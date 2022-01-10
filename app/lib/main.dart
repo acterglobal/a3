@@ -49,29 +49,60 @@ class _EffektioHomeState extends State<EffektioHome> {
                 ),
               ]),
           drawer: Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: const <Widget>[
-                UserAccountsDrawerHeader(
-                    accountName: Text("Ben"),
-                    accountEmail: Text("ben:effektio.org"),
-                    currentAccountPicture: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          "https://matrix-client.matrix.org/_matrix/media/r0/download/matrix.org/ABFEXSDrESxovWwEnCYdNcHT"),
-                    )),
-                ListTile(
-                  leading: Icon(Icons.task_alt_outlined),
-                  title: Text('Tasks'),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: const <Widget>[
+                      UserAccountsDrawerHeader(
+                          accountName: Text("Ben"),
+                          accountEmail: Text("ben:effektio.org"),
+                          currentAccountPicture: CircleAvatar(
+                            backgroundImage: NetworkImage(
+                                "https://matrix-client.matrix.org/_matrix/media/r0/download/matrix.org/ABFEXSDrESxovWwEnCYdNcHT"),
+                          )),
+                      ListTile(
+                        leading: Icon(Icons.task_alt_outlined),
+                        title: Text('Tasks'),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.calendar_today_outlined),
+                        title: Text('Events'),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.image),
+                        title: Text('Images'),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.real_estate_agent_outlined),
+                        title: Text('Resources'),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.folder_outlined),
+                        title: Text('Documents'),
+                      ),
+                    ],
+                  ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.calendar_today_outlined),
-                  title: Text('Events'),
+                Container(
+                  child: Align(
+                    alignment: FractionalOffset.bottomCenter,
+                    child: Container(
+                        padding: EdgeInsets.all(15.0),
+                        child: Container(
+                            child: Column(children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Icon(Icons.settings),
+                            ],
+                          ),
+                          Divider(),
+                          Text("Effektio 0.0.1"),
+                        ]))),
+                  ),
                 ),
-                ListTile(
-                  leading: Icon(Icons.real_estate_agent_outlined),
-                  title: Text('Resources'),
-                ),
-                Divider(),
               ],
             ),
           ),
