@@ -13,6 +13,32 @@ RELEASE = true
 DEV = false
 LIB_OUT_DIR = "release"
 
+[tasks.init]
+description = "initalise everything"
+dependencies = [
+    "flutter-get"
+]
+
+[tasks.flutter-get]
+description = "update flutter dependencies"
+script = [
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app",
+    "flutter pub get"
+]
+
+[tasks.ffigen]
+description = "generate the latest Dart from FFI"
+script = [
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
+    "flutter pub run ffigen"
+]
+
+[tasks.format]
+install_crate = "rustfmt"
+command = "cargo"
+args = ["fmt", "--", "--emit=files"]
+
+
 [tasks.test-flow]
 disabled = true
 
@@ -229,7 +255,7 @@ env = { ANDROID_TARGET = "x86_64-linux-android", JNI_LIB_DIR = "x86_64" }
 run_task = "copy-lib"
 
 [tasks.post-android]
-dependencies = ["restore-crate-type"]
+dependencies = ["ffigen", "restore-crate-type"]
 
 [tasks.setup-crate-type-android]
 private = true
