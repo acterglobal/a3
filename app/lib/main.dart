@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
 void main() {
+  EffekioSdk().loadPage("testing FFI");
   runApp(Effektio());
 }
 
@@ -20,6 +22,7 @@ class EffektioHome extends StatefulWidget {
 }
 
 class _EffektioHomeState extends State<EffektioHome> {
+  String dropdownValue = 'All';
   int _currentIndex = 0;
 
   // This widget is the root of your application.
@@ -34,11 +37,30 @@ class _EffektioHomeState extends State<EffektioHome> {
         //supportedLocales: GalleryLocalizations.supportedLocales,
         // locale: GalleryOptions.of(context).locale,
         home: Scaffold(
-          extendBodyBehindAppBar: true,
           appBar: AppBar(
               primary: false,
               backgroundColor: Colors.transparent,
               foregroundColor: Colors.blue,
+              centerTitle: true,
+              title: DropdownButton<String>(
+                value: dropdownValue,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                items: <String>[
+                  'All',
+                  'Greenpeace',
+                  '104er',
+                  'Badminton 1905 e.V.'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
               elevation: 0.0,
               shadowColor: Colors.transparent,
               actions: [
@@ -71,16 +93,24 @@ class _EffektioHomeState extends State<EffektioHome> {
                         title: Text('Events'),
                       ),
                       ListTile(
-                        leading: Icon(Icons.image),
+                        leading: Icon(Icons.photo_library_outlined),
                         title: Text('Images'),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.video_collection_outlined),
+                        title: Text('Videos'),
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.folder_outlined),
+                        title: Text('Documents'),
                       ),
                       ListTile(
                         leading: Icon(Icons.real_estate_agent_outlined),
                         title: Text('Resources'),
                       ),
                       ListTile(
-                        leading: Icon(Icons.folder_outlined),
-                        title: Text('Documents'),
+                        leading: Icon(Icons.payments_outlined),
+                        title: Text('Budget'),
                       ),
                     ],
                   ),
