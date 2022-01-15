@@ -1560,6 +1560,22 @@ class EffektioFFI {
   late final _getloadavg =
       _getloadavgPtr.asFunction<int Function(ffi.Pointer<ffi.Double>, int)>();
 
+  int echo(
+    int port,
+    ffi.Pointer<ffi.Int8> url,
+  ) {
+    return _echo(
+      port,
+      url,
+    );
+  }
+
+  late final _echoPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Int64, ffi.Pointer<ffi.Int8>)>>('echo');
+  late final _echo =
+      _echoPtr.asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
+
   int error_message_utf8(
     ffi.Pointer<ffi.Int8> buf,
     int length,
@@ -1585,22 +1601,6 @@ class EffektioFFI {
       _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('last_error_length');
   late final _last_error_length =
       _last_error_lengthPtr.asFunction<int Function()>();
-
-  int load_page(
-    int port,
-    ffi.Pointer<ffi.Int8> url,
-  ) {
-    return _load_page(
-      port,
-      url,
-    );
-  }
-
-  late final _load_pagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int32 Function(ffi.Int64, ffi.Pointer<ffi.Int8>)>>('load_page');
-  late final _load_page =
-      _load_pagePtr.asFunction<int Function(int, ffi.Pointer<ffi.Int8>)>();
 }
 
 class __fsid_t extends ffi.Struct {

@@ -8,7 +8,6 @@ rust-version = "1.58"
 
 [build-dependencies]
 cbindgen = "0.14.3"
-dart-bindgen = "0.1.7"
 
 [dependencies]
 anyhow = "1.0.51"
@@ -22,4 +21,4 @@ async-std = "1"
 
 [lib]
 name = "effektio"
-crate-type = ["staticlib"]
+crate-type = ["rlib"]

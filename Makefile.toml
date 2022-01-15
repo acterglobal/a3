@@ -22,8 +22,10 @@ dependencies = [
 [tasks.flutter-get]
 description = "update flutter dependencies"
 script = [
+    "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
+    "flutter pub get",
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/app",
-    "flutter pub get"
+    "flutter pub get",
 ]
 
 [tasks.ffigen]
@@ -31,6 +33,12 @@ description = "generate the latest Dart from FFI"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
     "flutter pub run ffigen"
+]
+[tasks.prep-app]
+description = "Update the native SDK and run the android flutter app"
+dependencies = [
+    "android",
+    "ffigen",
 ]
 
 [tasks.format]

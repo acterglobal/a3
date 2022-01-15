@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
-void main() {
-  EffekioSdk().loadPage("testing FFI");
+void main() async {
+  final sdk = EffekioSdk();
+  EffekioSdk.setup();
+
   runApp(Effektio());
+  final res = await sdk.echo("testing FFI");
+  print("got back ${res}");
 }
 
 class Effektio extends StatelessWidget {

@@ -1,7 +1,7 @@
 
 [toolchain]
-channel = "stable"
-components = ["rustfmt", "clippy"]
+channel = "nightly"
+components = ["rustfmt", "clippy", "rls"]
 targets = [
     "wasm32-unknown-unknown",
     "aarch64-linux-android",

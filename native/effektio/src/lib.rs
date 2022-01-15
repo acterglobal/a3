@@ -60,12 +60,12 @@ pub unsafe extern "C" fn error_message_utf8(buf: *mut raw::c_char, length: i32) 
 }
 
 #[no_mangle]
-pub extern "C" fn load_page(port: i64, url: *const raw::c_char) -> i32 {
+pub extern "C" fn echo (port: i64, url: *const raw::c_char) -> i32 {
     let rt = runtime!();
     let url = cstr!(url);
+    println!("in echo");
     let t = Isolate::new(port).task(async move {
-        println!("fetching: {:}", url);
-        "res"
+        url
     });
     rt.spawn(t);
     1
