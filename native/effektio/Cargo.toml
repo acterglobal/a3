@@ -14,10 +14,25 @@ anyhow = "1.0.51"
 tokio = { version = "1", features = ["rt-multi-thread"] }
 ffi-gen-macro = { version = "0.1.2" }
 futures = "0.3.17"
-ffi_helpers = "0.2"
+ffi_helpers = "0.3"
 allo-isolate = "0.1.6"
 lazy_static = "1.4"
 async-std = "1"
+cute-log = "2.0.7"
+parking_lot = "0.11.2"
+
+[dependencies.matrix-sdk]
+git = "https://github.com/matrix-org/matrix-rust-sdk/"
+default-features = false
+features = [
+#    "encryption",
+    "rustls-tls",
+#    "qrcode",
+#    "sled_cryptostore",
+    "sled_state_store",
+    "anyhow",
+]
+
 
 [lib]
 name = "effektio"

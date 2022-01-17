@@ -1593,6 +1593,14 @@ class EffektioFFI {
   late final _error_message_utf8 = _error_message_utf8Ptr
       .asFunction<int Function(ffi.Pointer<ffi.Int8>, int)>();
 
+  int init() {
+    return _init();
+  }
+
+  late final _initPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('init');
+  late final _init = _initPtr.asFunction<int Function()>();
+
   int last_error_length() {
     return _last_error_length();
   }
@@ -1601,6 +1609,21 @@ class EffektioFFI {
       _lookup<ffi.NativeFunction<ffi.Int32 Function()>>('last_error_length');
   late final _last_error_length =
       _last_error_lengthPtr.asFunction<int Function()>();
+
+  /// Returns 0 if things went wrong, or the reference number otherwise
+  int new_client(
+    ffi.Pointer<ffi.Int8> url,
+  ) {
+    return _new_client(
+      url,
+    );
+  }
+
+  late final _new_clientPtr =
+      _lookup<ffi.NativeFunction<ffi.Int32 Function(ffi.Pointer<ffi.Int8>)>>(
+          'new_client');
+  late final _new_client =
+      _new_clientPtr.asFunction<int Function(ffi.Pointer<ffi.Int8>)>();
 }
 
 class __fsid_t extends ffi.Struct {
