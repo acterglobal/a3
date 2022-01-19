@@ -4,8 +4,6 @@
 
  - `cargo install`
  - `cargo install cargo-make`
- - `cargo install cargo-ndk`
- - `cargo install cargo-lipo`
  - `flutter`
 
 + Android NDK / XCode
