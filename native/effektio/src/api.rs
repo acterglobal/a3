@@ -1,81 +1,36 @@
-#![allow(clippy::missing_safety_doc, clippy::not_unsafe_ptr_arg_deref)]
+use futures::Stream;
+use anyhow::Result;
+pub use matrix_sdk::Client;
+use url::Url;
+use log::warn;
+#[cfg(target_os = "android")]
+use crate::android as platform;
 
-
-use anyhow::{Context, Result};
-use lazy_static::lazy_static;
-use matrix_sdk::Client as MatrixClient;
-use parking_lot::RwLock;
-use std::{collections::BTreeMap, io};
-use tokio::runtime::{Builder, Runtime};
-
-lazy_static! {
-    static ref RUNTIME: io::Result<Runtime> = Builder::new_multi_thread()
-        .worker_threads(4)
-        .thread_name("effektiorust")
-        .build();
-    static ref CLIENTS: RwLock<BTreeMap<u32, MatrixClient>> = RwLock::new(BTreeMap::new());
-    static ref CLIENTS_COUNTER: RwLock<u32> = RwLock::new(0);
-}
-
-
-#[derive(Debug, Clone)]
-pub struct Client(pub(crate) u32);
-
-impl Client {
-    fn matrix_client(&self) -> Result<MatrixClient, anyhow::Error> {
-        let lock = CLIENTS.read();
-        lock.get(&self.0).context("Client unknown").map(|m| m.clone())
+#[cfg(not(target_os = "android"))]
+mod platform {
+    pub(super) fn new_client(_url: url::Url, _data_path: String) -> anyhow::Result<matrix_sdk::Client> {
+        anyhow::bail!("not implemented for current platform")
+    }
+    pub(super) fn init_logging(filter: Option<String>) -> anyhow::Result<()> {
+        anyhow::bail!("not implemented for current platform")
     }
 }
 
-pub async fn avatar_url(h: Client) -> Result<Option<String>> {
-    Ok(match h.matrix_client()?.avatar_url().await? {
-        Some(u) => Some(u.to_string()),
-        None => None
-    })
-}
-pub async fn logged_in(h: Client) -> Result<bool> {
-    Ok(h.matrix_client()?.logged_in().await)
-}
-pub async fn homeserver(h: Client) -> Result<String> {
-    Ok(h.matrix_client()?.homeserver().await.to_string())
-}
-pub async fn login(
-    h: Client,
-    user: String,
-    password: String,
-    device_id: Option<String>,
-    initial_device_display_name: Option<&str>
-) -> Result<String> {
-    let m = h.matrix_client()?;
-    let r = m.login(&user, &password, device_id, initial_device_display_name)?;
-
-}
+ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
 /// Returns 0 if things went wrong, or the reference number otherwise
-pub fn new_client(url: String) -> Result<Client> {
-    let url = url.parse()?;
-    let counter = CLIENTS_COUNTER
-        .read()
-        .checked_add(1)
-        .context("Running out of clients")?;
-    {
-        let client = MatrixClient::new(url)?;
-        (*CLIENTS.write()).insert(counter, client);
-    }
-    *CLIENTS_COUNTER.write() = counter;
-    Ok(Client(counter))
+pub fn new_client(home_url: String, data_path: String) -> Result<Client> {
+    let url = Url::parse(&home_url)?;
+    warn!("New client for {}", url);
+    platform::new_client(url, data_path)
 }
 
-pub async fn echo(url: String) -> Result<String> {
-    async move {
-        Ok(url)
-    }.await
+pub fn echo(inp: String) -> Result<String> {
+    Ok(String::from(inp))
 }
 
-pub fn init() -> Result<()> {
-    const LOGGER: cute_log::Logger = cute_log::Logger::new();
-    LOGGER.set_max_level(cute_log::log::LevelFilter::Info);
-    //error!(LOGGER.set_LOGGER());
+#[allow(clippy::if_same_then_else)]
+fn init_logging(filter: Option<String>) -> Result<()> {
+    platform::init_logging(filter)?;
     Ok(())
 }

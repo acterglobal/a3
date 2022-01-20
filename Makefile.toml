@@ -16,9 +16,17 @@ LIB_OUT_DIR = "release"
 [tasks.setup]
 description = "set up the system"
 script = [
-  "dart pub global activate ffigen",
   "cargo install cargo-ndk",
   "cargo install cargo-lipo",
+]
+
+[tasks.ffigen]
+script = [
+    """
+    cargo check
+    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/effektio/bindings.dart \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/effektio_flutter_sdk.dart
+    """,
 ]
 
 [tasks.init]
@@ -36,30 +44,17 @@ script = [
     "flutter pub get",
 ]
 
-[tasks.ffigen]
-description = "generate the latest Dart from FFI"
-command = "flutter_rust_bridge_codegen"
-args = [
-  "--rust-input",
-  "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/effektio/src/api.rs",
-  "--dart-output",
-  "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/effektio_flutter_sdk/lib/effektio-ffi.dart",
-  "--c-output",
-  "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/effektio_flutter_sdk/ios/Classes/binding.h",
-]
-
 [tasks.prep-app]
 description = "Update the native SDK and run the android flutter app"
 dependencies = [
-    "android",
     "ffigen",
+    "android",
 ]
 
 [tasks.format]
 install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
-
 
 [tasks.test-flow]
 disabled = true
@@ -68,6 +63,7 @@ disabled = true
 description = "development android x86_64 emulator"
 category = "Build"
 dependencies = [
+  "ffigen",
   "setup-crate-type-android",
   "pre-android",
   "android-x86_64",

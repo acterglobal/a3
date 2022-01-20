@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() async {
-  final sdk = EffekioSdk();
-  EffekioSdk.setup();
-
   runApp(Effektio());
-  final res = await sdk.echo("testing FFI");
-  print("got back ${res}");
 }
 
 class Effektio extends StatelessWidget {
@@ -20,6 +16,20 @@ class Effektio extends StatelessWidget {
   }
 }
 
+Future<Client> make_client() async {
+  final api = Api.load();
+  api.initLogging("warn");
+  final directory = await getApplicationDocumentsDirectory();
+  final data_path = directory.path;
+  final res = api.echo("https://matrix.org");
+  print("got back ${res}");
+  final client =
+      api.newClient("https://matrix.org", '${data_path}/matrix-data');
+  final logged_in = await client.loggedIn();
+  print("got back ${logged_in}");
+  return client;
+}
+
 class EffektioHome extends StatefulWidget {
   @override
   _EffektioHomeState createState() => _EffektioHomeState();
@@ -28,6 +38,17 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome> {
   String dropdownValue = 'All';
   int _currentIndex = 0;
+  late Client _client;
+
+  @override
+  void initState() {
+    super.initState();
+    make_client().then((c) {
+      setState(() {
+        _client = c;
+      });
+    });
+  }
 
   // This widget is the root of your application.
   @override
