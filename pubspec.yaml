@@ -1,6 +1,6 @@
 name: riverpod_infinite_scroll
-description: Riverpod implementation of infinite_scroll_pagination
-version: 1.0.0
+description: Riverpod implementation of infinite_scroll_pagination, this package allows to use infinite_scroll_pagination with Riverpod abstracting away the complexity
+version: 1.0.1
 homepage: https://www.quantos.it
 
 environment:
