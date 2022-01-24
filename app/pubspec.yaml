@@ -30,11 +30,11 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  path_provider: 2.0.8
+  path_provider: ^2.0.8
+  formz: ^0.4.1
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
 
