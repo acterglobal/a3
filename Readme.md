@@ -38,3 +38,7 @@ We have a test suite to run unit tests and integration tests. This is run via th
 .... TBD
 
 ## License
+
+This Code is made available under an the eventually Free Software "Effektio Source License". Tl;dr: You can use the software for personal, educational and interal usage as long as the installation stays below 100 registered users and is not available to the public. Any other installation, usage or derivation of the work requires consent by the licensor. All code is made availble under the AGPL Free Software License two years after its publication.
+
+All contributors must agree that their code is licensed this way and that the license can be changed by the licensor. A bot on the Github Repo will track that agreement.
