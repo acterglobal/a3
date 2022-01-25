@@ -49,9 +49,9 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
         return List.generate(
             20,
             (index) => User(
-                id: "$index",
+                id: "${page}_$index",
                 name: "John",
-                profilePicture: "https://www.mywebsite.com/images/$index"));
+                profilePicture: "https://via.placeholder.com/150/92c952"));
       });
       // we then update state accordingly
       state = state.copyWith(records: [

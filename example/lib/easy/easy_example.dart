@@ -17,7 +17,7 @@ class EasyExample extends StatelessWidget {
         provider: easyExampleProvider,
         // a function that build a single Post
         itemBuilder: (context, item, index) => ListTile(
-          leading: Image.network(item.image),
+          leading: CircleAvatar(child: Image.network(item.image)),
           title: Text(item.title),
         ),
         // The type of list we want to render
