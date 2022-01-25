@@ -1,4 +1,4 @@
-# Efektio flutter app
+# Effektio flutter app
 
 ## Requirements
 
