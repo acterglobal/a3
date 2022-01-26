@@ -240,6 +240,27 @@ mod api {
         })
     }
     #[no_mangle]
+    pub extern "C" fn __login_with_token(tmp1: i64,tmp2: u64,tmp3: u64,tmp5: i64,tmp6: u64,tmp7: u64,) -> i64 {
+        panic_abort(move || {
+            let tmp0 = unsafe {
+                String::from_raw_parts(
+                    tmp1 as _,
+                    tmp2 as _,
+                    tmp3 as _,
+                )
+            };let tmp4 = unsafe {
+                String::from_raw_parts(
+                    tmp5 as _,
+                    tmp6 as _,
+                    tmp7 as _,
+                )
+            };let tmp8 = login_with_token(tmp0,tmp4,);#[allow(unused_assignments)] let mut tmp9 = Default::default();let tmp9_0 = async move { tmp8.await.map_err(|err| err.to_string()) };
+            let tmp9_1: FfiFuture<Result<Client>> = FfiFuture::new(tmp9_0);
+            tmp9 = Box::into_raw(Box::new(tmp9_1)) as _;
+            tmp9
+        })
+    }
+    #[no_mangle]
     pub extern "C" fn __echo(tmp1: i64,tmp2: u64,tmp3: u64,) -> __echoReturn {
         panic_abort(move || {
             let tmp0 = unsafe {
@@ -279,6 +300,15 @@ mod api {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.logged_in();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = tmp2;
             let tmp3_1: FfiFuture<bool> = FfiFuture::new(tmp3_0);
+            tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
+            tmp3
+        })
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_restore_token(tmp1: i64,) -> i64 {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.restore_token();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
+            let tmp3_1: FfiFuture<Result<String>> = FfiFuture::new(tmp3_0);
             tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
             tmp3
         })
@@ -327,6 +357,43 @@ mod api {
             unsafe { Box::<FfiFuture<Result<Client>>>::from_raw(boxed as *mut _) };
         });
     }#[no_mangle]
+    pub extern "C" fn __login_with_token_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __login_with_token_future_pollReturn {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<Client>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();if let Some(tmp8) = tmp6 {
+                tmp7 = 1;
+                match tmp8 {
+                    Ok(tmp10) => {
+                        tmp9 = 1;
+                        let tmp10_0 = assert_send_static(tmp10);
+                        tmp15 = Box::into_raw(Box::new(tmp10_0)) as _;
+                    }
+                    Err(tmp11_0) => {
+                        tmp9 = 0;
+                        let tmp11 = tmp11_0.to_string();
+                        let tmp11_0 = ManuallyDrop::new(tmp11);
+                        tmp12 = tmp11_0.as_ptr() as _;
+                        tmp13 = tmp11_0.len() as _;
+                        tmp14 = tmp11_0.capacity() as _;
+                    }
+                };
+            } else {
+                tmp7 = 0;
+            }
+            __login_with_token_future_pollReturn {
+                ret0: tmp7,ret1: tmp9,ret2: tmp12,ret3: tmp13,ret4: tmp14,ret5: tmp15,
+            }
+        })
+    }
+    #[repr(C)]
+    pub struct __login_with_token_future_pollReturn {
+        pub ret0: u8,pub ret1: u8,pub ret2: i64,pub ret3: u64,pub ret4: u64,pub ret5: i64,
+    }
+    #[no_mangle]
+    pub extern "C" fn __login_with_token_future_drop(_: i64, boxed: i64) {
+        panic_abort(move || {
+            unsafe { Box::<FfiFuture<Result<Client>>>::from_raw(boxed as *mut _) };
+        });
+    }#[no_mangle]
     pub extern "C" fn __Client_logged_in_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Client_logged_in_future_pollReturn {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<bool>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();if let Some(tmp8) = tmp6 {
@@ -348,6 +415,45 @@ mod api {
     pub extern "C" fn __Client_logged_in_future_drop(_: i64, boxed: i64) {
         panic_abort(move || {
             unsafe { Box::<FfiFuture<bool>>::from_raw(boxed as *mut _) };
+        });
+    }#[no_mangle]
+    pub extern "C" fn __Client_restore_token_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Client_restore_token_future_pollReturn {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<String>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();#[allow(unused_assignments)] let mut tmp16 = Default::default();#[allow(unused_assignments)] let mut tmp17 = Default::default();if let Some(tmp8) = tmp6 {
+                tmp7 = 1;
+                match tmp8 {
+                    Ok(tmp10) => {
+                        tmp9 = 1;
+                        let tmp10_0 = ManuallyDrop::new(tmp10);
+                        tmp15 = tmp10_0.as_ptr() as _;
+                        tmp16 = tmp10_0.len() as _;
+                        tmp17 = tmp10_0.capacity() as _;
+                    }
+                    Err(tmp11_0) => {
+                        tmp9 = 0;
+                        let tmp11 = tmp11_0.to_string();
+                        let tmp11_0 = ManuallyDrop::new(tmp11);
+                        tmp12 = tmp11_0.as_ptr() as _;
+                        tmp13 = tmp11_0.len() as _;
+                        tmp14 = tmp11_0.capacity() as _;
+                    }
+                };
+            } else {
+                tmp7 = 0;
+            }
+            __Client_restore_token_future_pollReturn {
+                ret0: tmp7,ret1: tmp9,ret2: tmp12,ret3: tmp13,ret4: tmp14,ret5: tmp15,ret6: tmp16,ret7: tmp17,
+            }
+        })
+    }
+    #[repr(C)]
+    pub struct __Client_restore_token_future_pollReturn {
+        pub ret0: u8,pub ret1: u8,pub ret2: i64,pub ret3: u64,pub ret4: u64,pub ret5: i64,pub ret6: u64,pub ret7: u64,
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_restore_token_future_drop(_: i64, boxed: i64) {
+        panic_abort(move || {
+            unsafe { Box::<FfiFuture<Result<String>>>::from_raw(boxed as *mut _) };
         });
     }
 }

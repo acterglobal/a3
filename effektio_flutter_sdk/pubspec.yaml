@@ -15,6 +15,7 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   isolate: ^2.1.1
+  shared_preferences: ^2.0.12
   flutter_rust_bridge: "1.14.0"
   path_provider: "2.0.8"
 
