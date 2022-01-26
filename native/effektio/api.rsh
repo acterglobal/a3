@@ -4,7 +4,7 @@ fn init_logging(filter: Option<string>) -> Result<()>;
 
 
 /// Create a new client for homeserver at url with storage at data_path
-fn new_client(home_url: string, data_path: string) -> Result<Client>;
+fn login_new_client(username: string, password: string, basepath: string) -> Future<Result<Client>>;
 
 fn echo(inp: string) -> Result<string>;
 

@@ -25,7 +25,7 @@ script = [
     """
     cargo check
     cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/effektio/bindings.dart \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/effektio_flutter_sdk.dart
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/effektio_flutter_sdk_ffi.dart
     """,
 ]
 

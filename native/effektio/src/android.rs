@@ -6,12 +6,18 @@ use tracing_subscriber::layer::SubscriberExt;
 use matrix_sdk::{Client, config::ClientConfig};
 use log::Level;
 use url::Url;
+use std::{fs, path};
 
-pub(crate) fn new_client(home_url: Url, data_path: String) -> Result<Client> {
+pub(crate) fn new_client_config(base_path: String, home: String) -> Result<ClientConfig> {
+    let data_path = path::PathBuf::from(base_path)
+        .join(home);
+
+    fs::create_dir_all(&data_path)?;
+
     let config = ClientConfig::new()
         .user_agent("effektio-android")?
-        .store_path(data_path);
-    Ok(Client::new_with_config(home_url, config)?)
+        .store_path(&data_path);
+    return Ok(config);
 }
 
 pub(crate) fn init_logging(filter: Option<String>) -> Result<()>{

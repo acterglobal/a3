@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:path_provider/path_provider.dart';
 
 void main() async {
   runApp(Effektio());
@@ -21,18 +20,12 @@ class Effektio extends StatelessWidget {
   }
 }
 
-Future<Client> make_client() async {
-  final api = Api.load();
-  api.initLogging("warn");
-  final directory = await getApplicationDocumentsDirectory();
-  final data_path = directory.path;
-  final res = api.echo("https://matrix.org");
-  print("got back ${res}");
-  final client =
-      api.newClient("https://matrix.org", '${data_path}/matrix-data');
-  final logged_in = await client.loggedIn();
-  print("got back ${logged_in}");
-  return client;
+Future<String> makeClient(String username, String password) async {
+  final sdk = await EffektioSdk.instance;
+  final client = await sdk.login(username, password);
+  final loggedIn = await client.loggedIn();
+  print("got back ${loggedIn}");
+  return client.toString();
 }
 
 class EffektioHome extends StatefulWidget {
@@ -43,14 +36,14 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome> {
   String dropdownValue = 'All';
   int _currentIndex = 0;
-  late Client _client;
+  // late Client _client;
 
   @override
   void initState() {
     super.initState();
-    make_client().then((c) {
+    makeClient().then((c) {
       setState(() {
-        _client = c;
+        //_client = c;
       });
     });
   }
