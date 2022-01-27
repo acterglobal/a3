@@ -3,6 +3,7 @@ use anyhow::Result;
 use matrix_sdk::{
     Client as MatrixClient,
     Session,
+    media::{MediaRequest, MediaFormat, MediaType},
 };
 pub use matrix_sdk::{
     ruma::{UserId, MxcUri, DeviceId, ServerName}
@@ -59,6 +60,14 @@ impl Client {
         })?)
     }
 
+    // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
+    //     let l = self.0.clone();
+    //     RUNTIME.spawn(async move {
+    //         let user_id = l.user_id().await.expect("No User ID found");
+    //         Ok(user_id.as_str().to_string())
+    //     }).await?
+    // }
+
     pub async fn user_id(&self) -> Result<String> {
         let l = self.0.clone();
         RUNTIME.spawn(async move {
@@ -83,11 +92,14 @@ impl Client {
         }).await?
     }
 
-    pub async fn avatar_url(&self) -> Result<String> {
+    pub async fn avatar(&self) -> Result<Vec<u8>> {
         let l = self.0.clone();
         RUNTIME.spawn(async move {
-            let url = l.avatar_url().await?.expect("No avatar Url given");
-            Ok(url.as_str().to_string())
+            let uri = l.avatar_url().await?.expect("No avatar Url given");
+            Ok(l.get_media_content(&MediaRequest{
+                media_type: MediaType::Uri(uri),
+                format: MediaFormat::File
+            }, true).await?)
         }).await?
     }
 }

@@ -7,11 +7,11 @@ rust-version = "1.58"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-ffi-gen = "0.1.7"
+ffi-gen = { git = "https://github.com/gnunicorn/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen-macro = { version = "0.1.2" }
+ffi-gen-macro = { git = "https://github.com/gnunicorn/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
 lazy_static = "1.4"

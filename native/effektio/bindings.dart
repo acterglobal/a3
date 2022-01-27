@@ -790,7 +790,7 @@ class Api {
     return tmp7;
   }
 
-  String? __clientAvatarUrlFuturePoll(
+  List<int>? __clientAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -804,7 +804,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientAvatarUrlFuturePoll(
+    final tmp6 = _clientAvatarFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -831,7 +831,7 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    final tmp7 = tmp13_0.asTypedList(tmp14).toList();
     if (tmp15 > 0) {
       final ffi.Pointer<ffi.Void> tmp13_0;
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
@@ -966,13 +966,13 @@ class Api {
       int Function(
     int,
   )>();
-  late final _clientAvatarUrlPtr = _lookup<
+  late final _clientAvatarPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_avatar_url");
+  )>>("__Client_avatar");
 
-  late final _clientAvatarUrl = _clientAvatarUrlPtr.asFunction<
+  late final _clientAvatar = _clientAvatarPtr.asFunction<
       int Function(
     int,
   )>();
@@ -1080,17 +1080,16 @@ class Api {
     int,
     int,
   )>();
-  late final _clientAvatarUrlFuturePollPtr = _lookup<
+  late final _clientAvatarFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientAvatarUrlFuturePollReturn Function(
+          _ClientAvatarFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_avatar_url_future_poll");
+  )>>("__Client_avatar_future_poll");
 
-  late final _clientAvatarUrlFuturePoll =
-      _clientAvatarUrlFuturePollPtr.asFunction<
-          _ClientAvatarUrlFuturePollReturn Function(
+  late final _clientAvatarFuturePoll = _clientAvatarFuturePollPtr.asFunction<
+      _ClientAvatarFuturePollReturn Function(
     int,
     int,
     int,
@@ -1178,17 +1177,17 @@ class Client {
     return tmp2;
   }
 
-  Future<String> avatarUrl() {
+  Future<List<int>> avatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientAvatarUrl(
+    final tmp1 = _api._clientAvatar(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_avatar_url_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_avatar_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientAvatarUrlFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientAvatarFuturePoll);
     return tmp2;
   }
 
@@ -1339,7 +1338,7 @@ class _ClientDisplayNameFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _ClientAvatarUrlFuturePollReturn extends ffi.Struct {
+class _ClientAvatarFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

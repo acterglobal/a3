@@ -30,6 +30,6 @@ object Client {
     /// The display_name of the client
     fn display_name() -> Future<Result<string>>;
 
-    // The avatar_url of the client
-    fn avatar_url() -> Future<Result<string>>;
+    // The avatar of the client
+    fn avatar() -> Future<Result<Vec<u8>>>;
 }

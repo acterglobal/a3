@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
@@ -32,7 +33,7 @@ class EffektioSidebar extends StatefulWidget {
 
   @override
   _EffektioSidebarState createState() => _EffektioSidebarState(
-      _client, _client.displayName(), _client.userId(), _client.avatarUrl());
+      _client, _client.displayName(), _client.userId(), _client.avatar());
 }
 
 class _EffektioSidebarState extends State<EffektioSidebar> {
@@ -41,9 +42,9 @@ class _EffektioSidebarState extends State<EffektioSidebar> {
   final Client _client;
   final Future<String> name;
   final Future<String> username;
-  final Future<String> avatarUrl;
+  final Future<List<int>> avatar;
 
-  _EffektioSidebarState(this._client, this.name, this.username, this.avatarUrl);
+  _EffektioSidebarState(this._client, this.name, this.username, this.avatar);
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +67,20 @@ class _EffektioSidebarState extends State<EffektioSidebar> {
                 return Text("loading...");
               }
             }),
-        currentAccountPicture: CircleAvatar(
-          backgroundImage: NetworkImage(
-              "https://matrix-client.matrix.org/_matrix/media/r0/download/matrix.org/ABFEXSDrESxovWwEnCYdNcHT"),
-        ));
+        currentAccountPicture: FutureBuilder<List<int>>(
+            future: avatar, // a previously-obtained Future<String> or null
+            builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+              if (snapshot.hasData) {
+                return CircleAvatar(
+                  backgroundImage:
+                      MemoryImage(Uint8List.fromList(snapshot.requireData)),
+                );
+              } else {
+                return CircleAvatar(
+                    backgroundColor: Colors.brown.shade800,
+                    child: const Text('AH'));
+              }
+            }));
   }
 }
 
