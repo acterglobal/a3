@@ -13,13 +13,23 @@ fn echo(inp: string) -> Result<string>;
 
 /// Main entry point for `effektio`.
 object Client {
-    /// Whether the client is logged in
-    fn logged_in() -> Future<bool>;
-
+    // Special
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;
 
-    // fn login(user: &str,  ) -> Future<
+    // Regular Rust Matrix Client
+    /// Whether the client is logged in
+    fn logged_in() -> Future<bool>;
 
-    // fn avatar_url() -> Future<>;
+    /// The user_id of the client
+    fn user_id() -> Future<Result<string>>;
+
+    // The device_id of the client
+    fn device_id() -> Future<Result<string>>;
+
+    /// The display_name of the client
+    fn display_name() -> Future<Result<string>>;
+
+    // The avatar_url of the client
+    fn avatar_url() -> Future<Result<string>>;
 }

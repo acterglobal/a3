@@ -20,33 +20,69 @@ class Effektio extends StatelessWidget {
   }
 }
 
-Future<String> makeClient(String username, String password) async {
+Future<Client> makeClient() async {
   final sdk = await EffektioSdk.instance;
-  final client = await sdk.login(username, password);
-  final loggedIn = await client.loggedIn();
-  print("got back ${loggedIn}");
-  return client.toString();
+  Client client = await sdk.currentClient;
+  return client;
+}
+
+class EffektioSidebar extends StatefulWidget {
+  Client _client;
+  EffektioSidebar(this._client);
+
+  @override
+  _EffektioSidebarState createState() => _EffektioSidebarState(
+      _client, _client.displayName(), _client.userId(), _client.avatarUrl());
+}
+
+class _EffektioSidebarState extends State<EffektioSidebar> {
+  String dropdownValue = 'All';
+  int _currentIndex = 0;
+  final Client _client;
+  final Future<String> name;
+  final Future<String> username;
+  final Future<String> avatarUrl;
+
+  _EffektioSidebarState(this._client, this.name, this.username, this.avatarUrl);
+
+  @override
+  Widget build(BuildContext context) {
+    return UserAccountsDrawerHeader(
+        accountName: FutureBuilder<String>(
+            future: name, // a previously-obtained Future<String> or null
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data ?? "no name");
+              } else {
+                return Text("loading...");
+              }
+            }),
+        accountEmail: FutureBuilder<String>(
+            future: username, // a previously-obtained Future<String> or null
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return Text(snapshot.data ?? "no addr");
+              } else {
+                return Text("loading...");
+              }
+            }),
+        currentAccountPicture: CircleAvatar(
+          backgroundImage: NetworkImage(
+              "https://matrix-client.matrix.org/_matrix/media/r0/download/matrix.org/ABFEXSDrESxovWwEnCYdNcHT"),
+        ));
+  }
 }
 
 class EffektioHome extends StatefulWidget {
   @override
-  _EffektioHomeState createState() => _EffektioHomeState();
+  _EffektioHomeState createState() => _EffektioHomeState(makeClient());
 }
 
 class _EffektioHomeState extends State<EffektioHome> {
   String dropdownValue = 'All';
   int _currentIndex = 0;
-  // late Client _client;
-
-  @override
-  void initState() {
-    super.initState();
-    makeClient().then((c) {
-      setState(() {
-        //_client = c;
-      });
-    });
-  }
+  final Future<Client> _client;
+  _EffektioHomeState(this._client);
 
   // This widget is the root of your application.
   @override
@@ -100,14 +136,18 @@ class _EffektioHomeState extends State<EffektioHome> {
             Expanded(
               child: ListView(
                 padding: EdgeInsets.zero,
-                children: const <Widget>[
-                  UserAccountsDrawerHeader(
-                      accountName: Text("Ben"),
-                      accountEmail: Text("ben:effektio.org"),
-                      currentAccountPicture: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            "https://matrix-client.matrix.org/_matrix/media/r0/download/matrix.org/ABFEXSDrESxovWwEnCYdNcHT"),
-                      )),
+                children: <Widget>[
+                  FutureBuilder<Client>(
+                      future:
+                          _client, // a previously-obtained Future<String> or null
+                      builder: (BuildContext context,
+                          AsyncSnapshot<Client> snapshot) {
+                        if (snapshot.hasData) {
+                          return EffektioSidebar(snapshot.requireData);
+                        } else {
+                          return Text("loading...");
+                        }
+                      }),
                   ListTile(
                     leading: Icon(Icons.task_alt_outlined),
                     title: Text('Tasks'),

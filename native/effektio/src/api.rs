@@ -3,12 +3,13 @@ use anyhow::Result;
 use matrix_sdk::{
     Client as MatrixClient,
     Session,
-    ruma::{UserId},
+};
+pub use matrix_sdk::{
+    ruma::{UserId, MxcUri, DeviceId, ServerName}
 };
 use lazy_static::lazy_static;
 use tokio::runtime;
 use url::Url;
-use log::warn;
 use serde_json;
 
 use serde::{Serialize, Deserialize};
@@ -42,12 +43,14 @@ struct RestoreToken {
     session: Session,
 }
 
-impl Client {
-
-    pub async fn logged_in(&self) -> bool {
-        self.0.logged_in().await
+impl std::ops::Deref for Client {
+    type Target = MatrixClient;
+    fn deref(&self) -> &MatrixClient {
+        &self.0
     }
+}
 
+impl Client {
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.0.session().await.expect("Missing session");
         let homeurl = self.0.homeserver().await.into();
@@ -56,6 +59,37 @@ impl Client {
         })?)
     }
 
+    pub async fn user_id(&self) -> Result<String> {
+        let l = self.0.clone();
+        RUNTIME.spawn(async move {
+            let user_id = l.user_id().await.expect("No User ID found");
+            Ok(user_id.as_str().to_string())
+        }).await?
+    }
+
+    pub async fn display_name(&self) -> Result<String> {
+        let l = self.0.clone();
+        RUNTIME.spawn(async move {
+            let display_name = l.display_name().await?.expect("No User ID found");
+            Ok(display_name.as_str().to_string())
+        }).await?
+    }
+
+    pub async fn device_id(&self) -> Result<String> {
+        let l = self.0.clone();
+        RUNTIME.spawn(async move {
+            let device_id = l.device_id().await.expect("No Device ID found");
+            Ok(device_id.as_str().to_string())
+        }).await?
+    }
+
+    pub async fn avatar_url(&self) -> Result<String> {
+        let l = self.0.clone();
+        RUNTIME.spawn(async move {
+            let url = l.avatar_url().await?.expect("No avatar Url given");
+            Ok(url.as_str().to_string())
+        }).await?
+    }
 }
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {

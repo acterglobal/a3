@@ -3,9 +3,8 @@ use anyhow::Result;
 use android_logger::{Config, FilterBuilder};
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 use tracing_subscriber::layer::SubscriberExt;
-use matrix_sdk::{Client, config::ClientConfig};
+use matrix_sdk::config::ClientConfig;
 use log::Level;
-use url::Url;
 use std::{fs, path};
 
 pub(crate) fn new_client_config(base_path: String, home: String) -> Result<ClientConfig> {

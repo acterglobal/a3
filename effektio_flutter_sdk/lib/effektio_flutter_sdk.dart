@@ -2,20 +2,27 @@ library effektio;
 
 import 'dart:core';
 import 'dart:io';
+//import 'package:flutter/foundation.dart';
 import "package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart";
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+export "package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart" show Client;
+
+// class EffektioClient extends ChangeNotifier {
+//   final Client client;
+//   EffektioClient(this.client);
+// }
 
 class EffektioSdk {
   static EffektioSdk? _instance;
   late final Api _api;
+  final int _index = 0;
   final List<Client> _clients = [];
 
   EffektioSdk._(this._api);
 
   Future<void> _persistSessions() async {
     List<String> sessions = [];
-    // FIXME: parallel?!?
     for (var c in _clients) {
       String token = await c.restoreToken();
       sessions.add(token);
@@ -30,11 +37,17 @@ class EffektioSdk {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList("sessions") ?? []);
     // TODO: parallel?!?
+    bool loggedIn = false;
     for (var token in sessions) {
       Client client = await _api.loginWithToken(appDocPath, token);
       clients.add(client);
+      loggedIn = await client.loggedIn();
     }
-    print("Restored $_clients");
+    print("Restored $_clients: $loggedIn");
+  }
+
+  Future<Client> get currentClient async {
+    return _clients[_index];
   }
 
   static Future<EffektioSdk> get instance async {
