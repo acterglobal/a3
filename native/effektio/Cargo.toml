@@ -25,6 +25,7 @@ tracing = { version = "0.1.29", default-features = false }
 tracing-log = "0.1.2"
 tracing-subscriber = { version = "0.3.3", default-features = false, features = ["env-filter", "fmt"] }
 sanitize-filename-reader-friendly = "2.2.1"
+derive_builder = "0.10.2"
 
 [dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"

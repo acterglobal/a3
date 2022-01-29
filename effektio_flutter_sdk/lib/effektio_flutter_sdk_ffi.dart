@@ -412,7 +412,7 @@ class Api {
   }
 
   /// Create a new client anonymous client connecting to the homeserver
-  Future<Client> anonClient(
+  Future<Client> guestClient(
     String basepath,
     String homeserver,
   ) {
@@ -438,7 +438,7 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _anonClient(
+    final tmp8 = _guestClient(
       tmp1,
       tmp2,
       tmp3,
@@ -448,9 +448,9 @@ class Api {
     );
     final tmp10 = tmp8;
     final ffi.Pointer<ffi.Void> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-    final tmp10_1 = _Box(this, tmp10_0, "__anon_client_future_drop");
+    final tmp10_1 = _Box(this, tmp10_0, "__guest_client_future_drop");
     tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
-    final tmp9 = _nativeFuture(tmp10_1, this.__anonClientFuturePoll);
+    final tmp9 = _nativeFuture(tmp10_1, this.__guestClientFuturePoll);
     return tmp9;
   }
 
@@ -605,7 +605,7 @@ class Api {
     return tmp7;
   }
 
-  Client? __anonClientFuturePoll(
+  Client? __guestClientFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -619,7 +619,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _anonClientFuturePoll(
+    final tmp6 = _guestClientFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -928,6 +928,51 @@ class Api {
     return tmp7;
   }
 
+  Room? __clientRoomFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientRoomFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Room");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Room._(this, tmp13_1);
+    return tmp7;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -990,7 +1035,7 @@ class Api {
     int,
     int,
   )>();
-  late final _anonClientPtr = _lookup<
+  late final _guestClientPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -999,9 +1044,9 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__anon_client");
+  )>>("__guest_client");
 
-  late final _anonClient = _anonClientPtr.asFunction<
+  late final _guestClient = _guestClientPtr.asFunction<
       int Function(
     int,
     int,
@@ -1031,6 +1076,16 @@ class Api {
   )>>("__Client_restore_token");
 
   late final _clientRestoreToken = _clientRestoreTokenPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientIsGuestPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__Client_is_guest");
+
+  late final _clientIsGuest = _clientIsGuestPtr.asFunction<
       int Function(
     int,
   )>();
@@ -1084,6 +1139,22 @@ class Api {
       int Function(
     int,
   )>();
+  late final _clientRoomPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_room");
+
+  late final _clientRoom = _clientRoomPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _loginNewClientFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _LoginNewClientFuturePollReturn Function(
@@ -1114,16 +1185,16 @@ class Api {
     int,
     int,
   )>();
-  late final _anonClientFuturePollPtr = _lookup<
+  late final _guestClientFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _AnonClientFuturePollReturn Function(
+          _GuestClientFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__anon_client_future_poll");
+  )>>("__guest_client_future_poll");
 
-  late final _anonClientFuturePoll = _anonClientFuturePollPtr.asFunction<
-      _AnonClientFuturePollReturn Function(
+  late final _guestClientFuturePoll = _guestClientFuturePollPtr.asFunction<
+      _GuestClientFuturePollReturn Function(
     int,
     int,
     int,
@@ -1216,6 +1287,32 @@ class Api {
     int,
     int,
   )>();
+  late final _clientRoomFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientRoomFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_room_future_poll");
+
+  late final _clientRoomFuturePoll = _clientRoomFuturePollPtr.asFunction<
+      _ClientRoomFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+}
+
+class Room {
+  final Api _api;
+  final _Box _box;
+
+  Room._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
 }
 
 /// Main entry point for `effektio`.
@@ -1237,6 +1334,18 @@ class Client {
     final tmp3_1 = _Box(_api, tmp3_0, "__Client_restore_token_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientRestoreTokenFuturePoll);
+    return tmp2;
+  }
+
+  /// Whether the client is registered as a guest account
+  bool isGuest() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientIsGuest(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -1299,6 +1408,7 @@ class Client {
     return tmp2;
   }
 
+  /// The avatar of the client
   Future<List<int>> avatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -1311,6 +1421,38 @@ class Client {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientAvatarFuturePoll);
     return tmp2;
+  }
+
+  /// The rooms currently known to the client
+  /// The get room known to the client
+  Future<Room> room(
+    String roomId,
+  ) {
+    final tmp1 = roomId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientRoom(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_room_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__clientRoomFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -1377,7 +1519,7 @@ class _LoginWithTokenFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _AnonClientFuturePollReturn extends ffi.Struct {
+class _GuestClientFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -1492,4 +1634,19 @@ class _ClientAvatarFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
+}
+
+class _ClientRoomFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
 }

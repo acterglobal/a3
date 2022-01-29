@@ -27,16 +27,16 @@ Future<Client> makeClient() async {
   return client;
 }
 
-class EffektioSidebar extends StatefulWidget {
+class AccountHeader extends StatefulWidget {
   Client _client;
-  EffektioSidebar(this._client);
+  AccountHeader(this._client);
 
   @override
-  _EffektioSidebarState createState() => _EffektioSidebarState(
+  _AccountHeaderState createState() => _AccountHeaderState(
       _client, _client.displayName(), _client.userId(), _client.avatar());
 }
 
-class _EffektioSidebarState extends State<EffektioSidebar> {
+class _AccountHeaderState extends State<AccountHeader> {
   String dropdownValue = 'All';
   int _currentIndex = 0;
   final Client _client;
@@ -44,7 +44,7 @@ class _EffektioSidebarState extends State<EffektioSidebar> {
   final Future<String> username;
   final Future<List<int>> avatar;
 
-  _EffektioSidebarState(this._client, this.name, this.username, this.avatar);
+  _AccountHeaderState(this._client, this.name, this.username, this.avatar);
 
   @override
   Widget build(BuildContext context) {
@@ -154,9 +154,45 @@ class _EffektioHomeState extends State<EffektioHome> {
                       builder: (BuildContext context,
                           AsyncSnapshot<Client> snapshot) {
                         if (snapshot.hasData) {
-                          return EffektioSidebar(snapshot.requireData);
+                          if (snapshot.requireData.isGuest()) {
+                            return DrawerHeader(
+                                decoration: BoxDecoration(
+                                  color: Colors.purple,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Effektio',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Guest',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                    )
+                                  ],
+                                ));
+                          } else {
+                            return AccountHeader(snapshot.requireData);
+                          }
                         } else {
-                          return Text("loading...");
+                          return DrawerHeader(
+                            decoration: BoxDecoration(
+                              color: Colors.blue,
+                            ),
+                            child: Text(
+                              'Effektio',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                              ),
+                            ),
+                          );
                         }
                       }),
                   ListTile(
