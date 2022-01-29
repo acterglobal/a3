@@ -6,7 +6,10 @@ use matrix_sdk::{
     media::{MediaRequest, MediaFormat, MediaType},
 };
 pub use matrix_sdk::{
-    ruma::{UserId, MxcUri, DeviceId, ServerName}
+    ruma::{
+        api::client::r0::account::register,
+        UserId, MxcUri, DeviceId, ServerName
+    }
 };
 use lazy_static::lazy_static;
 use tokio::runtime;
@@ -102,6 +105,25 @@ impl Client {
             }, true).await?)
         }).await?
     }
+}
+
+pub async fn anon_client(base_path: String, homeurl: String) -> Result<Client> {
+    let homeserver = Url::parse(&homeurl)?;
+    let config = platform::new_client_config(base_path, homeurl)?;
+    let mut guest_registration = register::Request::new();
+    guest_registration.kind = register::RegistrationKind::Guest;
+    RUNTIME.spawn(async move {
+        let client = MatrixClient::new_with_config(homeserver, config)?;
+        let register = client.register(guest_registration).await?;
+        let session = Session {
+            access_token: register.access_token.expect("no access token given"),
+            user_id: register.user_id,
+            device_id: register.device_id.clone().expect("device id is given by server"),
+        };
+        client.restore_login(session).await?;
+        Ok(Client(client))
+    }).await?
+
 }
 
 pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {

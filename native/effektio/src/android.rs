@@ -6,10 +6,11 @@ use tracing_subscriber::layer::SubscriberExt;
 use matrix_sdk::config::ClientConfig;
 use log::Level;
 use std::{fs, path};
+use sanitize_filename_reader_friendly::sanitize;
 
 pub(crate) fn new_client_config(base_path: String, home: String) -> Result<ClientConfig> {
     let data_path = path::PathBuf::from(base_path)
-        .join(home);
+        .join(sanitize(&home));
 
     fs::create_dir_all(&data_path)?;
 

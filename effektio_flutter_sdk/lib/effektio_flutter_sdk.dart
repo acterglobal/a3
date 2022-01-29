@@ -43,6 +43,14 @@ class EffektioSdk {
       clients.add(client);
       loggedIn = await client.loggedIn();
     }
+
+    if (_clients.isEmpty) {
+      Client client =
+          await _api.anonClient(appDocPath, "https://matrix.effektio.org");
+      clients.add(client);
+      loggedIn = await client.loggedIn();
+      await _persistSessions();
+    }
     print("Restored $_clients: $loggedIn");
   }
 

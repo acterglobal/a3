@@ -8,6 +8,9 @@ fn login_new_client(basepath: string, username: string, password: string) -> Fut
 /// Create a new client from the restore token
 fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Client>>;
 
+/// Create a new client anonymous client connecting to the homeserver
+fn anon_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
+
 
 fn echo(inp: string) -> Result<string>;
 
