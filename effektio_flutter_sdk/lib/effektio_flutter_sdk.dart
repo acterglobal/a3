@@ -73,6 +73,10 @@ class EffektioSdk {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     final client = await _api.loginNewClient(appDocPath, username, password);
+    if (_clients.length == 1 && _clients[0].isGuest()) {
+      // we are replacing a guest account
+      _clients.removeAt(0);
+    }
     _clients.add(client);
     await _persistSessions();
     return client;

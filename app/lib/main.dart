@@ -27,6 +27,12 @@ Future<Client> makeClient() async {
   return client;
 }
 
+Future<Client> login(String username, String password) async {
+  final sdk = await EffektioSdk.instance;
+  Client client = await sdk.login(username, password);
+  return client;
+}
+
 class AccountHeader extends StatefulWidget {
   Client _client;
   AccountHeader(this._client);
@@ -252,6 +258,13 @@ class _EffektioHomeState extends State<EffektioHome> {
                                             color: Colors.white,
                                             fontSize: 18,
                                           ),
+                                        ),
+                                        OutlinedButton(
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                                context, "/login");
+                                          },
+                                          child: const Text('Log In'),
                                         )
                                       ],
                                     ));
@@ -393,28 +406,88 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class Login extends StatelessWidget {
+// Define a custom Form widget.
+class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final _formKey = GlobalKey<FormState>();
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Material(
         child: Center(
             child: Form(
+                key: _formKey,
                 child: Wrap(
-      children: [
-        TextFormField(
-            decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: '@user:server.ltd',
-        )),
-        TextFormField(
-            obscureText: true,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Password',
-            )),
-      ],
-    ))));
+                  children: [
+                    TextFormField(
+                        controller: usernameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: '@user:server.ltd',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          if (!value[0].startsWith("@")) {
+                            return "Matrix accounts must start with @";
+                          }
+                          return null;
+                        }),
+                    TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Password',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password can't empty";
+                          }
+                          return null;
+                        }),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Validate returns true if the form is valid, or false otherwise.
+                        if (_formKey.currentState!.validate()) {
+                          login(usernameController.text,
+                                  passwordController.text)
+                              .then((a) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  backgroundColor: Colors.greenAccent,
+                                  content: Text('Login successful')),
+                            );
+                            Navigator.pop(context);
+                          }).catchError((e) {
+                            print(e);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.redAccent,
+                              content: Text("Login failed: $e"),
+                            ));
+                          });
+                        }
+                      },
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ))));
   }
 }

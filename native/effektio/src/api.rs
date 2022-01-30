@@ -2,12 +2,12 @@ use futures::{stream, Stream};
 use anyhow::{bail, Result};
 use matrix_sdk::{
     Client as MatrixClient,
+    room::Room as MatrixRoom,
     LoopCtrl,
     Session,
     media::{MediaRequest, MediaFormat, MediaType},
 };
 pub use matrix_sdk::{
-    room::Room,
     ruma::{
         api::client::r0::account::register,
         UserId, RoomId, MxcUri, DeviceId, ServerName
@@ -68,6 +68,27 @@ struct RestoreToken {
     homeurl: String,
     session: Session,
 }
+
+pub struct Room {
+    room: MatrixRoom,
+}
+
+impl Room {
+    async fn display_name(&self) -> Result<String> {
+        let r = self.room.clone();
+        RUNTIME.spawn(async move {
+            Ok(r.display_name().await?)
+        }).await?
+    }
+}
+
+impl std::ops::Deref for Room {
+    type Target = MatrixRoom;
+    fn deref(&self) -> &MatrixRoom {
+        &self.room
+    }
+}
+
 
 impl std::ops::Deref for Client {
     type Target = MatrixClient;
@@ -130,7 +151,8 @@ impl Client {
     }
 
     pub  fn conversations(&self) -> stream::Iter<std::vec::IntoIter<Room>> {
-        stream::iter(self.rooms().into_iter())
+        let r: Vec<_> = self.rooms().into_iter().map(|room| Room { room }).collect();
+        stream::iter(r.into_iter())
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
@@ -154,7 +176,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME.spawn(async move {
             if let Some(room) = l.get_room(&room_id) {
-                return Ok(room)
+                return Ok(Room { room })
             }
             bail!("Room not found")
         }).await?

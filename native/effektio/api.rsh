@@ -52,7 +52,4 @@ object Client {
 
     /// The conversations the user is involved in
     fn conversations() -> Stream<Room>;
-
-    /// The get room known to the client
-    fn room(room_id: string) -> Future<Result<Room>>;
 }
