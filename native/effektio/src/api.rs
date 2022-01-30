@@ -1,7 +1,8 @@
-use futures::Stream;
+use futures::{stream, Stream};
 use anyhow::{bail, Result};
 use matrix_sdk::{
     Client as MatrixClient,
+    LoopCtrl,
     Session,
     media::{MediaRequest, MediaFormat, MediaType},
 };
@@ -18,6 +19,7 @@ use url::Url;
 use serde_json;
 use parking_lot::RwLock;
 use derive_builder::Builder;
+use std::sync::Arc;
 
 use serde::{Serialize, Deserialize};
 
@@ -44,12 +46,20 @@ ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
+    #[builder(default)]
     is_guest: bool,
+    #[builder(default)]
+    has_first_synced: bool,
+    #[builder(default)]
+    is_syncing: bool,
+    #[builder(default)]
+    should_stop_syncing: bool,
 }
 
+#[derive(Clone)]
 pub struct Client {
     client: MatrixClient,
-    state: RwLock<ClientState>,
+    state: Arc<RwLock<ClientState>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -71,9 +81,42 @@ impl Client {
     fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
             client,
-            state: RwLock::new(state),
+            state: Arc::new(RwLock::new(state)),
         }
     }
+
+    fn start_sync(&self) {
+        let client = self.client.clone();
+        let state = self.state.clone();
+        RUNTIME.spawn(async move {
+            client.sync_with_callback(matrix_sdk::config::SyncSettings::new(), |_response| async {
+                if !state.read().has_first_synced {
+                    state.write().has_first_synced = true
+                }
+
+                if state.read().should_stop_syncing {
+                    state.write().is_syncing = false;
+                    return LoopCtrl::Break
+                } else if !state.read().is_syncing {
+                    state.write().is_syncing = true;
+                }
+                return LoopCtrl::Continue
+            }).await;
+        });
+    }
+
+    /// Indication whether we've received a first sync response since
+    /// establishing the client (in memory)
+    pub fn has_first_synced(&self) -> bool {
+        self.state.read().has_first_synced
+    }
+
+    /// Indication whether we are currently syncing
+    pub fn is_syncing(&self) -> bool {
+        self.state.read().has_first_synced
+    }
+
+    /// Is this a guest account?
     pub fn is_guest(&self) -> bool {
         self.state.read().is_guest
     }
@@ -84,6 +127,10 @@ impl Client {
         Ok(serde_json::to_string(&RestoreToken {
             session, homeurl, is_guest: self.state.read().is_guest,
         })?)
+    }
+
+    pub  fn conversations(&self) -> stream::Iter<std::vec::IntoIter<Room>> {
+        stream::iter(self.rooms().into_iter())
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
@@ -155,7 +202,9 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             device_id: register.device_id.clone().expect("device id is given by server"),
         };
         client.restore_login(session).await?;
-        Ok(Client::new(client, ClientStateBuilder::default().is_guest(true).build()?))
+        let c = Client::new(client, ClientStateBuilder::default().is_guest(true).build()?);
+        c.start_sync();
+        Ok(c)
     }).await?
 
 }
@@ -168,7 +217,9 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     RUNTIME.spawn(async move {
         let client = MatrixClient::new_with_config(homeserver, config)?;
         client.restore_login(session).await?;
-        Ok(Client::new(client, ClientStateBuilder::default().is_guest(is_guest).build()?))
+        let c = Client::new(client, ClientStateBuilder::default().is_guest(is_guest).build()?);
+        c.start_sync();
+        Ok(c)
     }).await?
 }
 
@@ -180,7 +231,9 @@ pub async fn login_new_client(base_path: String, username: String, password: Str
     RUNTIME.spawn(async move {
         let client = MatrixClient::new_from_user_id_with_config(&user, config).await?;
         client.login(user, &password, None, None).await?;
-        Ok(Client::new(client, ClientStateBuilder::default().is_guest(false).build()?))
+        let c = Client::new(client, ClientStateBuilder::default().is_guest(false).build()?);
+        c.start_sync();
+        Ok(c)
     }).await?
 }
 

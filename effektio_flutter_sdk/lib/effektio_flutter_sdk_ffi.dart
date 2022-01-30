@@ -650,6 +650,56 @@ class Api {
     return tmp7;
   }
 
+  String? __roomDisplayNameFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomDisplayNameFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
   String? __clientRestoreTokenFuturePoll(
     int boxed,
     int postCobject,
@@ -973,6 +1023,42 @@ class Api {
     return tmp7;
   }
 
+  Room? __clientConversationsStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientConversationsStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_Room");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = Room._(this, tmp11_1);
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -1069,6 +1155,16 @@ class Api {
     int,
     int,
   )>();
+  late final _roomDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Room_display_name");
+
+  late final _roomDisplayName = _roomDisplayNamePtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _clientRestoreTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -1086,6 +1182,26 @@ class Api {
   )>>("__Client_is_guest");
 
   late final _clientIsGuest = _clientIsGuestPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientHasFirstSyncedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__Client_has_first_synced");
+
+  late final _clientHasFirstSynced = _clientHasFirstSyncedPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientIsSyncingPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__Client_is_syncing");
+
+  late final _clientIsSyncing = _clientIsSyncingPtr.asFunction<
       int Function(
     int,
   )>();
@@ -1136,6 +1252,16 @@ class Api {
   )>>("__Client_avatar");
 
   late final _clientAvatar = _clientAvatarPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientConversationsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_conversations");
+
+  late final _clientConversations = _clientConversationsPtr.asFunction<
       int Function(
     int,
   )>();
@@ -1195,6 +1321,21 @@ class Api {
 
   late final _guestClientFuturePoll = _guestClientFuturePollPtr.asFunction<
       _GuestClientFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _roomDisplayNameFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomDisplayNameFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Room_display_name_future_poll");
+
+  late final _roomDisplayNameFuturePoll =
+      _roomDisplayNameFuturePollPtr.asFunction<
+          _RoomDisplayNameFuturePollReturn Function(
     int,
     int,
     int,
@@ -1301,6 +1442,23 @@ class Api {
     int,
     int,
   )>();
+  late final _clientConversationsStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientConversationsStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_conversations_stream_poll");
+
+  late final _clientConversationsStreamPoll =
+      _clientConversationsStreamPollPtr.asFunction<
+          _ClientConversationsStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
 }
 
 class Room {
@@ -1308,6 +1466,21 @@ class Room {
   final _Box _box;
 
   Room._(this._api, this._box);
+
+  /// Calculate the display name
+  Future<String> displayName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomDisplayName(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Room_display_name_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__roomDisplayNameFuturePoll);
+    return tmp2;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -1342,6 +1515,30 @@ class Client {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientIsGuest(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Whether the client has finished a first sync run
+  bool hasFirstSynced() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientHasFirstSynced(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Whether the client is syncing
+  bool isSyncing() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientIsSyncing(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -1423,7 +1620,21 @@ class Client {
     return tmp2;
   }
 
-  /// The rooms currently known to the client
+  /// The conversations the user is involved in
+  Stream<Room> conversations() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientConversations(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientConversationsStreamPoll);
+    return tmp2;
+  }
+
   /// The get room known to the client
   Future<Room> room(
     String roomId,
@@ -1532,6 +1743,25 @@ class _GuestClientFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _RoomDisplayNameFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
@@ -1649,4 +1879,11 @@ class _ClientRoomFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _ClientConversationsStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }

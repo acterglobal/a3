@@ -12,9 +12,9 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
 object Room {
-
+    /// Calculate the display name
+    fn display_name() -> Future<Result<string>>;
 }
-
 
 fn echo(inp: string) -> Result<string>;
 
@@ -27,6 +27,12 @@ object Client {
 
     /// Whether the client is registered as a guest account
     fn is_guest() -> bool;
+
+    /// Whether the client has finished a first sync run
+    fn has_first_synced() -> bool;
+
+    /// Whether the client is syncing
+    fn is_syncing() -> bool;
 
     // Regular Rust Matrix Client
     /// Whether the client is logged in
@@ -44,8 +50,8 @@ object Client {
     /// The avatar of the client
     fn avatar() -> Future<Result<Vec<u8>>>;
 
-    /// The rooms currently known to the client
-    // fn rooms() -> Future<Result<Vec<Room>>>;
+    /// The conversations the user is involved in
+    fn conversations() -> Stream<Room>;
 
     /// The get room known to the client
     fn room(room_id: string) -> Future<Result<Room>>;

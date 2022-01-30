@@ -317,6 +317,15 @@ mod api {
         pub ret0: u8,pub ret1: i64,pub ret2: u64,pub ret3: u64,pub ret4: i64,pub ret5: u64,pub ret6: u64,
     }
     #[no_mangle]
+    pub extern "C" fn __Room_display_name(tmp1: i64,) -> i64 {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Room) };let tmp2 = tmp0.display_name();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
+            let tmp3_1: FfiFuture<Result<String>> = FfiFuture::new(tmp3_0);
+            tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
+            tmp3
+        })
+    }
+    #[no_mangle]
     pub extern "C" fn drop_box_Room(_: i64, boxed: i64) {
         panic_abort(move || {
             unsafe { Box::<Room>::from_raw(boxed as *mut _) };
@@ -334,6 +343,20 @@ mod api {
     pub extern "C" fn __Client_is_guest(tmp1: i64,) -> u8 {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.is_guest();#[allow(unused_assignments)] let mut tmp3 = Default::default();tmp3 = if tmp2 { 1 } else { 0 };
+            tmp3
+        })
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_has_first_synced(tmp1: i64,) -> u8 {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.has_first_synced();#[allow(unused_assignments)] let mut tmp3 = Default::default();tmp3 = if tmp2 { 1 } else { 0 };
+            tmp3
+        })
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_is_syncing(tmp1: i64,) -> u8 {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.is_syncing();#[allow(unused_assignments)] let mut tmp3 = Default::default();tmp3 = if tmp2 { 1 } else { 0 };
             tmp3
         })
     }
@@ -379,6 +402,14 @@ mod api {
             let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.avatar();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
             let tmp3_1: FfiFuture<Result<Vec<u8>>> = FfiFuture::new(tmp3_0);
             tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
+            tmp3
+        })
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_conversations(tmp1: i64,) -> i64 {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.conversations();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0: FfiStream<Room> = FfiStream::new(tmp2);
+            tmp3 = Box::into_raw(Box::new(tmp3_0)) as _;
             tmp3
         })
     }
@@ -513,6 +544,45 @@ mod api {
     pub extern "C" fn __guest_client_future_drop(_: i64, boxed: i64) {
         panic_abort(move || {
             unsafe { Box::<FfiFuture<Result<Client>>>::from_raw(boxed as *mut _) };
+        });
+    }#[no_mangle]
+    pub extern "C" fn __Room_display_name_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Room_display_name_future_pollReturn {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<String>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();#[allow(unused_assignments)] let mut tmp16 = Default::default();#[allow(unused_assignments)] let mut tmp17 = Default::default();if let Some(tmp8) = tmp6 {
+                tmp7 = 1;
+                match tmp8 {
+                    Ok(tmp10) => {
+                        tmp9 = 1;
+                        let tmp10_0 = ManuallyDrop::new(tmp10);
+                        tmp15 = tmp10_0.as_ptr() as _;
+                        tmp16 = tmp10_0.len() as _;
+                        tmp17 = tmp10_0.capacity() as _;
+                    }
+                    Err(tmp11_0) => {
+                        tmp9 = 0;
+                        let tmp11 = tmp11_0.to_string();
+                        let tmp11_0 = ManuallyDrop::new(tmp11);
+                        tmp12 = tmp11_0.as_ptr() as _;
+                        tmp13 = tmp11_0.len() as _;
+                        tmp14 = tmp11_0.capacity() as _;
+                    }
+                };
+            } else {
+                tmp7 = 0;
+            }
+            __Room_display_name_future_pollReturn {
+                ret0: tmp7,ret1: tmp9,ret2: tmp12,ret3: tmp13,ret4: tmp14,ret5: tmp15,ret6: tmp16,ret7: tmp17,
+            }
+        })
+    }
+    #[repr(C)]
+    pub struct __Room_display_name_future_pollReturn {
+        pub ret0: u8,pub ret1: u8,pub ret2: i64,pub ret3: u64,pub ret4: u64,pub ret5: i64,pub ret6: u64,pub ret7: u64,
+    }
+    #[no_mangle]
+    pub extern "C" fn __Room_display_name_future_drop(_: i64, boxed: i64) {
+        panic_abort(move || {
+            unsafe { Box::<FfiFuture<Result<String>>>::from_raw(boxed as *mut _) };
         });
     }#[no_mangle]
     pub extern "C" fn __Client_restore_token_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Client_restore_token_future_pollReturn {
@@ -768,6 +838,31 @@ mod api {
     pub extern "C" fn __Client_room_future_drop(_: i64, boxed: i64) {
         panic_abort(move || {
             unsafe { Box::<FfiFuture<Result<Room>>>::from_raw(boxed as *mut _) };
+        });
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_conversations_stream_poll(tmp1: i64,tmp3: i64,tmp5: i64,tmp7: i64,) -> __Client_conversations_stream_pollReturn {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiStream<Room>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp7 as _;let tmp8 = tmp0.poll(tmp2,tmp4,tmp6,);#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp11 = Default::default();if let Some(tmp10) = tmp8 {
+                tmp9 = 1;
+                let tmp10_0 = assert_send_static(tmp10);
+                tmp11 = Box::into_raw(Box::new(tmp10_0)) as _;
+            } else {
+                tmp9 = 0;
+            }
+            __Client_conversations_stream_pollReturn {
+                ret0: tmp9,ret1: tmp11,
+            }
+        })
+    }
+    #[repr(C)]
+    pub struct __Client_conversations_stream_pollReturn {
+        pub ret0: u8,pub ret1: i64,
+    }
+    #[no_mangle]
+    pub extern "C" fn __Client_conversations_stream_drop(_: i64, boxed: i64) {
+        panic_abort(move || {
+            unsafe { Box::<FfiStream<Room>>::from_raw(boxed as *mut _) };
         });
     }
 }
