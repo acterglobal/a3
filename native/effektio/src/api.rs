@@ -80,6 +80,13 @@ impl Room {
             Ok(r.display_name().await?)
         }).await?
     }
+
+    pub async fn avatar(&self) -> Result<Vec<u8>> {
+        let r = self.room.clone();
+        RUNTIME.spawn(async move {
+            Ok(r.avatar(MediaFormat::File).await?.expect("No avatar"))
+        }).await?
+    }
 }
 
 impl std::ops::Deref for Room {

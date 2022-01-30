@@ -96,15 +96,31 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-        future: room.displayName(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            return ListTile(title: Text(snapshot.requireData));
-          } else {
-            return ListTile(title: Text("loading name"));
-          }
-        });
+    // ToDo: UnreadCounter
+    return ListTile(
+      leading: FutureBuilder<List<int>>(
+          future: room.avatar(), // a previously-obtained Future<String> or null
+          builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
+            if (snapshot.hasData) {
+              return CircleAvatar(
+                  backgroundImage:
+                      MemoryImage(Uint8List.fromList(snapshot.requireData)));
+            } else {
+              return CircleAvatar(
+                  backgroundColor: Colors.brown.shade800,
+                  child: const Text('H'));
+            }
+          }),
+      title: FutureBuilder<String>(
+          future: room.displayName(),
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.requireData);
+            } else {
+              return Text("loading name");
+            }
+          }),
+    );
   }
 }
 

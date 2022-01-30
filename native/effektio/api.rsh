@@ -14,6 +14,9 @@ fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 object Room {
     /// Calculate the display name
     fn display_name() -> Future<Result<string>>;
+
+    /// The avatar of the room
+    fn avatar() -> Future<Result<Vec<u8>>>;
 }
 
 fn echo(inp: string) -> Result<string>;
