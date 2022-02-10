@@ -27,28 +27,28 @@ The widget we will use for displaying such a feed is **RiverPagedBuilder!**
    
 
     class EasyExample extends StatelessWidget {
-    
-	    const EasyExample({Key? key} :super(key: key);
-   
-	    @override
-	    Widget build(BuildContext  context){
-		    return Scaffold(
-			    appBar: AppBar(),
-			    body: RiverPagedBuilder<int, Post>(
-				    firstPageKey: 0,
-				    provider: easyExampleProvider,
-				    itemBuilder: (context, item, index) => ListTile(
-					    leading: Image.network(item.image),
-					    title: Text(item.title),
-					),
-				    pagedBuilder: (controller, builder) => PagedListView(pagingController: controller, builderDelegate: builder),
-			    ),
-		    );
-	    }
+
+      const EasyExample({Key? key} :super(key: key);
+
+      @override
+      Widget build(BuildContext  context){
+        return Scaffold(
+          appBar: AppBar(),
+          body: RiverPagedBuilder<int, Post>(
+          firstPageKey: 0,
+          provider: easyExampleProvider,
+          itemBuilder: (context, item, index) => ListTile(
+            leading: Image.network(item.image),
+            title: Text(item.title),
+          ),
+          pagedBuilder: (controller, builder) => PagedListView(pagingController: controller, builderDelegate: builder),
+          ),
+        );
+      }
     }
 
 As we can see the code is really small. 
-We are passing to the **RiverPagedBuilder** four properties
+We are passing to the **RiverPagedBuilder** this properties
 
  1. *firstPageKey* - the first page we will ask to our paginated api
  2. *provider* - The **StateNotifierProvider** that holds the logic and the list of Posts
@@ -60,25 +60,25 @@ Let's see now how the **StateNotifier** we are using works.
 The class Post we are using in this example can be very simple:
 
     class  Post {
-        final  int  id;
-        final  String  title;
-        final  String  image;
-        const  Post({ required  this.id, required  this.title, required  this.image });
+      final  int  id;
+      final  String  title;
+      final  String  image;
+      const  Post({ required  this.id, required  this.title, required  this.image });
     }
 And this is the StateNotifier
 
     class EasyExampleNotifier extends PagedNotifier<int, Post> {
 
-	    EasyExampleNotifier():
-	    super(
-		    load: (page, limit) => Future.delayed(const  Duration(seconds: 2), () {
-			    // This simulates a network call to an api that returns paginated posts
-			    return [
-			    const  Post(id: 1, title: "My first work", image: "https://www.mywebsite.com/image1"),
-			    const  Post(id: 2, title: "My second work", image: "https://www.mywebsite.com/image2"),
-			    const  Post(id: 3, title: "My third work", image: "https://www.mywebsite.com/image3"),
-			    ];
-		    }),
+      EasyExampleNotifier():
+      super(
+        load: (page, limit) => Future.delayed(const  Duration(seconds: 2), () {
+          // This simulates a network call to an api that returns paginated posts
+          return [
+          const  Post(id: 1, title: "My first work", image: "https://www.mywebsite.com/image1"),
+          const  Post(id: 2, title: "My second work", image: "https://www.mywebsite.com/image2"),
+          const  Post(id: 3, title: "My third work", image: "https://www.mywebsite.com/image3"),
+          ];
+        }),
 		    nextPageKeyBuilder: NextPageKeyBuilderDefault.mysqlPagination,
 	    );
     
@@ -113,31 +113,29 @@ Let's suppose now that we need to fetch an api that return a list of users, and 
 So our page will look like this
 
     class CustomExample extends StatelessWidget {
-	    const CustomExample({Key? key}) : super(key: key);
-    
-      
-    
-	    @override
-	    Widget  build(BuildContext  context) {
-		    return  Scaffold(
-			    appBar: AppBar(),
-			    body: RiverPagedBuilder<String, User>(
-				    firstPageKey: '',
-				    provider: customExampleProvider,
-				    itemBuilder: (context, item, index) => ListTile(
-					    leading: Image.network(item.profilePicture),
-					    title: Text(item.name),
-				    ),
-				    pagedBuilder: (controller, builder) => PagedGridView(
-					    pagingController: controller,
-					    builderDelegate: builder,
-					    gridDelegate: const  SliverGridDelegateWithFixedCrossAxisCount(
-						    crossAxisCount: 3,
-					    ),
-				    ),
-			    ),
-		    );
-	    }
+      const CustomExample({Key? key}) : super(key: key);
+  
+      @override
+      Widget  build(BuildContext  context) {
+        return  Scaffold(
+          appBar: AppBar(),
+          body: RiverPagedBuilder<String, User>(
+            firstPageKey: '',
+            provider: customExampleProvider,
+            itemBuilder: (context, item, index) => ListTile(
+              leading: Image.network(item.profilePicture),
+              title: Text(item.name),
+            ),
+            pagedBuilder: (controller, builder) => PagedGridView(
+              pagingController: controller,
+              builderDelegate: builder,
+              gridDelegate: const  SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+              ),
+            ),
+          ),
+        );
+      }
     }
 
 > We have used a **PagedGridView** here instead of a **PagedListView** only to make things more fun and to see that this package works with any of the **infinite_scroll_pagination** widgets.
@@ -147,10 +145,10 @@ Now let's have a look of how we can create a more custom **StateNotifier**
 We have a simple class to represent a User
 
     class  User {
-	    final  String  id;
-	    final  String  name;
-	    final  String  profilePicture;
-	    const  User({ required  this.id, required  this.name, required  this.profilePicture });
+      final  String  id;
+      final  String  name;
+      final  String  profilePicture;
+      const  User({ required  this.id, required  this.name, required  this.profilePicture });
     }
 
 And we have the **StateNotifier** that manage those users
@@ -163,28 +161,28 @@ And we have the **StateNotifier** that manage those users
     
 	    @override
 	    Future<List<User>?> load(String  page, int  limit) async {
-		    try {
-			    var  users = await  Future.delayed(const  Duration(seconds: 3), () {
-				    // This simulates a network call to an api that returns paginated users
-				    return [
-					    const  User(id: "abcdef", name: "John", profilePicture: "https://www.mywebsite.com/images/1"),
-					    const  User(id: "asdfgh", name: "Mary", profilePicture: "https://www.mywebsite.com/images/2"),
-					    const  User(id: "qwerty", name: "Robert", profilePicture: "https://www.mywebsite.com/images/3")
-				    ];
-			    });
-			
-				// we then update state accordingly
-			    state = state.copyWith(
-				    records: [...(state.records ?? []), ...users],
-				    nextPageKey: users.length < limit ? null : users[users.length - 1].id
-			    );
-		    }
-		    catch (e) {
-			    // in case of error we should notifiy the listeners
-			    state = state.copyWith(
-				    error: e.toString()
-			    );
-		    }
+          try {
+            var  users = await  Future.delayed(const  Duration(seconds: 3), () {
+              // This simulates a network call to an api that returns paginated users
+              return [
+                const  User(id: "abcdef", name: "John", profilePicture: "https://www.mywebsite.com/images/1"),
+                const  User(id: "asdfgh", name: "Mary", profilePicture: "https://www.mywebsite.com/images/2"),
+                const  User(id: "qwerty", name: "Robert", profilePicture: "https://www.mywebsite.com/images/3")
+              ];
+            });
+        
+          // we then update state accordingly
+            state = state.copyWith(
+              records: [...(state.records ?? []), ...users],
+              nextPageKey: users.length < limit ? null : users[users.length - 1].id
+            );
+          }
+          catch (e) {
+            // in case of error we should notifiy the listeners
+            state = state.copyWith(
+              error: e.toString()
+            );
+          }
 	    }
 
 	    // Super simple example of custom methods of the StateNotifier
@@ -236,6 +234,7 @@ Also, in this example, we have used a custom state that extends **PagedState**, 
    		    );
    	    }
     }
+
 
 ## Custom wrapper for loading/error/try again states
 
