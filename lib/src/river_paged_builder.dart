@@ -26,6 +26,11 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
   final PageKeyType firstPageKey;
   final int limit;
 
+  /// Choose if to add a Pull to refresh functionality
+  /// This wil call `ref.refresh(provider)` internally
+  /// Default [false]
+  final bool pullToRefresh;
+
   final ItemWidgetBuilder<ItemType> itemBuilder;
   final PagedBuilder<PageKeyType, ItemType> pagedBuilder;
 
@@ -48,6 +53,7 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
       required this.itemBuilder,
       required this.firstPageKey,
       this.limit = 20,
+      this.pullToRefresh = false,
       this.firstPageErrorIndicatorBuilder,
       this.firstPageProgressIndicatorBuilder,
       this.noItemsFoundIndicatorBuilder,
@@ -66,6 +72,7 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
       required this.itemBuilder,
       required this.firstPageKey,
       this.limit = 20,
+      this.pullToRefresh = false,
       this.firstPageErrorIndicatorBuilder,
       this.firstPageProgressIndicatorBuilder,
       this.noItemsFoundIndicatorBuilder,
@@ -146,7 +153,16 @@ class _RiverPagedBuilderState<PageKeyType, ItemType>
     );
 
     // return a [PagedBuilder]
-    final pagedBuilder = widget.pagedBuilder(_pagingController, itemBuilder);
+    var pagedBuilder = widget.pagedBuilder(_pagingController, itemBuilder);
+    
+    // Add pull to refresh functionality if specified
+    if (widget.pullToRefresh) {
+      pagedBuilder = RefreshIndicator(
+        onRefresh: () => ref.refresh(_provider), 
+        child: pagedBuilder
+      );
+    }
+
     return pagedBuilder;
   }
 

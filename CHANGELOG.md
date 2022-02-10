@@ -5,3 +5,7 @@
 ## 1.0.1
 
 * Provided examples
+
+## 1.0.2
+
+* Addedd pull to refresh functionality
