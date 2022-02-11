@@ -1,14 +1,9 @@
+pub use matrix_sdk::ruma::events::room::message::{
+    ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+};
 use matrix_sdk::ruma::{
     self,
-    events::{
-        macros::EventContent,
-        SyncMessageEvent,
-        room::message::{
-            ImageMessageEventContent,
-            TextMessageEventContent,
-            VideoMessageEventContent,
-        }
-    },
+    events::{macros::EventContent, SyncMessageEvent},
     identifiers::EventId,
 };
 use serde::{Deserialize, Serialize};
@@ -18,9 +13,9 @@ use serde::{Deserialize, Serialize};
 #[ruma_event(type = "org.effektio.dev.colors")]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
-    pub color: String,
+    pub color: Option<String>,
     /// The background color to be used, as HEX
-    pub background: String,
+    pub background: Option<String>,
 }
 
 /// The content that is specific to each message type variant.
@@ -36,7 +31,6 @@ pub enum NewsContentType {
     Video(VideoMessageEventContent),
 }
 
-
 /// The payload for our news event.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "org.effektio.dev.news", kind = Message)]
@@ -50,5 +44,5 @@ pub struct NewsEventDevContent {
 #[serde(untagged)]
 #[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
 pub enum NewsEvent {
-    Dev(NewsEventDevContent)
+    Dev(NewsEventDevContent),
 }

@@ -7,12 +7,19 @@ use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
 use effektio_core::matrix_sdk::{config::ClientConfig, Client};
 
 use log::{info, trace, warn};
+use std::path::PathBuf;
 
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
 pub struct LoginConfig {
     /// Fully qualified @SOMETHING:server.tld username.
-    #[clap(short = 'u', long = "user", parse(try_from_str), env = "EFFEKTIO_USER")]
+    #[clap(
+        short = 'u',
+        long = "user",
+        value_hint = clap::ValueHint::Username,
+        parse(try_from_str),
+        env = "EFFEKTIO_USER"
+    )]
     login_username: Box<UserId>,
     #[clap(env = "EFFEKTIO_PASSWORD")]
     login_password: Option<String>,
@@ -53,6 +60,26 @@ pub struct PostNews {
     pub room: Box<RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,
+
+    /// Path to images to post
+    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
+    pub image: Vec<PathBuf>,
+
+    #[clap(short, long)]
+    /// Path to video(s) to post
+    pub video: Vec<PathBuf>,
+
+    /// Text to posh
+    #[clap(short, long)]
+    pub text: Vec<String>,
+
+    /// Font/Text color
+    #[clap(short, long)]
+    pub color: Option<String>,
+
+    /// Background color
+    #[clap(short, long)]
+    pub background: Option<String>,
 }
 
 /// Posting a news item to a given room
