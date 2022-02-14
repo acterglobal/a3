@@ -39,7 +39,7 @@ class AccountHeader extends StatefulWidget {
 
   @override
   _AccountHeaderState createState() => _AccountHeaderState(
-      _client, _client.displayName(), _client.userId(), _client.avatar());
+      _client, _client.displayName(), _client.userId(), _client.avatar().then((fb) => fb.toUint8List()));
 }
 
 class _AccountHeaderState extends State<AccountHeader> {
@@ -99,7 +99,7 @@ class ChatListItem extends StatelessWidget {
     // ToDo: UnreadCounter
     return ListTile(
       leading: FutureBuilder<List<int>>(
-          future: room.avatar(), // a previously-obtained Future<String> or null
+          future: room.avatar().then((fb) => fb.toUint8List()), // a previously-obtained Future<String> or null
           builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
             if (snapshot.hasData) {
               return CircleAvatar(
