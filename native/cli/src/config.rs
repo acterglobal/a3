@@ -84,6 +84,16 @@ pub struct PostNews {
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
+pub struct FetchNews {
+    /// The room you want to post the news to
+    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
+    pub room: Box<RoomId>,
+    #[clap(flatten)]
+    pub login: LoginConfig,
+}
+
+/// Posting a news item to a given room
+#[derive(Parser, Debug)]
 pub struct Manage {
     /// The room you want to post the news to
     #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
@@ -96,6 +106,8 @@ pub struct Manage {
 pub enum Action {
     /// Post News to a room
     PostNews(PostNews),
+    /// Fetch News of the use
+    FetchNews(FetchNews),
     /// Room Management
     Manage(Manage),
 }
