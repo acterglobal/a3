@@ -60,4 +60,4 @@ tokio = { verison = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
-crate-type = ["cdylib"]
+crate-type = ["rlib"]
