@@ -42,26 +42,51 @@ pub mod api {
         std::alloc::dealloc(ptr, layout);
     }
 
-    pub struct FfiBuffer {
-        pub bytes: Vec<u8>,
+    pub struct FfiBuffer<T> {
+        addr: usize,
+        size: usize,
+        alloc: usize,
+        phantom: std::marker::PhantomData<T>
+    }
+
+    impl<T> FfiBuffer<T> {
+        pub fn new(data: Vec<T>) -> FfiBuffer<T> {
+            unsafe {
+                let (addr, size, alloc) = data.into_raw_parts();
+                FfiBuffer {
+                    addr: std::mem::transmute(addr),
+                    size: size * std::mem::size_of::<T>(),
+                    alloc: alloc * std::mem::size_of::<T>(),
+                    phantom: Default::default(),
+                }
+            }
+        }
+    }
+
+    impl<T> Drop for FfiBuffer<T> {
+        fn drop(&mut self) {
+            unsafe {
+                Vec::from_raw_parts(self.addr as *mut u8, self.size, self.alloc);
+            }
+        }
     }
 
     #[no_mangle]
     pub unsafe extern "C" fn __ffi_buffer_address(ptr: *mut c_void) -> *mut c_void {
-        let buffer = &*(ptr as *mut FfiBuffer);
-        std::mem::transmute(buffer.bytes.as_ptr())
+        let buffer = &*(ptr as *mut FfiBuffer<u8>);
+        buffer.addr as _
     }
 
     #[no_mangle]
     pub unsafe extern "C" fn __ffi_buffer_size(ptr: *mut c_void) -> u32 {
-        let buffer = &*(ptr as *mut FfiBuffer);
-        buffer.bytes.len() as u32
+        let buffer = &*(ptr as *mut FfiBuffer<u8>);
+        buffer.size as _
     }
 
     #[no_mangle]
     pub extern "C" fn drop_box_FfiBuffer(_: i64, boxed: i64) {
         panic_abort(move || {
-            unsafe { Box::<FfiBuffer>::from_raw(boxed as *mut _) };
+            unsafe { Box::<FfiBuffer<u8>>::from_raw(boxed as *mut _) };
         });
     }
 
@@ -353,7 +378,7 @@ pub mod api {
     pub extern "C" fn __Room_avatar(tmp1: i64,) -> i64 {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut Room) };let tmp2 = tmp0.avatar();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
-            let tmp3_1: FfiFuture<Result<FfiBuffer>> = FfiFuture::new(tmp3_0);
+            let tmp3_1: FfiFuture<Result<FfiBuffer<u8>>> = FfiFuture::new(tmp3_0);
             tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
             tmp3
         })
@@ -433,7 +458,7 @@ pub mod api {
     pub extern "C" fn __Client_avatar(tmp1: i64,) -> i64 {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.avatar();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
-            let tmp3_1: FfiFuture<Result<FfiBuffer>> = FfiFuture::new(tmp3_0);
+            let tmp3_1: FfiFuture<Result<FfiBuffer<u8>>> = FfiFuture::new(tmp3_0);
             tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
             tmp3
         })
@@ -605,7 +630,7 @@ pub mod api {
     }#[no_mangle]
     pub extern "C" fn __Room_avatar_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Room_avatar_future_pollReturn {
         panic_abort(move || {
-            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<FfiBuffer>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();if let Some(tmp8) = tmp6 {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<FfiBuffer<u8>>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();if let Some(tmp8) = tmp6 {
                 tmp7 = 1;
                 match tmp8 {
                     Ok(tmp10) => {
@@ -637,7 +662,7 @@ pub mod api {
     #[no_mangle]
     pub extern "C" fn __Room_avatar_future_drop(_: i64, boxed: i64) {
         panic_abort(move || {
-            unsafe { Box::<FfiFuture<Result<FfiBuffer>>>::from_raw(boxed as *mut _) };
+            unsafe { Box::<FfiFuture<Result<FfiBuffer<u8>>>>::from_raw(boxed as *mut _) };
         });
     }#[no_mangle]
     pub extern "C" fn __Client_restore_token_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Client_restore_token_future_pollReturn {
@@ -821,7 +846,7 @@ pub mod api {
     }#[no_mangle]
     pub extern "C" fn __Client_avatar_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Client_avatar_future_pollReturn {
         panic_abort(move || {
-            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<FfiBuffer>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();if let Some(tmp8) = tmp6 {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<FfiBuffer<u8>>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();if let Some(tmp8) = tmp6 {
                 tmp7 = 1;
                 match tmp8 {
                     Ok(tmp10) => {
@@ -853,7 +878,7 @@ pub mod api {
     #[no_mangle]
     pub extern "C" fn __Client_avatar_future_drop(_: i64, boxed: i64) {
         panic_abort(move || {
-            unsafe { Box::<FfiFuture<Result<FfiBuffer>>>::from_raw(boxed as *mut _) };
+            unsafe { Box::<FfiFuture<Result<FfiBuffer<u8>>>>::from_raw(boxed as *mut _) };
         });
     }
     #[no_mangle]

@@ -533,7 +533,7 @@ checksum = "e88a8acf291dafb59c2d96e8f59828f3838bb1a70398823ade51a84de6a6deed"
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/bmcpt/ffi-gen?rev=148711e4927b04a4d8f452b19257942014e5374f#148711e4927b04a4d8f452b19257942014e5374f"
+source = "git+https://github.com/bmcpt/ffi-gen?rev=fb3c19ea88535aba9e25f109f1d9993cdac646f3#fb3c19ea88535aba9e25f109f1d9993cdac646f3"
 dependencies = [
  "anyhow",
  "genco",
@@ -545,7 +545,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/bmcpt/ffi-gen?rev=148711e4927b04a4d8f452b19257942014e5374f#148711e4927b04a4d8f452b19257942014e5374f"
+source = "git+https://github.com/bmcpt/ffi-gen?rev=fb3c19ea88535aba9e25f109f1d9993cdac646f3#fb3c19ea88535aba9e25f109f1d9993cdac646f3"
 dependencies = [
  "ffi-gen",
  "proc-macro2",

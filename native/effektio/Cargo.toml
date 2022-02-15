@@ -7,11 +7,15 @@ rust-version = "1.58"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "148711e4927b04a4d8f452b19257942014e5374f" }
+ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "fb3c19ea88535aba9e25f109f1d9993cdac646f3" }
+#ffi-gen = { path = "../../../ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen-macro = { git = "https://github.com/bmcpt/ffi-gen", rev = "148711e4927b04a4d8f452b19257942014e5374f" }
+ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "fb3c19ea88535aba9e25f109f1d9993cdac646f3" }
+#ffi-gen = { path = "../../../ffi-gen" }
+ffi-gen-macro = { git = "https://github.com/bmcpt/ffi-gen", rev = "fb3c19ea88535aba9e25f109f1d9993cdac646f3" }
+#ffi-gen-macro = { path = "../../../ffi-gen/macro" }
 tokio = "1"
 futures = "0.3.17"
 lazy_static = "1.4"
