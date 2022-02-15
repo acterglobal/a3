@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct RestoreToken {
     /// Was this registered per guest-account?
-    is_guest: bool,
+    pub is_guest: bool,
     /// Server homebase url
-    homeurl: String,
+    pub homeurl: String,
     /// Session to hand to client
-    session: Session,
+    pub session: Session,
 }
