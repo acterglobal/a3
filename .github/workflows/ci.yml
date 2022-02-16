@@ -32,22 +32,22 @@ jobs:
           - name: Android
             target: aarch64-linux-android
             os: ubuntu-latest
-            args: "-p effektio"
+            args: -p effektio
           - name: iOS
             target: x86_64-apple-ios
             os: macos-latest
-            args: "-p effektio"
+            args: -p effektio
           - name: Core
             target: x86_64-unknown-linux-gnu
-            args: "-p effektio-core --tests"
+            args: -p effektio-core --tests
             os: ubuntu-latest
           - name: FFI
             target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
-            args: "-p effektio"
+            args: -p effektio
           - name: CLI
             target: x86_64-unknown-linux-gnu
-            args: "-p effektio-cli"
+            args: -p effektio-cli
             os: ubuntu-latest
 
 
@@ -106,8 +106,7 @@ jobs:
       - run: |
           cargo install cargo-make
           cargo make setup-android
-      - uses: actions-rs/cargo@v1
-        name: Build Android FFI
+      - name: Build Android FFI
         run: cargo make android-build-release
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
@@ -133,8 +132,7 @@ jobs:
       - run: |
           cargo install cargo-make
           cargo make setup-ios
-      - uses: actions-rs/cargo@v1
-        name: Build iOS FFI
+      - name: Build iOS FFI
         run: cargo make ios-release
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
