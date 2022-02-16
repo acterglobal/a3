@@ -1,10 +1,6 @@
+use matrix_sdk::ruma::events::macros::EventContent;
 pub use matrix_sdk::ruma::events::room::message::{
     ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
-};
-use matrix_sdk::ruma::{
-    self,
-    events::{macros::EventContent, SyncMessageEvent},
-    identifiers::EventId,
 };
 use serde::{Deserialize, Serialize};
 

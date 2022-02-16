@@ -25,13 +25,21 @@ jobs:
 
   clippy:
     runs-on: ubuntu-latest
-    name: Build and check style // ${{ matrix.target }}
     strategy:
       matrix:
         target:
           - aarch64-linux-android
           - x86_64-unknown-linux-gnu
           - x86_64-apple-ios
+        args: ["-p effektio"]
+        include:
+          - name: Core
+            target: x86_64-unknown-linux-gnu
+            args: "-p effektio-core --tests"
+          - name: CLI
+            target: x86_64-unknown-linux-gnu
+            args: "-p effektio-cli"
+
 
     steps:
       - uses: actions/checkout@v2
@@ -45,8 +53,7 @@ jobs:
         name: Clippy
         with:
           command: clippy
-          args: -p effektio-core -p effektio --target ${{matrix.target}} -- -D warnings
-
+          args: ${{matrix.args}} --target ${{matrix.target}} -- -D warnings
 
   test-cli:
     runs-on: ubuntu-latest
@@ -57,13 +64,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          components: clippy
-
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p effektio-cli  -- -D warnings
 
       - uses: actions-rs/cargo@v1
         name: Testing
