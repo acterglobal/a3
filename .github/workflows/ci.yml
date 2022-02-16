@@ -80,7 +80,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          target: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android, i686-linux-android
+          target: aarch64-linux-androi armv7-linux-androideab x86_64-linux-androi i686-linux-android
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest 
@@ -114,7 +114,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          target: aarch64-apple-ios", x86_64-apple-ios
+          target: aarch64-apple-ios x86_64-apple-ios
       - uses: actions-rs/cargo@v1
         name: Setup build tool
         with:
