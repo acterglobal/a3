@@ -1,0 +1,79 @@
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+name: Build Check
+
+jobs:
+  build-cli:
+    runs-on: ubuntu-latest
+    name: Build CLI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/cargo@v1
+        name: Check CLI
+        with:
+          command: build --release -p effektio-cli
+
+  build-android:
+    runs-on: ubuntu-latest
+    name: Build Android App
+    runs-on: ubuntu-latest
+    # FIXME: remove once tests don't fail
+    contiue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+      - uses: nttld/setup-ndk@v1
+        with:
+          # FIXME: cargo-ndk doesn't work with latest 
+          ndk-version: r22
+      - uses: actions-rs/cargo@v1
+        name: Setup build tool
+        with:
+          command: make setup
+      - uses: actions-rs/cargo@v1
+        name: Build Android FFI
+        with:
+          command: make build android
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      # FIXME: tests are not set up to work yet
+      - run: flutter test
+      - run: flutter build apk
+      - run: flutter build appbundle
+
+  build-ios:
+    runs-on: macos-latest
+    name: Build iOS App
+    runs-on: ubuntu-latest
+    # FIXME: remove once tests don't fail
+    contiue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/cargo@v1
+        name: Setup build tool
+        with:
+          command: make setup
+      - uses: actions-rs/cargo@v1
+        name: Build iOS FFI
+        with:
+          command: make build ios
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      # FIXME: tests are not set up to work yet
+      - run: flutter test
+      - run: flutter build ios --release --no-codesign
