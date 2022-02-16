@@ -100,11 +100,10 @@ jobs:
           ndk-version: r22
       - run: |
           cargo install cargo-make
-          cargo make setup
+          cargo make setup-android
       - uses: actions-rs/cargo@v1
         name: Build Android FFI
-        with:
-          command: make build android
+        run: cargo make android-build-release
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
@@ -128,11 +127,10 @@ jobs:
           toolchain: nightly
       - run: |
           cargo install cargo-make
-          cargo make setup
+          cargo make setup-ios
       - uses: actions-rs/cargo@v1
         name: Build iOS FFI
-        with:
-          command: make build ios
+        run: cargo make ios-release
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
