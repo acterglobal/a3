@@ -115,8 +115,11 @@ jobs:
       - run: flutter pub get
       # FIXME: tests are not set up to work yet
       - run: flutter test
+        working-directory: ./app
       - run: flutter build apk
+        working-directory: ./app
       - run: flutter build appbundle
+        working-directory: ./app
 
   build-ios:
     runs-on: macos-latest
@@ -139,6 +142,9 @@ jobs:
         with:
           toolchain: 'stable'
       - run: flutter pub get
+        working-directory: ./app
       # FIXME: tests are not set up to work yet
       - run: flutter test
+        working-directory: ./app
       - run: flutter build ios --release --no-codesign
+        working-directory: ./app
