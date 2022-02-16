@@ -42,13 +42,13 @@ ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
     #[builder(default)]
-    is_guest: bool,
+    pub is_guest: bool,
     #[builder(default)]
-    has_first_synced: bool,
+    pub has_first_synced: bool,
     #[builder(default)]
-    is_syncing: bool,
+    pub is_syncing: bool,
     #[builder(default)]
-    should_stop_syncing: bool,
+    pub should_stop_syncing: bool,
 }
 
 #[derive(Clone)]
@@ -229,7 +229,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
     guest_registration.kind = register::RegistrationKind::Guest;
     RUNTIME
         .spawn(async move {
-            let client = MatrixClient::new_with_config(homeserver, config)?;
+            let client = MatrixClient::new_with_config(homeserver, config).await?;
             let register = client.register(guest_registration).await?;
             let session = Session {
                 access_token: register.access_token.expect("no access token given"),
@@ -261,7 +261,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = MatrixClient::new_with_config(homeserver, config)?;
+            let client = MatrixClient::new_with_config(homeserver, config).await?;
             client.restore_login(session).await?;
             let c = Client::new(
                 client,

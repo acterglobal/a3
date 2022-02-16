@@ -7,6 +7,7 @@ You'll need a recent:
  - Android NDK / XCode setup for the target - and device or simulator set up
  - [flutter](https://docs.flutter.dev/get-started/install)
  -
+_Note_ on the Android NDK. [Because of a change with the paths, you need to have NDKv22 install](https://github.com/bbqsrc/cargo-ndk/issues/38) (v23 and above don't work at the moment).
 
 ## Setup
 
