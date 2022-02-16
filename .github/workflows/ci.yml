@@ -1,22 +1,74 @@
 on:
   push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
 name: Build Check
 
 jobs:
-  build-cli:
+  style:
     runs-on: ubuntu-latest
-    name: Build CLI
+    name: Build and check style // ${{ matrix.target }}
+    strategy:
+      matrix:
+        target:
+          - aarch64-linux-android
+          - x86_64-unknown-linux-gnu
+          - x86_64-apple-ios
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: rustfmt, clippy
+          target: ${{ matrix.target }}
+      - uses: actions-rs/cargo@v1
+        name: Rust Format
+        with:
+          command: fmt
+          args: -p effektio-core -p effektio --target ${{matrix.target}} --check
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio-core -p effektio --target ${{matrix.target}} -- -D warnings
+
+
+  test-cli:
+    runs-on: ubuntu-latest
+    name: Checking CLI
     steps:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+
       - uses: actions-rs/cargo@v1
-        name: Check CLI
+        name: Rust Format
+        with:
+          command: fmt
+          args: -p effektio-cli --check
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio-cli  -- -D warnings
+
+      - uses: actions-rs/cargo@v1
+        name: Testing
+        with:
+          command: test -p effektio-cli
+
+      - uses: actions-rs/cargo@v1
+        name: Building
         with:
           command: build --release -p effektio-cli
+
 
   build-android:
     runs-on: ubuntu-latest
@@ -27,6 +79,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android, i686-linux-android
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest 
@@ -42,7 +97,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
-          channel: 'stable'
+          toolchain: 'stable'
       - run: flutter pub get
       # FIXME: tests are not set up to work yet
       - run: flutter test
@@ -58,6 +113,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: aarch64-apple-ios", x86_64-apple-ios
       - uses: actions-rs/cargo@v1
         name: Setup build tool
         with:
@@ -69,7 +127,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
-          channel: 'stable'
+          toolchain: 'stable'
       - run: flutter pub get
       # FIXME: tests are not set up to work yet
       - run: flutter test
