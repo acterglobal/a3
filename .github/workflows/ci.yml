@@ -28,22 +28,27 @@ jobs:
     name: Clippy ${{ matrix.name }}
     strategy:
       matrix:
-        os: [ "ubuntu-latest" ]
-        args: [ "-p effektio" ]
         include:
           - name: Android
             target: aarch64-linux-android
+            os: ubuntu-latest
+            args: "-p effektio"
           - name: iOS
             target: x86_64-apple-ios
             os: macos-latest
-          - name: FFI
-            target: x86_64-unknown-linux-gnu
+            args: "-p effektio"
           - name: Core
             target: x86_64-unknown-linux-gnu
             args: "-p effektio-core --tests"
+            os: ubuntu-latest
+          - name: FFI
+            target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            args: "-p effektio"
           - name: CLI
             target: x86_64-unknown-linux-gnu
             args: "-p effektio-cli"
+            os: ubuntu-latest
 
 
     steps:
