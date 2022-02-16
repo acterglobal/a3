@@ -6,7 +6,24 @@ on:
 name: Build Check
 
 jobs:
-  style:
+
+  rust-style:
+    runs-on: ubuntu-latest
+    name: Checking Format
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt
+      - uses: actions-rs/cargo@v1
+        name: Rust Format
+        with:
+          command: fmt
+          args: --all --check
+
+  clippy:
     runs-on: ubuntu-latest
     name: Build and check style // ${{ matrix.target }}
     strategy:
@@ -22,13 +39,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: rustfmt, clippy
+          components: clippy
           target: ${{ matrix.target }}
-      - uses: actions-rs/cargo@v1
-        name: Rust Format
-        with:
-          command: fmt
-          args: -p effektio-core -p effektio --target ${{matrix.target}} --check
       - uses: actions-rs/cargo@v1
         name: Clippy
         with:
@@ -45,13 +57,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          components: rustfmt, clippy
+          components: clippy
 
-      - uses: actions-rs/cargo@v1
-        name: Rust Format
-        with:
-          command: fmt
-          args: -p effektio-cli --check
       - uses: actions-rs/cargo@v1
         name: Clippy
         with:
