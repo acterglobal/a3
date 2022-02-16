@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Android App
     # FIXME: remove once tests don't fail
-    contiue-on-error: true
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
@@ -53,7 +53,7 @@ jobs:
     runs-on: macos-latest
     name: Build iOS App
     # FIXME: remove once tests don't fail
-    contiue-on-error: true
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
