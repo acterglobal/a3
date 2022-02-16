@@ -94,6 +94,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - run: cargo install cargo-make
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest 
@@ -127,6 +128,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - run: cargo install cargo-make
       - uses: actions-rs/cargo@v1
         name: Setup build tool
         with:
