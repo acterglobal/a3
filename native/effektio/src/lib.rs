@@ -1,4 +1,4 @@
-#![warn(clippy::all)]
+#![allow(dead_code)]
 
 pub use matrix_sdk;
 

@@ -15,7 +15,7 @@ pub(crate) fn new_client_config(base_path: String, home: String) -> Result<Clien
     let config = ClientConfig::new()
         .user_agent("effektio-android")?
         .store_path(&data_path);
-    return Ok(config);
+    Ok(config)
 }
 
 pub(crate) fn init_logging(filter: Option<String>) -> Result<()> {

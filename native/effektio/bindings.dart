@@ -454,52 +454,6 @@ class Api {
     return tmp9;
   }
 
-  String echo(
-    String inp,
-  ) {
-    final tmp0 = inp;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    final tmp4 = _echo(
-      tmp1,
-      tmp2,
-      tmp3,
-    );
-    final tmp6 = tmp4.arg0;
-    final tmp7 = tmp4.arg1;
-    final tmp8 = tmp4.arg2;
-    final tmp9 = tmp4.arg3;
-    final tmp10 = tmp4.arg4;
-    final tmp11 = tmp4.arg5;
-    final tmp12 = tmp4.arg6;
-    if (tmp6 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-      final tmp6_0 = utf8.decode(tmp7_0.asTypedList(tmp8));
-      if (tmp8 > 0) {
-        final ffi.Pointer<ffi.Void> tmp7_0;
-        tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-        this.__deallocate(tmp7_0, tmp9, 1);
-      }
-      throw tmp6_0;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-    final tmp5 = utf8.decode(tmp10_0.asTypedList(tmp11));
-    if (tmp12 > 0) {
-      final ffi.Pointer<ffi.Void> tmp10_0;
-      tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      this.__deallocate(tmp10_0, tmp12 * 1, 1);
-    }
-    return tmp5;
-  }
-
   late final _allocatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Uint8> Function(ffi.IntPtr, ffi.IntPtr)>>("allocate");
@@ -1146,20 +1100,6 @@ class Api {
     int,
     int,
   )>();
-  late final _echoPtr = _lookup<
-      ffi.NativeFunction<
-          _EchoReturn Function(
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__echo");
-
-  late final _echo = _echoPtr.asFunction<
-      _EchoReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _roomDisplayNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -1664,23 +1604,6 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _EchoReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-  @ffi.Uint64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {
