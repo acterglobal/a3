@@ -94,15 +94,13 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-      - run: cargo install cargo-make
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest 
           ndk-version: r22
-      - uses: actions-rs/cargo@v1
-        name: Setup build tool
-        with:
-          command: make setup
+      - run: |
+          cargo install cargo-make
+          cargo make setup
       - uses: actions-rs/cargo@v1
         name: Build Android FFI
         with:
@@ -128,11 +126,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-      - run: cargo install cargo-make
-      - uses: actions-rs/cargo@v1
-        name: Setup build tool
-        with:
-          command: make setup
+      - run: |
+          cargo install cargo-make
+          cargo make setup
       - uses: actions-rs/cargo@v1
         name: Build iOS FFI
         with:
