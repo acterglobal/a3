@@ -9,7 +9,6 @@ jobs:
   build-cli:
     runs-on: ubuntu-latest
     name: Build CLI
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
@@ -22,7 +21,6 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     name: Build Android App
-    runs-on: ubuntu-latest
     # FIXME: remove once tests don't fail
     contiue-on-error: true
     steps:
@@ -54,7 +52,6 @@ jobs:
   build-ios:
     runs-on: macos-latest
     name: Build iOS App
-    runs-on: ubuntu-latest
     # FIXME: remove once tests don't fail
     contiue-on-error: true
     steps:
