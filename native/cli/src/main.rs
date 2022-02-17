@@ -2,7 +2,6 @@
 
 use anyhow::{bail, Context, Result};
 use clap::Parser;
-use tokio;
 
 use effektio_core::events;
 use effektio_core::matrix_sdk;

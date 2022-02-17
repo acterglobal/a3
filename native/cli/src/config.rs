@@ -48,7 +48,7 @@ impl LoginConfig {
             .login(username.localpart(), &password, None, None)
             .await?;
 
-        return Ok(client);
+        Ok(client)
     }
 }
 
