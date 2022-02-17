@@ -71,11 +71,11 @@ impl Room {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<Vec<u8>> {
+    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         let r = self.room.clone();
-        RUNTIME
-            .spawn(async move { Ok(r.avatar(MediaFormat::File).await?.expect("No avatar")) })
-            .await?
+        RUNTIME.spawn(async move {
+            Ok(api::FfiBuffer::new(r.avatar(MediaFormat::File).await?.expect("No avatar")))
+        }).await?
     }
 }
 
@@ -205,21 +205,15 @@ impl Client {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<Vec<u8>> {
+    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let uri = l.avatar_url().await?.expect("No avatar Url given");
-                Ok(l.get_media_content(
-                    &MediaRequest {
-                        media_type: MediaType::Uri(uri),
-                        format: MediaFormat::File,
-                    },
-                    true,
-                )
-                .await?)
-            })
-            .await?
+        RUNTIME.spawn(async move {
+            let uri = l.avatar_url().await?.expect("No avatar Url given");
+            Ok(api::FfiBuffer::new(l.get_media_content(&MediaRequest{
+                media_type: MediaType::Uri(uri),
+                format: MediaFormat::File
+            }, true).await?))
+        }).await?
     }
 }
 

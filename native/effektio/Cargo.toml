@@ -12,6 +12,7 @@ ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
+ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
@@ -52,7 +53,7 @@ wasm-bindgen-futures = "0.4.28"
 [target.'cfg(target_os = "android")'.dependencies]
 tracing-android = "0.2"
 android_logger = "0.10.1"
-tokio = { verison = "1", features = ["rt-multi-thread", "parking_lot"] }
+tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
