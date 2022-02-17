@@ -1,12 +1,12 @@
 use anyhow::Result;
-use clap::{crate_version, ArgEnum, Args, Parser, Subcommand};
+use clap::{crate_version, Parser};
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
 use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
 use effektio_core::matrix_sdk::{config::ClientConfig, Client};
 
-use log::{info, trace, warn};
+use log::warn;
 use std::path::PathBuf;
 
 /// Generic Login Configuration helper
