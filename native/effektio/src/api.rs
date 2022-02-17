@@ -21,7 +21,10 @@ use url::Url;
 #[cfg(target_os = "android")]
 use crate::android as platform;
 
-#[cfg(not(target_os = "android"))]
+#[cfg(target_os = "ios")]
+use crate::ios as platform;
+
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 mod platform {
     pub(super) fn new_client_config(
         base_path: String,
