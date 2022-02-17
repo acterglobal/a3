@@ -1,0 +1,182 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Build Check
+
+jobs:
+
+  rust-style:
+    runs-on: ubuntu-latest
+    name: Formatting
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt
+      - uses: actions-rs/cargo@v1
+        name: Rust Format
+        with:
+          command: fmt
+          args: --all --check
+
+  core:
+    runs-on: ubuntu-latest
+    name: Rust Native ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Core
+            package: effektio-core
+            clippy_extras: --tests
+          - name: CLI
+            package: effektio-cli
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          target: ${{ matrix.target }}
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p ${{matrix.package}}
+      - uses: actions-rs/cargo@v1
+        name: Release Build
+        with:
+          command: build
+          args: -p ${{matrix.package}} --release
+
+  integrations:
+    runs-on: ubuntu-latest
+    # FIXME: remove once tests don't fail
+    continue-on-error: true
+    name: Clippy & Test ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: FFI
+            target: x86_64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          target: ${{ matrix.target }}
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio --target ${{matrix.target}} -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p effektio --target ${{matrix.target}}
+
+  build-android:
+    runs-on: ubuntu-latest
+    name: Build Android App
+    # FIXME: remove once tests don't fail
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+      - uses: nttld/setup-ndk@v1
+        with:
+          # FIXME: cargo-ndk doesn't work with latest 
+          ndk-version: r22
+      - run: |
+          cargo install cargo-make
+          cargo make setup-android
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      # - uses: actions-rs/cargo@v1
+      #   name: Clippy
+      #   with:
+      #     command: clippy
+      #     args: -p effektio --target aarch64-linux-android -- -D warnings
+      # - uses: actions-rs/cargo@v1
+      #   name: Test
+      #   with:
+      #     command: test
+      #     args: -p effektio --target aarch64-linux-android
+      - name: Build Android FFI
+        run: cargo make android-build-release
+      # FIXME: tests are not set up to work yet
+      # - run: flutter --pub test
+      #   working-directory: ./effektio_flutter_sdk
+      #   name: Testing SDK
+      # # FIXME: tests are not set up to work yet
+      # - run: flutter --pub test
+      #   name: Testing App
+      #   working-directory: ./app
+      - run: flutter build apk
+        working-directory: ./app
+      - run: flutter build appbundle
+        working-directory: ./app
+
+  build-ios:
+    runs-on: macos-latest
+    name: Build iOS App
+    # FIXME: remove once tests don't fail
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+      - run: |
+          cargo install cargo-make
+          cargo make setup-ios
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      # - uses: actions-rs/cargo@v1
+      #   name: Clippy
+      #   with:
+      #     command: clippy
+      #     args: -p effektio --target x86_64-apple-ios -- -D warnings
+      # - uses: actions-rs/cargo@v1
+      #   name: Test
+      #   with:
+      #     command: test
+      #     args: -p effektio --target x86_64-apple-ios
+      - name: Build iOS FFI
+        run: cargo make ios-release
+      # FIXME: tests are not set up to work yet
+      # - run: flutter --pub test
+      #   working-directory: ./effektio_flutter_sdk
+      #   name: Testing SDK
+      # # FIXME: tests are not set up to work yet
+      # - run: flutter --pub test
+      #   name: Testing App
+      #   working-directory: ./app
+      - run: flutter build ios --release --no-codesign
+        working-directory: ./app

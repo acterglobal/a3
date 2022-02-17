@@ -1,7 +1,7 @@
 use ffi_gen::FfiGen;
 use std::path::PathBuf;
 
-static API_DESC_FILENAME: &'static str = "api.rsh";
+static API_DESC_FILENAME: &str = "api.rsh";
 
 fn main() {
     let dir = PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());

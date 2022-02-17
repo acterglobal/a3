@@ -11,3 +11,8 @@ serde = "1"
 [dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
 default-features = false
+
+[dev-dependencies.matrix-sdk]
+git = "https://github.com/matrix-org/matrix-rust-sdk/"
+features = ["rustls-tls"]
+default-features = false

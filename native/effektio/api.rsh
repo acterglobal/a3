@@ -19,8 +19,6 @@ object Room {
     fn avatar() -> Future<Result<buffer<u8>>>;
 }
 
-fn echo(inp: string) -> Result<string>;
-
 /// Main entry point for `effektio`.
 object Client {
     // Special

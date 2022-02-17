@@ -331,41 +331,6 @@ pub mod api {
         })
     }
     #[no_mangle]
-    pub extern "C" fn __echo(tmp1: i64,tmp2: u64,tmp3: u64,) -> __echoReturn {
-        panic_abort(move || {
-            let tmp0 = unsafe {
-                String::from_raw_parts(
-                    tmp1 as _,
-                    tmp2 as _,
-                    tmp3 as _,
-                )
-            };let tmp4 = echo(tmp0,);#[allow(unused_assignments)] let mut tmp5 = Default::default();#[allow(unused_assignments)] let mut tmp8 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp10 = Default::default();#[allow(unused_assignments)] let mut tmp11 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();match tmp4 {
-                Ok(tmp6) => {
-                    tmp5 = 1;
-                    let tmp6_0 = ManuallyDrop::new(tmp6);
-                    tmp11 = tmp6_0.as_ptr() as _;
-                    tmp12 = tmp6_0.len() as _;
-                    tmp13 = tmp6_0.capacity() as _;
-                }
-                Err(tmp7_0) => {
-                    tmp5 = 0;
-                    let tmp7 = tmp7_0.to_string();
-                    let tmp7_0 = ManuallyDrop::new(tmp7);
-                    tmp8 = tmp7_0.as_ptr() as _;
-                    tmp9 = tmp7_0.len() as _;
-                    tmp10 = tmp7_0.capacity() as _;
-                }
-            };
-            __echoReturn {
-                ret0: tmp5,ret1: tmp8,ret2: tmp9,ret3: tmp10,ret4: tmp11,ret5: tmp12,ret6: tmp13,
-            }
-        })
-    }
-    #[repr(C)]
-    pub struct __echoReturn {
-        pub ret0: u8,pub ret1: i64,pub ret2: u64,pub ret3: u64,pub ret4: i64,pub ret5: u64,pub ret6: u64,
-    }
-    #[no_mangle]
     pub extern "C" fn __Room_display_name(tmp1: i64,) -> i64 {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut Room) };let tmp2 = tmp0.display_name();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
