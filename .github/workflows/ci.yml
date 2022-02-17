@@ -24,36 +24,17 @@ jobs:
           command: fmt
           args: --all --check
 
-  clippy-n-test:
-    runs-on: ${{ matrix.os }}
-    # FIXME: remove once tests don't fail
-    continue-on-error: true
-    name: Clippy & Test ${{ matrix.name }}
+  core:
+    runs-on: ubuntu-latest
+    name: Rust Native ${{ matrix.name }}
     strategy:
       matrix:
         include:
-          - name: Android
-            target: aarch64-linux-android
-            os: ubuntu-latest
-            args: -p effektio
-          - name: iOS
-            target: x86_64-apple-ios
-            os: macos-latest
-            args: -p effektio
           - name: Core
-            target: x86_64-unknown-linux-gnu
-            args: -p effektio-core --tests
-            os: ubuntu-latest
-          - name: FFI
-            target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-            args: -p effektio
+            pacakge: effektio-core
+            clippy_extras: --tests
           - name: CLI
-            target: x86_64-unknown-linux-gnu
-            args: -p effektio-cli
-            os: ubuntu-latest
-
-
+            pacakge: effektio-cli
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
@@ -66,34 +47,57 @@ jobs:
         name: Clippy
         with:
           command: clippy
-          args: ${{matrix.args}} --target ${{matrix.target}} -- -D warnings
+          args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
       - uses: actions-rs/cargo@v1
         name: Test
         with:
           command: test
-          args: ${{matrix.args}} --target ${{matrix.target}}
-
-  test-cli:
-    runs-on: ubuntu-latest
-    name: Checking CLI
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install supported toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
+          args: -p ${{matrix.package}}
       - uses: actions-rs/cargo@v1
-        name: Testing
-        with:
-          command: test
-          args: -p effektio-cli
-
-      - uses: actions-rs/cargo@v1
-        name: Building
+        name: Test
         with:
           command: build
-          args: --release -p effektio-cli
+          args: -p ${{matrix.package}} --release
+
+  integrations:
+    runs-on: ${{ matrix.os }}
+    # FIXME: remove once tests don't fail
+    continue-on-error: true
+    name: Clippy & Test ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Android
+            target: aarch64-linux-android
+            os: ubuntu-latest
+          - name: iOS
+            target: x86_64-apple-ios
+            os: macos-latest
+          - name: FFI
+            target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          target: ${{ matrix.target }}
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio --target ${{matrix.target}} -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p effektio --target ${{matrix.target}}
 
   build-android:
     runs-on: ubuntu-latest
@@ -119,11 +123,14 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
-      - run: flutter pub get
-        working-directory: ./app
       # FIXME: tests are not set up to work yet
-      - run: flutter test
-        working-directory: ./app
+      # - run: flutter --pub test
+      #   working-directory: ./effektio_flutter_sdk
+      #   name: Testing SDK
+      # # FIXME: tests are not set up to work yet
+      # - run: flutter --pub test
+      #   name: Testing App
+      #   working-directory: ./app
       - run: flutter build apk
         working-directory: ./app
       - run: flutter build appbundle
@@ -149,10 +156,13 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
-      - run: flutter pub get
-        working-directory: ./app
       # FIXME: tests are not set up to work yet
-      - run: flutter test
-        working-directory: ./app
+      # - run: flutter --pub test
+      #   working-directory: ./effektio_flutter_sdk
+      #   name: Testing SDK
+      # # FIXME: tests are not set up to work yet
+      # - run: flutter --pub test
+      #   name: Testing App
+      #   working-directory: ./app
       - run: flutter build ios --release --no-codesign
         working-directory: ./app
