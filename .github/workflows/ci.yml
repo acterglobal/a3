@@ -60,22 +60,15 @@ jobs:
           args: -p ${{matrix.package}} --release
 
   integrations:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     # FIXME: remove once tests don't fail
     continue-on-error: true
     name: Clippy & Test ${{ matrix.name }}
     strategy:
       matrix:
         include:
-          - name: Android
-            target: aarch64-linux-android
-            os: ubuntu-latest
-          - name: iOS
-            target: x86_64-apple-ios
-            os: macos-latest
           - name: FFI
             target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
@@ -110,6 +103,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          components: clippy
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest 
@@ -117,12 +111,22 @@ jobs:
       - run: |
           cargo install cargo-make
           cargo make setup-android
-      - name: Build Android FFI
-        run: cargo make android-build-release
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
           channel: 'stable'
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio --target aarch64-linux-android -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p effektio --target aarch64-linux-android
+      - name: Build Android FFI
+        run: cargo make android-build-release
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
@@ -150,12 +154,22 @@ jobs:
       - run: |
           cargo install cargo-make
           cargo make setup-ios
-      - name: Build iOS FFI
-        run: cargo make ios-release
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
           channel: 'stable'
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio --target x86_64-apple-ios -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p effektio --target x86_64-apple-ios
+      - name: Build iOS FFI
+        run: cargo make ios-release
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
