@@ -31,10 +31,10 @@ jobs:
       matrix:
         include:
           - name: Core
-            pacakge: effektio-core
+            package: effektio-core
             clippy_extras: --tests
           - name: CLI
-            pacakge: effektio-cli
+            package: effektio-cli
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
