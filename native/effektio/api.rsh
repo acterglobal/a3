@@ -16,7 +16,7 @@ object Room {
     fn display_name() -> Future<Result<string>>;
 
     /// The avatar of the room
-    fn avatar() -> Future<Result<Vec<u8>>>;
+    fn avatar() -> Future<Result<buffer<u8>>>;
 }
 
 /// Main entry point for `effektio`.
@@ -49,7 +49,7 @@ object Client {
     fn display_name() -> Future<Result<string>>;
 
     /// The avatar of the client
-    fn avatar() -> Future<Result<Vec<u8>>>;
+    fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// The conversations the user is involved in
     fn conversations() -> Stream<Room>;
