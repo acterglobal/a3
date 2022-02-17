@@ -54,7 +54,7 @@ jobs:
           command: test
           args: -p ${{matrix.package}}
       - uses: actions-rs/cargo@v1
-        name: Test
+        name: Release Build
         with:
           command: build
           args: -p ${{matrix.package}} --release
