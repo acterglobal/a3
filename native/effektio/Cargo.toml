@@ -8,15 +8,12 @@ rust-version = "1.58"
 
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "fb3c19ea88535aba9e25f109f1d9993cdac646f3" }
-#ffi-gen = { path = "../../../ffi-gen" }
+ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "fb3c19ea88535aba9e25f109f1d9993cdac646f3" }
-#ffi-gen = { path = "../../../ffi-gen" }
-ffi-gen-macro = { git = "https://github.com/bmcpt/ffi-gen", rev = "fb3c19ea88535aba9e25f109f1d9993cdac646f3" }
-#ffi-gen-macro = { path = "../../../ffi-gen/macro" }
+ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
+ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
 lazy_static = "1.4"
@@ -56,7 +53,7 @@ wasm-bindgen-futures = "0.4.28"
 [target.'cfg(target_os = "android")'.dependencies]
 tracing-android = "0.2"
 android_logger = "0.10.1"
-tokio = { verison = "1", features = ["rt-multi-thread", "parking_lot"] }
+tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
