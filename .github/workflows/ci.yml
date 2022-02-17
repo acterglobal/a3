@@ -115,16 +115,16 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p effektio --target aarch64-linux-android -- -D warnings
-      - uses: actions-rs/cargo@v1
-        name: Test
-        with:
-          command: test
-          args: -p effektio --target aarch64-linux-android
+      # - uses: actions-rs/cargo@v1
+      #   name: Clippy
+      #   with:
+      #     command: clippy
+      #     args: -p effektio --target aarch64-linux-android -- -D warnings
+      # - uses: actions-rs/cargo@v1
+      #   name: Test
+      #   with:
+      #     command: test
+      #     args: -p effektio --target aarch64-linux-android
       - name: Build Android FFI
         run: cargo make android-build-release
       # FIXME: tests are not set up to work yet
@@ -158,16 +158,16 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p effektio --target x86_64-apple-ios -- -D warnings
-      - uses: actions-rs/cargo@v1
-        name: Test
-        with:
-          command: test
-          args: -p effektio --target x86_64-apple-ios
+      # - uses: actions-rs/cargo@v1
+      #   name: Clippy
+      #   with:
+      #     command: clippy
+      #     args: -p effektio --target x86_64-apple-ios -- -D warnings
+      # - uses: actions-rs/cargo@v1
+      #   name: Test
+      #   with:
+      #     command: test
+      #     args: -p effektio --target x86_64-apple-ios
       - name: Build iOS FFI
         run: cargo make ios-release
       # FIXME: tests are not set up to work yet
