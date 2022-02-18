@@ -1,4 +1,5 @@
 #![warn(clippy::all)]
+#![feature(vec_into_raw_parts)]
 
 pub use matrix_sdk;
 

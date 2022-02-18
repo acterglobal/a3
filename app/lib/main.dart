@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
@@ -35,6 +36,7 @@ Future<Client> login(String username, String password) async {
 
 class AccountHeader extends StatefulWidget {
   Client _client;
+
   AccountHeader(this._client);
 
   @override
@@ -92,6 +94,7 @@ class _AccountHeaderState extends State<AccountHeader> {
 
 class ChatListItem extends StatelessWidget {
   final Room room;
+
   const ChatListItem({Key? key, required this.room}) : super(key: key);
 
   @override
@@ -125,27 +128,19 @@ class ChatListItem extends StatelessWidget {
 }
 
 class ChatOverview extends StatelessWidget {
-  final Future<List<Room>> rooms;
+  final FfiListRoom rooms;
+
   const ChatOverview({Key? key, required this.rooms}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Room>>(
-        future: rooms, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<List<Room>> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.requireData.isEmpty)
-              return Center(child: Text("No Conversations yet"));
-            return ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: snapshot.requireData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ChatListItem(room: snapshot.requireData[index]);
-                });
-          } else {
-            return Center(child: Text("loading"));
-          }
-        });
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: rooms.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ChatListItem(room: rooms[index]);
+      },
+    );
   }
 }
 
@@ -158,7 +153,9 @@ class _EffektioHomeState extends State<EffektioHome> {
   String dropdownValue = 'All';
   int _currentIndex = 0;
   final Future<Client> _client;
+
   _EffektioHomeState(this._client);
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -186,7 +183,7 @@ class _EffektioHomeState extends State<EffektioHome> {
             if (snapshot.hasData) {
               if (snapshot.requireData.hasFirstSynced()) {
                 return ChatOverview(
-                    rooms: snapshot.requireData.conversations().toList());
+                    rooms: snapshot.requireData.conversations());
               } else {
                 return Center(
                     child: Text(
@@ -249,8 +246,8 @@ class _EffektioHomeState extends State<EffektioHome> {
                     padding: EdgeInsets.zero,
                     children: <Widget>[
                       FutureBuilder<Client>(
-                          future:
-                              _client, // a previously-obtained Future<String> or null
+                          future: _client,
+                          // a previously-obtained Future<String> or null
                           builder: (BuildContext context,
                               AsyncSnapshot<Client> snapshot) {
                             if (snapshot.hasData) {

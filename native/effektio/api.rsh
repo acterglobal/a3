@@ -54,5 +54,5 @@ object Client {
     fn avatar() -> Future<Result<Vec<u8>>>;
 
     /// The conversations the user is involved in
-    fn conversations() -> Stream<Room>;
+    fn conversations() -> Vec<Room>;
 }
