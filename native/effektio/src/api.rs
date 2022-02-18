@@ -12,8 +12,6 @@ use matrix_sdk::{
     Client as MatrixClient, LoopCtrl, Session,
 };
 use parking_lot::RwLock;
-use serde::{Deserialize, Serialize};
-use serde_json;
 use std::sync::Arc;
 use tokio::runtime;
 use url::Url;
@@ -21,7 +19,10 @@ use url::Url;
 #[cfg(target_os = "android")]
 use crate::android as platform;
 
-#[cfg(not(target_os = "android"))]
+#[cfg(target_os = "ios")]
+use crate::ios as platform;
+
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
 mod platform {
     pub(super) fn new_client_config(
         base_path: String,
@@ -71,10 +72,14 @@ impl Room {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<Vec<u8>> {
+    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         let r = self.room.clone();
         RUNTIME
-            .spawn(async move { Ok(r.avatar(MediaFormat::File).await?.expect("No avatar")) })
+            .spawn(async move {
+                Ok(api::FfiBuffer::new(
+                    r.avatar(MediaFormat::File).await?.expect("No avatar"),
+                ))
+            })
             .await?
     }
 }
@@ -117,7 +122,7 @@ impl Client {
                     } else if !state.read().is_syncing {
                         state.write().is_syncing = true;
                     }
-                    return LoopCtrl::Continue;
+                    LoopCtrl::Continue
                 })
                 .await;
         });
@@ -205,19 +210,21 @@ impl Client {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<Vec<u8>> {
+    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let uri = l.avatar_url().await?.expect("No avatar Url given");
-                Ok(l.get_media_content(
-                    &MediaRequest {
-                        media_type: MediaType::Uri(uri),
-                        format: MediaFormat::File,
-                    },
-                    true,
-                )
-                .await?)
+                Ok(api::FfiBuffer::new(
+                    l.get_media_content(
+                        &MediaRequest {
+                            media_type: MediaType::Uri(uri),
+                            format: MediaFormat::File,
+                        },
+                        true,
+                    )
+                    .await?,
+                ))
             })
             .await?
     }
@@ -294,10 +301,6 @@ pub async fn login_new_client(
             Ok(c)
         })
         .await?
-}
-
-pub fn echo(inp: String) -> Result<String> {
-    Ok(String::from(inp))
 }
 
 fn init_logging(filter: Option<String>) -> Result<()> {

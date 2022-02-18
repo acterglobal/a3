@@ -914,7 +914,7 @@ class Api {
     return tmp7;
   }
 
-  List<int>? __roomAvatarFuturePoll(
+  FfiBufferUint8? __roomAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -939,8 +939,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -954,13 +952,11 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = tmp13_0.asTypedList(tmp14).toList();
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -1192,7 +1188,7 @@ class Api {
     return tmp7;
   }
 
-  List<int>? __clientAvatarFuturePoll(
+  FfiBufferUint8? __clientAvatarFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1217,8 +1213,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -1232,13 +1226,11 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = tmp13_0.asTypedList(tmp14).toList();
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -1669,7 +1661,7 @@ class Room {
   }
 
   /// The avatar of the room
-  Future<List<int>> avatar() {
+  Future<FfiBufferUint8> avatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomAvatar(
@@ -1807,7 +1799,7 @@ class Client {
   }
 
   /// The avatar of the client
-  Future<List<int>> avatar() {
+  Future<FfiBufferUint8> avatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientAvatar(
@@ -1948,10 +1940,6 @@ class _RoomAvatarFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
@@ -2050,10 +2038,6 @@ class _ClientAvatarFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class FfiListRoom extends Iterable<Room> implements CustomIterable<Room> {
