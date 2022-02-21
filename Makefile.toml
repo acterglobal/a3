@@ -36,10 +36,12 @@ dependencies = [
 script_runner = "@duckscript"
 script = [
     """
-    cargo check
     cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/effektio/bindings.dart \
     ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/effektio_flutter_sdk_ffi.dart
     """,
+]
+dependencies = [
+  "check-ffi"
 ]
 
 [tasks.init]
@@ -69,6 +71,10 @@ dependencies = [
 install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
+
+[tasks.check-ffi]
+command = "cargo"
+args = ["check", "-p", "effektio"]
 
 [tasks.test-flow]
 disabled = true
