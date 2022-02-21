@@ -1,8 +1,7 @@
-use super::Colorize;
-use matrix_sdk::ruma::events::macros::EventContent;
-use matrix_sdk::ruma::events::room::message::{
-    ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+use super::{
+    Colorize, ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
 };
+use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 /// The content that is specific to each message type variant.

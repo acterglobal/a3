@@ -1,7 +1,8 @@
+use super::EventId;
 pub use chrono::{DateTime, Utc};
 pub use chrono_tz::Tz as TimeZone;
 pub use csscolorparser::Color;
-use matrix_sdk::ruma::{events::macros::EventContent, EventId};
+use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 /// Default UTC Datetime Object

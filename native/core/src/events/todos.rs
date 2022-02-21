@@ -1,10 +1,5 @@
+use super::{EventId, TextMessageEventContent};
 use matrix_sdk::ruma::events::macros::EventContent;
-use matrix_sdk::ruma::{
-    events::room::message::{
-        ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
-    },
-    EventId,
-};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
@@ -51,7 +46,7 @@ impl Default for Priority {
 pub struct TaskListDevContent {
     pub role: Option<SpecialTaskListRole>,
     pub name: String,
-    pub description: Option<String>,
+    pub description: Option<TextMessageEventContent>,
     pub color: Option<Color>,
     pub sort_order: u32,
     pub time_zone: Option<TimeZone>,
@@ -71,7 +66,7 @@ pub struct TaskDevContent {
     #[serde(rename = "m.relates_to")]
     pub task_list_id: BelongsTo,
     pub title: String,
-    pub description: Option<String>,
+    pub description: Option<TextMessageEventContent>,
     pub utc_due: Option<UtcDateTime>,
     pub utc_start: Option<UtcDateTime>,
     pub sort_order: u32,
