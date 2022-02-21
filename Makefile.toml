@@ -33,6 +33,7 @@ dependencies = [
 ]
 
 [tasks.ffigen]
+script_runner = "@duckscript"
 script = [
     """
     cargo check
@@ -49,6 +50,7 @@ dependencies = [
 
 [tasks.flutter-get]
 description = "update flutter dependencies"
+script_runner = "@duckscript"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
     "flutter pub get",
