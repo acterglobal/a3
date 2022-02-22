@@ -8,11 +8,11 @@ rust-version = "1.58"
 
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "6c08e8003923576179f95788b79e17a66f095711" }
+ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen-macro = { git = "https://github.com/bmcpt/ffi-gen", rev = "6c08e8003923576179f95788b79e17a66f095711" }
+ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
 lazy_static = "1.4"
