@@ -295,7 +295,7 @@ run_task = "copy-lib"
 [tasks.post-android]
 dependencies = ["ffigen", "restore-crate-type"]
 
-# TODO: non linux distros
+# TODO: non linux desktops
 # TODO: release build
 [tasks.desktop]
 description = "Build rust SDK for desktop"

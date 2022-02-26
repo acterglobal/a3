@@ -29,7 +29,7 @@ class EffektioSdk {
       sessions.add(token);
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setStringList("sessions", sessions);
+    await prefs.setStringList("sessions", sessions);
   }
 
   Future<void> _restore() async {
@@ -70,6 +70,13 @@ class EffektioSdk {
   }
 
   Future<Client> login(String username, String password) async {
+    // To be removed when client management is implemented.
+    for (final client in _clients) {
+      if (await client.userId() == username) {
+        return client;
+      }
+    }
+
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     final client = await _api.loginNewClient(appDocPath, username, password);

@@ -86,11 +86,18 @@ class _TestPageState extends State<TestPage> {
       setState(() {
         suiteState = SuiteState.Executing;
       });
-      await suite.executeTest().forEach((line) {
-        setState(() {
-          logLines.add(line);
+      try {
+        await suite.executeTest().forEach((line) {
+          setState(() {
+            logLines.add(line);
+          });
         });
-      });
+      } catch (e) {
+        setState(() {
+          logLines.add(e.toString());
+        });
+        rethrow;
+      }
     })
     .then((_) async {
       await suite.teardown();

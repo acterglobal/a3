@@ -5,4 +5,3 @@ pub use matrix_sdk;
 
 mod api;
 mod platform;
-mod tests;
