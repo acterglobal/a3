@@ -164,10 +164,9 @@ impl Client {
         })?)
     }
 
-    pub fn conversations(&self) -> stream::Iter<std::vec::IntoIter<Room>> {
-        #[allow(clippy::needless_collect)]
-            let v: Vec<_> = self.rooms().into_iter().map(|room| Room { room }).collect();
-        stream::iter(v.into_iter())
+    pub fn conversations(&self) -> Vec<Room> {
+        let r: Vec<_> = self.rooms().into_iter().map(|room| Room { room }).collect();
+        r
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
@@ -242,7 +241,6 @@ impl Client {
 }
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
-    dbg!(&homeurl);
     let homeserver = Url::parse(&homeurl)?;
     let config = platform::new_client_config(base_path, homeurl)?;
     let mut guest_registration = register::Request::new();

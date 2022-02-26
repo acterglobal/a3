@@ -452,8 +452,8 @@ pub mod api {
     #[no_mangle]
     pub extern "C" fn __Client_conversations(tmp1: i64,) -> i64 {
         panic_abort(move || {
-            let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.conversations();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0: FfiStream<Room> = FfiStream::new(tmp2);
-            tmp3 = Box::into_raw(Box::new(tmp3_0)) as _;
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Client) };let tmp2 = tmp0.conversations();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp2_type_test: &Vec<Room> = &tmp2;let tmp2_0 = assert_send_static(tmp2);
+            tmp3 = Box::into_raw(Box::new(tmp2_0)) as _;
             tmp3
         })
     }
@@ -905,31 +905,6 @@ pub mod api {
         });
     }
     #[no_mangle]
-    pub extern "C" fn __Client_conversations_stream_poll(tmp1: i64,tmp3: i64,tmp5: i64,tmp7: i64,) -> __Client_conversations_stream_pollReturn {
-        panic_abort(move || {
-            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiStream<Room>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp7 as _;let tmp8 = tmp0.poll(tmp2,tmp4,tmp6,);#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp11 = Default::default();if let Some(tmp10) = tmp8 {
-                tmp9 = 1;
-                let tmp10_0 = assert_send_static(tmp10);
-                tmp11 = Box::into_raw(Box::new(tmp10_0)) as _;
-            } else {
-                tmp9 = 0;
-            }
-            __Client_conversations_stream_pollReturn {
-                ret0: tmp9,ret1: tmp11,
-            }
-        })
-    }
-    #[repr(C)]
-    pub struct __Client_conversations_stream_pollReturn {
-        pub ret0: u8,pub ret1: i64,
-    }
-    #[no_mangle]
-    pub extern "C" fn __Client_conversations_stream_drop(_: i64, boxed: i64) {
-        panic_abort(move || {
-            unsafe { Box::<FfiStream<Room>>::from_raw(boxed as *mut _) };
-        });
-    }
-    #[no_mangle]
     pub extern "C" fn __FfiListRoomMemberCreate() -> usize {
         panic_abort(move || unsafe {
             let list = Box::new(Vec::<RoomMember>::new());
@@ -958,6 +933,39 @@ pub mod api {
     pub extern "C" fn __FfiListRoomMemberElementAt(boxed: usize, index: u32) -> usize {
         panic_abort(move || unsafe {
             let list = Box::<Vec<RoomMember>>::from_raw(boxed as _);
+            let result = list.get(index as usize).unwrap() as *const _;
+            Box::into_raw(list);
+            result as _
+        })
+    }#[no_mangle]
+    pub extern "C" fn __FfiListRoomCreate() -> usize {
+        panic_abort(move || unsafe {
+            let list = Box::new(Vec::<Room>::new());
+            Box::into_raw(list) as _
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn drop_box_FfiListRoom(_: i64, boxed: i64) {
+        panic_abort(move || unsafe {
+            Box::<Vec<Room>>::from_raw(boxed as _);
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomLen(boxed: usize) -> u32 {
+        panic_abort(move || unsafe {
+            let list = Box::<Vec<Room>>::from_raw(boxed as _);
+            let result = list.len() as u32;
+            Box::into_raw(list);
+            result as _
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomElementAt(boxed: usize, index: u32) -> usize {
+        panic_abort(move || unsafe {
+            let list = Box::<Vec<Room>>::from_raw(boxed as _);
             let result = list.get(index as usize).unwrap() as *const _;
             Box::into_raw(list);
             result as _

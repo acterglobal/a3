@@ -143,28 +143,19 @@ class ChatListItem extends StatelessWidget {
 }
 
 class ChatOverview extends StatelessWidget {
-  final Future<List<Room>> rooms;
+  final List<Room> rooms;
 
   const ChatOverview({Key? key, required this.rooms}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Room>>(
-        future: rooms, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<List<Room>> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.requireData.isEmpty)
-              return const Center(child: Text("No Conversations yet"));
-            return ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: snapshot.requireData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ChatListItem(room: snapshot.requireData[index]);
-                });
-          } else {
-            return const Center(child: Text("loading"));
-          }
-        });
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: rooms.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ChatListItem(room: rooms[index]);
+      },
+    );
   }
 }
 
