@@ -6,7 +6,7 @@ use std::{fs, path};
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
-pub(crate) fn new_client_config(base_path: String, home: String) -> Result<ClientConfig> {
+pub fn new_client_config(base_path: String, home: String) -> Result<ClientConfig> {
     let data_path = path::PathBuf::from(base_path).join(sanitize(&home));
 
     fs::create_dir_all(&data_path)?;
@@ -17,7 +17,7 @@ pub(crate) fn new_client_config(base_path: String, home: String) -> Result<Clien
     Ok(config)
 }
 
-pub(crate) fn init_logging(filter: Option<String>) -> Result<()> {
+pub fn init_logging(filter: Option<String>) -> Result<()> {
     // FIXME: not yet supported
 
     Ok(())

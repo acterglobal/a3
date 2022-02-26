@@ -1,11 +1,13 @@
 #[allow(unused)]
 pub mod api {
+    #![allow(clippy::all)]
     use core::future::Future;
     use core::mem::ManuallyDrop;
     use core::pin::Pin;
     use core::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
     use std::sync::Arc;
     use std::ffi::c_void;
+    use futures::FutureExt;
     use super::*;
 
     #[doc=" Try to execute some function, catching any panics and aborting to make sure Rust"]
@@ -88,6 +90,10 @@ pub mod api {
         panic_abort(move || {
             unsafe { Box::<FfiBuffer<u8>>::from_raw(boxed as *mut _) };
         });
+    }
+
+    #[no_mangle]
+    pub extern "C" fn drop_box_Leak(_: i64, boxed: i64) {
     }
 
     #[repr(transparent)]
@@ -349,9 +355,24 @@ pub mod api {
         })
     }
     #[no_mangle]
+    pub extern "C" fn __Room_active_members(tmp1: i64,) -> i64 {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut Room) };let tmp2 = tmp0.active_members();#[allow(unused_assignments)] let mut tmp3 = Default::default();let tmp3_0 = async move { tmp2.await.map_err(|err| err.to_string()) };
+            let tmp3_1: FfiFuture<Result<Vec<RoomMember>>> = FfiFuture::new(tmp3_0);
+            tmp3 = Box::into_raw(Box::new(tmp3_1)) as _;
+            tmp3
+        })
+    }
+    #[no_mangle]
     pub extern "C" fn drop_box_Room(_: i64, boxed: i64) {
         panic_abort(move || {
             unsafe { Box::<Room>::from_raw(boxed as *mut _) };
+        });
+    }
+    #[no_mangle]
+    pub extern "C" fn drop_box_RoomMember(_: i64, boxed: i64) {
+        panic_abort(move || {
+            unsafe { Box::<RoomMember>::from_raw(boxed as *mut _) };
         });
     }#[no_mangle]
     pub extern "C" fn __Client_restore_token(tmp1: i64,) -> i64 {
@@ -630,6 +651,43 @@ pub mod api {
             unsafe { Box::<FfiFuture<Result<FfiBuffer<u8>>>>::from_raw(boxed as *mut _) };
         });
     }#[no_mangle]
+    pub extern "C" fn __Room_active_members_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Room_active_members_future_pollReturn {
+        panic_abort(move || {
+            let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<Vec<RoomMember>>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();if let Some(tmp8) = tmp6 {
+                tmp7 = 1;
+                match tmp8 {
+                    Ok(tmp10) => {
+                        tmp9 = 1;
+                        let tmp10_type_test: &Vec<RoomMember> = &tmp10;let tmp10_0 = assert_send_static(tmp10);
+                        tmp15 = Box::into_raw(Box::new(tmp10_0)) as _;
+                    }
+                    Err(tmp11_0) => {
+                        tmp9 = 0;
+                        let tmp11 = tmp11_0.to_string();
+                        let tmp11_0 = ManuallyDrop::new(tmp11);
+                        tmp12 = tmp11_0.as_ptr() as _;
+                        tmp13 = tmp11_0.len() as _;
+                        tmp14 = tmp11_0.capacity() as _;
+                    }
+                };
+            } else {
+                tmp7 = 0;
+            }
+            __Room_active_members_future_pollReturn {
+                ret0: tmp7,ret1: tmp9,ret2: tmp12,ret3: tmp13,ret4: tmp14,ret5: tmp15,
+            }
+        })
+    }
+    #[repr(C)]
+    pub struct __Room_active_members_future_pollReturn {
+        pub ret0: u8,pub ret1: u8,pub ret2: i64,pub ret3: u64,pub ret4: u64,pub ret5: i64,
+    }
+    #[no_mangle]
+    pub extern "C" fn __Room_active_members_future_drop(_: i64, boxed: i64) {
+        panic_abort(move || {
+            unsafe { Box::<FfiFuture<Result<Vec<RoomMember>>>>::from_raw(boxed as *mut _) };
+        });
+    }#[no_mangle]
     pub extern "C" fn __Client_restore_token_future_poll(tmp1: i64,tmp3: i64,tmp5: i64,) -> __Client_restore_token_future_pollReturn {
         panic_abort(move || {
             let tmp0 = unsafe { &mut *(tmp1 as *mut FfiFuture<Result<String>>) };let tmp2 = tmp3 as _;let tmp4 = tmp5 as _;let tmp6 = tmp0.poll(tmp2,tmp4,);#[allow(unused_assignments)] let mut tmp7 = Default::default();#[allow(unused_assignments)] let mut tmp9 = Default::default();#[allow(unused_assignments)] let mut tmp12 = Default::default();#[allow(unused_assignments)] let mut tmp13 = Default::default();#[allow(unused_assignments)] let mut tmp14 = Default::default();#[allow(unused_assignments)] let mut tmp15 = Default::default();#[allow(unused_assignments)] let mut tmp16 = Default::default();#[allow(unused_assignments)] let mut tmp17 = Default::default();if let Some(tmp8) = tmp6 {
@@ -870,5 +928,39 @@ pub mod api {
         panic_abort(move || {
             unsafe { Box::<FfiStream<Room>>::from_raw(boxed as *mut _) };
         });
+    }
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomMemberCreate() -> usize {
+        panic_abort(move || unsafe {
+            let list = Box::new(Vec::<RoomMember>::new());
+            Box::into_raw(list) as _
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn drop_box_FfiListRoomMember(_: i64, boxed: i64) {
+        panic_abort(move || unsafe {
+            Box::<Vec<RoomMember>>::from_raw(boxed as _);
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomMemberLen(boxed: usize) -> u32 {
+        panic_abort(move || unsafe {
+            let list = Box::<Vec<RoomMember>>::from_raw(boxed as _);
+            let result = list.len() as u32;
+            Box::into_raw(list);
+            result as _
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomMemberElementAt(boxed: usize, index: u32) -> usize {
+        panic_abort(move || unsafe {
+            let list = Box::<Vec<RoomMember>>::from_raw(boxed as _);
+            let result = list.get(index as usize).unwrap() as *const _;
+            Box::into_raw(list);
+            result as _
+        })
     }
 }

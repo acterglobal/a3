@@ -678,7 +678,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/effektio/ffi-gen#2e889f446045bfb589ffb904ad1a2bb70a27fa76"
+source = "git+https://github.com/bmcpt/ffi-gen?rev=fb2e59725401908539525e890c5961d3f6824094#fb2e59725401908539525e890c5961d3f6824094"
 dependencies = [
  "anyhow",
  "genco",
@@ -690,7 +690,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/effektio/ffi-gen#2e889f446045bfb589ffb904ad1a2bb70a27fa76"
+source = "git+https://github.com/bmcpt/ffi-gen?rev=fb2e59725401908539525e890c5961d3f6824094#fb2e59725401908539525e890c5961d3f6824094"
 dependencies = [
  "ffi-gen",
  "proc-macro2",

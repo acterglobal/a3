@@ -295,58 +295,60 @@ run_task = "copy-lib"
 [tasks.post-android]
 dependencies = ["ffigen", "restore-crate-type"]
 
+# TODO: non linux distros
+# TODO: release build
+[tasks.desktop]
+description = "Build rust SDK for desktop"
+dependencies = [
+    "ffigen",
+    "setup-crate-type-desktop",
+    "desktop-build",
+    "copy-desktop-lib",
+    "restore-crate-type"
+]
+
+[tasks.desktop-build]
+description = "Build for desktop"
+command = "cargo"
+args = [
+    "build",
+    "-p",
+    "effektio"
+]
+
+[tasks.copy-desktop-lib]
+description = "Copy desktop library to plugin"
+command = "cp"
+args = [
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so",
+    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so"
+]
+
 [tasks.setup-crate-type-android]
 private = true
-env = { TARGET_OS = "android" }
+env = { CRATE_TYPE = "cdylib" }
+run_task = "setup-crate-type"
+
+[tasks.setup-crate-type-desktop]
+private = true
+env = { CRATE_TYPE = "cdylib" }
 run_task = "setup-crate-type"
 
 [tasks.setup-crate-type-ios]
 private = true
-env = { TARGET_OS = "ios" }
+env = { CRATE_TYPE = "staticlib" }
+run_task = "setup-crate-type"
+
+[tasks.restore-crate-type]
+private = true
+env = { CRATE_TYPE = "rlib" }
 run_task = "setup-crate-type"
 
 [tasks.setup-crate-type]
 private = true
-script_runner = "@duckscript"
-script = [
-    """
-    toml = readfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml
-    crate_type = set ""
-    os = get_env TARGET_OS
-    is_android = eq ${os} "android"
-    is_ios = eq ${os} "ios"
-    if ${is_android}
-      crate_type = set "cdylib"
-    elseif ${is_ios}
-      crate_type = set "staticlib"
-    else
-      crate_type = set "rlib"
-    end
-    val = replace ${toml} "rlib" ${crate_type}
-    result = writefile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml ${val}
-    assert ${result}
-    """,
-]
-
-[tasks.restore-crate-type]
-private = true
-script_runner = "@duckscript"
-script = [
-    """
-    toml = readfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml
-    crate_type = set ""
-    os = get_env TARGET_OS
-    is_android = eq ${os} "android"
-    is_ios = eq ${os} "ios"
-    if ${is_android}
-      crate_type = set "cdylib"
-    elseif ${is_ios}
-      crate_type = set "staticlib"
-    else
-      crate_type = set "rlib"
-    end
-    val = replace ${toml} ${crate_type} "rlib"
-    result = writefile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml ${val}
-    assert ${result}
-    """,
+command = "sed"
+args = [
+    '-i',
+    's/crate-type = \["\w\+"\]/crate-type = ["${CRATE_TYPE}"]/',
+    '${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml'
 ]

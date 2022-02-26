@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
@@ -35,11 +36,15 @@ Future<Client> login(String username, String password) async {
 
 class AccountHeader extends StatefulWidget {
   Client _client;
+
   AccountHeader(this._client);
 
   @override
   _AccountHeaderState createState() => _AccountHeaderState(
-      _client, _client.displayName(), _client.userId(), _client.avatar().then((fb) => fb.toUint8List()));
+      _client,
+      _client.displayName(),
+      _client.userId(),
+      _client.avatar().then((fb) => fb.toUint8List()));
 }
 
 class _AccountHeaderState extends State<AccountHeader> {
@@ -92,6 +97,7 @@ class _AccountHeaderState extends State<AccountHeader> {
 
 class ChatListItem extends StatelessWidget {
   final Room room;
+
   const ChatListItem({Key? key, required this.room}) : super(key: key);
 
   @override
@@ -99,7 +105,8 @@ class ChatListItem extends StatelessWidget {
     // ToDo: UnreadCounter
     return ListTile(
       leading: FutureBuilder<List<int>>(
-          future: room.avatar().then((fb) => fb.toUint8List()), // a previously-obtained Future<String> or null
+          future: room.avatar().then((fb) => fb.toUint8List()),
+          // a previously-obtained Future<String> or null
           builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
             if (snapshot.hasData) {
               return CircleAvatar(
@@ -120,12 +127,22 @@ class ChatListItem extends StatelessWidget {
               return Text("loading name");
             }
           }),
+      trailing: FutureBuilder<FfiListRoomMember>(
+          future: room.activeMembers(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.requireData.length.toString());
+            } else {
+              return SizedBox();
+            }
+          }),
     );
   }
 }
 
 class ChatOverview extends StatelessWidget {
   final Future<List<Room>> rooms;
+
   const ChatOverview({Key? key, required this.rooms}) : super(key: key);
 
   @override
@@ -151,16 +168,22 @@ class ChatOverview extends StatelessWidget {
 
 class EffektioHome extends StatefulWidget {
   @override
-  _EffektioHomeState createState() => _EffektioHomeState(makeClient());
+  _EffektioHomeState createState() => _EffektioHomeState();
 }
 
 class _EffektioHomeState extends State<EffektioHome> {
+  late Future<Client> _client;
   String dropdownValue = 'All';
-  int _currentIndex = 0;
-  final Future<Client> _client;
-  _EffektioHomeState(this._client);
+  int _tabIndex = 0;
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  @override
+  void initState() {
+    super.initState();
+    _client = makeClient();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +209,7 @@ class _EffektioHomeState extends State<EffektioHome> {
             if (snapshot.hasData) {
               if (snapshot.requireData.hasFirstSynced()) {
                 return ChatOverview(
-                    rooms: snapshot.requireData.conversations().toList());
+                    rooms: snapshot.requireData.conversations().toList(),);
               } else {
                 return Center(
                     child: Text(
@@ -201,7 +224,8 @@ class _EffektioHomeState extends State<EffektioHome> {
                 style: optionStyle,
               ));
             }
-          }),
+          },
+      ),
     ];
 
     return DefaultTabController(
@@ -240,7 +264,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                   child: Icon(Icons.settings),
                 ),
               ]),
-          body: _widgetOptions.elementAt(_currentIndex),
+          body: _widgetOptions.elementAt(_tabIndex),
           drawer: Drawer(
             child: Column(
               children: <Widget>[
@@ -249,8 +273,8 @@ class _EffektioHomeState extends State<EffektioHome> {
                     padding: EdgeInsets.zero,
                     children: <Widget>[
                       FutureBuilder<Client>(
-                          future:
-                              _client, // a previously-obtained Future<String> or null
+                          future: _client,
+                          // a previously-obtained Future<String> or null
                           builder: (BuildContext context,
                               AsyncSnapshot<Client> snapshot) {
                             if (snapshot.hasData) {
@@ -348,7 +372,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                           ),
                           Divider(),
                           Text("Effektio 0.0.1"),
-                        ]))),
+                        ],),),),
                   ),
                 ),
               ],
@@ -356,7 +380,7 @@ class _EffektioHomeState extends State<EffektioHome> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
-            currentIndex: _currentIndex,
+            currentIndex: _tabIndex,
             backgroundColor: Color(0xFF6200EE),
             selectedItemColor: Colors.white,
             unselectedItemColor: Colors.white.withOpacity(.6),
@@ -364,7 +388,7 @@ class _EffektioHomeState extends State<EffektioHome> {
             unselectedFontSize: 0,
             onTap: (value) {
               // Respond to item press.
-              setState(() => _currentIndex = value);
+              setState(() => _tabIndex = value);
             },
             items: [
               BottomNavigationBarItem(
@@ -385,7 +409,8 @@ class _EffektioHomeState extends State<EffektioHome> {
               ),
             ],
           ),
-        ));
+        ),
+    );
 
     // theme: ThemeData(
     //   primaryColor: _primaryColor,
@@ -446,64 +471,66 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Material(
-        child: Center(
-            child: Form(
-                key: _formKey,
-                child: Wrap(
-                  children: [
-                    TextFormField(
-                        controller: usernameController,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: '@user:server.ltd',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter some text';
-                          }
-                          if (!value[0].startsWith("@")) {
-                            return "Matrix accounts must start with @";
-                          }
-                          return null;
-                        }),
-                    TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Password',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Password can't empty";
-                          }
-                          return null;
-                        }),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Validate returns true if the form is valid, or false otherwise.
-                        if (_formKey.currentState!.validate()) {
-                          login(usernameController.text,
-                                  passwordController.text)
-                              .then((a) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  backgroundColor: Colors.greenAccent,
-                                  content: Text('Login successful')),
-                            );
-                            Navigator.pop(context);
-                          }).catchError((e) {
-                            print(e);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              backgroundColor: Colors.redAccent,
-                              content: Text("Login failed: $e"),
-                            ));
-                          });
-                        }
-                      },
-                      child: const Text('Login'),
-                    ),
-                  ],
-                ))));
+      child: Center(
+        child: Form(
+          key: _formKey,
+          child: Wrap(
+            children: [
+              TextFormField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '@user:server.ltd',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text';
+                    }
+                    if (!value[0].startsWith("@")) {
+                      return "Matrix accounts must start with @";
+                    }
+                    return null;
+                  }),
+              TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Password',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Password can't empty";
+                    }
+                    return null;
+                  }),
+              ElevatedButton(
+                onPressed: () {
+                  // Validate returns true if the form is valid, or false otherwise.
+                  if (_formKey.currentState!.validate()) {
+                    login(usernameController.text, passwordController.text)
+                        .then((a) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            backgroundColor: Colors.greenAccent,
+                            content: Text('Login successful')),
+                      );
+                      Navigator.pop(context);
+                    }).catchError((e) {
+                      print(e);
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        backgroundColor: Colors.redAccent,
+                        content: Text("Login failed: $e"),
+                      ));
+                    });
+                  }
+                },
+                child: const Text('Login'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
