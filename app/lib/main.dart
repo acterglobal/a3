@@ -35,9 +35,9 @@ Future<Client> login(String username, String password) async {
 }
 
 class AccountHeader extends StatefulWidget {
-  Client _client;
+  final Client _client;
 
-  AccountHeader(this._client);
+  const AccountHeader(this._client, {Key? key}) : super(key: key);
 
   @override
   _AccountHeaderState createState() => _AccountHeaderState(
@@ -66,7 +66,7 @@ class _AccountHeaderState extends State<AccountHeader> {
               if (snapshot.hasData) {
                 return Text(snapshot.data ?? "no name");
               } else {
-                return Text("loading...");
+                return const Text("loading...");
               }
             }),
         accountEmail: FutureBuilder<String>(
@@ -75,7 +75,7 @@ class _AccountHeaderState extends State<AccountHeader> {
               if (snapshot.hasData) {
                 return Text(snapshot.data ?? "no addr");
               } else {
-                return Text("loading...");
+                return const Text("loading...");
               }
             }),
         currentAccountPicture: FutureBuilder<List<int>>(
@@ -104,18 +104,20 @@ class ChatListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
     return ListTile(
-      leading: FutureBuilder<List<int>>(
+      leading: FutureBuilder<Uint8List>(
           future: room.avatar().then((fb) => fb.toUint8List()),
           // a previously-obtained Future<String> or null
           builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
             if (snapshot.hasData) {
               return CircleAvatar(
-                  backgroundImage:
-                      MemoryImage(Uint8List.fromList(snapshot.requireData)));
+                backgroundImage:
+                    MemoryImage(Uint8List.fromList(snapshot.requireData)),
+              );
             } else {
               return CircleAvatar(
-                  backgroundColor: Colors.brown.shade800,
-                  child: const Text('H'));
+                backgroundColor: Colors.brown.shade800,
+                child: const Text('H'),
+              );
             }
           }),
       title: FutureBuilder<String>(
@@ -124,7 +126,7 @@ class ChatListItem extends StatelessWidget {
             if (snapshot.hasData) {
               return Text(snapshot.requireData);
             } else {
-              return Text("loading name");
+              return const Text("loading name");
             }
           }),
       trailing: FutureBuilder<FfiListRoomMember>(
@@ -133,7 +135,7 @@ class ChatListItem extends StatelessWidget {
             if (snapshot.hasData) {
               return Text(snapshot.requireData.length.toString());
             } else {
-              return SizedBox();
+              return const SizedBox();
             }
           }),
     );
@@ -152,7 +154,7 @@ class ChatOverview extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<List<Room>> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.requireData.isEmpty)
-              return Center(child: Text("No Conversations yet"));
+              return const Center(child: Text("No Conversations yet"));
             return ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: snapshot.requireData.length,
@@ -160,7 +162,7 @@ class ChatOverview extends StatelessWidget {
                   return ChatListItem(room: snapshot.requireData[index]);
                 });
           } else {
-            return Center(child: Text("loading"));
+            return const Center(child: Text("loading"));
           }
         });
   }
@@ -188,228 +190,230 @@ class _EffektioHomeState extends State<EffektioHome> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      Center(
+      const Center(
           child: Text(
         'Index 0: News',
         style: optionStyle,
       )),
-      Center(
+      const Center(
           child: Text(
         'Index 1: FAQ',
         style: optionStyle,
       )),
-      Center(
+      const Center(
           child: Text(
         'Index 4: Community',
         style: optionStyle,
       )),
       FutureBuilder<Client>(
-          future: _client, // a previously-obtained Future<String> or null
-          builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.requireData.hasFirstSynced()) {
-                return ChatOverview(
-                    rooms: snapshot.requireData.conversations().toList(),);
-              } else {
-                return Center(
-                    child: Text(
-                  'loading conversations',
-                  style: optionStyle,
-                ));
-              }
+        future: _client, // a previously-obtained Future<String> or null
+        builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
+          if (snapshot.hasData) {
+            if (snapshot.requireData.hasFirstSynced()) {
+              return ChatOverview(
+                rooms: snapshot.requireData.conversations().toList(),
+              );
             } else {
-              return Center(
+              return const Center(
                   child: Text(
-                'Index 3: Chat: waiting',
+                'loading conversations',
                 style: optionStyle,
               ));
             }
-          },
+          } else {
+            return const Center(
+                child: Text(
+              'Index 3: Chat: waiting',
+              style: optionStyle,
+            ));
+          }
+        },
       ),
     ];
 
     return DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-              primary: false,
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.blue,
-              centerTitle: true,
-              title: DropdownButton<String>(
-                value: dropdownValue,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownValue = newValue!;
-                  });
-                },
-                items: <String>[
-                  'All',
-                  'Greenpeace',
-                  '104er',
-                  'Badminton 1905 e.V.'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              elevation: 0.0,
-              shadowColor: Colors.transparent,
-              actions: [
-                Icon(Icons.login_outlined),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(Icons.settings),
-                ),
-              ]),
-          body: _widgetOptions.elementAt(_tabIndex),
-          drawer: Drawer(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: <Widget>[
-                      FutureBuilder<Client>(
-                          future: _client,
-                          // a previously-obtained Future<String> or null
-                          builder: (BuildContext context,
-                              AsyncSnapshot<Client> snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.requireData.isGuest()) {
-                                return DrawerHeader(
-                                    decoration: BoxDecoration(
-                                      color: Colors.purple,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          'Effektio',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 24,
-                                          ),
-                                        ),
-                                        Text(
-                                          'Guest',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                        OutlinedButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, "/login");
-                                          },
-                                          child: const Text('Log In'),
-                                        )
-                                      ],
-                                    ));
-                              } else {
-                                return AccountHeader(snapshot.requireData);
-                              }
-                            } else {
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          primary: false,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.blue,
+          centerTitle: true,
+          title: DropdownButton<String>(
+            value: dropdownValue,
+            onChanged: (String? newValue) {
+              setState(() {
+                dropdownValue = newValue!;
+              });
+            },
+            items: <String>['All', 'Greenpeace', '104er', 'Badminton 1905 e.V.']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+          elevation: 0.0,
+          shadowColor: Colors.transparent,
+          actions: const [
+            Icon(Icons.login_outlined),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              child: Icon(Icons.settings),
+            ),
+          ],
+        ),
+        body: _widgetOptions.elementAt(_tabIndex),
+        drawer: Drawer(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: <Widget>[
+                    FutureBuilder<Client>(
+                        future: _client,
+                        // a previously-obtained Future<String> or null
+                        builder: (BuildContext context,
+                            AsyncSnapshot<Client> snapshot) {
+                          if (snapshot.hasData) {
+                            if (snapshot.requireData.isGuest()) {
                               return DrawerHeader(
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                ),
-                                child: Text(
-                                  'Effektio',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.purple,
                                   ),
-                                ),
-                              );
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        'Effektio',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Guest',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                      OutlinedButton(
+                                        onPressed: () {
+                                          Navigator.pushNamed(
+                                              context, "/login");
+                                        },
+                                        child: const Text('Log In'),
+                                      )
+                                    ],
+                                  ));
+                            } else {
+                              return AccountHeader(snapshot.requireData);
                             }
-                          }),
-                      ListTile(
-                        leading: Icon(Icons.task_alt_outlined),
-                        title: Text('Tasks'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.calendar_today_outlined),
-                        title: Text('Events'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.photo_library_outlined),
-                        title: Text('Images'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.video_collection_outlined),
-                        title: Text('Videos'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.folder_outlined),
-                        title: Text('Documents'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.real_estate_agent_outlined),
-                        title: Text('Resources'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.payments_outlined),
-                        title: Text('Budget'),
-                      ),
-                    ],
-                  ),
+                          } else {
+                            return const DrawerHeader(
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                              ),
+                              child: Text(
+                                'Effektio',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                ),
+                              ),
+                            );
+                          }
+                        }),
+                    const ListTile(
+                      leading: Icon(Icons.task_alt_outlined),
+                      title: Text('Tasks'),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.calendar_today_outlined),
+                      title: Text('Events'),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.photo_library_outlined),
+                      title: Text('Images'),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.video_collection_outlined),
+                      title: Text('Videos'),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.folder_outlined),
+                      title: Text('Documents'),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.real_estate_agent_outlined),
+                      title: Text('Resources'),
+                    ),
+                    const ListTile(
+                      leading: Icon(Icons.payments_outlined),
+                      title: Text('Budget'),
+                    ),
+                  ],
                 ),
-                Container(
-                  child: Align(
-                    alignment: FractionalOffset.bottomCenter,
+              ),
+              Container(
+                child: Align(
+                  alignment: FractionalOffset.bottomCenter,
+                  child: Container(
+                    padding: const EdgeInsets.all(15.0),
                     child: Container(
-                        padding: EdgeInsets.all(15.0),
-                        child: Container(
-                            child: Column(children: [
+                      child: Column(
+                        children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
+                            children: const <Widget>[
                               Icon(Icons.settings),
                             ],
                           ),
-                          Divider(),
-                          Text("Effektio 0.0.1"),
-                        ],),),),
+                          const Divider(),
+                          const Text("Effektio 0.0.1"),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _tabIndex,
-            backgroundColor: Color(0xFF6200EE),
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white.withOpacity(.6),
-            selectedFontSize: 0,
-            unselectedFontSize: 0,
-            onTap: (value) {
-              // Respond to item press.
-              setState(() => _tabIndex = value);
-            },
-            items: [
-              BottomNavigationBarItem(
-                label: 'News',
-                icon: Icon(Icons.dashboard),
-              ),
-              BottomNavigationBarItem(
-                label: 'FAQ',
-                icon: Icon(Icons.help_outline),
-              ),
-              BottomNavigationBarItem(
-                label: 'Community',
-                icon: Icon(Icons.groups),
-              ),
-              BottomNavigationBarItem(
-                label: 'Chat',
-                icon: Icon(Icons.chat),
               ),
             ],
           ),
         ),
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _tabIndex,
+          backgroundColor: const Color(0xFF6200EE),
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white.withOpacity(.6),
+          selectedFontSize: 0,
+          unselectedFontSize: 0,
+          onTap: (value) {
+            // Respond to item press.
+            setState(() => _tabIndex = value);
+          },
+          items: const [
+            BottomNavigationBarItem(
+              label: 'News',
+              icon: Icon(Icons.dashboard),
+            ),
+            BottomNavigationBarItem(
+              label: 'FAQ',
+              icon: Icon(Icons.help_outline),
+            ),
+            BottomNavigationBarItem(
+              label: 'Community',
+              icon: Icon(Icons.groups),
+            ),
+            BottomNavigationBarItem(
+              label: 'Chat',
+              icon: Icon(Icons.chat),
+            ),
+          ],
+        ),
+      ),
     );
 
     // theme: ThemeData(
@@ -443,7 +447,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(child: Center(child: Text("Hello World")));
+    return const Material(child: Center(child: Text("Hello World")));
   }
 }
 
@@ -477,33 +481,35 @@ class _LoginState extends State<Login> {
           child: Wrap(
             children: [
               TextFormField(
-                  controller: usernameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: '@user:server.ltd',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text';
-                    }
-                    if (!value[0].startsWith("@")) {
-                      return "Matrix accounts must start with @";
-                    }
-                    return null;
-                  }),
+                controller: usernameController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: '@user:server.ltd',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                  if (!value[0].startsWith("@")) {
+                    return "Matrix accounts must start with @";
+                  }
+                  return null;
+                },
+              ),
               TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Password can't empty";
-                    }
-                    return null;
-                  }),
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Password',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Password can't empty";
+                  }
+                  return null;
+                },
+              ),
               ElevatedButton(
                 onPressed: () {
                   // Validate returns true if the form is valid, or false otherwise.
@@ -516,13 +522,17 @@ class _LoginState extends State<Login> {
                             content: Text('Login successful')),
                       );
                       Navigator.pop(context);
-                    }).catchError((e) {
-                      print(e);
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        backgroundColor: Colors.redAccent,
-                        content: Text("Login failed: $e"),
-                      ));
-                    });
+                    }).catchError(
+                      (e) {
+                        print(e);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.redAccent,
+                            content: Text("Login failed: $e"),
+                          ),
+                        );
+                      },
+                    );
                   }
                 },
                 child: const Text('Login'),

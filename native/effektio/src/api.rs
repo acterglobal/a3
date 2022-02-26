@@ -83,7 +83,6 @@ impl Room {
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<RoomMember>> {
         let r = self.room.clone();
-
         RUNTIME
             .spawn(async move {
                 Ok(r.active_members_no_sync().await.expect("No members")
