@@ -1,6 +1,6 @@
-use std::{fs, path};
 use matrix_sdk::config::ClientConfig;
 use sanitize_filename_reader_friendly::sanitize;
+use std::{fs, path};
 
 pub fn new_client_config(
     base_path: String,

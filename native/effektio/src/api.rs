@@ -1,3 +1,4 @@
+use crate::platform;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::RestoreToken;
@@ -15,7 +16,6 @@ use parking_lot::RwLock;
 use std::sync::Arc;
 use tokio::runtime;
 use url::Url;
-use crate::platform;
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
@@ -73,7 +73,9 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(r.active_members().await.expect("No members")
+                Ok(r.active_members()
+                    .await
+                    .expect("No members")
                     .into_iter()
                     .map(|member| RoomMember { member })
                     .collect())
@@ -85,7 +87,9 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(r.active_members_no_sync().await.expect("No members")
+                Ok(r.active_members_no_sync()
+                    .await
+                    .expect("No members")
                     .into_iter()
                     .map(|member| RoomMember { member })
                     .collect())
@@ -233,7 +237,7 @@ impl Client {
                         },
                         true,
                     )
-                        .await?,
+                    .await?,
                 ))
             })
             .await?

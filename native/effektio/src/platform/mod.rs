@@ -1,4 +1,3 @@
-
 #[cfg(target_os = "android")]
 mod android;
 
@@ -16,4 +15,3 @@ mod test_platform;
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 pub use test_platform::*;
-
