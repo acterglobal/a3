@@ -51,10 +51,12 @@ class _Box {
   bool _dropped;
   bool _moved;
   ffi.Pointer<ffi.Void> _finalizer = ffi.Pointer.fromAddress(0);
+  final Object? _context;
 
-  _Box(this._api, this._ptr, this._dropSymbol)
+  _Box(this._api, this._ptr, this._dropSymbol, {Object? context})
       : _dropped = false,
-        _moved = false;
+        _moved = false,
+        _context = context;
 
   late final _dropPtr = _api._lookup<
       ffi.NativeFunction<
@@ -653,52 +655,6 @@ class Api {
     tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
     final tmp9 = _nativeFuture(tmp10_1, this.__guestClientFuturePoll);
     return tmp9;
-  }
-
-  String echo(
-    String inp,
-  ) {
-    final tmp0 = inp;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    final tmp4 = _echo(
-      tmp1,
-      tmp2,
-      tmp3,
-    );
-    final tmp6 = tmp4.arg0;
-    final tmp7 = tmp4.arg1;
-    final tmp8 = tmp4.arg2;
-    final tmp9 = tmp4.arg3;
-    final tmp10 = tmp4.arg4;
-    final tmp11 = tmp4.arg5;
-    final tmp12 = tmp4.arg6;
-    if (tmp6 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-      final tmp6_0 = utf8.decode(tmp7_0.asTypedList(tmp8));
-      if (tmp8 > 0) {
-        final ffi.Pointer<ffi.Void> tmp7_0;
-        tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-        this.__deallocate(tmp7_0, tmp9, 1);
-      }
-      throw tmp6_0;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-    final tmp5 = utf8.decode(tmp10_0.asTypedList(tmp11));
-    if (tmp12 > 0) {
-      final ffi.Pointer<ffi.Void> tmp10_0;
-      tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      this.__deallocate(tmp10_0, tmp12 * 1, 1);
-    }
-    return tmp5;
   }
 
   late final _allocatePtr = _lookup<
@@ -1316,20 +1272,6 @@ class Api {
     int,
     int,
   )>();
-  late final _echoPtr = _lookup<
-      ffi.NativeFunction<
-          _EchoReturn Function(
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__echo");
-
-  late final _echo = _echoPtr.asFunction<
-      _EchoReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _roomDisplayNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -1846,23 +1788,6 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _EchoReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-  @ffi.Uint64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-}
-
 class _LoginNewClientFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -2054,11 +1979,16 @@ class FfiListRoom extends Iterable<Room> implements CustomIterable<Room> {
     return _api._ffiListRoomLen(_box.borrow());
   }
 
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
   Room elementAt(int index) {
     final address = _api._ffiListRoomElementAt(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Leak");
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
     return Room._(_api, reference);
   }
 
