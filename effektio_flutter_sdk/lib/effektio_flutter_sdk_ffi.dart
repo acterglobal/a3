@@ -2104,42 +2104,6 @@ class _ClientAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class FfiListRoom extends Iterable<Room> implements CustomIterable<Room> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListRoom._(this._api, this._box);
-
-  @override
-  Iterator<Room> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListRoomLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  Room elementAt(int index) {
-    final address = _api._ffiListRoomElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return Room._(_api, reference);
-  }
-
-  Room operator [](int index) {
-    return elementAt(index);
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
 class FfiListRoomMember extends Iterable<RoomMember>
     implements CustomIterable<RoomMember> {
   final Api _api;
@@ -2169,6 +2133,42 @@ class FfiListRoomMember extends Iterable<RoomMember>
   }
 
   RoomMember operator [](int index) {
+    return elementAt(index);
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListRoom extends Iterable<Room> implements CustomIterable<Room> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListRoom._(this._api, this._box);
+
+  @override
+  Iterator<Room> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListRoomLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Room elementAt(int index) {
+    final address = _api._ffiListRoomElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Room._(_api, reference);
+  }
+
+  Room operator [](int index) {
     return elementAt(index);
   }
 

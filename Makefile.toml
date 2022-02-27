@@ -346,10 +346,10 @@ run_task = "setup-crate-type"
 
 [tasks.setup-crate-type]
 private = true
-command = "sed"
+command = "perl"
 args = [
     '-i',
-    '',
-    's/crate-type = \["\w\+"\]/crate-type = ["${CRATE_TYPE}"]/',
+    '-pe',
+    's/crate-type = \["\w+"\]/crate-type = ["${CRATE_TYPE}"]/',
     '${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml'
 ]
