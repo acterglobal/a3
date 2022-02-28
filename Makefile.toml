@@ -84,7 +84,6 @@ description = "development android x86_64 emulator"
 category = "Build"
 dependencies = [
   "ffigen",
-  "setup-crate-type-android",
   "pre-android",
   "android-x86_64",
   "android-x86_64-release",
@@ -96,7 +95,6 @@ dependencies = [
 description = "build android ARM64 for actual device"
 category = "Build"
 dependencies = [
-  "setup-crate-type-android",
   "pre-android",
   "android-aarch64",
   "android-aarch64-release",
@@ -126,9 +124,6 @@ description = "Build ios targets."
 category = "Build"
 command = "cargo"
 args = ["lipo"]
-dependencies = [
-    "setup-crate-type-ios",
-]
 
 [tasks.ios-release]
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }
@@ -136,9 +131,6 @@ description = "Build ios targets."
 category = "Build"
 command = "cargo"
 args = ["lipo", "--release"]
-dependencies = [
-    "setup-crate-type-ios",
-]
 
 [tasks.post-ios]
 script_runner = "@duckscript"
@@ -153,13 +145,11 @@ script = [
     ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/binding.h
     """,
 ]
-dependencies = ["restore-crate-type"]
 
 [tasks.android]
 description = "Build android targets."
 category = "Build"
 dependencies = [
-    "setup-crate-type-android",
     "pre-android",
     "android-aarch64",
     "android-aarch64-release",
@@ -293,7 +283,7 @@ env = { ANDROID_TARGET = "x86_64-linux-android", JNI_LIB_DIR = "x86_64" }
 run_task = "copy-lib"
 
 [tasks.post-android]
-dependencies = ["ffigen", "restore-crate-type"]
+dependencies = ["ffigen"]
 
 # TODO: non linux desktops
 # TODO: release build
@@ -301,10 +291,8 @@ dependencies = ["ffigen", "restore-crate-type"]
 description = "Build rust SDK for desktop"
 dependencies = [
     "ffigen",
-    "setup-crate-type-desktop",
     "desktop-build",
     "copy-desktop-lib",
-    "restore-crate-type"
 ]
 
 [tasks.desktop-build]
@@ -322,34 +310,4 @@ command = "cp"
 args = [
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so",
     "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so"
-]
-
-[tasks.setup-crate-type-android]
-private = true
-env = { CRATE_TYPE = "cdylib" }
-run_task = "setup-crate-type"
-
-[tasks.setup-crate-type-desktop]
-private = true
-env = { CRATE_TYPE = "cdylib" }
-run_task = "setup-crate-type"
-
-[tasks.setup-crate-type-ios]
-private = true
-env = { CRATE_TYPE = "staticlib" }
-run_task = "setup-crate-type"
-
-[tasks.restore-crate-type]
-private = true
-env = { CRATE_TYPE = "rlib" }
-run_task = "setup-crate-type"
-
-[tasks.setup-crate-type]
-private = true
-command = "perl"
-args = [
-    '-i',
-    '-pe',
-    's/crate-type = \["\w+"\]/crate-type = ["${CRATE_TYPE}"]/',
-    '${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml'
 ]

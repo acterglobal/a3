@@ -56,4 +56,4 @@ tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
-crate-type = ["rlib"]
+crate-type = ["cdylib", "staticlib"]
