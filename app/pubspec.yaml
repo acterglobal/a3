@@ -36,6 +36,7 @@ dependencies:
   path_provider: ^2.0.8
   formz: ^0.4.1
   flutter_chat_ui: ^1.5.5
+  google_fonts: 
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
 
@@ -62,8 +63,31 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/logo.png
+    - assets/images/mainLogo.png
+    - assets/images/feed.png
+    - assets/images/News.png
+    - assets/images/chat.png
+    - assets/images/add.png
+    - assets/images/bell.png
+    - assets/images/hamburger.png
+    - assets/images/search.png
+    - assets/images/task.png
+    - assets/images/share.png
+    - assets/images/polls.png
+    - assets/images/people.png
+    - assets/images/faq.png
+    - assets/images/calendar.png
+    - assets/images/search.png
+    - assets/images/gallery.png
+    - assets/images/document.png
+    - assets/images/logout.png
+    - assets/images/dummy.png
+    - assets/images/dots.png
+    - assets/images/profileBack.png
+    - assets/images/edit.png
+  
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -91,3 +115,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+                                                   

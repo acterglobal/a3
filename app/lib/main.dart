@@ -1,9 +1,24 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:flutter/material.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'Screens/OnboardingScreens/LogIn.dart';
 
 void main() async {
-  runApp(Effektio());
+  WidgetsFlutterBinding.ensureInitialized();
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // final flowStarted = prefs.getBool(KeyConstants.flowStarted) ?? false;
+  // final userLoggedIn = prefs.getBool(KeyConstants.userLoggedIn) ?? false;
+  // ignore: prefer_const_constructors
+  runApp(MaterialApp(
+  //  builder: EasyLoading.init(),
+    debugShowCheckedModeBanner: false,
+    // ignore: prefer_const_constructors
+    home: LoginScreen()
+  ));
 }
 
 class Effektio extends StatelessWidget {
