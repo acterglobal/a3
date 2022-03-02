@@ -3,9 +3,10 @@ name = "effektio"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.58"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
+description = "Core types and features of the effektio app"
+homepage = "https://effekto.org"
+repository = "https://github.com/effektio/effektio"
+license-file = "../../LICENSE.txt"
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
