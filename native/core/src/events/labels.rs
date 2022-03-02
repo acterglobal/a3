@@ -1,7 +1,7 @@
 use serde; // 1.0.136
 
 use serde::de::{Deserialize, Deserializer, SeqAccess, Visitor};
-use serde::ser::{Serialize, SerializeSeq, SerializeStruct, Serializer};
+use serde::ser::{Serialize, SerializeSeq, Serializer};
 
 #[derive(Debug, PartialEq, Default)]
 pub struct Labels {
@@ -56,7 +56,7 @@ impl<'de> Visitor<'de> for LabelsVisitor {
     {
         let mut me = Labels::default();
         while let Some(key) = seq.next_element::<String>()? {
-            if let Some((prefix, res)) = key.split_once(":") {
+            if let Some((prefix, res)) = key.split_once(':') {
                 match prefix {
                     // first has priority
                     "m.type" if me.msgtype.is_none() => me.msgtype = Some(res.to_string()),
