@@ -13,7 +13,6 @@ ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
@@ -58,4 +57,4 @@ tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
-crate-type = ["rlib"]
+crate-type = ["cdylib", "staticlib"]

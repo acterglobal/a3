@@ -33,12 +33,15 @@ dependencies = [
 ]
 
 [tasks.ffigen]
+script_runner = "@duckscript"
 script = [
     """
-    cargo check
     cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/effektio/bindings.dart \
     ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/lib/effektio_flutter_sdk_ffi.dart
     """,
+]
+dependencies = [
+  "check-ffi"
 ]
 
 [tasks.init]
@@ -49,6 +52,7 @@ dependencies = [
 
 [tasks.flutter-get]
 description = "update flutter dependencies"
+script_runner = "@duckscript"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
     "flutter pub get",
@@ -68,6 +72,10 @@ install_crate = "rustfmt"
 command = "cargo"
 args = ["fmt", "--", "--emit=files"]
 
+[tasks.check-ffi]
+command = "cargo"
+args = ["check", "-p", "effektio"]
+
 [tasks.test-flow]
 disabled = true
 
@@ -76,7 +84,6 @@ description = "development android x86_64 emulator"
 category = "Build"
 dependencies = [
   "ffigen",
-  "setup-crate-type-android",
   "pre-android",
   "android-x86_64",
   "android-x86_64-release",
@@ -88,7 +95,6 @@ dependencies = [
 description = "build android ARM64 for actual device"
 category = "Build"
 dependencies = [
-  "setup-crate-type-android",
   "pre-android",
   "android-aarch64",
   "android-aarch64-release",
@@ -118,9 +124,6 @@ description = "Build ios targets."
 category = "Build"
 command = "cargo"
 args = ["lipo"]
-dependencies = [
-    "setup-crate-type-ios",
-]
 
 [tasks.ios-release]
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }
@@ -128,9 +131,6 @@ description = "Build ios targets."
 category = "Build"
 command = "cargo"
 args = ["lipo", "--release"]
-dependencies = [
-    "setup-crate-type-ios",
-]
 
 [tasks.post-ios]
 script_runner = "@duckscript"
@@ -145,13 +145,11 @@ script = [
     ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/binding.h
     """,
 ]
-dependencies = ["restore-crate-type"]
 
 [tasks.android]
 description = "Build android targets."
 category = "Build"
 dependencies = [
-    "setup-crate-type-android",
     "pre-android",
     "android-aarch64",
     "android-aarch64-release",
@@ -285,60 +283,4 @@ env = { ANDROID_TARGET = "x86_64-linux-android", JNI_LIB_DIR = "x86_64" }
 run_task = "copy-lib"
 
 [tasks.post-android]
-dependencies = ["ffigen", "restore-crate-type"]
-
-[tasks.setup-crate-type-android]
-private = true
-env = { TARGET_OS = "android" }
-run_task = "setup-crate-type"
-
-[tasks.setup-crate-type-ios]
-private = true
-env = { TARGET_OS = "ios" }
-run_task = "setup-crate-type"
-
-[tasks.setup-crate-type]
-private = true
-script_runner = "@duckscript"
-script = [
-    """
-    toml = readfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml
-    crate_type = set ""
-    os = get_env TARGET_OS
-    is_android = eq ${os} "android"
-    is_ios = eq ${os} "ios"
-    if ${is_android}
-      crate_type = set "cdylib"
-    elseif ${is_ios}
-      crate_type = set "staticlib"
-    else
-      crate_type = set "rlib"
-    end
-    val = replace ${toml} "rlib" ${crate_type}
-    result = writefile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml ${val}
-    assert ${result}
-    """,
-]
-
-[tasks.restore-crate-type]
-private = true
-script_runner = "@duckscript"
-script = [
-    """
-    toml = readfile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml
-    crate_type = set ""
-    os = get_env TARGET_OS
-    is_android = eq ${os} "android"
-    is_ios = eq ${os} "ios"
-    if ${is_android}
-      crate_type = set "cdylib"
-    elseif ${is_ios}
-      crate_type = set "staticlib"
-    else
-      crate_type = set "rlib"
-    end
-    val = replace ${toml} ${crate_type} "rlib"
-    result = writefile ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/Cargo.toml ${val}
-    assert ${result}
-    """,
-]
+dependencies = ["ffigen"]
