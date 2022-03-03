@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     // We also handle the message potentially returning null.
     try {
       platformVersion =
-          await EffektioFlutterSdk.platformVersion ?? 'Unknown platform version';
+          await 'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
