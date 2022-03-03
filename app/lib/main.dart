@@ -1,16 +1,28 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'l10n/l10n.dart';
 
 void main() async {
   runApp(Effektio());
 }
 
 class Effektio extends StatelessWidget {
+  const Effektio({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Effektio',
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: ApplicationLocalizations.supportedLocales,
       // MaterialApp contains our top-level Navigator
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
@@ -34,16 +46,19 @@ Future<Client> login(String username, String password) async {
 }
 
 class AccountHeader extends StatefulWidget {
-  Client _client;
+  final Client _client;
   AccountHeader(this._client);
 
   @override
   _AccountHeaderState createState() => _AccountHeaderState(
-      _client, _client.displayName(), _client.userId(), _client.avatar().then((fb) => fb.toUint8List()));
+      _client,
+      _client.displayName(),
+      _client.userId(),
+      _client.avatar().then((fb) => fb.toUint8List()));
 }
 
 class _AccountHeaderState extends State<AccountHeader> {
-  String dropdownValue = 'All';
+  // String dropdownValue = AppLocalizations.of(context).all;
   int _currentIndex = 0;
   final Client _client;
   final Future<String> name;
@@ -59,18 +74,20 @@ class _AccountHeaderState extends State<AccountHeader> {
             future: name, // a previously-obtained Future<String> or null
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data ?? "no name");
+                return Text(
+                    snapshot.data ?? AppLocalizations.of(context)!.noName);
               } else {
-                return Text("loading...");
+                return Text(AppLocalizations.of(context)!.loading + "...");
               }
             }),
         accountEmail: FutureBuilder<String>(
             future: username, // a previously-obtained Future<String> or null
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data ?? "no addr");
+                return Text(
+                    snapshot.data ?? AppLocalizations.of(context)!.noAddr);
               } else {
-                return Text("loading...");
+                return Text(AppLocalizations.of(context)!.loading + "...");
               }
             }),
         currentAccountPicture: FutureBuilder<List<int>>(
@@ -99,7 +116,8 @@ class ChatListItem extends StatelessWidget {
     // ToDo: UnreadCounter
     return ListTile(
       leading: FutureBuilder<List<int>>(
-          future: room.avatar().then((fb) => fb.toUint8List()), // a previously-obtained Future<String> or null
+          future: room.avatar().then((fb) =>
+              fb.toUint8List()), // a previously-obtained Future<String> or null
           builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
             if (snapshot.hasData) {
               return CircleAvatar(
@@ -117,7 +135,7 @@ class ChatListItem extends StatelessWidget {
             if (snapshot.hasData) {
               return Text(snapshot.requireData);
             } else {
-              return Text("loading name");
+              return Text(AppLocalizations.of(context)!.loadingName);
             }
           }),
     );
@@ -135,7 +153,8 @@ class ChatOverview extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<List<Room>> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.requireData.isEmpty)
-              return Center(child: Text("No Conversations yet"));
+              return Center(
+                  child: Text(AppLocalizations.of(context)!.noMessages));
             return ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: snapshot.requireData.length,
@@ -143,7 +162,7 @@ class ChatOverview extends StatelessWidget {
                   return ChatListItem(room: snapshot.requireData[index]);
                 });
           } else {
-            return Center(child: Text("loading"));
+            return Center(child: Text(AppLocalizations.of(context)!.loading));
           }
         });
   }
@@ -167,17 +186,17 @@ class _EffektioHomeState extends State<EffektioHome> {
     List<Widget> _widgetOptions = <Widget>[
       Center(
           child: Text(
-        'Index 0: News',
+        AppLocalizations.of(context)!.index1,
         style: optionStyle,
       )),
       Center(
           child: Text(
-        'Index 1: FAQ',
+        AppLocalizations.of(context)!.index2,
         style: optionStyle,
       )),
       Center(
           child: Text(
-        'Index 4: Community',
+        AppLocalizations.of(context)!.index4,
         style: optionStyle,
       )),
       FutureBuilder<Client>(
@@ -190,14 +209,14 @@ class _EffektioHomeState extends State<EffektioHome> {
               } else {
                 return Center(
                     child: Text(
-                  'loading conversations',
+                  AppLocalizations.of(context)!.loadingConvo,
                   style: optionStyle,
                 ));
               }
             } else {
               return Center(
                   child: Text(
-                'Index 3: Chat: waiting',
+                AppLocalizations.of(context)!.index3,
                 style: optionStyle,
               ));
             }
@@ -206,184 +225,188 @@ class _EffektioHomeState extends State<EffektioHome> {
 
     return DefaultTabController(
         length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-              primary: false,
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.blue,
-              centerTitle: true,
-              title: DropdownButton<String>(
-                value: dropdownValue,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dropdownValue = newValue!;
-                  });
-                },
-                items: <String>[
-                  'All',
-                  'Greenpeace',
-                  '104er',
-                  'Badminton 1905 e.V.'
-                ].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              elevation: 0.0,
-              shadowColor: Colors.transparent,
-              actions: [
-                Icon(Icons.login_outlined),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(Icons.settings),
+        child: SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+                primary: false,
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.blue,
+                centerTitle: true,
+                title: DropdownButton<String>(
+                  value: dropdownValue,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue!;
+                    });
+                  },
+                  items: <String>[
+                    'All',
+                    'Greenpeace',
+                    '104er',
+                    'Badminton 1905 e.V.'
+                  ].map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
                 ),
-              ]),
-          body: _widgetOptions.elementAt(_currentIndex),
-          drawer: Drawer(
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: <Widget>[
-                      FutureBuilder<Client>(
-                          future:
-                              _client, // a previously-obtained Future<String> or null
-                          builder: (BuildContext context,
-                              AsyncSnapshot<Client> snapshot) {
-                            if (snapshot.hasData) {
-                              if (snapshot.requireData.isGuest()) {
-                                return DrawerHeader(
-                                    decoration: BoxDecoration(
-                                      color: Colors.purple,
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          'Effektio',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 24,
+                elevation: 0.0,
+                shadowColor: Colors.transparent,
+                actions: [
+                  Icon(Icons.login_outlined),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Icon(Icons.settings),
+                  ),
+                ]),
+            body: _widgetOptions.elementAt(_currentIndex),
+            drawer: Drawer(
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: <Widget>[
+                        FutureBuilder<Client>(
+                            future:
+                                _client, // a previously-obtained Future<String> or null
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Client> snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.requireData.isGuest()) {
+                                  return DrawerHeader(
+                                      decoration: BoxDecoration(
+                                        color: Colors.purple,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Effektio',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          'Guest',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
+                                          Text(
+                                            AppLocalizations.of(context)!.guest,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                            ),
                                           ),
-                                        ),
-                                        OutlinedButton(
-                                          onPressed: () {
-                                            Navigator.pushNamed(
-                                                context, "/login");
-                                          },
-                                          child: const Text('Log In'),
-                                        )
-                                      ],
-                                    ));
+                                          OutlinedButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                  context, "/login");
+                                            },
+                                            child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .login),
+                                          )
+                                        ],
+                                      ));
+                                } else {
+                                  return AccountHeader(snapshot.requireData);
+                                }
                               } else {
-                                return AccountHeader(snapshot.requireData);
-                              }
-                            } else {
-                              return DrawerHeader(
-                                decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                ),
-                                child: Text(
-                                  'Effektio',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 24,
+                                return DrawerHeader(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
                                   ),
-                                ),
-                              );
-                            }
-                          }),
-                      ListTile(
-                        leading: Icon(Icons.task_alt_outlined),
-                        title: Text('Tasks'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.calendar_today_outlined),
-                        title: Text('Events'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.photo_library_outlined),
-                        title: Text('Images'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.video_collection_outlined),
-                        title: Text('Videos'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.folder_outlined),
-                        title: Text('Documents'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.real_estate_agent_outlined),
-                        title: Text('Resources'),
-                      ),
-                      ListTile(
-                        leading: Icon(Icons.payments_outlined),
-                        title: Text('Budget'),
-                      ),
-                    ],
+                                  child: Text(
+                                    'Effektio',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                );
+                              }
+                            }),
+                        ListTile(
+                          leading: Icon(Icons.task_alt_outlined),
+                          title: Text(AppLocalizations.of(context)!.tasks),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.calendar_today_outlined),
+                          title: Text(AppLocalizations.of(context)!.tasks),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.photo_library_outlined),
+                          title: Text(AppLocalizations.of(context)!.images),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.video_collection_outlined),
+                          title: Text(AppLocalizations.of(context)!.videos),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.folder_outlined),
+                          title: Text(AppLocalizations.of(context)!.documents),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.real_estate_agent_outlined),
+                          title: Text(AppLocalizations.of(context)!.resources),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.payments_outlined),
+                          title: Text(AppLocalizations.of(context)!.budget),
+                        ),
+                      ],
+                    ),
                   ),
+                  Container(
+                    child: Align(
+                      alignment: FractionalOffset.bottomCenter,
+                      child: Container(
+                          padding: EdgeInsets.all(15.0),
+                          child: Container(
+                              child: Column(children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Icon(Icons.settings),
+                              ],
+                            ),
+                            Divider(),
+                            Text("Effektio 0.0.1"),
+                          ]))),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _currentIndex,
+              backgroundColor: Color(0xFF6200EE),
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white.withOpacity(.6),
+              selectedFontSize: 0,
+              unselectedFontSize: 0,
+              onTap: (value) {
+                // Respond to item press.
+                setState(() => _currentIndex = value);
+              },
+              items: [
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.news,
+                  icon: Icon(Icons.dashboard),
                 ),
-                Container(
-                  child: Align(
-                    alignment: FractionalOffset.bottomCenter,
-                    child: Container(
-                        padding: EdgeInsets.all(15.0),
-                        child: Container(
-                            child: Column(children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: <Widget>[
-                              Icon(Icons.settings),
-                            ],
-                          ),
-                          Divider(),
-                          Text("Effektio 0.0.1"),
-                        ]))),
-                  ),
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.faq,
+                  icon: Icon(Icons.help_outline),
+                ),
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.community,
+                  icon: Icon(Icons.groups),
+                ),
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.chat,
+                  icon: Icon(Icons.chat),
                 ),
               ],
             ),
-          ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _currentIndex,
-            backgroundColor: Color(0xFF6200EE),
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white.withOpacity(.6),
-            selectedFontSize: 0,
-            unselectedFontSize: 0,
-            onTap: (value) {
-              // Respond to item press.
-              setState(() => _currentIndex = value);
-            },
-            items: [
-              BottomNavigationBarItem(
-                label: 'News',
-                icon: Icon(Icons.dashboard),
-              ),
-              BottomNavigationBarItem(
-                label: 'FAQ',
-                icon: Icon(Icons.help_outline),
-              ),
-              BottomNavigationBarItem(
-                label: 'Community',
-                icon: Icon(Icons.groups),
-              ),
-              BottomNavigationBarItem(
-                label: 'Chat',
-                icon: Icon(Icons.chat),
-              ),
-            ],
           ),
         ));
 
@@ -418,7 +441,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(child: Center(child: Text("Hello World")));
+    return Material(
+        child: Center(child: Text(AppLocalizations.of(context)!.helloWorld)));
   }
 }
 
@@ -459,10 +483,10 @@ class _LoginState extends State<Login> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter some text';
+                            return AppLocalizations.of(context)!.validator;
                           }
                           if (!value[0].startsWith("@")) {
-                            return "Matrix accounts must start with @";
+                            return AppLocalizations.of(context)!.matrixValidate;
                           }
                           return null;
                         }),
@@ -471,11 +495,12 @@ class _LoginState extends State<Login> {
                         obscureText: true,
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
-                          labelText: 'Password',
+                          labelText: AppLocalizations.of(context)!.password,
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Password can't empty";
+                            return AppLocalizations.of(context)!
+                                .passwordValidate;
                           }
                           return null;
                         }),
@@ -487,21 +512,24 @@ class _LoginState extends State<Login> {
                                   passwordController.text)
                               .then((a) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
+                              SnackBar(
                                   backgroundColor: Colors.greenAccent,
-                                  content: Text('Login successful')),
+                                  content: Text(AppLocalizations.of(context)!
+                                      .loginSuccess)),
                             );
                             Navigator.pop(context);
                           }).catchError((e) {
                             print(e);
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               backgroundColor: Colors.redAccent,
-                              content: Text("Login failed: $e"),
+                              content: Text(
+                                  AppLocalizations.of(context)!.loginFailed +
+                                      ": $e"),
                             ));
                           });
                         }
                       },
-                      child: const Text('Login'),
+                      child: Text(AppLocalizations.of(context)!.login),
                     ),
                   ],
                 ))));
