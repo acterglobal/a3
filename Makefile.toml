@@ -300,11 +300,7 @@ description = "Build for desktop"
 script_runner = "@duckscript"
 script = [
     """
-    if is_macos
-        exec cargo build --target x86_64-apple-darwin
-    else
-        exec cargo build
-    end
+    exec cargo build
     """
 ]
 
@@ -313,9 +309,7 @@ description = "Copy desktop library to plugin"
 script_runner = "@duckscript"
 script = [
     """
-    if is_macos
-        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/debug/libeffektio.dylib ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macos/libeffektio.dylib
-    else if is_linux
+    if is_linux
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so
     else if is_windows
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/effektio.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/effektio.dll
