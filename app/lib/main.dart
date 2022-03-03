@@ -1,12 +1,26 @@
 import 'dart:typed_data';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'l10n/l10n.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'Screens/OnboardingScreens/LogIn.dart';
 
 void main() async {
-  runApp(Effektio());
+  WidgetsFlutterBinding.ensureInitialized();
+  // SharedPreferences prefs = await SharedPreferences.getInstance();
+  // final flowStarted = prefs.getBool(KeyConstants.flowStarted) ?? false;
+  // final userLoggedIn = prefs.getBool(KeyConstants.userLoggedIn) ?? false;
+  // ignore: prefer_const_constructors
+  runApp(MaterialApp(
+      //  builder: EasyLoading.init(),
+      debugShowCheckedModeBanner: false,
+      // ignore: prefer_const_constructors
+      home: LoginScreen()));
 }
 
 class Effektio extends StatelessWidget {
@@ -46,7 +60,8 @@ Future<Client> login(String username, String password) async {
 }
 
 class AccountHeader extends StatefulWidget {
-  final Client _client;
+  Client _client;
+
   AccountHeader(this._client);
 
   @override
@@ -109,6 +124,7 @@ class _AccountHeaderState extends State<AccountHeader> {
 
 class ChatListItem extends StatelessWidget {
   final Room room;
+
   const ChatListItem({Key? key, required this.room}) : super(key: key);
 
   @override
@@ -143,28 +159,19 @@ class ChatListItem extends StatelessWidget {
 }
 
 class ChatOverview extends StatelessWidget {
-  final Future<List<Room>> rooms;
+  final FfiListRoom rooms;
+
   const ChatOverview({Key? key, required this.rooms}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Room>>(
-        future: rooms, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<List<Room>> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.requireData.isEmpty)
-              return Center(
-                  child: Text(AppLocalizations.of(context)!.noMessages));
-            return ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: snapshot.requireData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ChatListItem(room: snapshot.requireData[index]);
-                });
-          } else {
-            return Center(child: Text(AppLocalizations.of(context)!.loading));
-          }
-        });
+    return ListView.builder(
+      padding: const EdgeInsets.all(8),
+      itemCount: rooms.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ChatListItem(room: rooms[index]);
+      },
+    );
   }
 }
 
@@ -177,7 +184,9 @@ class _EffektioHomeState extends State<EffektioHome> {
   String dropdownValue = 'All';
   int _currentIndex = 0;
   final Future<Client> _client;
+
   _EffektioHomeState(this._client);
+
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
@@ -205,7 +214,7 @@ class _EffektioHomeState extends State<EffektioHome> {
             if (snapshot.hasData) {
               if (snapshot.requireData.hasFirstSynced()) {
                 return ChatOverview(
-                    rooms: snapshot.requireData.conversations().toList());
+                    rooms: snapshot.requireData.conversations());
               } else {
                 return Center(
                     child: Text(
@@ -228,38 +237,30 @@ class _EffektioHomeState extends State<EffektioHome> {
         child: SafeArea(
           child: Scaffold(
             appBar: AppBar(
-                primary: false,
-                backgroundColor: Colors.transparent,
-                foregroundColor: Colors.blue,
-                centerTitle: true,
-                title: DropdownButton<String>(
-                  value: dropdownValue,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  items: <String>[
-                    'All',
-                    'Greenpeace',
-                    '104er',
-                    'Badminton 1905 e.V.'
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-                elevation: 0.0,
-                shadowColor: Colors.transparent,
-                actions: [
-                  Icon(Icons.login_outlined),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Icon(Icons.settings),
-                  ),
-                ]),
+              primary: false,
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.blue,
+              centerTitle: true,
+              title: DropdownButton<String>(
+                value: dropdownValue,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                items: <String>[
+                  'All',
+                  'Greenpeace',
+                  '104er',
+                  'Badminton 1905 e.V.'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
             body: _widgetOptions.elementAt(_currentIndex),
             drawer: Drawer(
               child: Column(
@@ -269,8 +270,8 @@ class _EffektioHomeState extends State<EffektioHome> {
                       padding: EdgeInsets.zero,
                       children: <Widget>[
                         FutureBuilder<Client>(
-                            future:
-                                _client, // a previously-obtained Future<String> or null
+                            future: _client,
+                            // a previously-obtained Future<String> or null
                             builder: (BuildContext context,
                                 AsyncSnapshot<Client> snapshot) {
                               if (snapshot.hasData) {
@@ -290,7 +291,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                                           ),
                                           Text(
                                             AppLocalizations.of(context)!.guest,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 18,
                                             ),
@@ -303,7 +304,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                                             child: Text(
                                                 AppLocalizations.of(context)!
                                                     .login),
-                                          )
+                                          ),
                                         ],
                                       ));
                                 } else {

@@ -3,16 +3,16 @@ name = "effektio"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.58"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
+description = "Core types and features of the effektio app"
+homepage = "https://effekto.org"
+repository = "https://github.com/effektio/effektio"
+license-file = "../../LICENSE.txt"
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
@@ -57,4 +57,4 @@ tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
-crate-type = ["rlib"]
+crate-type = ["cdylib", "staticlib"]
