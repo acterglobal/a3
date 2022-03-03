@@ -29,3 +29,5 @@
 build/
 
 linux/libeffektio.so
+macos/libeffektio.dylib
+windows/effektio.dll
