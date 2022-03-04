@@ -309,9 +309,11 @@ description = "Copy desktop library to plugin"
 script_runner = "@duckscript"
 script = [
     """
-    if is_linux
+    os = os_family
+
+    if eq ${os} "linux"
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so
-    else if is_windows
+    else if eq ${os} "windows"
         cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/effektio.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/effektio.dll
     end
     """

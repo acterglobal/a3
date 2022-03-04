@@ -905,39 +905,6 @@ pub mod api {
         });
     }
     #[no_mangle]
-    pub extern "C" fn __FfiListRoomCreate() -> usize {
-        panic_abort(move || unsafe {
-            let list = Box::new(Vec::<Room>::new());
-            Box::into_raw(list) as _
-        })
-    }
-
-    #[no_mangle]
-    pub extern "C" fn drop_box_FfiListRoom(_: i64, boxed: i64) {
-        panic_abort(move || unsafe {
-            Box::<Vec<Room>>::from_raw(boxed as _);
-        })
-    }
-
-    #[no_mangle]
-    pub extern "C" fn __FfiListRoomLen(boxed: usize) -> u32 {
-        panic_abort(move || unsafe {
-            let list = Box::<Vec<Room>>::from_raw(boxed as _);
-            let result = list.len() as u32;
-            Box::into_raw(list);
-            result as _
-        })
-    }
-
-    #[no_mangle]
-    pub extern "C" fn __FfiListRoomElementAt(boxed: usize, index: u32) -> usize {
-        panic_abort(move || unsafe {
-            let list = Box::<Vec<Room>>::from_raw(boxed as _);
-            let result = list.get(index as usize).unwrap() as *const _;
-            Box::into_raw(list);
-            result as _
-        })
-    }#[no_mangle]
     pub extern "C" fn __FfiListRoomMemberCreate() -> usize {
         panic_abort(move || unsafe {
             let list = Box::new(Vec::<RoomMember>::new());
@@ -966,6 +933,39 @@ pub mod api {
     pub extern "C" fn __FfiListRoomMemberElementAt(boxed: usize, index: u32) -> usize {
         panic_abort(move || unsafe {
             let list = Box::<Vec<RoomMember>>::from_raw(boxed as _);
+            let result = list.get(index as usize).unwrap() as *const _;
+            Box::into_raw(list);
+            result as _
+        })
+    }#[no_mangle]
+    pub extern "C" fn __FfiListRoomCreate() -> usize {
+        panic_abort(move || unsafe {
+            let list = Box::new(Vec::<Room>::new());
+            Box::into_raw(list) as _
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn drop_box_FfiListRoom(_: i64, boxed: i64) {
+        panic_abort(move || unsafe {
+            Box::<Vec<Room>>::from_raw(boxed as _);
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomLen(boxed: usize) -> u32 {
+        panic_abort(move || unsafe {
+            let list = Box::<Vec<Room>>::from_raw(boxed as _);
+            let result = list.len() as u32;
+            Box::into_raw(list);
+            result as _
+        })
+    }
+
+    #[no_mangle]
+    pub extern "C" fn __FfiListRoomElementAt(boxed: usize, index: u32) -> usize {
+        panic_abort(move || unsafe {
+            let list = Box::<Vec<Room>>::from_raw(boxed as _);
             let result = list.get(index as usize).unwrap() as *const _;
             Box::into_raw(list);
             result as _
