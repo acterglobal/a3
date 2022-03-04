@@ -1624,32 +1624,6 @@ class Api {
     int,
     int,
   )>();
-  FfiListRoom createFfiListRoom() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListRoomCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoom");
-    return FfiListRoom._(this, list_box);
-  }
-
-  late final _ffiListRoomCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListRoomCreate");
-
-  late final _ffiListRoomCreate =
-      _ffiListRoomCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListRoomLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListRoomLen");
-
-  late final _ffiListRoomLen =
-      _ffiListRoomLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListRoomElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListRoomElementAt");
-
-  late final _ffiListRoomElementAt =
-      _ffiListRoomElementAtPtr.asFunction<int Function(int, int)>();
   FfiListRoomMember createFfiListRoomMember() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListRoomMemberCreate());
@@ -1677,6 +1651,32 @@ class Api {
 
   late final _ffiListRoomMemberElementAt =
       _ffiListRoomMemberElementAtPtr.asFunction<int Function(int, int)>();
+  FfiListRoom createFfiListRoom() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListRoomCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoom");
+    return FfiListRoom._(this, list_box);
+  }
+
+  late final _ffiListRoomCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListRoomCreate");
+
+  late final _ffiListRoomCreate =
+      _ffiListRoomCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListRoomLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListRoomLen");
+
+  late final _ffiListRoomLen =
+      _ffiListRoomLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListRoomElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListRoomElementAt");
+
+  late final _ffiListRoomElementAt =
+      _ffiListRoomElementAtPtr.asFunction<int Function(int, int)>();
 }
 
 class Room {
@@ -2104,6 +2104,42 @@ class _ClientAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class FfiListRoom extends Iterable<Room> implements CustomIterable<Room> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListRoom._(this._api, this._box);
+
+  @override
+  Iterator<Room> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListRoomLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Room elementAt(int index) {
+    final address = _api._ffiListRoomElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Room._(_api, reference);
+  }
+
+  Room operator [](int index) {
+    return elementAt(index);
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
 class FfiListRoomMember extends Iterable<RoomMember>
     implements CustomIterable<RoomMember> {
   final Api _api;
@@ -2133,42 +2169,6 @@ class FfiListRoomMember extends Iterable<RoomMember>
   }
 
   RoomMember operator [](int index) {
-    return elementAt(index);
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
-class FfiListRoom extends Iterable<Room> implements CustomIterable<Room> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListRoom._(this._api, this._box);
-
-  @override
-  Iterator<Room> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListRoomLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  Room elementAt(int index) {
-    final address = _api._ffiListRoomElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return Room._(_api, reference);
-  }
-
-  Room operator [](int index) {
     return elementAt(index);
   }
 
