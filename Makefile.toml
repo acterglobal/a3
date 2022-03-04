@@ -297,17 +297,24 @@ dependencies = [
 
 [tasks.desktop-build]
 description = "Build for desktop"
-command = "cargo"
-args = [
-    "build",
-    "-p",
-    "effektio"
+script_runner = "@duckscript"
+script = [
+    """
+    exec cargo build
+    """
 ]
 
 [tasks.copy-desktop-lib]
 description = "Copy desktop library to plugin"
-command = "cp"
-args = [
-    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so",
-    "${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so"
+script_runner = "@duckscript"
+script = [
+    """
+    os = os_family
+
+    if eq ${os} "linux"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so
+    else if eq ${os} "windows"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/effektio.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/effektio.dll
+    end
+    """
 ]
