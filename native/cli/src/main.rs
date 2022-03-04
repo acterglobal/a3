@@ -56,10 +56,18 @@ async fn main() -> Result<()> {
             }
 
             let colors = if news.color.is_some() || news.background.is_some() {
-                Some(events::Colorize {
-                    color: news.color.clone(),
-                    background: news.background.clone(),
-                })
+                let color = if let Some(c) = news.color {
+                    Some(c.parse()?)
+                } else {
+                    None
+                };
+                let background = if let Some(c) = news.background {
+                    Some(c.parse()?)
+                } else {
+                    None
+                };
+
+                Some(events::Colorize { color, background })
             } else {
                 None
             };
