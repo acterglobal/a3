@@ -32,6 +32,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+      - name: version
+        run: flutter --version
+        working-directory: effektio_flutter_sdk
       - working-directory: app
         run: flutter analyze
         name: lint app
