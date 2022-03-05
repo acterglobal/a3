@@ -39,9 +39,10 @@ jobs:
         run: flutter analyze
         name: lint app
       - working-directory: effektio_flutter_sdk
+        run: flutter pub get
+      - working-directory: effektio_flutter_sdk
         run: flutter analyze
         name: lint effektio_flutter_sdk
-
   core:
     runs-on: ubuntu-latest
     name: Rust Native ${{ matrix.name }}
@@ -124,7 +125,7 @@ jobs:
           components: clippy
       - uses: nttld/setup-ndk@v1
         with:
-          # FIXME: cargo-ndk doesn't work with latest 
+          # FIXME: cargo-ndk doesn't work with latest
           ndk-version: r22
       - run: |
           cargo install cargo-make
