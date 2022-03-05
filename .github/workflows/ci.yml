@@ -180,3 +180,14 @@ jobs:
       #   working-directory: ./app
       - run: flutter build ios --release --no-codesign
         working-directory: ./app
+
+  dart_analyze:
+    name: dart analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+      - working-directory: app
+        run: dart analyze
+      - working-directory: effektio_flutter_sdk
+        run: dart analyze

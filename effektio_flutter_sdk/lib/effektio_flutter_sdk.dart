@@ -2,11 +2,11 @@ library effektio;
 
 import 'dart:core';
 import 'dart:io';
-//import 'package:flutter/foundation.dart';
-import "package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart";
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-export "package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart"
+export 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Room;
 
 // class EffektioClient extends ChangeNotifier {
@@ -29,14 +29,14 @@ class EffektioSdk {
       sessions.add(token);
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList("sessions", sessions);
+    await prefs.setStringList('sessions', sessions);
   }
 
   Future<void> _restore() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> sessions = (prefs.getStringList("sessions") ?? []);
+    List<String> sessions = (prefs.getStringList('sessions') ?? []);
     // TODO: parallel?!?
     bool loggedIn = false;
     for (var token in sessions) {
@@ -47,12 +47,12 @@ class EffektioSdk {
 
     if (_clients.isEmpty) {
       Client client =
-          await _api.guestClient(appDocPath, "https://matrix.effektio.org");
+          await _api.guestClient(appDocPath, 'https://matrix.effektio.org');
       clients.add(client);
       loggedIn = await client.loggedIn();
       await _persistSessions();
     }
-    print("Restored $_clients: $loggedIn");
+    debugPrint('Restored $_clients: $loggedIn');
   }
 
   Future<Client> get currentClient async {
@@ -62,7 +62,7 @@ class EffektioSdk {
   static Future<EffektioSdk> get instance async {
     if (_instance == null) {
       final api = Api.load();
-      api.initLogging("warn");
+      api.initLogging('warn');
       _instance = EffektioSdk._(api);
       await _instance!._restore();
     }
