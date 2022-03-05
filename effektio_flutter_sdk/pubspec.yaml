@@ -44,6 +44,12 @@ flutter:
       web:
         pluginClass: EffektioFlutterSdkWeb
         fileName: effektio_flutter_sdk_web.dart
+      linux:
+        pluginClass: EffektioFlutterSdkPlugin
+      windows:
+        pluginClass: EffektioFlutterSdkPlugin
+      macos:
+        pluginClass: EffektioFlutterSdkPlugin
 ffigen:
   output: 'lib/effektio-ffi.dart'
   name: EffektioFFI

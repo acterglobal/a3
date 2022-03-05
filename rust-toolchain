@@ -1,6 +1,7 @@
+
 [toolchain]
 channel = "nightly"
-components = ["rustfmt", "clippy", "rls", "rust-analysis"]
+components = ["rustfmt", "clippy", "rls"]
 targets = [
     "wasm32-unknown-unknown",
     "aarch64-linux-android",

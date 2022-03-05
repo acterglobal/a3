@@ -17,7 +17,11 @@ object Room {
 
     /// The avatar of the room
     fn avatar() -> Future<Result<buffer<u8>>>;
+
+    fn active_members() -> Future<Result<Vec<RoomMember>>>;
 }
+
+object RoomMember {}
 
 /// Main entry point for `effektio`.
 object Client {

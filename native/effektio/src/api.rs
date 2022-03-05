@@ -1,3 +1,4 @@
+use crate::platform;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::RestoreToken;
@@ -15,25 +16,6 @@ use parking_lot::RwLock;
 use std::sync::Arc;
 use tokio::runtime;
 use url::Url;
-
-#[cfg(target_os = "android")]
-use crate::android as platform;
-
-#[cfg(target_os = "ios")]
-use crate::ios as platform;
-
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
-mod platform {
-    pub(super) fn new_client_config(
-        base_path: String,
-        home: String,
-    ) -> anyhow::Result<matrix_sdk::config::ClientConfig> {
-        anyhow::bail!("not implemented for current platform")
-    }
-    pub(super) fn init_logging(filter: Option<String>) -> anyhow::Result<()> {
-        anyhow::bail!("not implemented for current platform")
-    }
-}
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
@@ -64,6 +46,10 @@ pub struct Room {
     room: MatrixRoom,
 }
 
+pub struct RoomMember {
+    member: matrix_sdk::RoomMember,
+}
+
 impl Room {
     async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
@@ -79,6 +65,34 @@ impl Room {
                 Ok(api::FfiBuffer::new(
                     r.avatar(MediaFormat::File).await?.expect("No avatar"),
                 ))
+            })
+            .await?
+    }
+
+    pub async fn active_members(&self) -> Result<Vec<RoomMember>> {
+        let r = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                Ok(r.active_members()
+                    .await
+                    .expect("No members")
+                    .into_iter()
+                    .map(|member| RoomMember { member })
+                    .collect())
+            })
+            .await?
+    }
+
+    pub async fn active_members_no_sync(&self) -> Result<Vec<RoomMember>> {
+        let r = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                Ok(r.active_members_no_sync()
+                    .await
+                    .expect("No members")
+                    .into_iter()
+                    .map(|member| RoomMember { member })
+                    .collect())
             })
             .await?
     }

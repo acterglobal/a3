@@ -1,16 +1,4 @@
-# effektio_flutter_sdk_example
+# Test suite for effektio flutter sdk
 
-Demonstrates how to use the effektio_flutter_sdk plugin.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Run this app on the target platform to execute the test suite. Add a test case to `lib/test_suites` if you
+notice an issue.

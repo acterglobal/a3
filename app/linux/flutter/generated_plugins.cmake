@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  effektio_flutter_sdk
   url_launcher_linux
 )
 

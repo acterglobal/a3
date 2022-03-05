@@ -284,3 +284,37 @@ run_task = "copy-lib"
 
 [tasks.post-android]
 dependencies = ["ffigen"]
+
+# TODO: non linux desktops
+# TODO: release build
+[tasks.desktop]
+description = "Build rust SDK for desktop"
+dependencies = [
+    "ffigen",
+    "desktop-build",
+    "copy-desktop-lib",
+]
+
+[tasks.desktop-build]
+description = "Build for desktop"
+script_runner = "@duckscript"
+script = [
+    """
+    exec cargo build
+    """
+]
+
+[tasks.copy-desktop-lib]
+description = "Copy desktop library to plugin"
+script_runner = "@duckscript"
+script = [
+    """
+    os = os_family
+
+    if eq ${os} "linux"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so
+    else if eq ${os} "windows"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/effektio.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/effektio.dll
+    end
+    """
+]

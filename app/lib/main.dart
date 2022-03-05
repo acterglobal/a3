@@ -17,10 +17,11 @@ void main() async {
   // final userLoggedIn = prefs.getBool(KeyConstants.userLoggedIn) ?? false;
   // ignore: prefer_const_constructors
   runApp(MaterialApp(
-      //  builder: EasyLoading.init(),
-      debugShowCheckedModeBanner: false,
-      // ignore: prefer_const_constructors
-      home: LoginScreen()));
+  //  builder: EasyLoading.init(),
+    debugShowCheckedModeBanner: false,
+    // ignore: prefer_const_constructors
+    home: Effektio()
+  ));
 }
 
 class Effektio extends StatelessWidget {
@@ -60,9 +61,9 @@ Future<Client> login(String username, String password) async {
 }
 
 class AccountHeader extends StatefulWidget {
-  Client _client;
+  final Client _client;
 
-  AccountHeader(this._client);
+  const AccountHeader(this._client, {Key? key}) : super(key: key);
 
   @override
   _AccountHeaderState createState() => _AccountHeaderState(
@@ -131,18 +132,20 @@ class ChatListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
     return ListTile(
-      leading: FutureBuilder<List<int>>(
-          future: room.avatar().then((fb) =>
-              fb.toUint8List()), // a previously-obtained Future<String> or null
+      leading: FutureBuilder<Uint8List>(
+          future: room.avatar().then((fb) => fb.toUint8List()),
+          // a previously-obtained Future<String> or null
           builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
             if (snapshot.hasData) {
               return CircleAvatar(
-                  backgroundImage:
-                      MemoryImage(Uint8List.fromList(snapshot.requireData)));
+                backgroundImage:
+                    MemoryImage(Uint8List.fromList(snapshot.requireData)),
+              );
             } else {
               return CircleAvatar(
-                  backgroundColor: Colors.brown.shade800,
-                  child: const Text('H'));
+                backgroundColor: Colors.brown.shade800,
+                child: const Text('H'),
+              );
             }
           }),
       title: FutureBuilder<String>(
@@ -154,12 +157,21 @@ class ChatListItem extends StatelessWidget {
               return Text(AppLocalizations.of(context)!.loadingName);
             }
           }),
+      trailing: FutureBuilder<FfiListRoomMember>(
+          future: room.activeMembers(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Text(snapshot.requireData.length.toString());
+            } else {
+              return const SizedBox();
+            }
+          }),
     );
   }
 }
 
 class ChatOverview extends StatelessWidget {
-  final FfiListRoom rooms;
+  final List<Room> rooms;
 
   const ChatOverview({Key? key, required this.rooms}) : super(key: key);
 
@@ -177,18 +189,22 @@ class ChatOverview extends StatelessWidget {
 
 class EffektioHome extends StatefulWidget {
   @override
-  _EffektioHomeState createState() => _EffektioHomeState(makeClient());
+  _EffektioHomeState createState() => _EffektioHomeState();
 }
 
 class _EffektioHomeState extends State<EffektioHome> {
+  late Future<Client> _client;
   String dropdownValue = 'All';
-  int _currentIndex = 0;
-  final Future<Client> _client;
-
-  _EffektioHomeState(this._client);
+  int _tabIndex = 0;
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  @override
+  void initState() {
+    super.initState();
+    _client = makeClient();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +230,8 @@ class _EffektioHomeState extends State<EffektioHome> {
             if (snapshot.hasData) {
               if (snapshot.requireData.hasFirstSynced()) {
                 return ChatOverview(
-                    rooms: snapshot.requireData.conversations());
+                    rooms: snapshot.requireData.conversations().toList(),
+                );
               } else {
                 return Center(
                     child: Text(
@@ -261,7 +278,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                 }).toList(),
               ),
             ),
-            body: _widgetOptions.elementAt(_currentIndex),
+            body: _widgetOptions.elementAt(_tabIndex),
             drawer: Drawer(
               child: Column(
                 children: <Widget>[
@@ -379,7 +396,7 @@ class _EffektioHomeState extends State<EffektioHome> {
             ),
             bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
-              currentIndex: _currentIndex,
+              currentIndex: _tabIndex,
               backgroundColor: Color(0xFF6200EE),
               selectedItemColor: Colors.white,
               unselectedItemColor: Colors.white.withOpacity(.6),
@@ -387,7 +404,7 @@ class _EffektioHomeState extends State<EffektioHome> {
               unselectedFontSize: 0,
               onTap: (value) {
                 // Respond to item press.
-                setState(() => _currentIndex = value);
+                setState(() => _tabIndex = value);
               },
               items: [
                 BottomNavigationBarItem(
