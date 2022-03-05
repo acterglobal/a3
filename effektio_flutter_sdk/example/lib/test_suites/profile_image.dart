@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk_example/constants.dart';
 import 'package:effektio_flutter_sdk_example/test_suites/interface.dart';

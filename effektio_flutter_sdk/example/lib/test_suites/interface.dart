@@ -7,7 +7,7 @@ abstract class TestSuite {
 }
 
 enum SuiteState {
-  Uninitialized,
-  Executing,
-  Finished,
+  uninitialized,
+  executing,
+  finished,
 }
