@@ -43,6 +43,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.15.0"
+  crypto:
+    dependency: transitive
+    description:
+      name: crypto
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   csslib:
     dependency: transitive
     description:
@@ -163,6 +170,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.1"
+  google_fonts:
+    dependency: "direct main"
+    description:
+      name: google_fonts
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.1"
   html:
     dependency: transitive
     description:

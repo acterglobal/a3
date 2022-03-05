@@ -9,11 +9,11 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/bmcpt/ffi-gen", rev = "bb219bd8ca0b7894291e3f8075bf5e6eee754500" }
+ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-ffi-gen-macro = { git = "https://github.com/bmcpt/ffi-gen", rev = "bb219bd8ca0b7894291e3f8075bf5e6eee754500" }
+ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 tokio = "1"
 futures = "0.3.17"
 lazy_static = "1.4"
