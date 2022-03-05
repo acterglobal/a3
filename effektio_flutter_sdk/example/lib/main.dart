@@ -8,8 +8,8 @@ void main() async {
 }
 
 final testSuites = {
-  "Login": () => LoginTest(),
-  "Avatar": () => AvatarTest(),
+  'Login': () => LoginTest(),
+  'Avatar': () => AvatarTest(),
 };
 
 class MyApp extends StatelessWidget {
@@ -42,9 +42,11 @@ class HomePage extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) {
-                            return TestPage(name, key: UniqueKey());
-                          }),
+                          MaterialPageRoute(
+                            builder: (_) {
+                              return TestPage(name, key: UniqueKey());
+                            },
+                          ),
                         );
                       },
                       child: Text(name),
@@ -93,8 +95,7 @@ class _TestPageState extends State<TestPage> {
         });
         rethrow;
       }
-    })
-    .then((_) async {
+    }).then((_) async {
       await suite.teardown();
       setState(() {
         suiteState = SuiteState.finished;

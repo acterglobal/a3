@@ -5,12 +5,12 @@ import 'package:effektio_flutter_sdk_example/test_suites/interface.dart';
 class LoginTest extends TestSuite {
   @override
   Stream<String> executeTest() async* {
-    yield "Initializing SDK";
+    yield 'Initializing SDK';
     final sdk = await EffektioSdk.instance;
-    yield "Logging in";
+    yield 'Logging in';
     final client = await sdk.login(username, password);
-    yield "Client name: ${await client.displayName()}";
-    yield "done";
+    yield 'Client name: ${await client.displayName()}';
+    yield 'done';
   }
 
   @override

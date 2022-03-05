@@ -6,18 +6,18 @@ import 'package:flutter/cupertino.dart';
 class AvatarTest extends TestSuite {
   @override
   Stream<String> executeTest() async* {
-    yield "Initializing SDK";
+    yield 'Initializing SDK';
     final sdk = await EffektioSdk.instance;
-    yield "Logging in";
+    yield 'Logging in';
     final client = await sdk.login(username, password);
-    yield "Fetching avatar";
+    yield 'Fetching avatar';
     final avatar = await client.avatar().then((buffer) => buffer.toUint8List());
-    yield "Verifying response";
+    yield 'Verifying response';
     try {
       await PaintingBinding.instance!.instantiateImageCodec(avatar);
-      yield "done";
+      yield 'done';
     } catch (_) {
-      yield "ERROR: client.avatar() returned invalid data";
+      yield 'ERROR: client.avatar() returned invalid data';
     }
   }
 
