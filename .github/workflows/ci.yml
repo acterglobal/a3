@@ -24,6 +24,21 @@ jobs:
           command: fmt
           args: --all --check
 
+  dart_style:
+    name: lint dart code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - working-directory: app
+        run: flutter analyze
+        name: lint app
+      - working-directory: effektio_flutter_sdk
+        run: flutter analyze
+        name: lint effektio_flutter_sdk
+
   core:
     runs-on: ubuntu-latest
     name: Rust Native ${{ matrix.name }}

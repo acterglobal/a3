@@ -67,12 +67,12 @@ class SharedPrefrence {
     return prefs.setString(KeyConstants.userId, userId);
   }
 
-  removeValue(String key) async {
+  Future<Future<bool>> removeValue(String key) async {
     SharedPreferences myPrefs = await SharedPreferences.getInstance();
     return myPrefs.remove(key);
   }
 
-  removeAll() async {
+  Future<Future<bool>> removeAll() async {
     SharedPreferences myPrefs = await SharedPreferences.getInstance();
     return myPrefs.clear();
   }

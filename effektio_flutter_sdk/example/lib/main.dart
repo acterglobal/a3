@@ -1,15 +1,10 @@
-import 'package:effektio_flutter_sdk_example/constants.dart';
 import 'package:effektio_flutter_sdk_example/test_suites/interface.dart';
 import 'package:effektio_flutter_sdk_example/test_suites/login.dart';
 import 'package:effektio_flutter_sdk_example/test_suites/profile_image.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
 void main() async {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 final testSuites = {
@@ -22,7 +17,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       home: HomePage(),
     );
   }
@@ -75,7 +70,7 @@ class TestPage extends StatefulWidget {
 
 class _TestPageState extends State<TestPage> {
   late TestSuite suite;
-  SuiteState suiteState = SuiteState.Uninitialized;
+  SuiteState suiteState = SuiteState.uninitialized;
   List<String> logLines = [];
 
   @override
@@ -84,7 +79,7 @@ class _TestPageState extends State<TestPage> {
     suite = testSuites[widget.name]!();
     suite.setup().then((_) async {
       setState(() {
-        suiteState = SuiteState.Executing;
+        suiteState = SuiteState.executing;
       });
       try {
         await suite.executeTest().forEach((line) {
@@ -102,7 +97,7 @@ class _TestPageState extends State<TestPage> {
     .then((_) async {
       await suite.teardown();
       setState(() {
-        suiteState = SuiteState.Finished;
+        suiteState = SuiteState.finished;
       });
     });
   }
@@ -127,11 +122,11 @@ class _TestPageState extends State<TestPage> {
 
   Widget buildTitle() {
     switch (suiteState) {
-      case SuiteState.Uninitialized:
+      case SuiteState.uninitialized:
         return Text('${widget.name}: Initializing...');
-      case SuiteState.Executing:
+      case SuiteState.executing:
         return Text('${widget.name}: Executing...');
-      case SuiteState.Finished:
+      case SuiteState.finished:
         return Text('${widget.name}: Finished');
     }
   }
