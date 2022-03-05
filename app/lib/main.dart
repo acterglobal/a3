@@ -2,7 +2,9 @@ import 'dart:typed_data';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'l10n/l10n.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -18,15 +20,24 @@ void main() async {
   //  builder: EasyLoading.init(),
     debugShowCheckedModeBanner: false,
     // ignore: prefer_const_constructors
-    home: LoginScreen()
+    home: Effektio()
   ));
 }
 
 class Effektio extends StatelessWidget {
+  const Effektio({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Effektio',
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: ApplicationLocalizations.supportedLocales,
       // MaterialApp contains our top-level Navigator
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
@@ -63,7 +74,7 @@ class AccountHeader extends StatefulWidget {
 }
 
 class _AccountHeaderState extends State<AccountHeader> {
-  String dropdownValue = 'All';
+  // String dropdownValue = AppLocalizations.of(context).all;
   int _currentIndex = 0;
   final Client _client;
   final Future<String> name;
@@ -79,18 +90,20 @@ class _AccountHeaderState extends State<AccountHeader> {
             future: name, // a previously-obtained Future<String> or null
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data ?? "no name");
+                return Text(
+                    snapshot.data ?? AppLocalizations.of(context)!.noName);
               } else {
-                return const Text("loading...");
+                return Text(AppLocalizations.of(context)!.loading + "...");
               }
             }),
         accountEmail: FutureBuilder<String>(
             future: username, // a previously-obtained Future<String> or null
             builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
               if (snapshot.hasData) {
-                return Text(snapshot.data ?? "no addr");
+                return Text(
+                    snapshot.data ?? AppLocalizations.of(context)!.noAddr);
               } else {
-                return const Text("loading...");
+                return Text(AppLocalizations.of(context)!.loading + "...");
               }
             }),
         currentAccountPicture: FutureBuilder<List<int>>(
@@ -141,7 +154,7 @@ class ChatListItem extends StatelessWidget {
             if (snapshot.hasData) {
               return Text(snapshot.requireData);
             } else {
-              return const Text("loading name");
+              return Text(AppLocalizations.of(context)!.loadingName);
             }
           }),
       trailing: FutureBuilder<FfiListRoomMember>(
@@ -196,231 +209,224 @@ class _EffektioHomeState extends State<EffektioHome> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      const Center(
+      Center(
           child: Text(
-        'Index 0: News',
+        AppLocalizations.of(context)!.index1,
         style: optionStyle,
       )),
-      const Center(
+      Center(
           child: Text(
-        'Index 1: FAQ',
+        AppLocalizations.of(context)!.index2,
         style: optionStyle,
       )),
-      const Center(
+      Center(
           child: Text(
-        'Index 4: Community',
+        AppLocalizations.of(context)!.index4,
         style: optionStyle,
       )),
       FutureBuilder<Client>(
-        future: _client, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.requireData.hasFirstSynced()) {
-              return ChatOverview(
-                rooms: snapshot.requireData.conversations().toList(),
-              );
+          future: _client, // a previously-obtained Future<String> or null
+          builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.requireData.hasFirstSynced()) {
+                return ChatOverview(
+                    rooms: snapshot.requireData.conversations().toList(),
+                );
+              } else {
+                return Center(
+                    child: Text(
+                  AppLocalizations.of(context)!.loadingConvo,
+                  style: optionStyle,
+                ));
+              }
             } else {
-              return const Center(
+              return Center(
                   child: Text(
-                'loading conversations',
+                AppLocalizations.of(context)!.index3,
                 style: optionStyle,
               ));
             }
-          } else {
-            return const Center(
-                child: Text(
-              'Index 3: Chat: waiting',
-              style: optionStyle,
-            ));
-          }
-        },
-      ),
+          }),
     ];
 
     return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          primary: false,
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.blue,
-          centerTitle: true,
-          title: DropdownButton<String>(
-            value: dropdownValue,
-            onChanged: (String? newValue) {
-              setState(() {
-                dropdownValue = newValue!;
-              });
-            },
-            items: <String>['All', 'Greenpeace', '104er', 'Badminton 1905 e.V.']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-          elevation: 0.0,
-          shadowColor: Colors.transparent,
-          actions: const [
-            Icon(Icons.login_outlined),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.settings),
-            ),
-          ],
-        ),
-        body: _widgetOptions.elementAt(_tabIndex),
-        drawer: Drawer(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: ListView(
-                  padding: EdgeInsets.zero,
-                  children: <Widget>[
-                    FutureBuilder<Client>(
-                        future: _client,
-                        // a previously-obtained Future<String> or null
-                        builder: (BuildContext context,
-                            AsyncSnapshot<Client> snapshot) {
-                          if (snapshot.hasData) {
-                            if (snapshot.requireData.isGuest()) {
-                              return DrawerHeader(
-                                  decoration: const BoxDecoration(
-                                    color: Colors.purple,
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      const Text(
-                                        'Effektio',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 24,
-                                        ),
-                                      ),
-                                      const Text(
-                                        'Guest',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                      OutlinedButton(
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                              context, "/login");
-                                        },
-                                        child: const Text('Log In'),
-                                      )
-                                    ],
-                                  ));
-                            } else {
-                              return AccountHeader(snapshot.requireData);
-                            }
-                          } else {
-                            return const DrawerHeader(
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                              ),
-                              child: Text(
-                                'Effektio',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                ),
-                              ),
-                            );
-                          }
-                        }),
-                    const ListTile(
-                      leading: Icon(Icons.task_alt_outlined),
-                      title: Text('Tasks'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.calendar_today_outlined),
-                      title: Text('Events'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.photo_library_outlined),
-                      title: Text('Images'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.video_collection_outlined),
-                      title: Text('Videos'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.folder_outlined),
-                      title: Text('Documents'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.real_estate_agent_outlined),
-                      title: Text('Resources'),
-                    ),
-                    const ListTile(
-                      leading: Icon(Icons.payments_outlined),
-                      title: Text('Budget'),
-                    ),
-                  ],
-                ),
+        length: 3,
+        child: SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              primary: false,
+              backgroundColor: Colors.transparent,
+              foregroundColor: Colors.blue,
+              centerTitle: true,
+              title: DropdownButton<String>(
+                value: dropdownValue,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    dropdownValue = newValue!;
+                  });
+                },
+                items: <String>[
+                  'All',
+                  'Greenpeace',
+                  '104er',
+                  'Badminton 1905 e.V.'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
               ),
-              Container(
-                child: Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  child: Container(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Container(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: const <Widget>[
-                              Icon(Icons.settings),
-                            ],
-                          ),
-                          const Divider(),
-                          const Text("Effektio 0.0.1"),
-                        ],
-                      ),
+            ),
+            body: _widgetOptions.elementAt(_tabIndex),
+            drawer: Drawer(
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: <Widget>[
+                        FutureBuilder<Client>(
+                            future: _client,
+                            // a previously-obtained Future<String> or null
+                            builder: (BuildContext context,
+                                AsyncSnapshot<Client> snapshot) {
+                              if (snapshot.hasData) {
+                                if (snapshot.requireData.isGuest()) {
+                                  return DrawerHeader(
+                                      decoration: BoxDecoration(
+                                        color: Colors.purple,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            'Effektio',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 24,
+                                            ),
+                                          ),
+                                          Text(
+                                            AppLocalizations.of(context)!.guest,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18,
+                                            ),
+                                          ),
+                                          OutlinedButton(
+                                            onPressed: () {
+                                              Navigator.pushNamed(
+                                                  context, "/login");
+                                            },
+                                            child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .login),
+                                          ),
+                                        ],
+                                      ));
+                                } else {
+                                  return AccountHeader(snapshot.requireData);
+                                }
+                              } else {
+                                return DrawerHeader(
+                                  decoration: BoxDecoration(
+                                    color: Colors.blue,
+                                  ),
+                                  child: Text(
+                                    'Effektio',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                    ),
+                                  ),
+                                );
+                              }
+                            }),
+                        ListTile(
+                          leading: Icon(Icons.task_alt_outlined),
+                          title: Text(AppLocalizations.of(context)!.tasks),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.calendar_today_outlined),
+                          title: Text(AppLocalizations.of(context)!.tasks),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.photo_library_outlined),
+                          title: Text(AppLocalizations.of(context)!.images),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.video_collection_outlined),
+                          title: Text(AppLocalizations.of(context)!.videos),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.folder_outlined),
+                          title: Text(AppLocalizations.of(context)!.documents),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.real_estate_agent_outlined),
+                          title: Text(AppLocalizations.of(context)!.resources),
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.payments_outlined),
+                          title: Text(AppLocalizations.of(context)!.budget),
+                        ),
+                      ],
                     ),
                   ),
-                ),
+                  Container(
+                    child: Align(
+                      alignment: FractionalOffset.bottomCenter,
+                      child: Container(
+                          padding: EdgeInsets.all(15.0),
+                          child: Container(
+                              child: Column(children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: <Widget>[
+                                Icon(Icons.settings),
+                              ],
+                            ),
+                            Divider(),
+                            Text("Effektio 0.0.1"),
+                          ]))),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
+            bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _tabIndex,
+              backgroundColor: Color(0xFF6200EE),
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white.withOpacity(.6),
+              selectedFontSize: 0,
+              unselectedFontSize: 0,
+              onTap: (value) {
+                // Respond to item press.
+                setState(() => _tabIndex = value);
+              },
+              items: [
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.news,
+                  icon: Icon(Icons.dashboard),
+                ),
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.faq,
+                  icon: Icon(Icons.help_outline),
+                ),
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.community,
+                  icon: Icon(Icons.groups),
+                ),
+                BottomNavigationBarItem(
+                  label: AppLocalizations.of(context)!.chat,
+                  icon: Icon(Icons.chat),
+                ),
+              ],
+            ),
           ),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _tabIndex,
-          backgroundColor: const Color(0xFF6200EE),
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white.withOpacity(.6),
-          selectedFontSize: 0,
-          unselectedFontSize: 0,
-          onTap: (value) {
-            // Respond to item press.
-            setState(() => _tabIndex = value);
-          },
-          items: const [
-            BottomNavigationBarItem(
-              label: 'News',
-              icon: Icon(Icons.dashboard),
-            ),
-            BottomNavigationBarItem(
-              label: 'FAQ',
-              icon: Icon(Icons.help_outline),
-            ),
-            BottomNavigationBarItem(
-              label: 'Community',
-              icon: Icon(Icons.groups),
-            ),
-            BottomNavigationBarItem(
-              label: 'Chat',
-              icon: Icon(Icons.chat),
-            ),
-          ],
-        ),
-      ),
-    );
+        ));
 
     // theme: ThemeData(
     //   primaryColor: _primaryColor,
@@ -453,7 +459,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Material(child: Center(child: Text("Hello World")));
+    return Material(
+        child: Center(child: Text(AppLocalizations.of(context)!.helloWorld)));
   }
 }
 
@@ -481,72 +488,68 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: Center(
-        child: Form(
-          key: _formKey,
-          child: Wrap(
-            children: [
-              TextFormField(
-                controller: usernameController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: '@user:server.ltd',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  if (!value[0].startsWith("@")) {
-                    return "Matrix accounts must start with @";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Password',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Password can't empty";
-                  }
-                  return null;
-                },
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Validate returns true if the form is valid, or false otherwise.
-                  if (_formKey.currentState!.validate()) {
-                    login(usernameController.text, passwordController.text)
-                        .then((a) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            backgroundColor: Colors.greenAccent,
-                            content: Text('Login successful')),
-                      );
-                      Navigator.pop(context);
-                    }).catchError(
-                      (e) {
-                        print(e);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: Colors.redAccent,
-                            content: Text("Login failed: $e"),
-                          ),
-                        );
+        child: Center(
+            child: Form(
+                key: _formKey,
+                child: Wrap(
+                  children: [
+                    TextFormField(
+                        controller: usernameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: '@user:server.ltd',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return AppLocalizations.of(context)!.validator;
+                          }
+                          if (!value[0].startsWith("@")) {
+                            return AppLocalizations.of(context)!.matrixValidate;
+                          }
+                          return null;
+                        }),
+                    TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: AppLocalizations.of(context)!.password,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return AppLocalizations.of(context)!
+                                .passwordValidate;
+                          }
+                          return null;
+                        }),
+                    ElevatedButton(
+                      onPressed: () {
+                        // Validate returns true if the form is valid, or false otherwise.
+                        if (_formKey.currentState!.validate()) {
+                          login(usernameController.text,
+                                  passwordController.text)
+                              .then((a) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  backgroundColor: Colors.greenAccent,
+                                  content: Text(AppLocalizations.of(context)!
+                                      .loginSuccess)),
+                            );
+                            Navigator.pop(context);
+                          }).catchError((e) {
+                            print(e);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.redAccent,
+                              content: Text(
+                                  AppLocalizations.of(context)!.loginFailed +
+                                      ": $e"),
+                            ));
+                          });
+                        }
                       },
-                    );
-                  }
-                },
-                child: const Text('Login'),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                      child: Text(AppLocalizations.of(context)!.login),
+                    ),
+                  ],
+                ))));
   }
 }

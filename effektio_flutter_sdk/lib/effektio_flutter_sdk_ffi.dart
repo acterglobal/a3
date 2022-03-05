@@ -1624,6 +1624,32 @@ class Api {
     int,
     int,
   )>();
+  FfiListRoom createFfiListRoom() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListRoomCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoom");
+    return FfiListRoom._(this, list_box);
+  }
+
+  late final _ffiListRoomCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListRoomCreate");
+
+  late final _ffiListRoomCreate =
+      _ffiListRoomCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListRoomLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListRoomLen");
+
+  late final _ffiListRoomLen =
+      _ffiListRoomLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListRoomElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListRoomElementAt");
+
+  late final _ffiListRoomElementAt =
+      _ffiListRoomElementAtPtr.asFunction<int Function(int, int)>();
   FfiListRoomMember createFfiListRoomMember() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListRoomMemberCreate());
@@ -1651,32 +1677,6 @@ class Api {
 
   late final _ffiListRoomMemberElementAt =
       _ffiListRoomMemberElementAtPtr.asFunction<int Function(int, int)>();
-  FfiListRoom createFfiListRoom() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListRoomCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoom");
-    return FfiListRoom._(this, list_box);
-  }
-
-  late final _ffiListRoomCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListRoomCreate");
-
-  late final _ffiListRoomCreate =
-      _ffiListRoomCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListRoomLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListRoomLen");
-
-  late final _ffiListRoomLen =
-      _ffiListRoomLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListRoomElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListRoomElementAt");
-
-  late final _ffiListRoomElementAt =
-      _ffiListRoomElementAtPtr.asFunction<int Function(int, int)>();
 }
 
 class Room {
