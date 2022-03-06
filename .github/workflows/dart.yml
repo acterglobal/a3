@@ -26,7 +26,7 @@ jobs:
 
       - name: Install dependencies
         run: dart pub get
-        working-directory: app/lib
+        working-directory: app
 
       # Uncomment this step to verify the use of 'dart format' on each commit.
       - name: Verify formatting
