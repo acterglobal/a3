@@ -24,16 +24,19 @@ jobs:
       # - uses: dart-lang/setup-dart@v1
       - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
 
-      #- name: Install dependencies
-      #  run: dart pub get
+      - name: Install dependencies
+        run: dart pub get
+        working-directory: app/lib
 
       # Uncomment this step to verify the use of 'dart format' on each commit.
       - name: Verify formatting
-        run: dart format app/lib --output=show --set-exit-if-changed 
+        run: dart format --output=show --set-exit-if-changed .
+        working-directory: app/lib
 
       # Consider passing '--fatal-infos' for slightly stricter analysis.
       - name: Analyze project source
         run: dart analyze
+        working-directory: app/lib
 
       # Your project will need to have tests in test/ and a dependency on
       # package:test for this step to succeed. Note that Flutter projects will
