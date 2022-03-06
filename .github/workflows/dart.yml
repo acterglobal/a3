@@ -38,15 +38,15 @@ jobs:
         working-directory: app/lib
 
       # Consider passing '--fatal-infos' for slightly stricter analysis.
-      - name: Analyze project source
-        run: dart analyze
-        working-directory: app
+      #- name: Analyze project source
+      #  run: dart analyze
+      #  working-directory: app
 
       # Your project will need to have tests in test/ and a dependency on
       # package:test for this step to succeed. Note that Flutter projects will
       # want to change this to 'flutter test'.
-      - name: Run tests
-        run: flutter test
+      #- name: Run tests
+      #  run: flutter test
         
       #- name: Verify formatting
       #  run: dart format app/lib — output=show — set-exit-if-changed .
