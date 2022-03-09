@@ -8,12 +8,12 @@ use effektio_core::matrix_sdk;
 use effektio_core::ruma;
 
 mod config;
+use crate::ruma::api::client::filter::RoomEventFilter;
 use config::{Action, EffektioCliConfig};
 use flexi_logger::Logger;
 use log::{info, warn};
 use std::ffi::OsStr;
 use std::fs::File;
-use crate::ruma::api::client::filter::RoomEventFilter;
 
 #[tokio::main]
 async fn main() -> Result<()> {
