@@ -5,7 +5,7 @@ use effektio_core::RestoreToken;
 use futures::{stream, Stream};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{
-    api::client::r0::account::register, DeviceId, MxcUri, RoomId, ServerName, UserId,
+    DeviceId, MxcUri, RoomId, ServerName, UserId,
 };
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaType},
@@ -16,6 +16,7 @@ use parking_lot::RwLock;
 use std::sync::Arc;
 use tokio::runtime;
 use url::Url;
+use effektio_core::ruma::api::client::account::register;
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
@@ -208,7 +209,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let display_name = l.display_name().await?.expect("No User ID found");
+                let display_name = l.account().get_display_name().await?.expect("No User ID found");
                 Ok(display_name.as_str().to_string())
             })
             .await?
@@ -228,7 +229,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let uri = l.avatar_url().await?.expect("No avatar Url given");
+                let uri = l.account().get_avatar_url().await?.expect("No avatar Url given");
                 Ok(api::FfiBuffer::new(
                     l.get_media_content(
                         &MediaRequest {
@@ -246,8 +247,8 @@ impl Client {
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let homeserver = Url::parse(&homeurl)?;
-    let config = platform::new_client_config(base_path, homeurl)?;
-    let mut guest_registration = register::Request::new();
+    let config = platform::new_client_config(base_path, homeurl).await?;
+    let mut guest_registration = register::v3::Request::new();
     guest_registration.kind = register::RegistrationKind::Guest;
     RUNTIME
         .spawn(async move {
@@ -279,7 +280,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         is_guest,
     } = serde_json::from_str(&restore_token)?;
     let homeserver = Url::parse(&homeurl)?;
-    let config = platform::new_client_config(base_path, session.user_id.to_string())?;
+    let config = platform::new_client_config(base_path, session.user_id.to_string()).await?;
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -300,7 +301,7 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, username.clone())?;
+    let config = platform::new_client_config(base_path, username.clone()).await?;
     let user = Box::<UserId>::try_from(username)?;
     // First we need to log in.
     RUNTIME

@@ -81,7 +81,7 @@ class _AccountHeaderState extends State<AccountHeader> {
     super.initState();
     name = widget._client.displayName();
     username = widget._client.userId();
-    avatar = widget._client.avatar().then((fb) => fb.toUint8List());
+    avatar = widget._client.avatar().then((fb) => fb.asTypedList());
   }
 
   @override
@@ -141,7 +141,7 @@ class ChatListItem extends StatelessWidget {
     // ToDo: UnreadCounter
     return ListTile(
       leading: FutureBuilder<Uint8List>(
-        future: room.avatar().then((fb) => fb.toUint8List()),
+        future: room.avatar().then((fb) => fb.asTypedList()),
         // a previously-obtained Future<String> or null
         builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
           if (snapshot.hasData) {
