@@ -6,4 +6,3 @@ target
 
 native/effektio/api_generated.rs
 native/effektio/bindings.dart
-effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart

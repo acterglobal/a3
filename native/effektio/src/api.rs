@@ -1,12 +1,11 @@
 use crate::platform;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
+use effektio_core::ruma::api::client::account::register;
 use effektio_core::RestoreToken;
 use futures::{stream, Stream};
 use lazy_static::lazy_static;
-pub use matrix_sdk::ruma::{
-    DeviceId, MxcUri, RoomId, ServerName, UserId,
-};
+pub use matrix_sdk::ruma::{DeviceId, MxcUri, RoomId, ServerName, UserId};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaType},
     room::Room as MatrixRoom,
@@ -16,7 +15,6 @@ use parking_lot::RwLock;
 use std::sync::Arc;
 use tokio::runtime;
 use url::Url;
-use effektio_core::ruma::api::client::account::register;
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
@@ -209,7 +207,11 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let display_name = l.account().get_display_name().await?.expect("No User ID found");
+                let display_name = l
+                    .account()
+                    .get_display_name()
+                    .await?
+                    .expect("No User ID found");
                 Ok(display_name.as_str().to_string())
             })
             .await?
@@ -229,7 +231,11 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let uri = l.account().get_avatar_url().await?.expect("No avatar Url given");
+                let uri = l
+                    .account()
+                    .get_avatar_url()
+                    .await?
+                    .expect("No avatar Url given");
                 Ok(api::FfiBuffer::new(
                     l.get_media_content(
                         &MediaRequest {
