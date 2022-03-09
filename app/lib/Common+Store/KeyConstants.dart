@@ -1,4 +1,3 @@
-
 class KeyConstants {
   // KEYS FOR PREFRENCES
   static const String userLoggedIn = 'userLoggedIn';

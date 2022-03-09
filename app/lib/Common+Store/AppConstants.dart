@@ -1,4 +1,3 @@
-
 class ValidConstants {
   ValidConstants._();
 
@@ -29,7 +28,6 @@ class ValidConstants {
 }
 
 class Constant {
-
   static const List<String> gender = ['Male', 'Female', 'Other'];
 
   static const List<String> colleges = [
