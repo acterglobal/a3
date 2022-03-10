@@ -145,7 +145,7 @@ jobs:
       #     command: test
       #     args: -p effektio --target aarch64-linux-android
       - name: Build Android FFI
-        run: cargo make android-build-release
+        run: cargo make android
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
