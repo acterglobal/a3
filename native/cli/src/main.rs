@@ -8,6 +8,7 @@ use effektio_core::matrix_sdk;
 use effektio_core::ruma;
 
 mod config;
+use crate::ruma::api::client::filter::RoomEventFilter;
 use config::{Action, EffektioCliConfig};
 use flexi_logger::Logger;
 use log::{info, warn};
@@ -87,7 +88,7 @@ async fn main() -> Result<()> {
                 .context("Room not found or not joined")?;
             info!("Found room {:?}", room.name());
             let mut query = matrix_sdk::room::MessagesOptions::backward(&sync_resp.next_batch);
-            let mut filter = ruma::api::client::r0::filter::RoomEventFilter::default();
+            let mut filter = RoomEventFilter::default();
             filter.types = Some(types.as_slice());
             query.filter = filter;
             let messages = room.messages(query).await?;

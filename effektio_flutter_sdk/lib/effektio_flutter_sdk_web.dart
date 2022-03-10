@@ -31,7 +31,8 @@ class EffektioFlutterSdkWeb {
       default:
         throw PlatformException(
           code: 'Unimplemented',
-          details: 'effektio_flutter_sdk for web doesn\'t implement \'${call.method}\'',
+          details:
+              'effektio_flutter_sdk for web doesn\'t implement \'${call.method}\'',
         );
     }
   }

@@ -7,7 +7,7 @@ library effektio;
 import "dart:async";
 import "dart:convert";
 import "dart:ffi" as ffi;
-import "dart:io" show Platform;
+import "dart:io" show Platform, File, Directory;
 import "dart:isolate";
 import "dart:typed_data";
 
@@ -111,9 +111,11 @@ class FfiBufferInt8 {
     _box.drop();
   }
 
-  Int8List toInt8List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferInt8. This Int8List must not live longer than the creating FfiBufferInt8
+  Int8List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 1;
     return ffi.Pointer<ffi.Int8>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -129,9 +131,11 @@ class FfiBufferUint8 {
     _box.drop();
   }
 
-  Uint8List toUint8List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferUint8. This Uint8List must not live longer than the creating FfiBufferUint8
+  Uint8List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 1;
     return ffi.Pointer<ffi.Uint8>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -147,9 +151,11 @@ class FfiBufferInt16 {
     _box.drop();
   }
 
-  Int16List toInt16List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferInt16. This Int16List must not live longer than the creating FfiBufferInt16
+  Int16List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 2;
     return ffi.Pointer<ffi.Int16>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -165,9 +171,11 @@ class FfiBufferUint16 {
     _box.drop();
   }
 
-  Uint16List toUint16List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferUint16. This Uint16List must not live longer than the creating FfiBufferUint16
+  Uint16List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 2;
     return ffi.Pointer<ffi.Uint16>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -183,9 +191,11 @@ class FfiBufferInt32 {
     _box.drop();
   }
 
-  Int32List toInt32List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferInt32. This Int32List must not live longer than the creating FfiBufferInt32
+  Int32List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 4;
     return ffi.Pointer<ffi.Int32>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -201,9 +211,11 @@ class FfiBufferUint32 {
     _box.drop();
   }
 
-  Uint32List toUint32List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferUint32. This Uint32List must not live longer than the creating FfiBufferUint32
+  Uint32List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 4;
     return ffi.Pointer<ffi.Uint32>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -219,9 +231,11 @@ class FfiBufferInt64 {
     _box.drop();
   }
 
-  Int64List toInt64List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferInt64. This Int64List must not live longer than the creating FfiBufferInt64
+  Int64List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 8;
     return ffi.Pointer<ffi.Int64>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -237,9 +251,11 @@ class FfiBufferUint64 {
     _box.drop();
   }
 
-  Uint64List toUint64List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferUint64. This Uint64List must not live longer than the creating FfiBufferUint64
+  Uint64List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 8;
     return ffi.Pointer<ffi.Uint64>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -255,9 +271,11 @@ class FfiBufferFloat32 {
     _box.drop();
   }
 
-  Float32List toFloat32List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferFloat32. This Float32List must not live longer than the creating FfiBufferFloat32
+  Float32List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 4;
     return ffi.Pointer<ffi.Float>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -273,9 +291,11 @@ class FfiBufferFloat64 {
     _box.drop();
   }
 
-  Float64List toFloat64List() {
+  /// Returns a typed view of this buffer.
+  /// Note: The lifetime of this view is tied to the lifetime of this FfiBufferFloat64. This Float64List must not live longer than the creating FfiBufferFloat64
+  Float64List asTypedList() {
     final buffer = _box.borrow();
-    final addressRaw = _api._ffiBufferAddress(buffer).address;
+    final addressRaw = _api._ffiBufferAddress(buffer);
     final size = _api._ffiBufferSize(buffer) ~/ 8;
     return ffi.Pointer<ffi.Double>.fromAddress(addressRaw).asTypedList(size);
   }
@@ -388,6 +408,39 @@ Stream<T> _nativeStream<T>(
   done.listen((dynamic _message) => controller.close());
   poll();
   return controller.stream;
+}
+
+class FfiString {
+  final Api _api;
+  final _Box _box;
+
+  FfiString._(this._api, this._box);
+
+  String toDartString() {
+    final parts = _api._ffiStringIntoParts(_box.borrow());
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = ffi.Pointer.fromAddress(parts.addr);
+    final tmp1 = utf8.decode(tmp2_0.asTypedList(parts.len));
+    if (parts.capacity > 0) {
+      final ffi.Pointer<ffi.Void> tmp2_0;
+      tmp2_0 = ffi.Pointer.fromAddress(parts.addr);
+      _api.__deallocate(tmp2_0, parts.capacity * 1, 1);
+    }
+    return tmp1;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class _FfiStringParts extends ffi.Struct {
+  @ffi.Int64()
+  external int addr;
+  @ffi.Uint64()
+  external int len;
+  @ffi.Uint64()
+  external int capacity;
 }
 
 /// Main entry point to library.
@@ -673,17 +726,24 @@ class Api {
       .asFunction<void Function(ffi.Pointer<ffi.Uint8>, int, int)>();
 
   late final _ffiBufferAddressPtr =
-      _lookup<ffi.NativeFunction<ffi.Pointer<ffi.Uint8> Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr)>>(
           "__ffi_buffer_address");
 
   late final _ffiBufferAddress =
-      _ffiBufferAddressPtr.asFunction<ffi.Pointer<ffi.Uint8> Function(int)>();
+      _ffiBufferAddressPtr.asFunction<int Function(int)>();
 
   late final _ffiBufferSizePtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+      _lookup<ffi.NativeFunction<ffi.Uint64 Function(ffi.IntPtr)>>(
           "__ffi_buffer_size");
 
   late final _ffiBufferSize = _ffiBufferSizePtr.asFunction<int Function(int)>();
+
+  late final _ffiStringIntoPartsPtr =
+      _lookup<ffi.NativeFunction<_FfiStringParts Function(ffi.IntPtr)>>(
+          "__ffi_string_into_parts");
+
+  late final _ffiStringIntoParts =
+      _ffiStringIntoPartsPtr.asFunction<_FfiStringParts Function(int)>();
 
   Client? __loginNewClientFuturePoll(
     int boxed,
@@ -1624,32 +1684,6 @@ class Api {
     int,
     int,
   )>();
-  FfiListRoom createFfiListRoom() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListRoomCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoom");
-    return FfiListRoom._(this, list_box);
-  }
-
-  late final _ffiListRoomCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListRoomCreate");
-
-  late final _ffiListRoomCreate =
-      _ffiListRoomCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListRoomLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListRoomLen");
-
-  late final _ffiListRoomLen =
-      _ffiListRoomLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListRoomElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListRoomElementAt");
-
-  late final _ffiListRoomElementAt =
-      _ffiListRoomElementAtPtr.asFunction<int Function(int, int)>();
   FfiListRoomMember createFfiListRoomMember() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListRoomMemberCreate());
@@ -1677,6 +1711,32 @@ class Api {
 
   late final _ffiListRoomMemberElementAt =
       _ffiListRoomMemberElementAtPtr.asFunction<int Function(int, int)>();
+  FfiListRoom createFfiListRoom() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListRoomCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoom");
+    return FfiListRoom._(this, list_box);
+  }
+
+  late final _ffiListRoomCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListRoomCreate");
+
+  late final _ffiListRoomCreate =
+      _ffiListRoomCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListRoomLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListRoomLen");
+
+  late final _ffiListRoomLen =
+      _ffiListRoomLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListRoomElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListRoomElementAt");
+
+  late final _ffiListRoomElementAt =
+      _ffiListRoomElementAtPtr.asFunction<int Function(int, int)>();
 }
 
 class Room {

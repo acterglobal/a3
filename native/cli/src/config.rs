@@ -25,8 +25,10 @@ pub struct LoginConfig {
     login_password: Option<String>,
 }
 
-fn default_client_config() -> Result<ClientConfig> {
-    Ok(ClientConfig::new().user_agent(&format!("effektio-cli/{}", crate_version!()))?)
+async fn default_client_config() -> Result<ClientConfig> {
+    Ok(ClientConfig::new()
+        .await?
+        .user_agent(&format!("effektio-cli/{}", crate_version!()))?)
 }
 
 impl LoginConfig {
@@ -42,7 +44,7 @@ impl LoginConfig {
         };
 
         let client =
-            Client::new_from_user_id_with_config(&username, default_client_config()?).await?;
+            Client::new_from_user_id_with_config(&username, default_client_config().await?).await?;
 
         client
             .login(username.localpart(), &password, None, None)

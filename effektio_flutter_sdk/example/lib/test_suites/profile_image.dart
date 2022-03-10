@@ -11,7 +11,7 @@ class AvatarTest extends TestSuite {
     yield 'Logging in';
     final client = await sdk.login(username, password);
     yield 'Fetching avatar';
-    final avatar = await client.avatar().then((buffer) => buffer.toUint8List());
+    final avatar = await client.avatar().then((buffer) => buffer.asTypedList());
     yield 'Verifying response';
     try {
       await PaintingBinding.instance!.instantiateImageCodec(avatar);

@@ -3,3 +3,6 @@ target
 .env.sh
 .vscode
 .idea
+
+native/effektio/api_generated.rs
+native/effektio/bindings.dart
