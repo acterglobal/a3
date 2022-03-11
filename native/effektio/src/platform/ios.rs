@@ -1,3 +1,4 @@
+use super::native;
 use anyhow::Result;
 use log::Level;
 use matrix_sdk::config::ClientConfig;
@@ -7,14 +8,7 @@ use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::{fmt::format::FmtSpan, EnvFilter};
 
 pub fn new_client_config(base_path: String, home: String) -> Result<ClientConfig> {
-    let data_path = path::PathBuf::from(base_path).join(sanitize(&home));
-
-    fs::create_dir_all(&data_path)?;
-
-    let config = ClientConfig::new()
-        .user_agent("effektio-ios")?
-        .store_path(&data_path);
-    Ok(config)
+    Ok(native::new_client_config(base_path, home)?.user_agent("effektio-android")?)
 }
 
 pub fn init_logging(filter: Option<String>) -> Result<()> {

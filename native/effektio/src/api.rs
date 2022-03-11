@@ -253,7 +253,7 @@ impl Client {
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let homeserver = Url::parse(&homeurl)?;
-    let config = platform::new_client_config(base_path, homeurl).await?;
+    let config = platform::new_client_config(base_path, homeurl)?;
     let mut guest_registration = register::v3::Request::new();
     guest_registration.kind = register::RegistrationKind::Guest;
     RUNTIME
@@ -286,7 +286,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         is_guest,
     } = serde_json::from_str(&restore_token)?;
     let homeserver = Url::parse(&homeurl)?;
-    let config = platform::new_client_config(base_path, session.user_id.to_string()).await?;
+    let config = platform::new_client_config(base_path, session.user_id.to_string())?;
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -307,7 +307,7 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, username.clone()).await?;
+    let config = platform::new_client_config(base_path, username.clone())?;
     let user = Box::<UserId>::try_from(username)?;
     // First we need to log in.
     RUNTIME
