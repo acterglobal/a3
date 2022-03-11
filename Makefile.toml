@@ -60,13 +60,6 @@ script = [
     "flutter pub get",
 ]
 
-[tasks.prep-app]
-description = "Update the native SDK and run the android flutter app"
-dependencies = [
-    "ffigen",
-    "android",
-]
-
 [tasks.format]
 install_crate = "rustfmt"
 command = "cargo"
@@ -132,6 +125,7 @@ command = "cargo"
 args = ["lipo", "--release"]
 
 [tasks.post-ios]
+dependencies = ["ffigen"]
 script_runner = "@duckscript"
 condition = { platforms = ["mac"] }
 script = [
