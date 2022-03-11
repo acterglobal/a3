@@ -6,6 +6,9 @@ on:
 
 name: Build Check
 
+env:
+  DEV: true
+
 jobs:
 
   build-android:
@@ -85,7 +88,7 @@ jobs:
       #     command: test
       #     args: -p effektio --target x86_64-apple-ios
       - name: Build iOS FFI
-        run: cargo make ios-release
+        run: cargo make ios
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
