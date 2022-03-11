@@ -1,3 +1,5 @@
+mod native;
+
 #[cfg(target_os = "android")]
 mod android;
 
@@ -9,9 +11,6 @@ mod ios;
 
 #[cfg(target_os = "ios")]
 pub use ios::*;
-
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
-mod native;
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
 pub use native::*;

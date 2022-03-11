@@ -4,5 +4,6 @@ target
 .vscode
 .idea
 
-native/effektio/api_generated.rs
+native/effektio/src/api_generated.rs
+native/effektio/bindings.h
 native/effektio/bindings.dart

@@ -27,6 +27,8 @@
 .dart_tool/
 .packages
 build/
+lib/effektio_flutter_sdk_ffi.dart
+ios/Classes/bindings.h
 
 linux/libeffektio.so
 macos/libeffektio.dylib

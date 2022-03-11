@@ -1,0 +1,46 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Check Styles
+
+jobs:
+
+  rust-style:
+    runs-on: ubuntu-latest
+    name: Formatting
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/cargo@v1
+        name: Rust Format
+        with:
+          command: fmt
+          args: --all --check
+
+  dart_style:
+    name: lint dart code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: version
+        run: flutter --version
+        working-directory: effektio_flutter_sdk
+      - working-directory: app
+        run: flutter analyze
+        name: lint app
+      - working-directory: effektio_flutter_sdk
+        run: flutter pub get
+      - working-directory: effektio_flutter_sdk
+        run: flutter analyze
+        name: lint effektio_flutter_sdk

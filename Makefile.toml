@@ -60,13 +60,6 @@ script = [
     "flutter pub get",
 ]
 
-[tasks.prep-app]
-description = "Update the native SDK and run the android flutter app"
-dependencies = [
-    "ffigen",
-    "android",
-]
-
 [tasks.format]
 install_crate = "rustfmt"
 command = "cargo"
@@ -132,6 +125,7 @@ command = "cargo"
 args = ["lipo", "--release"]
 
 [tasks.post-ios]
+dependencies = ["ffigen"]
 script_runner = "@duckscript"
 condition = { platforms = ["mac"] }
 script = [
@@ -140,8 +134,8 @@ script = [
     ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/lib${CARGO_MAKE_CRATE_FS_NAME}.a
     """,
     """
-    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/binding.h \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/binding.h
+    cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/bindings.h
     """,
 ]
 

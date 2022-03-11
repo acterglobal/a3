@@ -1,8 +1,8 @@
-use matrix_sdk::config::ClientConfig;
+use matrix_sdk::{config::ClientConfig, store::make_store_config};
 use sanitize_filename_reader_friendly::sanitize;
 use std::{fs, path};
 
-pub async fn new_client_config(
+pub fn new_client_config(
     base_path: String,
     home: String,
 ) -> anyhow::Result<matrix_sdk::config::ClientConfig> {
@@ -10,10 +10,8 @@ pub async fn new_client_config(
 
     fs::create_dir_all(&data_path)?;
 
-    let config = ClientConfig::new().await?
-        .user_agent("effektio-test-platform")?
-        // .store_path(&data_path)
-        ;
+    let config = ClientConfig::with_store_config(make_store_config(&data_path, None)?)
+        .user_agent("effektio-test-platform")?;
 
     Ok(config)
 }

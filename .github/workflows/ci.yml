@@ -6,110 +6,10 @@ on:
 
 name: Build Check
 
+env:
+  DEV: true
+
 jobs:
-
-  rust-style:
-    runs-on: ubuntu-latest
-    name: Formatting
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          components: rustfmt
-      - uses: actions-rs/cargo@v1
-        name: Rust Format
-        with:
-          command: fmt
-          args: --all --check
-
-  dart_style:
-    name: lint dart code
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - name: version
-        run: flutter --version
-        working-directory: effektio_flutter_sdk
-      - working-directory: app
-        run: flutter analyze
-        name: lint app
-      - working-directory: effektio_flutter_sdk
-        run: flutter pub get
-      - working-directory: effektio_flutter_sdk
-        run: flutter analyze
-        name: lint effektio_flutter_sdk
-  core:
-    runs-on: ubuntu-latest
-    name: Rust Native ${{ matrix.name }}
-    strategy:
-      matrix:
-        include:
-          - name: Core
-            package: effektio-core
-            clippy_extras: --tests
-          - name: CLI
-            package: effektio-cli
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: clippy
-          target: ${{ matrix.target }}
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
-      - uses: actions-rs/cargo@v1
-        name: Test
-        with:
-          command: test
-          args: -p ${{matrix.package}}
-      - uses: actions-rs/cargo@v1
-        name: Release Build
-        with:
-          command: build
-          args: -p ${{matrix.package}} --release
-
-  integrations:
-    runs-on: ubuntu-latest
-    # FIXME: remove once tests don't fail
-    continue-on-error: true
-    name: Clippy & Test ${{ matrix.name }}
-    strategy:
-      matrix:
-        include:
-          - name: FFI
-            target: x86_64-unknown-linux-gnu
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install specific toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: clippy
-          target: ${{ matrix.target }}
-      - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
-        with:
-          channel: 'stable'
-      - uses: actions-rs/cargo@v1
-        name: Clippy
-        with:
-          command: clippy
-          args: -p effektio --target ${{matrix.target}} -- -D warnings
-      - uses: actions-rs/cargo@v1
-        name: Test
-        with:
-          command: test
-          args: -p effektio --target ${{matrix.target}}
 
   build-android:
     runs-on: ubuntu-latest
@@ -123,6 +23,7 @@ jobs:
         with:
           toolchain: nightly
           components: clippy
+      - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest
@@ -156,8 +57,8 @@ jobs:
       #   working-directory: ./app
       - run: flutter build apk
         working-directory: ./app
-      - run: flutter build appbundle
-        working-directory: ./app
+      # - run: flutter build appbundle
+      #   working-directory: ./app
 
   build-ios:
     runs-on: macos-latest
@@ -170,6 +71,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - uses: Swatinem/rust-cache@v1
       - run: |
           cargo install cargo-make
           cargo make setup-ios
@@ -188,7 +90,7 @@ jobs:
       #     command: test
       #     args: -p effektio --target x86_64-apple-ios
       - name: Build iOS FFI
-        run: cargo make ios-release
+        run: cargo make ios
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk

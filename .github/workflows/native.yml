@@ -1,0 +1,78 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Check Native Build
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    name: Rust Native ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Core
+            package: effektio-core
+            clippy_extras: --tests
+          - name: CLI
+            package: effektio-cli
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          target: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p ${{matrix.package}} ${{matrix.clippy_extras}} -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p ${{matrix.package}}
+      - uses: actions-rs/cargo@v1
+        name: Release Build
+        with:
+          command: build
+          args: -p ${{matrix.package}} --release
+
+  integrations:
+    runs-on: ubuntu-latest
+    # FIXME: remove once tests don't fail
+    continue-on-error: true
+    name: Clippy & Test ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: FFI
+            target: x86_64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+          target: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v1
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      - uses: actions-rs/cargo@v1
+        name: Clippy
+        with:
+          command: clippy
+          args: -p effektio --target ${{matrix.target}} -- -D warnings
+      - uses: actions-rs/cargo@v1
+        name: Test
+        with:
+          command: test
+          args: -p effektio --target ${{matrix.target}}

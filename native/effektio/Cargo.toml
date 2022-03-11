@@ -3,13 +3,18 @@ name = "effektio"
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.58"
-description = "Core types and features of the effektio app"
+description = "SDK of the effektio app"
 homepage = "https://effekto.org"
 repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
+[features]
+default = [ ]
+cbindgen = [ ]
+
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
+cbindgen = "0.20.0"
 
 [dependencies]
 anyhow = "1.0.51"
