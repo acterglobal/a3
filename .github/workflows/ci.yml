@@ -57,8 +57,8 @@ jobs:
       #   working-directory: ./app
       - run: flutter build apk
         working-directory: ./app
-      - run: flutter build appbundle
-        working-directory: ./app
+      # - run: flutter build appbundle
+      #   working-directory: ./app
 
   build-ios:
     runs-on: macos-latest
