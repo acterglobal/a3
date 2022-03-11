@@ -7,5 +7,6 @@ pub use matrix_sdk;
 pub mod api;
 pub mod platform;
 
+#[rustfmt::skip]
 #[cfg(feature = "cbindgen")]
 pub mod api_generated;
