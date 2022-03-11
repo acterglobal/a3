@@ -23,6 +23,7 @@ jobs:
         with:
           toolchain: nightly
           components: clippy
+      - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest
@@ -70,6 +71,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - uses: Swatinem/rust-cache@v1
       - run: |
           cargo install cargo-make
           cargo make setup-ios

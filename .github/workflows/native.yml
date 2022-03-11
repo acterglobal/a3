@@ -26,6 +26,7 @@ jobs:
           toolchain: nightly
           components: clippy
           target: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         name: Clippy
         with:
@@ -60,6 +61,7 @@ jobs:
           toolchain: nightly
           components: clippy
           target: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v1
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
