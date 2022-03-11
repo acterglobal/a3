@@ -1,4 +1,3 @@
-use cbindgen;
 use ffi_gen::FfiGen;
 use std::path::PathBuf;
 
@@ -15,12 +14,20 @@ fn main() {
         "cargo:rerun-if-changed={}",
         path.as_path().to_str().unwrap()
     );
+
+    // general FFI-gen
     let ffigen = FfiGen::new(&path).unwrap();
     let dart = crate_dir.join(API_DART_FILENAME);
+    // building the rust source for reuse in cbindgen later
     let rst = ffigen.generate_rust(ffi_gen::Abi::Native64).unwrap();
     std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst).unwrap();
+
+    // then let's build the dart API
     ffigen.generate_dart(dart, "effektio", "effektio").unwrap();
 
+    // once the setup is ready, let's create the c-headers
+    // this needs the rust API to be generated first, as it
+    // imports that via the `cbindings`-feature to scan an build the headers
     let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
         .expect("Reading cbindgen.toml failed");
 
