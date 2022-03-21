@@ -1,5 +1,4 @@
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 
 Future<Client> makeClient() async {
   final sdk = await EffektioSdk.instance;

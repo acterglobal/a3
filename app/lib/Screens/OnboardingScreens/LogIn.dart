@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
