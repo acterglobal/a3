@@ -1,6 +1,6 @@
 import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/Screens/HomeScreens/News.dart';
-import 'package:effektio/Screens/HomeScreens/Notification.dart';
+import 'package:effektio/screens/HomeScreens/News.dart';
+import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
