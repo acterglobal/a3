@@ -1,4 +1,4 @@
-import 'package:effektio/Common+Store/KeyConstants.dart';
+import 'package:effektio/common/store/KeyConstants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefrence {

@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 // CLASS BUTTON
 
-import 'package:effektio/Common+Store/Colors.dart';
+import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable

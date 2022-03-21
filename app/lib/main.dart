@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:effektio/repository/client.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -45,18 +46,6 @@ class Effektio extends StatelessWidget {
       },
     );
   }
-}
-
-Future<Client> makeClient() async {
-  final sdk = await EffektioSdk.instance;
-  Client client = await sdk.currentClient;
-  return client;
-}
-
-Future<Client> login(String username, String password) async {
-  final sdk = await EffektioSdk.instance;
-  Client client = await sdk.login(username, password);
-  return client;
 }
 
 class AccountHeader extends StatefulWidget {

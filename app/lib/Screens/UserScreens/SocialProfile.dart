@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio/Common+Store/Colors.dart';
-import 'package:effektio/Common+Widget/AppCommon.dart';
-import 'package:effektio/Common+Widget/SideMenu.dart';
+import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/SideMenu.dart';
 
 class SocialProfileScreen extends StatefulWidget {
   const SocialProfileScreen({Key? key}) : super(key: key);

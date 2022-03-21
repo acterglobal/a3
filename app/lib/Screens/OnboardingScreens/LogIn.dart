@@ -1,11 +1,10 @@
-// ignore_for_file: prefer_const_constructors
-import 'package:effektio/Common+Store/Colors.dart';
-import 'package:effektio/Common+Widget/OnboardingWidget.dart';
-import 'package:effektio/Screens/OnboardingScreens/Signup.dart';
+import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/widget/OnboardingWidget.dart';
+import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio/Common+Store/AppConstants.dart';
+import 'package:effektio/common/store/AppConstants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);

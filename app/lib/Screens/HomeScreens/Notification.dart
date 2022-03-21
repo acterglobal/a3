@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio/Common+Store/Colors.dart';
-import 'package:effektio/Common+Widget/AppCommon.dart';
-import 'package:effektio/Common+Widget/SideMenu.dart';
+import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/SideMenu.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);

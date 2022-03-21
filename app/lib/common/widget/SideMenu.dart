@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/Common+Store/Colors.dart';
+import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/Screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/Screens/UserScreens/SocialProfile.dart';
 import 'package:flutter/material.dart';
