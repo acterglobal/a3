@@ -22,7 +22,7 @@ You also need to build the core SDK once first:
 
 ## Building for SDK
 
-Whenever the native SDK changed, you need to (re)build the artifacts. To do that you can use `cargo make build` with the specific SDK target, e.g. `cargo make build android`
+Whenever the native SDK changed, you need to (re)build the artifacts. To do that you can use `cargo make android`
 
 .Note: currently only android is fully supported. Plumbing for iOS is existing but not tested, Web, Linux, Mac, Windows and are platforms have not been configured yet.
 
@@ -35,6 +35,13 @@ F5 in VS Code or `flutter run` in `app`
 ## Running Tests
 
 We have a test suite to run unit tests and integration tests. This is run via the CI to ensure consistency and every features is expected to add further tests to the suite. You can run the tests via:
+
+
+## Troubleshooting
+
+### NDK compile error
+
+The current system has a problem with the latest android native development kit (NDK), please downgrade to version r22.* - then things should be fine.
 
 .... TBD
 
