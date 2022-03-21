@@ -2,6 +2,7 @@
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
+import 'package:effektio/repository/client.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,11 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<Client> login(String username, String password) async {
-    final sdk = await EffektioSdk.instance;
-    Client client = await sdk.login(username, password);
-    return client;
-  }
+  // Future<Client> login(String username, String password) async {
+  //   final sdk = await EffektioSdk.instance;
+  //   Client client = await sdk.login(username, password);
+  //   return client;
+  // }
 
   @override
   Widget build(BuildContext context) {

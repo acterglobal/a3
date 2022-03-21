@@ -1,12 +1,17 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:typed_data';
 import 'package:effektio/repository/client.dart';
+import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
+import 'package:effektio/screens/OnboardingScreens/splashScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'dart:async';
+
+import 'Screens/HomeScreens/News.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +24,7 @@ void main() async {
       //  builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       // ignore: prefer_const_constructors
-      home: Effektio(),
+      home: SplashScreen(),
     ),
   );
 }
@@ -41,8 +46,8 @@ class Effektio extends StatelessWidget {
       // MaterialApp contains our top-level Navigator
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => const EffektioHome(),
-        '/login': (BuildContext context) => const Login(),
+        '/': (BuildContext context) => EffektioHome(),
+        '/login': (BuildContext context) => const LoginScreen(),
       },
     );
   }
@@ -211,24 +216,26 @@ class _EffektioHomeState extends State<EffektioHome> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      Center(
-        child: Text(
-          AppLocalizations.of(context)!.index1,
-          style: optionStyle,
-        ),
-      ),
-      Center(
-        child: Text(
-          AppLocalizations.of(context)!.index2,
-          style: optionStyle,
-        ),
-      ),
-      Center(
-        child: Text(
-          AppLocalizations.of(context)!.index4,
-          style: optionStyle,
-        ),
-      ),
+      // Center(
+      //   child: Text(
+      //     AppLocalizations.of(context)!.index1,
+      //     style: optionStyle,
+      //   ),
+      // ),
+      NewsScreen(),
+
+      // Center(
+      //   child: Text(
+      //     AppLocalizations.of(context)!.index2,
+      //     style: optionStyle,
+      //   ),
+      // ),
+      // Center(
+      //   child: Text(
+      //     AppLocalizations.of(context)!.index4,
+      //     style: optionStyle,
+      //   ),
+      // ),
       FutureBuilder<Client>(
         future: _client, // a previously-obtained Future<String> or null
         builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
