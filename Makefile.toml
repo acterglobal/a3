@@ -99,6 +99,8 @@ dependencies = [
 description = "Runs the rust compiler."
 category = "Build"
 dependencies = ["android"]
+command = "cargo"
+args = ["build", "-p", "effektio", "--release"]
 
 [tasks.build.mac]
 description = "Runs the rust compiler."
