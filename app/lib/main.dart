@@ -11,7 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'dart:async';
 
-import 'Screens/HomeScreens/News.dart';
+import 'screens/HomeScreens/News.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
