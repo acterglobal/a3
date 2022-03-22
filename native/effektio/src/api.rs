@@ -258,7 +258,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
     guest_registration.kind = register::RegistrationKind::Guest;
     RUNTIME
         .spawn(async move {
-            let client = MatrixClient::new_with_config(homeserver, config).await?;
+            let client = config.build().await?;
             let register = client.register(guest_registration).await?;
             let session = Session {
                 access_token: register.access_token.expect("no access token given"),
@@ -290,7 +290,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = MatrixClient::new_with_config(homeserver, config).await?;
+            let client = config.build().await?;
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
@@ -307,12 +307,12 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, username.clone())?;
-    let user = Box::<UserId>::try_from(username)?;
+    let user = Box::<UserId>::try_from(username.clone())?;
+    let config = platform::new_client_config(base_path, username)?.user_id(&user);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = MatrixClient::new_from_user_id_with_config(&user, config).await?;
+            let client = config.build().await?;
             client.login(user, &password, None, None).await?;
             let c = Client::new(
                 client,
