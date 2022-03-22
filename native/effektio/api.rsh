@@ -11,6 +11,8 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
+object UserId {}
+
 object Room {
     /// Calculate the display name
     fn display_name() -> Future<Result<string>>;
@@ -18,10 +20,28 @@ object Room {
     /// The avatar of the room
     fn avatar() -> Future<Result<buffer<u8>>>;
 
+    /// the members currently in the room
     fn active_members() -> Future<Result<Vec<RoomMember>>>;
+
+    // the members currently in the room
+    // fn get_member(user: UserId) -> Future<Result<RoomMember>>;
 }
 
-object RoomMember {}
+object RoomMember {
+
+    /// The avatar of the member
+    fn avatar() -> Future<Result<buffer<u8>>>;
+
+    /// Calculate the display name
+    fn display_name() -> Option<string>;
+
+    /// Falback name
+    // fn name() -> string;
+
+    /// Full user_id
+    fn user_id() -> UserId;
+
+}
 
 /// Main entry point for `effektio`.
 object Client {
