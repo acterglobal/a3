@@ -1,7 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:effektio/common/store/Colors.dart';
+<<<<<<< HEAD
 import 'package:effektio/Screens/SideMenuScreens/Gallery.dart';
+=======
+import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
+>>>>>>> 6788fe361f338dca819135b57b0f1ce18c5cbeb5
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
