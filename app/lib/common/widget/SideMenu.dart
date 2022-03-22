@@ -2,7 +2,7 @@
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/Screens/SideMenuScreens/Gallery.dart';
-import 'package:effektio/Screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,11 +21,16 @@ class SideDrawer extends StatelessWidget {
               children: [
                 Container(
                   margin: EdgeInsets.all(10),
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(
-                      'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/profile');
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+                      ),
+                      radius: 24,
                     ),
-                    radius: 24,
                   ),
                 ),
                 SizedBox(
@@ -138,34 +143,33 @@ class SideDrawer extends StatelessWidget {
           Expanded(
             child: Align(
               alignment: FractionalOffset.bottomCenter,
-              child: MaterialButton(
-                onPressed: () => {},
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 50),
-                  height: 100,
-                  alignment: Alignment.bottomCenter,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: Container(
-                            margin: const EdgeInsets.only(right: 10),
-                            child: Image.asset('assets/images/logout.png'),
-                          ),
-                          onPressed: () {},
+              child: Container(
+                margin: EdgeInsets.only(bottom: 20, left: 20),
+                height: 100,
+                alignment: Alignment.bottomCenter,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Container(
+                          margin: const EdgeInsets.only(right: 10),
+                          child: Image.asset('assets/images/logout.png'),
                         ),
-                        Text(
-                          'logout',
-                          style: GoogleFonts.montserrat(
-                            fontSize: 16,
-                            color: AppColors.primaryColor,
-                          ),
-                        )
-                      ],
-                    ),
+                        onPressed: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                      ),
+                      Text(
+                        'logout',
+                        style: GoogleFonts.montserrat(
+                          fontSize: 16,
+                          color: AppColors.primaryColor,
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),

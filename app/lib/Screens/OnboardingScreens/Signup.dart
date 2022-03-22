@@ -177,7 +177,7 @@ class _SignupScreentate extends State<SignupScreen> {
               Container(
                 child: onboardingTextField(
                   'Confirm Password',
-                  confirmPasswordController,
+                  passwordController,
                   'Please re-enter Password',
                 ),
               ),

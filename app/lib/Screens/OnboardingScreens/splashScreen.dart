@@ -32,7 +32,7 @@ class SplashScreen extends StatelessWidget {
               if ((state is Initial) || (state is Loading)) {
                 return SplashScreenWidget();
               } else if (state is Loaded) {
-                return LoginScreen();
+                return Effektio();
               } else {
                 throw (e) {};
               }

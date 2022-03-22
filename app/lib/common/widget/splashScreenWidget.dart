@@ -39,7 +39,6 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> logos = [];
     // ignore: sized_box_for_whitespace
     return Container(
       height: MediaQuery.of(context).size.height,

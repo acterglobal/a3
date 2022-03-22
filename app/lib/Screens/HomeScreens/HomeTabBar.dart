@@ -1,3 +1,4 @@
+import 'package:effektio/Screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';

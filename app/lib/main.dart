@@ -2,8 +2,10 @@
 
 import 'dart:typed_data';
 import 'package:effektio/repository/client.dart';
+import 'package:effektio/screens/HomeScreens/HomeTabBar.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/splashScreen.dart';
+import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,6 +50,7 @@ class Effektio extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => EffektioHome(),
         '/login': (BuildContext context) => const LoginScreen(),
+        '/profile': (BuildContext context) => const SocialProfileScreen(),
       },
     );
   }
@@ -216,26 +219,19 @@ class _EffektioHomeState extends State<EffektioHome> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      // Center(
-      //   child: Text(
-      //     AppLocalizations.of(context)!.index1,
-      //     style: optionStyle,
-      //   ),
-      // ),
       NewsScreen(),
-
-      // Center(
-      //   child: Text(
-      //     AppLocalizations.of(context)!.index2,
-      //     style: optionStyle,
-      //   ),
-      // ),
-      // Center(
-      //   child: Text(
-      //     AppLocalizations.of(context)!.index4,
-      //     style: optionStyle,
-      //   ),
-      // ),
+      Center(
+        child: Text(
+          AppLocalizations.of(context)!.index2,
+          style: optionStyle,
+        ),
+      ),
+      Center(
+        child: Text(
+          AppLocalizations.of(context)!.index4,
+          style: optionStyle,
+        ),
+      ),
       FutureBuilder<Client>(
         future: _client, // a previously-obtained Future<String> or null
         builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
@@ -415,37 +411,38 @@ class _EffektioHomeState extends State<EffektioHome> {
               ],
             ),
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _tabIndex,
-            backgroundColor: const Color(0xFF6200EE),
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white.withOpacity(.6),
-            selectedFontSize: 0,
-            unselectedFontSize: 0,
-            onTap: (value) {
-              // Respond to item press.
-              setState(() => _tabIndex = value);
-            },
-            items: [
-              BottomNavigationBarItem(
-                label: AppLocalizations.of(context)!.news,
-                icon: const Icon(Icons.dashboard),
-              ),
-              BottomNavigationBarItem(
-                label: AppLocalizations.of(context)!.faq,
-                icon: const Icon(Icons.help_outline),
-              ),
-              BottomNavigationBarItem(
-                label: AppLocalizations.of(context)!.community,
-                icon: const Icon(Icons.groups),
-              ),
-              BottomNavigationBarItem(
-                label: AppLocalizations.of(context)!.chat,
-                icon: const Icon(Icons.chat),
-              ),
-            ],
-          ),
+          // bottomNavigationBar: BottomNavigationBar(
+          //   type: BottomNavigationBarType.fixed,
+          //   currentIndex: _tabIndex,
+          //   backgroundColor: const Color(0xFF6200EE),
+          //   selectedItemColor: Colors.white,
+          //   unselectedItemColor: Colors.white.withOpacity(.6),
+          //   selectedFontSize: 0,
+          //   unselectedFontSize: 0,
+          //   onTap: (value) {
+          //     // Respond to item press.
+          //     setState(() => _tabIndex = value);
+          //   },
+          //   items: [
+          //     BottomNavigationBarItem(
+          //       label: AppLocalizations.of(context)!.news,
+          //       icon: const Icon(Icons.dashboard),
+          //     ),
+          //     BottomNavigationBarItem(
+          //       label: AppLocalizations.of(context)!.faq,
+          //       icon: const Icon(Icons.help_outline),
+          //     ),
+          //     BottomNavigationBarItem(
+          //       label: AppLocalizations.of(context)!.community,
+          //       icon: const Icon(Icons.groups),
+          //     ),
+          //     BottomNavigationBarItem(
+          //       label: AppLocalizations.of(context)!.chat,
+          //       icon: const Icon(Icons.chat),
+          //     ),
+          //   ],
+          // ),
+          bottomNavigationBar: HomeTabBar(_tabIndex),
         ),
       ),
     );
