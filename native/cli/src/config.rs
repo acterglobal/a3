@@ -4,7 +4,7 @@ use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
 use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
-use effektio_core::matrix_sdk::{config::ClientConfig, Client};
+use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
 use log::warn;
 use std::path::PathBuf;
@@ -25,8 +25,8 @@ pub struct LoginConfig {
     login_password: Option<String>,
 }
 
-async fn default_client_config() -> Result<ClientConfig> {
-    Ok(ClientConfig::new().user_agent(&format!("effektio-cli/{}", crate_version!()))?)
+async fn default_client_config() -> Result<ClientBuilder> {
+    Ok(Client::builder().user_agent(&format!("effektio-cli/{}", crate_version!())))
 }
 
 impl LoginConfig {
@@ -41,8 +41,11 @@ impl LoginConfig {
                 .interact()?,
         };
 
-        let client =
-            Client::new_from_user_id_with_config(&username, default_client_config().await?).await?;
+        let client = default_client_config()
+            .await?
+            .user_id(&username)
+            .build()
+            .await?;
 
         client
             .login(username.localpart(), &password, None, None)
