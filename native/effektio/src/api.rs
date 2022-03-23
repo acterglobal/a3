@@ -20,8 +20,9 @@ mod room;
 mod stream;
 
 pub use client::{Client, ClientStateBuilder};
+pub use messages::AnyMessage;
 pub use room::{Room, RoomMember};
-pub use stream::BackwardsStream;
+pub use stream::TimelineStream;
 
 pub type UserId = Box<ruma::UserId>;
 

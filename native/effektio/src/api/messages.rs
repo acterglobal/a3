@@ -34,24 +34,26 @@ impl BaseMessage {
     }
 }
 
+#[derive(Clone)]
 pub struct TextMessage {
-    base_message: Arc<BaseMessage>,
+    base_message: BaseMessage,
 }
 
 impl TextMessage {
-    pub fn base_message(&self) -> Arc<BaseMessage> {
-        return self.base_message.clone();
+    pub fn base_message(&self) -> BaseMessage {
+        self.base_message.clone()
     }
 }
 
+#[derive(Clone)]
 pub struct ImageMessage {
-    base_message: Arc<BaseMessage>,
+    base_message: BaseMessage,
     url: Option<Box<MxcUri>>,
 }
 
 impl ImageMessage {
-    pub fn base_message(&self) -> Arc<BaseMessage> {
-        return self.base_message.clone();
+    pub fn base_message(&self) -> BaseMessage {
+        self.base_message.clone()
     }
 
     pub fn url(&self) -> Option<String> {
@@ -62,42 +64,43 @@ impl ImageMessage {
     }
 }
 
+#[derive(Clone)]
 pub struct AnyMessage {
-    text: Option<Arc<TextMessage>>,
-    image: Option<Arc<ImageMessage>>,
+    text: Option<TextMessage>,
+    image: Option<ImageMessage>,
 }
 
 impl AnyMessage {
-    pub fn text(&self) -> Option<Arc<TextMessage>> {
+    pub fn text(&self) -> Option<TextMessage> {
         self.text.clone()
     }
 
-    pub fn image(&self) -> Option<Arc<ImageMessage>> {
+    pub fn image(&self) -> Option<ImageMessage> {
         self.image.clone()
     }
 }
 
-pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<Arc<AnyMessage>> {
+pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<AnyMessage> {
     match sync_event.event.deserialize() {
         Ok(AnySyncRoomEvent::Message(AnySyncMessageEvent::RoomMessage(m))) => {
-            let base_message = Arc::new(BaseMessage {
+            let base_message = BaseMessage {
                 id: m.event_id.to_string(),
                 content: m.content.body().to_string(),
                 sender: m.sender.to_string(),
                 origin_server_ts: m.origin_server_ts.as_secs().into(),
-            });
+            };
 
             match m.content.msgtype {
                 MessageType::Image(content) => {
                     let any_message = AnyMessage {
                         text: None,
-                        image: Some(Arc::new(ImageMessage {
+                        image: Some(ImageMessage {
                             base_message,
                             url: content.url,
-                        })),
+                        }),
                     };
 
-                    return Some(Arc::new(any_message));
+                    return Some(any_message);
                 }
                 // MessageType::Audio(content) => {
 
@@ -119,10 +122,10 @@ pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<Arc<AnyMessage
                 // }
                 _ => {
                     let any_message = AnyMessage {
-                        text: Some(Arc::new(TextMessage { base_message })),
+                        text: Some(TextMessage { base_message }),
                         image: None,
                     };
-                    return Some(Arc::new(any_message));
+                    return Some(any_message);
                 }
             }
         }

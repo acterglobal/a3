@@ -1,4 +1,4 @@
-use super::{api, UserId, RUNTIME};
+use super::{api, TimelineStream, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{stream, Stream};
@@ -96,6 +96,19 @@ impl Room {
             .spawn(async move {
                 let member = r.get_member(&user_id).await?.context("User not found")?;
                 Ok(RoomMember { member })
+            })
+            .await?
+    }
+
+    pub async fn timeline(&self) -> Result<TimelineStream> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let (forward, backward) = room
+                    .timeline()
+                    .await
+                    .context("Failed acquiring timeline streams")?;
+                Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward)))
             })
             .await?
     }
