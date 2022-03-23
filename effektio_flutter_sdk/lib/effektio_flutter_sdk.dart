@@ -1,5 +1,3 @@
-library effektio;
-
 import 'dart:core';
 import 'dart:io';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';

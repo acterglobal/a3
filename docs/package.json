@@ -1,0 +1,16 @@
+{
+  "name": "effektio-docs",
+  "version": "0.0.1",
+  "repository": "https://github.com/effektio/effektio",
+  "author": "Benjamin Kampmann",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "vuepress": "^2.0.0-beta.36",
+    "@vuepress/theme-default": "^2.0.0-beta.36"
+  },
+  "scripts": {
+    "doc:dev": "vuepress dev",
+    "doc:publish": "vuepress build --dest dist"
+  }
+}
