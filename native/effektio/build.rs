@@ -25,18 +25,20 @@ fn main() {
     // then let's build the dart API
     ffigen.generate_dart(dart, "effektio", "effektio").unwrap();
 
-    // once the setup is ready, let's create the c-headers
-    // this needs the rust API to be generated first, as it
-    // imports that via the `cbindings`-feature to scan an build the headers
-    let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
-        .expect("Reading cbindgen.toml failed");
+    if std::env::var("SKIP_CBINDGEN").is_err() {
+        // once the setup is ready, let's create the c-headers
+        // this needs the rust API to be generated first, as it
+        // imports that via the `cbindings`-feature to scan an build the headers
+        let config = cbindgen::Config::from_file(crate_dir.join(API_CBINDGEN_CONFIG_FILENAME))
+            .expect("Reading cbindgen.toml failed");
 
-    cbindgen::Builder::new()
-        .with_config(config)
-        .with_crate(crate_dir)
-        .generate()
-        .expect("Unable to generate bindings")
-        .write_to_file(API_C_HEADER_FILENAME);
+        cbindgen::Builder::new()
+            .with_config(config)
+            .with_crate(crate_dir)
+            .generate()
+            .expect("Unable to generate C-headers")
+            .write_to_file(API_C_HEADER_FILENAME);
+    }
 
     // let js = dir.join("bindings.mjs");
     // ffigen.generate_js(js).unwrap();
