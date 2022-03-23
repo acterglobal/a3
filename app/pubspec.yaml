@@ -68,31 +68,7 @@ flutter:
   generate: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/logo.svg
-    - assets/images/mainLogo.svg
-    - assets/images/logo.png
-    - assets/images/mainLogo.png
-    - assets/images/feed.png
-    - assets/images/News.png
-    - assets/images/chat.png
-    - assets/images/add.png
-    - assets/images/bell.png
-    - assets/images/hamburger.png
-    - assets/images/search.png
-    - assets/images/task.png
-    - assets/images/share.png
-    - assets/images/polls.png
-    - assets/images/people.png
-    - assets/images/faq.png
-    - assets/images/calendar.png
-    - assets/images/search.png
-    - assets/images/gallery.png
-    - assets/images/document.png
-    - assets/images/logout.png
-    - assets/images/dummy.png
-    - assets/images/dots.png
-    - assets/images/profileBack.png
-    - assets/images/edit.png
+    - assets/images/
   
   #   - images/a_dot_ham.jpeg
 

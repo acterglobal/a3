@@ -1,3 +1,5 @@
+// ignore_for_file: require_trailing_commas
+
 import 'package:effektio/blocs/login/form_submission_status.dart';
 
 class SignInState {

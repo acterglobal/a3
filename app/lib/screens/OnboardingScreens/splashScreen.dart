@@ -4,7 +4,6 @@ import 'package:effektio/blocs/splash_screen/splash_screen_bloc.dart';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/splashScreenWidget.dart';
 import 'package:effektio/main.dart';
-import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

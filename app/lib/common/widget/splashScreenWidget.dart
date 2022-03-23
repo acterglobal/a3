@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:effektio/blocs/splash_screen/splash_screen_bloc.dart';
-import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,7 +47,6 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            // Here place your app logo, tagline etc..
             Center(
               child: AnimatedSwitcher(
                 duration: Duration(milliseconds: 800),
@@ -63,7 +61,7 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
                         key: Key('2'),
                         height: MediaQuery.of(context).size.height / 1.5,
                         width: MediaQuery.of(context).size.width / 1.5,
-                        child: SvgPicture.asset('assets/images/mainLogo.svg'),
+                        child: SvgPicture.asset('assets/images/main_logo.svg'),
                       ),
                 switchInCurve: Curves.ease,
                 transitionBuilder: (Widget child, Animation<double> animation) {
