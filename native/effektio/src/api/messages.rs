@@ -30,7 +30,7 @@ impl BaseMessage {
     }
 
     pub fn origin_server_ts(&self) -> u64 {
-        self.origin_server_ts.clone()
+        self.origin_server_ts
     }
 }
 
@@ -57,10 +57,7 @@ impl ImageMessage {
     }
 
     pub fn url(&self) -> Option<String> {
-        match self.url.clone() {
-            Some(url) => return Some(url.to_string()),
-            _ => return None,
-        }
+        self.url.clone().map(|url| url.to_string())
     }
 }
 
@@ -100,7 +97,7 @@ pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<AnyMessage> {
                         }),
                     };
 
-                    return Some(any_message);
+                    Some(any_message)
                 }
                 // MessageType::Audio(content) => {
 
@@ -125,7 +122,7 @@ pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<AnyMessage> {
                         text: Some(TextMessage { base_message }),
                         image: None,
                     };
-                    return Some(any_message);
+                    Some(any_message)
                 }
             }
         }
