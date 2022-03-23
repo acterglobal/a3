@@ -25,7 +25,7 @@ fn main() {
     // then let's build the dart API
     ffigen.generate_dart(dart, "effektio", "effektio").unwrap();
 
-    if std::env::var("CARGO_FEATURE_CBINDGEN").is_ok() {
+    if std::env::var("SKIP_CBINDGEN").is_err() {
         // once the setup is ready, let's create the c-headers
         // this needs the rust API to be generated first, as it
         // imports that via the `cbindings`-feature to scan an build the headers
