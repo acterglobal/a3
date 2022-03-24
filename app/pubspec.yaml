@@ -39,6 +39,8 @@ dependencies:
   formz: ^0.4.1
   flutter_chat_ui: ^1.5.5
   google_fonts: ^2.3.1
+  flutter_bloc: ^8.0.1
+  flutter_svg: ^1.0.3
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
 
@@ -66,29 +68,7 @@ flutter:
   generate: true
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/logo.png
-    - assets/images/mainLogo.png
-    - assets/images/feed.png
-    - assets/images/News.png
-    - assets/images/chat.png
-    - assets/images/add.png
-    - assets/images/bell.png
-    - assets/images/hamburger.png
-    - assets/images/search.png
-    - assets/images/task.png
-    - assets/images/share.png
-    - assets/images/polls.png
-    - assets/images/people.png
-    - assets/images/faq.png
-    - assets/images/calendar.png
-    - assets/images/search.png
-    - assets/images/gallery.png
-    - assets/images/document.png
-    - assets/images/logout.png
-    - assets/images/dummy.png
-    - assets/images/dots.png
-    - assets/images/profileBack.png
-    - assets/images/edit.png
+    - assets/images/
   
   #   - images/a_dot_ham.jpeg
 

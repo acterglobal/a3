@@ -1,8 +1,12 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 // CLASS BUTTON
 
-import 'package:effektio/Common+Store/Colors.dart';
+import 'package:effektio/blocs/login/signIn_bloc.dart';
+import 'package:effektio/blocs/login/signIn_event.dart';
+import 'package:effektio/blocs/login/signIn_state.dart';
+import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // ignore: must_be_immutable
 class CustomOnbaordingButton extends StatelessWidget {
@@ -45,7 +49,7 @@ class CustomOnbaordingButton extends StatelessWidget {
 // ignore: unused_element
 Widget onboardingTextField(
   String hintText,
-  TextEditingController controller,
+  TextEditingController passwordController,
   String validatorText,
 ) {
   return Container(
@@ -55,16 +59,24 @@ Widget onboardingTextField(
       color: AppColors.textFieldColor,
       borderRadius: BorderRadius.circular(4),
     ),
-    child: TextFormField(
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
-        border: InputBorder.none,
+    child: BlocBuilder<SignInBloc, SignInState>(
+      builder: (context, state) {
+        return TextFormField(
+          controller: passwordController,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
+            border: InputBorder.none,
 
-        hintText: hintText, // pass the hint text parameter here
-        hintStyle: TextStyle(color: Colors.grey),
-      ),
-      style: TextStyle(color: Colors.white),
-      validator: (val) => val!.isEmpty ? validatorText : null,
+            hintText: hintText, // pass the hint text parameter here
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          style: TextStyle(color: Colors.white),
+          validator: (val) => val!.isEmpty ? validatorText : null,
+          onChanged: (value) => context
+              .read<SignInBloc>()
+              .add(SignInPasswordChanged(password: value)),
+        );
+      },
     ),
   );
 }

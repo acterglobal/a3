@@ -1,4 +1,4 @@
-import 'package:effektio/Common+Store/Colors.dart';
+import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
 
 Widget galleryImagesView(String image) {

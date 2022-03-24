@@ -1,6 +1,6 @@
-import 'package:effektio/Common+Store/Colors.dart';
-import 'package:effektio/Common+Widget/AppCommon.dart';
-import 'package:effektio/Common+Widget/Feed.dart';
+import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/Feed.dart';
 import 'package:flutter/material.dart';
 
 class GalleryScreen extends StatefulWidget {
@@ -20,7 +20,6 @@ class _GalleryScreenState extends State<GalleryScreen> {
     'https://i.ytimg.com/vi/dWnhkEFRzFQ/maxresdefault.jpg',
     'https://recenthighlights.com/wp-content/uploads/2020/06/Solo-Leveling-Anime.jpg',
     'https://cdn.mos.cms.futurecdn.net/eVyt9jnUrLBSvSwW6pScj9.jpg',
-    '',
     'https://assets3.thrillist.com/v1/image/3055763/414x310/crop;webp=auto;jpeg_quality=60;progressive.jpg',
   ];
 
@@ -30,6 +29,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.textFieldColor,
         title: navBarTitle('Gallery'),
+        centerTitle: true,
       ),
       backgroundColor: Colors.black,
       body: Container(
@@ -38,7 +38,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           crossAxisCount: 2,
           crossAxisSpacing: 15,
           mainAxisSpacing: 15,
-          children: List.generate(10, (index) {
+          children: List.generate(9, (index) {
             return Center(
               child: galleryImagesView(images[index]),
             );

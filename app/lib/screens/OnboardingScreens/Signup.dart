@@ -1,12 +1,14 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:effektio/Common+Store/Colors.dart';
-import 'package:effektio/Common+Widget/OnboardingWidget.dart';
-import 'package:effektio/Screens/HomeScreens/HomeTabBar.dart';
-import 'package:effektio/Screens/OnboardingScreens/LogIn.dart';
+// ignore_for_file: prefer_const_constructors
+
+import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/widget/OnboardingWidget.dart';
+import 'package:effektio/screens/HomeScreens/HomeTabBar.dart';
+import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio/Common+Store/AppConstants.dart';
+import 'package:effektio/common/store/AppConstants.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -50,7 +52,7 @@ class _SignupScreentate extends State<SignupScreen> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: Image.asset('assets/images/logo.png'),
+                child: SvgPicture.asset('assets/images/logo.svg'),
               ),
               SizedBox(
                 height: 40,
@@ -163,23 +165,23 @@ class _SignupScreentate extends State<SignupScreen> {
               SizedBox(
                 height: 20,
               ),
-              Container(
-                child: onboardingTextField(
-                  'Password',
-                  passwordController,
-                  'Please enter Password',
-                ),
-              ),
+              // Container(
+              //   child: onboardingTextField(
+              //     'Password',
+              //     passwordController,
+              //     'Please enter Password',
+              //   ),
+              // ),
               SizedBox(
                 height: 20,
               ),
-              Container(
-                child: onboardingTextField(
-                  'Confirm Password',
-                  confirmPasswordController,
-                  'Please re-enter Password',
-                ),
-              ),
+              // Container(
+              //   child: onboardingTextField(
+              //     'Confirm Password',
+              //     passwordController,
+              //     'Please re-enter Password',
+              //   ),
+              // ),
               SizedBox(
                 height: 40,
               ),
