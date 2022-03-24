@@ -199,12 +199,6 @@ class _SideDrawerState extends State<SideDrawer> {
                       onTap: () {
                         Navigator.pushNamed(context, '/profile');
                       },
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-                        ),
-                        radius: 24,
-                      ),
                     ),
                   );
                 }
