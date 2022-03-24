@@ -13,37 +13,19 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
+        submodules: true
 
 #       ---- setup of systems
+
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
 
-#       ---- Install extra tools
-
-      # cache node_modules
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
-      # install dependencies if the cache did not hit
-      - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn --frozen-lockfile
-        working-directory: docs
+#                  ---- Install extra tools
 
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
@@ -51,21 +33,24 @@ jobs:
 #       ---- Actual build steps
 
       - name: Build Dart SDK
-        run: flutter pub global run dartdoc --output ../docs/.vuepress/public/api/main/dart-sdk/
+        run: flutter pub global run dartdoc --output ../docs/static/api/main/dart-sdk/
         working-directory: effektio_flutter_sdk
 
       - name: Build Dart App
-        run: flutter pub global run dartdoc --output ../docs/.vuepress/public/api/main/app/
+        run: flutter pub global run dartdoc --output ../docs/static/api/main/app/
         working-directory: app
 
       - name: Build Rust docs
         run: |
           cargo doc -p effektio
-          mv target/doc docs/.vuepress/public/api/main/rust/
+          mv target/doc/ docs/static/api/main/rust
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+#       ---- Finalisation for github pages
+
+      - name: Build only 
+        uses: shalzz/zola-deploy-action@master
         if: ${{ github.ref == 'refs/heads/main' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./.github/pages
+        env:
+          BUILD_DIR: docs
+          PAGES_BRANCH: "gh-pages"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
