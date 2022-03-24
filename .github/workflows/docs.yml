@@ -1,0 +1,56 @@
+name: GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v3
+        submodules: true
+
+#       ---- setup of systems
+
+      - name: Setup flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install specific toolchain
+        uses: actions-rs/toolchain@v1
+
+#                  ---- Install extra tools
+
+      - name: Install Dartdocs
+        run: flutter pub global activate dartdoc
+
+#       ---- Actual build steps
+
+      - name: Build Dart SDK
+        run: flutter pub global run dartdoc --output ../docs/static/api/main/dart-sdk/
+        working-directory: effektio_flutter_sdk
+
+      - name: Build Dart App
+        run: flutter pub global run dartdoc --output ../docs/static/api/main/app/
+        working-directory: app
+
+      - name: Build Rust docs
+        run: |
+          cargo doc -p effektio
+          mv target/doc/ docs/static/api/main/rust
+
+#       ---- Finalisation for github pages
+
+      - name: Build only 
+        uses: shalzz/zola-deploy-action@master
+        if: ${{ github.ref == 'refs/heads/main' }}
+        env:
+          BUILD_DIR: docs
+          PAGES_BRANCH: "gh-pages"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
