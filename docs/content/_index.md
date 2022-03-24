@@ -26,12 +26,4 @@ content = "Decentralised end-2-end encrypted always-on full privacy for all comm
 title = "non-business suite "
 content = "CRM, PM, Help-Desk, SM-Intergation, Public & Private groups all in one "
 
-[[extra.list]]
-title = "Page layouts"
-content = "Build pages with a landing page, blog, or documentation layout. Add custom sections and components to suit your needs."
-
-[[extra.list]]
-title = "Dark mode"
-content = "Switch to a low-light UI with the click of a button. Change colors with variables to match your branding."
-
 +++
