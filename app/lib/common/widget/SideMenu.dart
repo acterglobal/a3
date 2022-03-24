@@ -193,14 +193,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     );
                   }
                 } else {
-                  return Container(
-                    margin: EdgeInsets.all(10),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/profile');
-                      },
-                    ),
-                  );
+                  return Container();
                 }
               },
             ),
