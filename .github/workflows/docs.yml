@@ -33,6 +33,11 @@ jobs:
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
 
+      - name: Building dart FFI
+        run: |
+          cargo check -p effektio
+          cp native/effektio/bindings.dart effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+
 #       ---- Actual build steps
 
       - name: Build Dart SDK
