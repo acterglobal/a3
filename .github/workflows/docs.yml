@@ -23,8 +23,10 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Install specific toolchain
+      - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
 
 #                  ---- Install extra tools
 
