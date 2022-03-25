@@ -13,7 +13,8 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
-        submodules: true
+        with:
+          submodules: true
 
 #       ---- setup of systems
 
