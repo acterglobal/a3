@@ -227,12 +227,12 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               CustomOnbaordingButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => HomeTabBar(0),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => HomeTabBar(0),
+                  //   ),
+                  // );
                   if (_formKey.currentState!.validate()) {}
                 },
                 title: 'Sign up',

@@ -227,7 +227,7 @@ class _EffektioHomeState extends State<EffektioHome> {
       length: 5,
       child: SafeArea(
         child: Scaffold(
-          appBar: tabIndex == 0
+          appBar: tabIndex != 3 && tabIndex != 4
               ? null
               : AppBar(
                   title: navBarTitle(_navBarTitle(tabIndex)),

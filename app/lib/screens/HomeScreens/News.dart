@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/widget/FeedDetail.dart';
 import 'package:effektio/common/widget/NewsSideBar.dart';
@@ -8,7 +7,6 @@ import 'package:effektio/common/widget/SideMenu.dart';
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key, required this.client}) : super(key: key);
