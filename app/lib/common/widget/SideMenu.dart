@@ -193,20 +193,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     );
                   }
                 } else {
-                  return Container(
-                    margin: EdgeInsets.all(10),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/profile');
-                      },
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage(
-                          'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-                        ),
-                        radius: 24,
-                      ),
-                    ),
-                  );
+                  return Container();
                 }
               },
             ),

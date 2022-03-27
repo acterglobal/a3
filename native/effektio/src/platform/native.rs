@@ -9,6 +9,7 @@ pub fn new_client_config(base_path: String, home: String) -> anyhow::Result<Clie
 
     let config = Client::builder()
         .store_config(make_store_config(&data_path, None)?)
+        .homeserver_url(home)
         .user_agent("effektio-test-platform");
 
     Ok(config)
