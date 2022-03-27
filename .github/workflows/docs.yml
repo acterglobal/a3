@@ -38,7 +38,7 @@ jobs:
       - name: Build Rust docs
         run: |
           cargo doc -p effektio
-          echo "--- Moving docs
+          echo "--- Moving docs"
           mv target/doc/ docs/static/api/main/rust
           echo "--- Copying bindings.dart"
           cp native/effektio/bindings.dart effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
