@@ -9,6 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
+    name: Build Latest API Docs
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
