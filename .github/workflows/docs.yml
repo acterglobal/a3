@@ -33,6 +33,17 @@ jobs:
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
 
+
+#
+      - name: Versions
+        run: |
+          echo "--- Rust"
+          cargo -V
+          echo "--- Flutter doctor"
+          flutter doctor
+          echo "--- dartdoct"
+          flutter pub global run dartdoc --version
+
 #       ---- Actual build steps
 
       - name: Build Rust docs
@@ -53,7 +64,7 @@ jobs:
 
 #       ---- Finalisation for github pages
 
-      - name: Build only 
+      - name: build zola
         uses: shalzz/zola-deploy-action@master
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
