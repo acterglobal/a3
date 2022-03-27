@@ -33,18 +33,15 @@ jobs:
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
 
-      - name: Building dart FFI
-        run: |
-          cargo check -p effektio
-          echo "--- Copying bindings.dart"
-          cp native/effektio/bindings.dart effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-
 #       ---- Actual build steps
 
       - name: Build Rust docs
         run: |
-          cargo doc -p effektio
+          cargo doc -p effektio -p effektio-cli
+          echo "--- Moving docs
           mv target/doc/ docs/static/api/main/rust
+          echo "--- Copying bindings.dart"
+          cp native/effektio/bindings.dart effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
 
       - name: Build Dart App
         run: flutter pub global run dartdoc --output ../docs/static/api/main/app/
