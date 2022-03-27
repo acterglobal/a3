@@ -173,9 +173,15 @@ class _EffektioHomeState extends State<EffektioHome> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _widgetOptions = <Widget>[
-      NewsScreen(),
-      NewsScreen(),
-      NewsScreen(),
+      NewsScreen(
+        client: _client,
+      ),
+      NewsScreen(
+        client: _client,
+      ),
+      NewsScreen(
+        client: _client,
+      ),
       FutureBuilder<Client>(
         future: _client, // a previously-obtained Future<String> or null
         builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
@@ -221,39 +227,41 @@ class _EffektioHomeState extends State<EffektioHome> {
       length: 5,
       child: SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            title: navBarTitle(_navBarTitle(tabIndex)),
-            centerTitle: true,
-            primary: false,
-            elevation: 1,
-            backgroundColor: AppColors.textFieldColor,
-            leading: Builder(
-              builder: (BuildContext context) {
-                return IconButton(
-                  icon: Container(
-                    margin: const EdgeInsets.only(bottom: 10, left: 10),
-                    child: Image.asset('assets/images/hamburger.png'),
+          appBar: tabIndex == 0
+              ? null
+              : AppBar(
+                  title: navBarTitle(_navBarTitle(tabIndex)),
+                  centerTitle: true,
+                  primary: false,
+                  elevation: 1,
+                  backgroundColor: AppColors.textFieldColor,
+                  leading: Builder(
+                    builder: (BuildContext context) {
+                      return IconButton(
+                        icon: Container(
+                          margin: const EdgeInsets.only(bottom: 10, left: 10),
+                          child: Image.asset('assets/images/hamburger.png'),
+                        ),
+                        onPressed: () {
+                          Scaffold.of(context).openDrawer();
+                        },
+                        tooltip: MaterialLocalizations.of(context)
+                            .openAppDrawerTooltip,
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
-                );
-              },
-            ),
-            actions: [
-              IconButton(
-                icon: Container(
-                  margin: const EdgeInsets.only(bottom: 10, right: 10),
-                  child: Image.asset('assets/images/search.png'),
+                  actions: [
+                    IconButton(
+                      icon: Container(
+                        margin: const EdgeInsets.only(bottom: 10, right: 10),
+                        child: Image.asset('assets/images/search.png'),
+                      ),
+                      onPressed: () {
+                        setState(() {});
+                      },
+                    )
+                  ],
                 ),
-                onPressed: () {
-                  setState(() {});
-                },
-              )
-            ],
-          ),
           body: _widgetOptions.elementAt(tabIndex),
           drawer: SideDrawer(
             client: _client,

@@ -1,11 +1,18 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/MockData.dart';
+import 'package:effektio/common/widget/FeedDetail.dart';
+import 'package:effektio/common/widget/NewsSideBar.dart';
+import 'package:effektio/common/widget/SideMenu.dart';
+
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class NewsScreen extends StatefulWidget {
-  const NewsScreen({Key? key}) : super(key: key);
+  const NewsScreen({Key? key, required this.client}) : super(key: key);
+  final Future<Client> client;
 
   @override
   _NewsScreenState createState() => _NewsScreenState();
@@ -14,79 +21,79 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: 5,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: AppColors.textFieldColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.all(10),
-                          child: CircleAvatar(
-                            backgroundImage: NetworkImage(
-                              'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-                            ),
-                            radius: 18,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // ignore: sized_box_for_whitespace
-                            Container(
-                              width: 150,
-                              child: Text(
-                                'Sports',
-                                style: GoogleFonts.montserrat(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              '35 members',
-                              style: GoogleFonts.montserrat(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.white,
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    )
-                  ],
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Container(
+                margin: const EdgeInsets.only(bottom: 10, left: 10),
+                child: Image.asset('assets/images/hamburger.png'),
+              ),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+            );
+          },
+        ),
+      ),
+      drawer: SideDrawer(
+        client: widget.client,
+      ),
+      body: PageView.builder(
+        itemCount: feeds.length,
+        onPageChanged: (int page) {},
+        scrollDirection: Axis.vertical,
+        itemBuilder: ((context, index) {
+          return Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: feeds[index],
+                  clipBehavior: Clip.none,
                 ),
-                IconButton(
-                  onPressed: () {},
-                  icon: Image.asset('assets/images/dots.png'),
-                )
-              ],
-            ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    // ignore: sized_box_for_whitespace
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // ignore: prefer_const_literals_to_create_immutables
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 20.0,
+                            spreadRadius: 100,
+                            offset: Offset(0.0, 200.0),
+                          ),
+                        ],
+                      ),
+                      height: MediaQuery.of(context).size.height / 4,
+                      child: FeedDetail(),
+                    ),
+                  ),
+                  Expanded(
+                    // ignore: sized_box_for_whitespace
+                    child: Container(
+                      height: MediaQuery.of(context).size.height / 2.5,
+                      child: NewsSideBar(),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           );
-        },
+        }),
       ),
     );
   }

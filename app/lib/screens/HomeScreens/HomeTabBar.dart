@@ -27,10 +27,10 @@ class _MyHomeTabBar extends State<HomeTabBar> {
   }
 
   static final List<Widget> _widgetOptions = <Widget>[
-    const NewsScreen(),
-    const NewsScreen(),
-    const NewsScreen(),
-    const NewsScreen(),
+    // const NewsScreen(),
+    // const NewsScreen(),
+    // const NewsScreen(),
+    // const NewsScreen(),
     const NotificationScreen()
   ];
 
