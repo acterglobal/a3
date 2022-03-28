@@ -29,8 +29,7 @@ pub type UserId = Box<ruma::UserId>;
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
-    let config = platform::new_client_config(base_path, homeurl.clone())?
-        .homeserver_url(homeurl);
+    let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
     let mut guest_registration = register::v3::Request::new();
     guest_registration.kind = register::RegistrationKind::Guest;
     RUNTIME
