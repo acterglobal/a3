@@ -2,7 +2,6 @@
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
-import 'package:effektio/screens/HomeScreens/HomeTabBar.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -227,12 +226,12 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               CustomOnbaordingButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => HomeTabBar(0),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => HomeTabBar(0),
+                  //   ),
+                  // );
                   if (_formKey.currentState!.validate()) {}
                 },
                 title: 'Sign up',

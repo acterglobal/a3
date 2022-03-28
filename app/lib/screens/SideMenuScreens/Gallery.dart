@@ -1,6 +1,6 @@
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
-import 'package:effektio/common/widget/Feed.dart';
+import 'package:effektio/common/widget/GalleryView.dart';
 import 'package:flutter/material.dart';
 
 class GalleryScreen extends StatefulWidget {
