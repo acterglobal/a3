@@ -851,6 +851,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_repr",
+ "url",
 ]
 
 [[package]]
@@ -3284,6 +3285,7 @@ dependencies = [
  "idna",
  "matches",
  "percent-encoding",
+ "serde",
 ]
 
 [[package]]
