@@ -88,7 +88,7 @@ impl Client {
 
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.client.session().await.context("Missing session")?;
-        let homeurl = self.client.homeserver().await.into();
+        let homeurl = self.client.homeserver().await;
         Ok(serde_json::to_string(&RestoreToken {
             session,
             homeurl,
