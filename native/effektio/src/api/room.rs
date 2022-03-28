@@ -44,7 +44,7 @@ pub struct Room {
 }
 
 impl Room {
-    async fn display_name(&self) -> Result<String> {
+    pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move { Ok(r.display_name().await?) })

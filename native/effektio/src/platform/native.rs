@@ -7,12 +7,9 @@ pub fn new_client_config(base_path: String, home: String) -> anyhow::Result<Clie
 
     fs::create_dir_all(&data_path)?;
 
-    let config = Client::builder()
+    Ok(Client::builder()
         .store_config(make_store_config(&data_path, None)?)
-        .homeserver_url(home)
-        .user_agent("effektio-test-platform");
-
-    Ok(config)
+        .user_agent("effektio-test-platform"))
 }
 
 pub fn init_logging(filter: Option<String>) -> anyhow::Result<()> {

@@ -29,8 +29,7 @@ pub type UserId = Box<ruma::UserId>;
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
-    let homeserver = Url::parse(&homeurl)?;
-    let config = platform::new_client_config(base_path, homeurl)?;
+    let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
     let mut guest_registration = register::v3::Request::new();
     guest_registration.kind = register::RegistrationKind::Guest;
     RUNTIME
@@ -62,8 +61,8 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let homeserver = Url::parse(&homeurl)?;
-    let config = platform::new_client_config(base_path, session.user_id.to_string())?;
+    let config = platform::new_client_config(base_path, session.user_id.to_string())?
+        .homeserver_url(homeurl);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
