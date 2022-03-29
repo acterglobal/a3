@@ -4,43 +4,11 @@ use anyhow::{Result, Context, bail}; // 1.0.53
 use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt::Debug;
 
+mod traits;
+mod binary_switch;
 
-trait Transition: Serialize + DeserializeOwned + Debug {
-    type Action: Clone + Serialize + DeserializeOwned + Debug;
-    fn transition(&mut self, action: Self::Action) -> Result<()>;
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct BinarySwitch(BinarySwitchState);
-
-impl BinarySwitch {
-    pub fn new() -> Self {
-        BinarySwitch(BinarySwitchState::Off)
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-enum BinarySwitchState {
-    On,
-    Off,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-enum BinarySwitchAction {
-    SwitchOn,
-    SwitchOff
-}
-
-impl Transition for BinarySwitch {
-    type Action = BinarySwitchAction;
-    fn transition(&mut self, action: Self::Action) -> Result<()> {
-        self.0 = match action {
-            BinarySwitchAction::SwitchOn => BinarySwitchState::On,
-            BinarySwitchAction::SwitchOff => BinarySwitchState::Off,
-        };
-        Ok(())
-    }
-}
+pub use traits::Transition;
+pub use binary_switch::{BinarySwitch, BinarySwitchAction};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 struct Redacted {
