@@ -51,6 +51,7 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
             (Vec::new(), Vec::new()),
             async move |(mut groups, mut conversations), room| {
                 let is_effektio_group = {
+                    #[allow(clippy::match_like_matches_macro)]
                     if let Ok(Some(_)) = room
                         .get_state_event(PURPOSE_FIELD.into(), PURPOSE_VALUE)
                         .await
