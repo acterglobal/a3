@@ -1,14 +1,15 @@
-use super::{api, Room, UserId, RUNTIME};
+use super::{api, Conversation, Group, Room, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::ruma::api::client::account::register;
 use effektio_core::RestoreToken;
-use futures::{stream, Stream};
+use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaType},
     room::Room as MatrixRoom,
+    ruma::events::StateEventType,
     Client as MatrixClient, LoopCtrl, Session,
 };
 use parking_lot::RwLock;
@@ -38,6 +39,47 @@ impl std::ops::Deref for Client {
     fn deref(&self) -> &MatrixClient {
         &self.client
     }
+}
+
+static PURPOSE_FIELD: &str = "m.room.purpose";
+static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
+static PURPOSE_VALUE: &str = "org.effektio";
+
+async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Conversation>) {
+    stream::iter(client.rooms().into_iter())
+        .fold(
+            (Vec::new(), Vec::new()),
+            async move |(mut groups, mut conversations), room| {
+                let is_effektio_group = {
+                    if let Ok(Some(_)) = room
+                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_VALUE)
+                        .await
+                    {
+                        true
+                    } else if let Ok(Some(_)) = room
+                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_VALUE)
+                        .await
+                    {
+                        true
+                    } else {
+                        false
+                    }
+                };
+
+                if is_effektio_group {
+                    groups.push(Group {
+                        inner: Room { room },
+                    });
+                } else {
+                    conversations.push(Conversation {
+                        inner: Room { room },
+                    });
+                }
+
+                (groups, conversations)
+            },
+        )
+        .await
 }
 
 impl Client {
@@ -96,9 +138,24 @@ impl Client {
         })?)
     }
 
-    pub fn conversations(&self) -> Vec<Room> {
-        let r: Vec<_> = self.rooms().into_iter().map(|room| Room { room }).collect();
-        r
+    pub async fn conversations(&self) -> Result<Vec<Conversation>> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let (_, conversations) = devide_groups_from_common(c).await;
+                Ok(conversations)
+            })
+            .await?
+    }
+
+    pub async fn groups(&self) -> Result<Vec<Group>> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let (groups, _) = devide_groups_from_common(c).await;
+                Ok(groups)
+            })
+            .await?
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {

@@ -15,13 +15,17 @@ lazy_static! {
 }
 
 mod client;
+mod conversation;
+mod group;
 mod messages;
 mod room;
 mod stream;
 
 pub use client::{Client, ClientStateBuilder};
+pub use conversation::Conversation;
+pub use group::Group;
 pub use messages::AnyMessage;
-pub use room::{Room, RoomMember};
+pub use room::{Member, Room};
 pub use stream::TimelineStream;
 
 pub type UserId = Box<ruma::UserId>;

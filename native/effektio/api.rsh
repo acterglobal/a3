@@ -25,7 +25,7 @@ object TimelineStream {
 
 }
 
-object Room {
+object Conversation {
     /// Calculate the display name
     fn display_name() -> Future<Result<string>>;
 
@@ -33,16 +33,30 @@ object Room {
     fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// the members currently in the room
-    fn active_members() -> Future<Result<Vec<RoomMember>>>;
+    fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// Get the timeline for the room
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    // fn get_member(user: UserId) -> Future<Result<RoomMember>>;
+    // fn get_member(user: UserId) -> Future<Result<Member>>;
 }
 
-object RoomMember {
+object Group {
+    /// Calculate the display name
+    fn display_name() -> Future<Result<string>>;
+
+    /// The avatar of the Group
+    fn avatar() -> Future<Result<buffer<u8>>>;
+
+    /// the members currently in the group
+    fn active_members() -> Future<Result<Vec<Member>>>;
+
+    // the members currently in the room
+    // fn get_member(user: UserId) -> Future<Result<Member>>;
+}
+
+object Member {
 
     /// The avatar of the member
     fn avatar() -> Future<Result<buffer<u8>>>;
@@ -91,5 +105,8 @@ object Client {
     fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// The conversations the user is involved in
-    fn conversations() -> Vec<Room>;
+    fn conversations() -> Future<Result<Vec<Conversation>>>;
+
+    /// The groups the user is part of
+    fn groups() -> Future<Result<Vec<Group>>>;
 }
