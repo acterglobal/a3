@@ -1,5 +1,5 @@
 use super::TextMessageEventContent;
-use matrix_sdk::ruma::events::macros::EventContent;
+use ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
@@ -42,7 +42,7 @@ impl Default for Priority {
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.tasklist", kind = Message)]
+#[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
 pub struct TaskListDevContent {
     pub role: Option<SpecialTaskListRole>,
     pub name: String,
@@ -61,7 +61,7 @@ pub struct TaskListDevContent {
 /// see also the [IETF Task](https://www.rfc-editor.org/rfc/rfc8984.html#name-task)
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.task", kind = Message)]
+#[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
 pub struct TaskDevContent {
     #[serde(rename = "m.relates_to")]
     pub task_list_id: BelongsTo,

@@ -1,4 +1,4 @@
-pub use matrix_sdk::ruma::{
+pub use ruma::{
     events::room::message::{
         ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
     },

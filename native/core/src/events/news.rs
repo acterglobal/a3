@@ -1,7 +1,7 @@
 use super::{
     Colorize, ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
 };
-use matrix_sdk::ruma::events::macros::EventContent;
+use ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 /// The content that is specific to each message type variant.
@@ -19,7 +19,7 @@ pub enum NewsContentType {
 
 /// The payload for our news event.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.news", kind = Message)]
+#[ruma_event(type = "org.effektio.dev.news", kind = MessageLike)]
 pub struct NewsEventDevContent {
     pub contents: Vec<NewsContentType>,
     pub colors: Option<Colorize>,

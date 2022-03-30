@@ -6,60 +6,20 @@ use std::fmt::Debug;
 
 mod traits;
 mod binary_switch;
+mod reaction;
 
-pub use traits::Transition;
+pub use traits::{Transition, Action, GenericFeaturesSupport};
+pub use reaction::ReactionState; 
 pub use binary_switch::{BinarySwitch, BinarySwitchAction};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct Redacted {
-    by: String,
+use ruma::{
+    events::{
+        reaction::ReactionEvent,
+        room::redaction::RoomRedactionEvent,
+    },
+    MilliSecondsSinceUnixEpoch, UserId, EventId,
+};
 
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    reason: Option<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-struct ReactionAction {
-    key: String,
-    user: String,
-}
-
-#[derive(Serialize, Deserialize, Debug, Default, Clone)]
-struct ReactionState(BTreeMap<String, Vec<String>>);
-
-impl core::ops::Deref for ReactionState {
-    type Target = BTreeMap<String, Vec<String>>;
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-
-impl ReactionState {
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-}
-
-impl Transition for ReactionState {
-    type Action = ReactionAction;
-    fn transition(&mut self, action: Self::Action) -> Result<()> {
-        match self.0.entry(action.key) {
-            Entry::Vacant(o) => {
-                o.insert(vec![action.user]);
-            }
-            Entry::Occupied(mut o) => {
-                let users = o.get_mut();
-                if !users.contains(&action.user) {
-                    // we ignore if the user is already in the list
-                    users.push(action.user);
-                };
-            }
-        };
-    Ok(())
-    }
-}
 
 fn deserialize_optional_field<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
 where
@@ -70,20 +30,66 @@ where
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct StatefulObject<T>
+#[serde(bound = "T: Transition")]
+pub enum InnerState<T> {
+    Redacted {
+        reason: Option<String>,
+        sender: Box<UserId>,
+        when: MilliSecondsSinceUnixEpoch,
+    },
+    Alive(T),
+    Archived {   
+        sender: Box<UserId>,
+        when: MilliSecondsSinceUnixEpoch,
+        obj: T
+    },
+}
+
+impl<T> InnerState<T> {
+    fn inner(&self) -> Option<&T> {
+        match self {
+            InnerState::Alive(ref o) => Some(o),
+            InnerState::Archived { ref obj, ..} => Some(obj),
+            InnerState::Redacted { .. } => None
+        }
+    }
+}
+
+impl<T> Transition for InnerState<T>
 where T: Transition
 {
-    #[serde(deserialize_with = "deserialize_optional_field")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    state: Option<T>,
+    type Action = <T as Transition>::Action;
+    fn transition(&mut self, action: Self::Action) -> Result<bool> {
+        match self {
+            InnerState::Alive(o) => o.transition(action),
+            InnerState::Archived { obj, ..} => obj.transition(action),
+            InnerState::Redacted { .. } => bail!("Has been redacted. Can't transition on redacted object.")
+        }
+    }
+}
 
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    redacted: Option<Redacted>,
+impl<T> GenericFeaturesSupport for InnerState<T>
+where T: GenericFeaturesSupport
+{
+    fn support_redaction(&self) -> bool {
+        self.inner().map(|o| o.support_redaction()).unwrap_or_default()
+    }
 
-    #[serde(default)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    archived: Option<String>,
+    fn supports_comments(&self) -> bool {
+        self.inner().map(|o| o.supports_comments()).unwrap_or_default()
+    }
+
+    fn supports_reactions(&self) -> bool {
+        self.inner().map(|o| o.supports_reactions()).unwrap_or_default()
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(bound = "T: Transition")]
+pub struct StatefulObject<T>
+where T: Transition
+{
+    inner: InnerState<T>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "ReactionState::is_empty")]
@@ -91,15 +97,13 @@ where T: Transition
 
     #[serde(default)]
     #[serde(skip_serializing_if = "Vec::is_empty")]
-    history: Vec<GenericAction<T::Action>>,
+    history: Vec<Box<EventId>>,
 }
 
-impl<T:Transition> StatefulObject<T> {
+impl<T: Transition> StatefulObject<T> {
     pub fn new(state: T) -> Self {
         StatefulObject {
-            state: Some(state),
-            redacted: None,
-            archived: None,
+            inner: InnerState::Alive(state),
             reactions: ReactionState(Default::default()),
             history: Vec::new(),
         }
@@ -107,37 +111,54 @@ impl<T:Transition> StatefulObject<T> {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-enum GenericAction<A: Clone + Debug> {
-    Redaction(Redacted),
-    Archive(String),
-    Reaction(ReactionAction),
-    ObjectAction(A),
+pub  enum GenericAction<A: Action> {
+    Redaction(RoomRedactionEvent),
+    // Archive(String),
+    Reaction(ReactionEvent),
+    SpecificAction(A),
 }
 
+impl<T: Action> Action for GenericAction<T> {}
+
+impl<T> From<RoomRedactionEvent> for GenericAction<T>
+where T: Action
+{
+    fn from(other: RoomRedactionEvent) -> Self {
+        GenericAction::Redaction(other)
+    }
+}
+
+impl<T> From<ReactionEvent> for GenericAction<T>
+where T: Action
+{
+    fn from(other: ReactionEvent) -> Self {
+        GenericAction::Reaction(other)
+    }
+}
+
+
 impl<T> Transition for StatefulObject<T>
-where T: Transition + Serialize + DeserializeOwned
+where T: Transition + GenericFeaturesSupport
 {
     type Action = GenericAction<<T as Transition>::Action>;
-    fn transition(&mut self, action: Self::Action) -> Result<()> {
-        if self.redacted.is_some() {
+    fn transition(&mut self, action: Self::Action) -> Result<bool> {
+        if matches!(self.inner, InnerState::Redacted { .. }) {
             bail!("Object has been redacted already");
         }
-        let history_record = action.clone(); 
-        match action {
-            GenericAction::Archive(u) => self.archived = Some(u),
-            GenericAction::Redaction(r) => {
-                self.redacted = Some(r);
-                self.state = None;
+        
+        Ok(match action {
+            GenericAction::Reaction(r) => {
+                if !self.inner.supports_reactions() {
+                    bail!("Reacting not supported");
+                }
+                self.reactions.transition(r)?
+            },
+            GenericAction::SpecificAction(a) => {
+                self.inner.transition(a)?
             }
-            GenericAction::Reaction(r) => self.reactions.transition(r)?,
-            GenericAction::ObjectAction(a) => {
-                let mut state = self.state.take().context("Invalid state")?;
-                state.transition(a)?;
-                self.state = Some(state);
-            }
-        };
-        self.history.push(history_record);
-        Ok(())
+            // FIXME
+            _ => false
+        })
     }
 }
 
@@ -149,25 +170,25 @@ mod test {
     fn smoketest() -> Result<()> {
         let mut m = StatefulObject::new(BinarySwitch::new());
 
-        m.transition(GenericAction::ObjectAction(BinarySwitchAction::SwitchOn))?;
+        m.transition(BinarySwitchAction::SwitchOn.into())?;
         let on_json = serde_json::to_string(&m)?;
         println!("After on: {:}", on_json);
 
-        m.transition(GenericAction::ObjectAction(BinarySwitchAction::SwitchOff))?;
+        m.transition(BinarySwitchAction::SwitchOff.into())?;
         let off_json = serde_json::to_string(&m)?;
         println!("After off: {:}", off_json);
 
         let mut recov = serde_json::from_str::<StatefulObject<BinarySwitch>>(&on_json)?;
         println!("Recovered State: {:?}", recov);
 
-        recov.transition(GenericAction::ObjectAction(BinarySwitchAction::SwitchOff))?;
+        recov.transition(BinarySwitchAction::SwitchOff.into())?;
         println!("Recovered State off: {:?}", recov);
 
-        recov.transition(GenericAction::Redaction(Redacted{by: "Ben".to_owned(), reason: None}))?;
-        let redacetd = serde_json::to_string(&recov)?;
-        println!("Redacted State: {:?}", redacetd);
+        // recov.transition(GenericAction::Redaction(Redacted{by: "Ben".to_owned(), reason: None}))?;
+        // let redacetd = serde_json::to_string(&recov)?;
+        // println!("Redacted State: {:?}", redacetd);
 
-        assert!(recov.transition(GenericAction::ObjectAction(BinarySwitchAction::SwitchOn)).is_err());
+        assert!(recov.transition(BinarySwitchAction::SwitchOn.into()).is_err());
         Ok(())
     }
 }

@@ -849,6 +849,7 @@ dependencies = [
  "chrono-tz",
  "csscolorparser",
  "matrix-sdk",
+ "ruma 0.5.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
  "serde",
  "serde_json",
  "serde_repr",
@@ -1533,7 +1534,7 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "reqwest",
- "ruma",
+ "ruma 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
  "thiserror",
@@ -1561,7 +1562,7 @@ dependencies = [
  "matrix-sdk-crypto",
  "pbkdf2",
  "rand 0.8.5",
- "ruma",
+ "ruma 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
  "sha2 0.10.2",
@@ -1579,7 +1580,7 @@ dependencies = [
  "async-trait",
  "futures-util",
  "instant",
- "ruma",
+ "ruma 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "tokio",
  "uuid",
@@ -1603,7 +1604,7 @@ dependencies = [
  "matrix-sdk-common",
  "pbkdf2",
  "rand 0.8.5",
- "ruma",
+ "ruma 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
  "sha2 0.10.2",
@@ -2340,14 +2341,28 @@ dependencies = [
  "assign",
  "js_int",
  "ruma-api",
- "ruma-client-api",
- "ruma-common",
+ "ruma-client-api 0.13.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruma-common 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-events",
- "ruma-federation-api",
+ "ruma-federation-api 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-identifiers",
  "ruma-serde",
- "ruma-signatures",
- "ruma-state-res",
+ "ruma-signatures 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruma-state-res 0.6.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ruma"
+version = "0.5.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "assign",
+ "js_int",
+ "ruma-client-api 0.13.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "ruma-common 0.8.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "ruma-federation-api 0.4.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "ruma-signatures 0.10.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "ruma-state-res 0.6.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
 ]
 
 [[package]]
@@ -2393,10 +2408,26 @@ dependencies = [
  "maplit",
  "percent-encoding",
  "ruma-api",
- "ruma-common",
+ "ruma-common 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-events",
  "ruma-identifiers",
  "ruma-serde",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ruma-client-api"
+version = "0.13.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "assign",
+ "bytes",
+ "http",
+ "js_int",
+ "maplit",
+ "percent-encoding",
+ "ruma-common 0.8.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
  "serde",
  "serde_json",
 ]
@@ -2418,6 +2449,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruma-common"
+version = "0.8.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "base64",
+ "bytes",
+ "form_urlencoded",
+ "http",
+ "indexmap",
+ "indoc",
+ "itoa",
+ "js_int",
+ "percent-encoding",
+ "rand 0.8.5",
+ "ruma-identifiers-validation 0.7.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "ruma-macros",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "url",
+ "uuid",
+ "wildmatch",
+]
+
+[[package]]
 name = "ruma-events"
 version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2425,7 +2482,7 @@ checksum = "d2b661cc7dd619039c99aea1e42c06e3ac9a29a1d648dc3bcbb4f0dffcb49d04"
 dependencies = [
  "indoc",
  "js_int",
- "ruma-common",
+ "ruma-common 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-events-macros",
  "ruma-identifiers",
  "ruma-serde",
@@ -2455,10 +2512,21 @@ checksum = "bf1c02bf70a1cde9cf7d014544f1f63dee122ba7026a3b5535a9fc4f3ab888cd"
 dependencies = [
  "js_int",
  "ruma-api",
- "ruma-common",
+ "ruma-common 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-events",
  "ruma-identifiers",
  "ruma-serde",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ruma-federation-api"
+version = "0.4.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "js_int",
+ "ruma-common 0.8.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
  "serde",
  "serde_json",
 ]
@@ -2472,7 +2540,7 @@ dependencies = [
  "percent-encoding",
  "rand 0.8.5",
  "ruma-identifiers-macros",
- "ruma-identifiers-validation 0.7.0",
+ "ruma-identifiers-validation 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-serde",
  "ruma-serde-macros",
  "serde",
@@ -2509,6 +2577,27 @@ checksum = "5dc675917d537c870035d4681d7a2b939683fb908bbc036aa55889b09c5794f1"
 dependencies = [
  "thiserror",
  "url",
+]
+
+[[package]]
+name = "ruma-identifiers-validation"
+version = "0.7.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "thiserror",
+ "url",
+]
+
+[[package]]
+name = "ruma-macros"
+version = "0.1.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "ruma-identifiers-validation 0.7.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "syn",
 ]
 
 [[package]]
@@ -2558,6 +2647,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruma-signatures"
+version = "0.10.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "base64",
+ "ed25519-dalek",
+ "pkcs8",
+ "rand 0.7.3",
+ "ruma-common 0.8.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
+ "serde_json",
+ "sha2 0.9.9",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
 name = "ruma-state-res"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2565,10 +2670,24 @@ checksum = "8c3328d01db08c51a66ac4093dd42151376a20fffebc6763a886d3e6d59d1ebc"
 dependencies = [
  "itertools",
  "js_int",
- "ruma-common",
+ "ruma-common 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ruma-events",
  "ruma-identifiers",
  "ruma-serde",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "ruma-state-res"
+version = "0.6.0"
+source = "git+https://github.com/ruma/ruma?rev=deea762b8#deea762b8edc5abf9fc5fe3cf6daba8cb59ced75"
+dependencies = [
+ "itertools",
+ "js_int",
+ "ruma-common 0.8.0 (git+https://github.com/ruma/ruma?rev=deea762b8)",
  "serde",
  "serde_json",
  "thiserror",

@@ -5,7 +5,7 @@ use anyhow::{Result, Context, bail}; // 1.0.53
 use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt::Debug;
 
-use super::Transition;
+use super::{Transition, Action, GenericFeaturesSupport, GenericAction};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct BinarySwitch(BinarySwitchState);
@@ -28,13 +28,26 @@ pub enum BinarySwitchAction {
     SwitchOff
 }
 
+
+impl Into<GenericAction<BinarySwitchAction>> for BinarySwitchAction
+{
+    fn into(self) -> GenericAction<BinarySwitchAction> {
+        GenericAction::SpecificAction(self)
+    }
+}
+
+
+impl Action for BinarySwitchAction {}
+
+impl GenericFeaturesSupport for BinarySwitch { }
+
 impl Transition for BinarySwitch {
     type Action = BinarySwitchAction;
-    fn transition(&mut self, action: Self::Action) -> Result<()> {
+    fn transition(&mut self, action: Self::Action) -> Result<bool> {
         self.0 = match action {
             BinarySwitchAction::SwitchOn => BinarySwitchState::On,
             BinarySwitchAction::SwitchOff => BinarySwitchState::Off,
         };
-        Ok(())
+        Ok(true)
     }
 }

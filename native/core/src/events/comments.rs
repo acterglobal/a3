@@ -1,10 +1,10 @@
 use super::{TextMessageEventContent, BelongsTo};
-use matrix_sdk::ruma::events::macros::EventContent;
+use ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 /// The payload for our Comment event.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.comment", kind = Message)]
+#[ruma_event(type = "org.effektio.dev.comment", kind = MessageLike)]
 pub struct CommentEventDevContent {
     pub text: TextMessageEventContent,
     #[serde(rename = "m.relates_to")]
