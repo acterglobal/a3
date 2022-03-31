@@ -9,6 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-20.04
+    name: Build Latest API Docs
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
@@ -33,12 +34,23 @@ jobs:
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
 
+
+#
+      - name: Versions
+        run: |
+          echo "--- Rust"
+          cargo -V
+          echo "--- Flutter doctor"
+          flutter doctor
+          echo "--- dartdoct"
+          flutter pub global run dartdoc --version
+
 #       ---- Actual build steps
 
       - name: Build Rust docs
         run: |
           cargo doc -p effektio
-          echo "--- Moving docs
+          echo "--- Moving docs"
           mv target/doc/ docs/static/api/main/rust
           echo "--- Copying bindings.dart"
           cp native/effektio/bindings.dart effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
@@ -47,13 +59,16 @@ jobs:
         run: flutter pub global run dartdoc --output ../docs/static/api/main/app/
         working-directory: app
 
+      - name: "Checking for bindings"
+        run: ls -ltas effektio_flutter_sdk/lib/
+
       - name: Build Dart SDK
         run: flutter pub global run dartdoc --output ../docs/static/api/main/dart-sdk/
         working-directory: effektio_flutter_sdk
 
 #       ---- Finalisation for github pages
 
-      - name: Build only 
+      - name: build zola
         uses: shalzz/zola-deploy-action@master
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
