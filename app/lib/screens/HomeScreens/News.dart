@@ -50,13 +50,11 @@ class _NewsScreenState extends State<NewsScreen> {
           return Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              Expanded(
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: feeds[index],
-                  clipBehavior: Clip.none,
-                ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: feeds[index],
+                clipBehavior: Clip.none,
               ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
