@@ -20,11 +20,12 @@ mod room;
 mod stream;
 
 pub use client::{Client, ClientStateBuilder};
-pub use messages::AnyMessage;
+pub use messages::RoomMessage;
 pub use room::{Room, RoomMember};
 pub use stream::TimelineStream;
 
 pub type UserId = Box<ruma::UserId>;
+pub type EventId = Box<ruma::EventId>;
 
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
