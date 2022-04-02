@@ -5,6 +5,7 @@ import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
+import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
@@ -60,82 +61,6 @@ class Effektio extends StatelessWidget {
   }
 }
 
-class ChatListItem extends StatelessWidget {
-  final Room room;
-
-  const ChatListItem({Key? key, required this.room}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    // ToDo: UnreadCounter
-    return ListTile(
-      leading: FutureBuilder<Uint8List>(
-        future: room.avatar().then((fb) => fb.asTypedList()),
-        // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-          if (snapshot.hasData) {
-            return CircleAvatar(
-              backgroundImage:
-                  MemoryImage(Uint8List.fromList(snapshot.requireData)),
-            );
-          } else {
-            return CircleAvatar(
-              backgroundColor: Colors.brown.shade800,
-              child: const Text('H'),
-            );
-          }
-        },
-      ),
-      title: FutureBuilder<String>(
-        future: room.displayName(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            return Text(
-              snapshot.requireData,
-              style: TextStyle(color: Colors.white),
-            );
-          } else {
-            return Text(AppLocalizations.of(context)!.loadingName);
-          }
-        },
-      ),
-      trailing: FutureBuilder<FfiListRoomMember>(
-        future: room.activeMembers(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Text(
-              snapshot.requireData.length.toString(),
-              style: TextStyle(color: Colors.white),
-            );
-          } else {
-            return const SizedBox();
-          }
-        },
-      ),
-    );
-  }
-}
-
-class ChatOverview extends StatelessWidget {
-  final List<Room> rooms;
-
-  const ChatOverview({Key? key, required this.rooms}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.backgroundColor,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: rooms.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ChatListItem(room: rooms[index]);
-        },
-      ),
-    );
-  }
-}
-
 class EffektioHome extends StatefulWidget {
   const EffektioHome({Key? key}) : super(key: key);
 
@@ -182,44 +107,8 @@ class _EffektioHomeState extends State<EffektioHome> {
       NewsScreen(
         client: _client,
       ),
-      FutureBuilder<Client>(
-        future: _client, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.requireData.hasFirstSynced()) {
-              return ChatOverview(
-                rooms: snapshot.requireData.conversations().toList(),
-              );
-            } else {
-              return Center(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  color: AppColors.backgroundColor,
-                  child: Text(
-                    AppLocalizations.of(context)!.loadingConvo,
-                    style: optionStyle,
-                  ),
-                ),
-              );
-            }
-          } else {
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              color: AppColors.backgroundColor,
-              child: Center(
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
-            );
-          }
-        },
+      ChatScreen(
+        client: _client,
       ),
       NotificationScreen(),
     ];
@@ -227,7 +116,7 @@ class _EffektioHomeState extends State<EffektioHome> {
       length: 5,
       child: SafeArea(
         child: Scaffold(
-          appBar: tabIndex != 3 && tabIndex != 4
+          appBar: tabIndex <= 3
               ? null
               : AppBar(
                   title: navBarTitle(_navBarTitle(tabIndex)),
