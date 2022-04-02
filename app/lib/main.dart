@@ -7,6 +7,7 @@ import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
+import 'package:effektio/screens/HomeScreens/Faq.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
@@ -156,24 +157,18 @@ class _EffektioHomeState extends State<EffektioHome> {
     _client = makeClient();
   }
 
-  String _navBarTitle(int index) {
-    if (index == 0) {
-      return 'News';
-    } else if (index == 1) {
-      return 'News';
-    } else if (index == 2) {
-      return 'News';
-    } else if (index == 3) {
-      return 'Chat';
-    } else {
-      return 'Nofitications';
-    }
-  }
-
   Widget homeScreen(BuildContext context, Client client) {
+    List<String?> _titles = <String?>[
+      null,
+      "FAQ",
+      null,
+      null,
+      "Chat",
+      "Notifications"
+    ];
     List<Widget> _widgetOptions = <Widget>[
       NewsScreen(client: client),
-      NotificationScreen(),
+      FaqScreen(client: client),
       NotificationScreen(),
       ChatOverview(rooms: client.conversations().toList()),
       NotificationScreen(),
@@ -183,10 +178,10 @@ class _EffektioHomeState extends State<EffektioHome> {
       length: 5,
       child: SafeArea(
         child: Scaffold(
-          appBar: tabIndex != 3 && tabIndex != 4
+          appBar: _titles[tabIndex] == null
               ? null
               : AppBar(
-                  title: navBarTitle(_navBarTitle(tabIndex)),
+                  title: navBarTitle(_titles[tabIndex] ?? ""),
                   centerTitle: true,
                   primary: false,
                   elevation: 1,

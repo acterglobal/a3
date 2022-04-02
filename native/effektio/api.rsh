@@ -17,6 +17,14 @@ object News {
     fn text() -> Option<string>;
 }
 
+/// A news object
+object Faq {
+    /// get the title of the news item
+    fn title() -> string;
+    /// get the body of the news item
+    fn body() -> string;
+}
+
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
 
@@ -104,4 +112,7 @@ object Client {
 
     /// Get the latest News for the client
     fn latest_news() -> Future<Result<Vec<News>>>;
+
+    /// Get the FAQs for the client
+    fn faqs() -> Future<Result<Vec<Faq>>>;
 }

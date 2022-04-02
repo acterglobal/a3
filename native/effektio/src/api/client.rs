@@ -4,8 +4,8 @@ use derive_builder::Builder;
 use effektio_core::{
     ruma::api::client::account::register,
     RestoreToken,
-    models::News,
-    mocks::gen_mock_news
+    models::{ News, Faq },
+    mocks::{gen_mock_news, gen_mock_faqs},
 };
 use futures::{stream, Stream};
 use lazy_static::lazy_static;
@@ -107,6 +107,10 @@ impl Client {
 
     pub async fn latest_news(&self) -> Result<Vec<News>> {
         Ok(gen_mock_news())
+    }
+
+    pub async fn faqs(&self) -> Result<Vec<Faq>> {
+        Ok(gen_mock_faqs())
     }
 
 
