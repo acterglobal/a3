@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-final List<Image> feeds = [
+final List<Image> newsFeeds = [
   Image.asset(
     'assets/images/feed1.jpg',
     fit: BoxFit.cover,

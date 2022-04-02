@@ -170,59 +170,15 @@ class _EffektioHomeState extends State<EffektioHome> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget homeScreen(BuildContext context, Client client) {
     List<Widget> _widgetOptions = <Widget>[
-      NewsScreen(
-        client: _client,
-      ),
-      NewsScreen(
-        client: _client,
-      ),
-      NewsScreen(
-        client: _client,
-      ),
-      FutureBuilder<Client>(
-        future: _client, // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.requireData.hasFirstSynced()) {
-              return ChatOverview(
-                rooms: snapshot.requireData.conversations().toList(),
-              );
-            } else {
-              return Center(
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  color: AppColors.backgroundColor,
-                  child: Text(
-                    AppLocalizations.of(context)!.loadingConvo,
-                    style: optionStyle,
-                  ),
-                ),
-              );
-            }
-          } else {
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              color: AppColors.backgroundColor,
-              child: Center(
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
-                ),
-              ),
-            );
-          }
-        },
-      ),
+      NewsScreen(client: client),
+      NotificationScreen(),
+      NotificationScreen(),
+      ChatOverview(rooms: client.conversations().toList()),
       NotificationScreen(),
     ];
+
     return DefaultTabController(
       length: 5,
       child: SafeArea(
@@ -350,6 +306,33 @@ class _EffektioHomeState extends State<EffektioHome> {
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Client>(
+      future: _client, // a previously-obtained Future<String> or null
+      builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
+        if (snapshot.hasData) {
+          return homeScreen(context, snapshot.requireData);
+        } else {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            color: AppColors.backgroundColor,
+            child: Center(
+              child: SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }

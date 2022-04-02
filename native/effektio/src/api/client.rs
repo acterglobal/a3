@@ -1,8 +1,12 @@
 use super::{api, Room, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
-use effektio_core::ruma::api::client::account::register;
-use effektio_core::RestoreToken;
+use effektio_core::{
+    ruma::api::client::account::register,
+    RestoreToken,
+    models::News,
+    mocks::gen_mock_news
+};
 use futures::{stream, Stream};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
@@ -100,6 +104,11 @@ impl Client {
         let r: Vec<_> = self.rooms().into_iter().map(|room| Room { room }).collect();
         r
     }
+
+    pub async fn latest_news(&self) -> Result<Vec<News>> {
+        Ok(gen_mock_news())
+    }
+
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
     //     let l = self.client.clone();

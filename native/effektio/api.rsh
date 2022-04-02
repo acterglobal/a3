@@ -11,6 +11,15 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
+/// A news object
+object News {
+    /// get the text of the news item
+    fn text() -> Option<string>;
+}
+
+/// generate news mock items
+fn gen_mock_news() -> Vec<News>;
+
 object UserId {}
 
 object AnyMessage { }
@@ -92,4 +101,7 @@ object Client {
 
     /// The conversations the user is involved in
     fn conversations() -> Vec<Room>;
+
+    /// Get the latest News for the client
+    fn latest_news() -> Future<Result<Vec<News>>>;
 }

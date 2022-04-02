@@ -4,7 +4,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-export './effektio_flutter_sdk_ffi.dart' show Client, Room;
+export './effektio_flutter_sdk_ffi.dart' show Client, Room, News;
 
 // class EffektioClient extends ChangeNotifier {
 //   final Client client;
