@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -55,7 +55,6 @@ class Effektio extends StatelessWidget {
         '/profile': (BuildContext context) => const SocialProfileScreen(),
         '/signup': (BuildContext context) => const SignupScreen(),
         '/gallery': (BuildContext context) => const GalleryScreen(),
-        '/chat': (BuildContext context) => const ChatScreen(),
       },
     );
   }
@@ -155,87 +154,96 @@ class _EffektioHomeState extends State<EffektioHome> {
           drawer: SideDrawer(
             client: _client,
           ),
-          bottomNavigationBar: BottomNavigationBar(
-            backgroundColor: AppColors.textFieldColor,
-            type: BottomNavigationBarType.fixed,
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset('assets/images/newsfeed_linear.svg'),
-                ),
-                activeIcon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset(
-                    'assets/images/newsfeed_bold.svg',
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(36, 38, 50, 1),
+              boxShadow: [
+                BoxShadow(color: Colors.grey, offset: Offset(0, -0.5)),
+              ],
+            ),
+            child: BottomNavigationBar(
+              backgroundColor: Color.fromRGBO(36, 38, 50, 1),
+              type: BottomNavigationBarType.fixed,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child:
+                        SvgPicture.asset('assets/images/newsfeed_linear.svg'),
                   ),
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset('assets/images/menu_linear.svg'),
-                ),
-                activeIcon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset(
-                    'assets/images/menu_bold.svg',
+                  activeIcon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/newsfeed_bold.svg',
+                    ),
                   ),
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset('assets/images/add.svg'),
-                ),
-                activeIcon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset(
-                    'assets/images/add.svg',
-                    color: AppColors.primaryColor,
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset('assets/images/menu_linear.svg'),
                   ),
-                ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset('assets/images/chat_linear.svg'),
-                ),
-                activeIcon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset(
-                    'assets/images/chat_bold.svg',
+                  activeIcon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/menu_bold.svg',
+                    ),
                   ),
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child:
-                      SvgPicture.asset('assets/images/notification_linear.svg'),
-                ),
-                activeIcon: Container(
-                  margin: const EdgeInsets.only(top: 10),
-                  child: SvgPicture.asset(
-                    'assets/images/notification_bold.svg',
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset('assets/images/add.svg'),
                   ),
+                  activeIcon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/add.svg',
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  label: '',
                 ),
-                label: '',
-              ),
-            ],
-            currentIndex: tabIndex,
-            showUnselectedLabels: true,
-            selectedItemColor: AppColors.primaryColor,
-            iconSize: 30,
-            onTap: (value) {
-              setState(() {
-                tabIndex = value;
-              });
-            },
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset('assets/images/chat_linear.svg'),
+                  ),
+                  activeIcon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/chat_bold.svg',
+                    ),
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset(
+                        'assets/images/notification_linear.svg'),
+                  ),
+                  activeIcon: Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: SvgPicture.asset(
+                      'assets/images/notification_bold.svg',
+                    ),
+                  ),
+                  label: '',
+                ),
+              ],
+              currentIndex: tabIndex,
+              showUnselectedLabels: true,
+              selectedItemColor: AppColors.primaryColor,
+              iconSize: 30,
+              onTap: (value) {
+                setState(() {
+                  tabIndex = value;
+                });
+              },
+            ),
           ),
         ),
       ),

@@ -32,12 +32,12 @@ class _ChatListState extends State<ChatList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
         leadingWidth: MediaQuery.of(context).size.width / 5,
         toolbarHeight: MediaQuery.of(context).size.height / 15,
-        backgroundColor: Colors.black,
-        elevation: 1,
+        backgroundColor: Color.fromRGBO(36, 38, 50, 1),
+        elevation: 0,
         leading: Container(
           margin: const EdgeInsets.only(left: 10),
           child: TextButton(
@@ -95,60 +95,60 @@ class _ChatListState extends State<ChatList> {
                       userId: userId,
                     );
                   } else {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height / 6,
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height / 1.5,
+                      width: MediaQuery.of(context).size.width,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryColor,
                         ),
-                        Center(
-                          child: Container(
-                            child: SvgPicture.asset(
-                              'assets/images/empty_messages.svg',
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          'Looks Empty here...',
-                          style: GoogleFonts.montserrat(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Center(
-                          child: Container(
-                            height: MediaQuery.of(context).size.height / 3,
-                            width: MediaQuery.of(context).size.width / 2,
-                            child: Text(
-                              'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                              style: GoogleFonts.montserrat(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                              overflow: TextOverflow.clip,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     );
                   }
                 } else {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height / 1.5,
-                    width: MediaQuery.of(context).size.width,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.primaryColor,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height / 6,
                       ),
-                    ),
+                      Center(
+                        child: Container(
+                          child: SvgPicture.asset(
+                            'assets/images/empty_messages.svg',
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Text(
+                        'Looks Empty here...',
+                        style: GoogleFonts.montserrat(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Center(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height / 3,
+                          width: MediaQuery.of(context).size.width / 2,
+                          child: Text(
+                            'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                            style: GoogleFonts.montserrat(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.clip,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 }
               },

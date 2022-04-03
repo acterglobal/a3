@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
 import 'package:effektio/blocs/login/form_submission_status.dart';
 import 'package:effektio/blocs/login/signIn_bloc.dart';
@@ -41,11 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Column(
-        children: <Widget>[
-          BlocProvider(
-            create: (context) => SignInBloc(),
-            child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            BlocProvider(
+              create: (context) => SignInBloc(),
               child: BlocListener<SignInBloc, SignInState>(
                 listener: (context, state) {
                   final formStatus = state.formStatus;
@@ -227,8 +227,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

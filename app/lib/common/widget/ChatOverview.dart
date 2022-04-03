@@ -1,11 +1,15 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
+import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatOverview extends StatelessWidget {
@@ -56,12 +60,18 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<types.Message> _messages = [];
     // ToDo: UnreadCounter
     return ListTile(
-      enableFeedback: true,
       onTap: () {
-        Navigator.pushNamed(context, '/chat');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatScreen(
+              room: room,
+              user: userId,
+            ),
+          ),
+        );
       },
       // hoverColor: Colors.grey[700],
       // contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
@@ -78,8 +88,9 @@ class ChatListItem extends StatelessWidget {
           } else {
             return CircleAvatar(
               radius: 25,
-              backgroundColor: Colors.brown.shade800,
-              child: const Text('H'),
+              backgroundColor:
+                  Colors.primaries[Random().nextInt(Colors.primaries.length)],
+              child: SvgPicture.asset('assets/images/people.svg'),
             );
           }
         },
@@ -106,13 +117,14 @@ class ChatListItem extends StatelessWidget {
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
             return Container(
-              margin: const EdgeInsets.only(top: 10),
+              margin: const EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
-                '${snapshot.requireData.sender()}: ${snapshot.requireData.body()}',
+                '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
                 style: GoogleFonts.montserrat(
                   fontSize: 12,
                   color: Colors.white,
                 ),
+                maxLines: 2,
               ),
             );
           } else {
@@ -120,14 +132,17 @@ class ChatListItem extends StatelessWidget {
           }
         },
       ),
-
-      trailing: FutureBuilder<FfiListRoomMember>(
-        future: room.activeMembers(),
+      trailing: FutureBuilder<RoomMessage>(
+        future: room.latestMessage(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Text(
-              snapshot.requireData.length.toString(),
-              style: TextStyle(color: Colors.white),
+              formatedTime(snapshot.requireData.originServerTs()),
+              style: GoogleFonts.montserrat(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w300,
+              ),
             );
           } else {
             return const SizedBox();
