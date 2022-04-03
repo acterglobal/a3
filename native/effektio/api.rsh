@@ -11,18 +11,38 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
-object UserId {}
+object UserId {
+    // full name as string
+    //fn as_str() -> string;
 
-object AnyMessage { }
+    // only the user name itself
+    //fn localpart() -> string;
+}
+object EventId {}
+
+/// A room Message metadata and content
+object RoomMessage {
+
+    /// Unique ID of this event
+    fn event_id() -> string;
+
+    /// The User, who sent that event
+    fn sender() -> string;
+
+    /// the body of the massage - fallback string reprensentation
+    fn body() -> string;
+
+    /// the server receiving timestamp
+    fn origin_server_ts() -> u64;
+}
 
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever a new event arrived
-    fn next() -> Future<Result<AnyMessage>>;
+    fn next() -> Future<Result<RoomMessage>>;
 
     /// Get the next count messages backwards,
-    fn paginate_backwards(count: u64) -> Future<Result<Vec<AnyMessage>>>;
-
+    fn paginate_backwards(count: u64) -> Future<Result<Vec<RoomMessage>>>;
 }
 
 object Room {
@@ -40,6 +60,9 @@ object Room {
 
     // the members currently in the room
     // fn get_member(user: UserId) -> Future<Result<RoomMember>>;
+
+    /// The last message sent to the room
+    fn latest_message() -> Future<Result<RoomMessage>>;
 }
 
 object RoomMember {

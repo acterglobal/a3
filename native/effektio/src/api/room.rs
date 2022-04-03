@@ -1,7 +1,8 @@
 use super::{api, TimelineStream, UserId, RUNTIME};
+use super::messages::{sync_event_to_message, RoomMessage};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
-use futures::{stream, Stream};
+use futures::{stream, Stream, pin_mut, StreamExt};
 use matrix_sdk::ruma;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaType},
@@ -109,6 +110,34 @@ impl Room {
                     .await
                     .context("Failed acquiring timeline streams")?;
                 Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward)))
+            })
+            .await?
+    }
+
+    pub async fn latest_message(&self) -> Result<RoomMessage> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let stream = room
+                    .timeline_backward()
+                    .await
+                    .context("Failed acquiring timeline streams")?;
+                pin_mut!(stream);
+                loop {
+                    match stream.next().await {
+                        None => break,
+                        Some(Ok(e)) => {
+                            if let Some(a) = sync_event_to_message(e) {
+                                return Ok(a)
+                            }
+                        }
+                        _ => {
+                            // we ignore errors
+                        }
+                    }
+                }
+
+                bail!("No Message found")
             })
             .await?
     }
