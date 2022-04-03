@@ -1,10 +1,9 @@
 // ignore_for_file: prefer_const_constructors
-
-import 'dart:typed_data';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
+import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
@@ -56,6 +55,7 @@ class Effektio extends StatelessWidget {
         '/profile': (BuildContext context) => const SocialProfileScreen(),
         '/signup': (BuildContext context) => const SignupScreen(),
         '/gallery': (BuildContext context) => const GalleryScreen(),
+        '/chat': (BuildContext context) => const ChatScreen(),
       },
     );
   }
@@ -107,7 +107,7 @@ class _EffektioHomeState extends State<EffektioHome> {
       NewsScreen(
         client: _client,
       ),
-      ChatScreen(
+      ChatList(
         client: _client,
       ),
       NotificationScreen(),

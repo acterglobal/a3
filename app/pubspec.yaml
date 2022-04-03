@@ -38,6 +38,7 @@ dependencies:
   path_provider: ^2.0.8
   formz: ^0.4.1
   flutter_chat_ui: ^1.5.5
+  flutter_chat_types: ^3.3.2
   google_fonts: ^2.3.1
   flutter_bloc: ^8.0.1
   flutter_svg: ^1.0.3

@@ -11,3 +11,9 @@ Future<Client> login(String username, String password) async {
   Client client = await sdk.login(username, password);
   return client;
 }
+
+Future<String> getUser(Future<Client> client) async {
+  Client _client = await client;
+  final String userId = await _client.userId();
+  return userId;
+}

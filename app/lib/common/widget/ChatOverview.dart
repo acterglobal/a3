@@ -2,15 +2,20 @@
 
 import 'dart:typed_data';
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Room> rooms;
-
-  const ChatOverview({Key? key, required this.rooms}) : super(key: key);
+  final String userId;
+  const ChatOverview({
+    Key? key,
+    required this.rooms,
+    required this.userId,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +27,10 @@ class ChatOverview extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return Column(
           children: <Widget>[
-            ChatListItem(room: rooms[index]),
+            ChatListItem(
+              room: rooms[index],
+              userId: userId,
+            ),
             Container(
               // margin: EdgeInsets.only(left: 70, bottom: 10, right: 10),
               child: Divider(
@@ -42,13 +50,20 @@ class ChatOverview extends StatelessWidget {
 
 class ChatListItem extends StatelessWidget {
   final Room room;
-
-  const ChatListItem({Key? key, required this.room}) : super(key: key);
+  final String userId;
+  const ChatListItem({Key? key, required this.room, required this.userId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<types.Message> _messages = [];
     // ToDo: UnreadCounter
     return ListTile(
+      enableFeedback: true,
+      onTap: () {
+        Navigator.pushNamed(context, '/chat');
+      },
+      // hoverColor: Colors.grey[700],
       // contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       leading: FutureBuilder<Uint8List>(
         future: room.avatar().then((fb) => fb.asTypedList()),
@@ -76,23 +91,34 @@ class ChatListItem extends StatelessWidget {
             return Text(
               snapshot.requireData,
               style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             );
           } else {
             return Text('Loading Name');
           }
         },
       ),
-      subtitle: Container(
-        margin: const EdgeInsets.only(
-          top: 10,
-        ),
-        child: Text(
-          'Hello',
-          style: GoogleFonts.montserrat(color: Colors.white, fontSize: 12),
-        ),
+      subtitle: FutureBuilder<TimelineStream>(
+        future: room.timeline(),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.hasData) {
+            return Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: Text(
+                userId,
+                style: GoogleFonts.montserrat(
+                  fontSize: 11,
+                  color: Colors.white,
+                ),
+              ),
+            );
+          } else {
+            return Container();
+          }
+        },
       ),
       trailing: FutureBuilder<FfiListRoomMember>(
         future: room.activeMembers(),
