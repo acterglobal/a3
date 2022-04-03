@@ -101,16 +101,16 @@ class ChatListItem extends StatelessWidget {
           }
         },
       ),
-      subtitle: FutureBuilder<TimelineStream>(
-        future: room.timeline(),
+      subtitle: FutureBuilder<RoomMessage>(
+        future: room.latestMessage(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
             return Container(
               margin: const EdgeInsets.only(top: 10),
               child: Text(
-                userId,
+                '${snapshot.requireData.sender()}: ${snapshot.requireData.body()}',
                 style: GoogleFonts.montserrat(
-                  fontSize: 11,
+                  fontSize: 12,
                   color: Colors.white,
                 ),
               ),
@@ -120,6 +120,7 @@ class ChatListItem extends StatelessWidget {
           }
         },
       ),
+
       trailing: FutureBuilder<FfiListRoomMember>(
         future: room.activeMembers(),
         builder: (context, snapshot) {
