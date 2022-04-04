@@ -7,7 +7,7 @@ import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
-import 'package:effektio/screens/HomeScreens/Faq.dart';
+import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
@@ -168,7 +168,7 @@ class _EffektioHomeState extends State<EffektioHome> {
     ];
     List<Widget> _widgetOptions = <Widget>[
       NewsScreen(client: client),
-      FaqScreen(client: client),
+      FaqOverviewScreen(client: client),
       NotificationScreen(),
       ChatOverview(rooms: client.conversations().toList()),
       NotificationScreen(),

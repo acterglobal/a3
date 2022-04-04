@@ -8,15 +8,15 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class FaqScreen extends StatefulWidget {
-  const FaqScreen({Key? key, required this.client}) : super(key: key);
+class FaqOverviewScreen extends StatefulWidget {
+  const FaqOverviewScreen({Key? key, required this.client}) : super(key: key);
   final Client client;
 
   @override
-  _FaqScreenState createState() => _FaqScreenState();
+  _FaOverviewqScreenState createState() => _FaOverviewqScreenState();
 }
 
-class _FaqScreenState extends State<FaqScreen> {
+class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FfiListFaq>(
