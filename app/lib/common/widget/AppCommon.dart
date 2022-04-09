@@ -28,15 +28,16 @@ String getNameFromId(String name) {
 }
 
 String formatedTime(int value) {
-  int h, m, s;
+  int h, m;
 
-  h = value ~/ 3600;
+  value = value % (24 * 3600);
+  h = (value ~/ 3600) + 5;
+  value %= 3600;
+  m = value ~/ 60;
 
-  m = ((value - h * 3600)) ~/ 60;
+  // s = value - (h * 3600) - (m * 60);
 
-  s = value - (h * 3600) - (m * 60);
-
-  String result = '$h:$m:$s';
+  String result = '$h:$m';
 
   return result;
 }

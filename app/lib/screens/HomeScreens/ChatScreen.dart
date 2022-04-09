@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/repository/client.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ChatScreen extends StatefulWidget {
   final Room room;
-  final String user;
+  final String? user;
   const ChatScreen({Key? key, required this.room, required this.user})
       : super(key: key);
 
@@ -28,8 +29,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
-    _user = types.User(id: widget.user);
+    _user = types.User(id: widget.user!);
     super.initState();
+    _getMessages();
   }
 
   void _addMessage(types.Message message) {
@@ -47,6 +49,17 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     _addMessage(textMessage);
+  }
+
+  void _getMessages() async {
+    final stream = await getTimeline(widget.room);
+    await getMessages(stream, 20).then(
+      (messages) => {
+        setState(() {
+          _messages = messages;
+        })
+      },
+    );
   }
 
   @override
@@ -159,6 +172,7 @@ class _ChatScreenState extends State<ChatScreen> {
           messages: _messages,
           onSendPressed: _handleSendPressed,
           user: _user,
+          showUserAvatars: true,
         ),
       ),
     );

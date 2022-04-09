@@ -14,7 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Room> rooms;
-  final String userId;
+  final String? userId;
   const ChatOverview({
     Key? key,
     required this.rooms,
@@ -54,7 +54,7 @@ class ChatOverview extends StatelessWidget {
 
 class ChatListItem extends StatelessWidget {
   final Room room;
-  final String userId;
+  final String? userId;
   const ChatListItem({Key? key, required this.room, required this.userId})
       : super(key: key);
 
@@ -136,6 +136,7 @@ class ChatListItem extends StatelessWidget {
         future: room.latestMessage(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
+            print(snapshot.requireData.originServerTs());
             return Text(
               formatedTime(snapshot.requireData.originServerTs()),
               style: GoogleFonts.montserrat(

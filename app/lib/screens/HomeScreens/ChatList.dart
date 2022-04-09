@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace
+// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
@@ -17,16 +17,18 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  late String userId;
+  late String? userId;
+
   @override
   void initState() {
-    _getUser();
+    _getUser().then((value) => userId = value);
     super.initState();
   }
 
-  void _getUser() async {
-    userId = await getUser(widget.client);
+  Future<String?> _getUser() async {
+    final String? id = await getUser(widget.client);
     // print(userId);
+    return id;
   }
 
   @override
@@ -88,23 +90,22 @@ class _ChatListState extends State<ChatList> {
             FutureBuilder<Client>(
               future: widget.client,
               builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.requireData.hasFirstSynced()) {
-                    return ChatOverview(
-                      rooms: snapshot.requireData.conversations().toList(),
-                      userId: userId,
-                    );
-                  } else {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.5,
-                      width: MediaQuery.of(context).size.width,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
-                        ),
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height / 1.5,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
                       ),
-                    );
-                  }
+                    ),
+                  );
+                }
+                if (snapshot.hasData) {
+                  return ChatOverview(
+                    userId: userId,
+                    rooms: snapshot.requireData.conversations().toList(),
+                  );
                 } else {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
