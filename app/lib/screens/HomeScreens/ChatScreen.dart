@@ -53,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void _getMessages() async {
     final stream = await getTimeline(widget.room);
-    await getMessages(stream, 20).then(
+    await getMessages(stream, 10).then(
       (messages) => {
         setState(() {
           _messages = messages;
