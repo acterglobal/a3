@@ -190,8 +190,10 @@ class _EffektioHomeState extends State<EffektioHome> {
               return FutureBuilder<FfiListConversation>(
                 future: snapshot.requireData
                     .conversations(), // a previously-obtained Future<String> or null
-                builder: (BuildContext context,
-                    AsyncSnapshot<FfiListConversation> snapshot) {
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<FfiListConversation> snapshot,
+                ) {
                   if (snapshot.hasData) {
                     return ChatOverview(
                       conversations: snapshot.requireData.toList(),
