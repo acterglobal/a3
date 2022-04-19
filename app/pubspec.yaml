@@ -47,6 +47,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.9.2
+  flutter_lints: ^1.0.4
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/logo.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -69,6 +76,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/icon/
   
   #   - images/a_dot_ham.jpeg
 

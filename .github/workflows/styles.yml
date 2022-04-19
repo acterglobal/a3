@@ -36,9 +36,9 @@ jobs:
       - name: version
         run: flutter --version
         working-directory: effektio_flutter_sdk
-      - working-directory: app
-        run: flutter analyze
+      - run: flutter analyze
         name: lint app
+        working-directory: app
       - working-directory: effektio_flutter_sdk
         run: flutter pub get
       - working-directory: effektio_flutter_sdk
