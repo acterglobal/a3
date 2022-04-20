@@ -16,7 +16,7 @@ jobs:
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          channel: nightly
+          toolchain: nightly
           components: rustfmt
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
