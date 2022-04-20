@@ -33,14 +33,6 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - name: Install supported rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          channel: nightly
-      - name: "Build FFI interface"
-        run: |
-          cargo install cargo-make
-          cargo make ffigen
       - name: version
         run: flutter --version
         working-directory: effektio_flutter_sdk

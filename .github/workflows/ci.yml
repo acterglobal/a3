@@ -47,6 +47,8 @@ jobs:
       #     args: -p effektio --target aarch64-linux-android
       - name: Build Android FFI
         run: cargo make android
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
@@ -91,6 +93,8 @@ jobs:
       #     args: -p effektio --target x86_64-apple-ios
       - name: Build iOS FFI
         run: cargo make ios
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
