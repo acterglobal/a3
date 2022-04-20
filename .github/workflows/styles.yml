@@ -4,13 +4,13 @@ on:
   pull_request:
     branches: [ main ]
 
-name: Check Styles
+name: Style
 
 jobs:
 
   rust-style:
     runs-on: ubuntu-latest
-    name: Formatting
+    name: Rust
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
@@ -26,7 +26,7 @@ jobs:
           args: --all --check
 
   dart-style:
-    name: lint dart code
+    name: Flutter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

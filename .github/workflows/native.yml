@@ -4,12 +4,12 @@ on:
   pull_request:
     branches: [ main ]
 
-name: Check Native Build
+name: Native
 
 jobs:
   core:
     runs-on: ubuntu-latest
-    name: Rust Native ${{ matrix.name }}
+    name: Clippy & Test & Build ${{ matrix.name }}
     strategy:
       matrix:
         include:
@@ -78,7 +78,7 @@ jobs:
           args: -p effektio --target ${{matrix.target}}
 
   ffigen:
-    name: Ensure ffi.dart file is up to date
+    name: FFI-Gen up-to-date
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

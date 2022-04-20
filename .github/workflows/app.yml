@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ main ]
 
-name: App Build Check
+name: App
 
 env:
   RELEASE: true
@@ -13,7 +13,7 @@ jobs:
 
   build-android:
     runs-on: ubuntu-latest
-    name: Build Android App
+    name: Build Android
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -43,7 +43,7 @@ jobs:
 
   build-ios:
     runs-on: macos-latest
-    name: Build iOS App
+    name: Build iOS
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
