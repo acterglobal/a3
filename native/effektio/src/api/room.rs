@@ -8,18 +8,18 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
 };
 
-pub struct RoomMember {
+pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
 }
 
-impl std::ops::Deref for RoomMember {
+impl std::ops::Deref for Member {
     type Target = matrix_sdk::RoomMember;
     fn deref(&self) -> &matrix_sdk::RoomMember {
         &self.member
     }
 }
 
-impl RoomMember {
+impl Member {
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         let r = self.member.clone();
         RUNTIME
@@ -62,7 +62,7 @@ impl Room {
             .await?
     }
 
-    pub async fn active_members(&self) -> Result<Vec<RoomMember>> {
+    pub async fn active_members(&self) -> Result<Vec<Member>> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -70,13 +70,13 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| RoomMember { member })
+                    .map(|member| Member { member })
                     .collect())
             })
             .await?
     }
 
-    pub async fn active_members_no_sync(&self) -> Result<Vec<RoomMember>> {
+    pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -84,18 +84,18 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| RoomMember { member })
+                    .map(|member| Member { member })
                     .collect())
             })
             .await?
     }
 
-    pub async fn get_member(&self, user_id: UserId) -> Result<RoomMember> {
+    pub async fn get_member(&self, user_id: UserId) -> Result<Member> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
                 let member = r.get_member(&user_id).await?.context("User not found")?;
-                Ok(RoomMember { member })
+                Ok(Member { member })
             })
             .await?
     }

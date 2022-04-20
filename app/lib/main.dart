@@ -61,16 +61,16 @@ class Effektio extends StatelessWidget {
 }
 
 class ChatListItem extends StatelessWidget {
-  final Room room;
+  final Conversation conversation;
 
-  const ChatListItem({Key? key, required this.room}) : super(key: key);
+  const ChatListItem({Key? key, required this.conversation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
     return ListTile(
       leading: FutureBuilder<Uint8List>(
-        future: room.avatar().then((fb) => fb.asTypedList()),
+        future: conversation.avatar().then((fb) => fb.asTypedList()),
         // a previously-obtained Future<String> or null
         builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
           if (snapshot.hasData) {
@@ -87,7 +87,7 @@ class ChatListItem extends StatelessWidget {
         },
       ),
       title: FutureBuilder<String>(
-        future: room.displayName(),
+        future: conversation.displayName(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return Text(
@@ -99,8 +99,8 @@ class ChatListItem extends StatelessWidget {
           }
         },
       ),
-      trailing: FutureBuilder<FfiListRoomMember>(
-        future: room.activeMembers(),
+      trailing: FutureBuilder<FfiListMember>(
+        future: conversation.activeMembers(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Text(
@@ -117,9 +117,9 @@ class ChatListItem extends StatelessWidget {
 }
 
 class ChatOverview extends StatelessWidget {
-  final List<Room> rooms;
+  final List<Conversation> conversations;
 
-  const ChatOverview({Key? key, required this.rooms}) : super(key: key);
+  const ChatOverview({Key? key, required this.conversations}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -127,9 +127,9 @@ class ChatOverview extends StatelessWidget {
       color: AppColors.backgroundColor,
       child: ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: rooms.length,
+        itemCount: conversations.length,
         itemBuilder: (BuildContext context, int index) {
-          return ChatListItem(room: rooms[index]);
+          return ChatListItem(conversation: conversations[index]);
         },
       ),
     );
@@ -187,8 +187,31 @@ class _EffektioHomeState extends State<EffektioHome> {
         builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
           if (snapshot.hasData) {
             if (snapshot.requireData.hasFirstSynced()) {
-              return ChatOverview(
-                rooms: snapshot.requireData.conversations().toList(),
+              return FutureBuilder<FfiListConversation>(
+                future: snapshot.requireData
+                    .conversations(), // a previously-obtained Future<String> or null
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<FfiListConversation> snapshot,
+                ) {
+                  if (snapshot.hasData) {
+                    return ChatOverview(
+                      conversations: snapshot.requireData.toList(),
+                    );
+                  } else {
+                    return Center(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        color: AppColors.backgroundColor,
+                        child: Text(
+                          AppLocalizations.of(context)!.loadingConvo,
+                          style: optionStyle,
+                        ),
+                      ),
+                    );
+                  }
+                },
               );
             } else {
               return Center(
