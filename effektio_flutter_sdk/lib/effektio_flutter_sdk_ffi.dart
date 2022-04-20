@@ -2344,153 +2344,6 @@ class Api {
     int,
     int,
   )>();
-  FfiListMember createFfiListMember() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListMemberCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListMember");
-    return FfiListMember._(this, list_box);
-  }
-
-  late final _ffiListMemberCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListMemberCreate");
-
-  late final _ffiListMemberCreate =
-      _ffiListMemberCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListMemberLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListMemberLen");
-
-  late final _ffiListMemberLen =
-      _ffiListMemberLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListMemberElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListMemberElementAt");
-
-  late final _ffiListMemberElementAt =
-      _ffiListMemberElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListMemberRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListMemberRemove");
-
-  late final _ffiListMemberRemove =
-      _ffiListMemberRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListMemberAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListMemberAdd");
-
-  late final _ffiListMemberAdd =
-      _ffiListMemberAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListMemberInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListMemberInsert");
-
-  late final _ffiListMemberInsert =
-      _ffiListMemberInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListGroup createFfiListGroup() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListGroupCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListGroup");
-    return FfiListGroup._(this, list_box);
-  }
-
-  late final _ffiListGroupCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListGroupCreate");
-
-  late final _ffiListGroupCreate =
-      _ffiListGroupCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListGroupLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListGroupLen");
-
-  late final _ffiListGroupLen =
-      _ffiListGroupLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListGroupElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListGroupElementAt");
-
-  late final _ffiListGroupElementAt =
-      _ffiListGroupElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListGroupRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListGroupRemove");
-
-  late final _ffiListGroupRemove =
-      _ffiListGroupRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListGroupAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListGroupAdd");
-
-  late final _ffiListGroupAdd =
-      _ffiListGroupAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListGroupInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListGroupInsert");
-
-  late final _ffiListGroupInsert =
-      _ffiListGroupInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListConversation createFfiListConversation() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListConversationCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListConversation");
-    return FfiListConversation._(this, list_box);
-  }
-
-  late final _ffiListConversationCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListConversationCreate");
-
-  late final _ffiListConversationCreate =
-      _ffiListConversationCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListConversationLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListConversationLen");
-
-  late final _ffiListConversationLen =
-      _ffiListConversationLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListConversationElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListConversationElementAt");
-
-  late final _ffiListConversationElementAt =
-      _ffiListConversationElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListConversationRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListConversationRemove");
-
-  late final _ffiListConversationRemove =
-      _ffiListConversationRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListConversationAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListConversationAdd");
-
-  late final _ffiListConversationAdd =
-      _ffiListConversationAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListConversationInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListConversationInsert");
-
-  late final _ffiListConversationInsert =
-      _ffiListConversationInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListAnyMessage createFfiListAnyMessage() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListAnyMessageCreate());
@@ -2540,6 +2393,153 @@ class Api {
 
   late final _ffiListAnyMessageInsert =
       _ffiListAnyMessageInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListConversation createFfiListConversation() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListConversationCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListConversation");
+    return FfiListConversation._(this, list_box);
+  }
+
+  late final _ffiListConversationCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListConversationCreate");
+
+  late final _ffiListConversationCreate =
+      _ffiListConversationCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListConversationLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListConversationLen");
+
+  late final _ffiListConversationLen =
+      _ffiListConversationLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListConversationElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListConversationElementAt");
+
+  late final _ffiListConversationElementAt =
+      _ffiListConversationElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListConversationRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListConversationRemove");
+
+  late final _ffiListConversationRemove =
+      _ffiListConversationRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListConversationAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListConversationAdd");
+
+  late final _ffiListConversationAdd =
+      _ffiListConversationAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListConversationInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListConversationInsert");
+
+  late final _ffiListConversationInsert =
+      _ffiListConversationInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListGroup createFfiListGroup() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListGroupCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListGroup");
+    return FfiListGroup._(this, list_box);
+  }
+
+  late final _ffiListGroupCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListGroupCreate");
+
+  late final _ffiListGroupCreate =
+      _ffiListGroupCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListGroupLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListGroupLen");
+
+  late final _ffiListGroupLen =
+      _ffiListGroupLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListGroupElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListGroupElementAt");
+
+  late final _ffiListGroupElementAt =
+      _ffiListGroupElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListGroupRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListGroupRemove");
+
+  late final _ffiListGroupRemove =
+      _ffiListGroupRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListGroupAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListGroupAdd");
+
+  late final _ffiListGroupAdd =
+      _ffiListGroupAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListGroupInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListGroupInsert");
+
+  late final _ffiListGroupInsert =
+      _ffiListGroupInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListMember createFfiListMember() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListMemberCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListMember");
+    return FfiListMember._(this, list_box);
+  }
+
+  late final _ffiListMemberCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListMemberCreate");
+
+  late final _ffiListMemberCreate =
+      _ffiListMemberCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListMemberLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListMemberLen");
+
+  late final _ffiListMemberLen =
+      _ffiListMemberLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListMemberElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListMemberElementAt");
+
+  late final _ffiListMemberElementAt =
+      _ffiListMemberElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListMemberRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListMemberRemove");
+
+  late final _ffiListMemberRemove =
+      _ffiListMemberRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListMemberAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListMemberAdd");
+
+  late final _ffiListMemberAdd =
+      _ffiListMemberAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListMemberInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListMemberInsert");
+
+  late final _ffiListMemberInsert =
+      _ffiListMemberInsertPtr.asFunction<void Function(int, int, int)>();
 }
 
 class UserId {
@@ -3398,65 +3398,6 @@ class FfiListAnyMessage extends Iterable<AnyMessage>
   }
 }
 
-class FfiListGroup extends Iterable<Group> implements CustomIterable<Group> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListGroup._(this._api, this._box);
-
-  @override
-  Iterator<Group> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListGroupLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  Group elementAt(int index) {
-    final address = _api._ffiListGroupElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return Group._(_api, reference);
-  }
-
-  Group operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  Group remove(int index) {
-    final address = _api._ffiListGroupRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Group");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return Group._(_api, reference);
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(Group element) {
-    _api._ffiListGroupAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, Group element) {
-    _api._ffiListGroupInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
 class FfiListConversation extends Iterable<Conversation>
     implements CustomIterable<Conversation> {
   final Api _api;
@@ -3510,6 +3451,65 @@ class FfiListConversation extends Iterable<Conversation>
   void insert(int index, Conversation element) {
     _api._ffiListConversationInsert(
         _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListGroup extends Iterable<Group> implements CustomIterable<Group> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListGroup._(this._api, this._box);
+
+  @override
+  Iterator<Group> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListGroupLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Group elementAt(int index) {
+    final address = _api._ffiListGroupElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Group._(_api, reference);
+  }
+
+  Group operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Group remove(int index) {
+    final address = _api._ffiListGroupRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Group");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Group._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(Group element) {
+    _api._ffiListGroupAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Group element) {
+    _api._ffiListGroupInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
