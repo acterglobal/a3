@@ -2,13 +2,11 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:duration/duration.dart';
 
 Widget navBarTitle(String title) {
   return Text(
     title,
-    style: GoogleFonts.montserrat(
+    style: const TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.w700,
       color: Colors.white,
@@ -31,7 +29,7 @@ String formatedTime(int value) {
   int h, m;
 
   value = value % (24 * 3600);
-  h = (value ~/ 3600) + 5;
+  h = (value ~/ 3600);
   value %= 3600;
   m = value ~/ 60;
 

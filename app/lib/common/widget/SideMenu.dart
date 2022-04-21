@@ -8,7 +8,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SideDrawer extends StatefulWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
@@ -59,12 +58,12 @@ class _SideDrawerState extends State<SideDrawer> {
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
+                            children: const [
                               SizedBox(
                                 width: 150,
                                 child: Text(
                                   'Guest User',
-                                  style: GoogleFonts.montserrat(
+                                  style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
@@ -73,7 +72,7 @@ class _SideDrawerState extends State<SideDrawer> {
                               ),
                               Text(
                                 'Effektio 0.0.1',
-                                style: GoogleFonts.montserrat(
+                                style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.white,
                                 ),
@@ -142,7 +141,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                       width: 150,
                                       child: Text(
                                         snapshot.data ?? 'No Name',
-                                        style: GoogleFonts.montserrat(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w700,
                                           color: Colors.white,
@@ -170,7 +169,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                   if (snapshot.hasData) {
                                     return Text(
                                       snapshot.data ?? '',
-                                      style: GoogleFonts.montserrat(
+                                      style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.white,
                                       ),
@@ -210,7 +209,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Todo List',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () => {},
           ),
@@ -223,7 +222,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Gallery',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () => {
               Navigator.pushNamed(context, '/gallery'),
@@ -238,7 +237,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Events',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () => {},
           ),
@@ -251,7 +250,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Shared resource',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () => {},
           ),
@@ -264,7 +263,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Polls & Votes',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () => {},
           ),
@@ -277,7 +276,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Group Budgeting',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () {
               Navigator.push(
@@ -295,7 +294,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'Shared Documents',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () {},
           ),
@@ -308,7 +307,7 @@ class _SideDrawerState extends State<SideDrawer> {
             ),
             title: Text(
               'FAQs',
-              style: GoogleFonts.montserrat(fontSize: 16, color: Colors.white),
+              style: TextStyle(fontSize: 16, color: Colors.white),
             ),
             onTap: () {},
           ),
@@ -367,7 +366,7 @@ class _SideDrawerState extends State<SideDrawer> {
                               ),
                               Text(
                                 'Logout',
-                                style: GoogleFonts.montserrat(
+                                style: TextStyle(
                                   fontSize: 16,
                                   color: AppColors.primaryColor,
                                 ),

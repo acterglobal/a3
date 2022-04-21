@@ -6,7 +6,6 @@ import 'package:effektio/repository/client.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({Key? key, required this.client}) : super(key: key);
@@ -17,18 +16,19 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  late String? userId;
+  String? userId = '';
 
   @override
   void initState() {
-    _getUser().then((value) => userId = value);
+    _getUser();
     super.initState();
   }
 
-  Future<String?> _getUser() async {
+  Future<void> _getUser() async {
     final String? id = await getUser(widget.client);
-    // print(userId);
-    return id;
+    setState(() {
+      userId = id;
+    });
   }
 
   @override
@@ -46,7 +46,7 @@ class _ChatListState extends State<ChatList> {
             onPressed: () {},
             child: Text(
               'Select',
-              style: GoogleFonts.montserrat(
+              style: TextStyle(
                 fontSize: 14,
                 color: AppColors.primaryColor,
               ),
@@ -77,7 +77,7 @@ class _ChatListState extends State<ChatList> {
               ),
               child: Text(
                 'Chat',
-                style: GoogleFonts.montserrat(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
@@ -125,7 +125,7 @@ class _ChatListState extends State<ChatList> {
                       ),
                       Text(
                         'Looks Empty here...',
-                        style: GoogleFonts.montserrat(
+                        style: TextStyle(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -140,7 +140,7 @@ class _ChatListState extends State<ChatList> {
                           width: MediaQuery.of(context).size.width / 2,
                           child: Text(
                             'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                             ),

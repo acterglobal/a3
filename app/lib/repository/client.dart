@@ -29,9 +29,10 @@ Future<List<types.Message>> getMessages(
   TimelineStream stream,
   int count,
 ) async {
-  final List<types.Message> _messages = [];
+  List<types.Message> _messages = [];
   var messages = await stream.paginateBackwards(count);
   for (RoomMessage message in messages) {
+    // print(message.sender());
     types.TextMessage m = types.TextMessage(
       id: message.eventId(),
       author: types.User(id: message.sender()),

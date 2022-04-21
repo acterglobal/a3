@@ -4,7 +4,6 @@ import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
-import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
@@ -18,6 +17,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
+
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,11 @@ class Effektio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: GoogleFonts.montserratTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
       title: 'Effektio',
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -71,8 +77,8 @@ class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
   int tabIndex = 0;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
+  // static const TextStyle optionStyle =
+  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
 
   @override
   void initState() {
@@ -223,7 +229,8 @@ class _EffektioHomeState extends State<EffektioHome> {
                   icon: Container(
                     margin: const EdgeInsets.only(top: 10),
                     child: SvgPicture.asset(
-                        'assets/images/notification_linear.svg'),
+                      'assets/images/notification_linear.svg',
+                    ),
                   ),
                   activeIcon: Container(
                     margin: const EdgeInsets.only(top: 10),

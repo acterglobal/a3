@@ -1,16 +1,12 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Room> rooms;
@@ -88,8 +84,7 @@ class ChatListItem extends StatelessWidget {
           } else {
             return CircleAvatar(
               radius: 25,
-              backgroundColor:
-                  Colors.primaries[Random().nextInt(Colors.primaries.length)],
+              backgroundColor: Colors.grey[700],
               child: SvgPicture.asset('assets/images/people.svg'),
             );
           }
@@ -101,7 +96,7 @@ class ChatListItem extends StatelessWidget {
           if (snapshot.hasData) {
             return Text(
               snapshot.requireData,
-              style: GoogleFonts.montserrat(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
@@ -120,7 +115,7 @@ class ChatListItem extends StatelessWidget {
               margin: const EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
                 '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
-                style: GoogleFonts.montserrat(
+                style: TextStyle(
                   fontSize: 12,
                   color: Colors.white,
                 ),
@@ -136,10 +131,9 @@ class ChatListItem extends StatelessWidget {
         future: room.latestMessage(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            print(snapshot.requireData.originServerTs());
             return Text(
               formatedTime(snapshot.requireData.originServerTs()),
-              style: GoogleFonts.montserrat(
+              style: TextStyle(
                 color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w300,

@@ -87,7 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         'Welcome Back',
-                        style: GoogleFonts.montserrat(
+                        style: TextStyle(
                           fontSize: 25,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         'Sign in to Continue',
-                        style: GoogleFonts.montserrat(
+                        style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontWeight: FontWeight.w300,
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {},
                           child: Text(
                             'Forgot Password?',
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Color(0xff008080),
                               fontWeight: FontWeight.w300,
@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don't have an account ?  ",
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
                               fontWeight: FontWeight.w300,
