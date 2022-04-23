@@ -31,7 +31,7 @@ class _ChatScreenState extends State<ChatScreen> {
   List<types.Message> _messages = [];
   late final _user;
   bool isLoading = false;
-
+  // int _page = 0;
   @override
   void initState() {
     _user = types.User(
@@ -204,6 +204,18 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  // Future<void> _handleEndReached() async {
+  //   setState(() {
+  //     isLoading = true;
+  //   });
+  //   var stream = await getTimeline(widget.room);
+  //   List<types.Message> messages = await getMessages(stream, 10);
+  //   setState(() {
+  //     _messages = [..._messages, ...messages];
+  //     _page = _page + 1;
+  //     isLoading = false;
+  //   });
+  // }
   // Widget _bubbleBuilder(
   //   Widget child, {
   //   required message,
@@ -348,6 +360,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 messages: _messages,
                 onSendPressed: _handleSendPressed,
                 user: _user,
+                // isAttachmentUploading: true,
                 avatarBuilder: (userId) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
@@ -357,12 +370,14 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   );
                 },
-                showUserNames: true,
                 // bubbleBuilder: _bubbleBuilder,
+                // showUserNames: true,
                 showUserAvatars: true,
                 onAttachmentPressed: _handleAtachmentPressed,
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 onMessageTap: _handleMessageTap,
+                // onEndReached: _handleEndReached,
+                // onEndReachedThreshold: 1,
                 emptyState: EmptyPlaceholder(),
                 theme: EffektioChatTheme(
                   attachmentButtonIcon:

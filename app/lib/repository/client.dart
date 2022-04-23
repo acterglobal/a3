@@ -35,6 +35,7 @@ Future<List<types.Message>> getMessages(
     // print(message.sender());
     types.TextMessage m = types.TextMessage(
       id: message.eventId(),
+      showStatus: true,
       author: types.User(id: message.sender()),
       text: message.body(),
     );

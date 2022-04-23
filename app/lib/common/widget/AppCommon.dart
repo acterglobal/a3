@@ -29,13 +29,14 @@ String formatedTime(int value) {
   int h, m;
 
   value = value % (24 * 3600);
-  h = (value ~/ 3600);
+  h = ((value ~/ 3600) + 5) % 24;
   value %= 3600;
   m = value ~/ 60;
+  String hourLeft = h.toString().length < 2 ? '0' + h.toString() : h.toString();
 
   // s = value - (h * 3600) - (m * 60);
 
-  String result = '$h:$m';
+  String result = '$hourLeft:$m';
 
   return result;
 }
