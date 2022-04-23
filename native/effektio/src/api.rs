@@ -23,7 +23,7 @@ pub use client::{Client, ClientStateBuilder};
 pub use messages::AnyMessage;
 pub use room::{Room, RoomMember};
 pub use stream::TimelineStream;
-pub use effektio_core::models::{ News, Faq };
+pub use effektio_core::models::{ News, Faq, Color, Tag };
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
