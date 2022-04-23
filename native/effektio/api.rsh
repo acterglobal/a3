@@ -11,10 +11,26 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
+/// Representing a color
+object Color {
+    // as rgba in u8
+    fn rgba_u8() -> (u8, u8, u8, u8);
+
+}
+
 /// A news object
 object News {
     /// get the text of the news item
     fn text() -> Option<string>;
+}
+
+object Tag {
+    /// the title of the tag
+    fn title() -> string;
+    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
+    fn hash_tag() -> string;
+    /// if given, the specific color for this tag
+    fn color() -> Option<Color>; 
 }
 
 /// A news object
@@ -23,6 +39,12 @@ object Faq {
     fn title() -> string;
     /// get the body of the news item
     fn body() -> string;
+    /// whether this object is pinned
+    fn pinned() -> bool;
+    // The team this faq belongs to
+    //fn team() -> Room;
+    /// the tags on this item
+    fn tags() -> Vec<Tag>;
 }
 
 /// generate news mock items
