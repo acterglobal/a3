@@ -7,6 +7,14 @@ use matrix_sdk::ruma;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest, MediaType},
     room::Room as MatrixRoom,
+    deserialized_responses::SyncRoomEvent,
+    ruma::{
+        EventId,
+        events::{
+            room::message::RoomMessageEventContent,
+        AnyMessageEventContent
+        }
+    },
 };
 
 pub struct RoomMember {
@@ -140,6 +148,47 @@ impl Room {
                 bail!("No Message found")
             })
             .await?
+    }
+    pub async fn typing_notice(&self, typing: bool) -> Result<()> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send typing notice to a room we are not in")
+        };
+        RUNTIME.spawn(async move {
+            room.typing_notice(typing).await?;
+            Ok(())
+        }).await?
+    }
+
+    pub async fn read_receipt(&self, event_id: String) -> Result<()> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send read_receipt to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        RUNTIME.spawn(async move {
+            room.read_receipt(&event_id).await?;
+            Ok(())
+        }).await?
+    }
+
+    pub async fn send_plain_message(&self, message: String) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        RUNTIME.spawn(async move {
+            let r = room.send(
+                AnyMessageEventContent::RoomMessage(
+                    RoomMessageEventContent::text_plain(message)
+                ),
+                None,
+            ).await?;
+            Ok(r.event_id.to_string())
+        }).await?
     }
 }
 

@@ -63,6 +63,21 @@ object Room {
 
     /// The last message sent to the room
     fn latest_message() -> Future<Result<RoomMessage>>;
+
+    /// Activate typing notice for this room
+    /// The typing notice remains active for 4s. It can be deactivate at any
+    /// point by setting typing to false. If this method is called while the
+    /// typing notice is active nothing will happen. This method can be called
+    /// on every key stroke, since it will do nothing while typing is active.
+    fn typing_notice(typing: bool) -> Future<Result<()>>;
+
+    /// Send a request to notify this room that the user has read specific event.
+    fn read_receipt(event_id: string) -> Future<Result<()>>;
+
+    /// Send a simple plain text message to the room
+    /// returns the event_id as given by the server of the event soon after
+    /// received over timeline().next()
+    fn send_plain_message(text_message: string) -> Future<Result<string>>;
 }
 
 object RoomMember {
