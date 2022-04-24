@@ -18,7 +18,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Room room;
+  final Conversation room;
   final String? user;
   const ChatScreen({Key? key, required this.room, required this.user})
       : super(key: key);
@@ -196,7 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       isLoading = true;
     });
-    var stream = await getTimeline(widget.room);
+    var stream = await widget.room.timeline();
     List<types.Message> messages = await getMessages(stream, 10);
     setState(() {
       _messages = messages;
@@ -281,11 +281,11 @@ class _ChatScreenState extends State<ChatScreen> {
               },
             ),
             SizedBox(height: 5),
-            FutureBuilder<FfiListRoomMember>(
+            FutureBuilder<FfiListMember>(
               future: widget.room.activeMembers(),
               builder: (
                 BuildContext context,
-                AsyncSnapshot<FfiListRoomMember> snapshot,
+                AsyncSnapshot<FfiListMember> snapshot,
               ) {
                 if (snapshot.hasData) {
                   return Text(

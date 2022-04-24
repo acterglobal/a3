@@ -20,11 +20,6 @@ Future<String> getUser(Future<Client> client) async {
   return userId;
 }
 
-Future<TimelineStream> getTimeline(Room room) async {
-  var timeline = await room.timeline();
-  return timeline;
-}
-
 Future<List<types.Message>> getMessages(
   TimelineStream stream,
   int count,

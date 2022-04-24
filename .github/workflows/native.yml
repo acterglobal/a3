@@ -4,12 +4,12 @@ on:
   pull_request:
     branches: [ main ]
 
-name: Check Native Build
+name: Native
 
 jobs:
   core:
     runs-on: ubuntu-latest
-    name: Rust Native ${{ matrix.name }}
+    name: Clippy & Test & Build ${{ matrix.name }}
     strategy:
       matrix:
         include:
@@ -76,3 +76,22 @@ jobs:
         with:
           command: test
           args: -p effektio --target ${{matrix.target}}
+
+  ffigen:
+    name: FFI-Gen up-to-date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Install supported rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+      - name: "Build FFI interface"
+        run: |
+          cargo install cargo-make
+          cargo make ffigen
+      - name: "Check file is no different"
+        run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart

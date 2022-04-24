@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ChatOverview extends StatelessWidget {
-  final List<Room> rooms;
+  final List<Conversation> rooms;
   final String? userId;
   const ChatOverview({
     Key? key,
@@ -49,7 +49,7 @@ class ChatOverview extends StatelessWidget {
 }
 
 class ChatListItem extends StatelessWidget {
-  final Room room;
+  final Conversation room;
   final String? userId;
   const ChatListItem({Key? key, required this.room, required this.userId})
       : super(key: key);

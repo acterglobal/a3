@@ -4,6 +4,8 @@ import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio/repository/client.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -23,6 +25,9 @@ class _ChatListState extends State<ChatList> {
     _getUser();
     super.initState();
   }
+
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
 
   Future<void> _getUser() async {
     final String? id = await getUser(widget.client);
@@ -102,9 +107,32 @@ class _ChatListState extends State<ChatList> {
                   );
                 }
                 if (snapshot.hasData) {
-                  return ChatOverview(
-                    userId: userId,
-                    rooms: snapshot.requireData.conversations().toList(),
+                  return FutureBuilder<FfiListConversation>(
+                    future: snapshot.requireData
+                        .conversations(), // a previously-obtained Future<String> or null
+                    builder: (
+                      BuildContext context,
+                      AsyncSnapshot<FfiListConversation> snapshot,
+                    ) {
+                      if (snapshot.hasData) {
+                        return ChatOverview(
+                          userId: userId,
+                          rooms: snapshot.requireData.toList(),
+                        );
+                      } else {
+                        return Center(
+                          child: Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            color: AppColors.backgroundColor,
+                            child: Text(
+                              AppLocalizations.of(context)!.loadingConvo,
+                              style: optionStyle,
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   );
                 } else {
                   return Column(

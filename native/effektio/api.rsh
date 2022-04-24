@@ -45,7 +45,7 @@ object TimelineStream {
     fn paginate_backwards(count: u64) -> Future<Result<Vec<RoomMessage>>>;
 }
 
-object Room {
+object Conversation {
     /// Calculate the display name
     fn display_name() -> Future<Result<string>>;
 
@@ -53,7 +53,7 @@ object Room {
     fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// the members currently in the room
-    fn active_members() -> Future<Result<Vec<RoomMember>>>;
+    fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// Get the timeline for the room
     fn timeline() -> Future<Result<TimelineStream>>;
@@ -69,10 +69,10 @@ object Room {
     /// point by setting typing to false. If this method is called while the
     /// typing notice is active nothing will happen. This method can be called
     /// on every key stroke, since it will do nothing while typing is active.
-    fn typing_notice(typing: bool) -> Future<Result<()>>;
+    fn typing_notice(typing: bool) -> Future<Result<bool>>;
 
     /// Send a request to notify this room that the user has read specific event.
-    fn read_receipt(event_id: string) -> Future<Result<()>>;
+    fn read_receipt(event_id: string) -> Future<Result<bool>>;
 
     /// Send a simple plain text message to the room
     /// returns the event_id as given by the server of the event soon after
@@ -80,7 +80,21 @@ object Room {
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 }
 
-object RoomMember {
+object Group {
+    /// Calculate the display name
+    fn display_name() -> Future<Result<string>>;
+
+    /// The avatar of the Group
+    fn avatar() -> Future<Result<buffer<u8>>>;
+
+    /// the members currently in the group
+    fn active_members() -> Future<Result<Vec<Member>>>;
+
+    // the members currently in the room
+    // fn get_member(user: UserId) -> Future<Result<Member>>;
+}
+
+object Member {
 
     /// The avatar of the member
     fn avatar() -> Future<Result<buffer<u8>>>;
@@ -129,5 +143,8 @@ object Client {
     fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// The conversations the user is involved in
-    fn conversations() -> Vec<Room>;
+    fn conversations() -> Future<Result<Vec<Conversation>>>;
+
+    /// The groups the user is part of
+    fn groups() -> Future<Result<Vec<Group>>>;
 }
