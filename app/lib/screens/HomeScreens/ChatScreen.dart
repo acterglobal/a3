@@ -11,6 +11,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // int _page = 0;
   @override
   void initState() {
+    // _updateState();
     _user = types.User(
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
@@ -42,7 +44,13 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
   }
 
-  void _addMessage(types.Message message) {
+  // void _updateState() async {
+  //   var timeline = await widget.room.timeline();
+  //   await timeline.next();
+  //   setState(() {});
+  // }
+
+  void _addMessage(types.Message message) async {
     setState(() {
       _messages.insert(0, message);
     });
@@ -62,14 +70,18 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  void _handleSendPressed(types.PartialText message) async {
+    await widget.room.typingNotice(false);
+    var eventId = await sendMessage(widget.room, message.text);
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: randomString(),
+      remoteId: eventId,
       text: message.text,
+      status: Status.sent,
+      showStatus: true,
     );
-
     _addMessage(textMessage);
   }
 
@@ -197,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> {
       isLoading = true;
     });
     var stream = await widget.room.timeline();
-    List<types.Message> messages = await getMessages(stream, 10);
+    List<types.Message> messages = await getMessages(stream, 10, widget.room);
     setState(() {
       _messages = messages;
       isLoading = false;
@@ -369,6 +381,9 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Text(getNameFromId(userId)[0].toUpperCase()),
                     ),
                   );
+                },
+                onTextChanged: (text) async {
+                  await widget.room.typingNotice(true);
                 },
                 // bubbleBuilder: _bubbleBuilder,
                 // showUserNames: true,
