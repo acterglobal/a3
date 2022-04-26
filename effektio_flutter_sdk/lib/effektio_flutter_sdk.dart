@@ -11,6 +11,8 @@ export './effektio_flutter_sdk_ffi.dart' show Client;
 //   EffektioClient(this.client);
 // }
 
+const DEFAULT_SERVER = String.fromEnvironment("DEFAULT_EFFEKTIO_SERVER", defaultValue: 'https://matrix.effektio.org')
+
 class EffektioSdk {
   static EffektioSdk? _instance;
   late final Api _api;
@@ -44,7 +46,7 @@ class EffektioSdk {
 
     if (_clients.isEmpty) {
       Client client =
-          await _api.guestClient(appDocPath, 'https://matrix.effektio.org');
+          await _api.guestClient(appDocPath, DEFAULT_SERVER);
       clients.add(client);
       loggedIn = await client.loggedIn();
       await _persistSessions();

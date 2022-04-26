@@ -65,3 +65,35 @@ jobs:
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
       - run: flutter build ios --release --no-codesign
         working-directory: ./app
+
+  integration-test:
+    runs-on: ubuntu-latest
+    name: Integration Tests
+    continue-on-error: true
+    services:
+      synapse:
+        image: "lightyear/effekio-synapse-ci:latest"
+        ports: 
+          - 8008
+          - 8009
+          - 8448
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy
+      - run: |
+          cargo install cargo-make
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+      - name: Build Android FFI
+        run: cargo make --profile release desktop
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+      - run: flutter test integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapze.ports['8008'] }}
+        name: "running tests"
+        working-directory: ./app
