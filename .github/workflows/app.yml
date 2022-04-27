@@ -79,9 +79,9 @@ jobs:
           SYNAPSE_SERVER_NAME: ds9.effektio.org
           SYNAPSE_REPORT_STATS: no
         ports: 
-          - 8008
-          - 8009
-          - 8448
+          - 8008:8008
+          - 8009:8009
+          - 8448:8448
     steps:
       - uses: actions/checkout@v2
       - name: Install supported toolchain
@@ -95,10 +95,10 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
-      - name: Build Android FFI
+      - name: Build Native
         run: cargo make --profile release desktop
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-      - run: flutter test integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapze.ports['8008'] }}
+      - run: flutter test -d linux integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapze.ports['8008'] }}
         name: "running tests"
         working-directory: ./app
