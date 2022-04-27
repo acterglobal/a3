@@ -1,2 +1,2 @@
 FROM matrixdotorg/synapse:latest
-COPY ./data /data
+ENTRYPOINT /start.py generate && /start.py run
