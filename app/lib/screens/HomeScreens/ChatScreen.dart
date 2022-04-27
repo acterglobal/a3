@@ -16,6 +16,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -35,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
   // int _page = 0;
   @override
   void initState() {
-    // _updateState();
+    _updateState();
     _user = types.User(
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
@@ -44,11 +45,25 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
   }
 
-  // void _updateState() async {
-  //   var timeline = await widget.room.timeline();
-  //   await timeline.next();
-  //   setState(() {});
-  // }
+  void _updateState() async {
+    var timeline = await widget.room.timeline();
+    await timeline.next();
+    var newEvent = await widget.room.latestMessage();
+    final user = types.User(
+      id: newEvent.sender(),
+    );
+    if (newEvent.sender() != _user.id) {
+      final textMessage = types.TextMessage(
+        id: newEvent.eventId(),
+        author: user,
+        text: newEvent.body(),
+      );
+      setState(() {
+        _messages.insert(0, textMessage);
+      });
+    }
+    _updateState();
+  }
 
   void _addMessage(types.Message message) async {
     setState(() {

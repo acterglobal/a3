@@ -13,7 +13,7 @@ class EffektioChatTheme extends ChatTheme {
       top: 16,
     ),
     TextStyle dateDividerTextStyle = const TextStyle(
-      color: neutral2,
+      color: Colors.white,
       fontSize: 12,
       fontWeight: FontWeight.w800,
       height: 1.333,

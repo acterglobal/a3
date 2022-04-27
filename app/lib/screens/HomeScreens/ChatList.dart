@@ -3,7 +3,6 @@
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio/repository/client.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
