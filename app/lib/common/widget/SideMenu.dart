@@ -37,7 +37,7 @@ class _SideDrawerState extends State<SideDrawer> {
           children: <Widget>[
             Container(
               margin: EdgeInsets.only(
-                top: _size.height*0.05,
+                top: _size.height * 0.05,
               ),
               child: FutureBuilder<Client>(
                 future: widget.client,
@@ -108,7 +108,8 @@ class _SideDrawerState extends State<SideDrawer> {
                                     child: CircleAvatar(
                                       backgroundImage: MemoryImage(
                                         Uint8List.fromList(
-                                            snapshot.requireData),
+                                          snapshot.requireData,
+                                        ),
                                       ),
                                       radius: 24,
                                     ),
@@ -200,7 +201,7 @@ class _SideDrawerState extends State<SideDrawer> {
               ),
             ),
             SizedBox(
-              height: _size.height*0.04,
+              height: _size.height * 0.04,
             ),
             ListTile(
               leading: SvgPicture.asset(
@@ -290,7 +291,8 @@ class _SideDrawerState extends State<SideDrawer> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => SocialProfileScreen()),
+                    builder: (context) => SocialProfileScreen(),
+                  ),
                 );
               },
             ),
@@ -322,7 +324,9 @@ class _SideDrawerState extends State<SideDrawer> {
               ),
               onTap: () {},
             ),
-            SizedBox(height: 5,),
+            SizedBox(
+              height: 5,
+            ),
             FutureBuilder<Client>(
               future: widget.client,
               builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
