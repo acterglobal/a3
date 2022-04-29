@@ -31,6 +31,13 @@ class PagedNotifier<PageKeyType, ItemType>
 
   @override
   Future<List<ItemType>?> load(PageKeyType page, int limit) async {
+    // avoid repeated call to the same page
+    if (state.previousPageKeys.contains(page)) {
+      await Future.delayed(const Duration(seconds: 0), () {
+        state = state.copyWith();
+      });
+      return state.records;
+    }
     try {
       final records = await _load(page, limit);
       state = state.copyWith(
@@ -50,6 +57,7 @@ class PagedNotifier<PageKeyType, ItemType>
         debugPrint(e.toString());
       }
     }
+    return null;
   }
 }
 

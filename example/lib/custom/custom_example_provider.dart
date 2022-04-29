@@ -17,7 +17,8 @@ class CustomExampleState extends PagedState<String, User> {
       {this.filterByCity = false,
       List<User>? records,
       String? error,
-      String? nextPageKey})
+      String? nextPageKey,
+      List<String>? previousPageKeys})
       : super(records: records, error: error, nextPageKey: nextPageKey);
 
   // We can customize our .copyWith for example
@@ -26,14 +27,16 @@ class CustomExampleState extends PagedState<String, User> {
       {bool? filterByCity,
       List<User>? records,
       dynamic error,
-      dynamic nextPageKey}) {
+      dynamic nextPageKey,
+      List<String>? previousPageKeys}) {
     final sup = super
-        .copyWith(records: records, error: error, nextPageKey: nextPageKey);
+        .copyWith(records: records, error: error, nextPageKey: nextPageKey, previousPageKeys: previousPageKeys);
     return CustomExampleState(
         filterByCity: filterByCity ?? this.filterByCity,
         records: sup.records,
         error: sup.error,
-        nextPageKey: sup.nextPageKey);
+        nextPageKey: sup.nextPageKey,
+        previousPageKeys: sup.previousPageKeys);
   }
 }
 
@@ -61,6 +64,7 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
+    return null;
   }
 
   // Super simple example of custom methods of the StateNotifier
