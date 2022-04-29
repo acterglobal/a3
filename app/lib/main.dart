@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:typed_data';
+//import 'package:device_preview/device_preview.dart';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -12,6 +13,7 @@ import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+//import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -31,6 +33,12 @@ void main() async {
       home: Effektio(),
     ),
   );
+//   runApp(
+//   DevicePreview(
+//     enabled: !kReleaseMode,
+//     builder: (context) => Effektio(), // Wrap your app
+//   ),
+// );
 }
 
 class Effektio extends StatelessWidget {
@@ -39,6 +47,9 @@ class Effektio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // useInheritedMediaQuery: true,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
       title: 'Effektio',
       localizationsDelegates: const [
         AppLocalizations.delegate,
