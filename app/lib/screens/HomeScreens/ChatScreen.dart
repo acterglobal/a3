@@ -32,15 +32,18 @@ class _ChatScreenState extends State<ChatScreen> {
   List<types.Message> _messages = [];
   late final _user;
   bool isLoading = false;
-  // int _page = 0;
+  int _page = 0;
+  int _count = 20;
   @override
   void initState() {
-    _updateState();
     _user = types.User(
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
     );
+
     _getMessages();
+    _handleEndReached();
+    _updateState();
     super.initState();
   }
 
@@ -230,18 +233,19 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  // Future<void> _handleEndReached() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
-  //   var stream = await getTimeline(widget.room);
-  //   List<types.Message> messages = await getMessages(stream, 10);
-  //   setState(() {
-  //     _messages = [..._messages, ...messages];
-  //     _page = _page + 1;
-  //     isLoading = false;
-  //   });
-  // }
+  Future<void> _handleEndReached() async {
+    var stream = await widget.room.timeline();
+    List<types.Message> messages =
+        await getMessages(stream, _count, widget.room);
+    setState(() {
+      if (messages.isNotEmpty && messages.length >= 10) {
+        messages.removeRange(0, _count - 10);
+        _messages = [..._messages, ...messages];
+        _page = _page + 1;
+        _count + 10;
+      }
+    });
+  }
   // Widget _bubbleBuilder(
   //   Widget child, {
   //   required message,
@@ -405,8 +409,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 onAttachmentPressed: _handleAtachmentPressed,
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 onMessageTap: _handleMessageTap,
-                // onEndReached: _handleEndReached,
-                // onEndReachedThreshold: 1,
+                onEndReached: _handleEndReached,
+                onEndReachedThreshold: 0.75,
                 emptyState: EmptyPlaceholder(),
                 theme: EffektioChatTheme(
                   attachmentButtonIcon:
