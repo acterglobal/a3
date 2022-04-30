@@ -158,7 +158,7 @@ class _RiverPagedBuilderState<PageKeyType, ItemType>
     // Add pull to refresh functionality if specified
     if (widget.pullToRefresh) {
       pagedBuilder = RefreshIndicator(
-          onRefresh: () => ref.refresh(_provider), child: pagedBuilder);
+          onRefresh: () async => ref.refresh(_provider), child: pagedBuilder);
     }
 
     return pagedBuilder;
