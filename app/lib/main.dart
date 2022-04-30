@@ -40,6 +40,8 @@ class Effektio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      //To avoid redundancy, the whole textTheme of app is setup as Montserrat,
+      //so we can avoid using it explicitly in every Text Widget
       theme: ThemeData(
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme,

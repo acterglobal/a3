@@ -32,7 +32,9 @@ class _ChatScreenState extends State<ChatScreen> {
   List<types.Message> _messages = [];
   late final _user;
   bool isLoading = false;
+  //incremental, don't know if it has any use but written here as in docs
   int _page = 0;
+  //starting from this value to show (messages-10) to avoid duplication
   int _count = 20;
   @override
   void initState() {
@@ -40,13 +42,13 @@ class _ChatScreenState extends State<ChatScreen> {
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
     );
-
     _getMessages();
     _handleEndReached();
     _updateState();
     super.initState();
   }
 
+  //will detect if any new event is arrived and will re-render the screen
   void _updateState() async {
     var timeline = await widget.room.timeline();
     await timeline.next();
@@ -87,6 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  //push messages in conversation
   void _handleSendPressed(types.PartialText message) async {
     await widget.room.typingNotice(false);
     var eventId = await sendMessage(widget.room, message.text);
@@ -102,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _addMessage(textMessage);
   }
 
-  void _handleAtachmentPressed() {
+  void _handleAttachmentPressed() {
     showModalBottomSheet<void>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -221,6 +224,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  //Load messages at start
   void _getMessages() async {
     setState(() {
       isLoading = true;
@@ -233,6 +237,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  //Pagination Control
   Future<void> _handleEndReached() async {
     var stream = await widget.room.timeline();
     List<types.Message> messages =
@@ -246,6 +251,7 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     });
   }
+  //Custom Bubble Builder function, left for future use
   // Widget _bubbleBuilder(
   //   Widget child, {
   //   required message,
@@ -390,7 +396,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 messages: _messages,
                 onSendPressed: _handleSendPressed,
                 user: _user,
-                // isAttachmentUploading: true,
+                //custom avatar builder
                 avatarBuilder: (userId) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
@@ -400,18 +406,20 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   );
                 },
+                //Whenever users starts typing on keyboard, this will trigger the function
                 onTextChanged: (text) async {
                   await widget.room.typingNotice(true);
                 },
                 // bubbleBuilder: _bubbleBuilder,
                 // showUserNames: true,
                 showUserAvatars: true,
-                onAttachmentPressed: _handleAtachmentPressed,
+                onAttachmentPressed: _handleAttachmentPressed,
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 onMessageTap: _handleMessageTap,
                 onEndReached: _handleEndReached,
                 onEndReachedThreshold: 0.75,
                 emptyState: EmptyPlaceholder(),
+                //Custom Theme class, see lib/common/store/chatTheme.dart
                 theme: EffektioChatTheme(
                   attachmentButtonIcon:
                       SvgPicture.asset('assets/images/attachment.svg'),

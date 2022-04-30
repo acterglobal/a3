@@ -15,12 +15,14 @@ Future<Client> login(String username, String password) async {
   return client;
 }
 
+//Fetch user id from sdk
 Future<String> getUser(Future<Client> client) async {
   Client _client = await client;
   final String userId = await _client.userId();
   return userId;
 }
 
+//Fetch messages from sdk and store them in list
 Future<List<types.Message>> getMessages(
   TimelineStream stream,
   int count,
@@ -30,6 +32,7 @@ Future<List<types.Message>> getMessages(
   bool isSeen = false;
   var messages = await stream.paginateBackwards(count);
   for (RoomMessage message in messages) {
+    //Based on boolean, it'll update the status of message (seen,delivered) etc
     await room.readReceipt(message.eventId()).then(
           (value) => {
             isSeen = value,
@@ -48,6 +51,7 @@ Future<List<types.Message>> getMessages(
   return _messages;
 }
 
+//Push message
 Future<String> sendMessage(Conversation convo, String message) async {
   var res = await convo.sendPlainMessage(message);
   return res;
