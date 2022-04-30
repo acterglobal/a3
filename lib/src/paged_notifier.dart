@@ -46,6 +46,7 @@ class PagedNotifier<PageKeyType, ItemType>
           ...(records ?? <ItemType>[])
         ],
         nextPageKey: nextPageKeyBuilder(records, page, limit),
+        previousPageKeys: { ...state.previousPageKeys, page }.toList()
       );
       return records;
     } catch (e) {

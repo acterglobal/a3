@@ -13,3 +13,7 @@
 ## 1.0.3
 
 * Avoid repeated calls
+
+## 1.0.4
+
+* Bug next page key
