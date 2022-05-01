@@ -96,9 +96,21 @@ jobs:
         with:
           channel: 'stable'
       - name: Build Native
-        run: cargo make --profile release desktop
+        run: cargo make --profile release android
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-      - run: flutter test -d linux integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapze.ports['8008'] }}
+
+      - uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
+        with:
+          cmd: flutter doctor -v
+          api: 28
+          tag: default
+          abi: x86
+      - name: Versions
+        run: |
+          sdkmanager platform-tools
+          adb devices
+          echo $ANDROID_HOME
+      - run: flutter test -d linux integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
         name: "running tests"
         working-directory: ./app
