@@ -1,19 +1,16 @@
-use super::{api, TimelineStream, UserId, RUNTIME};
 use super::messages::{sync_event_to_message, RoomMessage};
+use super::{api, TimelineStream, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
-use futures::{stream, Stream, pin_mut, StreamExt};
+use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::ruma;
 use matrix_sdk::{
+    deserialized_responses::SyncRoomEvent,
     media::{MediaFormat, MediaRequest, MediaType},
     room::Room as MatrixRoom,
-    deserialized_responses::SyncRoomEvent,
     ruma::{
+        events::{room::message::RoomMessageEventContent, AnyMessageEventContent},
         EventId,
-        events::{
-            room::message::RoomMessageEventContent,
-        AnyMessageEventContent
-        }
     },
 };
 
@@ -136,7 +133,7 @@ impl Room {
                         None => break,
                         Some(Ok(e)) => {
                             if let Some(a) = sync_event_to_message(e) {
-                                return Ok(a)
+                                return Ok(a);
                             }
                         }
                         _ => {
@@ -155,10 +152,12 @@ impl Room {
         } else {
             bail!("Can't send typing notice to a room we are not in")
         };
-        RUNTIME.spawn(async move {
-            room.typing_notice(typing).await?;
-            Ok(true)
-        }).await?
+        RUNTIME
+            .spawn(async move {
+                room.typing_notice(typing).await?;
+                Ok(true)
+            })
+            .await?
     }
 
     pub async fn read_receipt(&self, event_id: String) -> Result<bool> {
@@ -168,10 +167,12 @@ impl Room {
             bail!("Can't send read_receipt to a room we are not in")
         };
         let event_id = EventId::parse(event_id)?;
-        RUNTIME.spawn(async move {
-            room.read_receipt(&event_id).await?;
-            Ok(true)
-        }).await?
+        RUNTIME
+            .spawn(async move {
+                room.read_receipt(&event_id).await?;
+                Ok(true)
+            })
+            .await?
     }
 
     pub async fn send_plain_message(&self, message: String) -> Result<String> {
@@ -180,15 +181,19 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
-        RUNTIME.spawn(async move {
-            let r = room.send(
-                AnyMessageEventContent::RoomMessage(
-                    RoomMessageEventContent::text_plain(message)
-                ),
-                None,
-            ).await?;
-            Ok(r.event_id.to_string())
-        }).await?
+        RUNTIME
+            .spawn(async move {
+                let r = room
+                    .send(
+                        AnyMessageEventContent::RoomMessage(RoomMessageEventContent::text_plain(
+                            message,
+                        )),
+                        None,
+                    )
+                    .await?;
+                Ok(r.event_id.to_string())
+            })
+            .await?
     }
 }
 
