@@ -111,6 +111,6 @@ jobs:
           sdkmanager platform-tools
           adb devices
           echo $ANDROID_HOME
-      - run: flutter test -d linux integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+      - run: flutter test -d android integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
         name: "running tests"
         working-directory: ./app
