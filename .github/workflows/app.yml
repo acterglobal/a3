@@ -75,42 +75,50 @@ jobs:
         image: "lightyear/effekio-synapse-ci:latest"
         volumes:
           - synapse-data:/data
-        env:
-          SYNAPSE_SERVER_NAME: ds9.effektio.org
-          SYNAPSE_REPORT_STATS: no
         ports: 
           - 8008:8008
           - 8009:8009
           - 8448:8448
     steps:
       - uses: actions/checkout@v2
+
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           components: clippy
-      - run: |
-          cargo install cargo-make
+
+      - run: cargo install cargo-make
+        name: "Install cargo-make"
+
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
           channel: 'stable'
+
       - name: Build Native
         run: cargo make --profile release android
+
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
 
-      - uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
+      - name: Initialize e2ee mock data
+        run: cargo run -p effektio-cli -- 
+
+      - name: Start Android emulator
+        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
         with:
           cmd: flutter doctor -v
           api: 28
           tag: default
           abi: x86
+
       - name: Versions
         run: |
           sdkmanager platform-tools
           adb devices
           echo $ANDROID_HOME
+
       - run: flutter test -d android integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
         name: "running tests"
         working-directory: ./app
