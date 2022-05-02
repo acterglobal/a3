@@ -2,7 +2,6 @@
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
-import 'package:effektio/repository/client.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
@@ -10,7 +9,7 @@ import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -76,8 +75,14 @@ class _EffektioHomeState extends State<EffektioHome> {
   int tabIndex = 0;
   @override
   void initState() {
-    super.initState();
     _client = makeClient();
+    super.initState();
+  }
+
+  Future<Client> makeClient() async {
+    final sdk = await EffektioSdk.instance;
+    Client client = await sdk.currentClient;
+    return client;
   }
 
   String _navBarTitle(int index) {

@@ -10,11 +10,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
-  final String? userId;
+  final String? user;
   const ChatOverview({
     Key? key,
     required this.rooms,
-    required this.userId,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -29,7 +29,7 @@ class ChatOverview extends StatelessWidget {
           children: <Widget>[
             ChatListItem(
               room: rooms[index],
-              userId: userId,
+              user: user,
             ),
             Container(
               child: Divider(
@@ -49,8 +49,8 @@ class ChatOverview extends StatelessWidget {
 
 class ChatListItem extends StatelessWidget {
   final Conversation room;
-  final String? userId;
-  const ChatListItem({Key? key, required this.room, required this.userId})
+  final String? user;
+  const ChatListItem({Key? key, required this.room, required this.user})
       : super(key: key);
 
   @override
@@ -63,7 +63,7 @@ class ChatListItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => ChatScreen(
               room: room,
-              user: userId,
+              user: user,
             ),
           ),
         );

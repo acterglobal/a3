@@ -6,7 +6,6 @@ import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
-import 'package:effektio/repository/client.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -31,29 +30,61 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   List<types.Message> _messages = [];
   late final _user;
-  late TimelineStream _stream;
+  TimelineStream? _stream;
   bool isLoading = false;
-  //incremental, don't know if it has any use but written here as in docs
-  int _page = 0;
   @override
   void initState() {
     _user = types.User(
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
     );
-    Future.delayed(Duration.zero, () async {
-      _stream = await widget.room.timeline();
-      _getMessages();
-      _handleEndReached();
-    });
-    _updateState();
     super.initState();
+    _getTimeline().whenComplete(
+      () async => {await _getMessages(), _handleEndReached(), _updateState()},
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<List<types.Message>> getMessages(
+    TimelineStream? stream,
+    int count,
+    Conversation room,
+  ) async {
+    List<types.Message> _messages = [];
+    bool isSeen = false;
+    var messages = await stream!.paginateBackwards(count);
+    for (RoomMessage message in messages) {
+      //Based on boolean, it'll update the status of message (seen,delivered) etc
+      await room.readReceipt(message.eventId()).then(
+            (value) => {
+              isSeen = value,
+            },
+          );
+      types.TextMessage m = types.TextMessage(
+        id: message.eventId(),
+        showStatus: true,
+        author: types.User(id: message.sender()),
+        text: message.body(),
+        status: isSeen ? Status.seen : Status.delivered,
+      );
+      _messages.add(m);
+      isSeen = !isSeen;
+    }
+    return _messages;
+  }
+
+  Future<void> _getTimeline() async {
+    _stream = await widget.room.timeline();
+    setState(() {});
   }
 
   //will detect if any new event is arrived and will re-render the screen
   void _updateState() async {
-    var timeline = await widget.room.timeline();
-    await timeline.next();
+    await _stream!.next();
     var newEvent = await widget.room.latestMessage();
     final user = types.User(
       id: newEvent.sender(),
@@ -68,7 +99,6 @@ class _ChatScreenState extends State<ChatScreen> {
         _messages.insert(0, textMessage);
       });
     }
-    _updateState();
   }
 
   void _addMessage(types.Message message) async {
@@ -94,7 +124,7 @@ class _ChatScreenState extends State<ChatScreen> {
   //push messages in conversation
   void _handleSendPressed(types.PartialText message) async {
     await widget.room.typingNotice(false);
-    var eventId = await sendMessage(widget.room, message.text);
+    var eventId = await widget.room.sendPlainMessage(message.text);
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -243,7 +273,7 @@ class _ChatScreenState extends State<ChatScreen> {
     List<types.Message> messages = await getMessages(_stream, 10, widget.room);
     setState(() {
       _messages = [..._messages, ...messages];
-      _page = _page + 1;
+      print(_messages.length);
     });
   }
 
@@ -388,7 +418,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 onMessageTap: _handleMessageTap,
                 onEndReached: _handleEndReached,
-                onEndReachedThreshold: 1,
+                onEndReachedThreshold: 0.75,
                 emptyState: EmptyPlaceholder(),
                 //Custom Theme class, see lib/common/store/chatTheme.dart
                 theme: EffektioChatTheme(

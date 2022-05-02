@@ -2,7 +2,6 @@
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
-import 'package:effektio/repository/client.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -17,24 +16,26 @@ class ChatList extends StatefulWidget {
 }
 
 class _ChatListState extends State<ChatList> {
-  String? userId = '';
+  String? user;
 
   @override
   void initState() {
-    _getUser();
     super.initState();
+    _getUser().whenComplete(() => {setState(() {})});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> _getUser() async {
+    var fetchClient = await widget.client;
+    user = await fetchClient.userId();
   }
 
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
-
-  Future<void> _getUser() async {
-    final String? id = await getUser(widget.client);
-    setState(() {
-      userId = id;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +118,7 @@ class _ChatListState extends State<ChatList> {
                       ) {
                         if (snapshot.hasData) {
                           return ChatOverview(
-                            userId: userId,
+                            user: user,
                             rooms: snapshot.requireData.toList(),
                           );
                         } else {
