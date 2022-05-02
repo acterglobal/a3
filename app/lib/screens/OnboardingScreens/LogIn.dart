@@ -31,12 +31,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // Future<Client> login(String username, String password) async {
-  //   final sdk = await EffektioSdk.instance;
-  //   Client client = await sdk.login(username, password);
-  //   return client;
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     );
-                    // Navigator.pop(context);
                   } else if (formStatus is SubmissionSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -128,9 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintStyle: TextStyle(color: Colors.grey),
                               ),
                               style: TextStyle(color: Colors.white),
-                              // validator: (value) => ValidConstants.isEmail(value!)
-                              //     ? null
-                              //     : 'Please enter valid email',
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter email';

@@ -22,12 +22,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // SharedPreferences prefs = await SharedPreferences.getInstance();
-  // final flowStarted = prefs.getBool(KeyConstants.flowStarted) ?? false;
-  // final userLoggedIn = prefs.getBool(KeyConstants.userLoggedIn) ?? false;
   runApp(
     const MaterialApp(
-      //  builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
       home: Effektio(),
     ),
@@ -78,10 +74,6 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
   int tabIndex = 0;
-
-  // static const TextStyle optionStyle =
-  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
-
   @override
   void initState() {
     super.initState();
@@ -114,70 +106,7 @@ class _EffektioHomeState extends State<EffektioHome> {
       NewsScreen(
         client: _client,
       ),
-
       ChatList(client: _client),
-      // FutureBuilder<Client>(
-      //   future: _client, // a previously-obtained Future<String> or null
-      //   builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-      //     if (snapshot.hasData) {
-      //       if (snapshot.requireData.hasFirstSynced()) {
-      //         return FutureBuilder<FfiListConversation>(
-      //           future: snapshot.requireData
-      //               .conversations(), // a previously-obtained Future<String> or null
-      //           builder: (
-      //             BuildContext context,
-      //             AsyncSnapshot<FfiListConversation> snapshot,
-      //           ) {
-      //             if (snapshot.hasData) {
-      //               return ChatOverview(
-      //                 conversations: snapshot.requireData.toList(),
-      //               );
-      //             } else {
-      //               return Center(
-      //                 child: Container(
-      //                   height: MediaQuery.of(context).size.height,
-      //                   width: MediaQuery.of(context).size.width,
-      //                   color: AppColors.backgroundColor,
-      //                   child: Text(
-      //                     AppLocalizations.of(context)!.loadingConvo,
-      //                     style: optionStyle,
-      //                   ),
-      //                 ),
-      //               );
-      //             }
-      //           },
-      //         );
-      //       } else {
-      //         return Center(
-      //           child: Container(
-      //             height: MediaQuery.of(context).size.height,
-      //             width: MediaQuery.of(context).size.width,
-      //             color: AppColors.backgroundColor,
-      //             child: Text(
-      //               AppLocalizations.of(context)!.loadingConvo,
-      //               style: optionStyle,
-      //             ),
-      //           ),
-      //         );
-      //       }
-      //     } else {
-      //       return Container(
-      //         height: MediaQuery.of(context).size.height,
-      //         width: MediaQuery.of(context).size.width,
-      //         color: AppColors.backgroundColor,
-      //         child: Center(
-      //           child: SizedBox(
-      //             height: 50,
-      //             width: 50,
-      //             child: CircularProgressIndicator(
-      //               color: AppColors.primaryColor,
-      //             ),
-      //           ),
-      //         ),
-      //       );
-      //     }
-      //   },
-      // ),
       NotificationScreen(),
     ];
     return DefaultTabController(

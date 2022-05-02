@@ -32,7 +32,6 @@ class ChatOverview extends StatelessWidget {
               userId: userId,
             ),
             Container(
-              // margin: EdgeInsets.only(left: 70, bottom: 10, right: 10),
               child: Divider(
                 indent: 75,
                 endIndent: 15,
@@ -69,8 +68,6 @@ class ChatListItem extends StatelessWidget {
           ),
         );
       },
-      // hoverColor: Colors.grey[700],
-      // contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
       leading: FutureBuilder<Uint8List>(
         future: room.avatar().then((fb) => fb.asTypedList()),
         // a previously-obtained Future<String> or null

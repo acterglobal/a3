@@ -163,23 +163,9 @@ class _SignupScreentate extends State<SignupScreen> {
               SizedBox(
                 height: 20,
               ),
-              // Container(
-              //   child: onboardingTextField(
-              //     'Password',
-              //     passwordController,
-              //     'Please enter Password',
-              //   ),
-              // ),
               SizedBox(
                 height: 20,
               ),
-              // Container(
-              //   child: onboardingTextField(
-              //     'Confirm Password',
-              //     passwordController,
-              //     'Please re-enter Password',
-              //   ),
-              // ),
               SizedBox(
                 height: 40,
               ),
@@ -225,12 +211,6 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               CustomOnbaordingButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => HomeTabBar(0),
-                  //   ),
-                  // );
                   if (_formKey.currentState!.validate()) {}
                 },
                 title: 'Sign up',

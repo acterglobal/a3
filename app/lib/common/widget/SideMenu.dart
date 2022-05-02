@@ -40,9 +40,7 @@ class _SideDrawerState extends State<SideDrawer> {
                 if (snapshot.hasData) {
                   if (snapshot.requireData.isGuest()) {
                     return GestureDetector(
-                      onTap: () {
-                        // Navigator.pushNamed(context, '/profile');
-                      },
+                      onTap: () {},
                       child: Row(
                         children: <Widget>[
                           Container(

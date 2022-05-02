@@ -47,7 +47,6 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
           )
         ],
       ),
-      // drawer: SideDrawer(),
       body: Container(
         color: Colors.black,
         child: SingleChildScrollView(

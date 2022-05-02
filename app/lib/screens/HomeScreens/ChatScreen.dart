@@ -251,28 +251,6 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     });
   }
-  //Custom Bubble Builder function, left for future use
-  // Widget _bubbleBuilder(
-  //   Widget child, {
-  //   required message,
-  //   required nextMessageInGroup,
-  // }) {
-  //   return Bubble(
-  //     child: child,
-  //     color: _user.id != message.author.id ||
-  //             message.type == types.MessageType.image
-  //         ? const Color(0xfff5f5f7)
-  //         : AppColors.primaryColor,
-  //     margin: nextMessageInGroup
-  //         ? const BubbleEdges.symmetric(horizontal: 6)
-  //         : null,
-  //     nip: nextMessageInGroup
-  //         ? BubbleNip.no
-  //         : _user.id != message.author.id
-  //             ? BubbleNip.leftBottom
-  //             : BubbleNip.rightBottom,
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -410,8 +388,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 onTextChanged: (text) async {
                   await widget.room.typingNotice(true);
                 },
-                // bubbleBuilder: _bubbleBuilder,
-                // showUserNames: true,
                 showUserAvatars: true,
                 onAttachmentPressed: _handleAttachmentPressed,
                 onPreviewDataFetched: _handlePreviewDataFetched,
