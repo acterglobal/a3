@@ -31,19 +31,21 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   List<types.Message> _messages = [];
   late final _user;
+  late TimelineStream _stream;
   bool isLoading = false;
   //incremental, don't know if it has any use but written here as in docs
   int _page = 0;
-  //starting from this value to show (messages-10) to avoid duplication
-  int _count = 20;
   @override
   void initState() {
     _user = types.User(
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
     );
-    _getMessages();
-    _handleEndReached();
+    Future.delayed(Duration.zero, () async {
+      _stream = await widget.room.timeline();
+      _getMessages();
+      _handleEndReached();
+    });
     _updateState();
     super.initState();
   }
@@ -225,12 +227,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   //Load messages at start
-  void _getMessages() async {
+  Future<void> _getMessages() async {
     setState(() {
       isLoading = true;
     });
-    var stream = await widget.room.timeline();
-    List<types.Message> messages = await getMessages(stream, 10, widget.room);
+    List<types.Message> messages = await getMessages(_stream, 10, widget.room);
     setState(() {
       _messages = messages;
       isLoading = false;
@@ -239,16 +240,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   //Pagination Control
   Future<void> _handleEndReached() async {
-    var stream = await widget.room.timeline();
-    List<types.Message> messages =
-        await getMessages(stream, _count, widget.room);
+    List<types.Message> messages = await getMessages(_stream, 10, widget.room);
     setState(() {
-      if (messages.isNotEmpty && messages.length >= 10) {
-        messages.removeRange(0, _count - 10);
-        _messages = [..._messages, ...messages];
-        _page = _page + 1;
-        _count + 10;
-      }
+      _messages = [..._messages, ...messages];
+      _page = _page + 1;
     });
   }
 
@@ -393,7 +388,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 onMessageTap: _handleMessageTap,
                 onEndReached: _handleEndReached,
-                onEndReachedThreshold: 0.75,
+                onEndReachedThreshold: 1,
                 emptyState: EmptyPlaceholder(),
                 //Custom Theme class, see lib/common/store/chatTheme.dart
                 theme: EffektioChatTheme(
