@@ -3,13 +3,13 @@ use std::sync::Arc;
 use matrix_sdk::{
     deserialized_responses::SyncRoomEvent,
     ruma::{
-        events::{room::message::{
-            MessageType, RoomMessageEventContent,
-        }, AnySyncMessageEvent, AnySyncRoomEvent, SyncMessageEvent},
-        MxcUri, UserId, EventId,
+        events::{
+            room::message::{MessageType, RoomMessageEventContent},
+            AnySyncMessageEvent, AnySyncRoomEvent, SyncMessageEvent,
+        },
+        EventId, MxcUri, UserId,
     },
 };
-
 
 pub struct RoomMessage {
     inner: SyncMessageEvent<RoomMessageEventContent>,
@@ -17,7 +17,6 @@ pub struct RoomMessage {
 }
 
 impl RoomMessage {
-
     pub fn event_id(&self) -> String {
         self.inner.event_id.to_string()
     }
