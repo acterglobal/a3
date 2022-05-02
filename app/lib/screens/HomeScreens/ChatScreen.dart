@@ -150,8 +150,8 @@ class _ChatScreenState extends State<ChatScreen> {
               children: <Widget>[
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
-                    _handleImageSelection();
+                    _handleImageSelection(context);
+                    // Navigator.pop(context);
                   },
                   child: Row(
                     children: <Widget>[
@@ -175,8 +175,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pop(context);
-                    _handleFileSelection();
+                    _handleFileSelection(context);
+                    // Navigator.pop(context);
                   },
                   child: Row(
                     children: <Widget>[
@@ -205,7 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _handleImageSelection() async {
+  void _handleImageSelection(BuildContext context) async {
     final result = await ImagePicker().pickImage(
       imageQuality: 70,
       maxWidth: 1440,
@@ -226,12 +226,18 @@ class _ChatScreenState extends State<ChatScreen> {
         uri: result.path,
         width: image.width.toDouble(),
       );
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text('The File that is uploaded isn\'t sent to the server.'),
+        ),
+      );
+      Navigator.pop(context);
       _addMessage(message);
     }
   }
 
-  void _handleFileSelection() async {
+  void _handleFileSelection(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
@@ -245,7 +251,13 @@ class _ChatScreenState extends State<ChatScreen> {
         size: result.files.single.size,
         uri: result.files.single.path!,
       );
-
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text('The File that is uploaded isn\'t sent to the server.'),
+        ),
+      );
+      Navigator.pop(context);
       _addMessage(message);
     }
   }
@@ -273,7 +285,6 @@ class _ChatScreenState extends State<ChatScreen> {
     List<types.Message> messages = await getMessages(_stream, 10, widget.room);
     setState(() {
       _messages = [..._messages, ...messages];
-      print(_messages.length);
     });
   }
 
