@@ -7,7 +7,6 @@ import 'package:effektio/common/widget/SideMenu.dart';
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key, required this.client}) : super(key: key);
@@ -29,10 +28,8 @@ class _NewsScreenState extends State<NewsScreen> {
           builder: (BuildContext context) {
             return IconButton(
               icon: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
                 margin: const EdgeInsets.only(bottom: 10, left: 10),
-                child: SvgPicture.asset('assets/images/hamburger.svg'),
+                child: Image.asset('assets/images/hamburger.png'),
               ),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
