@@ -11,6 +11,9 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
+/// Create a new client from the restore token
+fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
+
 object UserId {}
 
 object AnyMessage { }

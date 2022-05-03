@@ -817,6 +817,7 @@ version = "0.1.0"
 dependencies = [
  "android_logger",
  "anyhow",
+ "assign",
  "cbindgen",
  "derive_builder",
  "effektio-core",
@@ -866,6 +867,7 @@ dependencies = [
  "chrono-tz",
  "csscolorparser",
  "matrix-sdk",
+ "ruma",
  "serde",
  "serde_json",
  "serde_repr",

@@ -1,7 +1,6 @@
 use super::{api, Conversation, Group, Room, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
-use effektio_core::ruma::api::client::account::register;
 use effektio_core::RestoreToken;
 use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
