@@ -1,8 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'dart:typed_data';
-
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -92,36 +91,10 @@ class _SideDrawerState extends State<SideDrawer> {
                       },
                       child: Row(
                         children: [
-                          FutureBuilder<List<int>>(
-                            future:
-                                avatar, // a previously-obtained Future<String> or null
-                            builder: (
-                              BuildContext context,
-                              AsyncSnapshot<List<int>> snapshot,
-                            ) {
-                              if (snapshot.hasData) {
-                                return Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: CircleAvatar(
-                                    backgroundImage: MemoryImage(
-                                      Uint8List.fromList(
-                                        snapshot.requireData,
-                                      ),
-                                    ),
-                                    radius: 24,
-                                  ),
-                                );
-                              } else {
-                                return Container(
-                                  margin: EdgeInsets.all(10),
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.brown.shade800,
-                                    child: const Text('G'),
-                                    radius: 24,
-                                  ),
-                                );
-                              }
-                            },
+                          CustomAvatar(
+                            radius: 24,
+                            avatar: avatar,
+                            displayName: name,
                           ),
                           SizedBox(
                             width: 10,
@@ -224,7 +197,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Gallery',
-                      style:  _textTheme.bodyText1,
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () => {
                       Navigator.pushNamed(context, '/gallery'),
@@ -239,7 +212,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Events',
-                      style:  _textTheme.bodyText1,
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -252,7 +225,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared resource',
-                      style:  _textTheme.bodyText1,
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -265,7 +238,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Polls & Votes',
-                      style:  _textTheme.bodyText1,
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -278,7 +251,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Group Budgeting',
-                      style:  _textTheme.bodyText1,
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () {
                       Navigator.push(
@@ -311,7 +284,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'FAQs',
-                      style:  _textTheme.bodyText1,
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () {},
                   ),
