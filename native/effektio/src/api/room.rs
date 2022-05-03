@@ -4,7 +4,7 @@ use effektio_core::RestoreToken;
 use futures::{stream, Stream};
 use matrix_sdk::ruma;
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
 };
 

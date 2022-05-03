@@ -7,11 +7,13 @@ use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::events::StateEventType,
     Client as MatrixClient, LoopCtrl, Session,
 };
+
+use ruma::events::room::MediaSource;
 use parking_lot::RwLock;
 use std::sync::Arc;
 use url::Url;
@@ -226,7 +228,7 @@ impl Client {
                 Ok(api::FfiBuffer::new(
                     l.get_media_content(
                         &MediaRequest {
-                            media_type: MediaType::Uri(uri),
+                            source: MediaSource::Plain(uri.into()),
                             format: MediaFormat::File,
                         },
                         true,

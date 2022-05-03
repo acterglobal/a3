@@ -3,7 +3,7 @@ use std::sync::Arc;
 use matrix_sdk::{
     deserialized_responses::SyncRoomEvent,
     ruma::{
-        events::{room::message::MessageType, AnySyncMessageEvent, AnySyncRoomEvent},
+        events::{room::message::MessageType, AnySyncMessageLikeEvent, SyncMessageLikeEvent, AnySyncRoomEvent},
         MxcUri,
     },
 };
@@ -79,7 +79,7 @@ impl AnyMessage {
 
 pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<AnyMessage> {
     match sync_event.event.deserialize() {
-        Ok(AnySyncRoomEvent::Message(AnySyncMessageEvent::RoomMessage(m))) => {
+        Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)))) => {
             let base_message = BaseMessage {
                 id: m.event_id.to_string(),
                 content: m.content.body().to_string(),
@@ -88,17 +88,17 @@ pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<AnyMessage> {
             };
 
             match m.content.msgtype {
-                MessageType::Image(content) => {
-                    let any_message = AnyMessage {
-                        text: None,
-                        image: Some(ImageMessage {
-                            base_message,
-                            url: content.url,
-                        }),
-                    };
+                // MessageType::Image(content) => {
+                //     let any_message = AnyMessage {
+                //         text: None,
+                //         image: Some(ImageMessage {
+                //             base_message,
+                //             url: content.source,
+                //         }),
+                //     };
 
-                    Some(any_message)
-                }
+                //     Some(any_message)
+                // }
                 // MessageType::Audio(content) => {
 
                 // }

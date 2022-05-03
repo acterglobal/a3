@@ -4,7 +4,7 @@ use effektio_core::ruma::api::client::account::register;
 use effektio_core::RestoreToken;
 use futures::Stream;
 use lazy_static::lazy_static;
-pub use matrix_sdk::ruma;
+pub use ruma;
 use matrix_sdk::Session;
 use tokio::runtime;
 use url::Url;
@@ -28,7 +28,7 @@ pub use messages::AnyMessage;
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 
-pub type UserId = Box<ruma::UserId>;
+pub type UserId = ruma::OwnedUserId;
 
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 

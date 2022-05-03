@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 pub type UtcDateTime = DateTime<Utc>;
 
 /// Customize the color scheme
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.colors")]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+// #[ruma_event(type = "org.effektio.dev.colors")]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     pub color: Option<Color>,
