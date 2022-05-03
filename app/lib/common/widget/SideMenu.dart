@@ -30,6 +30,7 @@ class _SideDrawerState extends State<SideDrawer> {
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
+    final _textTheme = Theme.of(context).textTheme;
     return Drawer(
       backgroundColor: AppColors.textFieldColor,
       child: Column(
@@ -210,10 +211,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Todo List',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -226,10 +224,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Gallery',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style:  _textTheme.bodyText1,
                     ),
                     onTap: () => {
                       Navigator.pushNamed(context, '/gallery'),
@@ -244,10 +239,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Events',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style:  _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -260,10 +252,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared resource',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style:  _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -276,10 +265,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Polls & Votes',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style:  _textTheme.bodyText1,
                     ),
                     onTap: () => {},
                   ),
@@ -292,10 +278,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Group Budgeting',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style:  _textTheme.bodyText1,
                     ),
                     onTap: () {
                       Navigator.push(
@@ -315,10 +298,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared Documents',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style: _textTheme.bodyText1,
                     ),
                     onTap: () {},
                   ),
@@ -331,10 +311,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'FAQs',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
+                      style:  _textTheme.bodyText1,
                     ),
                     onTap: () {},
                   ),

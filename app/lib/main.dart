@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/textTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
@@ -12,18 +13,26 @@ import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // SharedPreferences prefs = await SharedPreferences.getInstance();
   // final flowStarted = prefs.getBool(KeyConstants.flowStarted) ?? false;
   // final userLoggedIn = prefs.getBool(KeyConstants.userLoggedIn) ?? false;
+  GoogleFonts.config.allowRuntimeFetching = false;
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
   runApp(
     const MaterialApp(
       //  builder: EasyLoading.init(),
@@ -39,6 +48,9 @@ class Effektio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        textTheme: CustomTextTheme.textTheme,
+      ),
       title: 'Effektio',
       localizationsDelegates: const [
         AppLocalizations.delegate,
