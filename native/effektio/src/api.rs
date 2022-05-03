@@ -1,21 +1,20 @@
 use crate::platform;
 use anyhow::{bail, Context, Result};
-use effektio_core::ruma::api::client::{
-    account::register, uiaa,
-};
+use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
 use futures::Stream;
 use lazy_static::lazy_static;
 use matrix_sdk::Session;
+pub use ruma;
 use tokio::runtime;
 use url::Url;
-pub use ruma;
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
         runtime::Runtime::new().expect("Can't start Tokio runtime");
 }
 
+mod account;
 mod auth;
 mod client;
 mod conversation;
@@ -24,9 +23,11 @@ mod messages;
 mod room;
 mod stream;
 
-
+pub use account::Account;
+pub use auth::{
+    guest_client, login_new_client, login_with_token, register_with_registration_token,
+};
 pub use client::{Client, ClientStateBuilder};
-pub use auth::{guest_client, login_with_token, login_new_client, register_with_registration_token};
 pub use conversation::Conversation;
 pub use group::Group;
 pub use messages::AnyMessage;

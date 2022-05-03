@@ -1,16 +1,14 @@
+use super::{Client, ClientStateBuilder, RUNTIME};
 use crate::platform;
-use super::{Client, RUNTIME, ClientStateBuilder};
 use anyhow::{bail, Context, Result};
-use effektio_core::ruma::api::client::{
-    account::register, uiaa,
-};
+use assign::assign;
+use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
 use futures::Stream;
 use lazy_static::lazy_static;
 use matrix_sdk::Session;
 use tokio::runtime;
 use url::Url;
-use assign::assign;
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
@@ -83,7 +81,6 @@ pub async fn login_new_client(
         })
         .await?
 }
-
 
 pub async fn register_with_registration_token(
     base_path: String,

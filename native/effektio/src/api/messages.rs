@@ -3,7 +3,10 @@ use std::sync::Arc;
 use matrix_sdk::{
     deserialized_responses::SyncRoomEvent,
     ruma::{
-        events::{room::message::MessageType, AnySyncMessageLikeEvent, SyncMessageLikeEvent, AnySyncRoomEvent},
+        events::{
+            room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
+            SyncMessageLikeEvent,
+        },
         MxcUri,
     },
 };
@@ -79,7 +82,9 @@ impl AnyMessage {
 
 pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<AnyMessage> {
     match sync_event.event.deserialize() {
-        Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)))) => {
+        Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+            SyncMessageLikeEvent::Original(m),
+        ))) => {
             let base_message = BaseMessage {
                 id: m.event_id.to_string(),
                 content: m.content.body().to_string(),

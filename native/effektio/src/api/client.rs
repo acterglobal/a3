@@ -1,4 +1,4 @@
-use super::{api, Conversation, Group, Room, UserId, RUNTIME};
+use super::{api, Account, Conversation, Group, Room, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::RestoreToken;
@@ -12,8 +12,8 @@ use matrix_sdk::{
     Client as MatrixClient, LoopCtrl, Session,
 };
 
-use ruma::events::room::MediaSource;
 use parking_lot::RwLock;
+use ruma::events::room::MediaSource;
 use std::sync::Arc;
 use url::Url;
 
@@ -191,6 +191,10 @@ impl Client {
             .await?
     }
 
+    pub async fn account(&self) -> Result<Account> {
+        Ok(Account::new(self.client.account()))
+    }
+
     pub async fn display_name(&self) -> Result<String> {
         let l = self.client.clone();
         RUNTIME
@@ -216,25 +220,6 @@ impl Client {
     }
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let uri = l
-                    .account()
-                    .get_avatar_url()
-                    .await?
-                    .context("No avatar Url given")?;
-                Ok(api::FfiBuffer::new(
-                    l.get_media_content(
-                        &MediaRequest {
-                            source: MediaSource::Plain(uri.into()),
-                            format: MediaFormat::File,
-                        },
-                        true,
-                    )
-                    .await?,
-                ))
-            })
-            .await?
+        self.account().await?.avatar().await
     }
 }
