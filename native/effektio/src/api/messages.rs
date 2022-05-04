@@ -5,7 +5,8 @@ use matrix_sdk::{
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
-            AnySyncMessageLikeEvent, AnySyncRoomEvent, SyncMessageLikeEvent, OriginalSyncMessageLikeEvent
+            AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
+            SyncMessageLikeEvent,
         },
         MxcUri,
     },
@@ -38,12 +39,10 @@ pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<RoomMessage> {
     match sync_event.event.deserialize() {
         Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
-        ))) => {
-            Some(RoomMessage {
-                fallback: m.content.body().to_string(),
-                inner: m,
-            })
-        }
+        ))) => Some(RoomMessage {
+            fallback: m.content.body().to_string(),
+            inner: m,
+        }),
         _ => None,
     }
 }

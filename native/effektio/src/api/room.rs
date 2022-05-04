@@ -52,7 +52,7 @@ impl Room {
     pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
-            .spawn(async move { Ok(r.display_name().await?) })
+            .spawn(async move { Ok(r.display_name().await?.to_string()) })
             .await?
     }
 
@@ -184,9 +184,9 @@ impl Room {
             .spawn(async move {
                 let r = room
                     .send(
-                        AnyMessageLikeEventContent::RoomMessage(RoomMessageEventContent::text_plain(
-                            message,
-                        )),
+                        AnyMessageLikeEventContent::RoomMessage(
+                            RoomMessageEventContent::text_plain(message),
+                        ),
                         None,
                     )
                     .await?;

@@ -505,9 +505,9 @@ checksum = "e4c78c047431fee22c1a7bb92e00ad095a02a983affe4d8a72e2a2c62c1b94f3"
 
 [[package]]
 name = "const_format"
-version = "0.2.22"
+version = "0.2.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22bc6cd49b0ec407b680c3e380182b6ac63b73991cb7602de350352fc309b614"
+checksum = "0936ffe6d0c8d6a51b3b0a73b2acbe925d786f346cf45bfddc8341d79fb7dc8a"
 dependencies = [
  "const_format_proc_macros",
 ]
@@ -1364,6 +1364,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "indexed_db_futures"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d26ac735f676c52305becf53264b91cea9866a8de61ccbf464405b377b9cbca9"
+dependencies = [
+ "cfg-if",
+ "js-sys",
+ "uuid 0.8.2",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1526,7 +1540,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "matrix-sdk"
 version = "0.4.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b2273ab7a1a815e2f60758243f15205ce68e4800"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -1541,6 +1555,7 @@ dependencies = [
  "http",
  "matrix-sdk-base",
  "matrix-sdk-common",
+ "matrix-sdk-indexeddb",
  "matrix-sdk-sled",
  "mime",
  "reqwest",
@@ -1558,7 +1573,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.4.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b2273ab7a1a815e2f60758243f15205ce68e4800"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1581,7 +1596,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.4.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b2273ab7a1a815e2f60758243f15205ce68e4800"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
 dependencies = [
  "async-lock",
  "futures-util",
@@ -1595,7 +1610,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.4.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b2273ab7a1a815e2f60758243f15205ce68e4800"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
 dependencies = [
  "aes 0.8.1",
  "aes-gcm",
@@ -1622,9 +1637,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "matrix-sdk-indexeddb"
+version = "0.1.0"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64",
+ "dashmap",
+ "futures-util",
+ "getrandom 0.2.6",
+ "indexed_db_futures",
+ "matrix-sdk-base",
+ "matrix-sdk-crypto",
+ "matrix-sdk-store-encryption",
+ "ruma",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "matrix-sdk-sled"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b2273ab7a1a815e2f60758243f15205ce68e4800"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1648,7 +1687,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b2273ab7a1a815e2f60758243f15205ce68e4800"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#26935ee1c09f0f61c92a71f73d969e35a94a491d"
 dependencies = [
  "blake3",
  "chacha20poly1305",
@@ -1792,9 +1831,9 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
 name = "openssl"
-version = "0.10.39"
+version = "0.10.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28f3916d46d9d813a62d7b7d2724d7b14785ac999fb623d990ee4603f9122742"
+checksum = "fb81a6430ac911acb25fe5ac8f1d2af1b4ea8a4fdfda0f1ee4292af2e2d8eb0e"
 dependencies = [
  "bitflags",
  "cfg-if",
@@ -2408,7 +2447,7 @@ dependencies = [
  "thiserror",
  "tracing",
  "url",
- "uuid",
+ "uuid 1.0.0",
  "wildmatch",
 ]
 
@@ -2600,9 +2639,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.80"
+version = "1.0.81"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f972498cf015f7c0746cac89ebe1d6ef10c293b94175a243a2d9442c163d9944"
+checksum = "9b7ce2b32a1aed03c558dc61a5cd328f15aff2dbc17daad8fb8af04d2100e15c"
 dependencies = [
  "itoa",
  "ryu",
@@ -2969,9 +3008,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-rustls"
-version = "0.23.3"
+version = "0.23.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4151fda0cf2798550ad0b34bcfc9b9dcc2a9d2471c895c68f3a8818e54f2389e"
+checksum = "c43ee83903113e03984cb9e5cebe6c04a5116269e900e3ddba8f068a62adda59"
 dependencies = [
  "rustls",
  "tokio",
@@ -3188,6 +3227,15 @@ dependencies = [
 
 [[package]]
 name = "uuid"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
+dependencies = [
+ "getrandom 0.2.6",
+]
+
+[[package]]
+name = "uuid"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8cfcd319456c4d6ea10087ed423473267e1a071f3bc0aa89f80d60997843c6f0"
@@ -3277,6 +3325,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "27370197c907c55e3f1a9fbe26f44e937fe6451368324e009cba39e139dc08ad"
 dependencies = [
  "cfg-if",
+ "serde",
+ "serde_json",
  "wasm-bindgen-macro",
 ]
 
