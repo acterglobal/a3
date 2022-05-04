@@ -8,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class SideDrawer extends StatefulWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
