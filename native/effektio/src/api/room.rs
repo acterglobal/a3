@@ -1,11 +1,16 @@
+use super::messages::{sync_event_to_message, RoomMessage};
 use super::{api, TimelineStream, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
-use futures::{stream, Stream};
+use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::ruma;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
+    ruma::{
+        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
+        EventId,
+    },
 };
 
 pub struct Member {
@@ -109,6 +114,83 @@ impl Room {
                     .await
                     .context("Failed acquiring timeline streams")?;
                 Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward)))
+            })
+            .await?
+    }
+
+    pub async fn latest_message(&self) -> Result<RoomMessage> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let stream = room
+                    .timeline_backward()
+                    .await
+                    .context("Failed acquiring timeline streams")?;
+                pin_mut!(stream);
+                loop {
+                    match stream.next().await {
+                        None => break,
+                        Some(Ok(e)) => {
+                            if let Some(a) = sync_event_to_message(e) {
+                                return Ok(a);
+                            }
+                        }
+                        _ => {
+                            // we ignore errors
+                        }
+                    }
+                }
+
+                bail!("No Message found")
+            })
+            .await?
+    }
+    pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send typing notice to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                room.typing_notice(typing).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn read_receipt(&self, event_id: String) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send read_receipt to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        RUNTIME
+            .spawn(async move {
+                room.read_receipt(&event_id).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_plain_message(&self, message: String) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let r = room
+                    .send(
+                        AnyMessageLikeEventContent::RoomMessage(RoomMessageEventContent::text_plain(
+                            message,
+                        )),
+                        None,
+                    )
+                    .await?;
+                Ok(r.event_id.to_string())
             })
             .await?
     }

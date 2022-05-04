@@ -30,11 +30,12 @@ pub use auth::{
 pub use client::{Client, ClientStateBuilder};
 pub use conversation::Conversation;
 pub use group::Group;
-pub use messages::AnyMessage;
+pub use messages::RoomMessage;
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 
 pub type UserId = ruma::OwnedUserId;
+pub type EventId = Box<ruma::EventId>;
 
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
