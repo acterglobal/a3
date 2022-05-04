@@ -3,10 +3,10 @@ use clap::{crate_version, Parser};
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
-use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
+use effektio_core::matrix_sdk::ruma::UserId;
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
-use crate::action::{PostNews, FetchNews};
+use crate::action::Action;
 
 use log::warn;
 
@@ -58,26 +58,6 @@ impl LoginConfig {
 
         Ok(client)
     }
-}
-
-/// Posting a news item to a given room
-#[derive(Parser, Debug)]
-pub struct Manage {
-    /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
-    pub room: Box<RoomId>,
-    #[clap(flatten)]
-    pub login: LoginConfig,
-}
-
-#[derive(clap::Subcommand, Debug)]
-pub enum Action {
-    /// Post News to a room
-    PostNews(PostNews),
-    /// Fetch News of the use
-    FetchNews(FetchNews),
-    /// Room Management
-    Manage(Manage),
 }
 
 #[derive(Parser, Debug)]
