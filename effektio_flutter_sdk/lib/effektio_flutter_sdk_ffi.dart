@@ -887,7 +887,7 @@ class Api {
     return tmp7;
   }
 
-  AnyMessage? __timelineStreamNextFuturePoll(
+  RoomMessage? __timelineStreamNextFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -926,13 +926,13 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_AnyMessage");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomMessage");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = AnyMessage._(this, tmp13_1);
+    final tmp7 = RoomMessage._(this, tmp13_1);
     return tmp7;
   }
 
-  FfiListAnyMessage? __timelineStreamPaginateBackwardsFuturePoll(
+  FfiListRoomMessage? __timelineStreamPaginateBackwardsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -971,9 +971,9 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListAnyMessage");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListRoomMessage");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListAnyMessage._(this, tmp13_1);
+    final tmp14 = FfiListRoomMessage._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -1162,6 +1162,185 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_TimelineStream");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = TimelineStream._(this, tmp13_1);
+    return tmp7;
+  }
+
+  RoomMessage? __conversationLatestMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationLatestMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomMessage");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RoomMessage._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __conversationTypingNoticeFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationTypingNoticeFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __conversationReadReceiptFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationReadReceiptFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  String? __conversationSendPlainMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationSendPlainMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -1801,6 +1980,47 @@ class Api {
     int,
     int,
   )>();
+  late final _roomMessageEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageEventIdReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_event_id");
+
+  late final _roomMessageEventId = _roomMessageEventIdPtr.asFunction<
+      _RoomMessageEventIdReturn Function(
+    int,
+  )>();
+  late final _roomMessageSenderPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageSenderReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_sender");
+
+  late final _roomMessageSender = _roomMessageSenderPtr.asFunction<
+      _RoomMessageSenderReturn Function(
+    int,
+  )>();
+  late final _roomMessageBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageBodyReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_body");
+
+  late final _roomMessageBody = _roomMessageBodyPtr.asFunction<
+      _RoomMessageBodyReturn Function(
+    int,
+  )>();
+  late final _roomMessageOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__RoomMessage_origin_server_ts");
+
+  late final _roomMessageOriginServerTs =
+      _roomMessageOriginServerTsPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _timelineStreamNextPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -1863,6 +2083,63 @@ class Api {
 
   late final _conversationTimeline = _conversationTimelinePtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _conversationLatestMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Conversation_latest_message");
+
+  late final _conversationLatestMessage =
+      _conversationLatestMessagePtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _conversationTypingNoticePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint8,
+  )>>("__Conversation_typing_notice");
+
+  late final _conversationTypingNotice =
+      _conversationTypingNoticePtr.asFunction<
+          int Function(
+    int,
+    int,
+  )>();
+  late final _conversationReadReceiptPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Conversation_read_receipt");
+
+  late final _conversationReadReceipt = _conversationReadReceiptPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationSendPlainMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Conversation_send_plain_message");
+
+  late final _conversationSendPlainMessage =
+      _conversationSendPlainMessagePtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
     int,
   )>();
   late final _groupDisplayNamePtr = _lookup<
@@ -2169,6 +2446,66 @@ class Api {
     int,
     int,
   )>();
+  late final _conversationLatestMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationLatestMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_latest_message_future_poll");
+
+  late final _conversationLatestMessageFuturePoll =
+      _conversationLatestMessageFuturePollPtr.asFunction<
+          _ConversationLatestMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationTypingNoticeFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationTypingNoticeFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_typing_notice_future_poll");
+
+  late final _conversationTypingNoticeFuturePoll =
+      _conversationTypingNoticeFuturePollPtr.asFunction<
+          _ConversationTypingNoticeFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationReadReceiptFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationReadReceiptFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_read_receipt_future_poll");
+
+  late final _conversationReadReceiptFuturePoll =
+      _conversationReadReceiptFuturePollPtr.asFunction<
+          _ConversationReadReceiptFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationSendPlainMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationSendPlainMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_send_plain_message_future_poll");
+
+  late final _conversationSendPlainMessageFuturePoll =
+      _conversationSendPlainMessageFuturePollPtr.asFunction<
+          _ConversationSendPlainMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _groupDisplayNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _GroupDisplayNameFuturePollReturn Function(
@@ -2344,55 +2681,6 @@ class Api {
     int,
     int,
   )>();
-  FfiListAnyMessage createFfiListAnyMessage() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListAnyMessageCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListAnyMessage");
-    return FfiListAnyMessage._(this, list_box);
-  }
-
-  late final _ffiListAnyMessageCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListAnyMessageCreate");
-
-  late final _ffiListAnyMessageCreate =
-      _ffiListAnyMessageCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListAnyMessageLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListAnyMessageLen");
-
-  late final _ffiListAnyMessageLen =
-      _ffiListAnyMessageLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListAnyMessageElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListAnyMessageElementAt");
-
-  late final _ffiListAnyMessageElementAt =
-      _ffiListAnyMessageElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListAnyMessageRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListAnyMessageRemove");
-
-  late final _ffiListAnyMessageRemove =
-      _ffiListAnyMessageRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListAnyMessageAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListAnyMessageAdd");
-
-  late final _ffiListAnyMessageAdd =
-      _ffiListAnyMessageAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListAnyMessageInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListAnyMessageInsert");
-
-  late final _ffiListAnyMessageInsert =
-      _ffiListAnyMessageInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListConversation createFfiListConversation() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListConversationCreate());
@@ -2540,6 +2828,55 @@ class Api {
 
   late final _ffiListMemberInsert =
       _ffiListMemberInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListRoomMessage createFfiListRoomMessage() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListRoomMessageCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListRoomMessage");
+    return FfiListRoomMessage._(this, list_box);
+  }
+
+  late final _ffiListRoomMessageCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListRoomMessageCreate");
+
+  late final _ffiListRoomMessageCreate =
+      _ffiListRoomMessageCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListRoomMessageLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListRoomMessageLen");
+
+  late final _ffiListRoomMessageLen =
+      _ffiListRoomMessageLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListRoomMessageElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListRoomMessageElementAt");
+
+  late final _ffiListRoomMessageElementAt =
+      _ffiListRoomMessageElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListRoomMessageRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListRoomMessageRemove");
+
+  late final _ffiListRoomMessageRemove =
+      _ffiListRoomMessageRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListRoomMessageAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListRoomMessageAdd");
+
+  late final _ffiListRoomMessageAdd =
+      _ffiListRoomMessageAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListRoomMessageInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListRoomMessageInsert");
+
+  late final _ffiListRoomMessageInsert =
+      _ffiListRoomMessageInsertPtr.asFunction<void Function(int, int, int)>();
 }
 
 class UserId {
@@ -2554,11 +2891,96 @@ class UserId {
   }
 }
 
-class AnyMessage {
+class EventId {
   final Api _api;
   final _Box _box;
 
-  AnyMessage._(this._api, this._box);
+  EventId._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A room Message metadata and content
+class RoomMessage {
+  final Api _api;
+  final _Box _box;
+
+  RoomMessage._(this._api, this._box);
+
+  /// Unique ID of this event
+  String eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// The User, who sent that event
+  String sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageSender(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the body of the massage - fallback string reprensentation
+  String body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the server receiving timestamp
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -2574,7 +2996,7 @@ class TimelineStream {
   TimelineStream._(this._api, this._box);
 
   /// Fires whenever a new event arrived
-  Future<AnyMessage> next() {
+  Future<RoomMessage> next() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._timelineStreamNext(
@@ -2589,7 +3011,7 @@ class TimelineStream {
   }
 
   /// Get the next count messages backwards,
-  Future<FfiListAnyMessage> paginateBackwards(
+  Future<FfiListRoomMessage> paginateBackwards(
     int count,
   ) {
     final tmp1 = count;
@@ -2685,6 +3107,118 @@ class Conversation {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__conversationTimelineFuturePoll);
     return tmp2;
+  }
+
+  /// The last message sent to the room
+  Future<RoomMessage> latestMessage() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationLatestMessage(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Conversation_latest_message_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__conversationLatestMessageFuturePoll);
+    return tmp2;
+  }
+
+  /// Activate typing notice for this room
+  /// The typing notice remains active for 4s. It can be deactivate at any
+  /// point by setting typing to false. If this method is called while the
+  /// typing notice is active nothing will happen. This method can be called
+  /// on every key stroke, since it will do nothing while typing is active.
+  Future<bool> typingNotice(
+    bool typing,
+  ) {
+    final tmp1 = typing;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._conversationTypingNotice(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Conversation_typing_notice_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__conversationTypingNoticeFuturePoll);
+    return tmp4;
+  }
+
+  /// Send a request to notify this room that the user has read specific event.
+  Future<bool> readReceipt(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._conversationReadReceipt(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Conversation_read_receipt_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__conversationReadReceiptFuturePoll);
+    return tmp6;
+  }
+
+  /// Send a simple plain text message to the room
+  /// returns the event_id as given by the server of the event soon after
+  /// received over timeline().next()
+  Future<String> sendPlainMessage(
+    String textMessage,
+  ) {
+    final tmp1 = textMessage;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._conversationSendPlainMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Conversation_send_plain_message_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__conversationSendPlainMessageFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -2996,6 +3530,33 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _RoomMessageEventIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _RoomMessageSenderReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _RoomMessageBodyReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _MemberDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -3144,6 +3705,70 @@ class _ConversationTimelineFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _ConversationLatestMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ConversationTypingNoticeFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ConversationReadReceiptFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ConversationSendPlainMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _GroupDisplayNameFuturePollReturn extends ffi.Struct {
@@ -3338,66 +3963,6 @@ class _ClientGroupsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class FfiListAnyMessage extends Iterable<AnyMessage>
-    implements CustomIterable<AnyMessage> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListAnyMessage._(this._api, this._box);
-
-  @override
-  Iterator<AnyMessage> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListAnyMessageLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  AnyMessage elementAt(int index) {
-    final address = _api._ffiListAnyMessageElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return AnyMessage._(_api, reference);
-  }
-
-  AnyMessage operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  AnyMessage remove(int index) {
-    final address = _api._ffiListAnyMessageRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_AnyMessage");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return AnyMessage._(_api, reference);
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(AnyMessage element) {
-    _api._ffiListAnyMessageAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, AnyMessage element) {
-    _api._ffiListAnyMessageInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
 class FfiListConversation extends Iterable<Conversation>
     implements CustomIterable<Conversation> {
   final Api _api;
@@ -3569,6 +4134,66 @@ class FfiListMember extends Iterable<Member> implements CustomIterable<Member> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Member element) {
     _api._ffiListMemberInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListRoomMessage extends Iterable<RoomMessage>
+    implements CustomIterable<RoomMessage> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListRoomMessage._(this._api, this._box);
+
+  @override
+  Iterator<RoomMessage> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListRoomMessageLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  RoomMessage elementAt(int index) {
+    final address = _api._ffiListRoomMessageElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return RoomMessage._(_api, reference);
+  }
+
+  RoomMessage operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  RoomMessage remove(int index) {
+    final address = _api._ffiListRoomMessageRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_RoomMessage");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return RoomMessage._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(RoomMessage element) {
+    _api._ffiListRoomMessageAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, RoomMessage element) {
+    _api._ffiListRoomMessageInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

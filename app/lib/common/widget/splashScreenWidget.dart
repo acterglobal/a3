@@ -74,18 +74,8 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
                     child: child,
                   );
                 },
-                // layoutBuilder:
-                //     (Widget? currentChild, List<Widget> previousChildren) {
-                //   return currentChild!;
-                // },
               ),
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(
-            //     top: 30,
-            //     bottom: 30,
-            //   ),
-            // ),
           ],
         ),
       ),
