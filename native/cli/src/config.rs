@@ -6,8 +6,9 @@ use dialoguer::Password;
 use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
+use crate::action::PostNews;
+
 use log::warn;
-use std::path::PathBuf;
 
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
@@ -53,36 +54,6 @@ impl LoginConfig {
 
         Ok(client)
     }
-}
-
-/// Posting a news item to a given room
-#[derive(Parser, Debug)]
-pub struct PostNews {
-    /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
-    pub room: Box<RoomId>,
-    #[clap(flatten)]
-    pub login: LoginConfig,
-
-    /// Path to images to post
-    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
-    pub image: Vec<PathBuf>,
-
-    #[clap(short, long)]
-    /// Path to video(s) to post
-    pub video: Vec<PathBuf>,
-
-    /// Text to posh
-    #[clap(short, long)]
-    pub text: Vec<String>,
-
-    /// Font/Text color
-    #[clap(short, long)]
-    pub color: Option<String>,
-
-    /// Background color
-    #[clap(short, long)]
-    pub background: Option<String>,
 }
 
 /// Posting a news item to a given room

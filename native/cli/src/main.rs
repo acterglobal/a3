@@ -7,77 +7,20 @@ use effektio_core::events;
 use effektio_core::matrix_sdk;
 use effektio_core::ruma;
 
+mod action;
 mod config;
+
 use crate::ruma::api::client::filter::RoomEventFilter;
 use config::{Action, EffektioCliConfig};
 use flexi_logger::Logger;
 use log::{info, warn};
-use std::ffi::OsStr;
-use std::fs::File;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = EffektioCliConfig::parse();
     Logger::try_with_str(cli.log)?.start()?;
     match cli.action {
-        Action::PostNews(news) => {
-            let client = news.login.client().await?;
-            // FIXME: is there a more efficient way? First sync can take very long...
-            client.sync_once(Default::default()).await?;
-            let room = client
-                .get_joined_room(&news.room)
-                .context("Room not found or not joined")?;
-            info!("Found room {:?}", room.name());
-
-            let mut contents = Vec::new();
-
-            for p in news.image {
-                let mime = match p.extension().and_then(OsStr::to_str) {
-                    Some(".jpg") | Some(".jpeg") => mime::IMAGE_JPEG,
-                    Some(".png") => mime::IMAGE_PNG,
-                    _ => mime::IMAGE_STAR,
-                };
-                let mut image = File::open(p).context("Couldn't open file for reading")?;
-
-                let res = client.upload(&mime, &mut image).await?;
-
-                contents.push(events::NewsContentType::Image(
-                    events::ImageMessageEventContent::plain("".to_owned(), res.content_uri, None),
-                ));
-            }
-
-            for body in news.text {
-                contents.push(events::NewsContentType::Text(
-                    events::TextMessageEventContent::plain(body),
-                ));
-            }
-
-            if contents.is_empty() {
-                bail!("No content defined.");
-            }
-
-            let colors = if news.color.is_some() || news.background.is_some() {
-                let color = if let Some(c) = news.color {
-                    Some(c.parse()?)
-                } else {
-                    None
-                };
-                let background = if let Some(c) = news.background {
-                    Some(c.parse()?)
-                } else {
-                    None
-                };
-
-                Some(events::Colorize { color, background })
-            } else {
-                None
-            };
-
-            let resp = room
-                .send(events::NewsEventDevContent { contents, colors }, None)
-                .await?;
-            info!("Event sent: {}", resp.event_id);
-        }
+        Action::PostNews(news) => news.run().await?,
         Action::FetchNews(config) => {
             let types = vec!["org.effektio.dev.news".to_owned()];
             let client = config.login.client().await?;
