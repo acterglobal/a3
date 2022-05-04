@@ -3,6 +3,7 @@ use clap::Parser;
 
 use effektio_core::events;
 use effektio_core::ruma;
+use crate::config::{ENV_ROOM, LoginConfig};
 
 use log::info;
 use std::ffi::OsStr;
@@ -13,10 +14,10 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 pub struct PostNews {
     /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
+    #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
     pub room: Box<ruma::RoomId>,
     #[clap(flatten)]
-    pub login: crate::config::LoginConfig,
+    pub login: LoginConfig,
 
     /// Path to images to post
     #[clap(short, long, value_hint = clap::ValueHint::FilePath)]

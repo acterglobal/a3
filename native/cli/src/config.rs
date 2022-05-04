@@ -6,9 +6,13 @@ use dialoguer::Password;
 use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
-use crate::action::PostNews;
+use crate::action::{PostNews, FetchNews};
 
 use log::warn;
+
+pub const ENV_USER: &str = "EFFEKTIO_USER";
+pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";
+pub const ENV_ROOM: &str = "EFFEKTIO_ROOM";
 
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
@@ -19,10 +23,10 @@ pub struct LoginConfig {
         long = "user",
         value_hint = clap::ValueHint::Username,
         parse(try_from_str),
-        env = "EFFEKTIO_USER"
+        env = ENV_USER
     )]
     login_username: Box<UserId>,
-    #[clap(env = "EFFEKTIO_PASSWORD")]
+    #[clap(env = ENV_PASSWORD)]
     login_password: Option<String>,
 }
 
@@ -58,19 +62,9 @@ impl LoginConfig {
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
-pub struct FetchNews {
-    /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
-    pub room: Box<RoomId>,
-    #[clap(flatten)]
-    pub login: LoginConfig,
-}
-
-/// Posting a news item to a given room
-#[derive(Parser, Debug)]
 pub struct Manage {
     /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
+    #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
     pub room: Box<RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,
