@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio/common/store/Colors.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -55,7 +54,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           margin: EdgeInsets.only(right: 10),
                           child: Text(
                             'Lorem Ipsum is simply dummy text of the printing',
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w400,
                               color: Colors.white,
@@ -67,7 +66,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                         Text(
                           '35 members',
-                          style: GoogleFonts.montserrat(
+                          style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w300,
                             color: Colors.white,

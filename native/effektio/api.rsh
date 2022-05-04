@@ -11,18 +11,38 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
-object UserId {}
+object UserId {
+    // full name as string
+    //fn as_str() -> string;
 
-object AnyMessage { }
+    // only the user name itself
+    //fn localpart() -> string;
+}
+object EventId {}
+
+/// A room Message metadata and content
+object RoomMessage {
+
+    /// Unique ID of this event
+    fn event_id() -> string;
+
+    /// The User, who sent that event
+    fn sender() -> string;
+
+    /// the body of the massage - fallback string reprensentation
+    fn body() -> string;
+
+    /// the server receiving timestamp
+    fn origin_server_ts() -> u64;
+}
 
 /// Timeline with Room Events
 object TimelineStream {
     /// Fires whenever a new event arrived
-    fn next() -> Future<Result<AnyMessage>>;
+    fn next() -> Future<Result<RoomMessage>>;
 
     /// Get the next count messages backwards,
-    fn paginate_backwards(count: u64) -> Future<Result<Vec<AnyMessage>>>;
-
+    fn paginate_backwards(count: u64) -> Future<Result<Vec<RoomMessage>>>;
 }
 
 object Conversation {
@@ -39,7 +59,25 @@ object Conversation {
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    // fn get_member(user: UserId) -> Future<Result<Member>>;
+    // fn get_member(user: UserId) -> Future<Result<RoomMember>>;
+
+    /// The last message sent to the room
+    fn latest_message() -> Future<Result<RoomMessage>>;
+
+    /// Activate typing notice for this room
+    /// The typing notice remains active for 4s. It can be deactivate at any
+    /// point by setting typing to false. If this method is called while the
+    /// typing notice is active nothing will happen. This method can be called
+    /// on every key stroke, since it will do nothing while typing is active.
+    fn typing_notice(typing: bool) -> Future<Result<bool>>;
+
+    /// Send a request to notify this room that the user has read specific event.
+    fn read_receipt(event_id: string) -> Future<Result<bool>>;
+
+    /// Send a simple plain text message to the room
+    /// returns the event_id as given by the server of the event soon after
+    /// received over timeline().next()
+    fn send_plain_message(text_message: string) -> Future<Result<string>>;
 }
 
 object Group {

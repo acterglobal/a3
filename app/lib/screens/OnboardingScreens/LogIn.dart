@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
 import 'package:effektio/blocs/login/form_submission_status.dart';
 import 'package:effektio/blocs/login/signIn_bloc.dart';
@@ -31,21 +31,15 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // Future<Client> login(String username, String password) async {
-  //   final sdk = await EffektioSdk.instance;
-  //   Client client = await sdk.login(username, password);
-  //   return client;
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Column(
-        children: <Widget>[
-          BlocProvider(
-            create: (context) => SignInBloc(),
-            child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            BlocProvider(
+              create: (context) => SignInBloc(),
               child: BlocListener<SignInBloc, SignInState>(
                 listener: (context, state) {
                   final formStatus = state.formStatus;
@@ -58,7 +52,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     );
-                    // Navigator.pop(context);
                   } else if (formStatus is SubmissionSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -87,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         'Welcome Back',
-                        style: GoogleFonts.montserrat(
+                        style: TextStyle(
                           fontSize: 25,
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -98,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         'Sign in to Continue',
-                        style: GoogleFonts.montserrat(
+                        style: TextStyle(
                           fontSize: 16,
                           color: Colors.white,
                           fontWeight: FontWeight.w300,
@@ -128,9 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintStyle: TextStyle(color: Colors.grey),
                               ),
                               style: TextStyle(color: Colors.white),
-                              // validator: (value) => ValidConstants.isEmail(value!)
-                              //     ? null
-                              //     : 'Please enter valid email',
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter email';
@@ -163,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {},
                           child: Text(
                             'Forgot Password?',
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Color(0xff008080),
                               fontWeight: FontWeight.w300,
@@ -201,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don't have an account ?  ",
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
                               fontWeight: FontWeight.w300,
@@ -227,8 +217,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

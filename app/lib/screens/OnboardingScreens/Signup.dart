@@ -6,7 +6,6 @@ import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio/common/store/AppConstants.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -58,7 +57,7 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               Text(
                 'Lets get Started',
-                style: GoogleFonts.montserrat(
+                style: TextStyle(
                   fontSize: 25,
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
@@ -69,7 +68,7 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               Text(
                 'Create an account to explore',
-                style: GoogleFonts.montserrat(
+                style: TextStyle(
                   fontSize: 16,
                   color: Colors.white,
                   fontWeight: FontWeight.w300,
@@ -164,23 +163,9 @@ class _SignupScreentate extends State<SignupScreen> {
               SizedBox(
                 height: 20,
               ),
-              // Container(
-              //   child: onboardingTextField(
-              //     'Password',
-              //     passwordController,
-              //     'Please enter Password',
-              //   ),
-              // ),
               SizedBox(
                 height: 20,
               ),
-              // Container(
-              //   child: onboardingTextField(
-              //     'Confirm Password',
-              //     passwordController,
-              //     'Please re-enter Password',
-              //   ),
-              // ),
               SizedBox(
                 height: 40,
               ),
@@ -191,7 +176,7 @@ class _SignupScreentate extends State<SignupScreen> {
                   text: TextSpan(
                     // Note: Styles for TextSpans must be explicitly defined.
                     // Child text spans will inherit styles from parent
-                    style: GoogleFonts.montserrat(
+                    style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w300,
                       color: Colors.white,
@@ -226,12 +211,6 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               CustomOnbaordingButton(
                 onPressed: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => HomeTabBar(0),
-                  //   ),
-                  // );
                   if (_formKey.currentState!.validate()) {}
                 },
                 title: 'Sign up',
@@ -244,7 +223,7 @@ class _SignupScreentate extends State<SignupScreen> {
                 children: [
                   Text(
                     'Already have an account ?  ',
-                    style: GoogleFonts.montserrat(
+                    style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
                       fontWeight: FontWeight.w300,
@@ -261,7 +240,7 @@ class _SignupScreentate extends State<SignupScreen> {
                     },
                     child: Text(
                       'Sign in ',
-                      style: GoogleFonts.montserrat(
+                      style: TextStyle(
                         fontSize: 16,
                         color: AppColors.primaryColor,
                         fontWeight: FontWeight.w300,
