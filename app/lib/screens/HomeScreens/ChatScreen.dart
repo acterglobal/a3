@@ -293,76 +293,80 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
-        centerTitle: true,
         backgroundColor: Color.fromRGBO(51, 53, 64, 0.4),
         elevation: 1,
-        leadingWidth: MediaQuery.of(context).size.width,
         toolbarHeight: 70,
-        leading: Row(
-          children: <Widget>[
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: SvgPicture.asset('assets/images/back_button.svg'),
-            ),
-          ],
+        leading: Container(
+          width: 30,
+          child: Row(
+            children: <Widget>[
+              IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: SvgPicture.asset('assets/images/back_button.svg'),
+              ),
+            ],
+          ),
         ),
-        title: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FutureBuilder<String>(
-              future: widget.room.displayName(),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    snapshot.requireData,
-                    overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  );
-                } else {
-                  return Text('Loading Name');
-                }
-              },
-            ),
-            SizedBox(height: 5),
-            FutureBuilder<FfiListMember>(
-              future: widget.room.activeMembers(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<FfiListMember> snapshot,
-              ) {
-                if (snapshot.hasData) {
-                  return Text(
-                    '${snapshot.requireData.length.toString()} Members',
-                    style: GoogleFonts.montserrat(
-                      color: AppColors.primaryColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  );
-                } else {
-                  return Container(
-                    height: 15,
-                    width: 15,
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    ),
-                  );
-                }
-              },
-            ),
-          ],
+        title: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FutureBuilder<String>(
+                future: widget.room.displayName(),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      snapshot.requireData,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    );
+                  } else {
+                    return Text('Loading Name');
+                  }
+                },
+              ),
+              SizedBox(height: 5),
+              FutureBuilder<FfiListMember>(
+                future: widget.room.activeMembers(),
+                builder: (
+                  BuildContext context,
+                  AsyncSnapshot<FfiListMember> snapshot,
+                ) {
+                  if (snapshot.hasData) {
+                    return Text(
+                      '${snapshot.requireData.length.toString()} Members',
+                      style: GoogleFonts.montserrat(
+                        color: AppColors.primaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    );
+                  } else {
+                    return Container(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryColor,
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
         ),
         actions: [
-          SizedBox(
-            width: 70,
-          ),
+          // SizedBox(
+          //   width: 70,
+          // ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: FutureBuilder<Uint8List>(
@@ -375,14 +379,22 @@ class _ChatScreenState extends State<ChatScreen> {
                     height: 20,
                     width: 20,
                     child: CircularProgressIndicator(
-                        color: AppColors.primaryColor),
+                      color: AppColors.primaryColor,
+                    ),
                   );
                 } else {
                   if (snapshot.hasData) {
-                    return CircleAvatar(
-                      radius: 20,
-                      backgroundImage: MemoryImage(
-                        Uint8List.fromList(snapshot.requireData),
+                    return Container(
+                      height: 50,
+                      width: 50,
+                      child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: CircleAvatar(
+                          radius: 20,
+                          backgroundImage: MemoryImage(
+                            Uint8List.fromList(snapshot.requireData),
+                          ),
+                        ),
                       ),
                     );
                   } else {
