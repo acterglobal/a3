@@ -87,7 +87,11 @@ class _SideDrawerState extends State<SideDrawer> {
                     username = snapshot.requireData.userId();
                     return GestureDetector(
                       onTap: () {
-                        Navigator.pushNamed(context, '/profile');
+                        Navigator.pushNamed(
+                          context,
+                          '/profile',
+                          arguments: snapshot.requireData,
+                        );
                       },
                       child: Row(
                         children: [
@@ -95,6 +99,8 @@ class _SideDrawerState extends State<SideDrawer> {
                             radius: 24,
                             avatar: avatar,
                             displayName: name,
+                            isGroup: false,
+                            stringName: '',
                           ),
                           SizedBox(
                             width: 10,

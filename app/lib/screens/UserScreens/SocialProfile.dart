@@ -1,12 +1,16 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
+import 'package:effektio/common/widget/customAvatar.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 
 class SocialProfileScreen extends StatefulWidget {
-  const SocialProfileScreen({Key? key}) : super(key: key);
+  const SocialProfileScreen({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _SocialProfileScreenState createState() => _SocialProfileScreenState();
@@ -15,6 +19,7 @@ class SocialProfileScreen extends StatefulWidget {
 class _SocialProfileScreenState extends State<SocialProfileScreen> {
   @override
   Widget build(BuildContext context) {
+    final _client = ModalRoute.of(context)!.settings.arguments as Client;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -89,10 +94,13 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                                 width: 5,
                               ),
                             ),
-                            child: CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-                              ),
+                            child: CustomAvatar(
+                              avatar: _client
+                                  .avatar()
+                                  .then((fb) => fb.asTypedList()),
+                              displayName: _client.displayName(),
+                              isGroup: false,
+                              stringName: '',
                               radius: 50,
                             ),
                           ),
