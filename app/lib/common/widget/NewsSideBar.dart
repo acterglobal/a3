@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -33,21 +34,26 @@ class NewsSideBar extends StatelessWidget {
       clipBehavior: Clip.none,
       alignment: Alignment.bottomCenter,
       children: [
-        Container(
+        CachedNetworkImage(
+          imageUrl:
+              'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
           height: 45,
           width: 45,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.white,
-            ),
-            borderRadius: BorderRadius.circular(25),
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(
-                'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+          imageBuilder: (context, imageProvider) => Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white,
+              ),
+              borderRadius: BorderRadius.circular(25),
+              image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.red, BlendMode.colorBurn),
               ),
             ),
           ),
+          placeholder: (context, url) => CircularProgressIndicator(),
+          errorWidget: (context, url, error) => Icon(Icons.error),
         ),
       ],
     );

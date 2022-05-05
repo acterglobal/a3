@@ -3,7 +3,8 @@
 import 'package:effektio/blocs/login/form_submission_status.dart';
 import 'package:effektio/blocs/login/signIn_event.dart';
 import 'package:effektio/blocs/login/signIn_state.dart';
-import 'package:effektio/repository/client.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
@@ -19,6 +20,12 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
 
   void _signInPassword(SignInPasswordChanged event, Emitter<SignInState> emit) {
     emit(state.copywith(password: event.password));
+  }
+
+  Future<Client> login(String username, String password) async {
+    final sdk = await EffektioSdk.instance;
+    Client client = await sdk.login(username, password);
+    return client;
   }
 
   Future<void> _signInSubmitted(
