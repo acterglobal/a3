@@ -67,15 +67,12 @@ class CustomAvatar extends StatelessWidget {
                     AsyncSnapshot<String> snapshot,
                   ) {
                     if (snapshot.hasData) {
-                      return Container(
-                        margin: const EdgeInsets.all(10),
-                        child: TextAvatar(
-                          numberLetters: 2,
-                          shape: Shape.Circular,
-                          upperCase: true,
-                          text: snapshot.data ?? 'N',
-                          size: radius,
-                        ),
+                      return TextAvatar(
+                        numberLetters: 2,
+                        shape: Shape.Circular,
+                        upperCase: true,
+                        text: snapshot.data ?? 'N',
+                        size: radius,
                       );
                     } else {
                       return const SizedBox(

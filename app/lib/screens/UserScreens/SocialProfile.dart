@@ -101,7 +101,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                               displayName: _client.displayName(),
                               isGroup: false,
                               stringName: '',
-                              radius: 50,
+                              radius: 60,
                             ),
                           ),
                           Text(

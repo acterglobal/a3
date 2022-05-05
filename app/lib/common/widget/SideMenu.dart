@@ -95,12 +95,15 @@ class _SideDrawerState extends State<SideDrawer> {
                       },
                       child: Row(
                         children: [
-                          CustomAvatar(
-                            radius: 24,
-                            avatar: avatar,
-                            displayName: name,
-                            isGroup: false,
-                            stringName: '',
+                          Container(
+                            margin: EdgeInsets.all(10),
+                            child: CustomAvatar(
+                              radius: 24,
+                              avatar: avatar,
+                              displayName: name,
+                              isGroup: false,
+                              stringName: '',
+                            ),
                           ),
                           SizedBox(
                             width: 10,
