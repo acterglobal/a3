@@ -370,24 +370,32 @@ class _ChatScreenState extends State<ChatScreen> {
               // a previously-obtained Future<String> or null
               builder:
                   (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-                if (snapshot.hasData) {
-                  return CircleAvatar(
-                    radius: 20,
-                    backgroundImage: MemoryImage(
-                      Uint8List.fromList(snapshot.requireData),
-                      scale: 0.5,
-                    ),
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                        color: AppColors.primaryColor),
                   );
                 } else {
-                  return CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.grey[600],
-                    child: SvgPicture.asset(
-                      'assets/images/people.svg',
-                      width: 20,
-                      height: 20,
-                    ),
-                  );
+                  if (snapshot.hasData) {
+                    return CircleAvatar(
+                      radius: 20,
+                      backgroundImage: MemoryImage(
+                        Uint8List.fromList(snapshot.requireData),
+                      ),
+                    );
+                  } else {
+                    return CircleAvatar(
+                      radius: 20,
+                      backgroundColor: Colors.grey[600],
+                      child: SvgPicture.asset(
+                        'assets/images/people.svg',
+                        width: 20,
+                        height: 20,
+                      ),
+                    );
+                  }
                 }
               },
             ),

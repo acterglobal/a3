@@ -2,6 +2,7 @@
 
 import 'dart:typed_data';
 
+import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -72,18 +73,26 @@ class ChatListItem extends StatelessWidget {
         future: room.avatar().then((fb) => fb.asTypedList()),
         // a previously-obtained Future<String> or null
         builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-          if (snapshot.hasData) {
-            return CircleAvatar(
-              radius: 25,
-              backgroundImage:
-                  MemoryImage(Uint8List.fromList(snapshot.requireData)),
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(color: AppColors.primaryColor),
             );
           } else {
-            return CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.grey[700],
-              child: SvgPicture.asset('assets/images/people.svg'),
-            );
+            if (snapshot.hasData) {
+              return CircleAvatar(
+                radius: 25,
+                backgroundImage:
+                    MemoryImage(Uint8List.fromList(snapshot.requireData)),
+              );
+            } else {
+              return CircleAvatar(
+                radius: 25,
+                backgroundColor: Colors.grey[700],
+                child: SvgPicture.asset('assets/images/people.svg'),
+              );
+            }
           }
         },
       ),
