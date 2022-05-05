@@ -10,7 +10,6 @@ import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +19,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
