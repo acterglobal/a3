@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-import 'dart:typed_data';
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/store/chatTheme.dart';
