@@ -47,7 +47,6 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
           )
         ],
       ),
-      // drawer: SideDrawer(),
       body: Container(
         color: Colors.black,
         child: SingleChildScrollView(
@@ -99,14 +98,14 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                           ),
                           Text(
                             'Harjeet kAUR',
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Text(
                             'Harjeet@gmail.com',
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey,
                               fontWeight: FontWeight.bold,

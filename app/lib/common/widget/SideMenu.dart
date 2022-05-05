@@ -166,7 +166,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                   if (snapshot.hasData) {
                                     return Text(
                                       snapshot.data ?? '',
-                                      style: GoogleFonts.montserrat(
+                                      style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.white,
                                       ),

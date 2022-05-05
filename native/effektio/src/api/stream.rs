@@ -1,4 +1,4 @@
-use super::messages::{sync_event_to_message, AnyMessage};
+use super::messages::{sync_event_to_message, RoomMessage};
 use super::RUNTIME;
 
 use anyhow::{Context, Result};
@@ -28,11 +28,11 @@ impl TimelineStream {
             backward: Arc::new(Mutex::new(backward)),
         }
     }
-    pub async fn paginate_backwards(&self, mut count: u64) -> Result<Vec<AnyMessage>> {
+    pub async fn paginate_backwards(&self, mut count: u64) -> Result<Vec<RoomMessage>> {
         let backward = self.backward.clone();
         RUNTIME
             .spawn(async move {
-                let mut messages: Vec<AnyMessage> = Vec::new();
+                let mut messages: Vec<RoomMessage> = Vec::new();
                 let stream = backward.lock().await;
                 pin_mut!(stream);
 
@@ -58,7 +58,7 @@ impl TimelineStream {
             })
             .await?
     }
-    pub async fn next(&self) -> Result<AnyMessage> {
+    pub async fn next(&self) -> Result<RoomMessage> {
         let forward = self.forward.clone();
         RUNTIME
             .spawn(async move {

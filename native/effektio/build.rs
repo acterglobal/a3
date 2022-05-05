@@ -15,15 +15,22 @@ fn main() {
         path.as_path().to_str().unwrap()
     );
 
-    // general FFI-gen
-    let ffigen = FfiGen::new(&path).unwrap();
-    let dart = crate_dir.join(API_DART_FILENAME);
-    // building the rust source for reuse in cbindgen later
-    let rst = ffigen.generate_rust(ffi_gen::Abi::Native64).unwrap();
-    std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst).unwrap();
+    if std::env::var("SKIP_FFIGEN").is_err() {
+        // general FFI-gen
+        let ffigen = FfiGen::new(&path).expect("Could not parse api.rsh");
+        let dart = crate_dir.join(API_DART_FILENAME);
+        // building the rust source for reuse in cbindgen later
+        let rst = ffigen
+            .generate_rust(ffi_gen::Abi::Native64)
+            .expect("Failure generating rust side of ffigen");
+        std::fs::write(crate_dir.join("src").join(API_RUST_FILENAME), rst)
+            .expect("Writing rust file failed.");
 
-    // then let's build the dart API
-    ffigen.generate_dart(dart, "effektio", "effektio").unwrap();
+        // then let's build the dart API
+        ffigen
+            .generate_dart(dart, "effektio", "effektio")
+            .expect("Failure generating dart side of ffigen");
+    }
 
     if std::env::var("SKIP_CBINDGEN").is_err() {
         // once the setup is ready, let's create the c-headers
