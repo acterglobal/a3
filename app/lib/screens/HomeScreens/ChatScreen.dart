@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-import 'dart:typed_data';
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -365,31 +365,12 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: FutureBuilder<Uint8List>(
-              future: widget.room.avatar().then((fb) => fb.asTypedList()),
-              // a previously-obtained Future<String> or null
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-                if (snapshot.hasData) {
-                  return CircleAvatar(
-                    radius: 20,
-                    backgroundImage: MemoryImage(
-                      Uint8List.fromList(snapshot.requireData),
-                      scale: 0.5,
-                    ),
-                  );
-                } else {
-                  return CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Colors.grey[600],
-                    child: SvgPicture.asset(
-                      'assets/images/people.svg',
-                      width: 20,
-                      height: 20,
-                    ),
-                  );
-                }
-              },
+            child: CustomAvatar(
+              avatar: widget.room.avatar(),
+              displayName: widget.room.displayName(),
+              radius: 20,
+              isGroup: true,
+              stringName: '',
             ),
           ),
         ],
@@ -414,9 +395,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 avatarBuilder: (userId) {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: CircleAvatar(
+                    child: CustomAvatar(
+                      avatar:
+                          widget.room.avatar(),
+                      displayName: null,
                       radius: 15,
-                      child: Text(getNameFromId(userId)[0].toUpperCase()),
+                      isGroup: false,
+                      stringName: getNameFromId(userId),
                     ),
                   );
                 },
