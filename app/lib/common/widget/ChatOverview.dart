@@ -1,13 +1,13 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
-import 'dart:typed_data';
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
@@ -69,32 +69,12 @@ class ChatListItem extends StatelessWidget {
           ),
         );
       },
-      leading: FutureBuilder<Uint8List>(
-        future: room.avatar().then((fb) => fb.asTypedList()),
-        // a previously-obtained Future<String> or null
-        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(color: AppColors.primaryColor),
-            );
-          } else {
-            if (snapshot.hasData) {
-              return CircleAvatar(
-                radius: 25,
-                backgroundImage:
-                    MemoryImage(Uint8List.fromList(snapshot.requireData)),
-              );
-            } else {
-              return CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.grey[700],
-                child: SvgPicture.asset('assets/images/people.svg'),
-              );
-            }
-          }
-        },
+      leading: CustomAvatar(
+        avatar: room.avatar(),
+        displayName: room.displayName(),
+        radius: 25,
+        isGroup: true,
+        stringName: '',
       ),
       title: FutureBuilder<String>(
         future: room.displayName(),
