@@ -9,6 +9,7 @@ use effektio_core::ruma;
 
 mod config;
 use crate::ruma::api::client::filter::RoomEventFilter;
+use crate::ruma::events::room::MediaSource;
 use config::{Action, EffektioCliConfig};
 use flexi_logger::Logger;
 use log::{info, warn};
@@ -98,9 +99,13 @@ async fn main() -> Result<()> {
             for entry in messages.chunk {
                 let event = match entry
                     .event
-                    .deserialize_as::<ruma::events::MessageEvent<events::NewsEventDevContent>>()
+                    .deserialize_as::<ruma::events::MessageLikeEvent<events::NewsEventDevContent>>()
                 {
-                    Ok(e) => e,
+                    Ok(ruma::events::MessageLikeEvent::Original(o)) => o,
+                    Ok(ruma::events::MessageLikeEvent::Redacted(_)) => {
+                        // FIXME: what do we do with redactions
+                        continue;
+                    }
                     Err(e) => {
                         warn!("Non Compliant News Entry found: {}", e);
                         continue;
@@ -129,14 +134,14 @@ async fn main() -> Result<()> {
                 ]));
                 for content in news.contents {
                     let (key, content) = match content {
-                        events::NewsContentType::Image(image) => (
-                            "image",
-                            image.url.map(|a| a.to_string()).unwrap_or(image.body),
-                        ),
-                        events::NewsContentType::Video(video) => (
-                            "video",
-                            video.url.map(|a| a.to_string()).unwrap_or(video.body),
-                        ),
+                        events::NewsContentType::Image(image) => match image.source {
+                            MediaSource::Plain(url) => ("image", url.to_string()),
+                            MediaSource::Encrypted(_) => ("image", "<encrypted>".to_owned()),
+                        },
+                        events::NewsContentType::Video(video) => match video.source {
+                            MediaSource::Plain(url) => ("video", url.to_string()),
+                            MediaSource::Encrypted(_) => ("video", "<encrypted>".to_owned()),
+                        },
                         events::NewsContentType::Text(text) => ("text", text.body),
                         _ => ("unknown", "n/a".to_owned()),
                     };
