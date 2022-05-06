@@ -138,7 +138,7 @@ class ChatListItem extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Text(
-              formatedTime(snapshot.requireData.originServerTs()),
+              formatedTime(snapshot.requireData.originServerTs())!,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12,

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:time/time.dart';
 
 Widget navBarTitle(String title) {
   return Text(
@@ -25,18 +26,14 @@ String getNameFromId(String name) {
   return name.substring(start, end);
 }
 
-String formatedTime(int value) {
-  int h, m;
+String? formatedTime(int value) {
+  final int h = (value.seconds.inHours + 5) % 24;
+  final int m = (value.seconds.inMinutes) % 60;
 
-  value = value % (24 * 3600);
-  h = ((value ~/ 3600) + 5) % 24;
-  value %= 3600;
-  m = value ~/ 60;
-  String hourLeft = h.toString().length < 2 ? '0' + h.toString() : h.toString();
-  String minuteLeft =
-      m.toString().length < 2 ? '0' + m.toString() : m.toString();
-
-  String result = '$hourLeft:$minuteLeft';
+  //00:00 Format
+  String hour = h.toString().length < 2 ? '0' + h.toString() : h.toString();
+  String minutes = m.toString().length < 2 ? '0' + m.toString() : m.toString();
+  String result = '$hour:$minutes';
 
   return result;
 }
