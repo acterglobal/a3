@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
@@ -339,7 +338,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   return Text(
                     '${snapshot.requireData.length.toString()} Members',
-                    style: GoogleFonts.montserrat(
+                    style: TextStyle(
                       color: AppColors.primaryColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w300,
@@ -361,12 +360,19 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: CustomAvatar(
-              avatar: widget.room.avatar(),
-              displayName: widget.room.displayName(),
-              radius: 20,
-              isGroup: true,
-              stringName: '',
+            child: Container(
+              height: 45,
+              width: 45,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: CustomAvatar(
+                  avatar: widget.room.avatar(),
+                  displayName: widget.room.displayName(),
+                  radius: 20,
+                  isGroup: true,
+                  stringName: '',
+                ),
+              ),
             ),
           ),
         ],
@@ -392,8 +398,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: CustomAvatar(
-                      avatar:
-                          widget.room.avatar(),
+                      avatar: widget.room.avatar(),
                       displayName: null,
                       radius: 15,
                       isGroup: false,

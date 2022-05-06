@@ -49,7 +49,6 @@ dependencies:
   cached_network_image: ^3.2.0
   flutter_link_previewer: ^2.6.6
   bubble: ^1.2.1
-  time: ^2.1.0
   colorize_text_avatar: ^1.0.2
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk

@@ -705,13 +705,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.8"
-  time:
-    dependency: "direct main"
-    description:
-      name: time
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.0"
   typed_data:
     dependency: transitive
     description:
