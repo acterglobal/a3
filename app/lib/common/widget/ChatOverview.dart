@@ -1,13 +1,10 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
-
-import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
