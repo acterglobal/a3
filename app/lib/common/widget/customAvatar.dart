@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAvatar extends StatelessWidget {
-  final Future<List<int>> avatar;
+  final Future<FfiBufferUint8> avatar;
   final Future<String>? displayName;
   final double radius;
   final bool isGroup;
@@ -22,7 +23,7 @@ class CustomAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<int>>(
-      future: avatar,
+      future: avatar.then((fb) => fb.asTypedList()),
       builder: (
         BuildContext context,
         AsyncSnapshot<List<int>> snapshot,
@@ -71,7 +72,7 @@ class CustomAvatar extends StatelessWidget {
                         numberLetters: 2,
                         shape: Shape.Circular,
                         upperCase: true,
-                        text: snapshot.data ?? 'N',
+                        text: snapshot.data ?? 'e',
                         size: radius,
                       );
                     } else {

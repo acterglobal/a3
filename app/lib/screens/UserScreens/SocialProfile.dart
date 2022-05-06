@@ -95,9 +95,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                               ),
                             ),
                             child: CustomAvatar(
-                              avatar: _client
-                                  .avatar()
-                                  .then((fb) => fb.asTypedList()),
+                              avatar: _client.avatar(),
                               displayName: _client.displayName(),
                               isGroup: false,
                               stringName: '',

@@ -366,7 +366,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: CustomAvatar(
-              avatar: widget.room.avatar().then((fb) => fb.asTypedList()),
+              avatar: widget.room.avatar(),
               displayName: widget.room.displayName(),
               radius: 20,
               isGroup: true,
@@ -397,7 +397,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     padding: const EdgeInsets.only(right: 10),
                     child: CustomAvatar(
                       avatar:
-                          widget.room.avatar().then((fb) => fb.asTypedList()),
+                          widget.room.avatar(),
                       displayName: null,
                       radius: 15,
                       isGroup: false,

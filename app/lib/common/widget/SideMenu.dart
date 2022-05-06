@@ -19,7 +19,6 @@ class SideDrawer extends StatefulWidget {
 class _SideDrawerState extends State<SideDrawer> {
   late Future<String> name;
   late Future<String> username;
-  late Future<List<int>> avatar;
   bool isGuest = false;
   @override
   void initState() {
@@ -80,9 +79,6 @@ class _SideDrawerState extends State<SideDrawer> {
                       ],
                     );
                   } else {
-                    avatar = snapshot.requireData
-                        .avatar()
-                        .then((fb) => fb.asTypedList());
                     name = snapshot.requireData.displayName();
                     username = snapshot.requireData.userId();
                     return GestureDetector(
@@ -99,7 +95,7 @@ class _SideDrawerState extends State<SideDrawer> {
                             margin: EdgeInsets.all(10),
                             child: CustomAvatar(
                               radius: 24,
-                              avatar: avatar,
+                              avatar: snapshot.requireData.avatar(),
                               displayName: name,
                               isGroup: false,
                               stringName: '',

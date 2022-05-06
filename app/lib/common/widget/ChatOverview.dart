@@ -69,7 +69,7 @@ class ChatListItem extends StatelessWidget {
         );
       },
       leading: CustomAvatar(
-        avatar: room.avatar().then((fb) => fb.asTypedList()),
+        avatar: room.avatar(),
         displayName: room.displayName(),
         radius: 25,
         isGroup: true,
