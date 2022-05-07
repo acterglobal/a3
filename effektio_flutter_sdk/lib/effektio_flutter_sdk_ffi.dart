@@ -962,7 +962,6 @@ class Api {
     return tmp7;
   }
 
-<<<<<<< HEAD
   Client? __registerWithRegistrationTokenFuturePoll(
     int boxed,
     int postCobject,
@@ -1008,10 +1007,7 @@ class Api {
     return tmp7;
   }
 
-  AnyMessage? __timelineStreamNextFuturePoll(
-=======
   RoomMessage? __timelineStreamNextFuturePoll(
->>>>>>> origin/main
     int boxed,
     int postCobject,
     int port,
@@ -1656,6 +1652,186 @@ class Api {
     return tmp7;
   }
 
+  String? __accountDisplayNameFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountDisplayNameFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  bool? __accountSetDisplayNameFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountSetDisplayNameFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __accountAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  bool? __accountSetAvatarFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _accountSetAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   String? __clientRestoreTokenFuturePoll(
     int boxed,
     int postCobject,
@@ -1734,7 +1910,7 @@ class Api {
     return tmp7;
   }
 
-  String? __clientUserIdFuturePoll(
+  Account? __clientAccountFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1748,7 +1924,52 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientUserIdFuturePoll(
+    final tmp6 = _clientAccountFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Account");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Account._(this, tmp13_1);
+    return tmp7;
+  }
+
+  String? __clientDeviceIdFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientDeviceIdFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -1784,7 +2005,7 @@ class Api {
     return tmp7;
   }
 
-  String? __clientDeviceIdFuturePoll(
+  String? __clientUserIdFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1798,7 +2019,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientDeviceIdFuturePoll(
+    final tmp6 = _clientUserIdFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2104,7 +2325,6 @@ class Api {
     int,
     int,
   )>();
-<<<<<<< HEAD
   late final _registerWithRegistrationTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -2136,7 +2356,8 @@ class Api {
     int,
     int,
     int,
-=======
+    int,
+  )>();
   late final _roomMessageEventIdPtr = _lookup<
       ffi.NativeFunction<
           _RoomMessageEventIdReturn Function(
@@ -2176,7 +2397,6 @@ class Api {
   late final _roomMessageOriginServerTs =
       _roomMessageOriginServerTsPtr.asFunction<
           int Function(
->>>>>>> origin/main
     int,
   )>();
   late final _timelineStreamNextPtr = _lookup<
@@ -2360,6 +2580,64 @@ class Api {
       int Function(
     int,
   )>();
+  late final _accountDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Account_display_name");
+
+  late final _accountDisplayName = _accountDisplayNamePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _accountSetDisplayNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Account_set_display_name");
+
+  late final _accountSetDisplayName = _accountSetDisplayNamePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _accountAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Account_avatar");
+
+  late final _accountAvatar = _accountAvatarPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _accountSetAvatarPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Account_set_avatar");
+
+  late final _accountSetAvatar = _accountSetAvatarPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _clientRestoreTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -2410,13 +2688,13 @@ class Api {
       int Function(
     int,
   )>();
-  late final _clientUserIdPtr = _lookup<
+  late final _clientAccountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_user_id");
+  )>>("__Client_account");
 
-  late final _clientUserId = _clientUserIdPtr.asFunction<
+  late final _clientAccount = _clientAccountPtr.asFunction<
       int Function(
     int,
   )>();
@@ -2427,6 +2705,16 @@ class Api {
   )>>("__Client_device_id");
 
   late final _clientDeviceId = _clientDeviceIdPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_user_id");
+
+  late final _clientUserId = _clientUserIdPtr.asFunction<
       int Function(
     int,
   )>();
@@ -2737,6 +3025,65 @@ class Api {
     int,
     int,
   )>();
+  late final _accountDisplayNameFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountDisplayNameFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Account_display_name_future_poll");
+
+  late final _accountDisplayNameFuturePoll =
+      _accountDisplayNameFuturePollPtr.asFunction<
+          _AccountDisplayNameFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _accountSetDisplayNameFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountSetDisplayNameFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Account_set_display_name_future_poll");
+
+  late final _accountSetDisplayNameFuturePoll =
+      _accountSetDisplayNameFuturePollPtr.asFunction<
+          _AccountSetDisplayNameFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _accountAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountAvatarFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Account_avatar_future_poll");
+
+  late final _accountAvatarFuturePoll = _accountAvatarFuturePollPtr.asFunction<
+      _AccountAvatarFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _accountSetAvatarFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountSetAvatarFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Account_set_avatar_future_poll");
+
+  late final _accountSetAvatarFuturePoll =
+      _accountSetAvatarFuturePollPtr.asFunction<
+          _AccountSetAvatarFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientRestoreTokenFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientRestoreTokenFuturePollReturn Function(
@@ -2767,16 +3114,16 @@ class Api {
     int,
     int,
   )>();
-  late final _clientUserIdFuturePollPtr = _lookup<
+  late final _clientAccountFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientUserIdFuturePollReturn Function(
+          _ClientAccountFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_user_id_future_poll");
+  )>>("__Client_account_future_poll");
 
-  late final _clientUserIdFuturePoll = _clientUserIdFuturePollPtr.asFunction<
-      _ClientUserIdFuturePollReturn Function(
+  late final _clientAccountFuturePoll = _clientAccountFuturePollPtr.asFunction<
+      _ClientAccountFuturePollReturn Function(
     int,
     int,
     int,
@@ -2792,6 +3139,20 @@ class Api {
   late final _clientDeviceIdFuturePoll =
       _clientDeviceIdFuturePollPtr.asFunction<
           _ClientDeviceIdFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientUserIdFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientUserIdFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_user_id_future_poll");
+
+  late final _clientUserIdFuturePoll = _clientUserIdFuturePollPtr.asFunction<
+      _ClientUserIdFuturePollReturn Function(
     int,
     int,
     int,
@@ -3524,6 +3885,125 @@ class Member {
   }
 }
 
+class Account {
+  final Api _api;
+  final _Box _box;
+
+  Account._(this._api, this._box);
+
+  /// The display_name of the account
+  Future<String> displayName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountDisplayName(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Account_display_name_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__accountDisplayNameFuturePoll);
+    return tmp2;
+  }
+
+  /// Change the display name of the account
+  Future<bool> setDisplayName(
+    String name,
+  ) {
+    final tmp1 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._accountSetDisplayName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Account_set_display_name_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__accountSetDisplayNameFuturePoll);
+    return tmp6;
+  }
+
+  /// The avatar of the client
+  Future<FfiBufferUint8> avatar() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountAvatar(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Account_avatar_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__accountAvatarFuturePoll);
+    return tmp2;
+  }
+
+  /// Change the avatar of the account
+  /// provide the c_type as MIME, e.g. `image/jpeg`
+  Future<bool> setAvatar(
+    String cType,
+    List<int> data,
+  ) {
+    final tmp1 = cType;
+    final tmp5 = data;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    tmp7 = tmp5.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._accountSetAvatar(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Account_set_avatar_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__accountSetAvatarFuturePoll);
+    return tmp10;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Main entry point for `effektio`.
 class Client {
   final Api _api;
@@ -3597,18 +4077,18 @@ class Client {
     return tmp2;
   }
 
-  /// The user_id of the client
-  Future<String> userId() {
+  /// return the account of the logged in user, if given
+  Future<Account> account() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientUserId(
+    final tmp1 = _api._clientAccount(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_user_id_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_account_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientUserIdFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientAccountFuturePoll);
     return tmp2;
   }
 
@@ -3626,7 +4106,24 @@ class Client {
     return tmp2;
   }
 
+  /// The user_id of the client
+  /// deprecated, please use account() instead.
+  Future<String> userId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientUserId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_user_id_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientUserIdFuturePoll);
+    return tmp2;
+  }
+
   /// The display_name of the client
+  /// deprecated, please use account() instead.
   Future<String> displayName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -3642,6 +4139,7 @@ class Client {
   }
 
   /// The avatar of the client
+  /// deprecated, please use account() instead.
   Future<FfiBufferUint8> avatar() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -4023,6 +4521,70 @@ class _MemberAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _AccountDisplayNameFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _AccountSetDisplayNameFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _AccountAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _AccountSetAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -4049,7 +4611,22 @@ class _ClientLoggedInFuturePollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientUserIdFuturePollReturn extends ffi.Struct {
+class _ClientAccountFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientDeviceIdFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -4068,7 +4645,7 @@ class _ClientUserIdFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
-class _ClientDeviceIdFuturePollReturn extends ffi.Struct {
+class _ClientUserIdFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
