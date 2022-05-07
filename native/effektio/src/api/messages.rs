@@ -5,14 +5,15 @@ use matrix_sdk::{
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
-            AnySyncMessageEvent, AnySyncRoomEvent, SyncMessageEvent,
+            AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
+            SyncMessageLikeEvent,
         },
-        EventId, MxcUri, UserId,
+        MxcUri,
     },
 };
 
 pub struct RoomMessage {
-    inner: SyncMessageEvent<RoomMessageEventContent>,
+    inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
     fallback: String,
 }
 
@@ -36,14 +37,12 @@ impl RoomMessage {
 
 pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<RoomMessage> {
     match sync_event.event.deserialize() {
-        Ok(AnySyncRoomEvent::Message(AnySyncMessageEvent::RoomMessage(inner))) => {
-            if matches!(inner.content.msgtype, MessageType::Text(..)) {
-                let fallback = inner.content.body().to_string();
-                Some(RoomMessage { inner, fallback })
-            } else {
-                None
-            }
-        }
+        Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+            SyncMessageLikeEvent::Original(m),
+        ))) => Some(RoomMessage {
+            fallback: m.content.body().to_string(),
+            inner: m,
+        }),
         _ => None,
     }
 }

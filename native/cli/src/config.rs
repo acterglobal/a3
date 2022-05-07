@@ -3,11 +3,16 @@ use clap::{crate_version, Parser};
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
-use effektio_core::matrix_sdk::ruma::{RoomId, UserId};
+use effektio_core::matrix_sdk::ruma::UserId;
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
+use crate::action::Action;
+
 use log::warn;
-use std::path::PathBuf;
+
+pub const ENV_USER: &str = "EFFEKTIO_USER";
+pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";
+pub const ENV_ROOM: &str = "EFFEKTIO_ROOM";
 
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
@@ -18,10 +23,10 @@ pub struct LoginConfig {
         long = "user",
         value_hint = clap::ValueHint::Username,
         parse(try_from_str),
-        env = "EFFEKTIO_USER"
+        env = ENV_USER
     )]
     login_username: Box<UserId>,
-    #[clap(env = "EFFEKTIO_PASSWORD")]
+    #[clap(env = ENV_PASSWORD)]
     login_password: Option<String>,
 }
 
@@ -53,66 +58,6 @@ impl LoginConfig {
 
         Ok(client)
     }
-}
-
-/// Posting a news item to a given room
-#[derive(Parser, Debug)]
-pub struct PostNews {
-    /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
-    pub room: Box<RoomId>,
-    #[clap(flatten)]
-    pub login: LoginConfig,
-
-    /// Path to images to post
-    #[clap(short, long, value_hint = clap::ValueHint::FilePath)]
-    pub image: Vec<PathBuf>,
-
-    #[clap(short, long)]
-    /// Path to video(s) to post
-    pub video: Vec<PathBuf>,
-
-    /// Text to posh
-    #[clap(short, long)]
-    pub text: Vec<String>,
-
-    /// Font/Text color
-    #[clap(short, long)]
-    pub color: Option<String>,
-
-    /// Background color
-    #[clap(short, long)]
-    pub background: Option<String>,
-}
-
-/// Posting a news item to a given room
-#[derive(Parser, Debug)]
-pub struct FetchNews {
-    /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
-    pub room: Box<RoomId>,
-    #[clap(flatten)]
-    pub login: LoginConfig,
-}
-
-/// Posting a news item to a given room
-#[derive(Parser, Debug)]
-pub struct Manage {
-    /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = "EFFEKTIO_ROOM")]
-    pub room: Box<RoomId>,
-    #[clap(flatten)]
-    pub login: LoginConfig,
-}
-
-#[derive(clap::Subcommand, Debug)]
-pub enum Action {
-    /// Post News to a room
-    PostNews(PostNews),
-    /// Fetch News of the use
-    FetchNews(FetchNews),
-    /// Room Management
-    Manage(Manage),
 }
 
 #[derive(Parser, Debug)]

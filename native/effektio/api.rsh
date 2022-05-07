@@ -11,6 +11,12 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
+/// generate news mock items
+fn gen_mock_news() -> Vec<News>;
+/// Create a new client from the restore token
+fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
+
+
 /// Representing a color
 object Color {
     // as rgba in u8
@@ -46,9 +52,6 @@ object Faq {
     fn tags() -> Vec<Tag>;
 }
 
-/// generate news mock items
-fn gen_mock_news() -> Vec<News>;
-
 object UserId {
     // full name as string
     //fn as_str() -> string;
@@ -56,6 +59,7 @@ object UserId {
     // only the user name itself
     //fn localpart() -> string;
 }
+
 object EventId {}
 
 /// A room Message metadata and content
@@ -148,6 +152,23 @@ object Member {
 
 }
 
+object Account {
+    /// The display_name of the account
+    fn display_name() -> Future<Result<string>>;
+
+    /// Change the display name of the account
+    fn set_display_name(name: string) -> Future<Result<bool>>;
+
+    /// The avatar of the client
+    fn avatar() -> Future<Result<buffer<u8>>>;
+
+    /// Change the avatar of the account
+    /// provide the c_type as MIME, e.g. `image/jpeg`
+    fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<bool>>;
+}
+
+
+
 /// Main entry point for `effektio`.
 object Client {
     // Special
@@ -164,20 +185,25 @@ object Client {
     /// Whether the client is syncing
     fn is_syncing() -> bool;
 
-    // Regular Rust Matrix Client
     /// Whether the client is logged in
     fn logged_in() -> Future<bool>;
 
-    /// The user_id of the client
-    fn user_id() -> Future<Result<string>>;
+    /// return the account of the logged in user, if given
+    fn account() -> Future<Result<Account>>;
 
     // The device_id of the client
     fn device_id() -> Future<Result<string>>;
 
+    /// The user_id of the client
+    /// deprecated, please use account() instead.
+    fn user_id() -> Future<Result<string>>;
+
     /// The display_name of the client
+    /// deprecated, please use account() instead.
     fn display_name() -> Future<Result<string>>;
 
     /// The avatar of the client
+    /// deprecated, please use account() instead.
     fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// The conversations the user is involved in

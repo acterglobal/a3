@@ -1,4 +1,4 @@
-use super::{api, Conversation, Group, Room, UserId, RUNTIME};
+use super::{api, Account, Conversation, Group, Room, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
@@ -11,12 +11,14 @@ use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::events::StateEventType,
     Client as MatrixClient, LoopCtrl, Session,
 };
+
 use parking_lot::RwLock;
+use ruma::events::room::MediaSource;
 use std::sync::Arc;
 use url::Url;
 
@@ -202,6 +204,10 @@ impl Client {
             .await?
     }
 
+    pub async fn account(&self) -> Result<Account> {
+        Ok(Account::new(self.client.account()))
+    }
+
     pub async fn display_name(&self) -> Result<String> {
         let l = self.client.clone();
         RUNTIME
@@ -227,25 +233,6 @@ impl Client {
     }
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let uri = l
-                    .account()
-                    .get_avatar_url()
-                    .await?
-                    .context("No avatar Url given")?;
-                Ok(api::FfiBuffer::new(
-                    l.get_media_content(
-                        &MediaRequest {
-                            media_type: MediaType::Uri(uri),
-                            format: MediaFormat::File,
-                        },
-                        true,
-                    )
-                    .await?,
-                ))
-            })
-            .await?
+        self.account().await?.avatar().await
     }
 }

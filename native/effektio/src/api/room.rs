@@ -5,11 +5,10 @@ use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::ruma;
 use matrix_sdk::{
-    deserialized_responses::SyncRoomEvent,
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        events::{room::message::RoomMessageEventContent, AnyMessageEventContent},
+        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
         EventId,
     },
 };
@@ -53,7 +52,7 @@ impl Room {
     pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
-            .spawn(async move { Ok(r.display_name().await?) })
+            .spawn(async move { Ok(r.display_name().await?.to_string()) })
             .await?
     }
 
@@ -185,9 +184,9 @@ impl Room {
             .spawn(async move {
                 let r = room
                     .send(
-                        AnyMessageEventContent::RoomMessage(RoomMessageEventContent::text_plain(
-                            message,
-                        )),
+                        AnyMessageLikeEventContent::RoomMessage(
+                            RoomMessageEventContent::text_plain(message),
+                        ),
                         None,
                     )
                     .await?;
