@@ -27,6 +27,18 @@ object Color {
 object News {
     /// get the text of the news item
     fn text() -> Option<string>;
+    /// the tags on this item
+    fn tags() -> Vec<Tag>;
+    /// the number of likes on this item
+    fn likes_count() -> u32;
+    /// the number of comments on this item
+    fn comments_count() -> u32;
+    /// if given, the specific foreground color
+    fn fg_color() -> Option<Color>; 
+    /// if given, the specific background color
+    fn bg_color() -> Option<Color>; 
+    /// if given, the image
+    fn image() -> Future<Option<Vec<u8>>>; 
 }
 
 object Tag {
@@ -50,6 +62,10 @@ object Faq {
     //fn team() -> Room;
     /// the tags on this item
     fn tags() -> Vec<Tag>;
+    /// the number of likes on this item
+    fn likes_count() -> u32;
+    /// the number of comments on this item
+    fn comments_count() -> u32;
 }
 
 object UserId {
