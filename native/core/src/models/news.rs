@@ -68,7 +68,7 @@ impl News {
     pub fn fg_color(&self) -> Option<Color> {
         self.fg_color.clone()
     }
-    pub async fn image(&self) -> Option<Vec<u8>> {
+    pub fn image(&self) -> Option<Vec<u8>> {
         self.image.clone()
     }
 }

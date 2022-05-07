@@ -80,7 +80,8 @@ class _SideDrawerState extends State<SideDrawer> {
                     );
                   } else {
                     name = snapshot.requireData.displayName();
-                    username = snapshot.requireData.userId();
+                    username =
+                        snapshot.requireData.userId().then((u) => u.toString());
                     return GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(

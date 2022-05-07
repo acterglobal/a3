@@ -32,7 +32,7 @@ class _ChatListState extends State<ChatList> {
 
   Future<void> _getUser() async {
     var fetchClient = await widget.client;
-    user = await fetchClient.userId();
+    user = await fetchClient.userId().then((u) => u.toString());
   }
 
   static const TextStyle optionStyle =

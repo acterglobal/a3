@@ -38,7 +38,7 @@ object News {
     /// if given, the specific background color
     fn bg_color() -> Option<Color>; 
     /// if given, the image
-    fn image() -> Future<Option<Vec<u8>>>; 
+    fn image() -> Option<Vec<u8>>; 
 }
 
 object Tag {
@@ -71,6 +71,8 @@ object Faq {
 object UserId {
     // full name as string
     //fn as_str() -> string;
+
+    fn to_string() -> string;
 
     // only the user name itself
     //fn localpart() -> string;

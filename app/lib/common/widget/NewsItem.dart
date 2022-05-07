@@ -1,5 +1,7 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:effektio/common/store/Colors.dart';
 import './NewsSideBar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 
@@ -16,9 +18,17 @@ class NewsItem extends StatefulWidget {
 class _NewsItemState extends State<NewsItem> {
   @override
   Widget build(BuildContext context) {
+    var image = widget.news.image();
+
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          child: image != null ? Image.memory(Uint8List.fromList(image)) : null,
+          clipBehavior: Clip.none,
+        ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
