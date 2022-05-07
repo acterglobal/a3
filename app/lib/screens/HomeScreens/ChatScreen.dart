@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
@@ -13,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 
@@ -34,14 +32,14 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isLoading = false;
   @override
   void initState() {
+    _getTimeline().whenComplete(
+      () async => {await _getMessages(), _handleEndReached(), _updateState()},
+    );
     _user = types.User(
       id: widget.user!,
       firstName: getNameFromId(widget.user!),
     );
     super.initState();
-    _getTimeline().whenComplete(
-      () async => {await _getMessages(), _handleEndReached(), _updateState()},
-    );
   }
 
   @override
@@ -293,10 +291,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
-        centerTitle: true,
         backgroundColor: Color.fromRGBO(51, 53, 64, 0.4),
         elevation: 1,
-        leadingWidth: MediaQuery.of(context).size.width,
+        centerTitle: true,
         toolbarHeight: 70,
         leading: Row(
           children: <Widget>[
@@ -340,7 +337,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   return Text(
                     '${snapshot.requireData.length.toString()} Members',
-                    style: GoogleFonts.montserrat(
+                    style: TextStyle(
                       color: AppColors.primaryColor,
                       fontSize: 12,
                       fontWeight: FontWeight.w300,
@@ -360,17 +357,21 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          SizedBox(
-            width: 70,
-          ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: CustomAvatar(
-              avatar: widget.room.avatar(),
-              displayName: widget.room.displayName(),
-              radius: 20,
-              isGroup: true,
-              stringName: '',
+            child: Container(
+              height: 45,
+              width: 45,
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: CustomAvatar(
+                  avatar: widget.room.avatar(),
+                  displayName: widget.room.displayName(),
+                  radius: 20,
+                  isGroup: true,
+                  stringName: '',
+                ),
+              ),
             ),
           ),
         ],
@@ -396,8 +397,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 10),
                     child: CustomAvatar(
-                      avatar:
-                          widget.room.avatar(),
+                      avatar: widget.room.avatar(),
                       displayName: null,
                       radius: 15,
                       isGroup: false,
