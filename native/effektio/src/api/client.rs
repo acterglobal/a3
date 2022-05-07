@@ -2,10 +2,10 @@ use super::{api, Conversation, Group, Room, UserId, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
+    mocks::{gen_mock_faqs, gen_mock_news},
+    models::{Faq, News},
     ruma::api::client::account::register,
     RestoreToken,
-    models::{ News, Faq },
-    mocks::{gen_mock_news, gen_mock_faqs},
 };
 use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
@@ -170,7 +170,6 @@ impl Client {
     pub async fn faqs(&self) -> Result<Vec<Faq>> {
         Ok(gen_mock_faqs())
     }
-
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
     //     let l = self.client.clone();

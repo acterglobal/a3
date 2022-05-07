@@ -8,7 +8,6 @@ pub mod models;
 pub mod support;
 pub use support::RestoreToken;
 
-
 #[cfg(feature = "with-mocks")]
 pub mod mocks {
     pub use super::models::mocks::*;

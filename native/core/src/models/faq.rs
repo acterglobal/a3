@@ -2,29 +2,26 @@ use crate::models::Tag;
 
 #[cfg(feature = "with-mocks")]
 use fake::{
+    faker::lorem::en::{Paragraph, Sentence},
     Dummy, Fake, Faker,
-    faker::lorem::en::{
-        Paragraph, Sentence
-    }
 };
 
 #[cfg_attr(feature = "with-mocks", derive(Dummy))]
 #[derive(Clone)]
 pub struct Faq {
-    #[cfg_attr(feature = "with-mocks", dummy(faker="Sentence(3..24)"))]
+    #[cfg_attr(feature = "with-mocks", dummy(faker = "Sentence(3..24)"))]
     pub(crate) title: String,
-    #[cfg_attr(feature = "with-mocks", dummy(faker="Paragraph(3..12)"))]
+    #[cfg_attr(feature = "with-mocks", dummy(faker = "Paragraph(3..12)"))]
     pub(crate) body: String,
     pub(crate) pinned: bool,
     pub(crate) tags: Vec<Tag>,
-    #[cfg_attr(feature = "with-mocks", dummy(faker="0..1024"))]
+    #[cfg_attr(feature = "with-mocks", dummy(faker = "0..1024"))]
     pub(crate) likes_count: u64,
-    #[cfg_attr(feature = "with-mocks", dummy(faker="0..324"))]
+    #[cfg_attr(feature = "with-mocks", dummy(faker = "0..324"))]
     pub(crate) comments_count: u64,
 }
 
 impl Faq {
-
     pub fn title(&self) -> String {
         self.title.clone()
     }
@@ -49,7 +46,6 @@ impl Faq {
         self.comments_count
     }
 }
-
 
 #[cfg(feature = "with-mocks")]
 pub fn gen_mocks() -> Vec<Faq> {
@@ -78,5 +74,4 @@ pub fn gen_mocks() -> Vec<Faq> {
         Faker.fake(),
         Faker.fake(),
     ]
-
 }
