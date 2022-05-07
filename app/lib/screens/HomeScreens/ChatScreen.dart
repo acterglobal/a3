@@ -30,16 +30,17 @@ class _ChatScreenState extends State<ChatScreen> {
   late final _user;
   TimelineStream? _stream;
   bool isLoading = false;
+  int _page = 0;
   @override
   void initState() {
-    _getTimeline().whenComplete(
-      () async => {await _getMessages(), _handleEndReached(), _updateState()},
-    );
     _user = types.User(
       id: widget.user!,
-      firstName: getNameFromId(widget.user!),
     );
+    isLoading = true;
     super.initState();
+    _getTimeline().whenComplete(
+      () => {_handleEndReached(), _newEvent()},
+    );
   }
 
   @override
@@ -47,41 +48,45 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<List<types.Message>> getMessages(
-    TimelineStream? stream,
-    int count,
-    Conversation room,
-  ) async {
-    List<types.Message> _messages = [];
-    bool isSeen = false;
-    var messages = await stream!.paginateBackwards(count);
-    for (RoomMessage message in messages) {
-      //Based on boolean, it'll update the status of message (seen,delivered) etc
-      await room.readReceipt(message.eventId()).then(
-            (value) => {
-              isSeen = value,
-            },
-          );
-      types.TextMessage m = types.TextMessage(
-        id: message.eventId(),
-        showStatus: true,
-        author: types.User(id: message.sender()),
-        text: message.body(),
-        status: isSeen ? Status.seen : Status.delivered,
-      );
-      _messages.add(m);
-      isSeen = !isSeen;
-    }
-    return _messages;
-  }
-
   Future<void> _getTimeline() async {
     _stream = await widget.room.timeline();
-    setState(() {});
+    var messages = await _stream!.paginateBackwards(10);
+    for (RoomMessage message in messages) {
+      types.TextMessage m = types.TextMessage(
+        author: types.User(id: message.sender()),
+        id: message.eventId(),
+        text: message.body(),
+      );
+      _messages.add(m);
+    }
+    setState(() {
+      isLoading = false;
+    });
+    if (_messages.isNotEmpty) {
+      if (_messages.first.author.id == _user.id) {
+        bool isSeen = await widget.room.readReceipt(_messages.first.id);
+        types.TextMessage lm = types.TextMessage(
+          author: _user,
+          id: _messages.first.id,
+          text: messages.first.body(),
+          showStatus: true,
+          status: isSeen ? Status.seen : Status.delivered,
+        );
+        _messages.removeAt(0);
+        _messages.insert(0, lm);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   //will detect if any new event is arrived and will re-render the screen
-  void _updateState() async {
+  void _newEvent() async {
     await _stream!.next();
     var newEvent = await widget.room.latestMessage();
     final user = types.User(
@@ -96,13 +101,9 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _messages.insert(0, textMessage);
       });
+    } else {
+      setState(() {});
     }
-  }
-
-  void _addMessage(types.Message message) async {
-    setState(() {
-      _messages.insert(0, message);
-    });
   }
 
   void _handlePreviewDataFetched(
@@ -126,13 +127,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: randomString(),
-      remoteId: eventId,
+      id: eventId,
       text: message.text,
       status: Status.sent,
       showStatus: true,
     );
-    _addMessage(textMessage);
+    _messages.insert(0, textMessage);
   }
 
   void _handleAttachmentPressed() {
@@ -149,7 +149,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 GestureDetector(
                   onTap: () {
                     _handleImageSelection(context);
-                    // Navigator.pop(context);
                   },
                   child: Row(
                     children: <Widget>[
@@ -174,7 +173,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 GestureDetector(
                   onTap: () {
                     _handleFileSelection(context);
-                    // Navigator.pop(context);
                   },
                   child: Row(
                     children: <Widget>[
@@ -231,7 +229,9 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
       Navigator.pop(context);
-      _addMessage(message);
+      setState(() {
+        _messages.insert(0, message);
+      });
     }
   }
 
@@ -256,7 +256,9 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
       Navigator.pop(context);
-      _addMessage(message);
+      setState(() {
+        _messages.insert(0, message);
+      });
     }
   }
 
@@ -266,23 +268,21 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  //Load messages at start
-  Future<void> _getMessages() async {
-    setState(() {
-      isLoading = true;
-    });
-    List<types.Message> messages = await getMessages(_stream, 10, widget.room);
-    setState(() {
-      _messages = messages;
-      isLoading = false;
-    });
-  }
-
   //Pagination Control
   Future<void> _handleEndReached() async {
-    List<types.Message> messages = await getMessages(_stream, 10, widget.room);
+    final messages = await _stream!.paginateBackwards(10);
+    final List<types.Message> nextMessages = [];
+    for (RoomMessage message in messages) {
+      types.TextMessage m = types.TextMessage(
+        author: types.User(id: message.sender()),
+        id: message.eventId(),
+        text: message.body(),
+      );
+      nextMessages.add(m);
+    }
     setState(() {
-      _messages = [..._messages, ...messages];
+      _messages = [..._messages, ...nextMessages];
+      _page = _page + 1;
     });
   }
 
