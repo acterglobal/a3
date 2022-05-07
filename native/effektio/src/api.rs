@@ -15,13 +15,17 @@ lazy_static! {
 }
 
 mod client;
+mod conversation;
+mod group;
 mod messages;
 mod room;
 mod stream;
 
 pub use client::{Client, ClientStateBuilder};
-pub use messages::AnyMessage;
-pub use room::{Room, RoomMember};
+pub use conversation::Conversation;
+pub use group::Group;
+pub use messages::RoomMessage;
+pub use room::{Member, Room};
 pub use stream::TimelineStream;
 pub use effektio_core::models::{ News, Faq, Color, Tag };
 
@@ -29,6 +33,7 @@ pub use effektio_core::models::{ News, Faq, Color, Tag };
 pub use effektio_core::mocks::*;
 
 pub type UserId = Box<ruma::UserId>;
+pub type EventId = Box<ruma::EventId>;
 
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 

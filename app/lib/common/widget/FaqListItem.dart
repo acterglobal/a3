@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show Client, Faq;
 import 'package:effektio/screens/faq/Item.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 

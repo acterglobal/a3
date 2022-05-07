@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import './NewsSideBar.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 
 class NewsItem extends StatefulWidget {
   const NewsItem({Key? key, required this.client, required this.news})
