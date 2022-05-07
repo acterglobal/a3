@@ -1,4 +1,4 @@
-use super::{api, Conversation, Group, Room, UserId, RUNTIME};
+use super::{api, Conversation, Group, Room, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::RestoreToken;

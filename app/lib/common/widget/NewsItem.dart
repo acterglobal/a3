@@ -19,14 +19,6 @@ class _NewsItemState extends State<NewsItem> {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        // Expanded(
-        //   child: Container(
-        //     width: MediaQuery.of(context).size.width,
-        //     height: MediaQuery.of(context).size.height,
-        //     child: snapshot.requireData[index],
-        //     clipBehavior: Clip.none,
-        //   ),
-        // ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[

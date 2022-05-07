@@ -34,14 +34,6 @@ class FaqListItemState extends State<FaqListItem> {
         },
         child: Column(
           children: <Widget>[
-            // ListTile(
-            // title: Text(
-            //   widget.faq.title(),
-            //   style: optionStyle,
-            //   maxLines: 2,
-            // ),
-            // trailing: Icon(Icons.turned_in_outlined, color: Colors.grey),
-            // subtitle:
             Column(
               children: <Widget>[
                 Container(

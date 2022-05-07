@@ -101,7 +101,7 @@ object Conversation {
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    // fn get_member(user: UserId) -> Future<Result<RoomMember>>;
+    fn get_member(user_id: UserId) -> Future<Result<Member>>;
 
     /// The last message sent to the room
     fn latest_message() -> Future<Result<RoomMessage>>;
@@ -133,7 +133,7 @@ object Group {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    // fn get_member(user: UserId) -> Future<Result<Member>>;
+    fn get_member(user: UserId) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -143,9 +143,6 @@ object Member {
 
     /// Calculate the display name
     fn display_name() -> Option<string>;
-
-    /// Falback name
-    // fn name() -> string;
 
     /// Full user_id
     fn user_id() -> UserId;
@@ -196,7 +193,7 @@ object Client {
 
     /// The user_id of the client
     /// deprecated, please use account() instead.
-    fn user_id() -> Future<Result<string>>;
+    fn user_id() -> Future<Result<UserId>>;
 
     /// The display_name of the client
     /// deprecated, please use account() instead.

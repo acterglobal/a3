@@ -1,7 +1,5 @@
 use crate::platform;
 use anyhow::{bail, Context, Result};
-use effektio_core::ruma::api::client::{account::register, uiaa};
-use effektio_core::RestoreToken;
 use futures::Stream;
 use lazy_static::lazy_static;
 use matrix_sdk::Session;

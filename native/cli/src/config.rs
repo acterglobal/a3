@@ -3,7 +3,7 @@ use clap::{crate_version, Parser};
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
-use effektio_core::matrix_sdk::ruma::UserId;
+use effektio_core::matrix_sdk::ruma::OwnedUserId;
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
 use crate::action::Action;
@@ -25,7 +25,7 @@ pub struct LoginConfig {
         parse(try_from_str),
         env = ENV_USER
     )]
-    login_username: Box<UserId>,
+    login_username: OwnedUserId,
     #[clap(env = ENV_PASSWORD)]
     login_password: Option<String>,
 }

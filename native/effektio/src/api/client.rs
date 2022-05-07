@@ -1,4 +1,4 @@
-use super::{api, Account, Conversation, Group, Room, UserId, RUNTIME};
+use super::{api, Account, Conversation, Group, Room, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
@@ -181,12 +181,12 @@ impl Client {
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<String> {
+    pub async fn user_id(&self) -> Result<ruma::OwnedUserId> {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let user_id = l.user_id().await.context("No User ID found")?;
-                Ok(user_id.as_str().to_string())
+                Ok(user_id.to_owned())
             })
             .await?
     }
