@@ -5,7 +5,7 @@ use fake::{
     Dummy,
     Fake,
     Faker,
-    // faker::lorem::en::Paragraph,
+    faker::lorem::en::Sentence,
 };
 #[cfg(feature = "with-mocks")]
 use super::mocks::ColorFaker;
@@ -37,6 +37,7 @@ pub(crate) mod mocks {
 #[cfg_attr(feature = "with-mocks", derive(Dummy))]
 #[derive(Default)]
 pub struct News {
+    #[cfg_attr(feature = "with-mocks", dummy(faker = "Sentence(3..24)"))]
     text: Option<String>,
     pub(crate) tags: Vec<Tag>,
     #[cfg_attr(feature = "with-mocks", dummy(faker = "0..1024"))]
