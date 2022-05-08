@@ -1,27 +1,45 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class NewsSideBar extends StatelessWidget {
-  const NewsSideBar({Key? key}) : super(key: key);
+class NewsSideBar extends StatefulWidget {
+  const NewsSideBar({Key? key, required this.client, required this.news})
+      : super(key: key);
+  final Client client;
+  final News news;
 
   @override
+  _NewsSideBarState createState() => _NewsSideBarState();
+}
+
+class _NewsSideBarState extends State<NewsSideBar> {
+  @override
   Widget build(BuildContext context) {
-    TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
-          fontSize: 13,
-          color: Colors.white,
-        );
+    var bgColor =
+        convertColor(widget.news.bgColor(), AppColors.backgroundColor);
+    var fgColor = convertColor(widget.news.fgColor(), AppColors.primaryColor);
+
+    TextStyle style = Theme.of(context)
+        .textTheme
+        .bodyText1!
+        .copyWith(fontSize: 13, color: fgColor, shadows: [
+      Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
+    ]);
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _sideBarItem('heart', '2,8M', style),
-          _sideBarItem('comment', '11,0K', style),
-          _sideBarItem('reply', '76,1K', style),
+          _sideBarItem('heart', widget.news.likesCount().toString(), style),
+          _sideBarItem(
+              'comment', widget.news.commentsCount().toString(), style),
+          _sideBarItem('reply', '76', style),
           _profileImageButton(),
         ],
       ),

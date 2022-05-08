@@ -86,7 +86,7 @@ class _NewsItemState extends State<NewsItem> {
               // ignore: sized_box_for_whitespace
               child: Container(
                 height: MediaQuery.of(context).size.height / 2.5,
-                child: NewsSideBar(),
+                child: NewsSideBar(client: widget.client, news: widget.news),
               ),
             ),
           ],
