@@ -17,23 +17,25 @@ pub(crate) mod mocks {
     use rand::prelude::*;
 
     pub struct RandomImage;
+    pub static IMAGE_001: &'static [u8] = include_bytes!("./mocks/images/01.jpg").as_slice();
+    pub static IMAGE_002: &'static [u8] = include_bytes!("./mocks/images/02.jpg").as_slice();
+    pub static IMAGE_003: &'static [u8] = include_bytes!("./mocks/images/03.jpg").as_slice();
+    pub static IMAGE_004: &'static [u8] = include_bytes!("./mocks/images/04.jpg").as_slice();
+    pub static IMAGE_005: &'static [u8] = include_bytes!("./mocks/images/05.jpg").as_slice();
+    pub static IMAGE_006: &'static [u8] = include_bytes!("./mocks/images/06.jpg").as_slice();
+    pub static IMAGE_007: &'static [u8] = include_bytes!("./mocks/images/07.jpg").as_slice();
 
     impl Dummy<RandomImage> for Vec<u8> {
         fn dummy_with_rng<R: Rng + ?Sized>(_: &RandomImage, rng: &mut R) -> Self {
             vec![
-                include_bytes!("./mocks/images/01.jpg").as_slice(),
-                include_bytes!("./mocks/images/02.jpg").as_slice(),
-                include_bytes!("./mocks/images/03.jpg").as_slice(),
-                include_bytes!("./mocks/images/04.jpg").as_slice(),
-                include_bytes!("./mocks/images/05.jpg").as_slice(),
-                include_bytes!("./mocks/images/06.jpg").as_slice(),
-                include_bytes!("./mocks/images/07.jpg").as_slice(),
+                IMAGE_001, IMAGE_002, IMAGE_003, IMAGE_004, IMAGE_005, IMAGE_006, IMAGE_007
             ].choose(rng).unwrap().to_vec()
         }
     }
 }
 
 #[cfg_attr(feature = "with-mocks", derive(Dummy))]
+#[derive(Default)]
 pub struct News {
     text: Option<String>,
     pub(crate) tags: Vec<Tag>,
@@ -76,6 +78,24 @@ impl News {
 #[cfg(feature = "with-mocks")]
 pub fn gen_mocks() -> Vec<News> {
     vec![
+        News {
+            text: Some("Our transport is on its way to Poland, to refugee camps".to_string()),
+            likes_count: 23,
+            comments_count: 2,
+            image: Some(mocks::IMAGE_001.to_vec()),
+            fg_color: Some(Color::from_rgb_u8(255,255,255)),
+            bg_color: Some(Color::from_rgb_u8(0,0,0)),
+            ..Default::default()
+        },
+        News {
+            text: Some("What is currently needed to help Ukrainian refugees ".to_string()),
+            likes_count: 102,
+            comments_count: 14,
+            image: Some(mocks::IMAGE_002.to_vec()),
+            fg_color: Some(Color::from_rgb_u8(255,255,255)),
+            bg_color: Some(Color::from_rgb_u8(0,0,0)),
+            ..Default::default()
+        },
         Faker.fake(),
         Faker.fake(),
         Faker.fake(),

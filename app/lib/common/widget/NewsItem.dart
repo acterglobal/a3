@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio/common/store/Colors.dart';
 import './NewsSideBar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
 class NewsItem extends StatefulWidget {
   const NewsItem({Key? key, required this.client, required this.news})
@@ -19,14 +20,20 @@ class _NewsItemState extends State<NewsItem> {
   @override
   Widget build(BuildContext context) {
     var image = widget.news.image();
+    var bgColor =
+        convertColor(widget.news.bgColor(), AppColors.backgroundColor);
+    var fgColor = convertColor(widget.news.fgColor(), AppColors.primaryColor);
 
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
         Container(
+          color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: image != null ? Image.memory(Uint8List.fromList(image)) : null,
+          child: image != null
+              ? Image.memory(Uint8List.fromList(image), fit: BoxFit.cover)
+              : null,
           clipBehavior: Clip.none,
         ),
         Row(
@@ -36,17 +43,6 @@ class _NewsItemState extends State<NewsItem> {
               flex: 3,
               // ignore: sized_box_for_whitespace
               child: Container(
-                decoration: BoxDecoration(
-                  // ignore: prefer_const_literals_to_create_immutables
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: Colors.black54,
-                      blurRadius: 20.0,
-                      spreadRadius: 100,
-                      offset: Offset(0.0, 200.0),
-                    ),
-                  ],
-                ),
                 height: MediaQuery.of(context).size.height / 4,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 10),
@@ -54,22 +50,32 @@ class _NewsItemState extends State<NewsItem> {
                     children: <Widget>[
                       Text(
                         'Lorem Ipsum is simply dummy text of the printing and',
-                        style: GoogleFonts.montserrat(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: GoogleFonts.roboto(
+                            color: fgColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                  color: bgColor,
+                                  offset: const Offset(2, 2),
+                                  blurRadius: 5),
+                            ]),
                       ),
                       // ignore: prefer_const_constructors
                       SizedBox(height: 10),
                       // ignore: prefer_const_constructors
                       Text(
                         widget.news.text() ?? "",
-                        style: GoogleFonts.montserrat(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: GoogleFonts.roboto(
+                            color: fgColor,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            shadows: [
+                              Shadow(
+                                  color: bgColor,
+                                  offset: const Offset(1, 1),
+                                  blurRadius: 3),
+                            ]),
                       ),
                     ],
                   ),

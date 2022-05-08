@@ -19,7 +19,7 @@ fn register_with_registration_token(basepath: string, username: string, password
 
 /// Representing a color
 object Color {
-    // as rgba in u8
+    /// as rgba in u8
     fn rgba_u8() -> (u8, u8, u8, u8);
 }
 
