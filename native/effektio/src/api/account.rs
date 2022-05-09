@@ -49,7 +49,7 @@ impl Account {
         let l = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let name = if new_name.len() == 0 {
+                let name = if new_name.is_empty() {
                     None
                 } else {
                     Some(new_name.as_str())

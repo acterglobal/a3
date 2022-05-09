@@ -1,9 +1,9 @@
-use anyhow::{Context, bail, Result};
+use anyhow::{bail, Context, Result};
 use clap::Parser;
 
+use crate::config::{LoginConfig, ENV_ROOM};
 use effektio_core::events;
 use effektio_core::ruma;
-use crate::config::{ENV_ROOM, LoginConfig};
 
 use crate::ruma::api::client::filter::RoomEventFilter;
 use crate::ruma::events::room::MediaSource;

@@ -186,7 +186,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let user_id = l.user_id().await.context("No User ID found")?;
-                Ok(user_id.to_owned())
+                Ok(user_id)
             })
             .await?
     }

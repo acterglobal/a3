@@ -1,9 +1,9 @@
 use anyhow::{bail, Context, Result};
 use clap::Parser;
 
+use crate::config::{LoginConfig, ENV_ROOM};
 use effektio_core::events;
 use effektio_core::ruma;
-use crate::config::{ENV_ROOM, LoginConfig};
 
 use log::info;
 use std::ffi::OsStr;

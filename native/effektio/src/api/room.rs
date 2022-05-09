@@ -8,9 +8,8 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        OwnedUserId,
         events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
-        EventId,
+        EventId, OwnedUserId,
     },
 };
 

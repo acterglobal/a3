@@ -1,20 +1,15 @@
 use super::{Color, Tag};
 
 #[cfg(feature = "with-mocks")]
-use fake::{
-    Dummy,
-    Fake,
-    Faker,
-    faker::lorem::en::Sentence,
-};
-#[cfg(feature = "with-mocks")]
 use super::mocks::ColorFaker;
+#[cfg(feature = "with-mocks")]
+use fake::{faker::lorem::en::Sentence, Dummy, Fake, Faker};
 
 #[cfg(feature = "with-mocks")]
 pub(crate) mod mocks {
     use fake::Dummy;
-    use rand::Rng;
     use rand::prelude::*;
+    use rand::Rng;
 
     pub struct RandomImage;
     pub static IMAGE_001: &'static [u8] = include_bytes!("./mocks/images/01.jpg").as_slice();
@@ -28,8 +23,11 @@ pub(crate) mod mocks {
     impl Dummy<RandomImage> for Vec<u8> {
         fn dummy_with_rng<R: Rng + ?Sized>(_: &RandomImage, rng: &mut R) -> Self {
             vec![
-                IMAGE_001, IMAGE_002, IMAGE_003, IMAGE_004, IMAGE_005, IMAGE_006, IMAGE_007
-            ].choose(rng).unwrap().to_vec()
+                IMAGE_001, IMAGE_002, IMAGE_003, IMAGE_004, IMAGE_005, IMAGE_006, IMAGE_007,
+            ]
+            .choose(rng)
+            .unwrap()
+            .to_vec()
         }
     }
 }
@@ -84,8 +82,8 @@ pub fn gen_mocks() -> Vec<News> {
             likes_count: 23,
             comments_count: 2,
             image: Some(mocks::IMAGE_001.to_vec()),
-            fg_color: Some(Color::from_rgb_u8(255,255,255)),
-            bg_color: Some(Color::from_rgb_u8(0,0,0)),
+            fg_color: Some(Color::from_rgb_u8(255, 255, 255)),
+            bg_color: Some(Color::from_rgb_u8(0, 0, 0)),
             ..Default::default()
         },
         News {
@@ -93,8 +91,8 @@ pub fn gen_mocks() -> Vec<News> {
             likes_count: 102,
             comments_count: 14,
             image: Some(mocks::IMAGE_002.to_vec()),
-            fg_color: Some(Color::from_rgb_u8(255,255,255)),
-            bg_color: Some(Color::from_rgb_u8(0,0,0)),
+            fg_color: Some(Color::from_rgb_u8(255, 255, 255)),
+            bg_color: Some(Color::from_rgb_u8(0, 0, 0)),
             ..Default::default()
         },
         Faker.fake(),

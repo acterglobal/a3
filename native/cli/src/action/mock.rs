@@ -1,39 +1,33 @@
 use anyhow::Result;
 use clap::{crate_version, Parser};
 
-use effektio_core::ruma;
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
+use effektio_core::ruma;
 
 use ruma::{
-    api::client::{
-        account::register::{v3::Request as RegistrationRequest},
-        uiaa,
-    },
+    api::client::{account::register::v3::Request as RegistrationRequest, uiaa},
     assign,
 };
 
 fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
-    Ok(
-        Client::builder()
+    Ok(Client::builder()
         .user_agent(&format!("effektio-cli/{}", crate_version!()))
-        .homeserver_url(homeserver)
-    )
+        .homeserver_url(homeserver))
 }
 
-async fn register(homeserver: &str, username: &str, password: &str) -> Result<Client>{
+async fn register(homeserver: &str, username: &str, password: &str) -> Result<Client> {
     let client = default_client_config(homeserver)?.build().await?;
 
     let request = assign!(RegistrationRequest::new(), {
         username: Some(username),
         password: Some(password),
-        
+
         auth: Some(uiaa::AuthData::FallbackAcknowledgement(
             uiaa::FallbackAcknowledgement::new("foobar"),
         )),
     });
     client.register(request).await?;
     Ok(client)
-
 }
 
 /// Posting a news item to a given room

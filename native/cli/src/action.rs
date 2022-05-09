@@ -1,18 +1,15 @@
+use crate::config::{LoginConfig, ENV_ROOM};
 use anyhow::Result;
-use crate::config::{ENV_ROOM, LoginConfig};
 use clap::Parser;
 use effektio_core::ruma;
 
-
-mod post_news;
 mod fetch_news;
 mod mock;
+mod post_news;
 
+pub use fetch_news::FetchNews;
 pub use mock::Mock;
 pub use post_news::PostNews;
-pub use fetch_news::FetchNews;
-
-
 
 #[derive(clap::Subcommand, Debug)]
 pub enum Action {
@@ -28,16 +25,14 @@ pub enum Action {
 
 impl Action {
     pub async fn run(&self) -> Result<()> {
-        Ok(match &*self{
+        Ok(match &*self {
             Action::PostNews(news) => news.run().await?,
             Action::FetchNews(config) => config.run().await?,
             Action::Mock(config) => config.run().await?,
             _ => unimplemented!(),
         })
-    } 
+    }
 }
-
-
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
