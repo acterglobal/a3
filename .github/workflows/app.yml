@@ -103,7 +103,7 @@ jobs:
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- 
+        run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
       - name: Start Android emulator
         uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1

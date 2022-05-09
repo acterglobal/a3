@@ -17,7 +17,7 @@ pub enum Action {
     PostNews(PostNews),
     /// Fetch News of the use
     FetchNews(FetchNews),
-    /// Room Management
+    /// Mock Data on fresh server
     Mock(Mock),
     /// Room Management
     Manage(Manage),
