@@ -1,12 +1,11 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
-
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
@@ -117,7 +116,12 @@ class ChatListItem extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Text(
-              formatedTime(snapshot.requireData.originServerTs()),
+              DateFormat.Hm().format(
+                DateTime.fromMillisecondsSinceEpoch(
+                  snapshot.requireData.originServerTs() * 1000,
+                  isUtc: true,
+                ),
+              ),
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 12,

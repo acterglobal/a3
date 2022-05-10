@@ -11,12 +11,68 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
+/// generate news mock items
+fn gen_mock_news() -> Vec<News>;
 /// Create a new client from the restore token
 fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
+
+
+/// Representing a color
+object Color {
+    /// as rgba in u8
+    fn rgba_u8() -> (u8, u8, u8, u8);
+}
+
+/// A news object
+object News {
+    /// get the text of the news item
+    fn text() -> Option<string>;
+    /// the tags on this item
+    fn tags() -> Vec<Tag>;
+    /// the number of likes on this item
+    fn likes_count() -> u32;
+    /// the number of comments on this item
+    fn comments_count() -> u32;
+    /// if given, the specific foreground color
+    fn fg_color() -> Option<Color>; 
+    /// if given, the specific background color
+    fn bg_color() -> Option<Color>; 
+    /// if given, the image
+    fn image() -> Option<Vec<u8>>; 
+}
+
+object Tag {
+    /// the title of the tag
+    fn title() -> string;
+    /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
+    fn hash_tag() -> string;
+    /// if given, the specific color for this tag
+    fn color() -> Option<Color>; 
+}
+
+/// A news object
+object Faq {
+    /// get the title of the news item
+    fn title() -> string;
+    /// get the body of the news item
+    fn body() -> string;
+    /// whether this object is pinned
+    fn pinned() -> bool;
+    // The team this faq belongs to
+    //fn team() -> Room;
+    /// the tags on this item
+    fn tags() -> Vec<Tag>;
+    /// the number of likes on this item
+    fn likes_count() -> u32;
+    /// the number of comments on this item
+    fn comments_count() -> u32;
+}
 
 object UserId {
     // full name as string
     //fn as_str() -> string;
+
+    fn to_string() -> string;
 
     // only the user name itself
     //fn localpart() -> string;
@@ -63,7 +119,7 @@ object Conversation {
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    // fn get_member(user: UserId) -> Future<Result<RoomMember>>;
+    fn get_member(user_id: UserId) -> Future<Result<Member>>;
 
     /// The last message sent to the room
     fn latest_message() -> Future<Result<RoomMessage>>;
@@ -95,7 +151,7 @@ object Group {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    // fn get_member(user: UserId) -> Future<Result<Member>>;
+    fn get_member(user: UserId) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -105,9 +161,6 @@ object Member {
 
     /// Calculate the display name
     fn display_name() -> Option<string>;
-
-    /// Falback name
-    // fn name() -> string;
 
     /// Full user_id
     fn user_id() -> UserId;
@@ -158,7 +211,7 @@ object Client {
 
     /// The user_id of the client
     /// deprecated, please use account() instead.
-    fn user_id() -> Future<Result<string>>;
+    fn user_id() -> Future<Result<UserId>>;
 
     /// The display_name of the client
     /// deprecated, please use account() instead.
@@ -173,4 +226,10 @@ object Client {
 
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;
+
+    /// Get the latest News for the client
+    fn latest_news() -> Future<Result<Vec<News>>>;
+
+    /// Get the FAQs for the client
+    fn faqs() -> Future<Result<Vec<Faq>>>;
 }

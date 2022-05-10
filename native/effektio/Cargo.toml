@@ -9,7 +9,8 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = [ ]
+default = [ "with-mocks" ]
+with-mocks = [ "effektio-core/with-mocks" ]
 cbindgen = [ ]
 
 [build-dependencies]

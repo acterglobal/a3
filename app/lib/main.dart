@@ -6,12 +6,14 @@ import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
+import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:flutter/foundation.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
+    show EffektioSdk, Client;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -88,35 +90,27 @@ class _EffektioHomeState extends State<EffektioHome> {
     return client;
   }
 
-  String _navBarTitle(int index) {
-    if (index == 0) {
-      return 'News';
-    } else if (index == 1) {
-      return 'News';
-    } else if (index == 2) {
-      return 'News';
-    } else if (index == 3) {
-      return 'Chat';
-    } else {
-      return 'Nofitications';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget homeScreen(BuildContext context, Client client) {
+    List<String?> _titles = <String?>[
+      null,
+      "FAQ",
+      null,
+      null,
+      "Chat",
+      "Notifications"
+    ];
     List<Widget> _widgetOptions = <Widget>[
       NewsScreen(
-        client: _client,
+        client: client,
       ),
+      FaqOverviewScreen(client: client),
       NewsScreen(
-        client: _client,
-      ),
-      NewsScreen(
-        client: _client,
+        client: client,
       ),
       ChatList(client: _client),
       NotificationScreen(),
     ];
+
     return DefaultTabController(
       length: 5,
       child: SafeArea(
@@ -124,7 +118,7 @@ class _EffektioHomeState extends State<EffektioHome> {
           appBar: tabIndex <= 3
               ? null
               : AppBar(
-                  title: navBarTitle(_navBarTitle(tabIndex)),
+                  title: navBarTitle(_titles[tabIndex] ?? ""),
                   centerTitle: true,
                   primary: false,
                   elevation: 1,
@@ -254,6 +248,33 @@ class _EffektioHomeState extends State<EffektioHome> {
           ),
         ),
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Client>(
+      future: _client, // a previously-obtained Future<String> or null
+      builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
+        if (snapshot.hasData) {
+          return homeScreen(context, snapshot.requireData);
+        } else {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            color: AppColors.backgroundColor,
+            child: Center(
+              child: SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
+                ),
+              ),
+            ),
+          );
+        }
+      },
     );
   }
 }

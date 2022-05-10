@@ -4,7 +4,7 @@ import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -80,7 +80,8 @@ class _SideDrawerState extends State<SideDrawer> {
                     );
                   } else {
                     name = snapshot.requireData.displayName();
-                    username = snapshot.requireData.userId();
+                    username =
+                        snapshot.requireData.userId().then((u) => u.toString());
                     return GestureDetector(
                       onTap: () {
                         Navigator.pushNamed(

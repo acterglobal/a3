@@ -65,7 +65,7 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
-    let user = Box::<ruma::UserId>::try_from(username.clone())?;
+    let user = ruma::OwnedUserId::try_from(username.clone())?;
     let config = platform::new_client_config(base_path, username)?.user_id(&user);
     // First we need to log in.
     RUNTIME
@@ -88,7 +88,7 @@ pub async fn register_with_registration_token(
     password: String,
     registration_token: String,
 ) -> Result<Client> {
-    let user = Box::<ruma::UserId>::try_from(username.clone())?;
+    let user = ruma::OwnedUserId::try_from(username.clone())?;
     let config = platform::new_client_config(base_path, username.clone())?.user_id(&user);
     // First we need to log in.
     RUNTIME
