@@ -7,7 +7,8 @@ import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show Client, Conversation, TimelineStream, RoomMessage, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';

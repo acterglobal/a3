@@ -9,7 +9,8 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = [ ]
+default = [ "with-mocks" ]
+with-mocks = [ "effektio-core/with-mocks" ]
 cbindgen = [ ]
 
 [build-dependencies]
@@ -18,21 +19,23 @@ cbindgen = "0.20.0"
 
 [dependencies]
 anyhow = "1.0.51"
+assign = "1.1.1"
+derive_builder = "0.10.2"
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
-tokio = "1"
 futures = "0.3.17"
 lazy_static = "1.4"
+log = "0.4"
+log-panics = "2.0.0"
 parking_lot = "0.11.2"
+ruma = "0.6.1"
+sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
-url = "2.2.2"
-log-panics = "2.0.0"
-log = "0.4"
+tokio = "1"
 tracing = { version = "0.1.29", default-features = false }
 tracing-log = "0.1.2"
 tracing-subscriber = { version = "0.3.3", default-features = false, features = ["env-filter", "fmt"] }
-sanitize-filename-reader-friendly = "2.2.1"
-derive_builder = "0.10.2"
+url = "2.2.2"
 
 [dependencies.effektio-core]
 path = "../core"
@@ -41,11 +44,10 @@ path = "../core"
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
 default-features = false
 features = [
-    "encryption",
+    "e2e-encryption",
     "rustls-tls",
 #    "qrcode",
-    "sled_cryptostore",
-    "sled_state_store",
+    "sled",
     "anyhow",
 ]
 

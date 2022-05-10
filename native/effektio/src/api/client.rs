@@ -1,18 +1,24 @@
-use super::{api, Conversation, Group, Room, UserId, RUNTIME};
+use super::{api, Account, Conversation, Group, Room, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
-use effektio_core::ruma::api::client::account::register;
-use effektio_core::RestoreToken;
+use effektio_core::{
+    mocks::{gen_mock_faqs, gen_mock_news},
+    models::{Faq, News},
+    ruma::api::client::account::register,
+    RestoreToken,
+};
 use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::events::StateEventType,
     Client as MatrixClient, LoopCtrl, Session,
 };
+
 use parking_lot::RwLock;
+use ruma::events::room::MediaSource;
 use std::sync::Arc;
 use url::Url;
 
@@ -159,6 +165,14 @@ impl Client {
             .await?
     }
 
+    pub async fn latest_news(&self) -> Result<Vec<News>> {
+        Ok(gen_mock_news())
+    }
+
+    pub async fn faqs(&self) -> Result<Vec<Faq>> {
+        Ok(gen_mock_faqs())
+    }
+
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
     //     let l = self.client.clone();
     //     RUNTIME.spawn(async move {
@@ -167,12 +181,12 @@ impl Client {
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<String> {
+    pub async fn user_id(&self) -> Result<ruma::OwnedUserId> {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let user_id = l.user_id().await.context("No User ID found")?;
-                Ok(user_id.as_str().to_string())
+                Ok(user_id)
             })
             .await?
     }
@@ -188,6 +202,10 @@ impl Client {
                 bail!("Room not found")
             })
             .await?
+    }
+
+    pub async fn account(&self) -> Result<Account> {
+        Ok(Account::new(self.client.account()))
     }
 
     pub async fn display_name(&self) -> Result<String> {
@@ -215,25 +233,6 @@ impl Client {
     }
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let uri = l
-                    .account()
-                    .get_avatar_url()
-                    .await?
-                    .context("No avatar Url given")?;
-                Ok(api::FfiBuffer::new(
-                    l.get_media_content(
-                        &MediaRequest {
-                            media_type: MediaType::Uri(uri),
-                            format: MediaFormat::File,
-                        },
-                        true,
-                    )
-                    .await?,
-                ))
-            })
-            .await?
+        self.account().await?.avatar().await
     }
 }

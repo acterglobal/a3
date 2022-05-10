@@ -1,0 +1,18 @@
+
+version: '3'
+
+services:
+
+  synapse:
+    build:
+        context: .github/effektio-synapse-ci
+        dockerfile: Dockerfile
+    image: lightyear/effekio-synapse-ci:latest
+    restart: unless-stopped
+    environment:
+      - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+    volumes:
+      - ./.local/docker-data:/data
+    ports:
+      - 8448:8448/tcp
+      - 8118:8008/tcp
