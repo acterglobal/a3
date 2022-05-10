@@ -4,6 +4,9 @@
 import 'package:effektio/blocs/login/signIn_bloc.dart';
 import 'package:effektio/blocs/login/signIn_event.dart';
 import 'package:effektio/blocs/login/signIn_state.dart';
+import 'package:effektio/blocs/sign_up/signup_bloc.dart';
+import 'package:effektio/blocs/sign_up/signup_event.dart';
+import 'package:effektio/blocs/sign_up/signup_state.dart';
 import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,6 +78,40 @@ Widget onboardingTextField(
           onChanged: (value) => context
               .read<SignInBloc>()
               .add(SignInPasswordChanged(password: value)),
+        );
+      },
+    ),
+  );
+}
+
+Widget onboardingSignUpTextField(
+  String hintText,
+  TextEditingController passwordController,
+  String validatorText,
+) {
+  return Container(
+    margin: EdgeInsets.only(left: 20, right: 20),
+    height: 60,
+    decoration: BoxDecoration(
+      color: AppColors.textFieldColor,
+      borderRadius: BorderRadius.circular(4),
+    ),
+    child: BlocBuilder<SignUpBloc, SignUpState>(
+      builder: (context, state) {
+        return TextFormField(
+          controller: passwordController,
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
+            border: InputBorder.none,
+
+            hintText: hintText, // pass the hint text parameter here
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          style: TextStyle(color: Colors.white),
+          validator: (val) => val!.isEmpty ? validatorText : null,
+          onChanged: (value) => context
+              .read<SignUpBloc>()
+              .add(SignUpPasswordChanged(password: value)),
         );
       },
     ),

@@ -1,0 +1,56 @@
+import 'package:effektio/blocs/sign_up/form_submition_status.dart';
+import 'package:effektio/blocs/sign_up/signup_event.dart';
+import 'package:effektio/blocs/sign_up/signup_state.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
+  SignUpBloc() : super(SignUpState()) {
+    on<SignUpUsernameChanged>(_signUpUsername);
+    on<SignUpPasswordChanged>(_signUpPassword);
+    on<SignUpFirstNameChanged>(_signUpFirstName);
+    on<SignUpLastNameChanged>(_signUpLastName);
+    on<SignUpSubmitted>(_signUpSubmitted);
+  }
+
+  void _signUpUsername(SignUpUsernameChanged event, Emitter<SignUpState> emit) {
+    emit(state.copywith(username: event.username));
+  }
+
+  void _signUpPassword(SignUpPasswordChanged event, Emitter<SignUpState> emit) {
+    emit(state.copywith(password: event.password));
+  }
+
+  void _signUpFirstName(
+    SignUpFirstNameChanged event,
+    Emitter<SignUpState> emit,
+  ) {
+    emit(state.copywith(firstName: event.firstName));
+  }
+
+  void _signUpLastName(
+    SignUpLastNameChanged event,
+    Emitter<SignUpState> emit,
+  ) {
+    emit(state.copywith(lastName: event.lastName));
+  }
+
+  Future<Client> signUp(String username, String password) async {
+    final sdk = await EffektioSdk.instance;
+    Client client = await sdk.signUp(username, password);
+    return client;
+  }
+
+  Future<void> _signUpSubmitted(
+    SignUpSubmitted event,
+    Emitter<SignUpState> emit,
+  ) async {
+    emit(state.copywith(formStatus: FormSubmitting()));
+    try {
+      await signUp(event.username, event.password);
+      emit(state.copywith(formStatus: SubmissionSuccess()));
+    } catch (e) {
+      emit(state.copywith(formStatus: SubmissionFailed(e as String)));
+    }
+  }
+}
