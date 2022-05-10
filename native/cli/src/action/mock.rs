@@ -41,12 +41,12 @@ impl Mock {
     pub async fn run(&self) -> Result<()> {
         let homeserver = self.homeserver.as_str();
 
-        let sisko = register(&homeserver, "sisko", "sisko").await?;
-        let kyra = register(&homeserver, "kyra", "kyra").await?;
-        let worf = register(&homeserver, "worf", "worf").await?;
-        let bashir = register(&homeserver, "bashir", "bashir").await?;
-        let miles = register(&homeserver, "miles", "miles").await?;
-        let dax = register(&homeserver, "dax", "dax").await?;
+        let _sisko = register(homeserver, "sisko", "sisko").await?;
+        let _kyra = register(homeserver, "kyra", "kyra").await?;
+        let _worf = register(homeserver, "worf", "worf").await?;
+        let _bashir = register(homeserver, "bashir", "bashir").await?;
+        let _miles = register(homeserver, "miles", "miles").await?;
+        let _dax = register(homeserver, "dax", "dax").await?;
 
         Ok(())
     }

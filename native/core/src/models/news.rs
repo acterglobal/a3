@@ -12,13 +12,13 @@ pub(crate) mod mocks {
     use rand::Rng;
 
     pub struct RandomImage;
-    pub static IMAGE_001: &'static [u8] = include_bytes!("./mocks/images/01.jpg").as_slice();
-    pub static IMAGE_002: &'static [u8] = include_bytes!("./mocks/images/02.jpg").as_slice();
-    pub static IMAGE_003: &'static [u8] = include_bytes!("./mocks/images/03.jpg").as_slice();
-    pub static IMAGE_004: &'static [u8] = include_bytes!("./mocks/images/04.jpg").as_slice();
-    pub static IMAGE_005: &'static [u8] = include_bytes!("./mocks/images/05.jpg").as_slice();
-    pub static IMAGE_006: &'static [u8] = include_bytes!("./mocks/images/06.jpg").as_slice();
-    pub static IMAGE_007: &'static [u8] = include_bytes!("./mocks/images/07.jpg").as_slice();
+    pub static IMAGE_001: &[u8] = include_bytes!("./mocks/images/01.jpg").as_slice();
+    pub static IMAGE_002: &[u8] = include_bytes!("./mocks/images/02.jpg").as_slice();
+    pub static IMAGE_003: &[u8] = include_bytes!("./mocks/images/03.jpg").as_slice();
+    pub static IMAGE_004: &[u8] = include_bytes!("./mocks/images/04.jpg").as_slice();
+    pub static IMAGE_005: &[u8] = include_bytes!("./mocks/images/05.jpg").as_slice();
+    pub static IMAGE_006: &[u8] = include_bytes!("./mocks/images/06.jpg").as_slice();
+    pub static IMAGE_007: &[u8] = include_bytes!("./mocks/images/07.jpg").as_slice();
 
     impl Dummy<RandomImage> for Vec<u8> {
         fn dummy_with_rng<R: Rng + ?Sized>(_: &RandomImage, rng: &mut R) -> Self {
