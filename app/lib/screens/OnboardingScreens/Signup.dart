@@ -24,16 +24,14 @@ class _SignupScreentate extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
+  final nameController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     emailController.dispose();
     passwordController.dispose();
-    lastNameController.dispose();
-    firstNameController.dispose();
+    nameController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
   }
@@ -120,7 +118,7 @@ class _SignupScreentate extends State<SignupScreen> {
                                 child: BlocBuilder<SignUpBloc, SignUpState>(
                                   builder: (context, state) {
                                     return TextFormField(
-                                      controller: firstNameController,
+                                      controller: nameController,
                                       decoration: InputDecoration(
                                         contentPadding: EdgeInsets.only(
                                           left: 10.0,
@@ -129,18 +127,18 @@ class _SignupScreentate extends State<SignupScreen> {
                                         ),
                                         border: InputBorder.none,
                                         hintText:
-                                            'First Name', // pass the hint text parameter here
+                                            'Name', // pass the hint text parameter here
                                         hintStyle:
                                             TextStyle(color: Colors.grey),
                                       ),
                                       style: TextStyle(color: Colors.white),
                                       validator: (val) => val!.isEmpty
-                                          ? 'Please enter First Name'
+                                          ? 'Please enter Name'
                                           : null,
                                       onChanged: (value) =>
                                           context.read<SignUpBloc>().add(
-                                                SignUpFirstNameChanged(
-                                                  firstName: value,
+                                                SignUpNameChanged(
+                                                  name: value,
                                                 ),
                                               ),
                                     );
@@ -150,44 +148,6 @@ class _SignupScreentate extends State<SignupScreen> {
                             ),
                             SizedBox(
                               width: 20,
-                            ),
-                            Expanded(
-                              child: Container(
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: AppColors.textFieldColor,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: BlocBuilder<SignUpBloc, SignUpState>(
-                                  builder: (context, state) {
-                                    return TextFormField(
-                                      controller: lastNameController,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                          left: 10.0,
-                                          top: 12,
-                                          right: 10,
-                                        ),
-                                        border: InputBorder.none,
-                                        hintText:
-                                            'Last name', // pass the hint text parameter here
-                                        hintStyle:
-                                            TextStyle(color: Colors.grey),
-                                      ),
-                                      style: TextStyle(color: Colors.white),
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Please enter Last Name'
-                                          : null,
-                                      onChanged: (value) =>
-                                          context.read<SignUpBloc>().add(
-                                                SignUpLastNameChanged(
-                                                  lastName: value,
-                                                ),
-                                              ),
-                                    );
-                                  },
-                                ),
-                              ),
                             ),
                           ],
                         ),
@@ -294,6 +254,7 @@ class _SignupScreentate extends State<SignupScreen> {
                                             SignUpSubmitted(
                                               username: emailController.text,
                                               password: passwordController.text,
+                                              name: nameController.text,
                                             ),
                                           );
                                     }

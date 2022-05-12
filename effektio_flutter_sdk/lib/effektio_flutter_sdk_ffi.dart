@@ -2057,7 +2057,7 @@ class Api {
     return tmp7;
   }
 
-  String? __clientUserIdFuturePoll(
+  String? __clientDeviceIdFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2071,7 +2071,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientUserIdFuturePoll(
+    final tmp6 = _clientDeviceIdFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5812,7 +5812,7 @@ class _ClientAccountFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientUserIdFuturePollReturn extends ffi.Struct {
+class _ClientDeviceIdFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

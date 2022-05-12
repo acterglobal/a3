@@ -7,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 export './effektio_flutter_sdk_ffi.dart' show Client;
 
-
 const DEFAULT_SERVER = String.fromEnvironment("DEFAULT_EFFEKTIO_SERVER",
     defaultValue: 'https://matrix.effektio.org');
 
@@ -97,7 +96,7 @@ class EffektioSdk {
     return client;
   }
 
-  Future<ffi.Client> signUp(String username, String password) async {
+  Future<ffi.Client> signUp(String username, String password, String displayName) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
       if (await client.userId() == username) {
@@ -113,6 +112,8 @@ class EffektioSdk {
       password,
       'asdf1234',
     );
+    final ac = await client.account();
+    await ac.setDisplayName(displayName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       _clients.removeAt(0);
@@ -121,7 +122,6 @@ class EffektioSdk {
     await _persistSessions();
     return client;
   }
-
 
   List<ffi.Client> get clients {
     return _clients;

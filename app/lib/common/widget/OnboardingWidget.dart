@@ -65,6 +65,7 @@ Widget onboardingTextField(
     child: BlocBuilder<SignInBloc, SignInState>(
       builder: (context, state) {
         return TextFormField(
+          obscureText: true,
           controller: passwordController,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
@@ -99,6 +100,7 @@ Widget onboardingSignUpTextField(
     child: BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return TextFormField(
+          obscureText: true,
           controller: passwordController,
           decoration: InputDecoration(
             contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),

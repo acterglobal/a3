@@ -12,21 +12,16 @@ class SignUpPasswordChanged extends SignUpEvent {
   SignUpPasswordChanged({required this.password});
 }
 
-class SignUpFirstNameChanged extends SignUpEvent {
-  final String firstName;
+class SignUpNameChanged extends SignUpEvent {
+  final String name;
 
-  SignUpFirstNameChanged({required this.firstName});
-}
-
-class SignUpLastNameChanged extends SignUpEvent {
-  final String lastName;
-
-  SignUpLastNameChanged({required this.lastName});
+  SignUpNameChanged({required this.name});
 }
 
 class SignUpSubmitted extends SignUpEvent {
   final String username;
   final String password;
+  final String name;
 
-  SignUpSubmitted({required this.username, required this.password});
+  SignUpSubmitted({required this.username, required this.password, required this.name});
 }

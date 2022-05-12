@@ -8,8 +8,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   SignUpBloc() : super(SignUpState()) {
     on<SignUpUsernameChanged>(_signUpUsername);
     on<SignUpPasswordChanged>(_signUpPassword);
-    on<SignUpFirstNameChanged>(_signUpFirstName);
-    on<SignUpLastNameChanged>(_signUpLastName);
+    on<SignUpNameChanged>(_signUpName);
     on<SignUpSubmitted>(_signUpSubmitted);
   }
 
@@ -21,23 +20,16 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     emit(state.copywith(password: event.password));
   }
 
-  void _signUpFirstName(
-    SignUpFirstNameChanged event,
+  void _signUpName(
+    SignUpNameChanged event,
     Emitter<SignUpState> emit,
   ) {
-    emit(state.copywith(firstName: event.firstName));
+    emit(state.copywith(name: event.name));
   }
 
-  void _signUpLastName(
-    SignUpLastNameChanged event,
-    Emitter<SignUpState> emit,
-  ) {
-    emit(state.copywith(lastName: event.lastName));
-  }
-
-  Future<Client> signUp(String username, String password) async {
+  Future<Client> signUp(String username, String password, String displayName) async {
     final sdk = await EffektioSdk.instance;
-    Client client = await sdk.signUp(username, password);
+    Client client = await sdk.signUp(username, password,displayName);
     return client;
   }
 
@@ -47,7 +39,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   ) async {
     emit(state.copywith(formStatus: FormSubmitting()));
     try {
-      await signUp(event.username, event.password);
+      await signUp(event.username, event.password,event.name);
       emit(state.copywith(formStatus: SubmissionSuccess()));
     } catch (e) {
       emit(state.copywith(formStatus: SubmissionFailed(e as String)));
