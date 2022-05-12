@@ -41,14 +41,19 @@ dependencies:
   google_fonts: ^2.3.1
   flutter_bloc: ^8.0.1
   flutter_svg: ^1.0.3
+  file_picker: ^4.5.1
+  html_editor_enhanced: ^2.4.0+1
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
+  flutter_colorpicker: ^1.0.3
+
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.9.2
-  fluttertoast: ^8.0.9
+
 
 flutter_icons:
   android: true

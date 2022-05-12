@@ -62,7 +62,7 @@ class _NewsItemState extends State<NewsItem> {
                       SizedBox(height: 10),
                       // ignore: prefer_const_constructors
                       Text(
-                        widget.news.text() ?? "",
+                        widget.news.text() ?? '',
                         style: GoogleFonts.montserrat(
                           color: Colors.white,
                           fontSize: 14,

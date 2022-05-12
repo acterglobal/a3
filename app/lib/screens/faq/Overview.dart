@@ -20,37 +20,39 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FfiListFaq>(
-        future: widget.client.faqs(),
-        builder: (BuildContext context, AsyncSnapshot<FfiListFaq> snapshot) {
-          if (!snapshot.hasData) {
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              color: AppColors.backgroundColor,
-              child: Center(
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
-                  ),
+      future: widget.client.faqs(),
+      builder: (BuildContext context, AsyncSnapshot<FfiListFaq> snapshot) {
+        if (!snapshot.hasData) {
+          return Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            color: AppColors.backgroundColor,
+            child: Center(
+              child: SizedBox(
+                height: 50,
+                width: 50,
+                child: CircularProgressIndicator(
+                  color: AppColors.primaryColor,
                 ),
               ),
-            );
-          } else {
-            //final items = snapshot.requireData.toList();
-            return Container(
-              color: AppColors.backgroundColor,
-              child: ListView.builder(
-                padding: const EdgeInsets.all(8),
-                itemCount: snapshot.requireData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return FaqListItem(
-                      client: widget.client, faq: snapshot.requireData[index]);
-                },
-              ),
-            );
-          }
-        });
+            ),
+          );
+        } else {
+          return Container(
+            color: AppColors.backgroundColor,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: snapshot.requireData.length,
+              itemBuilder: (BuildContext context, int index) {
+                return FaqListItem(
+                  client: widget.client,
+                  faq: snapshot.requireData[index],
+                );
+              },
+            ),
+          );
+        }
+      },
+    );
   }
 }

@@ -5,6 +5,7 @@ import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/repository/client.dart';
+import 'package:effektio/screens/EditorScreen/Editor.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/faq/Overview.dart';
@@ -160,11 +161,11 @@ class _EffektioHomeState extends State<EffektioHome> {
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,
-      "FAQ",
+      'FAQ',
       null,
       null,
-      "Chat",
-      "Notifications"
+      'Chat',
+      'Notifications'
     ];
     List<Widget> _widgetOptions = <Widget>[
       NewsScreen(client: client),
@@ -181,7 +182,7 @@ class _EffektioHomeState extends State<EffektioHome> {
           appBar: _titles[tabIndex] == null
               ? null
               : AppBar(
-                  title: navBarTitle(_titles[tabIndex] ?? ""),
+                  title: navBarTitle(_titles[tabIndex] ?? ''),
                   centerTitle: true,
                   primary: false,
                   elevation: 1,
@@ -201,17 +202,40 @@ class _EffektioHomeState extends State<EffektioHome> {
                       );
                     },
                   ),
-                  actions: [
-                    IconButton(
-                      icon: Container(
-                        margin: const EdgeInsets.only(bottom: 10, right: 10),
-                        child: Image.asset('assets/images/search.png'),
-                      ),
-                      onPressed: () {
-                        setState(() {});
-                      },
-                    )
-                  ],
+                  actions: tabIndex == 1
+                      ? [
+                          IconButton(
+                            icon: Container(
+                              margin:
+                                  const EdgeInsets.only(bottom: 10, right: 10),
+                              child: Icon(Icons.add),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return HtmlEditorExampleApp();
+                                    },
+                                  ),
+                                );
+                              });
+                            },
+                          )
+                        ]
+                      : [
+                          IconButton(
+                            icon: Container(
+                              margin:
+                                  const EdgeInsets.only(bottom: 10, right: 10),
+                              child: Image.asset('assets/images/search.png'),
+                            ),
+                            onPressed: () {
+                              setState(() {});
+                            },
+                          )
+                        ],
                 ),
           body: _widgetOptions.elementAt(tabIndex),
           drawer: SideDrawer(

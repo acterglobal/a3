@@ -45,6 +45,8 @@ object Faq {
     //fn team() -> Room;
     /// the tags on this item
     fn tags() -> Vec<Tag>;
+    fn likes_count() -> u64;
+    fn comments_count() -> u64;
 }
 
 /// generate news mock items
@@ -137,4 +139,6 @@ object Client {
 
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
+
+
 }
