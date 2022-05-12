@@ -21,7 +21,8 @@ fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
 async fn register(homeserver: &str, username: &str, password: &str) -> Result<Client> {
     let client = default_client_config(homeserver)?.build().await?;
     if let Err(resp) = client.register(RegistrationRequest::new()).await {
-        if let Some(response) = resp.uiaa_response() {
+        // FIXME: do actually check the registration types...
+        if let Some(_response) = resp.uiaa_response() {
             let request = assign!(RegistrationRequest::new(), {
                 username: Some(username),
                 password: Some(password),
