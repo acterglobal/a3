@@ -50,8 +50,10 @@ dependencies:
   flutter_link_previewer: ^2.6.6
   bubble: ^1.2.1
   colorize_text_avatar: ^1.0.2
+  html_editor_enhanced: ^2.4.0+1
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
+  flutter_colorpicker: ^1.0.3
 
 dev_dependencies:
   flutter_test:
