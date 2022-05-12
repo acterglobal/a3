@@ -25,12 +25,13 @@ pub enum Action {
 
 impl Action {
     pub async fn run(&self) -> Result<()> {
-        Ok(match &*self {
+        match &*self {
             Action::PostNews(news) => news.run().await?,
             Action::FetchNews(config) => config.run().await?,
             Action::Mock(config) => config.run().await?,
             _ => unimplemented!(),
-        })
+        };
+        Ok(())
     }
 }
 
