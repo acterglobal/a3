@@ -61,9 +61,9 @@ class _NewsScreenState extends State<NewsScreen> {
                   },
                 ),
               ),
-              // drawer: SideDrawer(
-              //   client: widget.client,
-              // ),
+              drawer: SideDrawer(
+                client: Future.value(widget.client),
+              ),
               body: PageView.builder(
                 itemCount: snapshot.requireData.length,
                 onPageChanged: (int page) {},

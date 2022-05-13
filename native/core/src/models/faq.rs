@@ -2,10 +2,8 @@ use crate::models::Tag;
 
 #[cfg(feature = "with-mocks")]
 use fake::{
+    faker::lorem::en::{Paragraph, Sentence},
     Dummy, Fake, Faker,
-    faker::lorem::en::{
-        Paragraph, Sentence
-    }
 };
 
 #[cfg_attr(feature = "with-mocks", derive(Dummy))]
@@ -24,7 +22,6 @@ pub struct Faq {
 }
 
 impl Faq {
-
     pub fn title(&self) -> String {
         self.title.clone()
     }
@@ -49,7 +46,6 @@ impl Faq {
         self.comments_count
     }
 }
-
 
 #[cfg(feature = "with-mocks")]
 pub fn gen_mocks() -> Vec<Faq> {
@@ -78,5 +74,4 @@ pub fn gen_mocks() -> Vec<Faq> {
         Faker.fake(),
         Faker.fake(),
     ]
-
 }

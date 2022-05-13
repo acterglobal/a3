@@ -1,13 +1,11 @@
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
-name: Build Check
+name: Deploy App 
 
 env:
-  DEV: true
+  RELEASE: true
 
 jobs:
 
@@ -46,7 +44,9 @@ jobs:
       #     command: test
       #     args: -p effektio --target aarch64-linux-android
       - name: Build Android FFI
-        run: cargo make android
+        run: cargo make --profile release android
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk
@@ -55,7 +55,7 @@ jobs:
       # - run: flutter --pub test
       #   name: Testing App
       #   working-directory: ./app
-      - run: flutter build apk
+      - run: flutter build appbundle --release
         working-directory: ./app
       # - run: flutter build appbundle
       #   working-directory: ./app
@@ -90,7 +90,9 @@ jobs:
       #     command: test
       #     args: -p effektio --target x86_64-apple-ios
       - name: Build iOS FFI
-        run: cargo make ios
+        run: cargo make --profile release  ios
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
       #   working-directory: ./effektio_flutter_sdk

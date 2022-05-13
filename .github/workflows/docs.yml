@@ -1,4 +1,4 @@
-name: GitHub Pages
+name: Docs
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  deploy:
+  docs:
     runs-on: ubuntu-20.04
     name: Build Latest API Docs
     concurrency:
@@ -50,10 +50,8 @@ jobs:
       - name: Build Rust docs
         run: |
           cargo doc -p effektio
-          echo "--- Moving docs"
+          echo --- Moving docs
           mv target/doc/ docs/static/api/main/rust
-          echo "--- Copying bindings.dart"
-          cp native/effektio/bindings.dart effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
 
       - name: Build Dart App
         run: flutter pub global run dartdoc --output ../docs/static/api/main/app/

@@ -1,21 +1,24 @@
-use super::{api, Room, UserId, RUNTIME};
+use super::{api, Account, Conversation, Group, Room, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
+    mocks::{gen_mock_faqs, gen_mock_news},
+    models::{Faq, News},
     ruma::api::client::account::register,
     RestoreToken,
-    models::{ News, Faq },
-    mocks::{gen_mock_news, gen_mock_faqs},
 };
-use futures::{stream, Stream};
+use futures::{stream, Stream, StreamExt};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
+    ruma::events::StateEventType,
     Client as MatrixClient, LoopCtrl, Session,
 };
+
 use parking_lot::RwLock;
+use ruma::events::room::MediaSource;
 use std::sync::Arc;
 use url::Url;
 
@@ -42,6 +45,48 @@ impl std::ops::Deref for Client {
     fn deref(&self) -> &MatrixClient {
         &self.client
     }
+}
+
+static PURPOSE_FIELD: &str = "m.room.purpose";
+static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
+static PURPOSE_VALUE: &str = "org.effektio";
+
+async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Conversation>) {
+    stream::iter(client.rooms().into_iter())
+        .fold(
+            (Vec::new(), Vec::new()),
+            async move |(mut groups, mut conversations), room| {
+                let is_effektio_group = {
+                    #[allow(clippy::match_like_matches_macro)]
+                    if let Ok(Some(_)) = room
+                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_VALUE)
+                        .await
+                    {
+                        true
+                    } else if let Ok(Some(_)) = room
+                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_VALUE)
+                        .await
+                    {
+                        true
+                    } else {
+                        false
+                    }
+                };
+
+                if is_effektio_group {
+                    groups.push(Group {
+                        inner: Room { room },
+                    });
+                } else {
+                    conversations.push(Conversation {
+                        inner: Room { room },
+                    });
+                }
+
+                (groups, conversations)
+            },
+        )
+        .await
 }
 
 impl Client {
@@ -100,9 +145,24 @@ impl Client {
         })?)
     }
 
-    pub fn conversations(&self) -> Vec<Room> {
-        let r: Vec<_> = self.rooms().into_iter().map(|room| Room { room }).collect();
-        r
+    pub async fn conversations(&self) -> Result<Vec<Conversation>> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let (_, conversations) = devide_groups_from_common(c).await;
+                Ok(conversations)
+            })
+            .await?
+    }
+
+    pub async fn groups(&self) -> Result<Vec<Group>> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let (groups, _) = devide_groups_from_common(c).await;
+                Ok(groups)
+            })
+            .await?
     }
 
     pub async fn latest_news(&self) -> Result<Vec<News>> {
@@ -113,7 +173,6 @@ impl Client {
         Ok(gen_mock_faqs())
     }
 
-
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
     //     let l = self.client.clone();
     //     RUNTIME.spawn(async move {
@@ -122,12 +181,12 @@ impl Client {
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<String> {
+    pub async fn user_id(&self) -> Result<ruma::OwnedUserId> {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let user_id = l.user_id().await.context("No User ID found")?;
-                Ok(user_id.as_str().to_string())
+                Ok(user_id)
             })
             .await?
     }
@@ -143,6 +202,10 @@ impl Client {
                 bail!("Room not found")
             })
             .await?
+    }
+
+    pub async fn account(&self) -> Result<Account> {
+        Ok(Account::new(self.client.account()))
     }
 
     pub async fn display_name(&self) -> Result<String> {
@@ -170,25 +233,6 @@ impl Client {
     }
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let uri = l
-                    .account()
-                    .get_avatar_url()
-                    .await?
-                    .context("No avatar Url given")?;
-                Ok(api::FfiBuffer::new(
-                    l.get_media_content(
-                        &MediaRequest {
-                            media_type: MediaType::Uri(uri),
-                            format: MediaFormat::File,
-                        },
-                        true,
-                    )
-                    .await?,
-                ))
-            })
-            .await?
+        self.account().await?.avatar().await
     }
 }

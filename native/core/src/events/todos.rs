@@ -18,7 +18,7 @@ pub enum SpecialTaskListRole {
 #[derive(Clone, Serialize_repr, Deserialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 /// Implementing Priority according to
-/// https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1
+/// <https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1>
 pub enum Priority {
     Undefined = 0,
     Highest = 1,
@@ -42,7 +42,7 @@ impl Default for Priority {
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.tasklist", kind = Message)]
+#[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
 pub struct TaskListDevContent {
     pub role: Option<SpecialTaskListRole>,
     pub name: String,
@@ -61,7 +61,7 @@ pub struct TaskListDevContent {
 /// see also the [IETF Task](https://www.rfc-editor.org/rfc/rfc8984.html#name-task)
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
-#[ruma_event(type = "org.effektio.dev.task", kind = Message)]
+#[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
 pub struct TaskDevContent {
     #[serde(rename = "m.relates_to")]
     pub task_list_id: BelongsTo,

@@ -4,19 +4,19 @@ on:
   pull_request:
     branches: [ main ]
 
-name: Check Styles
+name: Style
 
 jobs:
 
   rust-style:
     runs-on: ubuntu-latest
-    name: Formatting
+    name: Rust
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
           components: rustfmt
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
@@ -25,8 +25,8 @@ jobs:
           command: fmt
           args: --all --check
 
-  dart_style:
-    name: lint dart code
+  dart-style:
+    name: Flutter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,9 +36,9 @@ jobs:
       - name: version
         run: flutter --version
         working-directory: effektio_flutter_sdk
-      - working-directory: app
-        run: flutter analyze
+      - run: flutter analyze
         name: lint app
+        working-directory: app
       - working-directory: effektio_flutter_sdk
         run: flutter pub get
       - working-directory: effektio_flutter_sdk

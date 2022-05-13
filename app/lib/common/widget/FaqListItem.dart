@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
+
 class FaqListItem extends StatefulWidget {
   const FaqListItem({Key? key, required this.client, required this.faq})
       : super(key: key);
