@@ -30,7 +30,6 @@ class _SideDrawerState extends State<SideDrawer> {
     final _size = MediaQuery.of(context).size;
     final _textTheme = Theme.of(context).textTheme;
     return Drawer(
-      backgroundColor: AppColors.textFieldColor,
       child: Column(
         children: <Widget>[
           Container(

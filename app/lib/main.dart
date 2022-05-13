@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/store/textTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -44,9 +45,9 @@ class Effektio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        textTheme: CustomTextTheme.textTheme,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
       title: 'Effektio',
       localizationsDelegates: const [
         AppLocalizations.delegate,

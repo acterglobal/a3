@@ -73,8 +73,9 @@ class _NewsScreenState extends State<NewsScreen> {
                 onPageChanged: (int page) {},
                 scrollDirection: Axis.vertical,
                 itemBuilder: ((context, index) {
-                  return NewsItem(
-                      client: widget.client, news: snapshot.requireData[index]);
+                  return Container();
+                  // return NewsItem(
+                  //     client: widget.client, news: snapshot.requireData[index]);
                 }),
               ),
             );
