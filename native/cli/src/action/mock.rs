@@ -9,6 +9,9 @@ use ruma::{
     assign,
 };
 
+use std::time::Duration;
+use tokio::time::sleep;
+
 fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
     Ok(Client::builder()
         .user_agent(&format!("effektio-cli/{}", crate_version!()))
@@ -17,17 +20,32 @@ fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
 
 async fn register(homeserver: &str, username: &str, password: &str) -> Result<Client> {
     let client = default_client_config(homeserver)?.build().await?;
+    if let Err(resp) = client.register(RegistrationRequest::new()).await {
+        // FIXME: do actually check the registration types...
+        if let Some(_response) = resp.uiaa_response() {
+            let request = assign!(RegistrationRequest::new(), {
+                username: Some(username),
+                password: Some(password),
 
-    let request = assign!(RegistrationRequest::new(), {
-        username: Some(username),
-        password: Some(password),
+                auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
+            });
+            client.register(request).await?;
+        }
+    }
 
-        auth: Some(uiaa::AuthData::FallbackAcknowledgement(
-            uiaa::FallbackAcknowledgement::new("foobar"),
-        )),
-    });
-    client.register(request).await?;
     Ok(client)
+}
+
+async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result<Client> {
+    match register(homeserver, username, password).await {
+        Ok(cl) => Ok(cl),
+        Err(e) => {
+            log::warn!("Could not register {:}, {:}", username, e);
+            let c = default_client_config(homeserver)?.build().await?;
+            c.login(username, password, None, None).await?;
+            Ok(c)
+        }
+    }
 }
 
 /// Posting a news item to a given room
@@ -41,12 +59,20 @@ impl Mock {
     pub async fn run(&self) -> Result<()> {
         let homeserver = self.homeserver.as_str();
 
-        let sisko = register(&homeserver, "sisko", "sisko").await?;
-        let kyra = register(&homeserver, "kyra", "kyra").await?;
-        let worf = register(&homeserver, "worf", "worf").await?;
-        let bashir = register(&homeserver, "bashir", "bashir").await?;
-        let miles = register(&homeserver, "miles", "miles").await?;
-        let dax = register(&homeserver, "dax", "dax").await?;
+        // FIXME: would be better if we used the effektio API for this...
+
+        let _sisko = ensure_user(homeserver, "sisko", "sisko").await?;
+        sleep(Duration::from_millis(300)).await;
+        let _kyra = ensure_user(homeserver, "kyra", "kyra").await?;
+        sleep(Duration::from_millis(300)).await;
+        let _worf = ensure_user(homeserver, "worf", "worf").await?;
+        sleep(Duration::from_millis(300)).await;
+        let _bashir = ensure_user(homeserver, "bashir", "bashir").await?;
+        sleep(Duration::from_millis(300)).await;
+        // let _miles = ensure_user(homeserver, "miles", "miles").await?;
+        // sleep(Duration::from_millis(300)).await;
+        // let _dax = ensure_user(homeserver, "dax", "dax").await?;
+        // sleep(Duration::from_millis(300)).await;
 
         Ok(())
     }
