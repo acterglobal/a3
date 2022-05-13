@@ -1,16 +1,15 @@
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, UserId, RUNTIME};
+use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::ruma;
 use matrix_sdk::{
-    deserialized_responses::SyncRoomEvent,
-    media::{MediaFormat, MediaRequest, MediaType},
+    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        events::{room::message::RoomMessageEventContent, AnyMessageEventContent},
-        EventId,
+        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
+        EventId, OwnedUserId,
     },
 };
 
@@ -40,7 +39,7 @@ impl Member {
         self.member.display_name().map(|s| s.to_owned())
     }
 
-    pub fn user_id(&self) -> UserId {
+    pub fn user_id(&self) -> OwnedUserId {
         self.member.user_id().to_owned()
     }
 }
@@ -53,7 +52,7 @@ impl Room {
     pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
-            .spawn(async move { Ok(r.display_name().await?) })
+            .spawn(async move { Ok(r.display_name().await?.to_string()) })
             .await?
     }
 
@@ -96,7 +95,7 @@ impl Room {
             .await?
     }
 
-    pub async fn get_member(&self, user_id: UserId) -> Result<Member> {
+    pub async fn get_member(&self, user_id: Box<OwnedUserId>) -> Result<Member> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -185,9 +184,9 @@ impl Room {
             .spawn(async move {
                 let r = room
                     .send(
-                        AnyMessageEventContent::RoomMessage(RoomMessageEventContent::text_plain(
-                            message,
-                        )),
+                        AnyMessageLikeEventContent::RoomMessage(
+                            RoomMessageEventContent::text_plain(message),
+                        ),
                         None,
                     )
                     .await?;
