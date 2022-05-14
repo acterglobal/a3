@@ -99,9 +99,8 @@ class _ChatScreenState extends State<ChatScreen> {
         author: user,
         text: newEvent.body(),
       );
-      setState(() {
-        _messages.insert(0, textMessage);
-      });
+      _messages.insert(0, textMessage);
+      setState(() {});
     } else {
       setState(() {});
     }
