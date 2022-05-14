@@ -26,7 +26,7 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
             return Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              color: AppColors.backgroundColor,
+              color: AppColors.darkBackgroundColor,
               child: Center(
                 child: SizedBox(
                   height: 50,
@@ -40,7 +40,7 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
           } else {
             //final items = snapshot.requireData.toList();
             return Container(
-              color: AppColors.backgroundColor,
+              color: AppColors.darkBackgroundColor,
               child: ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: snapshot.requireData.length,

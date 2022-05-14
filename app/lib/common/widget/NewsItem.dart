@@ -21,7 +21,7 @@ class _NewsItemState extends State<NewsItem> {
   Widget build(BuildContext context) {
     var image = widget.news.image();
     var bgColor =
-        convertColor(widget.news.bgColor(), AppColors.backgroundColor);
+        convertColor(widget.news.bgColor(), AppColors.darkBackgroundColor);
     var fgColor = convertColor(widget.news.fgColor(), AppColors.primaryColor);
 
     return Stack(

@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields
 
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, FfiListConversation;
@@ -35,16 +36,13 @@ class _ChatListState extends State<ChatList> {
     user = await fetchClient.userId().then((u) => u.toString());
   }
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
         leadingWidth: MediaQuery.of(context).size.width / 5,
         toolbarHeight: MediaQuery.of(context).size.height / 15,
-        backgroundColor: Color.fromRGBO(36, 38, 50, 1),
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.only(left: 10),
@@ -52,10 +50,8 @@ class _ChatListState extends State<ChatList> {
             onPressed: () {},
             child: Text(
               'Select',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.primaryColor,
-              ),
+              style: _textTheme.labelLarge
+                  ?.copyWith(color: AppColors.primaryColor),
             ),
           ),
         ),
@@ -67,6 +63,9 @@ class _ChatListState extends State<ChatList> {
             ),
             icon: SvgPicture.asset(
               'assets/images/edit.svg',
+              color: isDarkTheme
+                  ? AppColors.lightIconColor
+                  : AppColors.darkIconColor,
               width: 20,
               height: 20,
             ),
@@ -84,11 +83,7 @@ class _ChatListState extends State<ChatList> {
                 ),
                 child: Text(
                   'Chat',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: _textTheme.titleLarge,
                 ),
               ),
               const SizedBox(
@@ -127,10 +122,10 @@ class _ChatListState extends State<ChatList> {
                             child: Container(
                               height: MediaQuery.of(context).size.height,
                               width: MediaQuery.of(context).size.width,
-                              color: AppColors.backgroundColor,
+                              color: AppColors.darkBackgroundColor,
                               child: Text(
                                 AppLocalizations.of(context)!.loadingConvo,
-                                style: optionStyle,
+                                style: _textTheme.titleMedium,
                               ),
                             ),
                           );
@@ -156,11 +151,7 @@ class _ChatListState extends State<ChatList> {
                         ),
                         Text(
                           'Looks Empty here...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: _textTheme.titleMedium,
                         ),
                         SizedBox(
                           height: 5,
@@ -168,13 +159,10 @@ class _ChatListState extends State<ChatList> {
                         Center(
                           child: Container(
                             height: MediaQuery.of(context).size.height / 3,
-                            width: MediaQuery.of(context).size.width / 2,
+                            width: MediaQuery.of(context).size.width / 1.5,
                             child: Text(
                               'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
+                              style: _textTheme.bodyMedium,
                               overflow: TextOverflow.clip,
                               textAlign: TextAlign.center,
                             ),

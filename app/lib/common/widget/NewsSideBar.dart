@@ -21,7 +21,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
   @override
   Widget build(BuildContext context) {
     var bgColor =
-        convertColor(widget.news.bgColor(), AppColors.backgroundColor);
+        convertColor(widget.news.bgColor(), AppColors.darkBackgroundColor);
     var fgColor = convertColor(widget.news.fgColor(), AppColors.primaryColor);
 
     TextStyle style = Theme.of(context)

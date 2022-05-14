@@ -1,14 +1,20 @@
-import 'package:effektio/common/store/Colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CustomTextTheme {
- static TextTheme textTheme = TextTheme(
-    bodyText1: GoogleFonts.roboto(
-      fontSize: 16,
-      color: AppColors.white,
+  //bodyMedium: User Id
+  static TextTheme get textTheme => const TextTheme(
+    /// sidebar menue item
+    titleSmall: TextStyle(
+      fontWeight: FontWeight.w500,
+      fontSize: 15,
+    ),
+    /// User Name
+    titleMedium: TextStyle(
       fontWeight: FontWeight.w600,
-      letterSpacing: 0.2,
+      fontSize: 18,
+    ),
+    titleLarge: TextStyle(
+      fontWeight: FontWeight.w700,
     ),
   );
 }

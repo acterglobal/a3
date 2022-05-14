@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/common/store/textTheme.dart';
+import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
@@ -38,15 +38,28 @@ void main() async {
   );
 }
 
-class Effektio extends StatelessWidget {
+class Effektio extends StatefulWidget {
   const Effektio({Key? key}) : super(key: key);
+
+  @override
+  State<Effektio> createState() => _EffektioState();
+}
+
+class _EffektioState extends State<Effektio> {
+  @override
+  void initState() {
+    super.initState();
+    currentTheme.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(
-        textTheme: CustomTextTheme.textTheme,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: currentTheme.currentTheme,
       title: 'Effektio',
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -156,14 +169,11 @@ class _EffektioHomeState extends State<EffektioHome> {
           ),
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
-              color: Color.fromRGBO(36, 38, 50, 1),
               boxShadow: [
                 BoxShadow(color: Colors.grey, offset: Offset(0, -0.5)),
               ],
             ),
             child: BottomNavigationBar(
-              backgroundColor: Color.fromRGBO(36, 38, 50, 1),
-              type: BottomNavigationBarType.fixed,
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: Container(
@@ -262,7 +272,7 @@ class _EffektioHomeState extends State<EffektioHome> {
           return Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: AppColors.backgroundColor,
+            color: AppColors.darkBackgroundColor,
             child: Center(
               child: SizedBox(
                 height: 50,

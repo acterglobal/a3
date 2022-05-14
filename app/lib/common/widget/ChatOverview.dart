@@ -30,14 +30,8 @@ class ChatOverview extends StatelessWidget {
               room: rooms[index],
               user: user,
             ),
-            Container(
-              child: Divider(
-                indent: 75,
-                endIndent: 15,
-                height: 1,
-                thickness: 0.5,
-                color: Colors.grey[700],
-              ),
+            Divider(
+              height: 1,
             ),
           ],
         );
@@ -54,6 +48,7 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     // ToDo: UnreadCounter
     return ListTile(
       onTap: () {
@@ -80,11 +75,7 @@ class ChatListItem extends StatelessWidget {
           if (snapshot.hasData) {
             return Text(
               snapshot.requireData,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: _textTheme.titleSmall,
             );
           } else {
             return Text('Loading Name');
@@ -122,11 +113,7 @@ class ChatListItem extends StatelessWidget {
                   isUtc: true,
                 ),
               ),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-              ),
+              style: _textTheme.labelSmall,
             );
           } else {
             return const SizedBox();
