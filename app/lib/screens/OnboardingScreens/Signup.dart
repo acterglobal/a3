@@ -21,15 +21,16 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreentate extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
+  final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+  final tokenController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final nameController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    emailController.dispose();
+    userNameController.dispose();
     passwordController.dispose();
     nameController.dispose();
     confirmPasswordController.dispose();
@@ -103,101 +104,32 @@ class _SignupScreentate extends State<SignupScreen> {
                           fontWeight: FontWeight.w300,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 50),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: AppColors.textFieldColor,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: BlocBuilder<SignUpBloc, SignUpState>(
-                                  builder: (context, state) {
-                                    return TextFormField(
-                                      controller: nameController,
-                                      decoration: InputDecoration(
-                                        contentPadding: EdgeInsets.only(
-                                          left: 10.0,
-                                          top: 12,
-                                          right: 10,
-                                        ),
-                                        border: InputBorder.none,
-                                        hintText:
-                                            'Name', // pass the hint text parameter here
-                                        hintStyle:
-                                            TextStyle(color: Colors.grey),
-                                      ),
-                                      style: TextStyle(color: Colors.white),
-                                      validator: (val) => val!.isEmpty
-                                          ? 'Please enter Name'
-                                          : null,
-                                      onChanged: (value) =>
-                                          context.read<SignUpBloc>().add(
-                                                SignUpNameChanged(
-                                                  name: value,
-                                                ),
-                                              ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 20),
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: AppColors.textFieldColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: BlocBuilder<SignUpBloc, SignUpState>(
-                          builder: (context, state) {
-                            return TextFormField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(
-                                  left: 10.0,
-                                  top: 12,
-                                  right: 10,
-                                ),
-                                border: InputBorder.none,
-                                hintText:
-                                    'Email Address', // pass the hint text parameter here
-                                hintStyle: TextStyle(color: Colors.grey),
-                              ),
-                              style: TextStyle(color: Colors.white),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter email';
-                                }
-                                if (!value[0].startsWith('@')) {
-                                  return 'Please enter correct username format (starts with @)';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) => context
-                                  .read<SignUpBloc>()
-                                  .add(SignUpUsernameChanged(username: value)),
-                            );
-                          },
-                        ),
-                      ),
                       SizedBox(
                         height: 20,
                       ),
-                      onboardingSignUpTextField(
+                      signUpOnboardingTextField(
+                        'Name',
+                        nameController,
+                        'Please enter Your Name',
+                        SignUpOnboardingTextFieldEnum.name,
+                      ),
+                      signUpOnboardingTextField(
+                        'user Name',
+                        userNameController,
+                        'Please enter User Name',
+                        SignUpOnboardingTextFieldEnum.userName,
+                      ),
+                      signUpOnboardingTextField(
                         'Password',
                         passwordController,
                         'Please enter Password',
+                        SignUpOnboardingTextFieldEnum.password,
+                      ),
+                      signUpOnboardingTextField(
+                        'Token',
+                        tokenController,
+                        'Please enter Token',
+                        SignUpOnboardingTextFieldEnum.token,
                       ),
                       SizedBox(
                         height: 30,
@@ -252,9 +184,13 @@ class _SignupScreentate extends State<SignupScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       context.read<SignUpBloc>().add(
                                             SignUpSubmitted(
-                                              username: emailController.text,
-                                              password: passwordController.text,
-                                              name: nameController.text,
+                                              username: userNameController.text
+                                                  .trim(),
+                                              password: passwordController.text
+                                                  .trim(),
+                                              name: nameController.text.trim(),
+                                              token:
+                                                  tokenController.text.trim(),
                                             ),
                                           );
                                     }
