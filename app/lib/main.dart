@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/Prefrences.dart';
 import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -31,10 +32,7 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Effektio(),
-    ),
+    Effektio(),
   );
 }
 
@@ -49,6 +47,11 @@ class _EffektioState extends State<Effektio> {
   @override
   void initState() {
     super.initState();
+
+    SharedPrefrence().getAppTheme().then((value) {
+      currentTheme.toggleTheme(value);
+    });
+
     currentTheme.addListener(() {
       setState(() {});
     });
@@ -240,11 +243,8 @@ class _EffektioHomeState extends State<EffektioHome> {
         if (snapshot.hasData) {
           return homeScreen(context, snapshot.requireData);
         } else {
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: AppColors.darkBackgroundColor,
-            child: Center(
+          return Scaffold(
+            body: Center(
               child: SizedBox(
                 height: 50,
                 width: 50,

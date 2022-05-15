@@ -20,7 +20,7 @@ class SideDrawer extends StatefulWidget {
 class _SideDrawerState extends State<SideDrawer> {
   late Future<String> name;
   late Future<String> username;
-  bool switchValue = false;
+  bool switchValue = isDarkTheme;
   bool isGuest = false;
   @override
   void initState() {
@@ -39,12 +39,12 @@ class _SideDrawerState extends State<SideDrawer> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(switchValue ? 'Light Mode' : 'Dark Mode'),
+                Text(!switchValue ? 'Light Mode' : 'Dark Mode'),
                 Switch(
                   value: switchValue,
                   activeColor: AppColors.primaryColor,
                   onChanged: (value) {
-                    currentTheme.toggleTheme();
+                    currentTheme.toggleTheme(value);
                     setState(() {
                       switchValue = value;
                     });

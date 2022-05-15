@@ -1,4 +1,5 @@
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/Prefrences.dart';
 import 'package:effektio/common/store/textTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,8 +10,9 @@ bool isDarkTheme = true;
 class AppTheme with ChangeNotifier {
   ThemeMode get currentTheme => isDarkTheme ? ThemeMode.dark : ThemeMode.light;
 
-  void toggleTheme() {
-    isDarkTheme = !isDarkTheme;
+  Future<void> toggleTheme(bool isDark) async {
+    isDarkTheme = isDark;
+    await SharedPrefrence().setAppTheme(isDark);
     notifyListeners();
   }
 
