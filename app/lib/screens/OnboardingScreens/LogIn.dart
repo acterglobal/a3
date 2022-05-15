@@ -9,7 +9,6 @@ import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -33,8 +32,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: AppColors.darkBackgroundColor,
+      //   backgroundColor: AppColors.darkBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -80,22 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         'Welcome Back',
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: _textTheme.headlineSmall,
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
                         'Sign in to Continue',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300,
-                        ),
+                        style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 20, right: 20, top: 100),
@@ -191,11 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don't have an account ?  ",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w300,
-                            ),
+                            style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
                           ),
                           InkWell(
                             onTap: () {
@@ -203,11 +191,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text(
                               'Sign up ',
-                              style: GoogleFonts.lato(
-                                fontSize: 18,
+                              style: _textTheme.titleSmall!.copyWith(
                                 color: AppColors.primaryColor,
-                                fontWeight: FontWeight.w300,
                               ),
+                             
                             ),
                           )
                         ],

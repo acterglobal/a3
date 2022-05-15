@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
 import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -289,10 +290,12 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(51, 53, 64, 0.4),
+        backgroundColor: isDarkTheme
+            ? AppColors.darkChatAppbarColor
+            : AppColors.lightBackgroundColor,
         elevation: 1,
         centerTitle: true,
         toolbarHeight: 70,
@@ -302,7 +305,12 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: SvgPicture.asset('assets/images/back_button.svg'),
+              icon: SvgPicture.asset(
+                'assets/images/back_button.svg',
+                color: !isDarkTheme
+                    ? AppColors.darkIconColor
+                    : AppColors.lightBackgroundColor,
+              ),
             ),
           ],
         ),
@@ -317,11 +325,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Text(
                     snapshot.requireData,
                     overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                    style: _textTheme.titleSmall,
                   );
                 } else {
                   return Text('Loading Name');
@@ -338,11 +342,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   return Text(
                     '${snapshot.requireData.length.toString()} Members',
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
+                    style: _textTheme.labelMedium!
+                        .copyWith(color: AppColors.primaryColor),
                   );
                 } else {
                   return Container(

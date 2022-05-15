@@ -103,6 +103,27 @@ class _EffektioHomeState extends State<EffektioHome> {
     return client;
   }
 
+  BottomNavigationBarItem navBaritem(String icon, String activeIcon) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: SvgPicture.asset(
+          icon,
+          color:
+              isDarkTheme ? AppColors.lightIconColor : AppColors.darkIconColor,
+        ),
+      ),
+      activeIcon: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: SvgPicture.asset(
+          activeIcon,
+          color: AppColors.primaryColor,
+        ),
+      ),
+      label: '',
+    );
+  }
+
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,
@@ -133,9 +154,8 @@ class _EffektioHomeState extends State<EffektioHome> {
               : AppBar(
                   title: navBarTitle(_titles[tabIndex] ?? ""),
                   centerTitle: true,
-                  primary: false,
+                  primary: true,
                   elevation: 1,
-                  backgroundColor: AppColors.textFieldColor,
                   leading: Builder(
                     builder: (BuildContext context) {
                       return IconButton(
@@ -175,80 +195,31 @@ class _EffektioHomeState extends State<EffektioHome> {
             ),
             child: BottomNavigationBar(
               items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child:
-                        SvgPicture.asset('assets/images/newsfeed_linear.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/newsfeed_bold.svg',
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/newsfeed_linear.svg',
+                  'assets/images/newsfeed_bold.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset('assets/images/menu_linear.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/menu_bold.svg',
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/menu_linear.svg',
+                  'assets/images/menu_bold.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset('assets/images/add.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/add.svg',
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/add.svg',
+                  'assets/images/add.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset('assets/images/chat_linear.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/chat_bold.svg',
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/chat_linear.svg',
+                  'assets/images/chat_bold.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/notification_linear.svg',
-                    ),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/notification_bold.svg',
-                    ),
-                  ),
-                  label: '',
-                ),
+                navBaritem(
+                  'assets/images/notification_linear.svg',
+                  'assets/images/notification_bold.svg',
+                )
               ],
               currentIndex: tabIndex,
               showUnselectedLabels: true,
-              selectedItemColor: AppColors.primaryColor,
               iconSize: 30,
+              type: BottomNavigationBarType.fixed,
               onTap: (value) {
                 setState(() {
                   tabIndex = value;

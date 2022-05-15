@@ -42,6 +42,7 @@ class _SideDrawerState extends State<SideDrawer> {
                 Text(switchValue ? 'Light Mode' : 'Dark Mode'),
                 Switch(
                   value: switchValue,
+                  activeColor: AppColors.primaryColor,
                   onChanged: (value) {
                     currentTheme.toggleTheme();
                     setState(() {

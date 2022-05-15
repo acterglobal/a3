@@ -36,9 +36,5 @@ class AppTheme with ChangeNotifier {
         scaffoldBackgroundColor: AppColors.darkBackgroundColor,
         dividerTheme: _dividerTheme,
         appBarTheme: const AppBarTheme(backgroundColor: AppColors.transparent),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: AppColors.darkBackgroundColor,
-          type: BottomNavigationBarType.fixed,
-        ),
       );
 }

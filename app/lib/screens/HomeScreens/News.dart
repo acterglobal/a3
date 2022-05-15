@@ -23,10 +23,9 @@ class _NewsScreenState extends State<NewsScreen> {
       future: widget.client.latestNews(),
       builder: (BuildContext context, AsyncSnapshot<FfiListNews> snapshot) {
         if (!snapshot.hasData) {
-          return Container(
+          return SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: AppColors.darkBackgroundColor,
             child: Center(
               child: SizedBox(
                 height: 50,
@@ -43,7 +42,7 @@ class _NewsScreenState extends State<NewsScreen> {
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               elevation: 0,
-              backgroundColor: Colors.transparent,
+              backgroundColor: AppColors.transparent,
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(

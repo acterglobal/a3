@@ -36,8 +36,8 @@ class _SignupScreentate extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -57,22 +57,14 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               Text(
                 'Lets get Started',
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: _textTheme.headlineSmall,
               ),
               SizedBox(
                 height: 10,
               ),
               Text(
                 'Create an account to explore',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w300,
-                ),
+                style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
               ),
               Container(
                 margin: EdgeInsets.only(left: 20, right: 20, top: 50),
@@ -176,11 +168,7 @@ class _SignupScreentate extends State<SignupScreen> {
                   text: TextSpan(
                     // Note: Styles for TextSpans must be explicitly defined.
                     // Child text spans will inherit styles from parent
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                    ),
+                    style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
                     children: <TextSpan>[
                       TextSpan(
                         text: 'By clicking to sign up you agree to our ',
@@ -191,7 +179,7 @@ class _SignupScreentate extends State<SignupScreen> {
                             debugPrint('Terms of Service"');
                           },
                         text: 'Terms and Condition',
-                        style: TextStyle(color: Colors.redAccent),
+                        style: TextStyle(color: AppColors.primaryColor),
                       ),
                       TextSpan(text: ' and that you have read our '),
                       TextSpan(
@@ -223,11 +211,7 @@ class _SignupScreentate extends State<SignupScreen> {
                 children: [
                   Text(
                     'Already have an account ?  ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w300,
-                    ),
+                    style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
                   ),
                   InkWell(
                     onTap: () {
@@ -240,10 +224,8 @@ class _SignupScreentate extends State<SignupScreen> {
                     },
                     child: Text(
                       'Sign in ',
-                      style: TextStyle(
-                        fontSize: 16,
+                      style: _textTheme.titleSmall!.copyWith(
                         color: AppColors.primaryColor,
-                        fontWeight: FontWeight.w300,
                       ),
                     ),
                   )

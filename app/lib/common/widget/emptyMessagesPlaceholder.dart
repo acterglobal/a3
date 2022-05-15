@@ -6,27 +6,18 @@ class EmptyPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         SizedBox(height: MediaQuery.of(context).size.height / 6),
         SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
         const SizedBox(height: 10),
-        const Text(
-          'No Messages here yet ...',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        Text('No Messages here yet ...', style: _textTheme.titleMedium),
         const SizedBox(height: 20),
-        const Text(
+        Text(
           'Start the conversation by sending the message',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-          ),
+          style: _textTheme.labelMedium,
         ),
       ],
     );

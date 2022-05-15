@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:effektio/common/store/appTheme.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio/common/store/Colors.dart';
 
@@ -20,7 +21,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         return Container(
           height: 100,
           decoration: BoxDecoration(
-            color: AppColors.primaryColor,
+            color: !isDarkTheme
+                ? AppColors.lightNotificationItem
+                : AppColors.primaryColor,
             borderRadius: BorderRadius.circular(10),
           ),
           margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
