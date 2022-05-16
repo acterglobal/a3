@@ -1,4 +1,4 @@
-use super::{TextMessageEventContent, BelongsTo};
+use super::{BelongsTo, TextMessageEventContent};
 use ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 

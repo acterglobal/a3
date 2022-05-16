@@ -1,25 +1,24 @@
-use serde::{Serialize, Deserialize, de::{DeserializeOwned, Deserializer}}; // 1.0.136
-use anyhow::{Result, Context, bail}; // 1.0.53
+use anyhow::{bail, Context, Result};
+use serde::{
+    de::{DeserializeOwned, Deserializer},
+    Deserialize, Serialize,
+}; // 1.0.136 // 1.0.53
 
 use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt::Debug;
 
-mod traits;
 mod binary_switch;
 mod reaction;
+mod traits;
 
-pub use traits::{Transition, Action, GenericFeaturesSupport};
-pub use reaction::ReactionState; 
 pub use binary_switch::{BinarySwitch, BinarySwitchAction};
+pub use reaction::ReactionState;
+pub use traits::{Action, GenericFeaturesSupport, Transition};
 
 use ruma::{
-    events::{
-        reaction::ReactionEvent,
-        room::redaction::RoomRedactionEvent,
-    },
-    MilliSecondsSinceUnixEpoch, OwnedUserId, EventId,
+    events::{reaction::ReactionEvent, room::redaction::RoomRedactionEvent},
+    EventId, MilliSecondsSinceUnixEpoch, OwnedUserId,
 };
-
 
 fn deserialize_optional_field<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
 where
@@ -38,10 +37,10 @@ pub enum InnerState<T> {
         when: MilliSecondsSinceUnixEpoch,
     },
     Alive(T),
-    Archived {   
+    Archived {
         sender: OwnedUserId,
         when: MilliSecondsSinceUnixEpoch,
-        obj: T
+        obj: T,
     },
 }
 
@@ -49,45 +48,56 @@ impl<T> InnerState<T> {
     fn inner(&self) -> Option<&T> {
         match self {
             InnerState::Alive(ref o) => Some(o),
-            InnerState::Archived { ref obj, ..} => Some(obj),
-            InnerState::Redacted { .. } => None
+            InnerState::Archived { ref obj, .. } => Some(obj),
+            InnerState::Redacted { .. } => None,
         }
     }
 }
 
 impl<T> Transition for InnerState<T>
-where T: Transition
+where
+    T: Transition,
 {
     type Action = <T as Transition>::Action;
     fn transition(&mut self, action: Self::Action) -> Result<bool> {
         match self {
             InnerState::Alive(o) => o.transition(action),
-            InnerState::Archived { obj, ..} => obj.transition(action),
-            InnerState::Redacted { .. } => bail!("Has been redacted. Can't transition on redacted object.")
+            InnerState::Archived { obj, .. } => obj.transition(action),
+            InnerState::Redacted { .. } => {
+                bail!("Has been redacted. Can't transition on redacted object.")
+            }
         }
     }
 }
 
 impl<T> GenericFeaturesSupport for InnerState<T>
-where T: GenericFeaturesSupport
+where
+    T: GenericFeaturesSupport,
 {
     fn support_redaction(&self) -> bool {
-        self.inner().map(|o| o.support_redaction()).unwrap_or_default()
+        self.inner()
+            .map(|o| o.support_redaction())
+            .unwrap_or_default()
     }
 
     fn supports_comments(&self) -> bool {
-        self.inner().map(|o| o.supports_comments()).unwrap_or_default()
+        self.inner()
+            .map(|o| o.supports_comments())
+            .unwrap_or_default()
     }
 
     fn supports_reactions(&self) -> bool {
-        self.inner().map(|o| o.supports_reactions()).unwrap_or_default()
+        self.inner()
+            .map(|o| o.supports_reactions())
+            .unwrap_or_default()
     }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(bound = "T: Transition")]
 pub struct StatefulObject<T>
-where T: Transition
+where
+    T: Transition,
 {
     inner: InnerState<T>,
 
@@ -111,7 +121,7 @@ impl<T: Transition> StatefulObject<T> {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
-pub  enum GenericAction<A: Action> {
+pub enum GenericAction<A: Action> {
     Redaction(RoomRedactionEvent),
     // Archive(String),
     Reaction(ReactionEvent),
@@ -121,7 +131,8 @@ pub  enum GenericAction<A: Action> {
 impl<T: Action> Action for GenericAction<T> {}
 
 impl<T> From<RoomRedactionEvent> for GenericAction<T>
-where T: Action
+where
+    T: Action,
 {
     fn from(other: RoomRedactionEvent) -> Self {
         GenericAction::Redaction(other)
@@ -129,35 +140,34 @@ where T: Action
 }
 
 impl<T> From<ReactionEvent> for GenericAction<T>
-where T: Action
+where
+    T: Action,
 {
     fn from(other: ReactionEvent) -> Self {
         GenericAction::Reaction(other)
     }
 }
 
-
 impl<T> Transition for StatefulObject<T>
-where T: Transition + GenericFeaturesSupport
+where
+    T: Transition + GenericFeaturesSupport,
 {
     type Action = GenericAction<<T as Transition>::Action>;
     fn transition(&mut self, action: Self::Action) -> Result<bool> {
         if matches!(self.inner, InnerState::Redacted { .. }) {
             bail!("Object has been redacted already");
         }
-        
+
         Ok(match action {
             GenericAction::Reaction(r) => {
                 if !self.inner.supports_reactions() {
                     bail!("Reacting not supported");
                 }
                 self.reactions.transition(r)?
-            },
-            GenericAction::SpecificAction(a) => {
-                self.inner.transition(a)?
             }
+            GenericAction::SpecificAction(a) => self.inner.transition(a)?,
             // FIXME
-            _ => false
+            _ => false,
         })
     }
 }
@@ -188,7 +198,9 @@ mod test {
         // let redacetd = serde_json::to_string(&recov)?;
         // println!("Redacted State: {:?}", redacetd);
 
-        assert!(recov.transition(BinarySwitchAction::SwitchOn.into()).is_err());
+        assert!(recov
+            .transition(BinarySwitchAction::SwitchOn.into())
+            .is_err());
         Ok(())
     }
 }

@@ -1,13 +1,13 @@
+use anyhow::{bail, Context, Result};
+use serde::{
+    de::{DeserializeOwned, Deserializer},
+    Deserialize, Serialize,
+}; // 1.0.136 // 1.0.53
 
-use serde::{Serialize, Deserialize, de::{DeserializeOwned, Deserializer}}; // 1.0.136
-use anyhow::{Result, Context, bail}; // 1.0.53
-
+use super::{Action, Transition};
+use ruma::{events::reaction::ReactionEvent, events::MessageLikeEvent, OwnedUserId};
 use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt::Debug;
-use ruma::{
-    OwnedUserId, events::reaction::ReactionEvent, events::MessageLikeEvent, 
-};
-use super::{Transition, Action};
 
 pub type ReactionMap = BTreeMap<String, Vec<OwnedUserId>>;
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
@@ -35,7 +35,7 @@ impl Transition for ReactionState {
             MessageLikeEvent::Original(u) => u,
             MessageLikeEvent::Redacted(_) => {
                 // FIXME: not yet supported
-                return Ok(false)
+                return Ok(false);
             }
         };
         match self.0.entry(event.content.relates_to.key) {
@@ -50,7 +50,7 @@ impl Transition for ReactionState {
                     // we ignore if the user is already in the list
                     users.push(sender);
                     Ok(true)
-                } else  {
+                } else {
                     Ok(false)
                 }
             }

@@ -3,9 +3,9 @@
 pub use matrix_sdk;
 pub use ruma;
 
-pub mod state_machine;
 pub mod events;
 pub mod models;
+pub mod state_machine;
 pub mod support;
 pub use support::RestoreToken;
 

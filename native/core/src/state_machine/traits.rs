@@ -1,8 +1,11 @@
-use serde::{Serialize, Deserialize, de::{DeserializeOwned, Deserializer}}; // 1.0.136
 use anyhow::Result;
+use serde::{
+    de::{DeserializeOwned, Deserializer},
+    Deserialize, Serialize,
+}; // 1.0.136
 use std::fmt::Debug;
 
-pub trait Action: Clone + Debug { }
+pub trait Action: Clone + Debug {}
 
 /// Describing the state transiiton that action can produce.
 pub trait Transition: Serialize + DeserializeOwned + Debug {
@@ -15,7 +18,6 @@ pub trait Transition: Serialize + DeserializeOwned + Debug {
 
 /// Simple way to configure support for generic features
 pub trait GenericFeaturesSupport {
-
     /// Whether you can redact this entity,
     /// defaults to true
     fn support_redaction(&self) -> bool {
@@ -33,5 +35,4 @@ pub trait GenericFeaturesSupport {
     fn supports_reactions(&self) -> bool {
         false
     }
-
 }
