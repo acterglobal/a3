@@ -5,15 +5,16 @@ use anyhow::{Result, Context, bail}; // 1.0.53
 use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt::Debug;
 use ruma::{
-    UserId, events::reaction::ReactionEvent
+    OwnedUserId, events::reaction::ReactionEvent, events::MessageLikeEvent, 
 };
 use super::{Transition, Action};
 
+pub type ReactionMap = BTreeMap<String, Vec<OwnedUserId>>;
 #[derive(Serialize, Deserialize, Debug, Default, Clone)]
-pub struct ReactionState(pub BTreeMap<String, Vec<Box<UserId>>>);
+pub struct ReactionState(pub ReactionMap);
 
 impl core::ops::Deref for ReactionState {
-    type Target = BTreeMap<String, Vec<Box<UserId>>>;
+    type Target = ReactionMap;
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -30,16 +31,24 @@ impl Action for ReactionEvent {}
 impl Transition for ReactionState {
     type Action = ReactionEvent;
     fn transition(&mut self, action: Self::Action) -> Result<bool> {
-        match self.0.entry(action.content.relates_to.key) {
+        let event = match action {
+            MessageLikeEvent::Original(u) => u,
+            MessageLikeEvent::Redacted(_) => {
+                // FIXME: not yet supported
+                return Ok(false)
+            }
+        };
+        match self.0.entry(event.content.relates_to.key) {
             Entry::Vacant(o) => {
-                o.insert(vec![action.sender]);
+                o.insert(vec![event.sender]);
                 Ok(true)
             }
             Entry::Occupied(mut o) => {
                 let users = o.get_mut();
-                if !users.contains(&action.sender) {
+                let sender = event.sender;
+                if !users.contains(&sender) {
                     // we ignore if the user is already in the list
-                    users.push(action.sender);
+                    users.push(sender);
                     Ok(true)
                 } else  {
                     Ok(false)

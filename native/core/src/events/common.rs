@@ -2,7 +2,6 @@ use super::EventId;
 pub use chrono::{DateTime, Utc};
 pub use chrono_tz::Tz as TimeZone;
 pub use csscolorparser::Color;
-use ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 /// Default UTC Datetime Object
@@ -10,7 +9,7 @@ pub type UtcDateTime = DateTime<Utc>;
 
 /// Customize the color scheme
 #[derive(Clone, Debug, Deserialize, Serialize)]
-// org.effektio.dev.colors
+// #[ruma_event(type = "org.effektio.dev.colors")]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     pub color: Option<Color>,

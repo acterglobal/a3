@@ -17,7 +17,7 @@ use ruma::{
         reaction::ReactionEvent,
         room::redaction::RoomRedactionEvent,
     },
-    MilliSecondsSinceUnixEpoch, UserId, EventId,
+    MilliSecondsSinceUnixEpoch, OwnedUserId, EventId,
 };
 
 
@@ -34,12 +34,12 @@ where
 pub enum InnerState<T> {
     Redacted {
         reason: Option<String>,
-        sender: Box<UserId>,
+        sender: OwnedUserId,
         when: MilliSecondsSinceUnixEpoch,
     },
     Alive(T),
     Archived {   
-        sender: Box<UserId>,
+        sender: OwnedUserId,
         when: MilliSecondsSinceUnixEpoch,
         obj: T
     },

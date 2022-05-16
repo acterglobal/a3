@@ -18,7 +18,7 @@ pub enum SpecialTaskListRole {
 #[derive(Clone, Serialize_repr, Deserialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 /// Implementing Priority according to
-/// https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1
+/// <https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1>
 pub enum Priority {
     Undefined = 0,
     Highest = 1,

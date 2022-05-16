@@ -9,6 +9,9 @@ homepage = "https://effekto.org"
 repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
+[features]
+with-mocks = ["fake", 'rand']
+
 [dependencies]
 serde = "1.0.136"
 serde_repr = "0.1"
@@ -18,13 +21,16 @@ chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }
 url = { version = "2.2.2", features = ["serde"] }
 anyhow = "1.0.53"
 
+# with-mocks
+fake = { version = "2.4", optional = true, features = ["derive"] }
+rand = { version = "0.8", optional = true }
+
 [dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
 default-features = false
 
 [dependencies.ruma]
-git = "https://github.com/ruma/ruma"
-rev = "deea762b8"
+version = "0.6.1"
 features = ["events", "unstable-msc2677",  "client-api-c", "compat", "rand", "unstable-msc2448"]
 
 [dev-dependencies]
