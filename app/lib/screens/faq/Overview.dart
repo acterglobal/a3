@@ -57,14 +57,14 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
                     ),
                   ),
                   onPressed: () {
-                    setState(() {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HtmlEditorExampleApp(),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HtmlEditorExample(
+                          title: 'Editor',
                         ),
-                      );
-                    });
+                      ),
+                    );
                   },
                 )
               ],

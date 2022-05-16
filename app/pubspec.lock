@@ -148,6 +148,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  emoji_picker_flutter:
+    dependency: "direct main"
+    description:
+      name: emoji_picker_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.2"
   equatable:
     dependency: transitive
     description:

@@ -51,8 +51,8 @@ pub struct News {
 }
 
 impl News {
-    pub fn text(&self) -> &Option<String> {
-        &self.text
+    pub fn text(&self) -> Option<String> {
+        self.text.clone()
     }
     pub fn tags(&self) -> Vec<Tag> {
         self.tags.clone()

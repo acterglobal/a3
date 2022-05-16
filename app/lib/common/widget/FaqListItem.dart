@@ -4,7 +4,6 @@ import 'package:effektio/screens/faq/Item.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
 class FaqListItem extends StatefulWidget {
   const FaqListItem({Key? key, required this.client, required this.faq})
@@ -45,7 +44,7 @@ class FaqListItemState extends State<FaqListItem> {
                     Flexible(
                       child: Text(
                         widget.faq.title(),
-                        style: GoogleFonts.montserrat(
+                        style: GoogleFonts.roboto(
                           color: Colors.white,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -96,7 +95,7 @@ class FaqListItemState extends State<FaqListItem> {
                                 const EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Text(
                               'Support',
-                              style: GoogleFonts.montserrat(
+                              style: GoogleFonts.roboto(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -126,7 +125,7 @@ class FaqListItemState extends State<FaqListItem> {
                               ),
                               child: Text(
                                 widget.faq.likesCount().toString(),
-                                style: GoogleFonts.montserrat(
+                                style: GoogleFonts.roboto(
                                   color: Colors.white,
                                   fontSize: 16,
                                 ),
@@ -146,7 +145,7 @@ class FaqListItemState extends State<FaqListItem> {
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Text(
                                 widget.faq.commentsCount().toString(),
-                                style: GoogleFonts.montserrat(
+                                style: GoogleFonts.roboto(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -170,6 +169,7 @@ class FaqListItemState extends State<FaqListItem> {
                     itemBuilder: (context, index) {
                       return TagListItem(
                         tagTitle: widget.faq.tags().elementAt(index).title(),
+                        tagColor: Colors.white,
                       );
                     },
                   ),

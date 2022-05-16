@@ -54,6 +54,8 @@ dependencies:
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
   flutter_colorpicker: ^1.0.3
+  emoji_picker_flutter: ^1.1.2
+
 
 dev_dependencies:
   flutter_test:
