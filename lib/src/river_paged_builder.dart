@@ -31,6 +31,10 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
   /// Default [false]
   final bool pullToRefresh;
 
+  /// Choose if infinite scrolling functionality should be enabled
+  /// Default [true]
+  final bool enableInfiniteScroll;
+
   final ItemWidgetBuilder<ItemType> itemBuilder;
   final PagedBuilder<PageKeyType, ItemType> pagedBuilder;
 
@@ -54,6 +58,7 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
       required this.firstPageKey,
       this.limit = 20,
       this.pullToRefresh = false,
+      this.enableInfiniteScroll = true,
       this.firstPageErrorIndicatorBuilder,
       this.firstPageProgressIndicatorBuilder,
       this.noItemsFoundIndicatorBuilder,
@@ -73,6 +78,7 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
       required this.firstPageKey,
       this.limit = 20,
       this.pullToRefresh = false,
+      this.enableInfiniteScroll = true,
       this.firstPageErrorIndicatorBuilder,
       this.firstPageProgressIndicatorBuilder,
       this.noItemsFoundIndicatorBuilder,
@@ -102,23 +108,37 @@ class _RiverPagedBuilderState<PageKeyType, ItemType>
         firstPageKey: widget.firstPageKey);
 
     // Redirect every page request to the [StateNotifier]
-    _pagingController.addPageRequestListener((pageKey) {
-      ref.read((_provider).notifier).load(pageKey, widget.limit);
-    });
+    _pagingController.addPageRequestListener(_loadFromProvider);
 
     super.initState();
+  }
+
+  void _loadFromProvider(PageKeyType pageKey) {
+    if (pageKey != widget.firstPageKey && !widget.enableInfiniteScroll) {
+      return _updatePagingState(
+        ref
+            .read<PagedState<PageKeyType, ItemType>>(_provider)
+            .copyWith(nextPageKey: null),
+      );
+    }
+    ref.read((_provider).notifier).load(pageKey, widget.limit);
+  }
+
+  void _updatePagingState(PagedState<PageKeyType, ItemType> state) {
+    _pagingController.value = PagingState(
+      error: state.error,
+      itemList: state.records,
+      nextPageKey: state.nextPageKey,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     // This listen to [StateNotiefer] change and reflect those changes to the [PagingController]
-    ref.listen<PagedState<PageKeyType, ItemType>>(_provider, (_, next) {
-      _pagingController.value = PagingState(
-        error: next.error,
-        itemList: next.records,
-        nextPageKey: next.nextPageKey,
-      );
-    });
+    ref.listen<PagedState<PageKeyType, ItemType>>(
+      _provider,
+      (_, next) => _updatePagingState(next),
+    );
 
     // Allow possibility to customize indicators
     final itemBuilder = PagedChildBuilderDelegate<ItemType>(
