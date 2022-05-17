@@ -7,7 +7,7 @@ use effektio_core::{
     ruma::api::client::account::register,
     RestoreToken,
 };
-use futures::{stream, Stream, StreamExt};
+use futures::{future::try_join_all, stream, Stream, StreamExt};
 use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
@@ -263,7 +263,8 @@ impl Client {
     }
 
     async fn catch_up(&self) -> Result<()> {
-        // let (groups, _) = self.devide_groups_from_common().await;
+        let groups = self.get_groups().await;
+        try_join_all(groups.iter().map(|g| g.sync_up())).await?;
         Ok(())
     }
 }

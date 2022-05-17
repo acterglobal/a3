@@ -203,6 +203,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a32fd6af2b5827bce66c29053ba0e7c42b9dcab01835835058558c10851a46b"
 
 [[package]]
+name = "bincode"
+version = "1.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b1f45e9417d87227c7a56d22e471c6206462cba514c7590c09aff4cf6d1ddcad"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -826,6 +835,7 @@ dependencies = [
  "android_logger",
  "anyhow",
  "assign",
+ "bincode",
  "cbindgen",
  "derive_builder",
  "effektio-core",
@@ -872,11 +882,13 @@ name = "effektio-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bincode",
  "chrono",
  "chrono-tz",
  "csscolorparser",
  "fake",
  "matrix-sdk",
+ "matrix-sdk-base",
  "rand 0.8.5",
  "ruma",
  "serde",

@@ -1,10 +1,6 @@
-use anyhow::{bail, Context, Result};
-use serde::{
-    de::{DeserializeOwned, Deserializer},
-    Deserialize, Serialize,
-}; // 1.0.136 // 1.0.53
+use anyhow::{bail,  Result};
+use serde::{Deserialize, Serialize,};
 
-use std::collections::btree_map::{BTreeMap, Entry};
 use std::fmt::Debug;
 
 mod binary_switch;
@@ -19,14 +15,6 @@ use ruma::{
     events::{reaction::ReactionEvent, room::redaction::RoomRedactionEvent},
     EventId, MilliSecondsSinceUnixEpoch, OwnedUserId,
 };
-
-fn deserialize_optional_field<'de, T, D>(deserializer: D) -> Result<Option<T>, D::Error>
-where
-    D: Deserializer<'de>,
-    T: Deserialize<'de>,
-{
-    Ok(Option::deserialize(deserializer)?)
-}
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(bound = "T: Transition")]

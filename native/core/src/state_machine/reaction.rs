@@ -1,8 +1,7 @@
-use anyhow::{bail, Context, Result};
+use anyhow::Result;
 use serde::{
-    de::{DeserializeOwned, Deserializer},
     Deserialize, Serialize,
-}; // 1.0.136 // 1.0.53
+};
 
 use super::{Action, Transition};
 use ruma::{events::reaction::ReactionEvent, events::MessageLikeEvent, OwnedUserId};
