@@ -1,11 +1,10 @@
-import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/common/store/appTheme.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Faq;
 import 'package:effektio/screens/faq/Item.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:themed/themed.dart';
 
 class FaqListItem extends StatefulWidget {
   const FaqListItem({Key? key, required this.client, required this.faq})
@@ -20,7 +19,6 @@ class FaqListItem extends StatefulWidget {
 class FaqListItemState extends State<FaqListItem> {
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -49,7 +47,7 @@ class FaqListItemState extends State<FaqListItem> {
                             Flexible(
                               child: Text(
                                 widget.faq.title(),
-                                style: _textTheme.titleSmall,
+                                style: FAQTheme.titleStyle,
                               ),
                             ),
                             // new Spacer(),
@@ -62,9 +60,7 @@ class FaqListItemState extends State<FaqListItem> {
                               },
                               child: Image.asset(
                                 'assets/images/bookmark.png',
-                                color: isDarkTheme
-                                    ? AppColors.lightIconColor
-                                    : AppColors.darkIconColor,
+                                color: AppCommonTheme.svgIconColor,
                               ),
                             )
                           ],
@@ -83,9 +79,7 @@ class FaqListItemState extends State<FaqListItem> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: !isDarkTheme
-                                      ? AppColors.primaryColor
-                                      : AppColors.lightBackgroundColor,
+                                  color: FAQTheme.faqOutlineBorderColor,
                                 ),
                               ),
                               child: Row(
@@ -94,13 +88,13 @@ class FaqListItemState extends State<FaqListItem> {
                                   Image.asset(
                                     'assets/images/asakerImage.png',
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
+                                  const Padding(
+                                    padding: EdgeInsets.only(
                                       left: 8.0,
                                     ),
                                     child: Text(
                                       'Support',
-                                      style: _textTheme.titleSmall,
+                                      style: FAQTheme.teameNameStyle,
                                     ),
                                   )
                                 ],
@@ -122,18 +116,16 @@ class FaqListItemState extends State<FaqListItem> {
                                       },
                                       child: Image.asset(
                                         'assets/images/heart_like.png',
-                                        color: isDarkTheme
-                                            ? AppColors.lightIconColor
-                                            : AppColors.darkIconColor,
+                                        color: AppCommonTheme.svgIconColor,
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
+                                    const Padding(
+                                      padding: EdgeInsets.only(
                                         left: 8.0,
                                       ),
                                       child: Text(
                                         '189',
-                                        style: _textTheme.labelLarge,
+                                        style: FAQTheme.likeAndCommentStyle,
                                       ),
                                     ),
                                     Padding(
@@ -147,17 +139,15 @@ class FaqListItemState extends State<FaqListItem> {
                                         },
                                         child: Image.asset(
                                           'assets/images/comment.png',
-                                          color: isDarkTheme
-                                              ? AppColors.lightIconColor
-                                              : AppColors.darkIconColor,
+                                          color: AppCommonTheme.svgIconColor,
                                         ),
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(left: 8.0),
                                       child: Text(
                                         '32',
-                                        style: _textTheme.labelLarge,
+                                        style: FAQTheme.likeAndCommentStyle,
                                       ),
                                     ),
                                   ],
@@ -182,20 +172,15 @@ class FaqListItemState extends State<FaqListItem> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: const Color(0xFF7879F1),
+                                  color: FAQTheme.uxColor,
                                 ),
                               ),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    'UX',
-                                    style: GoogleFonts.montserrat(
-                                      color: const Color(0xFF7879F1),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  )
+                                  Text('UX',
+                                      style: FAQTheme.lableStyle +
+                                          FAQTheme.uxColor,)
                                 ],
                               ),
                             ),
@@ -210,7 +195,7 @@ class FaqListItemState extends State<FaqListItem> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: const Color(0xFF23AFC2),
+                                  color: FAQTheme.importantColor,
                                 ),
                               ),
                               child: Row(
@@ -218,7 +203,8 @@ class FaqListItemState extends State<FaqListItem> {
                                 children: [
                                   Text(
                                     'Important',
-                                    style: _textTheme.bodySmall,
+                                    style: FAQTheme.lableStyle +
+                                        FAQTheme.importantColor,
                                   )
                                 ],
                               ),
@@ -234,7 +220,7 @@ class FaqListItemState extends State<FaqListItem> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: const Color(0xFFFA8E10),
+                                  color: FAQTheme.infoColor,
                                 ),
                               ),
                               child: Row(
@@ -242,7 +228,8 @@ class FaqListItemState extends State<FaqListItem> {
                                 children: [
                                   Text(
                                     'Info',
-                                    style: _textTheme.bodySmall,
+                                    style: FAQTheme.lableStyle +
+                                        FAQTheme.infoColor,
                                   )
                                 ],
                               ),
@@ -258,7 +245,7 @@ class FaqListItemState extends State<FaqListItem> {
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                  color: const Color(0xFFB8FFDD),
+                                  color: FAQTheme.supportColor,
                                 ),
                               ),
                               child: Row(
@@ -266,7 +253,8 @@ class FaqListItemState extends State<FaqListItem> {
                                 children: [
                                   Text(
                                     'Support',
-                                    style: _textTheme.bodySmall,
+                                    style: FAQTheme.lableStyle +
+                                        FAQTheme.supportColor,
                                   )
                                 ],
                               ),
@@ -279,12 +267,11 @@ class FaqListItemState extends State<FaqListItem> {
                 ),
                 elevation: 8,
                 margin: const EdgeInsets.all(20),
-                color: isDarkTheme
-                    ? AppColors.darkFaqCardColor
-                    : AppColors.lightFaqCardColor,
+                color: FAQTheme.faqCardColor,
                 shape: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(color: AppColors.dividerColor),
+                  borderSide:
+                      const BorderSide(color: FAQTheme.faqOutlineBorderColor),
                 ),
               )
             ],

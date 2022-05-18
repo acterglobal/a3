@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/FaqListItem.dart';
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -24,13 +24,13 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
           return Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            color: AppColors.darkBackgroundColor,
+            color: AppCommonTheme.backgroundColor,
             child: Center(
               child: SizedBox(
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
+                  color: AppCommonTheme.primaryColor,
                 ),
               ),
             ),

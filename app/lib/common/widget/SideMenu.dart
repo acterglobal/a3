@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/common/store/appTheme.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -9,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:themed/themed.dart';
 
 class SideDrawer extends StatefulWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
@@ -20,7 +20,7 @@ class SideDrawer extends StatefulWidget {
 class _SideDrawerState extends State<SideDrawer> {
   late Future<String> name;
   late Future<String> username;
-  bool switchValue = isDarkTheme;
+  bool switchValue = false;
   bool isGuest = false;
   @override
   void initState() {
@@ -30,28 +30,12 @@ class _SideDrawerState extends State<SideDrawer> {
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
-    final _textTheme = Theme.of(context).textTheme;
     return Drawer(
+      backgroundColor: AppCommonTheme.backgroundColor,
       child: Column(
         children: <Widget>[
-          Align(
-            alignment: Alignment.topRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(!switchValue ? 'Light Mode' : 'Dark Mode'),
-                Switch(
-                  value: switchValue,
-                  activeColor: AppColors.primaryColor,
-                  onChanged: (value) {
-                    currentTheme.toggleTheme(value);
-                    setState(() {
-                      switchValue = value;
-                    });
-                  },
-                ),
-              ],
-            ),
+          SizedBox(
+            height: 20,
           ),
           FutureBuilder<Client>(
             future: widget.client,
@@ -68,7 +52,7 @@ class _SideDrawerState extends State<SideDrawer> {
                           style: ButtonStyle(
                             alignment: Alignment.center,
                             backgroundColor: MaterialStateProperty.all<Color>(
-                              AppColors.primaryColor,
+                              AppCommonTheme.primaryColor,
                             ),
                           ),
                           onPressed: () {
@@ -83,7 +67,7 @@ class _SideDrawerState extends State<SideDrawer> {
                           style: ButtonStyle(
                             alignment: Alignment.center,
                             backgroundColor: MaterialStateProperty.all<Color>(
-                              AppColors.primaryColor,
+                              AppCommonTheme.primaryColor,
                             ),
                           ),
                           onPressed: () {
@@ -134,14 +118,15 @@ class _SideDrawerState extends State<SideDrawer> {
                                 if (snapshot.hasData) {
                                   return Text(
                                     snapshot.data ?? 'No Name',
-                                    style: _textTheme.titleMedium,
+                                    style: SideMenuAndProfileTheme
+                                        .sideMenuProfileStyle,
                                   );
                                 } else {
                                   return SizedBox(
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                      color: AppColors.primaryColor,
+                                      color: AppCommonTheme.primaryColor,
                                     ),
                                   );
                                 }
@@ -157,14 +142,16 @@ class _SideDrawerState extends State<SideDrawer> {
                                 if (snapshot.hasData) {
                                   return Text(
                                     snapshot.data ?? '',
-                                    style: _textTheme.labelLarge,
+                                    style: SideMenuAndProfileTheme
+                                            .sideMenuProfileStyle +
+                                        FontSize(14),
                                   );
                                 } else {
                                   return SizedBox(
                                     height: 50,
                                     width: 50,
                                     child: CircularProgressIndicator(
-                                      color: AppColors.primaryColor,
+                                      color: AppCommonTheme.primaryColor,
                                     ),
                                   );
                                 }
@@ -198,7 +185,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Todo List',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -211,7 +198,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Gallery',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {
                       Navigator.pushNamed(context, '/gallery'),
@@ -226,7 +213,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Events',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -239,7 +226,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared resource',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -252,7 +239,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Polls & Votes',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -265,7 +252,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Group Budgeting',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {
                       Navigator.push(
@@ -285,7 +272,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared Documents',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {},
                   ),
@@ -298,7 +285,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'FAQs',
-                      style: _textTheme.titleSmall,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {},
                   ),
@@ -336,7 +323,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                     'Logout',
                                     style: GoogleFonts.montserrat(
                                       fontSize: 16,
-                                      color: AppColors.primaryColor,
+                                      color: AppCommonTheme.primaryColor,
                                     ),
                                   )
                                 ],

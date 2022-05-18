@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:effektio/blocs/splash_screen/splash_screen_bloc.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/splashScreenWidget.dart';
 import 'package:effektio/main.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +24,7 @@ class SplashScreen extends StatelessWidget {
       child: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: AppColors.darkBackgroundColor,
+        color: AppCommonTheme.backgroundColor,
         child: Center(
           child: BlocBuilder<SplashScreenBloc, SplashScreenState>(
             builder: (context, state) {

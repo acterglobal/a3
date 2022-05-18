@@ -1,13 +1,13 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields
 
-import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/common/store/appTheme.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, FfiListConversation;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:themed/themed.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({Key? key, required this.client}) : super(key: key);
@@ -38,7 +38,6 @@ class _ChatListState extends State<ChatList> {
 
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         leadingWidth: MediaQuery.of(context).size.width / 5,
@@ -50,8 +49,7 @@ class _ChatListState extends State<ChatList> {
             onPressed: () {},
             child: Text(
               'Select',
-              style: _textTheme.labelLarge
-                  ?.copyWith(color: AppColors.primaryColor),
+              style: ChatTheme01.chatTitleStyle + AppCommonTheme.primaryColor,
             ),
           ),
         ),
@@ -63,9 +61,7 @@ class _ChatListState extends State<ChatList> {
             ),
             icon: SvgPicture.asset(
               'assets/images/edit.svg',
-              color: isDarkTheme
-                  ? AppColors.lightIconColor
-                  : AppColors.darkIconColor,
+              color: AppCommonTheme.svgIconColor,
               width: 20,
               height: 20,
             ),
@@ -83,7 +79,7 @@ class _ChatListState extends State<ChatList> {
                 ),
                 child: Text(
                   'Chat',
-                  style: _textTheme.titleLarge,
+                  style: AppCommonTheme.appBartitleStyle,
                 ),
               ),
               const SizedBox(
@@ -99,7 +95,7 @@ class _ChatListState extends State<ChatList> {
                       width: MediaQuery.of(context).size.width,
                       child: Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
+                          color: AppCommonTheme.primaryColor,
                         ),
                       ),
                     );
@@ -122,10 +118,10 @@ class _ChatListState extends State<ChatList> {
                             child: Container(
                               height: MediaQuery.of(context).size.height,
                               width: MediaQuery.of(context).size.width,
-                              color: AppColors.darkBackgroundColor,
+                              color: AppCommonTheme.backgroundColor,
                               child: Text(
                                 AppLocalizations.of(context)!.loadingConvo,
-                                style: _textTheme.titleMedium,
+                                style: ChatTheme01.emptyMsgTitle,
                               ),
                             ),
                           );
@@ -151,7 +147,7 @@ class _ChatListState extends State<ChatList> {
                         ),
                         Text(
                           'Looks Empty here...',
-                          style: _textTheme.titleMedium,
+                          style: ChatTheme01.emptyMsgTitle,
                         ),
                         SizedBox(
                           height: 5,
@@ -162,7 +158,7 @@ class _ChatListState extends State<ChatList> {
                             width: MediaQuery.of(context).size.width / 1.5,
                             child: Text(
                               'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                              style: _textTheme.bodyMedium,
+                              style: ChatTheme01.chatBodyStyle,
                               overflow: TextOverflow.clip,
                               textAlign: TextAlign.center,
                             ),

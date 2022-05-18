@@ -4,11 +4,12 @@ import 'package:effektio/blocs/login/form_submission_status.dart';
 import 'package:effektio/blocs/login/signIn_bloc.dart';
 import 'package:effektio/blocs/login/signIn_event.dart';
 import 'package:effektio/blocs/login/signIn_state.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:themed/themed.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -32,9 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      //   backgroundColor: AppColors.darkBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
@@ -80,20 +79,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         'Welcome Back',
-                        style: _textTheme.headlineSmall,
+                        style: AuthTheme.authTitleStyle,
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
                         'Sign in to Continue',
-                        style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
+                        style: AuthTheme.authbodyStyle,
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 20, right: 20, top: 100),
                         height: 60,
                         decoration: BoxDecoration(
-                          color: AppColors.textFieldColor,
+                          color: AppCommonTheme.textFieldColor,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: BlocBuilder<SignInBloc, SignInState>(
@@ -110,9 +109,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 border: InputBorder.none,
                                 hintText:
                                     'Email Address', // pass the hint text parameter here
-                                hintStyle: TextStyle(color: Colors.grey),
+                                hintStyle:
+                                    TextStyle(color: AuthTheme.hintTextColor),
                               ),
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                  color: AuthTheme.textFieldTextColor),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter email';
@@ -145,11 +146,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {},
                           child: Text(
                             'Forgot Password?',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff008080),
-                              fontWeight: FontWeight.w300,
-                            ),
+                            style: AuthTheme.authbodyStyle +
+                                AuthTheme.forgotPasswordColor,
                           ),
                         ),
                       ),
@@ -183,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             "Don't have an account ?  ",
-                            style: _textTheme.bodyLarge!.copyWith(fontSize: 16),
+                            style: AuthTheme.authbodyStyle,
                           ),
                           InkWell(
                             onTap: () {
@@ -191,10 +189,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text(
                               'Sign up ',
-                              style: _textTheme.titleSmall!.copyWith(
-                                color: AppColors.primaryColor,
-                              ),
-                             
+                              style: AuthTheme.authbodyStyle +
+                                  AppCommonTheme.primaryColor,
                             ),
                           )
                         ],

@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/common/store/Prefrences.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -23,6 +22,7 @@ import 'package:effektio/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:themed/themed.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,39 +47,31 @@ class _EffektioState extends State<Effektio> {
   @override
   void initState() {
     super.initState();
-
-    SharedPrefrence().getAppTheme().then((value) {
-      currentTheme.toggleTheme(value);
-    });
-
-    currentTheme.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: currentTheme.currentTheme,
-      title: 'Effektio',
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: ApplicationLocalizations.supportedLocales,
-      // MaterialApp contains our top-level Navigator
-      initialRoute: '/',
-      routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => EffektioHome(),
-        '/login': (BuildContext context) => const LoginScreen(),
-        '/profile': (BuildContext context) => const SocialProfileScreen(),
-        '/signup': (BuildContext context) => const SignupScreen(),
-        '/gallery': (BuildContext context) => const GalleryScreen(),
-      },
+    return Themed(
+      child: MaterialApp(
+        theme: AppTheme.theme,
+        title: 'Effektio',
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: ApplicationLocalizations.supportedLocales,
+        // MaterialApp contains our top-level Navigator
+        initialRoute: '/',
+        routes: <String, WidgetBuilder>{
+          '/': (BuildContext context) => EffektioHome(),
+          '/login': (BuildContext context) => const LoginScreen(),
+          '/profile': (BuildContext context) => const SocialProfileScreen(),
+          '/signup': (BuildContext context) => const SignupScreen(),
+          '/gallery': (BuildContext context) => const GalleryScreen(),
+        },
+      ),
     );
   }
 }
@@ -112,15 +104,14 @@ class _EffektioHomeState extends State<EffektioHome> {
         margin: const EdgeInsets.only(top: 10),
         child: SvgPicture.asset(
           icon,
-          color:
-              isDarkTheme ? AppColors.lightIconColor : AppColors.darkIconColor,
+          color: AppCommonTheme.svgIconColor,
         ),
       ),
       activeIcon: Container(
         margin: const EdgeInsets.only(top: 10),
         child: SvgPicture.asset(
           activeIcon,
-          color: AppColors.primaryColor,
+          color: AppCommonTheme.primaryColor,
         ),
       ),
       label: '',
@@ -197,6 +188,7 @@ class _EffektioHomeState extends State<EffektioHome> {
               ],
             ),
             child: BottomNavigationBar(
+              backgroundColor: AppCommonTheme.backgroundColor,
               items: <BottomNavigationBarItem>[
                 navBaritem(
                   'assets/images/newsfeed_linear.svg',
@@ -249,7 +241,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
+                  color: AppCommonTheme.primaryColor,
                 ),
               ),
             ),

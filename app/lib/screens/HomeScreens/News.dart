@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/NewsItem.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 
@@ -31,7 +31,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
+                  color: AppCommonTheme.primaryColor,
                 ),
               ),
             ),
@@ -42,13 +42,15 @@ class _NewsScreenState extends State<NewsScreen> {
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               elevation: 0,
-              backgroundColor: AppColors.transparent,
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(
                     icon: Container(
                       margin: const EdgeInsets.only(bottom: 10, left: 10),
-                      child: Image.asset('assets/images/hamburger.png'),
+                      child: CircleAvatar(
+                        backgroundColor: AppCommonTheme.primaryColor,
+                        child: Image.asset('assets/images/hamburger.png'),
+                      ),
                     ),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();

@@ -3,7 +3,7 @@
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 
 class SocialProfileScreen extends StatefulWidget {
@@ -19,7 +19,6 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final _client = ModalRoute.of(context)!.settings.arguments as Client;
-    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         title: navBarTitle('Social Profile'),
@@ -29,7 +28,10 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
             return IconButton(
               icon: Container(
                 margin: const EdgeInsets.only(bottom: 10, left: 10),
-                child: Image.asset('assets/images/hamburger.png'),
+                child: Image.asset(
+                  'assets/images/hamburger.png',
+                  color: AppCommonTheme.svgIconColor,
+                ),
               ),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
@@ -42,7 +44,10 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
           IconButton(
             icon: Container(
               margin: const EdgeInsets.only(bottom: 10, right: 10),
-              child: Image.asset('assets/images/edit.png'),
+              child: Image.asset(
+                'assets/images/edit.png',
+                color: AppCommonTheme.svgIconColor,
+              ),
             ),
             onPressed: () {
               setState(() {});
@@ -58,7 +63,6 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                 Container(
                   margin: EdgeInsets.only(top: 15, left: 20, right: 20),
                   decoration: BoxDecoration(
-                    color: AppColors.textFieldColor,
                     borderRadius: BorderRadius.circular(25),
                   ),
                   width: double.infinity,
@@ -86,7 +90,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(60),
                             border: Border.all(
-                              color: AppColors.primaryColor,
+                              color: AppCommonTheme.primaryColor,
                               width: 5,
                             ),
                           ),
@@ -100,18 +104,11 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                         ),
                         Text(
                           'Harjeet kAUR',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: SideMenuAndProfileTheme.profileNameStyle,
                         ),
                         Text(
                           'Harjeet@gmail.com',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: SideMenuAndProfileTheme.profileUserIdStyle,
                         )
                       ],
                     ),
@@ -132,23 +129,23 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                       Tab(
                         child: Text(
                           'News',
-                          style: _textTheme.titleSmall,
+                          style: SideMenuAndProfileTheme.profileMenueStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'Feed',
-                          style: _textTheme.titleSmall,
+                          style: SideMenuAndProfileTheme.profileMenueStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'More details',
-                          style: _textTheme.titleSmall,
+                          style: SideMenuAndProfileTheme.profileMenueStyle,
                         ),
                       ),
                     ],
-                    indicatorColor: AppColors.primaryColor,
+                    indicatorColor: AppCommonTheme.primaryColor,
                   ),
                   Container(
                     height: MediaQuery.of(context).size.height - 100,

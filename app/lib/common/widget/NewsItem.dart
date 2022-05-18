@@ -1,8 +1,8 @@
 import 'dart:typed_data';
+import 'package:effektio/common/widget/NewsSideBar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio/common/store/Colors.dart';
-import './NewsSideBar.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
@@ -21,8 +21,9 @@ class _NewsItemState extends State<NewsItem> {
   Widget build(BuildContext context) {
     var image = widget.news.image();
     var bgColor =
-        convertColor(widget.news.bgColor(), AppColors.darkBackgroundColor);
-    var fgColor = convertColor(widget.news.fgColor(), AppColors.primaryColor);
+        convertColor(widget.news.bgColor(), AppCommonTheme.backgroundColor);
+    var fgColor =
+        convertColor(widget.news.fgColor(), AppCommonTheme.primaryColor);
 
     return Stack(
       alignment: Alignment.bottomCenter,

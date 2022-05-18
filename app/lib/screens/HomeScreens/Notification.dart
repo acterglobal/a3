@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors
-import 'package:effektio/common/store/appTheme.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -13,7 +12,6 @@ class NotificationScreen extends StatefulWidget {
 class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return ListView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: 5,
@@ -21,9 +19,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         return Container(
           height: 100,
           decoration: BoxDecoration(
-            color: !isDarkTheme
-                ? AppColors.lightNotificationItem
-                : AppColors.primaryColor,
+            color: NotificationTheme.notificationcardColor,
             borderRadius: BorderRadius.circular(10),
           ),
           margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
@@ -56,7 +52,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         margin: EdgeInsets.only(right: 10),
                         child: Text(
                           'Lorem Ipsum is simply dummy text of the printing',
-                          style: textTheme.titleSmall,
+                          style: NotificationTheme.titleStyle,
                         ),
                       ),
                       SizedBox(
@@ -64,7 +60,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                       Text(
                         '35 members',
-                        style: textTheme.labelMedium,
+                        style: NotificationTheme.subTitleStyle,
                       )
                     ],
                   )

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
@@ -48,7 +49,6 @@ class ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     // ToDo: UnreadCounter
     return ListTile(
       onTap: () {
@@ -75,7 +75,7 @@ class ChatListItem extends StatelessWidget {
           if (snapshot.hasData) {
             return Text(
               snapshot.requireData,
-              style: _textTheme.titleSmall,
+              style: ChatTheme01.chatTitleStyle,
             );
           } else {
             return Text('Loading Name');
@@ -90,10 +90,7 @@ class ChatListItem extends StatelessWidget {
               margin: const EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
                 '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                ),
+                style: ChatTheme01.latestChatStyle,
                 maxLines: 2,
               ),
             );
@@ -113,7 +110,7 @@ class ChatListItem extends StatelessWidget {
                   isUtc: true,
                 ),
               ),
-              style: _textTheme.labelSmall,
+              style: ChatTheme01.latestChatDateStyle,
             );
           } else {
             return const SizedBox();

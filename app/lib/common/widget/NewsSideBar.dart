@@ -3,7 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -21,8 +21,9 @@ class _NewsSideBarState extends State<NewsSideBar> {
   @override
   Widget build(BuildContext context) {
     var bgColor =
-        convertColor(widget.news.bgColor(), AppColors.darkBackgroundColor);
-    var fgColor = convertColor(widget.news.fgColor(), AppColors.primaryColor);
+        convertColor(widget.news.bgColor(), AppCommonTheme.backgroundColor);
+    var fgColor =
+        convertColor(widget.news.fgColor(), AppCommonTheme.primaryColor);
 
     TextStyle style = Theme.of(context)
         .textTheme

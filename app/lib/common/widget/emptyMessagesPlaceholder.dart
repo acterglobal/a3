@@ -1,3 +1,4 @@
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -6,18 +7,18 @@ class EmptyPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         SizedBox(height: MediaQuery.of(context).size.height / 6),
         SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
         const SizedBox(height: 10),
-        Text('No Messages here yet ...', style: _textTheme.titleMedium),
+        const Text('No Messages here yet ...',
+            style: ChatTheme01.emptyMsgTitle,),
         const SizedBox(height: 20),
-        Text(
+        const Text(
           'Start the conversation by sending the message',
-          style: _textTheme.labelMedium,
+          style: ChatTheme01.chatBodyStyle,
         ),
       ],
     );

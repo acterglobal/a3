@@ -2,16 +2,6 @@ import 'package:effektio/common/store/KeyConstants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefrence {
-   Future<bool> setAppTheme(bool isDark) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setBool(KeyConstants.isDarkTheme, isDark);
-  }
-
-  Future<bool> getAppTheme() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(KeyConstants.isDarkTheme) ?? true;
-  }
-
   Future<bool> setLoggedIn(bool status) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setBool(KeyConstants.userLoggedIn, status);

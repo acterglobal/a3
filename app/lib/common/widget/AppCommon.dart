@@ -1,16 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
 
 Widget navBarTitle(String title) {
   return Text(
     title,
-    style: const TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.w700,
-      color: Colors.white,
-    ),
+    style: AppCommonTheme.appBartitleStyle,
   );
 }
 
