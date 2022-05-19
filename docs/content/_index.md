@@ -4,8 +4,8 @@ title = "Effektio Docs"
 # The homepage contents
 [extra]
 lead = '<b>Effektio</b> the mobile-first <strong>community</strong> communication and <strong>casual organising</strong> plattform. The palm-pilot for your social groups.'
-url = "/docs"
-url_button = "Dive in"
+url = "/docs/getting-started/setup/"
+url_button = "Getting started"
 repo_version = "GitHub v0.1.0"
 repo_license = "Eventually Open-source Effektio License."
 repo_url = "https://github.com/effektio/effektio"
