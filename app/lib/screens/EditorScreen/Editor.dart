@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, avoid_print
+
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
@@ -5,8 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-
-// void main() => runApp(const HtmlEditorExampleApp());
 
 var arr = [
   Colors.grey,
@@ -25,22 +25,10 @@ var arr = [
 
 List<String> _tagList = [];
 List<Color> _tagColorList = [];
+List<int> selectedIndexList = [];
+var isCheckVisible = false;
 
 Color? tagColor;
-
-// class HtmlEditorExampleApp extends StatelessWidget {
-//   const HtmlEditorExampleApp({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Editor',
-//       theme: ThemeData.dark(),
-//       darkTheme: ThemeData.dark(),
-//       home: const HtmlEditorExample(title: 'Create FAQ'),
-//     );
-//   }
-// }
 
 class HtmlEditorExample extends StatefulWidget {
   const HtmlEditorExample({Key? key, required this.title}) : super(key: key);
@@ -63,13 +51,15 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
     super.initState();
     if (_tagList.isNotEmpty) {
       _tagList.clear();
+      _tagColorList.clear();
+      selectedIndexList.clear();
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: widget.title,
+      title: 'Create FAQ',
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
       home: GestureDetector(
@@ -241,113 +231,152 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
 
   void showBottomSheet() {
     Color? primaryColor = Colors.grey;
+    var indexing;
+    selectedIndexList.clear();
 
     showModalBottomSheet(
+      backgroundColor: Colors.grey[800],
       context: context,
       builder: (context) {
-        return Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Edit Tag',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Container(
-                width: double.infinity,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: AppColors.textFieldColor,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextField(
-                  style: TextStyle(color: primaryColor),
-                  controller: tagTitleController,
-                  cursorColor: Colors.white,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    hintText: 'Tag Name',
-                    hintStyle: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Edit Tag',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
-                    border: InputBorder.none,
                   ),
                 ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Align(
-                alignment: Alignment.center,
-                child: Text(
-                  'Select a color',
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-            ),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 4,
-                children: List.generate(8, (index) {
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            tagColor = arr[index];
-                            print(tagColor?.value.toString());
-                          });
-                        },
-                        child: const Text(''),
-                        style: ElevatedButton.styleFrom(primary: arr[index]),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: Container(
+                    width: double.infinity,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.textFieldColor,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      style: TextStyle(color: primaryColor),
+                      controller: tagTitleController,
+                      cursorColor: Colors.white,
+                      textAlign: TextAlign.center,
+                      decoration: InputDecoration(
+                        hintText: 'Tag Name',
+                        hintStyle: TextStyle(
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                        border: InputBorder.none,
                       ),
                     ),
-                  );
-                }),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: ElevatedButton(
-                onPressed: () => {
-                  setState(() {
-                    if (tagTitleController.text.isNotEmpty) {
-                      _tagList.add(tagTitleController.text.toString());
-                      _tagColorList
-                          .add(tagColor == null ? Colors.white : tagColor!);
-                      print(_tagColorList.toString());
-                      Navigator.of(context).pop();
-                      tagTitleController.clear();
-                    } else {
-                      Fluttertoast.showToast(
-                        msg: 'Please fill the title of Tag',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
-                    }
-                  })
-                },
-                style: ElevatedButton.styleFrom(
-                  primary: AppColors.primaryColor,
-                  shape: const StadiumBorder(),
+                  ),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 80.0, right: 80.0),
-                  child: Text('Submit'),
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'Select a color',
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-            )
-          ],
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 20,
+                      ),
+                      itemCount: 8,
+                      itemBuilder: (BuildContext content, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              tagColor = arr[index];
+                            });
+
+                            setSheetState(() {
+                              indexing = index;
+
+                              if (!selectedIndexList.contains(index)) {
+                                selectedIndexList.clear();
+                                selectedIndexList.add(index);
+                              } else {
+                                selectedIndexList.clear();
+                              }
+                            });
+                          },
+                          child: Container(
+                            height: 80,
+                            width: 80,
+                            child: Visibility(
+                              visible: selectedIndexList.contains(index)
+                                  ? true
+                                  : false,
+                              child: Icon(
+                                Icons.done,
+                                color: Colors.white,
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                              color: arr[index],
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  child: ElevatedButton(
+                    onPressed: () => {
+                      setState(() {
+                        print(indexing);
+                        print(_tagColorList.length);
+                        print(tagColor);
+                        if (tagTitleController.text.isNotEmpty) {
+                          _tagList.add(tagTitleController.text.toString());
+                          _tagColorList
+                              .add(tagColor == null ? Colors.white : tagColor!);
+                          print(_tagColorList.length);
+                          Navigator.of(context).pop();
+                          tagTitleController.clear();
+                        } else {
+                          Fluttertoast.showToast(
+                            msg: 'Please fill the title of Tag',
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            textColor: Colors.white,
+                            fontSize: 16.0,
+                          );
+                        }
+                      })
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: AppColors.primaryColor,
+                      shape: const StadiumBorder(),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 80.0, right: 80.0),
+                      child: Text('Submit'),
+                    ),
+                  ),
+                )
+              ],
+            );
+          },
         );
       },
     );

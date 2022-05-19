@@ -61,7 +61,7 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => HtmlEditorExample(
-                          title: 'Editor',
+                          title: 'Create FAQ',
                         ),
                       ),
                     );
