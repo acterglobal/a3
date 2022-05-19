@@ -2,7 +2,8 @@
 
 import 'package:effektio/common/store/Colors.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show Client, FfiListConversation;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,7 +32,7 @@ class _ChatListState extends State<ChatList> {
 
   Future<void> _getUser() async {
     var fetchClient = await widget.client;
-    user = await fetchClient.userId();
+    user = await fetchClient.userId().then((u) => u.toString());
   }
 
   static const TextStyle optionStyle =

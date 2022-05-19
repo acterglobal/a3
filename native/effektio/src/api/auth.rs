@@ -65,7 +65,7 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
-    let user = Box::<ruma::UserId>::try_from(username.clone())?;
+    let user = ruma::OwnedUserId::try_from(username.clone())?;
     let config = platform::new_client_config(base_path, username)?.user_id(&user);
     // First we need to log in.
     RUNTIME
@@ -88,21 +88,31 @@ pub async fn register_with_registration_token(
     password: String,
     registration_token: String,
 ) -> Result<Client> {
-    let user = Box::<ruma::UserId>::try_from(username.clone())?;
+    let user = ruma::OwnedUserId::try_from(username.clone())?;
     let config = platform::new_client_config(base_path, username.clone())?.user_id(&user);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
+            if let Err(resp) = client.register(register::v3::Request::new()).await {
+                if let Some(_response) = resp.uiaa_response() {
+                    // FIXME: do actually check the registration types...
+                    let request = assign!(register::v3::Request::new(), {
+                        username: Some(&username),
+                        password: Some(&password),
 
-            let request = assign!(register::v3::Request::new(), {
-                username: Some(&username),
-                password: Some(&password),
-                auth: Some(uiaa::AuthData::RegistrationToken(
-                    uiaa::RegistrationToken::new(&registration_token),
-                )),
-            });
-            client.register(request).await?;
+                        auth: Some(uiaa::AuthData::RegistrationToken(
+                            uiaa::RegistrationToken::new(&registration_token),
+                        )),
+                    });
+                    client.register(request).await?;
+                } else {
+                    anyhow::bail!("Server did not indicate how to  allow registration.");
+                }
+            } else {
+                anyhow::bail!("Server is not set up to allow registration.");
+            }
+
             let c = Client::new(
                 client,
                 ClientStateBuilder::default().is_guest(false).build()?,

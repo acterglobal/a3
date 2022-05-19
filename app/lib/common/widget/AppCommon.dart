@@ -25,22 +25,6 @@ String getNameFromId(String name) {
   return name.substring(start, end);
 }
 
-String formatedTime(int value) {
-  int h, m;
-
-  value = value % (24 * 3600);
-  h = ((value ~/ 3600) + 5) % 24;
-  value %= 3600;
-  m = value ~/ 60;
-  String hourLeft = h.toString().length < 2 ? '0' + h.toString() : h.toString();
-  String minuteLeft =
-      m.toString().length < 2 ? '0' + m.toString() : m.toString();
-
-  String result = '$hourLeft:$minuteLeft';
-
-  return result;
-}
-
 String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));

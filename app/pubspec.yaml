@@ -49,14 +49,19 @@ dependencies:
   cached_network_image: ^3.2.0
   flutter_link_previewer: ^2.6.6
   bubble: ^1.2.1
+  colorize_text_avatar: ^1.0.2
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   flutter_launcher_icons: ^0.9.2
+  fluttertoast: ^8.0.9
   flutter_lints: ^1.0.4
+
 
 flutter_icons:
   android: true
@@ -85,6 +90,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icon/
+    - google_fonts/
   
   #   - images/a_dot_ham.jpeg
 

@@ -1,21 +1,33 @@
 import 'dart:core';
 import 'dart:io';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'dart:ui';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 export './effektio_flutter_sdk_ffi.dart' show Client;
 
-// class EffektioClient extends ChangeNotifier {
-//   final Client client;
-//   EffektioClient(this.client);
-// }
+const DEFAULT_SERVER = String.fromEnvironment("DEFAULT_EFFEKTIO_SERVER",
+    defaultValue: 'https://matrix.effektio.org');
+
+Color convertColor(ffi.Color? primary, Color fallback) {
+  if (primary == null) {
+    return fallback;
+  }
+  var data = primary.rgbaU8();
+  return Color.fromARGB(
+    data[3],
+    data[0],
+    data[1],
+    data[2],
+  );
+}
 
 class EffektioSdk {
   static EffektioSdk? _instance;
-  late final Api _api;
+  late final ffi.Api _api;
   final int _index = 0;
-  final List<Client> _clients = [];
+  final List<ffi.Client> _clients = [];
 
   EffektioSdk._(this._api);
 
@@ -34,17 +46,15 @@ class EffektioSdk {
     String appDocPath = appDocDir.path;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList('sessions') ?? []);
-    // TODO: parallel?!?
     bool loggedIn = false;
     for (var token in sessions) {
-      Client client = await _api.loginWithToken(appDocPath, token);
+      ffi.Client client = await _api.loginWithToken(appDocPath, token);
       clients.add(client);
       loggedIn = await client.loggedIn();
     }
 
     if (_clients.isEmpty) {
-      Client client =
-          await _api.guestClient(appDocPath, 'https://matrix.effektio.org');
+      ffi.Client client = await _api.guestClient(appDocPath, DEFAULT_SERVER);
       clients.add(client);
       loggedIn = await client.loggedIn();
       await _persistSessions();
@@ -52,13 +62,13 @@ class EffektioSdk {
     debugPrint('Restored $_clients: $loggedIn');
   }
 
-  Future<Client> get currentClient async {
+  Future<ffi.Client> get currentClient async {
     return _clients[_index];
   }
 
   static Future<EffektioSdk> get instance async {
     if (_instance == null) {
-      final api = Api.load();
+      final api = ffi.Api.load();
       api.initLogging('warn');
       _instance = EffektioSdk._(api);
       await _instance!._restore();
@@ -66,7 +76,7 @@ class EffektioSdk {
     return _instance!;
   }
 
-  Future<Client> login(String username, String password) async {
+  Future<ffi.Client> login(String username, String password) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
       if (await client.userId() == username) {
@@ -86,7 +96,35 @@ class EffektioSdk {
     return client;
   }
 
-  List<Client> get clients {
+  Future<ffi.Client> signUp(String username, String password,
+      String displayName, String token,) async {
+    // To be removed when client management is implemented.
+    for (final client in _clients) {
+      if (await client.userId() == username) {
+        return client;
+      }
+    }
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    final client = await _api.registerWithRegistrationToken(
+      appDocPath,
+      username,
+      password,
+      token,
+    );
+    final ac = await client.account();
+    await ac.setDisplayName(displayName);
+    if (_clients.length == 1 && _clients[0].isGuest()) {
+      // we are replacing a guest account
+      _clients.removeAt(0);
+    }
+    _clients.add(client);
+    await _persistSessions();
+    return client;
+  }
+
+  List<ffi.Client> get clients {
     return _clients;
   }
 }

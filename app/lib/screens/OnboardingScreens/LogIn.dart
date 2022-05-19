@@ -20,13 +20,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
+  final userNameController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    emailController.dispose();
+    userNameController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -97,53 +97,23 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.w300,
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 100),
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: AppColors.textFieldColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: BlocBuilder<SignInBloc, SignInState>(
-                          builder: (context, state) {
-                            return TextFormField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(
-                                  left: 10.0,
-                                  top: 12,
-                                  right: 10,
-                                ),
-
-                                border: InputBorder.none,
-                                hintText:
-                                    'Email Address', // pass the hint text parameter here
-                                hintStyle: TextStyle(color: Colors.grey),
-                              ),
-                              style: TextStyle(color: Colors.white),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter email';
-                                }
-                                if (!value[0].startsWith('@')) {
-                                  return 'Please enter correct username format (starts with @)';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) => context
-                                  .read<SignInBloc>()
-                                  .add(SignInUsernameChanged(username: value)),
-                            );
-                          },
-                        ),
+                       SizedBox(
+                        height: 35,
+                      ),
+                      signInOnboardingTextField(
+                        'User Name',
+                        userNameController,
+                        'Please enter User Name',
+                        SignInOnboardingTextFieldEnum.userName,
                       ),
                       SizedBox(
                         height: 20,
                       ),
-                      onboardingTextField(
+                      signInOnboardingTextField(
                         'Password',
                         passwordController,
                         'Please enter Password',
+                        SignInOnboardingTextFieldEnum.password,
                       ),
                       Container(
                         margin: EdgeInsets.only(right: 20),
@@ -173,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       context.read<SignInBloc>().add(
                                             SignInSubmitted(
-                                              username: emailController.text,
+                                              username: userNameController.text,
                                               password: passwordController.text,
                                             ),
                                           );

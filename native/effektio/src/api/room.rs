@@ -1,5 +1,5 @@
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, UserId, RUNTIME};
+use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
@@ -9,7 +9,7 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
-        EventId,
+        EventId, OwnedUserId,
     },
 };
 
@@ -39,7 +39,7 @@ impl Member {
         self.member.display_name().map(|s| s.to_owned())
     }
 
-    pub fn user_id(&self) -> UserId {
+    pub fn user_id(&self) -> OwnedUserId {
         self.member.user_id().to_owned()
     }
 }
@@ -95,7 +95,7 @@ impl Room {
             .await?
     }
 
-    pub async fn get_member(&self, user_id: UserId) -> Result<Member> {
+    pub async fn get_member(&self, user_id: Box<OwnedUserId>) -> Result<Member> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {

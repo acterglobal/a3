@@ -7,7 +7,3 @@ members = [
 lto = true
 panic = 'unwind'
 codegen-units = 1
-
-[patch."https://github.com/effektio/ffi-gen"]
-ffi-gen = { path = "../ffi-gen/" }
-ffi-gen-macro = { path = "../ffi-gen/macro" }

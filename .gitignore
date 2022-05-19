@@ -3,6 +3,7 @@ target
 .env.sh
 .vscode
 .idea
+.local
 
 native/effektio/src/api_generated.rs
 native/effektio/bindings.h

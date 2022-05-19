@@ -1,7 +1,5 @@
 use crate::platform;
 use anyhow::{bail, Context, Result};
-use effektio_core::ruma::api::client::{account::register, uiaa};
-use effektio_core::RestoreToken;
 use futures::Stream;
 use lazy_static::lazy_static;
 use matrix_sdk::Session;
@@ -29,13 +27,17 @@ pub use auth::{
 };
 pub use client::{Client, ClientStateBuilder};
 pub use conversation::Conversation;
+pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::Group;
 pub use messages::RoomMessage;
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 
+#[cfg(feature = "with-mocks")]
+pub use effektio_core::mocks::*;
+
 pub type UserId = ruma::OwnedUserId;
-pub type EventId = Box<ruma::EventId>;
+pub type EventId = ruma::OwnedEventId;
 
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
