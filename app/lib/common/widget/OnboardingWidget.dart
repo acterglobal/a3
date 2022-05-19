@@ -4,7 +4,7 @@
 import 'package:effektio/blocs/login/signIn_bloc.dart';
 import 'package:effektio/blocs/login/signIn_event.dart';
 import 'package:effektio/blocs/login/signIn_state.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -38,7 +38,7 @@ class CustomOnbaordingButton extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        color: AppColors.primaryColor,
+        color: AppCommonTheme.primaryColor,
         onPressed: onPressed,
       ),
     );
@@ -56,7 +56,7 @@ Widget onboardingTextField(
     margin: EdgeInsets.only(left: 20, right: 20),
     height: 60,
     decoration: BoxDecoration(
-      color: AppColors.textFieldColor,
+      color: AppCommonTheme.textFieldColor,
       borderRadius: BorderRadius.circular(4),
     ),
     child: BlocBuilder<SignInBloc, SignInState>(

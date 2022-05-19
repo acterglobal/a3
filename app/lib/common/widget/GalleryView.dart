@@ -1,10 +1,10 @@
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
 
 Widget galleryImagesView(String image) {
   return Container(
     decoration: BoxDecoration(
-      color: AppColors.textFieldColor,
+      color: AppCommonTheme.textFieldColor,
       borderRadius: BorderRadius.circular(25),
     ),
     width: double.infinity,

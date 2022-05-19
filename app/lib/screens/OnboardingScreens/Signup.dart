@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:effektio/common/store/AppConstants.dart';
+import 'package:themed/themed.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -36,8 +37,8 @@ class _SignupScreentate extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -57,22 +58,14 @@ class _SignupScreentate extends State<SignupScreen> {
               ),
               Text(
                 'Lets get Started',
-                style: TextStyle(
-                  fontSize: 25,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: AuthTheme.authTitleStyle,
               ),
               SizedBox(
                 height: 10,
               ),
               Text(
                 'Create an account to explore',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w300,
-                ),
+                style: AuthTheme.authbodyStyle,
               ),
               Container(
                 margin: EdgeInsets.only(left: 20, right: 20, top: 50),
@@ -83,7 +76,7 @@ class _SignupScreentate extends State<SignupScreen> {
                       child: Container(
                         height: 60,
                         decoration: BoxDecoration(
-                          color: AppColors.textFieldColor,
+                          color: AppCommonTheme.textFieldColor,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: TextFormField(
@@ -97,9 +90,10 @@ class _SignupScreentate extends State<SignupScreen> {
                             border: InputBorder.none,
                             hintText:
                                 'First Name', // pass the hint text parameter here
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle:
+                                TextStyle(color: AuthTheme.hintTextColor),
                           ),
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: AuthTheme.textFieldTextColor),
                           validator: (val) =>
                               val!.isEmpty ? 'Please enter First Name' : null,
                         ),
@@ -112,7 +106,7 @@ class _SignupScreentate extends State<SignupScreen> {
                       child: Container(
                         height: 60,
                         decoration: BoxDecoration(
-                          color: AppColors.textFieldColor,
+                          color: AppCommonTheme.textFieldColor,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: TextFormField(
@@ -126,9 +120,10 @@ class _SignupScreentate extends State<SignupScreen> {
                             border: InputBorder.none,
                             hintText:
                                 'Last name', // pass the hint text parameter here
-                            hintStyle: TextStyle(color: Colors.grey),
+                            hintStyle:
+                                TextStyle(color: AuthTheme.hintTextColor),
                           ),
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: AuthTheme.textFieldTextColor),
                           validator: (val) =>
                               val!.isEmpty ? 'Please enter Last Name' : null,
                         ),
@@ -141,7 +136,7 @@ class _SignupScreentate extends State<SignupScreen> {
                 margin: EdgeInsets.only(left: 20, right: 20, top: 20),
                 height: 60,
                 decoration: BoxDecoration(
-                  color: AppColors.textFieldColor,
+                  color: AppCommonTheme.textFieldColor,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: TextFormField(
@@ -152,9 +147,9 @@ class _SignupScreentate extends State<SignupScreen> {
                     border: InputBorder.none,
                     hintText:
                         'Email Address', // pass the hint text parameter here
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: AuthTheme.hintTextColor),
                   ),
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AuthTheme.textFieldTextColor),
                   validator: (value) => ValidConstants.isEmail(value!)
                       ? null
                       : 'Please enter vaild email',
@@ -176,11 +171,7 @@ class _SignupScreentate extends State<SignupScreen> {
                   text: TextSpan(
                     // Note: Styles for TextSpans must be explicitly defined.
                     // Child text spans will inherit styles from parent
-                    style: TextStyle(
-                      fontSize: 16.0,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.white,
-                    ),
+                    style: AuthTheme.authbodyStyle,
                     children: <TextSpan>[
                       TextSpan(
                         text: 'By clicking to sign up you agree to our ',
@@ -191,7 +182,8 @@ class _SignupScreentate extends State<SignupScreen> {
                             debugPrint('Terms of Service"');
                           },
                         text: 'Terms and Condition',
-                        style: TextStyle(color: Colors.redAccent),
+                        style: AuthTheme.authbodyStyle +
+                            AppCommonTheme.primaryColor,
                       ),
                       TextSpan(text: ' and that you have read our '),
                       TextSpan(
@@ -200,7 +192,8 @@ class _SignupScreentate extends State<SignupScreen> {
                             debugPrint('policy"');
                           },
                         text: 'Privacy Policy',
-                        style: TextStyle(color: AppColors.primaryColor),
+                        style: AuthTheme.authbodyStyle +
+                            AppCommonTheme.primaryColor,
                       ),
                     ],
                   ),
@@ -223,11 +216,7 @@ class _SignupScreentate extends State<SignupScreen> {
                 children: [
                   Text(
                     'Already have an account ?  ',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w300,
-                    ),
+                    style: AuthTheme.authbodyStyle,
                   ),
                   InkWell(
                     onTap: () {
@@ -240,11 +229,8 @@ class _SignupScreentate extends State<SignupScreen> {
                     },
                     child: Text(
                       'Sign in ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.primaryColor,
-                        fontWeight: FontWeight.w300,
-                      ),
+                      style: AuthTheme.authbodyStyle +
+                          AppCommonTheme.primaryColor,
                     ),
                   )
                 ],

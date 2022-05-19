@@ -1,12 +1,13 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, FfiListConversation;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:themed/themed.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({Key? key, required this.client}) : super(key: key);
@@ -35,16 +36,12 @@ class _ChatListState extends State<ChatList> {
     user = await fetchClient.userId().then((u) => u.toString());
   }
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
         leadingWidth: MediaQuery.of(context).size.width / 5,
         toolbarHeight: MediaQuery.of(context).size.height / 15,
-        backgroundColor: Color.fromRGBO(36, 38, 50, 1),
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.only(left: 10),
@@ -52,10 +49,7 @@ class _ChatListState extends State<ChatList> {
             onPressed: () {},
             child: Text(
               'Select',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.primaryColor,
-              ),
+              style: ChatTheme01.chatTitleStyle + AppCommonTheme.primaryColor,
             ),
           ),
         ),
@@ -67,6 +61,7 @@ class _ChatListState extends State<ChatList> {
             ),
             icon: SvgPicture.asset(
               'assets/images/edit.svg',
+              color: AppCommonTheme.svgIconColor,
               width: 20,
               height: 20,
             ),
@@ -84,11 +79,7 @@ class _ChatListState extends State<ChatList> {
                 ),
                 child: Text(
                   'Chat',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                  ),
+                  style: AppCommonTheme.appBartitleStyle,
                 ),
               ),
               const SizedBox(
@@ -104,7 +95,7 @@ class _ChatListState extends State<ChatList> {
                       width: MediaQuery.of(context).size.width,
                       child: Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
+                          color: AppCommonTheme.primaryColor,
                         ),
                       ),
                     );
@@ -127,10 +118,10 @@ class _ChatListState extends State<ChatList> {
                             child: Container(
                               height: MediaQuery.of(context).size.height,
                               width: MediaQuery.of(context).size.width,
-                              color: AppColors.backgroundColor,
+                              color: AppCommonTheme.backgroundColor,
                               child: Text(
                                 AppLocalizations.of(context)!.loadingConvo,
-                                style: optionStyle,
+                                style: ChatTheme01.emptyMsgTitle,
                               ),
                             ),
                           );
@@ -156,11 +147,7 @@ class _ChatListState extends State<ChatList> {
                         ),
                         Text(
                           'Looks Empty here...',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: ChatTheme01.emptyMsgTitle,
                         ),
                         SizedBox(
                           height: 5,
@@ -168,13 +155,10 @@ class _ChatListState extends State<ChatList> {
                         Center(
                           child: Container(
                             height: MediaQuery.of(context).size.height / 3,
-                            width: MediaQuery.of(context).size.width / 2,
+                            width: MediaQuery.of(context).size.width / 1.5,
                             child: Text(
                               'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
+                              style: ChatTheme01.chatBodyStyle,
                               overflow: TextOverflow.clip,
                               textAlign: TextAlign.center,
                             ),

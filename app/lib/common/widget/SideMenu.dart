@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -8,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:themed/themed.dart';
 
 class SideDrawer extends StatefulWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
@@ -19,6 +20,7 @@ class SideDrawer extends StatefulWidget {
 class _SideDrawerState extends State<SideDrawer> {
   late Future<String> name;
   late Future<String> username;
+  bool switchValue = false;
   bool isGuest = false;
   @override
   void initState() {
@@ -28,150 +30,143 @@ class _SideDrawerState extends State<SideDrawer> {
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
-    final _textTheme = Theme.of(context).textTheme;
     return Drawer(
-      backgroundColor: AppColors.textFieldColor,
+      backgroundColor: AppCommonTheme.backgroundColor,
       child: Column(
         children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(
-              top: _size.height * 0.04,
-            ),
-            child: FutureBuilder<Client>(
-              future: widget.client,
-              builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.requireData.isGuest()) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+          SizedBox(
+            height: 20,
+          ),
+          FutureBuilder<Client>(
+            future: widget.client,
+            builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.requireData.isGuest()) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(right: 20),
+                        alignment: Alignment.bottomCenter,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            alignment: Alignment.center,
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              AppCommonTheme.primaryColor,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/login');
+                          },
+                          child: Text('Login'),
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.bottomCenter,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            alignment: Alignment.center,
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                              AppCommonTheme.primaryColor,
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/signup');
+                          },
+                          child: Text('Signup'),
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  name = snapshot.requireData.displayName();
+                  username =
+                      snapshot.requireData.userId().then((u) => u.toString());
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/profile',
+                        arguments: snapshot.requireData,
+                      );
+                    },
+                    child: Row(
                       children: [
                         Container(
-                          margin: EdgeInsets.only(right: 20),
-                          alignment: Alignment.bottomCenter,
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              alignment: Alignment.center,
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                AppColors.primaryColor,
-                              ),
-                            ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/login');
-                            },
-                            child: Text('Login'),
+                          margin: EdgeInsets.all(10),
+                          child: CustomAvatar(
+                            radius: 24,
+                            avatar: snapshot.requireData.avatar(),
+                            displayName: name,
+                            isGroup: false,
+                            stringName: '',
                           ),
                         ),
-                        Container(
-                          alignment: Alignment.bottomCenter,
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              alignment: Alignment.center,
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                AppColors.primaryColor,
-                              ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FutureBuilder<String>(
+                              future:
+                                  name, // a previously-obtained Future<String> or null
+                              builder: (
+                                BuildContext context,
+                                AsyncSnapshot<String> snapshot,
+                              ) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data ?? 'No Name',
+                                    style: SideMenuAndProfileTheme
+                                        .sideMenuProfileStyle,
+                                  );
+                                } else {
+                                  return SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: AppCommonTheme.primaryColor,
+                                    ),
+                                  );
+                                }
+                              },
                             ),
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/signup');
-                            },
-                            child: Text('Signup'),
-                          ),
+                            FutureBuilder<String>(
+                              future:
+                                  username, // a previously-obtained Future<String> or null
+                              builder: (
+                                BuildContext context,
+                                AsyncSnapshot<String> snapshot,
+                              ) {
+                                if (snapshot.hasData) {
+                                  return Text(
+                                    snapshot.data ?? '',
+                                    style: SideMenuAndProfileTheme
+                                            .sideMenuProfileStyle +
+                                        FontSize(14),
+                                  );
+                                } else {
+                                  return SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircularProgressIndicator(
+                                      color: AppCommonTheme.primaryColor,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
                         ),
                       ],
-                    );
-                  } else {
-                    name = snapshot.requireData.displayName();
-                    username =
-                        snapshot.requireData.userId().then((u) => u.toString());
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/profile',
-                          arguments: snapshot.requireData,
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(10),
-                            child: CustomAvatar(
-                              radius: 24,
-                              avatar: snapshot.requireData.avatar(),
-                              displayName: name,
-                              isGroup: false,
-                              stringName: '',
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              FutureBuilder<String>(
-                                future:
-                                    name, // a previously-obtained Future<String> or null
-                                builder: (
-                                  BuildContext context,
-                                  AsyncSnapshot<String> snapshot,
-                                ) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                      snapshot.data ?? 'No Name',
-                                      style: GoogleFonts.montserrat(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    );
-                                  } else {
-                                    return SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                              FutureBuilder<String>(
-                                future:
-                                    username, // a previously-obtained Future<String> or null
-                                builder: (
-                                  BuildContext context,
-                                  AsyncSnapshot<String> snapshot,
-                                ) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                      snapshot.data ?? '',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.white,
-                                      ),
-                                    );
-                                  } else {
-                                    return SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child: CircularProgressIndicator(
-                                        color: AppColors.primaryColor,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                } else {
-                  return Container();
+                    ),
+                  );
                 }
-              },
-            ),
+              } else {
+                return Container();
+              }
+            },
           ),
           SizedBox(
             height: _size.height * 0.04,
@@ -190,7 +185,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Todo List',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -203,7 +198,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Gallery',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {
                       Navigator.pushNamed(context, '/gallery'),
@@ -218,7 +213,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Events',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -231,7 +226,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared resource',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -244,7 +239,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Polls & Votes',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
                   ),
@@ -257,7 +252,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Group Budgeting',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {
                       Navigator.push(
@@ -277,7 +272,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'Shared Documents',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {},
                   ),
@@ -290,7 +285,7 @@ class _SideDrawerState extends State<SideDrawer> {
                     ),
                     title: Text(
                       'FAQs',
-                      style: _textTheme.bodyText1,
+                      style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {},
                   ),
@@ -328,7 +323,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                     'Logout',
                                     style: GoogleFonts.montserrat(
                                       fontSize: 16,
-                                      color: AppColors.primaryColor,
+                                      color: AppCommonTheme.primaryColor,
                                     ),
                                   )
                                 ],
