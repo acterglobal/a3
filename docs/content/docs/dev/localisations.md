@@ -1,5 +1,16 @@
-# Localizing new content/strings in effektio app
++++
+title = "Localisation"
+
+weight = 10
+template = "docs/page.html"
+
+[extra]
+toc = true
+top = false
++++
+
 Effektio app is supported with flutter localizations and it is already setup and defined in ```pubspec.yaml```.
+
 ## Add new locale in the application
 1. Firstly go the ```l10.dart``` file and add the locale you want to support in the application.
 ```
