@@ -1,9 +1,8 @@
 +++
-title = "Docs"
+title = "Developer Documentation"
+
+sort_by = "weight"
+weight = 1
+template = "docs/section.html"
+
 +++
-
-
-## API docs
- - [App docs (main)](/api/main/app/)
- - [SDK docs (main)](/api/main/dart-sdk/)
- - [Rust docs (main)](/api/main/rust/effektio/)
