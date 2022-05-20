@@ -9,6 +9,7 @@ import 'package:effektio/blocs/sign_up/signup_bloc.dart';
 import 'package:effektio/blocs/sign_up/signup_event.dart';
 import 'package:effektio/blocs/sign_up/signup_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // ignore: must_be_immutable
@@ -67,6 +68,12 @@ Widget signUpOnboardingTextField(
     child: BlocBuilder<SignUpBloc, SignUpState>(
       builder: (context, state) {
         return TextFormField(
+          inputFormatters: (type == SignUpOnboardingTextFieldEnum.userName) ||
+                  (type == SignUpOnboardingTextFieldEnum.password)
+              ? [
+                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                ]
+              : [],
           obscureText: type == SignUpOnboardingTextFieldEnum.password,
           controller: controller,
           decoration: InputDecoration(
@@ -81,11 +88,6 @@ Widget signUpOnboardingTextField(
             if (val == null || val.trim().isEmpty) {
               return validatorText;
             }
-            if (type == SignUpOnboardingTextFieldEnum.userName) {
-              if (!val[0].startsWith('@')) {
-                return 'Please enter correct username format (starts with @)';
-              }
-            }
             return null;
           },
           onChanged: (value) {
@@ -96,6 +98,12 @@ Widget signUpOnboardingTextField(
                     .add(SignUpNameChanged(name: value.trim()));
                 break;
               case SignUpOnboardingTextFieldEnum.userName:
+                if (!value.startsWith('@')) {
+                  controller.text = '@${controller.text.trim()}';
+                  controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: controller.text.length),
+                  );
+                }
                 context
                     .read<SignUpBloc>()
                     .add(SignUpUsernameChanged(username: value.trim()));
@@ -136,6 +144,9 @@ Widget signInOnboardingTextField(
     child: BlocBuilder<SignInBloc, SignInState>(
       builder: (context, state) {
         return TextFormField(
+          inputFormatters: [
+            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+          ],
           obscureText: type == SignInOnboardingTextFieldEnum.password,
           controller: controller,
           decoration: InputDecoration(
@@ -150,17 +161,18 @@ Widget signInOnboardingTextField(
             if (val == null || val.trim().isEmpty) {
               return validatorText;
             }
-            if (type == SignInOnboardingTextFieldEnum.userName) {
-              if (!val[0].startsWith('@')) {
-                return 'Please enter correct username format (starts with @)';
-              }
-            }
-
+           
             return null;
           },
           onChanged: (value) {
             switch (type) {
               case SignInOnboardingTextFieldEnum.userName:
+                if (!value.startsWith('@')) {
+                  controller.text = '@${controller.text.trim()}';
+                  controller.selection = TextSelection.fromPosition(
+                    TextPosition(offset: controller.text.length),
+                  );
+                }
                 context
                     .read<SignInBloc>()
                     .add(SignInUsernameChanged(username: value.trim()));
