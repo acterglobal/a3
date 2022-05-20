@@ -5,7 +5,7 @@ services:
 
   synapse:
     build:
-        context: .github/effektio-synapse-ci
+        context: .github/effekio-synapse-ci
         dockerfile: Dockerfile
     image: lightyear/effekio-synapse-ci:latest
     restart: unless-stopped
