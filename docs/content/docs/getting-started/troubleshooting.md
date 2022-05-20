@@ -15,9 +15,19 @@ top = false
 
 The current system has a problem with the latest android native development kit (NDK), please downgrade to version r22.* - then things should be fine.
 
-## Emulator crash 
+## Android Build in Windows
 
-Please use the `Pixel 4 API 32 x86` emulator for development and testing. Other Emulators - in particular 32bit variants - have shown to be problematic.
+1. 35GB of HDD needed for project building. It doesn't cover android emulator vm.
+2. Run `cargo install cargo-make` so that `cargo make` can be executed.
+3. Run `cargo make android` in root directory.
+4. Open sdk manager in android studio and install `Google Play x86_64 API 30` image and `Android SDK Platform 30`.
+  - `API 31+` image is not launching in windows for now.
+  - This apk is not working on `x86` image of `API 30`.
+  - `API 32` doesn't contain `x86` image now.
+5. Open virtual device manager in android studio and create vm using `Google Play x86_64 API 30` image.
+  - 4GB of internal storage is recommended, because apk size of this project is 500+MB.
+6. Launch android emulator.
+7. Change to `app` directory and run `flutter run`.
 
 ## iOS Build
 
