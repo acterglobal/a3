@@ -98,12 +98,6 @@ Widget signUpOnboardingTextField(
                     .add(SignUpNameChanged(name: value.trim()));
                 break;
               case SignUpOnboardingTextFieldEnum.userName:
-                if (!value.startsWith('@')) {
-                  controller.text = '@${controller.text.trim()}';
-                  controller.selection = TextSelection.fromPosition(
-                    TextPosition(offset: controller.text.length),
-                  );
-                }
                 context
                     .read<SignUpBloc>()
                     .add(SignUpUsernameChanged(username: value.trim()));
@@ -161,18 +155,12 @@ Widget signInOnboardingTextField(
             if (val == null || val.trim().isEmpty) {
               return validatorText;
             }
-           
+
             return null;
           },
           onChanged: (value) {
             switch (type) {
               case SignInOnboardingTextFieldEnum.userName:
-                if (!value.startsWith('@')) {
-                  controller.text = '@${controller.text.trim()}';
-                  controller.selection = TextSelection.fromPosition(
-                    TextPosition(offset: controller.text.length),
-                  );
-                }
                 context
                     .read<SignInBloc>()
                     .add(SignInUsernameChanged(username: value.trim()));
