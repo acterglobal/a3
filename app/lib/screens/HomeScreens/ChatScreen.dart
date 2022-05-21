@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -15,6 +15,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
+import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
@@ -289,9 +290,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(51, 53, 64, 0.4),
+        backgroundColor: AppCommonTheme.backgroundColor,
         elevation: 1,
         centerTitle: true,
         toolbarHeight: 70,
@@ -301,7 +301,10 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: SvgPicture.asset('assets/images/back_button.svg'),
+              icon: SvgPicture.asset(
+                'assets/images/back_button.svg',
+                color: AppCommonTheme.svgIconColor,
+              ),
             ),
           ],
         ),
@@ -316,11 +319,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Text(
                     snapshot.requireData,
                     overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                    style: ChatTheme01.chatTitleStyle,
                   );
                 } else {
                   return Text('Loading Name');
@@ -337,18 +336,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   return Text(
                     '${snapshot.requireData.length.toString()} Members',
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
+                    style:
+                        ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
                   );
                 } else {
                   return Container(
                     height: 15,
                     width: 15,
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: AppCommonTheme.primaryColor,
                     ),
                   );
                 }
@@ -384,7 +380,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   height: 15,
                   width: 15,
                   child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
+                    color: AppCommonTheme.primaryColor,
                   ),
                 ),
               )

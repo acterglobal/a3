@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAvatar extends StatelessWidget {
@@ -32,7 +32,8 @@ class CustomAvatar extends StatelessWidget {
           return const SizedBox(
             height: 20,
             width: 20,
-            child: CircularProgressIndicator(color: AppColors.primaryColor),
+            child:
+                CircularProgressIndicator(color: AppCommonTheme.primaryColor),
           );
         } else {
           if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
@@ -80,7 +81,7 @@ class CustomAvatar extends StatelessWidget {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                          color: AppColors.primaryColor,
+                          color: AppCommonTheme.primaryColor,
                         ),
                       );
                     }

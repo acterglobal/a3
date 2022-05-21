@@ -13,4 +13,5 @@ class KeyConstants {
   static const String resumeId = 'resumeId';
   static const String profilePic = 'profilePic';
   static const String subscriptions = 'subscriptions';
+  static const String isDarkTheme = 'themeMode';
 }

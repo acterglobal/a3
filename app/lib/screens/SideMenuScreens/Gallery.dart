@@ -1,4 +1,4 @@
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/GalleryView.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.textFieldColor,
+        backgroundColor: AppCommonTheme.textFieldColor,
         title: navBarTitle('Gallery'),
         centerTitle: true,
       ),

@@ -1,7 +1,8 @@
 +++
-title = "Docs"
+title = "Development"
 
 sort_by = "weight"
-weight = 1
+weight = 10
 template = "docs/section.html"
+
 +++

@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
@@ -30,14 +31,8 @@ class ChatOverview extends StatelessWidget {
               room: rooms[index],
               user: user,
             ),
-            Container(
-              child: Divider(
-                indent: 75,
-                endIndent: 15,
-                height: 1,
-                thickness: 0.5,
-                color: Colors.grey[700],
-              ),
+            Divider(
+              height: 1,
             ),
           ],
         );
@@ -80,11 +75,7 @@ class ChatListItem extends StatelessWidget {
           if (snapshot.hasData) {
             return Text(
               snapshot.requireData,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+              style: ChatTheme01.chatTitleStyle,
             );
           } else {
             return Text('Loading Name');
@@ -99,10 +90,7 @@ class ChatListItem extends StatelessWidget {
               margin: const EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
                 '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.white,
-                ),
+                style: ChatTheme01.latestChatStyle,
                 maxLines: 2,
               ),
             );
@@ -122,11 +110,7 @@ class ChatListItem extends StatelessWidget {
                   isUtc: true,
                 ),
               ),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w300,
-              ),
+              style: ChatTheme01.latestChatDateStyle,
             );
           } else {
             return const SizedBox();

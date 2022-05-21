@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/FaqListItem.dart';
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
