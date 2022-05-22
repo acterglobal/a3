@@ -22,6 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
+  bool signInclicked = false;
 
   @override
   void dispose() {
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: BlocListener<SignInBloc, SignInState>(
                 listener: (context, state) {
                   final formStatus = state.formStatus;
-                  if (formStatus is SubmissionFailed) {
+                  if (formStatus is SubmissionFailed && signInclicked) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: Colors.redAccent,
@@ -88,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         'Sign in to Continue',
                         style: AuthTheme.authbodyStyle,
                       ),
-                       SizedBox(
+                      SizedBox(
                         height: 35,
                       ),
                       signInOnboardingTextField(
@@ -128,6 +129,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? CircularProgressIndicator()
                               : CustomOnbaordingButton(
                                   onPressed: () {
+                                    signInclicked = true;
+                                    Future.delayed(Duration(seconds: 1))
+                                        .then((_) {
+                                      signInclicked = false;
+                                    });
                                     if (_formKey.currentState!.validate()) {
                                       context.read<SignInBloc>().add(
                                             SignInSubmitted(

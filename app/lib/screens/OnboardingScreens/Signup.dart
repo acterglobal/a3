@@ -27,6 +27,7 @@ class _SignupScreentate extends State<SignupScreen> {
   final tokenController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final nameController = TextEditingController();
+  bool signUpclicked = false;
 
   @override
   void dispose() {
@@ -49,7 +50,7 @@ class _SignupScreentate extends State<SignupScreen> {
               child: BlocListener<SignUpBloc, SignUpState>(
                 listener: (context, state) {
                   final formStatus = state.formStatus;
-                  if (formStatus is SubmissionFailed) {
+                  if (formStatus is SubmissionFailed && signUpclicked) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         duration: Duration(seconds: 5),
@@ -179,6 +180,11 @@ class _SignupScreentate extends State<SignupScreen> {
                               ? CircularProgressIndicator()
                               : CustomOnbaordingButton(
                                   onPressed: () {
+                                    signUpclicked = true;
+                                    Future.delayed(Duration(seconds: 1))
+                                        .then((_) {
+                                      signUpclicked = false;
+                                    });
                                     if (_formKey.currentState!.validate()) {
                                       context.read<SignUpBloc>().add(
                                             SignUpSubmitted(
