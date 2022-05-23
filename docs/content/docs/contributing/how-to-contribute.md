@@ -24,7 +24,7 @@ top = false
     - post a comment that you'd like to work on it, so others will know you are working on it
 - Follow the [GitHub flow](https://guides.github.com/introduction/flow/).
 - After submitting your PR, accept the CLA (the bot will comment on the PR for you), accepting your code to be published under the [Effektio Source License](../license/)
-- Address all review remarks, ensure the CI is passing and the PR ios up to date with latest `main`
+- Address all review remarks, ensure the CI is passing and the PR ios up to date with latest `main`, more details in **[the review process description](../reviews)**
 
 ### Create an issue
 
