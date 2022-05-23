@@ -93,9 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 35,
                       ),
                       signInOnboardingTextField(
-                        'User Name',
+                        'Username',
                         userNameController,
-                        'Please enter User Name',
+                        'Please enter Username',
                         SignInOnboardingTextFieldEnum.userName,
                       ),
                       SizedBox(

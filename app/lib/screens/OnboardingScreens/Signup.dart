@@ -115,9 +115,9 @@ class _SignupScreentate extends State<SignupScreen> {
                         SignUpOnboardingTextFieldEnum.name,
                       ),
                       signUpOnboardingTextField(
-                        'user Name',
+                        'Username',
                         userNameController,
-                        'Please enter User Name',
+                        'Please enter Username',
                         SignUpOnboardingTextFieldEnum.userName,
                       ),
                       signUpOnboardingTextField(
