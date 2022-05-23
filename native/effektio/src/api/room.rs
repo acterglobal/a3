@@ -3,13 +3,19 @@ use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
+use js_int::UInt;
 use matrix_sdk::ruma;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
-        EventId, OwnedUserId,
+        events::{
+            file::{FileContent, FileContentInfo},
+            image::ImageEventContent,
+            room::message::RoomMessageEventContent,
+            AnyMessageLikeEventContent,
+        },
+        EventId, OwnedMxcUri, OwnedUserId,
     },
 };
 
@@ -187,6 +193,44 @@ impl Room {
                         AnyMessageLikeEventContent::RoomMessage(
                             RoomMessageEventContent::text_plain(message),
                         ),
+                        None,
+                    )
+                    .await?;
+                Ok(r.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn send_image_message(
+        &self,
+        message: String,
+        uri: String,
+        name: Option<String>,
+        mimetype: Option<String>,
+        size: Option<u64>,
+    ) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let url = OwnedMxcUri::from(uri);
+                let mut info = FileContentInfo::default();
+                info.name = name;
+                info.mimetype = mimetype;
+                info.size = match size {
+                    Some(val) => UInt::new(val),
+                    None => None,
+                };
+                let file = FileContent::plain(url, Some(Box::new(info)));
+                let content = ImageEventContent::plain(message, file);
+                let r = room
+                    .send(
+                        AnyMessageLikeEventContent::RoomMessage(RoomMessageEventContent::from(
+                            content,
+                        )),
                         None,
                     )
                     .await?;

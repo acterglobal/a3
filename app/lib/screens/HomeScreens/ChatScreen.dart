@@ -212,12 +212,19 @@ class _ChatScreenState extends State<ChatScreen> {
     if (result != null) {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
+      var eventId = await widget.room.sendImageMessage(
+        'Image placeholder',
+        result.path,
+        result.name,
+        result.mimeType,
+        bytes.length,
+      );
 
       final message = types.ImageMessage(
         author: _user,
         createdAt: DateTime.now().millisecondsSinceEpoch,
         height: image.height.toDouble(),
-        id: randomString(),
+        id: eventId,
         name: result.name,
         size: bytes.length,
         uri: result.path,

@@ -138,6 +138,8 @@ object Conversation {
     /// returns the event_id as given by the server of the event soon after
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
+
+    fn send_image_message(message: string, uri: string, name: Option<string>, mimetype: Option<string>, size: Option<u64>) -> Future<Result<string>>;
 }
 
 object Group {
