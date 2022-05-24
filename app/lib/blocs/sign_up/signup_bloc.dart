@@ -39,8 +39,14 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     String token,
   ) async {
     final sdk = await EffektioSdk.instance;
+    if (!username.contains(':')) {
+      username = '${username}:effektio.org';
+    }
+    if (!username.startsWith('@')) {
+      username = '@${username}';
+    }
     Client client = await sdk.signUp(
-      username.startsWith('@') ? username : '@$username',
+      username,
       password,
       displayName,
       token,

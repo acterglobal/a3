@@ -24,6 +24,12 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
 
   Future<Client> login(String username, String password) async {
     final sdk = await EffektioSdk.instance;
+    if (!username.contains(':')) {
+      username = '${username}:effektio.org';
+    }
+    if (!username.startsWith('@')) {
+      username = '@${username}';
+    }
     Client client = await sdk.login(username, password);
     return client;
   }
