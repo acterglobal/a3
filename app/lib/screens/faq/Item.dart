@@ -59,7 +59,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: AppCommonTheme.backgroundColor,
         elevation: 0,
         actions: <Widget>[
           IconButton(
@@ -68,7 +68,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
           )
         ],
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: AppCommonTheme.backgroundColor,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -123,11 +123,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           fit: FlexFit.loose,
                           child: Text(
                             widget.faq.title(),
-                            style: GoogleFonts.roboto(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: FAQTheme.titleStyle,
                           ),
                         ),
                         Align(
@@ -160,9 +156,8 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         margin: const EdgeInsets.only(left: 12.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.grey[800],
                           border: Border.all(
-                            color: Colors.white,
+                            color: FAQTheme.supportColor,
                           ),
                         ),
                         child: Row(
@@ -177,10 +172,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                               ),
                               child: Text(
                                 'Support',
-                                style: GoogleFonts.roboto(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
+                                style: FAQTheme.teameNameStyle,
                               ),
                             )
                           ],
@@ -205,10 +197,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                                 ),
                                 child: Text(
                                   widget.faq.likesCount().toString(),
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
+                                  style: FAQTheme.likeAndCommentStyle,
                                 ),
                               ),
                               GestureDetector(
@@ -230,10 +219,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                                       padding: const EdgeInsets.only(left: 8.0),
                                       child: Text(
                                         widget.faq.commentsCount().toString(),
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                        ),
+                                        style: FAQTheme.likeAndCommentStyle,
                                       ),
                                     ),
                                   ],
