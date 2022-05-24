@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -70,7 +70,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
         },
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: AppColors.backgroundColor,
+            backgroundColor: AppCommonTheme.backgroundColor,
             leading: TextButton(
               onPressed: () {
                 Navigator.pop(context);
@@ -88,7 +88,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: AppColors.primaryColor,
+                    primary: AppCommonTheme.primaryColor,
                     shape: const StadiumBorder(),
                   ),
                   onPressed: () async {
@@ -258,7 +258,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     width: double.infinity,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: AppColors.textFieldColor,
+                      color: AppCommonTheme.textFieldColor,
                       borderRadius: BorderRadius.circular(15),
                     ),
                     child: TextField(
@@ -365,7 +365,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       })
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: AppColors.primaryColor,
+                      primary: AppCommonTheme.primaryColor,
                       shape: const StadiumBorder(),
                     ),
                     child: const Padding(

@@ -2,11 +2,7 @@
 
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/FaqListItem.dart';
-<<<<<<< HEAD
 import 'package:effektio/screens/EditorScreen/Editor.dart';
-=======
-
->>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -28,30 +24,21 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
           return Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-<<<<<<< HEAD
-            color: AppColors.backgroundColor,
-=======
             color: AppCommonTheme.backgroundColor,
->>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
             child: Center(
               child: SizedBox(
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
-<<<<<<< HEAD
-                  color: AppColors.primaryColor,
-=======
                   color: AppCommonTheme.primaryColor,
->>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
                 ),
               ),
             ),
           );
         } else {
-<<<<<<< HEAD
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: AppColors.faqBackgroundColor,
+              backgroundColor: AppCommonTheme.backgroundColor,
               title: Text(
                 'Faq',
                 style: TextStyle(
@@ -83,7 +70,7 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
               ],
             ),
             body: Container(
-              color: AppColors.faqBackgroundColor,
+              color: AppCommonTheme.backgroundColor,
               child: ListView.builder(
                 padding: const EdgeInsets.all(8),
                 itemCount: snapshot.requireData.length,
@@ -95,18 +82,6 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
                 },
               ),
             ),
-=======
-          //final items = snapshot.requireData.toList();
-          return ListView.builder(
-            padding: const EdgeInsets.all(8),
-            itemCount: snapshot.requireData.length,
-            itemBuilder: (BuildContext context, int index) {
-              return FaqListItem(
-                client: widget.client,
-                faq: snapshot.requireData[index],
-              );
-            },
->>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
           );
         }
       },
