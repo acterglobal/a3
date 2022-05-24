@@ -3,21 +3,19 @@ use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
-use js_int::UInt;
 use matrix_sdk::ruma;
 use matrix_sdk::{
+    attachment::{
+        AttachmentConfig, AttachmentInfo, BaseImageInfo, BaseThumbnailInfo, BaseVideoInfo,
+    },
     media::{MediaFormat, MediaRequest},
-    room::Room as MatrixRoom,
+    room::{Joined as MatrixJoined, Room as MatrixRoom},
     ruma::{
-        events::{
-            file::{FileContent, FileContentInfo},
-            image::ImageEventContent,
-            room::message::RoomMessageEventContent,
-            AnyMessageLikeEventContent,
-        },
-        EventId, OwnedMxcUri, OwnedUserId,
+        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
+        EventId, OwnedUserId, UInt,
     },
 };
+use std::{fs::File, path::PathBuf};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -205,9 +203,11 @@ impl Room {
         &self,
         message: String,
         uri: String,
-        name: Option<String>,
-        mimetype: Option<String>,
-        size: Option<u64>,
+        name: String,
+        mimetype: String,
+        size: u32,
+        width: u32,
+        height: u32,
     ) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
@@ -216,23 +216,17 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let url = OwnedMxcUri::from(uri);
-                let mut info = FileContentInfo::default();
-                info.name = name;
-                info.mimetype = mimetype;
-                info.size = match size {
-                    Some(val) => UInt::new(val),
-                    None => None,
-                };
-                let file = FileContent::plain(url, Some(Box::new(info)));
-                let content = ImageEventContent::plain(message, file);
+                let path = PathBuf::from(uri);
+                let mut image = File::open(path)?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
+                    height: Some(UInt::from(height)),
+                    width: Some(UInt::from(width)),
+                    size: Some(UInt::from(size)),
+                    blurhash: None,
+                }));
+                let mime_type: mime::Mime = mimetype.parse().unwrap();
                 let r = room
-                    .send(
-                        AnyMessageLikeEventContent::RoomMessage(RoomMessageEventContent::from(
-                            content,
-                        )),
-                        None,
-                    )
+                    .send_attachment(name.as_str(), &mime_type, &mut image, config)
                     .await?;
                 Ok(r.event_id.to_string())
             })

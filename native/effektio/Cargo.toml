@@ -23,10 +23,10 @@ assign = "1.1.1"
 derive_builder = "0.10.2"
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
-js_int = "0.2.2"
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.0.0"
+mime = "0.3.16"
 parking_lot = "0.11.2"
 ruma = "0.6.1"
 sanitize-filename-reader-friendly = "2.2.1"
@@ -51,9 +51,6 @@ features = [
     "sled",
     "anyhow",
 ]
-
-[dependencies.ruma-common]
-features = ["unstable-msc3552"]
 
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]

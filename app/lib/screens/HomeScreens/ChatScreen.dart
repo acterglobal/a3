@@ -14,6 +14,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:themed/themed.dart';
 
@@ -212,12 +213,15 @@ class _ChatScreenState extends State<ChatScreen> {
     if (result != null) {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
+      final mimeType = lookupMimeType(result.path);
       var eventId = await widget.room.sendImageMessage(
         'Image placeholder',
         result.path,
         result.name,
-        result.mimeType,
+        mimeType!,
         bytes.length,
+        image.width,
+        image.height,
       );
 
       final message = types.ImageMessage(

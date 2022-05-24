@@ -53,6 +53,7 @@ dependencies:
   themed: ^3.0.2
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
+  mime: ^1.0.2
 
 dev_dependencies:
   flutter_test:
