@@ -1,6 +1,11 @@
 // ignore_for_file: unused_element, always_declare_return_types, library_prefixes, prefer_const_constructors
 
+<<<<<<< HEAD
 import 'dart:io';
+=======
+import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/widget/FaqListItem.dart';
+>>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
 
 import 'package:effektio/common/widget/TagItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';

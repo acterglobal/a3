@@ -1,8 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/NewsItem.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
+<<<<<<< HEAD
+=======
+
+>>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -15,25 +19,32 @@ class NewsScreen extends StatefulWidget {
 }
 
 class _NewsScreenState extends State<NewsScreen> {
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FfiListNews>(
       future: widget.client.latestNews(),
       builder: (BuildContext context, AsyncSnapshot<FfiListNews> snapshot) {
         if (!snapshot.hasData) {
+<<<<<<< HEAD
           return Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             color: AppColors.backgroundColor,
+=======
+          return SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+>>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
             child: Center(
               child: SizedBox(
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
+<<<<<<< HEAD
                   color: AppColors.primaryColor,
+=======
+                  color: AppCommonTheme.primaryColor,
+>>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
                 ),
               ),
             ),
@@ -44,13 +55,23 @@ class _NewsScreenState extends State<NewsScreen> {
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               elevation: 0,
+<<<<<<< HEAD
               backgroundColor: Colors.transparent,
+=======
+>>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(
                     icon: Container(
                       margin: const EdgeInsets.only(bottom: 10, left: 10),
+<<<<<<< HEAD
                       child: Image.asset('assets/images/hamburger.png'),
+=======
+                      child: CircleAvatar(
+                        backgroundColor: AppCommonTheme.primaryColor,
+                        child: Image.asset('assets/images/hamburger.png'),
+                      ),
+>>>>>>> a3294cdc35b5cd197063abbd534652b1f9343557
                     ),
                     onPressed: () {
                       Scaffold.of(context).openDrawer();

@@ -1,0 +1,34 @@
++++
+title = "Troubleshooting"
+
+sort_by = "weight"
+weight = 10
+template = "docs/page.html"
+
+[extra]
+toc = true
+top = false
++++
+
+
+## NDK compile error
+
+The current system has a problem with the latest android native development kit (NDK), please downgrade to version r22.* - then things should be fine.
+
+## Android Build in Windows
+
+1. 35GB of HDD needed for project building. It doesn't cover android emulator vm.
+2. Run `cargo install cargo-make` so that `cargo make` can be executed.
+3. Run `cargo make android` in root directory.
+4. Open sdk manager in android studio and install `Google Play x86_64 API 30` image and `Android SDK Platform 30`.
+  - `API 31+` image is not launching in windows for now.
+  - This apk is not working on `x86` image of `API 30`.
+  - `API 32` doesn't contain `x86` image now.
+5. Open virtual device manager in android studio and create vm using `Google Play x86_64 API 30` image.
+  - 4GB of internal storage is recommended, because apk size of this project is 500+MB.
+6. Launch android emulator.
+7. Change to `app` directory and run `flutter run`.
+
+## iOS Build
+
+The iOS build doesn't work right now, see [#10](https://github.com/effektio/effektio/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.

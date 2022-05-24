@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:effektio/common/store/Colors.dart';
-import 'package:effektio/common/store/textTheme.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
@@ -22,6 +22,7 @@ import 'package:effektio/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:themed/themed.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,39 +32,46 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Effektio(),
-    ),
+    Effektio(),
   );
 }
 
-class Effektio extends StatelessWidget {
+class Effektio extends StatefulWidget {
   const Effektio({Key? key}) : super(key: key);
 
   @override
+  State<Effektio> createState() => _EffektioState();
+}
+
+class _EffektioState extends State<Effektio> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        textTheme: CustomTextTheme.textTheme,
+    return Themed(
+      child: MaterialApp(
+        theme: AppTheme.theme,
+        title: 'Effektio',
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: ApplicationLocalizations.supportedLocales,
+        // MaterialApp contains our top-level Navigator
+        initialRoute: '/',
+        routes: <String, WidgetBuilder>{
+          '/': (BuildContext context) => EffektioHome(),
+          '/login': (BuildContext context) => const LoginScreen(),
+          '/profile': (BuildContext context) => const SocialProfileScreen(),
+          '/signup': (BuildContext context) => const SignupScreen(),
+          '/gallery': (BuildContext context) => const GalleryScreen(),
+        },
       ),
-      title: 'Effektio',
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      supportedLocales: ApplicationLocalizations.supportedLocales,
-      // MaterialApp contains our top-level Navigator
-      initialRoute: '/',
-      routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => EffektioHome(),
-        '/login': (BuildContext context) => const LoginScreen(),
-        '/profile': (BuildContext context) => const SocialProfileScreen(),
-        '/signup': (BuildContext context) => const SignupScreen(),
-        '/gallery': (BuildContext context) => const GalleryScreen(),
-      },
     );
   }
 }
@@ -88,6 +96,26 @@ class _EffektioHomeState extends State<EffektioHome> {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
     return client;
+  }
+
+  BottomNavigationBarItem navBaritem(String icon, String activeIcon) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: SvgPicture.asset(
+          icon,
+          color: AppCommonTheme.svgIconColor,
+        ),
+      ),
+      activeIcon: Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: SvgPicture.asset(
+          activeIcon,
+          color: AppCommonTheme.primaryColor,
+        ),
+      ),
+      label: '',
+    );
   }
 
   Widget homeScreen(BuildContext context, Client client) {
@@ -120,9 +148,8 @@ class _EffektioHomeState extends State<EffektioHome> {
               : AppBar(
                   title: navBarTitle(_titles[tabIndex] ?? ''),
                   centerTitle: true,
-                  primary: false,
+                  primary: true,
                   elevation: 1,
-                  backgroundColor: AppColors.textFieldColor,
                   leading: Builder(
                     builder: (BuildContext context) {
                       return IconButton(
@@ -156,89 +183,38 @@ class _EffektioHomeState extends State<EffektioHome> {
           ),
           bottomNavigationBar: Container(
             decoration: BoxDecoration(
-              color: Color.fromRGBO(36, 38, 50, 1),
               boxShadow: [
                 BoxShadow(color: Colors.grey, offset: Offset(0, -0.5)),
               ],
             ),
             child: BottomNavigationBar(
-              backgroundColor: Color.fromRGBO(36, 38, 50, 1),
-              type: BottomNavigationBarType.fixed,
+              backgroundColor: AppCommonTheme.backgroundColor,
               items: <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child:
-                        SvgPicture.asset('assets/images/newsfeed_linear.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/newsfeed_bold.svg',
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/newsfeed_linear.svg',
+                  'assets/images/newsfeed_bold.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset('assets/images/menu_linear.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/menu_bold.svg',
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/menu_linear.svg',
+                  'assets/images/menu_bold.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset('assets/images/add.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/add.svg',
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/add.svg',
+                  'assets/images/add.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset('assets/images/chat_linear.svg'),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/chat_bold.svg',
-                    ),
-                  ),
-                  label: '',
+                navBaritem(
+                  'assets/images/chat_linear.svg',
+                  'assets/images/chat_bold.svg',
                 ),
-                BottomNavigationBarItem(
-                  icon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/notification_linear.svg',
-                    ),
-                  ),
-                  activeIcon: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: SvgPicture.asset(
-                      'assets/images/notification_bold.svg',
-                    ),
-                  ),
-                  label: '',
-                ),
+                navBaritem(
+                  'assets/images/notification_linear.svg',
+                  'assets/images/notification_bold.svg',
+                )
               ],
               currentIndex: tabIndex,
               showUnselectedLabels: true,
-              selectedItemColor: AppColors.primaryColor,
               iconSize: 30,
+              type: BottomNavigationBarType.fixed,
               onTap: (value) {
                 setState(() {
                   tabIndex = value;
@@ -259,16 +235,13 @@ class _EffektioHomeState extends State<EffektioHome> {
         if (snapshot.hasData) {
           return homeScreen(context, snapshot.requireData);
         } else {
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            color: AppColors.backgroundColor,
-            child: Center(
+          return Scaffold(
+            body: Center(
               child: SizedBox(
                 height: 50,
                 width: 50,
                 child: CircularProgressIndicator(
-                  color: AppColors.primaryColor,
+                  color: AppCommonTheme.primaryColor,
                 ),
               ),
             ),

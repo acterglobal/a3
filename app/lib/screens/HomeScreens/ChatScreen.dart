@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-import 'package:effektio/common/store/Colors.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -15,6 +15,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
+import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
@@ -31,16 +32,17 @@ class _ChatScreenState extends State<ChatScreen> {
   late final _user;
   TimelineStream? _stream;
   bool isLoading = false;
+  int _page = 0;
   @override
   void initState() {
-    _getTimeline().whenComplete(
-      () async => {await _getMessages(), _handleEndReached(), _updateState()},
-    );
     _user = types.User(
       id: widget.user!,
-      firstName: getNameFromId(widget.user!),
     );
+    isLoading = true;
     super.initState();
+    _getTimeline().whenComplete(
+      () => {_handleEndReached(), _newEvent()},
+    );
   }
 
   @override
@@ -48,41 +50,45 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<List<types.Message>> getMessages(
-    TimelineStream? stream,
-    int count,
-    Conversation room,
-  ) async {
-    List<types.Message> _messages = [];
-    bool isSeen = false;
-    var messages = await stream!.paginateBackwards(count);
-    for (RoomMessage message in messages) {
-      //Based on boolean, it'll update the status of message (seen,delivered) etc
-      await room.readReceipt(message.eventId()).then(
-            (value) => {
-              isSeen = value,
-            },
-          );
-      types.TextMessage m = types.TextMessage(
-        id: message.eventId(),
-        showStatus: true,
-        author: types.User(id: message.sender()),
-        text: message.body(),
-        status: isSeen ? Status.seen : Status.delivered,
-      );
-      _messages.add(m);
-      isSeen = !isSeen;
-    }
-    return _messages;
-  }
-
   Future<void> _getTimeline() async {
     _stream = await widget.room.timeline();
-    setState(() {});
+    var messages = await _stream!.paginateBackwards(10);
+    for (RoomMessage message in messages) {
+      types.TextMessage m = types.TextMessage(
+        author: types.User(id: message.sender()),
+        id: message.eventId(),
+        text: message.body(),
+      );
+      _messages.add(m);
+    }
+    setState(() {
+      isLoading = false;
+    });
+    if (_messages.isNotEmpty) {
+      if (_messages.first.author.id == _user.id) {
+        bool isSeen = await widget.room.readReceipt(_messages.first.id);
+        types.TextMessage lm = types.TextMessage(
+          author: _user,
+          id: _messages.first.id,
+          text: messages.first.body(),
+          showStatus: true,
+          status: isSeen ? Status.seen : Status.delivered,
+        );
+        _messages.removeAt(0);
+        _messages.insert(0, lm);
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   //will detect if any new event is arrived and will re-render the screen
-  void _updateState() async {
+  void _newEvent() async {
     await _stream!.next();
     var newEvent = await widget.room.latestMessage();
     final user = types.User(
@@ -94,16 +100,11 @@ class _ChatScreenState extends State<ChatScreen> {
         author: user,
         text: newEvent.body(),
       );
-      setState(() {
-        _messages.insert(0, textMessage);
-      });
+      _messages.insert(0, textMessage);
+      setState(() {});
+    } else {
+      setState(() {});
     }
-  }
-
-  void _addMessage(types.Message message) async {
-    setState(() {
-      _messages.insert(0, message);
-    });
   }
 
   void _handlePreviewDataFetched(
@@ -127,13 +128,12 @@ class _ChatScreenState extends State<ChatScreen> {
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: randomString(),
-      remoteId: eventId,
+      id: eventId,
       text: message.text,
       status: Status.sent,
       showStatus: true,
     );
-    _addMessage(textMessage);
+    _messages.insert(0, textMessage);
   }
 
   void _handleAttachmentPressed() {
@@ -150,7 +150,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 GestureDetector(
                   onTap: () {
                     _handleImageSelection(context);
-                    // Navigator.pop(context);
                   },
                   child: Row(
                     children: <Widget>[
@@ -175,7 +174,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 GestureDetector(
                   onTap: () {
                     _handleFileSelection(context);
-                    // Navigator.pop(context);
                   },
                   child: Row(
                     children: <Widget>[
@@ -232,7 +230,9 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
       Navigator.pop(context);
-      _addMessage(message);
+      setState(() {
+        _messages.insert(0, message);
+      });
     }
   }
 
@@ -257,7 +257,9 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
       Navigator.pop(context);
-      _addMessage(message);
+      setState(() {
+        _messages.insert(0, message);
+      });
     }
   }
 
@@ -267,32 +269,29 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  //Load messages at start
-  Future<void> _getMessages() async {
-    setState(() {
-      isLoading = true;
-    });
-    List<types.Message> messages = await getMessages(_stream, 10, widget.room);
-    setState(() {
-      _messages = messages;
-      isLoading = false;
-    });
-  }
-
   //Pagination Control
   Future<void> _handleEndReached() async {
-    List<types.Message> messages = await getMessages(_stream, 10, widget.room);
+    final messages = await _stream!.paginateBackwards(10);
+    final List<types.Message> nextMessages = [];
+    for (RoomMessage message in messages) {
+      types.TextMessage m = types.TextMessage(
+        author: types.User(id: message.sender()),
+        id: message.eventId(),
+        text: message.body(),
+      );
+      nextMessages.add(m);
+    }
     setState(() {
-      _messages = [..._messages, ...messages];
+      _messages = [..._messages, ...nextMessages];
+      _page = _page + 1;
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(36, 38, 50, 1),
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(51, 53, 64, 0.4),
+        backgroundColor: AppCommonTheme.backgroundColor,
         elevation: 1,
         centerTitle: true,
         toolbarHeight: 70,
@@ -302,7 +301,10 @@ class _ChatScreenState extends State<ChatScreen> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              icon: SvgPicture.asset('assets/images/back_button.svg'),
+              icon: SvgPicture.asset(
+                'assets/images/back_button.svg',
+                color: AppCommonTheme.svgIconColor,
+              ),
             ),
           ],
         ),
@@ -317,11 +319,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Text(
                     snapshot.requireData,
                     overflow: TextOverflow.clip,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
+                    style: ChatTheme01.chatTitleStyle,
                   );
                 } else {
                   return Text('Loading Name');
@@ -338,18 +336,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (snapshot.hasData) {
                   return Text(
                     '${snapshot.requireData.length.toString()} Members',
-                    style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
+                    style:
+                        ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
                   );
                 } else {
                   return Container(
                     height: 15,
                     width: 15,
                     child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
+                      color: AppCommonTheme.primaryColor,
                     ),
                   );
                 }
@@ -385,7 +380,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   height: 15,
                   width: 15,
                   child: CircularProgressIndicator(
-                    color: AppColors.primaryColor,
+                    color: AppCommonTheme.primaryColor,
                   ),
                 ),
               )
