@@ -6,6 +6,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themed/themed.dart';
@@ -58,7 +59,7 @@ class _SideDrawerState extends State<SideDrawer> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/login');
                           },
-                          child: Text('Login'),
+                          child: Text(AppLocalizations.of(context)!.login),
                         ),
                       ),
                       Container(
@@ -73,7 +74,7 @@ class _SideDrawerState extends State<SideDrawer> {
                           onPressed: () {
                             Navigator.pushNamed(context, '/signup');
                           },
-                          child: Text('Signup'),
+                          child: Text(AppLocalizations.of(context)!.signUp),
                         ),
                       ),
                     ],
@@ -117,7 +118,8 @@ class _SideDrawerState extends State<SideDrawer> {
                               ) {
                                 if (snapshot.hasData) {
                                   return Text(
-                                    snapshot.data ?? 'No Name',
+                                    snapshot.data ??
+                                        AppLocalizations.of(context)!.noName,
                                     style: SideMenuAndProfileTheme
                                         .sideMenuProfileStyle,
                                   );
@@ -184,7 +186,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Todo List',
+                      AppLocalizations.of(context)!.toDoList,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
@@ -197,7 +199,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Gallery',
+                      AppLocalizations.of(context)!.gallery,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {
@@ -212,7 +214,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Events',
+                      AppLocalizations.of(context)!.events,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
@@ -225,7 +227,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Shared resource',
+                      AppLocalizations.of(context)!.sharedResource,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
@@ -238,7 +240,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Polls & Votes',
+                      AppLocalizations.of(context)!.pollsVotes,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () => {},
@@ -251,7 +253,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Group Budgeting',
+                      AppLocalizations.of(context)!.groupBudgeting,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {
@@ -271,7 +273,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'Shared Documents',
+                      AppLocalizations.of(context)!.sharedDocuments,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {},
@@ -284,7 +286,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       color: Colors.teal[700],
                     ),
                     title: Text(
-                      'FAQs',
+                      AppLocalizations.of(context)!.faqs,
                       style: SideMenuAndProfileTheme.sideMenuStyle,
                     ),
                     onTap: () {},
@@ -320,7 +322,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                     },
                                   ),
                                   Text(
-                                    'Logout',
+                                    AppLocalizations.of(context)!.logOut,
                                     style: GoogleFonts.montserrat(
                                       fontSize: 16,
                                       color: AppCommonTheme.primaryColor,

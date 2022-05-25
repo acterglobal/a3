@@ -15,6 +15,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -335,7 +336,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ) {
                 if (snapshot.hasData) {
                   return Text(
-                    '${snapshot.requireData.length.toString()} Members',
+                    '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.emptyPlaceholderText}',
                     style:
                         ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
                   );
@@ -385,6 +386,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               )
             : Chat(
+                l10n: ChatL10nEn(
+                  emptyChatPlaceholder: '',
+                  attachmentButtonAccessibilityLabel: '',
+                  fileButtonAccessibilityLabel: '',
+                  inputPlaceholder: AppLocalizations.of(context)!.message,
+                  sendButtonAccessibilityLabel: '',
+                ),
                 messages: _messages,
                 onSendPressed: _handleSendPressed,
                 user: _user,
