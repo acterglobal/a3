@@ -10,7 +10,7 @@ jobs:
 
   rust-style:
     runs-on: ubuntu-latest
-    name: Rust
+    name: Rust Formatting
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
@@ -26,7 +26,7 @@ jobs:
           args: --all --check
 
   dart-style:
-    name: Flutter
+    name: Flutter Analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
