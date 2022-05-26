@@ -39,8 +39,12 @@ class _NewsSideBarState extends State<NewsSideBar> {
         children: [
           _sideBarItem(
               'heart', widget.news.likesCount().toString(), fgColor, style),
-          _sideBarItem('comment', widget.news.commentsCount().toString(),
-              fgColor, style),
+          _sideBarItem(
+            'comment',
+            widget.news.commentsCount().toString(),
+            fgColor,
+            style,
+          ),
           _sideBarItem('reply', '76', fgColor, style),
           _profileImageButton(fgColor),
         ],
