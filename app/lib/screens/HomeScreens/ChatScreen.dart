@@ -8,7 +8,7 @@ import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, TimelineStream, RoomMessage, FfiListMember;
+    show Conversation, TimelineStream, RoomMessage, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -55,12 +55,42 @@ class _ChatScreenState extends State<ChatScreen> {
     _stream = await widget.room.timeline();
     var messages = await _stream!.paginateBackwards(10);
     for (RoomMessage message in messages) {
-      types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
-        id: message.eventId(),
-        text: message.body(),
-      );
-      _messages.add(m);
+      String msgtype = message.msgtype();
+      if (msgtype == 'm.audio') {
+      } else if (msgtype == 'm.emote') {
+      } else if (msgtype == 'm.file') {
+      } else if (msgtype == 'm.image') {
+        message.imageDescription().then((description) {
+          description.binData().then((value) {
+            types.ImageMessage m = types.ImageMessage(
+              author: types.User(id: message.sender()),
+              createdAt: message.originServerTs() * 1000,
+              height: description.height()?.toDouble(),
+              id: message.eventId(),
+              metadata: {
+                'binData': value.asTypedList(),
+              },
+              name: description.name(),
+              size: description.size(),
+              uri: '',
+              width: description.width()?.toDouble(),
+            );
+            _messages.add(m);
+          });
+        });
+      } else if (msgtype == 'm.location') {
+      } else if (msgtype == 'm.notice') {
+      } else if (msgtype == 'm.server_notice') {
+      } else if (msgtype == 'm.text') {
+        types.TextMessage m = types.TextMessage(
+          author: types.User(id: message.sender()),
+          createdAt: message.originServerTs() * 1000,
+          id: message.eventId(),
+          text: message.body(),
+        );
+        _messages.add(m);
+      } else if (msgtype == 'm.video') {
+      } else if (msgtype == 'm.key.verification.request') {}
     }
     setState(() {
       isLoading = false;
@@ -410,6 +440,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       isGroup: false,
                       stringName: getNameFromId(userId),
                     ),
+                  );
+                },
+                // custom image builder for binary data
+                imageMessageBuilder: (
+                  imageMessage, {
+                  required int messageWidth,
+                }) {
+                  return Image.memory(
+                    imageMessage.metadata?['binData'],
+                    width: messageWidth.toDouble(),
                   );
                 },
                 //Whenever users starts typing on keyboard, this will trigger the function

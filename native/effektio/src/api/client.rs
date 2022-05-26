@@ -47,6 +47,8 @@ impl std::ops::Deref for Client {
     }
 }
 
+static mut CURRENT_CLIENT: Option<MatrixClient> = None;
+
 static PURPOSE_FIELD: &str = "m.room.purpose";
 static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
 static PURPOSE_VALUE: &str = "org.effektio";
@@ -91,9 +93,18 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
 
 impl Client {
     pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
+        unsafe {
+            CURRENT_CLIENT = Some(client.clone());
+        }
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
+        }
+    }
+
+    pub fn current_client() -> Option<MatrixClient> {
+        unsafe {
+            CURRENT_CLIENT.clone()
         }
     }
 

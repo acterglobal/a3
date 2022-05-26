@@ -94,6 +94,25 @@ object RoomMessage {
 
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;
+
+    fn msgtype() -> string;
+
+    fn image_description() -> Future<Result<ImageDescription>>;
+}
+
+object ImageDescription {
+
+    fn bin_data() -> Future<Result<buffer<u8>>>;
+
+    fn name() -> string;
+
+    fn mimetype() -> Option<string>;
+
+    fn size() -> u64;
+
+    fn width() -> Option<u64>;
+
+    fn height() -> Option<u64>;
 }
 
 /// Timeline with Room Events
