@@ -21,7 +21,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: clippy
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
@@ -86,7 +85,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: clippy
 
       - run: cargo install cargo-make
         name: "Install cargo-make"
