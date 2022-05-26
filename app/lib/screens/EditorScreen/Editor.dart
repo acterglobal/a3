@@ -231,7 +231,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
 
   void showBottomSheet() {
     Color? primaryColor = Colors.grey;
-    var indexing;
+    int? indexing;
     selectedIndexList.clear();
 
     showModalBottomSheet(

@@ -115,7 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     TextStyle(color: AuthTheme.hintTextColor),
                               ),
                               style: TextStyle(
-                                  color: AuthTheme.textFieldTextColor),
+                                color: AuthTheme.textFieldTextColor,
+                              ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return AppLocalizations.of(context)!

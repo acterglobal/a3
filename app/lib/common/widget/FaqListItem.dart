@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Faq;
 import 'package:effektio/screens/faq/Item.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:themed/themed.dart';
 
-import 'TagItem.dart';
+import 'package:effektio/common/widget/TagItem.dart';
 
 class FaqListItem extends StatefulWidget {
   const FaqListItem({Key? key, required this.client, required this.faq})
@@ -116,8 +114,10 @@ class FaqListItemState extends State<FaqListItem> {
                               padding: const EdgeInsets.only(
                                 left: 8.0,
                               ),
-                              child: Text(widget.faq.likesCount().toString(),
-                                  style: FAQTheme.likeAndCommentStyle),
+                              child: Text(
+                                widget.faq.likesCount().toString(),
+                                style: FAQTheme.likeAndCommentStyle,
+                              ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0),

@@ -38,7 +38,6 @@ class _SignupScreentate extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
@@ -189,8 +188,8 @@ class _SignupScreentate extends State<SignupScreen> {
                             AppCommonTheme.primaryColor,
                       ),
                       TextSpan(
-                          text:
-                              ' ${AppLocalizations.of(context)!.termsText3} '),
+                        text: ' ${AppLocalizations.of(context)!.termsText3} ',
+                      ),
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {

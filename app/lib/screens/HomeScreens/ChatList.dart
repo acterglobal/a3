@@ -2,7 +2,6 @@
 
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
-import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, FfiListConversation;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
