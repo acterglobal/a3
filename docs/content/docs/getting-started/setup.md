@@ -43,6 +43,17 @@ Once the SDK is rebuild, you can run the flutter as usual on your device or emul
 
 F5 in VS Code or `flutter run` in `app`
 
+## Speed up Building
+
+It takes a long time to execute full build.
+You can rebuild only changes of source files to save your building time meaningfully.
+
+`cargo make android-dev`
+This will build only `x86_64` of rust library.
+(build only rust) `682.6s` -> `120.31s`
+
+`flutter run --no-build`
+(only flutter changed) `85.0s` -> `42.6s`
 
 ## Running Tests
 
