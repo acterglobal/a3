@@ -17,13 +17,23 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: rustfmt
+          components: rustfmt,clippy
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         name: Rust Format
         with:
           command: fmt
           args: --all --check
+      - uses: actions-rs/clippy-check@v1
+        name: "Clippy effektio & core"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: -p effektio-core -p effektio -- -D warnings
+      - uses: actions-rs/clippy-check@v1
+        name: "Clippy CLI"
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: -p effektio-cli -- -D warnings
 
   dart-style:
     name: Flutter
