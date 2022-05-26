@@ -1,6 +1,4 @@
 use super::{api, Client, RUNTIME};
-use std::sync::Arc;
-use url::Url;
 use anyhow::{bail, Result};
 use matrix_sdk::{
     deserialized_responses::SyncRoomEvent,
@@ -17,6 +15,8 @@ use matrix_sdk::{
         MxcUri, OwnedMxcUri,
     },
 };
+use std::sync::Arc;
+use url::Url;
 
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
@@ -45,39 +45,43 @@ impl RoomMessage {
     }
 
     pub async fn image_description(&self) -> Result<ImageDescription> {
-        let client = Client::current_client().unwrap();
         match &self.inner.content.msgtype {
             MessageType::Image(content) => {
+                let client = Client::current_client().unwrap();
                 let info = content.info.as_ref().unwrap();
-                RUNTIME
-                    .block_on(async move {
-                        let bin_data = client.get_media_content(
-                            &MediaRequest{ source: content.source.clone(), format: MediaFormat::File },
+                RUNTIME.block_on(async move {
+                    let bin_data = client
+                        .get_media_content(
+                            &MediaRequest {
+                                source: content.source.clone(),
+                                format: MediaFormat::File,
+                            },
                             false,
-                        ).await?;
-                        let description = ImageDescription {
-                            _bin_data: bin_data,
-                            _name: content.body.clone(),
-                            _mimetype: match info.mimetype.as_ref() {
-                                Some(value) => Some(value.clone()),
-                                None => None,
-                            },
-                            _size: match info.size {
-                                Some(value) => u64::from(value),
-                                None => 0,
-                            },
-                            _width: match info.width {
-                                Some(value) => Some(u64::from(value)),
-                                None => None,
-                            },
-                            _height: match info.height {
-                                Some(value) => Some(u64::from(value)),
-                                None => None,
-                            },
-                        };
-                        Ok(description)
-                    })
-            },
+                        )
+                        .await?;
+                    let description = ImageDescription {
+                        _bin_data: bin_data,
+                        _name: content.body.clone(),
+                        _mimetype: match info.mimetype.as_ref() {
+                            Some(value) => Some(value.clone()),
+                            None => None,
+                        },
+                        _size: match info.size {
+                            Some(value) => u64::from(value),
+                            None => 0,
+                        },
+                        _width: match info.width {
+                            Some(value) => Some(u64::from(value)),
+                            None => None,
+                        },
+                        _height: match info.height {
+                            Some(value) => Some(u64::from(value)),
+                            None => None,
+                        },
+                    };
+                    Ok(description)
+                })
+            }
             _ => bail!("Invalid file format"),
         }
     }
@@ -94,12 +98,11 @@ pub struct ImageDescription {
 
 impl ImageDescription {
     pub async fn bin_data(&self) -> Result<api::FfiBuffer<u8>> {
+        let data = self._bin_data.clone();
+        // any variable in self can't be called directly in spawn
         RUNTIME
-            .block_on(async move {
-                Ok(api::FfiBuffer::new(
-                    self._bin_data.clone(),
-                ))
-            })
+            .spawn(async move { Ok(api::FfiBuffer::new(data)) })
+            .await?
     }
 
     pub fn name(&self) -> String {

@@ -103,9 +103,7 @@ impl Client {
     }
 
     pub fn current_client() -> Option<MatrixClient> {
-        unsafe {
-            CURRENT_CLIENT.clone()
-        }
+        unsafe { CURRENT_CLIENT.clone() }
     }
 
     pub(crate) fn start_sync(&self) {
