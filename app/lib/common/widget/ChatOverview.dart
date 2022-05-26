@@ -7,6 +7,7 @@ import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
@@ -78,7 +79,7 @@ class ChatListItem extends StatelessWidget {
               style: ChatTheme01.chatTitleStyle,
             );
           } else {
-            return Text('Loading Name');
+            return Text(AppLocalizations.of(context)!.loadingName);
           }
         },
       ),

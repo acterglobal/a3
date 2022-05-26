@@ -2,6 +2,7 @@ import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/GalleryView.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GalleryScreen extends StatefulWidget {
   const GalleryScreen({Key? key}) : super(key: key);
@@ -28,7 +29,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppCommonTheme.textFieldColor,
-        title: navBarTitle('Gallery'),
+        title: navBarTitle(AppLocalizations.of(context)!.gallery),
         centerTitle: true,
       ),
       backgroundColor: Colors.black,
