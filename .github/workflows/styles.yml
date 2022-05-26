@@ -42,5 +42,7 @@ jobs:
         name: lint effektio_flutter_sdk
 
       - working-directory: app
-        run: flutter analyze
+        run: |
+          flutter pub get
+          flutter analyze
         name: lint app
