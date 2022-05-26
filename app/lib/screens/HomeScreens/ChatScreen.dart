@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
+import 'dart:async';
+import 'dart:io';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
@@ -16,6 +18,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
+import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -264,12 +267,6 @@ class _ChatScreenState extends State<ChatScreen> {
         uri: result.path,
         width: image.width.toDouble(),
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('The File that is uploaded isn\'t sent to the server.'),
-        ),
-      );
       Navigator.pop(context);
       setState(() {
         _messages.insert(0, message);
@@ -447,10 +444,26 @@ class _ChatScreenState extends State<ChatScreen> {
                   imageMessage, {
                   required int messageWidth,
                 }) {
-                  return Image.memory(
-                    imageMessage.metadata?['binData'],
-                    width: messageWidth.toDouble(),
-                  );
+                  if (imageMessage.uri.isEmpty) {
+                    // binary data
+                    return Image.memory(
+                      imageMessage.metadata?['binData'],
+                      width: messageWidth.toDouble(),
+                    );
+                  } else if (isURL(imageMessage.uri)) {
+                    // remote url
+                    return Image.network(
+                      imageMessage.uri,
+                      width: messageWidth.toDouble(),
+                    );
+                  } else {
+                    // local path
+                    // the image that just sent is displayed from local not remote
+                    return Image.file(
+                      File(imageMessage.uri),
+                      width: messageWidth.toDouble(),
+                    );
+                  }
                 },
                 //Whenever users starts typing on keyboard, this will trigger the function
                 onTextChanged: (text) async {
