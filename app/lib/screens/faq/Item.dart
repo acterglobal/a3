@@ -3,15 +3,12 @@
 import 'dart:io';
 
 import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/widget/FaqListItem.dart';
 
 import 'package:effektio/common/widget/TagItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/painting.dart' as mColors;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-
-import 'package:google_fonts/google_fonts.dart';
 
 class FaqItemScreen extends StatefulWidget {
   const FaqItemScreen({Key? key, required this.client, required this.faq})
@@ -104,7 +101,11 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           onPressed: () {
                             setState(() {
                               editFaqTitle = false;
-                              print(faqController.text.toString());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(faqController.text.toString()),
+                                ),
+                              );
                             });
                           },
                           child: const Text('Save'),

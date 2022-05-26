@@ -52,31 +52,35 @@ class _NewsItemState extends State<NewsItem> {
                       Text(
                         'Lorem Ipsum is simply dummy text of the printing and',
                         style: GoogleFonts.roboto(
-                            color: fgColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            shadows: [
-                              Shadow(
-                                  color: bgColor,
-                                  offset: const Offset(2, 2),
-                                  blurRadius: 5),
-                            ]),
+                          color: fgColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: bgColor,
+                              offset: const Offset(2, 2),
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
                       ),
                       // ignore: prefer_const_constructors
                       SizedBox(height: 10),
                       // ignore: prefer_const_constructors
                       Text(
-                        widget.news.text() ?? "",
+                        widget.news.text() ?? '',
                         style: GoogleFonts.roboto(
-                            color: fgColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            shadows: [
-                              Shadow(
-                                  color: bgColor,
-                                  offset: const Offset(1, 1),
-                                  blurRadius: 3),
-                            ]),
+                          color: fgColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          shadows: [
+                            Shadow(
+                              color: bgColor,
+                              offset: const Offset(1, 1),
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
