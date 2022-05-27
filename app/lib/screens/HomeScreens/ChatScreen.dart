@@ -18,7 +18,6 @@ import 'package:open_file/open_file.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
 
-
 class ChatScreen extends StatefulWidget {
   final Conversation room;
   final String? user;
@@ -116,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final index = _messages.indexWhere((element) => element.id == message.id);
     final updatedMessage = _messages[index].copyWith(previewData: previewData);
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance?.addPostFrameCallback((_) {
       setState(() {
         _messages[index] = updatedMessage;
       });
