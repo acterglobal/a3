@@ -95,23 +95,31 @@ object RoomMessage {
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;
 
+    /// m.audio, m.emote, m.file, m.image, m.location, m.service_notice, m.text, m.video or m.key.verification.request
     fn msgtype() -> string;
 
+    /// contains source data, name, mimetype, size, width and height
     fn image_description() -> Future<Result<ImageDescription>>;
 }
 
 object ImageDescription {
 
+    /// encrypted file data
     fn bin_data() -> Future<Result<buffer<u8>>>;
 
+    /// file name
     fn name() -> string;
 
+    /// MIME
     fn mimetype() -> Option<string>;
 
+    /// file size
     fn size() -> u64;
 
+    /// image width
     fn width() -> Option<u64>;
 
+    /// image height
     fn height() -> Option<u64>;
 }
 
