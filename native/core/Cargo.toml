@@ -36,7 +36,14 @@ default-features = false
 
 [dependencies.ruma]
 version = "0.6.1"
-features = ["events", "unstable-msc2677",  "client-api-c", "compat", "rand", "unstable-msc2448"]
+features = [
+    "events",
+    "client-api-c",
+    "compat",
+    "rand",
+    "unstable-msc2677", 
+    "unstable-msc2448"
+]
 
 [dev-dependencies]
 serde_json = "1.0.78"

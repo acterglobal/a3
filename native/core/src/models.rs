@@ -14,3 +14,8 @@ pub mod mocks {
     pub use super::faq::gen_mocks as gen_mock_faqs;
     pub use super::news::gen_mocks as gen_mock_news;
 }
+
+#[derive(Serialize, Deserialize)]
+pub enum EffektioModel {
+    TextMessage()
+}

@@ -1,6 +1,9 @@
 use matrix_sdk_base::{deserialized_responses::SyncRoomEvent, store::StateStore};
-use crate::events::AnyEffektioMessageLikeEvent;
-use ruma::{OwnedEventId, OwnedRoomId};
+use crate::events::{AnyEffektioMessageLikeEvent, NewsEvent};
+use ruma::{
+    ruma::events::OriginalMessageLikeEvent,
+    OwnedEventId, OwnedRoomId
+};
 
 #[derive(Clone, Debug)]
 #[allow(dead_code)]
@@ -16,15 +19,39 @@ impl<'a> Executor<'a> {
     pub async fn apply(&self, event: &SyncRoomEvent) -> anyhow::Result<Option<OwnedEventId>> {
         let effektio_event: AnyEffektioMessageLikeEvent = event.try_into()?;
 
-        match effektio_event {
-            AnyEffektioMessageLikeEvent::Dev(n) => {
+        Ok(match effektio_event {
+            AnyEffektioMessageLikeEvent::Matrix(m) => {
+                self.handle_regular_matrix_message(m).await?
+            }
+            AnyEffektioMessageLikeEvent::News(NewsEvent::Dev(n)) => {
                 
             }
-        }
-
-        Ok(None)
+        })
     }
 }
+
+// Regular Matrix Message System
+
+impl<'a> Executor<'a> {
+
+    pub async fn handle_regular_matrix_message(&self, event: AnyMessageLikeEvent) -> anyhow::Result<Option<OwnedEventId>> {
+        match event {
+            AnyMessageLikeEvent::RoomMessage(ml) => {
+                match ml {
+                    MessageLikeEvent::Original(m) => {
+                        // creates a new entry
+                    }
+
+                }
+            }
+        }
+    }
+
+    pub async fn handle_reaction(&self, event: OriginalMessageLikeEvent<ReactionEventContent>) -> anyhow::Result<()> {
+
+    } 
+}
+
 
 #[cfg(test)]
 mod tests {
