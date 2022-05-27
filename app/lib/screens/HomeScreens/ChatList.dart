@@ -48,7 +48,7 @@ class _ChatListState extends State<ChatList> {
           child: TextButton(
             onPressed: () {},
             child: Text(
-              'Select',
+              AppLocalizations.of(context)!.select,
               style: ChatTheme01.chatTitleStyle + AppCommonTheme.primaryColor,
             ),
           ),
@@ -78,7 +78,7 @@ class _ChatListState extends State<ChatList> {
                   left: 18,
                 ),
                 child: Text(
-                  'Chat',
+                  AppLocalizations.of(context)!.chat,
                   style: AppCommonTheme.appBartitleStyle,
                 ),
               ),
@@ -146,7 +146,7 @@ class _ChatListState extends State<ChatList> {
                           height: 20,
                         ),
                         Text(
-                          'Looks Empty here...',
+                          AppLocalizations.of(context)!.loadingConvo + '...',
                           style: ChatTheme01.emptyMsgTitle,
                         ),
                         SizedBox(

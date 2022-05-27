@@ -121,11 +121,11 @@ class _EffektioHomeState extends State<EffektioHome> {
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,
-      "FAQ",
+      'FAQ',
       null,
       null,
-      "Chat",
-      "Notifications"
+      'Chat',
+      'Notifications'
     ];
     List<Widget> _widgetOptions = <Widget>[
       NewsScreen(
@@ -146,7 +146,7 @@ class _EffektioHomeState extends State<EffektioHome> {
           appBar: tabIndex <= 3
               ? null
               : AppBar(
-                  title: navBarTitle(_titles[tabIndex] ?? ""),
+                  title: navBarTitle(_titles[tabIndex] ?? ''),
                   centerTitle: true,
                   primary: true,
                   elevation: 1,
@@ -169,7 +169,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                     IconButton(
                       icon: Container(
                         margin: const EdgeInsets.only(bottom: 10, right: 10),
-                        child: Image.asset('assets/images/search.png'),
+                        child: Icon(Icons.search),
                       ),
                       onPressed: () {
                         setState(() {});

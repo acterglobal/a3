@@ -12,8 +12,10 @@ export './effektio_flutter_sdk_ffi.dart' show Client;
 //   EffektioClient(this.client);
 // }
 
-const DEFAULT_SERVER = String.fromEnvironment("DEFAULT_EFFEKTIO_SERVER",
-    defaultValue: 'https://matrix.effektio.org');
+const defaultServer = String.fromEnvironment(
+  'DEFAULT_EFFEKTIO_SERVER',
+  defaultValue: 'https://matrix.effektio.org',
+);
 
 Color convertColor(ffi.Color? primary, Color fallback) {
   if (primary == null) {
@@ -60,7 +62,7 @@ class EffektioSdk {
     }
 
     if (_clients.isEmpty) {
-      ffi.Client client = await _api.guestClient(appDocPath, DEFAULT_SERVER);
+      ffi.Client client = await _api.guestClient(appDocPath, defaultServer);
       clients.add(client);
       loggedIn = await client.loggedIn();
       await _persistSessions();
@@ -85,7 +87,7 @@ class EffektioSdk {
   Future<ffi.Client> login(String username, String password) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
-      if (await client.userId() == username) {
+      if ((await client.userId()).toString() == username) {
         return client;
       }
     }
