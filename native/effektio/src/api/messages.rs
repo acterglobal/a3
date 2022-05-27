@@ -46,44 +46,46 @@ impl RoomMessage {
         self.inner.content.msgtype().to_string()
     }
 
-    pub async fn image_description(&self) -> Result<ImageDescription> {
+    pub async fn image_binary(&self) -> Result<api::FfiBuffer<u8>> {
         match &self.inner.content.msgtype {
             MessageType::Image(content) => {
-                let client = self.client.clone();
+                let l = self.client.clone();
+                let source = content.source.clone();
+                // any variable in self can't be called directly in spawn
+                RUNTIME
+                    .spawn(async move {
+                        let data = l
+                            .get_media_content(
+                                &MediaRequest {
+                                    source,
+                                    format: MediaFormat::File,
+                                },
+                                false,
+                            )
+                            .await?;
+                        Ok(api::FfiBuffer::new(data))
+                    })
+                    .await?
+            },
+            _ => bail!("Invalid file format"),
+        }
+    }
+
+    pub fn image_description(&self) -> Result<ImageDescription> {
+        match &self.inner.content.msgtype {
+            MessageType::Image(content) => {
                 let info = content.info.as_ref().unwrap();
-                RUNTIME.block_on(async move {
-                    let bin_data = client
-                        .get_media_content(
-                            &MediaRequest {
-                                source: content.source.clone(),
-                                format: MediaFormat::File,
-                            },
-                            false,
-                        )
-                        .await?;
-                    let description = ImageDescription {
-                        client: client.clone(),
-                        _bin_data: bin_data,
-                        _name: content.body.clone(),
-                        _mimetype: match info.mimetype.as_ref() {
-                            Some(value) => Some(value.clone()),
-                            None => None,
-                        },
-                        _size: match info.size {
-                            Some(value) => u64::from(value),
-                            None => 0,
-                        },
-                        _width: match info.width {
-                            Some(value) => Some(u64::from(value)),
-                            None => None,
-                        },
-                        _height: match info.height {
-                            Some(value) => Some(u64::from(value)),
-                            None => None,
-                        },
-                    };
-                    Ok(description)
-                })
+                let description = ImageDescription {
+                    img_name: content.body.clone(),
+                    img_mimetype: info.mimetype.as_ref().map(|value| value.clone()),
+                    img_size: match info.size {
+                        Some(value) => u64::from(value),
+                        None => 0,
+                    },
+                    img_width: info.width.map(u64::from),
+                    img_height: info.height.map(u64::from),
+                };
+                Ok(description)
             }
             _ => bail!("Invalid file format"),
         }
@@ -91,42 +93,32 @@ impl RoomMessage {
 }
 
 pub struct ImageDescription {
-    client: MatrixClient,
-    _bin_data: Vec<u8>,
-    _name: String,
-    _mimetype: Option<String>,
-    _size: u64,
-    _width: Option<u64>,
-    _height: Option<u64>,
+    img_name: String,
+    img_mimetype: Option<String>,
+    img_size: u64,
+    img_width: Option<u64>,
+    img_height: Option<u64>,
 }
 
 impl ImageDescription {
-    pub async fn bin_data(&self) -> Result<api::FfiBuffer<u8>> {
-        let data = self._bin_data.clone();
-        // any variable in self can't be called directly in spawn
-        RUNTIME
-            .spawn(async move { Ok(api::FfiBuffer::new(data)) })
-            .await?
-    }
-
     pub fn name(&self) -> String {
-        self._name.clone()
+        self.img_name.clone()
     }
 
     pub fn mimetype(&self) -> Option<String> {
-        self._mimetype.clone()
+        self.img_mimetype.clone()
     }
 
     pub fn size(&self) -> u64 {
-        self._size
+        self.img_size
     }
 
     pub fn width(&self) -> Option<u64> {
-        self._width
+        self.img_width
     }
 
     pub fn height(&self) -> Option<u64> {
-        self._height
+        self.img_height
     }
 }
 

@@ -10,7 +10,12 @@ import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, TimelineStream, RoomMessage, FfiListMember;
+    show
+        Conversation,
+        TimelineStream,
+        RoomMessage,
+        ImageDescription,
+        FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -63,21 +68,22 @@ class _ChatScreenState extends State<ChatScreen> {
       } else if (msgtype == 'm.emote') {
       } else if (msgtype == 'm.file') {
       } else if (msgtype == 'm.image') {
-        message.imageDescription().then((description) {
-          description.binData().then((value) {
-            types.ImageMessage m = types.ImageMessage(
-              author: types.User(id: message.sender()),
-              createdAt: message.originServerTs() * 1000,
-              height: description.height()?.toDouble(),
-              id: message.eventId(),
-              metadata: {
-                'binData': value.asTypedList(),
-              },
-              name: description.name(),
-              size: description.size(),
-              uri: '',
-              width: description.width()?.toDouble(),
-            );
+        message.imageBinary().then((binary) {
+          ImageDescription description = message.imageDescription()!;
+          types.ImageMessage m = types.ImageMessage(
+            author: types.User(id: message.sender()),
+            createdAt: message.originServerTs() * 1000,
+            height: description.height()?.toDouble(),
+            id: message.eventId(),
+            metadata: {
+              'binary': binary.asTypedList(),
+            },
+            name: description.name(),
+            size: description.size(),
+            uri: '',
+            width: description.width()?.toDouble(),
+          );
+          setState(() {
             _messages.add(m);
           });
         });
@@ -447,7 +453,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   if (imageMessage.uri.isEmpty) {
                     // binary data
                     return Image.memory(
-                      imageMessage.metadata?['binData'],
+                      imageMessage.metadata?['binary'],
                       width: messageWidth.toDouble(),
                     );
                   } else if (isURL(imageMessage.uri)) {

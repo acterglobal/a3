@@ -1019,7 +1019,7 @@ class Api {
     return tmp7;
   }
 
-  ImageDescription? __roomMessageImageDescriptionFuturePoll(
+  FfiBufferUint8? __roomMessageImageBinaryFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1033,52 +1033,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _roomMessageImageDescriptionFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ImageDescription");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = ImageDescription._(this, tmp13_1);
-    return tmp7;
-  }
-
-  FfiBufferUint8? __imageDescriptionBinDataFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _imageDescriptionBinDataFuturePoll(
+    final tmp6 = _roomMessageImageBinaryFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2923,25 +2878,25 @@ class Api {
       _RoomMessageMsgtypeReturn Function(
     int,
   )>();
-  late final _roomMessageImageDescriptionPtr = _lookup<
+  late final _roomMessageImageBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__RoomMessage_image_binary");
+
+  late final _roomMessageImageBinary = _roomMessageImageBinaryPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _roomMessageImageDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageImageDescriptionReturn Function(
     ffi.Int64,
   )>>("__RoomMessage_image_description");
 
   late final _roomMessageImageDescription =
       _roomMessageImageDescriptionPtr.asFunction<
-          int Function(
-    int,
-  )>();
-  late final _imageDescriptionBinDataPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__ImageDescription_bin_data");
-
-  late final _imageDescriptionBinData = _imageDescriptionBinDataPtr.asFunction<
-      int Function(
+          _RoomMessageImageDescriptionReturn Function(
     int,
   )>();
   late final _imageDescriptionNamePtr = _lookup<
@@ -3498,32 +3453,17 @@ class Api {
     int,
     int,
   )>();
-  late final _roomMessageImageDescriptionFuturePollPtr = _lookup<
+  late final _roomMessageImageBinaryFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageImageDescriptionFuturePollReturn Function(
+          _RoomMessageImageBinaryFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__RoomMessage_image_description_future_poll");
+  )>>("__RoomMessage_image_binary_future_poll");
 
-  late final _roomMessageImageDescriptionFuturePoll =
-      _roomMessageImageDescriptionFuturePollPtr.asFunction<
-          _RoomMessageImageDescriptionFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _imageDescriptionBinDataFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescriptionBinDataFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__ImageDescription_bin_data_future_poll");
-
-  late final _imageDescriptionBinDataFuturePoll =
-      _imageDescriptionBinDataFuturePollPtr.asFunction<
-          _ImageDescriptionBinDataFuturePollReturn Function(
+  late final _roomMessageImageBinaryFuturePoll =
+      _roomMessageImageBinaryFuturePollPtr.asFunction<
+          _RoomMessageImageBinaryFuturePollReturn Function(
     int,
     int,
     int,
@@ -4813,6 +4753,7 @@ class RoomMessage {
     return tmp2;
   }
 
+  /// m.audio, m.emote, m.file, m.image, m.location, m.service_notice, m.text, m.video or m.key.verification.request
   String msgtype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -4832,19 +4773,47 @@ class RoomMessage {
     return tmp2;
   }
 
-  Future<ImageDescription> imageDescription() {
+  /// decrypted image file data
+  Future<FfiBufferUint8> imageBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageImageBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__RoomMessage_image_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__roomMessageImageBinaryFuturePoll);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype, size, width and height
+  ImageDescription imageDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageImageDescription(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__RoomMessage_image_description_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__roomMessageImageDescriptionFuturePoll);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_ImageDescription");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = ImageDescription._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -4860,22 +4829,7 @@ class ImageDescription {
 
   ImageDescription._(this._api, this._box);
 
-  Future<FfiBufferUint8> binData() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionBinData(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__ImageDescription_bin_data_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__imageDescriptionBinDataFuturePoll);
-    return tmp2;
-  }
-
+  /// file name
   String name() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -4895,6 +4849,7 @@ class ImageDescription {
     return tmp2;
   }
 
+  /// MIME
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -4918,6 +4873,7 @@ class ImageDescription {
     return tmp2;
   }
 
+  /// file size
   int size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -4929,6 +4885,7 @@ class ImageDescription {
     return tmp2;
   }
 
+  /// image width
   int? width() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -4944,6 +4901,7 @@ class ImageDescription {
     return tmp2;
   }
 
+  /// image height
   int? height() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -5940,6 +5898,19 @@ class _RoomMessageMsgtypeReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _RoomMessageImageDescriptionReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _ImageDescriptionNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -6045,22 +6016,7 @@ class _RegisterWithRegistrationTokenFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RoomMessageImageDescriptionFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _ImageDescriptionBinDataFuturePollReturn extends ffi.Struct {
+class _RoomMessageImageBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

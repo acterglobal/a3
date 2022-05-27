@@ -87,8 +87,7 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
             },
         )
         .await;
-        (groups, convos)
-
+    (groups, convos)
 }
 
 impl Client {
@@ -98,7 +97,6 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
         }
     }
-
 
     pub(crate) fn start_sync(&self) {
         let client = self.client.clone();
