@@ -59,6 +59,16 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  void _insertMessage(types.ImageMessage m) {
+    for (var i = 0; i < _messages.length; i++) {
+      if (_messages[i].createdAt! < m.createdAt!) {
+        _messages.insert(i, m);
+        return;
+      }
+    }
+    _messages.add(m);
+  }
+
   Future<void> _getTimeline() async {
     _stream = await widget.room.timeline();
     var messages = await _stream!.paginateBackwards(10);
@@ -69,7 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
       } else if (msgtype == 'm.file') {
       } else if (msgtype == 'm.image') {
         message.imageBinary().then((binary) {
-          ImageDescription description = message.imageDescription()!;
+          ImageDescription description = message.imageDescription();
           types.ImageMessage m = types.ImageMessage(
             author: types.User(id: message.sender()),
             createdAt: message.originServerTs() * 1000,
@@ -84,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
             width: description.width()?.toDouble(),
           );
           setState(() {
-            _messages.add(m);
+            _insertMessage(m);
           });
         });
       } else if (msgtype == 'm.location') {
