@@ -1,6 +1,7 @@
 use super::{api, Client, RUNTIME};
 use anyhow::{bail, Result};
 use matrix_sdk::{
+    Client as MatrixClient,
     deserialized_responses::SyncRoomEvent,
     media::{MediaFormat, MediaRequest},
     ruma::{
@@ -20,6 +21,7 @@ use url::Url;
 
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
+    client: MatrixClient,
     fallback: String,
 }
 
@@ -47,7 +49,7 @@ impl RoomMessage {
     pub async fn image_description(&self) -> Result<ImageDescription> {
         match &self.inner.content.msgtype {
             MessageType::Image(content) => {
-                let client = Client::current_client().unwrap();
+                let client = self.client.clone();
                 let info = content.info.as_ref().unwrap();
                 RUNTIME.block_on(async move {
                     let bin_data = client
@@ -60,6 +62,7 @@ impl RoomMessage {
                         )
                         .await?;
                     let description = ImageDescription {
+                        client: client.clone(),
                         _bin_data: bin_data,
                         _name: content.body.clone(),
                         _mimetype: match info.mimetype.as_ref() {
@@ -88,6 +91,7 @@ impl RoomMessage {
 }
 
 pub struct ImageDescription {
+    client: MatrixClient,
     _bin_data: Vec<u8>,
     _name: String,
     _mimetype: Option<String>,
@@ -126,12 +130,13 @@ impl ImageDescription {
     }
 }
 
-pub fn sync_event_to_message(sync_event: SyncRoomEvent) -> Option<RoomMessage> {
+pub fn sync_event_to_message(sync_event: SyncRoomEvent, client: MatrixClient) -> Option<RoomMessage> {
     match sync_event.event.deserialize() {
         Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
         ))) => Some(RoomMessage {
             fallback: m.content.body().to_string(),
+            client,
             inner: m,
         }),
         _ => None,

@@ -5,6 +5,7 @@ use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::ruma;
 use matrix_sdk::{
+    Client as MatrixClient,
     attachment::{
         AttachmentConfig, AttachmentInfo, BaseImageInfo, BaseThumbnailInfo, BaseVideoInfo,
     },
@@ -49,6 +50,7 @@ impl Member {
 }
 
 pub struct Room {
+    pub(crate) client: MatrixClient,
     pub(crate) room: MatrixRoom,
 }
 
@@ -111,19 +113,21 @@ impl Room {
 
     pub async fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let (forward, backward) = room
                     .timeline()
                     .await
                     .context("Failed acquiring timeline streams")?;
-                Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward)))
+                Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward), client))
             })
             .await?
     }
 
     pub async fn latest_message(&self) -> Result<RoomMessage> {
         let room = self.room.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let stream = room
@@ -135,7 +139,7 @@ impl Room {
                     match stream.next().await {
                         None => break,
                         Some(Ok(e)) => {
-                            if let Some(a) = sync_event_to_message(e) {
+                            if let Some(a) = sync_event_to_message(e, client.clone()) {
                                 return Ok(a);
                             }
                         }
