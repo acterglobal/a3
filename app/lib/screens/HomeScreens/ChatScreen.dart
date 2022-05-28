@@ -64,7 +64,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _insertMessage(types.ImageMessage m) {
+  void _insertMessage(types.Message m) {
     for (var i = 0; i < _messages.length; i++) {
       if (_messages[i].createdAt! < m.createdAt!) {
         _messages.insert(i, m);
@@ -74,50 +74,61 @@ class _ChatScreenState extends State<ChatScreen> {
     _messages.add(m);
   }
 
+  void _loadMessage(RoomMessage message) {
+    String msgtype = message.msgtype();
+    if (msgtype == 'm.audio') {
+    } else if (msgtype == 'm.emote') {
+    } else if (msgtype == 'm.file') {
+    } else if (msgtype == 'm.image') {
+      message.imageBinary().then((binary) async {
+        ImageDescription description = message.imageDescription();
+        types.ImageMessage m = types.ImageMessage(
+          author: types.User(id: message.sender()),
+          createdAt: message.originServerTs() * 1000,
+          height: description.height()?.toDouble(),
+          id: message.eventId(),
+          metadata: {
+            'binary': binary.asTypedList(),
+          },
+          name: description.name(),
+          size: description.size(),
+          uri: '',
+          width: description.width()?.toDouble(),
+        );
+        await mtx.acquire();
+        setState(() {
+          _insertMessage(m);
+        });
+        mtx.release();
+      });
+    } else if (msgtype == 'm.location') {
+    } else if (msgtype == 'm.notice') {
+    } else if (msgtype == 'm.server_notice') {
+    } else if (msgtype == 'm.text') {
+      types.TextMessage m = types.TextMessage(
+        author: types.User(id: message.sender()),
+        createdAt: message.originServerTs() * 1000,
+        id: message.eventId(),
+        text: message.body(),
+      );
+      if (isLoading) {
+        _insertMessage(m);
+      } else {
+        setState(() {
+          _insertMessage(m);
+        });
+      }
+    } else if (msgtype == 'm.video') {
+    } else if (msgtype == 'm.key.verification.request') {}
+  }
+
   Future<void> _getTimeline() async {
     await mtx.acquire();
     _stream = await widget.room.timeline();
+    // i am fetching messages from remote
     var messages = await _stream!.paginateBackwards(10);
     for (RoomMessage message in messages) {
-      String msgtype = message.msgtype();
-      if (msgtype == 'm.audio') {
-      } else if (msgtype == 'm.emote') {
-      } else if (msgtype == 'm.file') {
-      } else if (msgtype == 'm.image') {
-        message.imageBinary().then((binary) async {
-          ImageDescription description = message.imageDescription();
-          types.ImageMessage m = types.ImageMessage(
-            author: types.User(id: message.sender()),
-            createdAt: message.originServerTs() * 1000,
-            height: description.height()?.toDouble(),
-            id: message.eventId(),
-            metadata: {
-              'binary': binary.asTypedList(),
-            },
-            name: description.name(),
-            size: description.size(),
-            uri: '',
-            width: description.width()?.toDouble(),
-          );
-          await mtx.acquire();
-          setState(() {
-            _insertMessage(m);
-          });
-          mtx.release();
-        });
-      } else if (msgtype == 'm.location') {
-      } else if (msgtype == 'm.notice') {
-      } else if (msgtype == 'm.server_notice') {
-      } else if (msgtype == 'm.text') {
-        types.TextMessage m = types.TextMessage(
-          author: types.User(id: message.sender()),
-          createdAt: message.originServerTs() * 1000,
-          id: message.eventId(),
-          text: message.body(),
-        );
-        _messages.add(m);
-      } else if (msgtype == 'm.video') {
-      } else if (msgtype == 'm.key.verification.request') {}
+      _loadMessage(message);
     }
     setState(() {
       isLoading = false;
@@ -125,23 +136,13 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_messages.isNotEmpty) {
       if (_messages.first.author.id == _user.id) {
         bool isSeen = await widget.room.readReceipt(_messages.first.id);
-        types.TextMessage lm = types.TextMessage(
-          author: _user,
-          id: _messages.first.id,
-          text: messages.first.body(),
-          showStatus: true,
-          status: isSeen ? Status.seen : Status.delivered,
-        );
-        _messages.removeAt(0);
-        _messages.insert(0, lm);
+        setState(() {
+          _messages[0] = _messages[0].copyWith(
+            showStatus: true,
+            status: isSeen ? Status.seen : Status.delivered,
+          );
+        });
       }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
     }
     mtx.release();
   }
@@ -149,20 +150,10 @@ class _ChatScreenState extends State<ChatScreen> {
   //will detect if any new event is arrived and will re-render the screen
   void _newEvent() async {
     await _stream!.next();
-    var newEvent = await widget.room.latestMessage();
-    final user = types.User(
-      id: newEvent.sender(),
-    );
-    if (newEvent.sender() != _user.id) {
-      final textMessage = types.TextMessage(
-        id: newEvent.eventId(),
-        author: user,
-        text: newEvent.body(),
-      );
-      _messages.insert(0, textMessage);
-      setState(() {});
-    } else {
-      setState(() {});
+    // i am fetching messages from remote
+    var message = await widget.room.latestMessage();
+    if (message.sender() != _user.id) {
+      _loadMessage(message);
     }
   }
 
@@ -181,18 +172,21 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   //push messages in conversation
-  void _handleSendPressed(types.PartialText message) async {
+  Future<void> _handleSendPressed(types.PartialText args) async {
+    // i am sending message
     await widget.room.typingNotice(false);
-    var eventId = await widget.room.sendPlainMessage(message.text);
-    final textMessage = types.TextMessage(
+    var eventId = await widget.room.sendPlainMessage(args.text);
+    final message = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: eventId,
-      text: message.text,
+      text: args.text,
       status: Status.sent,
       showStatus: true,
     );
-    _messages.insert(0, textMessage);
+    setState(() {
+      _messages.insert(0, message);
+    });
   }
 
   void _handleAttachmentPressed() {
@@ -282,6 +276,7 @@ class _ChatScreenState extends State<ChatScreen> {
         image.height,
       );
 
+      // i am sending message
       final message = types.ImageMessage(
         author: _user,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -305,6 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     if (result != null && result.files.single.path != null) {
+      // i am sending message
       final message = types.FileMessage(
         author: _user,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -336,13 +332,9 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _handleEndReached() async {
     final messages = await _stream!.paginateBackwards(10);
     final List<types.Message> nextMessages = [];
+    // i am fetching messages from remote
     for (RoomMessage message in messages) {
-      types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
-        id: message.eventId(),
-        text: message.body(),
-      );
-      nextMessages.add(m);
+      _loadMessage(message);
     }
     setState(() {
       _messages = [..._messages, ...nextMessages];
