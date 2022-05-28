@@ -1,20 +1,16 @@
 use super::messages::{sync_event_to_message, RoomMessage};
 use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
-use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
-use matrix_sdk::ruma;
 use matrix_sdk::{
-    Client as MatrixClient,
-    attachment::{
-        AttachmentConfig, AttachmentInfo, BaseImageInfo, BaseThumbnailInfo, BaseVideoInfo,
-    },
+    attachment::{AttachmentConfig, AttachmentInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{Joined as MatrixJoined, Room as MatrixRoom},
+    room::Room as MatrixRoom,
     ruma::{
         events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
         EventId, OwnedUserId, UInt,
     },
+    Client as MatrixClient,
 };
 use std::{fs::File, path::PathBuf};
 
@@ -120,7 +116,11 @@ impl Room {
                     .timeline()
                     .await
                     .context("Failed acquiring timeline streams")?;
-                Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward), client))
+                Ok(TimelineStream::new(
+                    Box::pin(forward),
+                    Box::pin(backward),
+                    client,
+                ))
             })
             .await?
     }

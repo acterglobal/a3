@@ -75,11 +75,17 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
 
                 if is_effektio_group {
                     groups.push(Group {
-                        inner: Room { room, client: client.clone() },
+                        inner: Room {
+                            room,
+                            client: client.clone(),
+                        },
                     });
                 } else {
                     conversations.push(Conversation {
-                        inner: Room { room, client: client.clone() },
+                        inner: Room {
+                            room,
+                            client: client.clone(),
+                        },
                     });
                 }
 
@@ -198,7 +204,10 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 if let Some(room) = l.get_room(&room_id) {
-                    return Ok(Room { room, client: l.clone() });
+                    return Ok(Room {
+                        room,
+                        client: l.clone(),
+                    });
                 }
                 bail!("Room not found")
             })

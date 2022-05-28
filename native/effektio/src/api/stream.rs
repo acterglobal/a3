@@ -69,7 +69,11 @@ impl TimelineStream {
                 let stream = forward.lock().await;
                 pin_mut!(stream);
                 loop {
-                    if let Some(e) = stream.next().await.and_then(|e| sync_event_to_message(e, client.clone())) {
+                    if let Some(e) = stream
+                        .next()
+                        .await
+                        .and_then(|e| sync_event_to_message(e, client.clone()))
+                    {
                         return Ok(e);
                     }
                 }

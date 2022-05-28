@@ -1,20 +1,14 @@
-use super::{api, Client, RUNTIME};
+use super::{api, RUNTIME};
 use anyhow::{bail, Result};
 use matrix_sdk::{
-    Client as MatrixClient,
     deserialized_responses::SyncRoomEvent,
     media::{MediaFormat, MediaRequest},
-    ruma::{
-        events::{
-            room::{
-                message::{MessageType, RoomMessageEventContent},
-                MediaSource,
-            },
-            AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
-            SyncMessageLikeEvent,
-        },
-        MxcUri, OwnedMxcUri,
+    ruma::events::{
+        room::message::{MessageType, RoomMessageEventContent},
+        AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
+        SyncMessageLikeEvent,
     },
+    Client as MatrixClient,
 };
 use std::sync::Arc;
 use url::Url;
@@ -66,7 +60,7 @@ impl RoomMessage {
                         Ok(api::FfiBuffer::new(data))
                     })
                     .await?
-            },
+            }
             _ => bail!("Invalid file format"),
         }
     }
@@ -122,7 +116,10 @@ impl ImageDescription {
     }
 }
 
-pub fn sync_event_to_message(sync_event: SyncRoomEvent, client: MatrixClient) -> Option<RoomMessage> {
+pub fn sync_event_to_message(
+    sync_event: SyncRoomEvent,
+    client: MatrixClient,
+) -> Option<RoomMessage> {
     match sync_event.event.deserialize() {
         Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
