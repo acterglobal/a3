@@ -25,12 +25,13 @@ class _NewsSideBarState extends State<NewsSideBar> {
     var fgColor =
         convertColor(widget.news.fgColor(), AppCommonTheme.primaryColor);
 
-    TextStyle style = Theme.of(context)
-        .textTheme
-        .bodyText1!
-        .copyWith(fontSize: 13, color: fgColor, shadows: [
-      Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
-    ]);
+    TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
+      fontSize: 13,
+      color: fgColor,
+      shadows: [
+        Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
+      ],
+    );
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Column(
@@ -38,9 +39,17 @@ class _NewsSideBarState extends State<NewsSideBar> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           _sideBarItem(
-              'heart', widget.news.likesCount().toString(), fgColor, style),
-          _sideBarItem('comment', widget.news.commentsCount().toString(),
-              fgColor, style),
+            'heart',
+            widget.news.likesCount().toString(),
+            fgColor,
+            style,
+          ),
+          _sideBarItem(
+            'comment',
+            widget.news.commentsCount().toString(),
+            fgColor,
+            style,
+          ),
           _sideBarItem('reply', '76', fgColor, style),
           _profileImageButton(fgColor),
         ],
