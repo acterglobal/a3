@@ -26,7 +26,10 @@ import 'package:mutex/mutex.dart';
 import 'package:open_file/open_file.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:themed/themed.dart';
+
 class ChatScreen extends StatefulWidget {
+  final Conversation room;
   final String? user;
   const ChatScreen({Key? key, required this.room, required this.user})
       : super(key: key);
