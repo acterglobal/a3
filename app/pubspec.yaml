@@ -54,6 +54,7 @@ dependencies:
   effektio_flutter_sdk:
     path: ../effektio_flutter_sdk
   mime: ^1.0.2
+  mutex: ^3.0.0
 
 dev_dependencies:
   flutter_test:

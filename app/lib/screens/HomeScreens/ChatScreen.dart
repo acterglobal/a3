@@ -22,6 +22,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:mutex/mutex.dart';
 import 'package:open_file/open_file.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
@@ -36,12 +37,15 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
+final mtx = Mutex(); // acquire this mutex, when updating state
+
 class _ChatScreenState extends State<ChatScreen> {
   List<types.Message> _messages = [];
   late final _user;
   TimelineStream? _stream;
   bool isLoading = false;
   int _page = 0;
+
   @override
   void initState() {
     _user = types.User(
@@ -70,6 +74,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _getTimeline() async {
+    await mtx.acquire();
     _stream = await widget.room.timeline();
     var messages = await _stream!.paginateBackwards(10);
     for (RoomMessage message in messages) {
@@ -78,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
       } else if (msgtype == 'm.emote') {
       } else if (msgtype == 'm.file') {
       } else if (msgtype == 'm.image') {
-        message.imageBinary().then((binary) {
+        message.imageBinary().then((binary) async {
           ImageDescription description = message.imageDescription();
           types.ImageMessage m = types.ImageMessage(
             author: types.User(id: message.sender()),
@@ -93,9 +98,11 @@ class _ChatScreenState extends State<ChatScreen> {
             uri: '',
             width: description.width()?.toDouble(),
           );
+          await mtx.acquire();
           setState(() {
             _insertMessage(m);
           });
+          mtx.release();
         });
       } else if (msgtype == 'm.location') {
       } else if (msgtype == 'm.notice') {
@@ -135,6 +142,7 @@ class _ChatScreenState extends State<ChatScreen> {
         isLoading = false;
       });
     }
+    mtx.release();
   }
 
   //will detect if any new event is arrived and will re-render the screen
