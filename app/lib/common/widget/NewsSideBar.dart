@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:effektio/common/widget/CommentView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
@@ -18,6 +19,37 @@ class NewsSideBar extends StatefulWidget {
 }
 
 class _NewsSideBarState extends State<NewsSideBar> {
+  static List<String> listPlayers = <String>[
+    'Cristiano Ronaldo',
+    'Lionel Messi',
+    'Neymar Jr.',
+    'Kevin De Bruyne',
+    'Robert Lewandowski',
+    'Kylian Mbappe',
+    'Virgil Van Dijk',
+    'Mohamed Salah',
+    'Sadio Mane',
+    'Sergio Ramos',
+    'Paul Pogba',
+    'Bruno Fernandes'
+  ];
+
+  static List<MaterialColor> listColors = <MaterialColor>[
+    Colors.blue,
+    Colors.orange,
+    Colors.brown,
+    Colors.blueGrey,
+    Colors.deepPurple,
+    Colors.indigo,
+    Colors.green,
+    Colors.yellow,
+    Colors.lime,
+    Colors.teal,
+    Colors.red,
+    Colors.pink
+  ];
+
+  TextEditingController commentcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     var bgColor =
@@ -90,19 +122,164 @@ class _NewsSideBarState extends State<NewsSideBar> {
 
   // ignore: always_declare_return_types
   _sideBarItem(String iconName, String label, Color? color, TextStyle style) {
-    return Column(
-      children: <Widget>[
-        SvgPicture.asset(
-          'assets/images/$iconName.svg',
-          color: color,
-          width: 35,
-          height: 35,
+    return GestureDetector(
+      onTap: (() {
+        if (iconName == 'comment') {
+          showBottomSheet();
+        }
+      }),
+      child: Column(
+        children: <Widget>[
+          SvgPicture.asset(
+            'assets/images/$iconName.svg',
+            color: color,
+            width: 35,
+            height: 35,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Text(label, style: style),
+        ],
+      ),
+    );
+  }
+
+  void showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppCommonTheme.backgroundColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(30.0),
         ),
-        SizedBox(
-          height: 5,
-        ),
-        Text(label, style: style),
-      ],
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12.0),
+                        child: SizedBox(
+                          height: 40,
+                          child: Center(
+                            child: Text(
+                              '101 Comments',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          controller: scrollController,
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.all(12),
+                              child: CommentView(
+                                name: listPlayers[index],
+                                titleColor: listColors[index],
+                                comment: 'How they can do it',
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 8.0,
+                          top: 8.0,
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: _profileImageButton(Colors.black),
+                            ),
+                            Expanded(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: AppCommonTheme.textFieldColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Expanded(
+                                  child: Stack(
+                                    alignment: Alignment.centerRight,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: TextField(
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          cursorColor: Colors.grey,
+                                          // controller: _controller,
+                                          decoration: const InputDecoration(
+                                            hintText: 'Add a comment',
+                                            hintStyle: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                            border: InputBorder.none,
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.emoji_emotions_outlined,
+                                          color: Colors.grey,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            // emojiShowing = !emojiShowing;
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                const snackBar = SnackBar(
+                                  content: Text('Send icon tapped'),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackBar);
+                              },
+                              icon: const Icon(
+                                Icons.send,
+                                color: Colors.pink,
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
     );
   }
 }

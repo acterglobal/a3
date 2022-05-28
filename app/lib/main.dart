@@ -53,6 +53,7 @@ class _EffektioState extends State<Effektio> {
   Widget build(BuildContext context) {
     return Themed(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         title: 'Effektio',
         localizationsDelegates: const [

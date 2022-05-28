@@ -113,6 +113,7 @@ class ChatTheme01 {
       color: latestChatTextColor,
     ),
   );
+
   static const latestChatDateStyle = TextStyleRef(
     TextStyle(
       fontSize: 11,
@@ -120,6 +121,7 @@ class ChatTheme01 {
       color: latestChatTextColor,
     ),
   );
+
   static const chatBodyStyle = TextStyleRef(
     TextStyle(
       fontSize: 14,

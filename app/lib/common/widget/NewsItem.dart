@@ -46,7 +46,7 @@ class _NewsItemState extends State<NewsItem> {
               child: Container(
                 height: MediaQuery.of(context).size.height / 4,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: Column(
                     children: <Widget>[
                       Text(
