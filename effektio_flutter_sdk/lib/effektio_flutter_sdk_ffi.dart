@@ -3096,9 +3096,6 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
     ffi.Uint32,
     ffi.Uint32,
     ffi.Uint32,
@@ -3107,9 +3104,6 @@ class Api {
   late final _conversationSendImageMessage =
       _conversationSendImageMessagePtr.asFunction<
           int Function(
-    int,
-    int,
-    int,
     int,
     int,
     int,
@@ -5177,7 +5171,6 @@ class Conversation {
   }
 
   Future<String> sendImageMessage(
-    String message,
     String uri,
     String name,
     String mimetype,
@@ -5185,13 +5178,12 @@ class Conversation {
     int width,
     int height,
   ) {
-    final tmp1 = message;
-    final tmp5 = uri;
-    final tmp9 = name;
-    final tmp13 = mimetype;
-    final tmp17 = size;
-    final tmp19 = width;
-    final tmp21 = height;
+    final tmp1 = uri;
+    final tmp5 = name;
+    final tmp9 = mimetype;
+    final tmp13 = size;
+    final tmp15 = width;
+    final tmp17 = height;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -5203,11 +5195,8 @@ class Conversation {
     var tmp11 = 0;
     var tmp12 = 0;
     var tmp14 = 0;
-    var tmp15 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
-    var tmp20 = 0;
-    var tmp22 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -5230,17 +5219,10 @@ class Conversation {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    final tmp13_0 = utf8.encode(tmp13);
-    tmp15 = tmp13_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp14_0 = _api.__allocate(tmp15 * 1, 1);
-    final Uint8List tmp14_1 = tmp14_0.asTypedList(tmp15);
-    tmp14_1.setAll(0, tmp13_0);
-    tmp14 = tmp14_0.address;
+    tmp14 = tmp13;
     tmp16 = tmp15;
     tmp18 = tmp17;
-    tmp20 = tmp19;
-    tmp22 = tmp21;
-    final tmp23 = _api._conversationSendImageMessage(
+    final tmp19 = _api._conversationSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -5252,20 +5234,17 @@ class Conversation {
       tmp11,
       tmp12,
       tmp14,
-      tmp15,
       tmp16,
       tmp18,
-      tmp20,
-      tmp22,
     );
-    final tmp25 = tmp23;
-    final ffi.Pointer<ffi.Void> tmp25_0 = ffi.Pointer.fromAddress(tmp25);
-    final tmp25_1 =
-        _Box(_api, tmp25_0, "__Conversation_send_image_message_future_drop");
-    tmp25_1._finalizer = _api._registerFinalizer(tmp25_1);
-    final tmp24 =
-        _nativeFuture(tmp25_1, _api.__conversationSendImageMessageFuturePoll);
-    return tmp24;
+    final tmp21 = tmp19;
+    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
+    final tmp21_1 =
+        _Box(_api, tmp21_0, "__Conversation_send_image_message_future_drop");
+    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
+    final tmp20 =
+        _nativeFuture(tmp21_1, _api.__conversationSendImageMessageFuturePoll);
+    return tmp20;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.

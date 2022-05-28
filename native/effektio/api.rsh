@@ -166,7 +166,7 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
-    fn send_image_message(message: string, uri: string, name: string, mimetype: string, size: u32, width: u32, height: u32) -> Future<Result<string>>;
+    fn send_image_message(uri: string, name: string, mimetype: string, size: u32, width: u32, height: u32) -> Future<Result<string>>;
 }
 
 object Group {

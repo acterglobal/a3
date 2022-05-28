@@ -71,7 +71,7 @@ impl RoomMessage {
                 let info = content.info.as_ref().unwrap();
                 let description = ImageDescription {
                     img_name: content.body.clone(),
-                    img_mimetype: info.mimetype.as_ref().map(|value| value.clone()),
+                    img_mimetype: info.mimetype.clone(),
                     img_size: match info.size {
                         Some(value) => u64::from(value),
                         None => 0,

@@ -205,7 +205,6 @@ impl Room {
 
     pub async fn send_image_message(
         &self,
-        message: String,
         uri: String,
         name: String,
         mimetype: String,

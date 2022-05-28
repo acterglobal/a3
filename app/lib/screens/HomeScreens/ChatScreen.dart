@@ -267,7 +267,6 @@ class _ChatScreenState extends State<ChatScreen> {
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
       var eventId = await widget.room.sendImageMessage(
-        'Image placeholder',
         result.path,
         result.name,
         mimeType!,
