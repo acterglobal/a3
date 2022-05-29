@@ -7,10 +7,11 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
 class NewsItem extends StatefulWidget {
-  const NewsItem({Key? key, required this.client, required this.news})
+  const NewsItem({Key? key, required this.client, required this.news, required this.index})
       : super(key: key);
   final Client client;
   final News news;
+  final int index;
 
   @override
   _NewsItemState createState() => _NewsItemState();
@@ -41,7 +42,7 @@ class _NewsItemState extends State<NewsItem> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Expanded(
-              flex: 3,
+              flex: 5,
               // ignore: sized_box_for_whitespace
               child: Container(
                 height: MediaQuery.of(context).size.height / 4,
@@ -52,31 +53,35 @@ class _NewsItemState extends State<NewsItem> {
                       Text(
                         'Lorem Ipsum is simply dummy text of the printing and',
                         style: GoogleFonts.roboto(
-                            color: fgColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            shadows: [
-                              Shadow(
-                                  color: bgColor,
-                                  offset: const Offset(2, 2),
-                                  blurRadius: 5),
-                            ]),
+                          color: fgColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: bgColor,
+                              offset: const Offset(2, 2),
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
                       ),
                       // ignore: prefer_const_constructors
                       SizedBox(height: 10),
                       // ignore: prefer_const_constructors
                       Text(
-                        widget.news.text() ?? "",
+                        widget.news.text() ?? '',
                         style: GoogleFonts.roboto(
-                            color: fgColor,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            shadows: [
-                              Shadow(
-                                  color: bgColor,
-                                  offset: const Offset(1, 1),
-                                  blurRadius: 3),
-                            ]),
+                          color: fgColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          shadows: [
+                            Shadow(
+                              color: bgColor,
+                              offset: const Offset(1, 1),
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -84,10 +89,13 @@ class _NewsItemState extends State<NewsItem> {
               ),
             ),
             Expanded(
+              flex: 1,
               // ignore: sized_box_for_whitespace
               child: Container(
                 height: MediaQuery.of(context).size.height / 2.5,
-                child: NewsSideBar(client: widget.client, news: widget.news),
+                child: InkWell(
+                  child: NewsSideBar(client: widget.client, news: widget.news, index: widget.index,),
+                ),
               ),
             ),
           ],
