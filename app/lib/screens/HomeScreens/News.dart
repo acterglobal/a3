@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/blocs/like_animation.dart';
+import 'package:effektio/common/animations/like_animation.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/NewsItem.dart';
 import 'package:effektio/common/widget/SideMenu.dart';

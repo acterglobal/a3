@@ -1,4 +1,4 @@
-import 'package:effektio/blocs/like_animation.dart';
+import 'package:effektio/common/animations/like_animation.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
