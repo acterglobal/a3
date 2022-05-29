@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:effektio/common/store/AppConstants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -37,7 +38,6 @@ class _SignupScreentate extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
@@ -57,14 +57,14 @@ class _SignupScreentate extends State<SignupScreen> {
                 height: 40,
               ),
               Text(
-                'Lets get Started',
+                AppLocalizations.of(context)!.onboardText,
                 style: AuthTheme.authTitleStyle,
               ),
               SizedBox(
                 height: 10,
               ),
               Text(
-                'Create an account to explore',
+                AppLocalizations.of(context)!.createAccountText,
                 style: AuthTheme.authbodyStyle,
               ),
               Container(
@@ -88,14 +88,15 @@ class _SignupScreentate extends State<SignupScreen> {
                               right: 10,
                             ),
                             border: InputBorder.none,
-                            hintText:
-                                'First Name', // pass the hint text parameter here
+                            hintText: AppLocalizations.of(context)!
+                                .firstName, // pass the hint text parameter here
                             hintStyle:
                                 TextStyle(color: AuthTheme.hintTextColor),
                           ),
                           style: TextStyle(color: AuthTheme.textFieldTextColor),
-                          validator: (val) =>
-                              val!.isEmpty ? 'Please enter First Name' : null,
+                          validator: (val) => val!.isEmpty
+                              ? AppLocalizations.of(context)!.missingFirstName
+                              : null,
                         ),
                       ),
                     ),
@@ -118,14 +119,15 @@ class _SignupScreentate extends State<SignupScreen> {
                               right: 10,
                             ),
                             border: InputBorder.none,
-                            hintText:
-                                'Last name', // pass the hint text parameter here
+                            hintText: AppLocalizations.of(context)!
+                                .lastName, // pass the hint text parameter here
                             hintStyle:
                                 TextStyle(color: AuthTheme.hintTextColor),
                           ),
                           style: TextStyle(color: AuthTheme.textFieldTextColor),
-                          validator: (val) =>
-                              val!.isEmpty ? 'Please enter Last Name' : null,
+                          validator: (val) => val!.isEmpty
+                              ? AppLocalizations.of(context)!.missingLastName
+                              : null,
                         ),
                       ),
                     ),
@@ -145,14 +147,14 @@ class _SignupScreentate extends State<SignupScreen> {
                     contentPadding:
                         EdgeInsets.only(left: 10.0, top: 12, right: 10),
                     border: InputBorder.none,
-                    hintText:
-                        'Email Address', // pass the hint text parameter here
+                    hintText: AppLocalizations.of(context)!
+                        .email, // pass the hint text parameter here
                     hintStyle: TextStyle(color: AuthTheme.hintTextColor),
                   ),
                   style: TextStyle(color: AuthTheme.textFieldTextColor),
                   validator: (value) => ValidConstants.isEmail(value!)
                       ? null
-                      : 'Please enter vaild email',
+                      : AppLocalizations.of(context)!.validEmail,
                 ),
               ),
               SizedBox(
@@ -174,24 +176,26 @@ class _SignupScreentate extends State<SignupScreen> {
                     style: AuthTheme.authbodyStyle,
                     children: <TextSpan>[
                       TextSpan(
-                        text: 'By clicking to sign up you agree to our ',
+                        text: '${AppLocalizations.of(context)!.termsText1} ',
                       ),
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             debugPrint('Terms of Service"');
                           },
-                        text: 'Terms and Condition',
+                        text: AppLocalizations.of(context)!.termsText2,
                         style: AuthTheme.authbodyStyle +
                             AppCommonTheme.primaryColor,
                       ),
-                      TextSpan(text: ' and that you have read our '),
+                      TextSpan(
+                        text: ' ${AppLocalizations.of(context)!.termsText3} ',
+                      ),
                       TextSpan(
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
                             debugPrint('policy"');
                           },
-                        text: 'Privacy Policy',
+                        text: AppLocalizations.of(context)!.termsText4,
                         style: AuthTheme.authbodyStyle +
                             AppCommonTheme.primaryColor,
                       ),
@@ -206,7 +210,7 @@ class _SignupScreentate extends State<SignupScreen> {
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {}
                 },
-                title: 'Sign up',
+                title: AppLocalizations.of(context)!.signUp,
               ),
               SizedBox(
                 height: 20,
@@ -215,7 +219,7 @@ class _SignupScreentate extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Already have an account ?  ',
+                    '${AppLocalizations.of(context)!.haveAccount}  ',
                     style: AuthTheme.authbodyStyle,
                   ),
                   InkWell(
@@ -228,9 +232,9 @@ class _SignupScreentate extends State<SignupScreen> {
                       );
                     },
                     child: Text(
-                      'Sign in ',
-                      style: AuthTheme.authbodyStyle +
-                          AppCommonTheme.primaryColor,
+                      AppLocalizations.of(context)!.login,
+                      style:
+                          AuthTheme.authbodyStyle + AppCommonTheme.primaryColor,
                     ),
                   )
                 ],

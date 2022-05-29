@@ -148,6 +148,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  emoji_picker_flutter:
+    dependency: "direct main"
+    description:
+      name: emoji_picker_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.2"
   equatable:
     dependency: transitive
     description:
@@ -183,6 +190,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.5.1"
+  flex_color_picker:
+    dependency: transitive
+    description:
+      name: flex_color_picker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -222,12 +236,47 @@ packages:
       name: flutter_chat_ui
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.7"
+    version: "1.5.8"
+  flutter_colorpicker:
+    dependency: "direct main"
+    description:
+      name: flutter_colorpicker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   flutter_driver:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_inappwebview:
+    dependency: transitive
+    description:
+      name: flutter_inappwebview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.4.0+2"
+  flutter_keyboard_visibility:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.2.0"
+  flutter_keyboard_visibility_platform_interface:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  flutter_keyboard_visibility_web:
+    dependency: transitive
+    description:
+      name: flutter_keyboard_visibility_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -332,6 +381,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.15.0"
+  html_editor_enhanced:
+    dependency: "direct main"
+    description:
+      name: html_editor_enhanced
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.0+1"
   http:
     dependency: transitive
     description:
@@ -388,6 +444,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.4"
+  infinite_listview:
+    dependency: transitive
+    description:
+      name: infinite_listview
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   integration_test:
     dependency: "direct dev"
     description: flutter
@@ -463,6 +526,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  numberpicker:
+    dependency: transitive
+    description:
+      name: numberpicker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   octo_image:
     dependency: transitive
     description:
@@ -582,6 +652,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  pointer_interceptor:
+    dependency: transitive
+    description:
+      name: pointer_interceptor
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.9.3"
   process:
     dependency: transitive
     description:

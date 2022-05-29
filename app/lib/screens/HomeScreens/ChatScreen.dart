@@ -8,13 +8,14 @@ import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, TimelineStream, RoomMessage, FfiListMember;
+    show Conversation, TimelineStream, RoomMessage, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -114,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final index = _messages.indexWhere((element) => element.id == message.id);
     final updatedMessage = _messages[index].copyWith(previewData: previewData);
 
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         _messages[index] = updatedMessage;
       });
@@ -335,7 +336,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ) {
                 if (snapshot.hasData) {
                   return Text(
-                    '${snapshot.requireData.length.toString()} Members',
+                    '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.emptyPlaceholderText}',
                     style:
                         ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
                   );
@@ -385,6 +386,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               )
             : Chat(
+                l10n: ChatL10nEn(
+                  emptyChatPlaceholder: '',
+                  attachmentButtonAccessibilityLabel: '',
+                  fileButtonAccessibilityLabel: '',
+                  inputPlaceholder: AppLocalizations.of(context)!.message,
+                  sendButtonAccessibilityLabel: '',
+                ),
                 messages: _messages,
                 onSendPressed: _handleSendPressed,
                 user: _user,
