@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:expandable_text/expandable_text.dart';
 
 class NewsItem extends StatefulWidget {
   const NewsItem({Key? key, required this.client, required this.news, required this.index})
@@ -50,6 +51,7 @@ class _NewsItemState extends State<NewsItem> {
                   padding: const EdgeInsets.only(left: 10),
                   child: Column(
                     children: <Widget>[
+                      const Spacer(),
                       Text(
                         'Lorem Ipsum is simply dummy text of the printing and',
                         style: GoogleFonts.roboto(
@@ -68,8 +70,14 @@ class _NewsItemState extends State<NewsItem> {
                       // ignore: prefer_const_constructors
                       SizedBox(height: 10),
                       // ignore: prefer_const_constructors
-                      Text(
+                      ExpandableText(
                         widget.news.text() ?? '',
+                        maxLines: 2,
+                        expandText: '',
+                        expandOnTextTap: true,
+                        collapseOnTextTap: true,
+                        animation: true,
+                        linkColor: fgColor,
                         style: GoogleFonts.roboto(
                           color: fgColor,
                           fontSize: 14,
@@ -83,6 +91,7 @@ class _NewsItemState extends State<NewsItem> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
