@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/widget/CommentView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -19,6 +22,28 @@ class NewsSideBar extends StatefulWidget {
 }
 
 class _NewsSideBarState extends State<NewsSideBar> {
+  TextEditingController commentController = TextEditingController();
+  bool emojiShowing = false;
+  bool isKeyBoardOpen = false;
+
+  _onEmojiSelected(Emoji emoji) {
+    commentController
+      ..text += emoji.emoji
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: commentController.text.length));
+  }
+
+  // openKeyboard() {
+  //   CommentViewState().commentCallback();
+  // }
+
+  _onBackspacePressed() {
+    commentController
+      ..text = commentController.text.characters.skipLast(1).toString()
+      ..selection = TextSelection.fromPosition(
+          TextPosition(offset: commentController.text.length));
+  }
+
   static List<String> listPlayers = <String>[
     'Cristiano Ronaldo',
     'Lionel Messi',
@@ -188,7 +213,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           itemCount: 10,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(12.0),
                               child: CommentView(
                                 name: listPlayers[index],
                                 titleColor: listColors[index],
@@ -213,46 +238,42 @@ class _NewsSideBarState extends State<NewsSideBar> {
                             Expanded(
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
-                                height: 40,
                                 decoration: BoxDecoration(
                                   color: AppCommonTheme.textFieldColor,
                                   borderRadius: BorderRadius.circular(15),
                                 ),
-                                child: Expanded(
-                                  child: Stack(
-                                    alignment: Alignment.centerRight,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 8.0),
-                                        child: TextField(
-                                          style: const TextStyle(
-                                            color: Colors.white,
+                                child: Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: TextField(
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        cursorColor: Colors.grey,
+                                        controller: commentController,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Add a comment',
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
                                           ),
-                                          cursorColor: Colors.grey,
-                                          // controller: _controller,
-                                          decoration: const InputDecoration(
-                                            hintText: 'Add a comment',
-                                            hintStyle: TextStyle(
-                                              color: Colors.grey,
-                                            ),
-                                            border: InputBorder.none,
-                                          ),
+                                          border: InputBorder.none,
                                         ),
                                       ),
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.emoji_emotions_outlined,
-                                          color: Colors.grey,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            // emojiShowing = !emojiShowing;
-                                          });
-                                        },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.emoji_emotions_outlined,
+                                        color: Colors.grey,
                                       ),
-                                    ],
-                                  ),
+                                      onPressed: () {
+                                        setState(() {
+                                          emojiShowing = !emojiShowing;
+                                        });
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -268,14 +289,146 @@ class _NewsSideBarState extends State<NewsSideBar> {
                                 Icons.send,
                                 color: Colors.pink,
                               ),
-                            )
+                            ),
                           ],
+                        ),
+                      ),
+                      Offstage(
+                        offstage: !emojiShowing,
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 250,
+                          child: EmojiPicker(
+                            onEmojiSelected: (Category category, Emoji emoji) {
+                              _onEmojiSelected(emoji);
+                            },
+                            onBackspacePressed: _onBackspacePressed,
+                            config: Config(
+                              columns: 7,
+                              emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                              verticalSpacing: 0,
+                              horizontalSpacing: 0,
+                              initCategory: Category.RECENT,
+                              bgColor: Colors.white,
+                              indicatorColor: Colors.blue,
+                              iconColor: Colors.grey,
+                              iconColorSelected: Colors.blue,
+                              progressIndicatorColor: Colors.blue,
+                              backspaceColor: Colors.blue,
+                              skinToneDialogBgColor: Colors.white,
+                              skinToneIndicatorColor: Colors.grey,
+                              enableSkinTones: true,
+                              showRecentsTab: true,
+                              recentsLimit: 28,
+                              noRecentsText: 'No Recents',
+                              noRecentsStyle: const TextStyle(
+                                fontSize: 20,
+                                color: Colors.black26,
+                              ),
+                              tabIndicatorAnimDuration: kTabScrollDuration,
+                              categoryIcons: const CategoryIcons(),
+                              buttonMode: ButtonMode.MATERIAL,
+                            ),
+                          ),
                         ),
                       )
                     ],
                   ),
                 );
               },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void showReportBottomSheet() {
+    showModalBottomSheet(
+      backgroundColor: Colors.grey[800],
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: AppCommonTheme.textFieldColor,
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Spam',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(
+                          Icons.keyboard_arrow_right,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Violence',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Fake Account',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Copyrights',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Spam',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         );
