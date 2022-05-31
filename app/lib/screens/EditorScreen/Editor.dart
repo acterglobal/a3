@@ -348,7 +348,8 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                           if (tagTitleController.text.isNotEmpty) {
                             _tagList.add(tagTitleController.text.toString());
                             _tagColorList.add(
-                                tagColor == null ? Colors.white : tagColor!);
+                              tagColor == null ? Colors.white : tagColor!,
+                            );
                             print(_tagColorList.length);
                             Navigator.of(context).pop();
                             tagTitleController.clear();
