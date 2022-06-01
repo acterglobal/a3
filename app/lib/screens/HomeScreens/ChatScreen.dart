@@ -24,10 +24,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:mutex/mutex.dart';
+import 'package:open_file/open_file.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
@@ -352,7 +354,20 @@ class _ChatScreenState extends State<ChatScreen> {
               join(dirPath, message.name); // path.join needs androidicu
           await widget.room.saveFile(message.id, filePath);
         }
-      } else {}
+      } else {
+        final result = await OpenFile.open(filePath);
+        if (result.message.isNotEmpty) {
+          Fluttertoast.showToast(
+            msg: result.message,
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black12,
+            textColor: Colors.black87,
+            fontSize: 16,
+          );
+        }
+      }
     }
   }
 
