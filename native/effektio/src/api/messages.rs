@@ -3,19 +3,22 @@ use anyhow::{bail, Result};
 use matrix_sdk::{
     deserialized_responses::SyncRoomEvent,
     media::{MediaFormat, MediaRequest},
+    room::Room,
     ruma::events::{
         room::message::{MessageType, RoomMessageEventContent},
         AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
-    Client as MatrixClient,
+    store::StateStore,
+    Client,
 };
-use std::sync::Arc;
+use std::{fs::File, io::Write, sync::Arc};
 use url::Url;
 
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
-    client: MatrixClient,
+    client: Client,
+    room: Room,
     fallback: String,
 }
 
@@ -84,6 +87,78 @@ impl RoomMessage {
             _ => bail!("Invalid file format"),
         }
     }
+
+    pub async fn save_file(&self, path: String) -> Result<bool> {
+        match &self.inner.content.msgtype {
+            MessageType::File(content) => {
+                let client = self.client.clone();
+                let room = self.room.clone();
+                let event_id = self.event_id().clone();
+                let source = content.source.clone();
+                // any variable in self can't be called directly in spawn
+                RUNTIME
+                    .spawn(async move {
+                        let mut file = File::create(path.as_str())?;
+                        let data = client
+                            .get_media_content(
+                                &MediaRequest {
+                                    source,
+                                    format: MediaFormat::File,
+                                },
+                                false,
+                            )
+                            .await?;
+                        file.write_all(&data)?;
+                        let key = [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
+                        client
+                            .store()
+                            .set_custom_value(&key, path.as_bytes().to_vec())
+                            .await?;
+                        Ok(true)
+                    })
+                    .await?
+            }
+            _ => bail!("Invalid file format"),
+        }
+    }
+
+    pub async fn file_path(&self) -> Result<String> {
+        match &self.inner.content.msgtype {
+            MessageType::File(content) => {
+                let client = self.client.clone();
+                let rid = self.room.room_id().clone();
+                let event_id = self.event_id().clone();
+                let key = [rid.as_str().as_bytes(), event_id.as_bytes()].concat();
+                let path = client
+                    .store()
+                    .get_custom_value(&key)
+                    .await?;
+                match std::str::from_utf8(&path.unwrap()) {
+                    Ok(v) => Ok(v.to_string()),
+                    Err(e) => bail!("Invalid file path"),
+                }
+            }
+            _ => bail!("Invalid file format"),
+        }
+    }
+
+    pub fn file_description(&self) -> Result<FileDescription> {
+        match &self.inner.content.msgtype {
+            MessageType::File(content) => {
+                let info = content.info.as_ref().unwrap();
+                let description = FileDescription {
+                    img_name: content.body.clone(),
+                    img_mimetype: info.mimetype.clone(),
+                    img_size: match info.size {
+                        Some(value) => u64::from(value),
+                        None => 0,
+                    },
+                };
+                Ok(description)
+            }
+            _ => bail!("Invalid file format"),
+        }
+    }
 }
 
 pub struct ImageDescription {
@@ -116,9 +191,30 @@ impl ImageDescription {
     }
 }
 
+pub struct FileDescription {
+    img_name: String,
+    img_mimetype: Option<String>,
+    img_size: u64,
+}
+
+impl FileDescription {
+    pub fn name(&self) -> String {
+        self.img_name.clone()
+    }
+
+    pub fn mimetype(&self) -> Option<String> {
+        self.img_mimetype.clone()
+    }
+
+    pub fn size(&self) -> u64 {
+        self.img_size
+    }
+}
+
 pub fn sync_event_to_message(
     sync_event: SyncRoomEvent,
-    client: MatrixClient,
+    client: Client,
+    room: Room,
 ) -> Option<RoomMessage> {
     match sync_event.event.deserialize() {
         Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
@@ -126,6 +222,7 @@ pub fn sync_event_to_message(
         ))) => Some(RoomMessage {
             fallback: m.content.body().to_string(),
             client,
+            room,
             inner: m,
         }),
         _ => None,

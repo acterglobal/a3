@@ -103,6 +103,15 @@ object RoomMessage {
 
     /// contains source data, name, mimetype, size, width and height
     fn image_description() -> Result<ImageDescription>;
+
+    /// save file in specified path
+    fn save_file(path: string) -> Future<Result<bool>>;
+
+    /// get the path that file was saved
+    fn file_path() -> Future<Result<string>>;
+
+    /// contains source data, name, mimetype and size
+    fn file_description() -> Result<FileDescription>;
 }
 
 object ImageDescription {
@@ -121,6 +130,18 @@ object ImageDescription {
 
     /// image height
     fn height() -> Option<u64>;
+}
+
+object FileDescription {
+
+    /// file name
+    fn name() -> string;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size
+    fn size() -> u64;
 }
 
 /// Timeline with Room Events
@@ -167,6 +188,14 @@ object Conversation {
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
     fn send_image_message(uri: string, name: string, mimetype: string, size: u32, width: u32, height: u32) -> Future<Result<string>>;
+
+    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
+
+    /// save file in specified path
+    fn save_file(event_id: string, uri: string) -> Future<Result<bool>>;
+
+    /// get the path that file was saved
+    fn file_path(event_id: string) -> Future<Result<string>>;
 }
 
 object Group {

@@ -15,6 +15,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         TimelineStream,
         RoomMessage,
         ImageDescription,
+        FileDescription,
         FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -23,7 +24,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:mutex/mutex.dart';
-import 'package:open_file/open_file.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
@@ -46,6 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TimelineStream? _stream;
   bool isLoading = false;
   int _page = 0;
+  final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
 
   @override
   void initState() {
@@ -64,21 +69,35 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _insertMessage(types.Message m) {
-    for (var i = 0; i < _messages.length; i++) {
-      if (_messages[i].createdAt! < m.createdAt!) {
-        _messages.insert(i, m);
+  void _insertMessage(types.Message m, List<types.Message> c) {
+    for (var i = 0; i < c.length; i++) {
+      if (c[i].createdAt! < m.createdAt!) {
+        c.insert(i, m);
         return;
       }
     }
-    _messages.add(m);
+    c.add(m);
   }
 
-  void _loadMessage(RoomMessage message) {
+  void _loadMessage(RoomMessage message, List<types.Message> container) {
     String msgtype = message.msgtype();
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
+      FileDescription description = message.fileDescription();
+      types.FileMessage m = types.FileMessage(
+        author: types.User(id: message.sender()),
+        createdAt: message.originServerTs() * 1000,
+        id: message.eventId(),
+        name: description.name(),
+        size: description.size(),
+        uri: '',
+      );
+      if (isLoading) {
+        _insertMessage(m, container);
+      } else {
+        setState(() => _insertMessage(m, container));
+      }
     } else if (msgtype == 'm.image') {
       message.imageBinary().then((binary) async {
         ImageDescription description = message.imageDescription();
@@ -96,9 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
           width: description.width()?.toDouble(),
         );
         await mtx.acquire();
-        setState(() {
-          _insertMessage(m);
-        });
+        setState(() => _insertMessage(m, container));
         mtx.release();
       });
     } else if (msgtype == 'm.location') {
@@ -112,11 +129,9 @@ class _ChatScreenState extends State<ChatScreen> {
         text: message.body(),
       );
       if (isLoading) {
-        _insertMessage(m);
+        _insertMessage(m, container);
       } else {
-        setState(() {
-          _insertMessage(m);
-        });
+        setState(() => _insertMessage(m, container));
       }
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
@@ -128,11 +143,9 @@ class _ChatScreenState extends State<ChatScreen> {
     // i am fetching messages from remote
     var messages = await _stream!.paginateBackwards(10);
     for (RoomMessage message in messages) {
-      _loadMessage(message);
+      _loadMessage(message, _messages);
     }
-    setState(() {
-      isLoading = false;
-    });
+    setState(() => isLoading = false);
     if (_messages.isNotEmpty) {
       if (_messages.first.author.id == _user.id) {
         bool isSeen = await widget.room.readReceipt(_messages.first.id);
@@ -148,12 +161,12 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   //will detect if any new event is arrived and will re-render the screen
-  void _newEvent() async {
+  Future<void> _newEvent() async {
     await _stream!.next();
     // i am fetching messages from remote
     var message = await widget.room.latestMessage();
     if (message.sender() != _user.id) {
-      _loadMessage(message);
+      _loadMessage(message, _messages);
     }
   }
 
@@ -165,9 +178,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final updatedMessage = _messages[index].copyWith(previewData: previewData);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _messages[index] = updatedMessage;
-      });
+      setState(() => _messages[index] = updatedMessage);
     });
   }
 
@@ -184,12 +195,10 @@ class _ChatScreenState extends State<ChatScreen> {
       status: Status.sent,
       showStatus: true,
     );
-    setState(() {
-      _messages.insert(0, message);
-    });
+    setState(() => _messages.insert(0, message));
   }
 
-  void _handleAttachmentPressed() {
+  void _handleAttachmentPressed(BuildContext context) {
     showModalBottomSheet<void>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -255,7 +264,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _handleImageSelection(BuildContext context) async {
+  Future<void> _handleImageSelection(BuildContext context) async {
     final result = await ImagePicker().pickImage(
       imageQuality: 70,
       maxWidth: 1440,
@@ -287,18 +296,24 @@ class _ChatScreenState extends State<ChatScreen> {
         width: image.width.toDouble(),
       );
       Navigator.pop(context);
-      setState(() {
-        _messages.insert(0, message);
-      });
+      setState(() => _messages.insert(0, message));
     }
   }
 
-  void _handleFileSelection(BuildContext context) async {
+  Future<void> _handleFileSelection(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
 
     if (result != null && result.files.single.path != null) {
+      final mimeType = lookupMimeType(result.files.single.path!);
+      var eventId = await widget.room.sendFileMessage(
+        result.files.single.path!,
+        result.files.single.name,
+        mimeType!,
+        result.files.single.size,
+      );
+
       // i am sending message
       final message = types.FileMessage(
         author: _user,
@@ -308,22 +323,36 @@ class _ChatScreenState extends State<ChatScreen> {
         size: result.files.single.size,
         uri: result.files.single.path!,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('The File that is uploaded isn\'t sent to the server.'),
-        ),
-      );
       Navigator.pop(context);
-      setState(() {
-        _messages.insert(0, message);
-      });
+      setState(() => _messages.insert(0, message));
     }
   }
 
-  void _handleMessageTap(BuildContext context, types.Message message) async {
+  Future<void> _handleMessageTap(
+    BuildContext context,
+    types.Message message,
+  ) async {
     if (message is types.FileMessage) {
-      await OpenFile.open(message.uri);
+      String filePath = await widget.room.filePath(message.id);
+      if (filePath.isEmpty) {
+        Directory? rootPath = await getTemporaryDirectory();
+        String? dirPath = await FilesystemPicker.open(
+          title: 'Save to folder',
+          context: context,
+          rootDirectory: rootPath!,
+          fsType: FilesystemType.folder,
+          pickText: 'Save file to this folder',
+          folderIconColor: Colors.teal,
+          requestPermission: !_isDesktop
+              ? () async => await Permission.storage.request().isGranted
+              : null,
+        );
+        if (dirPath != null) {
+          String filePath =
+              join(dirPath, message.name); // path.join needs androidicu
+          await widget.room.saveFile(message.id, filePath);
+        }
+      } else {}
     }
   }
 
@@ -333,7 +362,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final List<types.Message> nextMessages = [];
     // i am fetching messages from remote
     for (RoomMessage message in messages) {
-      _loadMessage(message);
+      _loadMessage(message, nextMessages);
     }
     setState(() {
       _messages = [..._messages, ...nextMessages];
@@ -493,7 +522,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   await widget.room.typingNotice(true);
                 },
                 showUserAvatars: true,
-                onAttachmentPressed: _handleAttachmentPressed,
+                onAttachmentPressed: () => _handleAttachmentPressed(context),
                 onPreviewDataFetched: _handlePreviewDataFetched,
                 onMessageTap: _handleMessageTap,
                 onEndReached: _handleEndReached,
