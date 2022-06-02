@@ -367,8 +367,11 @@ impl Room {
                         MessageLikeEvent::Original(m),
                     ))) => match m.content.msgtype {
                         MessageType::File(content) => {
-                            let key =
-                                [room.room_id().as_str().as_bytes(), event_id.as_str().as_bytes()].concat();
+                            let key = [
+                                room.room_id().as_str().as_bytes(),
+                                event_id.as_str().as_bytes(),
+                            ]
+                            .concat();
                             let path = client.store().get_custom_value(&key).await?;
                             match path {
                                 Some(value) => {
