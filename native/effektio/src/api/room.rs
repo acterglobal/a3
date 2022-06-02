@@ -260,21 +260,16 @@ impl Room {
                         match &m.content.msgtype {
                             MessageType::Image(content) => {
                                 let source = content.source.clone();
-                                // any variable in self can't be called directly in spawn
-                                RUNTIME
-                                    .spawn(async move {
-                                        let data = client
-                                            .get_media_content(
-                                                &MediaRequest {
-                                                    source,
-                                                    format: MediaFormat::File,
-                                                },
-                                                false,
-                                            )
-                                            .await?;
-                                        Ok(api::FfiBuffer::new(data))
-                                    })
-                                    .await?
+                                let data = client
+                                    .get_media_content(
+                                        &MediaRequest {
+                                            source,
+                                            format: MediaFormat::File,
+                                        },
+                                        false,
+                                    )
+                                    .await?;
+                                Ok(api::FfiBuffer::new(data))
                             }
                             _ => bail!("Invalid file format"),
                         }

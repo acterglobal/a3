@@ -124,9 +124,11 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {
           for (var i = 0; i < _messages.length; i++) {
             if (_messages[i].id == eventId) {
-              _messages[i] = _messages[i].copyWith(metadata: {
-                'binary': data.asTypedList(),
-              });
+              _messages[i] = _messages[i].copyWith(
+                metadata: {
+                  'binary': data.asTypedList(),
+                },
+              );
               break;
             }
           }
