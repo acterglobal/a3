@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, always_declare_return_types
 
 import 'dart:io';
 
@@ -34,10 +34,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
       ..selection = TextSelection.fromPosition(
           TextPosition(offset: commentController.text.length));
   }
-
-  // openKeyboard() {
-  //   CommentViewState().commentCallback();
-  // }
 
   _onBackspacePressed() {
     commentController
