@@ -24,7 +24,12 @@ unsafe impl Send for TimelineStream {}
 unsafe impl Sync for TimelineStream {}
 
 impl TimelineStream {
-    pub fn new(forward: FwdMsgStream, backward: BackwardMsgStream, client: Client, room: Room) -> Self {
+    pub fn new(
+        forward: FwdMsgStream,
+        backward: BackwardMsgStream,
+        client: Client,
+        room: Room,
+    ) -> Self {
         TimelineStream {
             forward: Arc::new(Mutex::new(forward)),
             backward: Arc::new(Mutex::new(backward)),

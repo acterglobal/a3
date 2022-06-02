@@ -29,7 +29,7 @@ pub use client::{Client, ClientStateBuilder};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::Group;
-pub use messages::{ImageDescription, FileDescription, RoomMessage};
+pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 

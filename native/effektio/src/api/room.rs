@@ -9,8 +9,7 @@ use matrix_sdk::{
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
-            MessageLikeEvent,
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, MessageLikeEvent,
         },
         EventId, OwnedUserId, UInt,
     },
@@ -256,23 +255,21 @@ impl Room {
                 match evt.event.deserialize() {
                     Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                         MessageLikeEvent::Original(m),
-                    ))) => {
-                        match &m.content.msgtype {
-                            MessageType::Image(content) => {
-                                let source = content.source.clone();
-                                let data = client
-                                    .get_media_content(
-                                        &MediaRequest {
-                                            source,
-                                            format: MediaFormat::File,
-                                        },
-                                        false,
-                                    )
-                                    .await?;
-                                Ok(api::FfiBuffer::new(data))
-                            }
-                            _ => bail!("Invalid file format"),
+                    ))) => match &m.content.msgtype {
+                        MessageType::Image(content) => {
+                            let source = content.source.clone();
+                            let data = client
+                                .get_media_content(
+                                    &MediaRequest {
+                                        source,
+                                        format: MediaFormat::File,
+                                    },
+                                    false,
+                                )
+                                .await?;
+                            Ok(api::FfiBuffer::new(data))
                         }
+                        _ => bail!("Invalid file format"),
                     },
                     _ => bail!("Invalid file format"),
                 }
@@ -323,31 +320,30 @@ impl Room {
                 match evt.event.deserialize() {
                     Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                         MessageLikeEvent::Original(m),
-                    ))) => {
-                        match m.content.msgtype {
-                            MessageType::File(content) => {
-                                let source = content.source.clone();
-                                let path = PathBuf::from(uri.clone());
-                                let mut file = File::create(path)?;
-                                let data = client
-                                    .get_media_content(
-                                        &MediaRequest {
-                                            source,
-                                            format: MediaFormat::File,
-                                        },
-                                        false,
-                                    )
-                                    .await?;
-                                file.write_all(&data)?;
-                                let key = [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
-                                client
-                                    .store()
-                                    .set_custom_value(&key, uri.as_str().as_bytes().to_vec())
-                                    .await?;
-                                Ok(true)
-                            }
-                            _ => Ok(false),
+                    ))) => match m.content.msgtype {
+                        MessageType::File(content) => {
+                            let source = content.source.clone();
+                            let path = PathBuf::from(uri.clone());
+                            let mut file = File::create(path)?;
+                            let data = client
+                                .get_media_content(
+                                    &MediaRequest {
+                                        source,
+                                        format: MediaFormat::File,
+                                    },
+                                    false,
+                                )
+                                .await?;
+                            file.write_all(&data)?;
+                            let key =
+                                [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
+                            client
+                                .store()
+                                .set_custom_value(&key, uri.as_str().as_bytes().to_vec())
+                                .await?;
+                            Ok(true)
                         }
+                        _ => Ok(false),
                     },
                     _ => Ok(false),
                 }
@@ -369,22 +365,21 @@ impl Room {
                 match evt.event.deserialize() {
                     Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                         MessageLikeEvent::Original(m),
-                    ))) => {
-                        match m.content.msgtype {
-                            MessageType::File(content) => {
-                                let rid = room.room_id().clone();
-                                let key = [rid.as_str().as_bytes(), event_id.as_str().as_bytes()].concat();
-                                let path = client
-                                    .store()
-                                    .get_custom_value(&key)
-                                    .await?;
-                                match path {
-                                    Some(value) => Ok(std::str::from_utf8(&value).unwrap().to_owned().to_string()),
-                                    None => Ok("".to_owned().to_string()),
+                    ))) => match m.content.msgtype {
+                        MessageType::File(content) => {
+                            let rid = room.room_id().clone();
+                            let key =
+                                [rid.as_str().as_bytes(), event_id.as_str().as_bytes()].concat();
+                            let path = client.store().get_custom_value(&key).await?;
+                            match path {
+                                Some(value) => {
+                                    let text = std::str::from_utf8(&value).unwrap();
+                                    Ok(text.to_owned().to_string())
                                 }
+                                None => Ok("".to_owned().to_string()),
                             }
-                            _ => Ok("".to_owned().to_string()),
                         }
+                        _ => Ok("".to_owned().to_string()),
                     },
                     _ => Ok("".to_owned().to_string()),
                 }

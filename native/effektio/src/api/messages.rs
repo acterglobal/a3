@@ -129,10 +129,7 @@ impl FileDescription {
     }
 }
 
-pub fn sync_event_to_message(
-    sync_event: SyncRoomEvent,
-    room: Room,
-) -> Option<RoomMessage> {
+pub fn sync_event_to_message(sync_event: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
     match sync_event.event.deserialize() {
         Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
             SyncMessageLikeEvent::Original(m),
