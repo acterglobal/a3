@@ -5,7 +5,6 @@ import 'package:effektio/common/widget/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 
 var arr = [
@@ -240,141 +239,157 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setSheetState) {
-            return Column(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Edit Tag',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+            return Scaffold(
+              body: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Edit Tag',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Container(
-                    width: double.infinity,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppCommonTheme.textFieldColor,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: TextField(
-                      style: TextStyle(color: primaryColor),
-                      controller: tagTitleController,
-                      cursorColor: Colors.white,
-                      textAlign: TextAlign.center,
-                      decoration: InputDecoration(
-                        hintText: 'Tag Name',
-                        hintStyle: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Container(
+                      width: double.infinity,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: AppCommonTheme.textFieldColor,
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: TextField(
+                        style: TextStyle(color: primaryColor),
+                        controller: tagTitleController,
+                        cursorColor: Colors.white,
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          hintText: 'Tag Name',
+                          hintStyle: TextStyle(
+                            color: Colors.white.withOpacity(0.5),
+                          ),
+                          border: InputBorder.none,
                         ),
-                        border: InputBorder.none,
                       ),
                     ),
                   ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Select a color',
-                      style: TextStyle(fontSize: 16, color: Colors.white),
+                  const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Select a color',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 12.0, right: 12.0),
-                    child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 20,
-                      ),
-                      itemCount: 8,
-                      itemBuilder: (BuildContext content, index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              tagColor = arr[index];
-                            });
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                      child: GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 4,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 20,
+                        ),
+                        itemCount: 8,
+                        itemBuilder: (BuildContext content, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                tagColor = arr[index];
+                              });
 
-                            setSheetState(() {
-                              indexing = index;
+                              setSheetState(() {
+                                indexing = index;
 
-                              if (!selectedIndexList.contains(index)) {
-                                selectedIndexList.clear();
-                                selectedIndexList.add(index);
-                              } else {
-                                selectedIndexList.clear();
-                              }
-                            });
-                          },
-                          child: Container(
-                            height: 80,
-                            width: 80,
-                            child: Visibility(
-                              visible: selectedIndexList.contains(index)
-                                  ? true
-                                  : false,
-                              child: Icon(
-                                Icons.done,
-                                color: Colors.white,
+                                if (!selectedIndexList.contains(index)) {
+                                  selectedIndexList.clear();
+                                  selectedIndexList.add(index);
+                                } else {
+                                  selectedIndexList.clear();
+                                }
+                              });
+                            },
+                            child: Container(
+                              height: 80,
+                              width: 80,
+                              child: Visibility(
+                                visible: selectedIndexList.contains(index)
+                                    ? true
+                                    : false,
+                                child: Icon(
+                                  Icons.done,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              decoration: BoxDecoration(
+                                color: arr[index],
+                                borderRadius: BorderRadius.circular(15),
                               ),
                             ),
-                            decoration: BoxDecoration(
-                              color: arr[index],
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20.0),
-                  child: ElevatedButton(
-                    onPressed: () => {
-                      setState(() {
-                        print(indexing);
-                        print(_tagColorList.length);
-                        print(tagColor);
-                        if (tagTitleController.text.isNotEmpty) {
-                          _tagList.add(tagTitleController.text.toString());
-                          _tagColorList
-                              .add(tagColor == null ? Colors.white : tagColor!);
-                          print(_tagColorList.length);
-                          Navigator.of(context).pop();
-                          tagTitleController.clear();
-                        } else {
-                          Fluttertoast.showToast(
-                            msg: 'Please fill the title of Tag',
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            textColor: Colors.white,
-                            fontSize: 16.0,
                           );
-                        }
-                      })
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: AppCommonTheme.primaryColor,
-                      shape: const StadiumBorder(),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 80.0, right: 80.0),
-                      child: Text('Submit'),
+                        },
+                      ),
                     ),
                   ),
-                )
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: ElevatedButton(
+                      onPressed: () => {
+                        setState(() {
+                          print(indexing);
+                          print(_tagColorList.length);
+                          print(tagColor);
+                          if (tagTitleController.text.isNotEmpty) {
+                            _tagList.add(tagTitleController.text.toString());
+                            _tagColorList.add(
+                              tagColor == null ? Colors.white : tagColor!,
+                            );
+                            print(_tagColorList.length);
+                            Navigator.of(context).pop();
+                            tagTitleController.clear();
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.only(bottom: 420),
+                                backgroundColor: Colors.black87,
+                                duration: Duration(seconds: 2),
+                                // ignore: sized_box_for_whitespace
+                                content: Container(
+                                  height: 20,
+                                  child: Center(
+                                    child: Text(
+                                      'Please fill the title of Tag',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        })
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: AppCommonTheme.primaryColor,
+                        shape: const StadiumBorder(),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 80.0, right: 80.0),
+                        child: Text('Submit'),
+                      ),
+                    ),
+                  )
+                ],
+              ),
             );
           },
         );
