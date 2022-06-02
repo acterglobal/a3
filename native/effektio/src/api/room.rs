@@ -305,7 +305,7 @@ impl Room {
             .await?
     }
 
-    pub async fn save_file(&self, event_id: String, uri: String) -> Result<bool> {
+    pub async fn save_file(&self, event_id: String, dir_path: String) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -323,8 +323,10 @@ impl Room {
                     ))) => match m.content.msgtype {
                         MessageType::File(content) => {
                             let source = content.source.clone();
-                            let path = PathBuf::from(uri.clone());
-                            let mut file = File::create(path)?;
+                            let name = content.body.clone();
+                            let mut path = PathBuf::from(dir_path.clone());
+                            path.push(name);
+                            let mut file = File::create(path.clone())?;
                             let data = client
                                 .get_media_content(
                                     &MediaRequest {
@@ -339,7 +341,7 @@ impl Room {
                                 [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
                             client
                                 .store()
-                                .set_custom_value(&key, uri.as_str().as_bytes().to_vec())
+                                .set_custom_value(&key, path.to_str().unwrap().as_bytes().to_vec())
                                 .await?;
                             Ok(true)
                         }

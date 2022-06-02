@@ -186,7 +186,7 @@ object Conversation {
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
 
     /// save file in specified path
-    fn save_file(event_id: string, uri: string) -> Future<Result<bool>>;
+    fn save_file(event_id: string, dir_path: string) -> Future<Result<bool>>;
 
     /// get the path that file was saved
     fn file_path(event_id: string) -> Future<Result<string>>;

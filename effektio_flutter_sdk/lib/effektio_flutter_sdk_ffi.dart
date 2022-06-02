@@ -5735,10 +5735,10 @@ class Conversation {
   /// save file in specified path
   Future<bool> saveFile(
     String eventId,
-    String uri,
+    String dirPath,
   ) {
     final tmp1 = eventId;
-    final tmp5 = uri;
+    final tmp5 = dirPath;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;

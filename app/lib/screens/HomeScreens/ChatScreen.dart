@@ -26,7 +26,6 @@ import 'package:mime/mime.dart';
 import 'package:mutex/mutex.dart';
 import 'package:open_file/open_file.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -364,9 +363,7 @@ class _ChatScreenState extends State<ChatScreen> {
               : null,
         );
         if (dirPath != null) {
-          String filePath =
-              join(dirPath, message.name); // path.join needs androidicu
-          await widget.room.saveFile(message.id, filePath);
+          await widget.room.saveFile(message.id, dirPath);
         }
       } else {
         final result = await OpenFile.open(filePath);
