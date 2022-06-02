@@ -65,9 +65,9 @@ impl RoomMessage {
             MessageType::File(content) => {
                 let info = content.info.as_ref().unwrap();
                 let description = FileDescription {
-                    img_name: content.body.clone(),
-                    img_mimetype: info.mimetype.clone(),
-                    img_size: match info.size {
+                    f_name: content.body.clone(),
+                    f_mimetype: info.mimetype.clone(),
+                    f_size: match info.size {
                         Some(value) => u64::from(value),
                         None => 0,
                     },
@@ -110,22 +110,22 @@ impl ImageDescription {
 }
 
 pub struct FileDescription {
-    img_name: String,
-    img_mimetype: Option<String>,
-    img_size: u64,
+    f_name: String,
+    f_mimetype: Option<String>,
+    f_size: u64,
 }
 
 impl FileDescription {
     pub fn name(&self) -> String {
-        self.img_name.clone()
+        self.f_name.clone()
     }
 
     pub fn mimetype(&self) -> Option<String> {
-        self.img_mimetype.clone()
+        self.f_mimetype.clone()
     }
 
     pub fn size(&self) -> u64 {
-        self.img_size
+        self.f_size
     }
 }
 
