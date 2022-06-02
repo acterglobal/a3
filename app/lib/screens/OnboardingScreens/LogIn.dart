@@ -7,6 +7,7 @@ import 'package:effektio/blocs/login/signIn_state.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:themed/themed.dart';
@@ -22,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final userNameController = TextEditingController();
   final passwordController = TextEditingController();
-  bool signInclicked = false;
 
   @override
   void dispose() {
@@ -43,20 +43,21 @@ class _LoginScreenState extends State<LoginScreen> {
               child: BlocListener<SignInBloc, SignInState>(
                 listener: (context, state) {
                   final formStatus = state.formStatus;
-                  if (formStatus is SubmissionFailed && signInclicked) {
+                  if (formStatus is SubmissionFailed) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         backgroundColor: Colors.redAccent,
                         content: Text(
-                          'Login failed: ${formStatus.exception.toString()}',
+                          '${AppLocalizations.of(context)!.loginFailed}: ${formStatus.exception.toString()}',
                         ),
                       ),
                     );
                   } else if (formStatus is SubmissionSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
+                      SnackBar(
                         backgroundColor: Colors.greenAccent,
-                        content: Text('Login successful'),
+                        content:
+                            Text(AppLocalizations.of(context)!.loginSuccess),
                       ),
                     );
                     Navigator.pushNamed(context, '/');
@@ -79,32 +80,32 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 40,
                       ),
                       Text(
-                        'Welcome Back',
+                        AppLocalizations.of(context)!.welcomeBack,
                         style: AuthTheme.authTitleStyle,
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
-                        'Sign in to Continue',
+                        AppLocalizations.of(context)!.signInContinue,
                         style: AuthTheme.authbodyStyle,
                       ),
                       SizedBox(
                         height: 35,
                       ),
                       signInOnboardingTextField(
-                        'Username',
+                        AppLocalizations.of(context)!.email,
                         userNameController,
-                        'Please enter Username',
+                        AppLocalizations.of(context)!.emptyEmail,
                         SignInOnboardingTextFieldEnum.userName,
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       signInOnboardingTextField(
-                        'Password',
+                        AppLocalizations.of(context)!.password,
                         passwordController,
-                        'Please enter Password',
+                        AppLocalizations.of(context)!.emptyPassword,
                         SignInOnboardingTextFieldEnum.password,
                       ),
                       Container(
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            'Forgot Password?',
+                            AppLocalizations.of(context)!.forgotPassword,
                             style: AuthTheme.authbodyStyle +
                                 AuthTheme.forgotPasswordColor,
                           ),
@@ -129,11 +130,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               ? CircularProgressIndicator()
                               : CustomOnbaordingButton(
                                   onPressed: () {
-                                    signInclicked = true;
-                                    Future.delayed(Duration(seconds: 1))
-                                        .then((_) {
-                                      signInclicked = false;
-                                    });
                                     if (_formKey.currentState!.validate()) {
                                       context.read<SignInBloc>().add(
                                             SignInSubmitted(
@@ -143,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           );
                                     }
                                   },
-                                  title: 'Login',
+                                  title: AppLocalizations.of(context)!.login,
                                 );
                         }),
                       ),
@@ -154,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account ?  ",
+                            AppLocalizations.of(context)!.noAccount,
                             style: AuthTheme.authbodyStyle,
                           ),
                           InkWell(
@@ -162,7 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Navigator.pushNamed(context, '/signup');
                             },
                             child: Text(
-                              'Sign up ',
+                              AppLocalizations.of(context)!.signUp,
                               style: AuthTheme.authbodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),

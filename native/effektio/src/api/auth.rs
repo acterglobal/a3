@@ -66,7 +66,12 @@ pub async fn login_new_client(
     password: String,
 ) -> Result<Client> {
     let user = ruma::OwnedUserId::try_from(username.clone())?;
-    let config = platform::new_client_config(base_path, username)?.user_id(&user);
+    let mut config = platform::new_client_config(base_path, username)?.user_id(&user);
+    if user.server_name().as_str() == "effektio.org" {
+        // effektio.org has problems with the .well-known-setup at the moment
+        config = config.homeserver_url("https://matrix.effektio.org");
+    }
+
     // First we need to log in.
     RUNTIME
         .spawn(async move {
