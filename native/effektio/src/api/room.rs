@@ -367,21 +367,20 @@ impl Room {
                         MessageLikeEvent::Original(m),
                     ))) => match m.content.msgtype {
                         MessageType::File(content) => {
-                            let rid = room.room_id().clone();
                             let key =
-                                [rid.as_str().as_bytes(), event_id.as_str().as_bytes()].concat();
+                                [room.room_id().as_str().as_bytes(), event_id.as_str().as_bytes()].concat();
                             let path = client.store().get_custom_value(&key).await?;
                             match path {
                                 Some(value) => {
                                     let text = std::str::from_utf8(&value).unwrap();
-                                    Ok(text.to_owned().to_string())
+                                    Ok(text.to_owned())
                                 }
-                                None => Ok("".to_owned().to_string()),
+                                None => Ok("".to_owned()),
                             }
                         }
-                        _ => Ok("".to_owned().to_string()),
+                        _ => Ok("".to_owned()),
                     },
-                    _ => Ok("".to_owned().to_string()),
+                    _ => Ok("".to_owned()),
                 }
             })
             .await?

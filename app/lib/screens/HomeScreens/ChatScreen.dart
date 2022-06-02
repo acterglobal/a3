@@ -324,7 +324,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
-      var eventId = await widget.room.sendFileMessage(
+      await widget.room.sendFileMessage(
         result.files.single.path!,
         result.files.single.name,
         mimeType!,
@@ -356,7 +356,7 @@ class _ChatScreenState extends State<ChatScreen> {
         String? dirPath = await FilesystemPicker.open(
           title: 'Save to folder',
           context: context,
-          rootDirectory: rootPath!,
+          rootDirectory: rootPath,
           fsType: FilesystemType.folder,
           pickText: 'Save file to this folder',
           folderIconColor: Colors.teal,
