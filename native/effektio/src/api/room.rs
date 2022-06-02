@@ -4,7 +4,6 @@ use anyhow::{bail, Context, Result};
 use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
-    deserialized_responses::RoomEvent,
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
@@ -133,7 +132,6 @@ impl Room {
 
     pub async fn latest_message(&self) -> Result<RoomMessage> {
         let room = self.room.clone();
-        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let stream = room
@@ -145,7 +143,7 @@ impl Room {
                     match stream.next().await {
                         None => break,
                         Some(Ok(e)) => {
-                            if let Some(a) = sync_event_to_message(e, client.clone(), room.clone()) {
+                            if let Some(a) = sync_event_to_message(e, room.clone()) {
                                 return Ok(a);
                             }
                         }
@@ -239,6 +237,50 @@ impl Room {
                     .send_attachment(name.as_str(), &mime_type, &mut image, config)
                     .await?;
                 Ok(r.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn image_binary(&self, event_id: String) -> Result<api::FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let client = self.client.clone();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let eid = EventId::parse(event_id.clone())?;
+                let evt = room.event(&eid).await?;
+                match evt.event.deserialize() {
+                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                        MessageLikeEvent::Original(m),
+                    ))) => {
+                        match &m.content.msgtype {
+                            MessageType::Image(content) => {
+                                let source = content.source.clone();
+                                // any variable in self can't be called directly in spawn
+                                RUNTIME
+                                    .spawn(async move {
+                                        let data = client
+                                            .get_media_content(
+                                                &MediaRequest {
+                                                    source,
+                                                    format: MediaFormat::File,
+                                                },
+                                                false,
+                                            )
+                                            .await?;
+                                        Ok(api::FfiBuffer::new(data))
+                                    })
+                                    .await?
+                            }
+                            _ => bail!("Invalid file format"),
+                        }
+                    },
+                    _ => bail!("Invalid file format"),
+                }
             })
             .await?
     }

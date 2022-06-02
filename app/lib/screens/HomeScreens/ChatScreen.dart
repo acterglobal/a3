@@ -30,6 +30,7 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
@@ -101,23 +102,35 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() => _insertMessage(m, container));
       }
     } else if (msgtype == 'm.image') {
-      message.imageBinary().then((binary) async {
-        ImageDescription description = message.imageDescription();
-        types.ImageMessage m = types.ImageMessage(
-          author: types.User(id: message.sender()),
-          createdAt: message.originServerTs() * 1000,
-          height: description.height()?.toDouble(),
-          id: message.eventId(),
-          metadata: {
-            'binary': binary.asTypedList(),
-          },
-          name: description.name(),
-          size: description.size(),
-          uri: '',
-          width: description.width()?.toDouble(),
-        );
-        await mtx.acquire();
+      String eventId = message.eventId();
+      ImageDescription description = message.imageDescription();
+      types.ImageMessage m = types.ImageMessage(
+        author: types.User(id: message.sender()),
+        createdAt: message.originServerTs() * 1000,
+        height: description.height()?.toDouble(),
+        id: eventId,
+        name: description.name(),
+        size: description.size(),
+        uri: '',
+        width: description.width()?.toDouble(),
+      );
+      if (isLoading) {
+        _insertMessage(m, container);
+      } else {
         setState(() => _insertMessage(m, container));
+      }
+      widget.room.imageBinary(eventId).then((data) async {
+        await mtx.acquire();
+        setState(() {
+          for (var i = 0; i < _messages.length; i++) {
+            if (_messages[i].id == eventId) {
+              _messages[i] = _messages[i].copyWith(metadata: {
+                'binary': data.asTypedList(),
+              });
+              break;
+            }
+          }
+        });
         mtx.release();
       });
     } else if (msgtype == 'm.location') {
@@ -513,10 +526,17 @@ class _ChatScreenState extends State<ChatScreen> {
                 }) {
                   if (imageMessage.uri.isEmpty) {
                     // binary data
-                    return Image.memory(
-                      imageMessage.metadata?['binary'],
-                      width: messageWidth.toDouble(),
-                    );
+                    if (imageMessage.metadata?.containsKey('binary') ?? false) {
+                      return Image.memory(
+                        imageMessage.metadata?['binary'],
+                        width: messageWidth.toDouble(),
+                      );
+                    } else {
+                      return Image.memory(
+                        kTransparentImage,
+                        width: messageWidth.toDouble(),
+                      );
+                    }
                   } else if (isURL(imageMessage.uri)) {
                     // remote url
                     return Image.network(

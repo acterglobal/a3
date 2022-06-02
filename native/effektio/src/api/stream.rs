@@ -34,7 +34,6 @@ impl TimelineStream {
     }
     pub async fn paginate_backwards(&self, mut count: u64) -> Result<Vec<RoomMessage>> {
         let backward = self.backward.clone();
-        let client = self.client.clone();
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -45,7 +44,7 @@ impl TimelineStream {
                 while count > 0 {
                     match stream.next().await {
                         Some(Ok(e)) => {
-                            if let Some(inner) = sync_event_to_message(e, client.clone(), room.clone()) {
+                            if let Some(inner) = sync_event_to_message(e, room.clone()) {
                                 messages.push(inner);
                                 count -= 1;
                             }
@@ -66,7 +65,6 @@ impl TimelineStream {
     }
     pub async fn next(&self) -> Result<RoomMessage> {
         let forward = self.forward.clone();
-        let client = self.client.clone();
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -76,7 +74,7 @@ impl TimelineStream {
                     if let Some(e) = stream
                         .next()
                         .await
-                        .and_then(|e| sync_event_to_message(e, client.clone(), room.clone()))
+                        .and_then(|e| sync_event_to_message(e, room.clone()))
                     {
                         return Ok(e);
                     }

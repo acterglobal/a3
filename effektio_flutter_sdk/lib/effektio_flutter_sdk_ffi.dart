@@ -1019,144 +1019,6 @@ class Api {
     return tmp7;
   }
 
-  FfiBufferUint8? __roomMessageImageBinaryFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomMessageImageBinaryFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiBufferUint8._(this, tmp13_1);
-    final tmp7 = tmp14;
-    return tmp7;
-  }
-
-  bool? __roomMessageSaveFileFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomMessageSaveFileFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  String? __roomMessageFilePathFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _roomMessageFilePathFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
-    return tmp7;
-  }
-
   RoomMessage? __timelineStreamNextFuturePoll(
     int boxed,
     int postCobject,
@@ -1706,6 +1568,52 @@ class Api {
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
       this.__deallocate(tmp13_0, tmp15 * 1, 1);
     }
+    return tmp7;
+  }
+
+  FfiBufferUint8? __conversationImageBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationImageBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -3112,16 +3020,6 @@ class Api {
       _RoomMessageMsgtypeReturn Function(
     int,
   )>();
-  late final _roomMessageImageBinaryPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__RoomMessage_image_binary");
-
-  late final _roomMessageImageBinary = _roomMessageImageBinaryPtr.asFunction<
-      int Function(
-    int,
-  )>();
   late final _roomMessageImageDescriptionPtr = _lookup<
       ffi.NativeFunction<
           _RoomMessageImageDescriptionReturn Function(
@@ -3131,32 +3029,6 @@ class Api {
   late final _roomMessageImageDescription =
       _roomMessageImageDescriptionPtr.asFunction<
           _RoomMessageImageDescriptionReturn Function(
-    int,
-  )>();
-  late final _roomMessageSaveFilePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__RoomMessage_save_file");
-
-  late final _roomMessageSaveFile = _roomMessageSaveFilePtr.asFunction<
-      int Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _roomMessageFilePathPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__RoomMessage_file_path");
-
-  late final _roomMessageFilePath = _roomMessageFilePathPtr.asFunction<
-      int Function(
     int,
   )>();
   late final _roomMessageFileDescriptionPtr = _lookup<
@@ -3414,6 +3286,22 @@ class Api {
     int,
     int,
     int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationImageBinaryPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Conversation_image_binary");
+
+  late final _conversationImageBinary = _conversationImageBinaryPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -3817,51 +3705,6 @@ class Api {
     int,
     int,
   )>();
-  late final _roomMessageImageBinaryFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomMessageImageBinaryFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__RoomMessage_image_binary_future_poll");
-
-  late final _roomMessageImageBinaryFuturePoll =
-      _roomMessageImageBinaryFuturePollPtr.asFunction<
-          _RoomMessageImageBinaryFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _roomMessageSaveFileFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomMessageSaveFileFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__RoomMessage_save_file_future_poll");
-
-  late final _roomMessageSaveFileFuturePoll =
-      _roomMessageSaveFileFuturePollPtr.asFunction<
-          _RoomMessageSaveFileFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _roomMessageFilePathFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomMessageFilePathFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__RoomMessage_file_path_future_poll");
-
-  late final _roomMessageFilePathFuturePoll =
-      _roomMessageFilePathFuturePollPtr.asFunction<
-          _RoomMessageFilePathFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _timelineStreamNextFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamNextFuturePollReturn Function(
@@ -4038,6 +3881,21 @@ class Api {
   late final _conversationSendImageMessageFuturePoll =
       _conversationSendImageMessageFuturePollPtr.asFunction<
           _ConversationSendImageMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationImageBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationImageBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_image_binary_future_poll");
+
+  late final _conversationImageBinaryFuturePoll =
+      _conversationImageBinaryFuturePollPtr.asFunction<
+          _ConversationImageBinaryFuturePollReturn Function(
     int,
     int,
     int,
@@ -5212,21 +5070,6 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// decrypted image file data
-  Future<FfiBufferUint8> imageBinary() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageImageBinary(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__RoomMessage_image_binary_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__roomMessageImageBinaryFuturePoll);
-    return tmp2;
-  }
-
   /// contains source data, name, mimetype, size, width and height
   ImageDescription imageDescription() {
     var tmp0 = 0;
@@ -5253,52 +5096,6 @@ class RoomMessage {
     final tmp7_1 = _Box(_api, tmp7_0, "drop_box_ImageDescription");
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp2 = ImageDescription._(_api, tmp7_1);
-    return tmp2;
-  }
-
-  /// save file in specified path
-  Future<bool> saveFile(
-    String path,
-  ) {
-    final tmp1 = path;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._roomMessageSaveFile(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__RoomMessage_save_file_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__roomMessageSaveFileFuturePoll);
-    return tmp6;
-  }
-
-  /// get the path that file was saved
-  Future<String> filePath() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageFilePath(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__RoomMessage_file_path_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__roomMessageFilePathFuturePoll);
     return tmp2;
   }
 
@@ -5833,6 +5630,39 @@ class Conversation {
     final tmp20 =
         _nativeFuture(tmp21_1, _api.__conversationSendImageMessageFuturePoll);
     return tmp20;
+  }
+
+  /// decrypted image file data
+  Future<FfiBufferUint8> imageBinary(
+    String eventId,
+  ) {
+    final tmp1 = eventId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._conversationImageBinary(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Conversation_image_binary_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__conversationImageBinaryFuturePoll);
+    return tmp6;
   }
 
   Future<String> sendFileMessage(
@@ -6760,55 +6590,6 @@ class _RegisterWithRegistrationTokenFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RoomMessageImageBinaryFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
-class _RoomMessageSaveFileFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _RoomMessageFilePathFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
-}
-
 class _TimelineStreamNextFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -6999,6 +6780,21 @@ class _ConversationSendImageMessageFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
+}
+
+class _ConversationImageBinaryFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
 }
 
 class _ConversationSendFileMessageFuturePollReturn extends ffi.Struct {

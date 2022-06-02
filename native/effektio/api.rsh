@@ -98,17 +98,8 @@ object RoomMessage {
     /// m.audio, m.emote, m.file, m.image, m.location, m.service_notice, m.text, m.video or m.key.verification.request
     fn msgtype() -> string;
 
-    /// decrypted image file data
-    fn image_binary() -> Future<Result<buffer<u8>>>;
-
     /// contains source data, name, mimetype, size, width and height
     fn image_description() -> Result<ImageDescription>;
-
-    /// save file in specified path
-    fn save_file(path: string) -> Future<Result<bool>>;
-
-    /// get the path that file was saved
-    fn file_path() -> Future<Result<string>>;
 
     /// contains source data, name, mimetype and size
     fn file_description() -> Result<FileDescription>;
@@ -188,6 +179,9 @@ object Conversation {
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
     fn send_image_message(uri: string, name: string, mimetype: string, size: u32, width: u32, height: u32) -> Future<Result<string>>;
+
+    /// decrypted image file data
+    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
 
