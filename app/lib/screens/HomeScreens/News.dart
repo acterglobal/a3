@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:effektio/common/animations/like_animation.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/NewsItem.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -16,7 +17,15 @@ class NewsScreen extends StatefulWidget {
   _NewsScreenState createState() => _NewsScreenState();
 }
 
-class _NewsScreenState extends State<NewsScreen> {
+class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
+  late AnimationController controller;
+  @override
+  void initState() {
+    controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FfiListNews>(
@@ -69,9 +78,15 @@ class _NewsScreenState extends State<NewsScreen> {
               onPageChanged: (int page) {},
               scrollDirection: Axis.vertical,
               itemBuilder: ((context, index) {
-                return NewsItem(
-                  client: widget.client,
-                  news: snapshot.requireData[index],
+                return InkWell(
+                  onDoubleTap: (() {
+                    LikeAnimation.run(index);
+                  }),
+                  child: NewsItem(
+                    client: widget.client,
+                    news: snapshot.requireData[index],
+                    index: index,
+                  ),
                 );
               }),
             ),
