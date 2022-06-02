@@ -60,7 +60,6 @@ dependencies:
   emoji_picker_flutter: ^1.1.2
   filesystem_picker: ^2.0.1
   permission_handler: ^9.2.0
-  fluttertoast: ^8.0.9
   transparent_image: ^2.0.0
   expandable_text: ^2.3.0
 
