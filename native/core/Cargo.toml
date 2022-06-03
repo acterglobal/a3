@@ -21,6 +21,7 @@ chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }
 url = { version = "2.2.2", features = ["serde"] }
 anyhow = "1.0.53"
 bincode = "1.3.3"
+futures-signals = "0.3.28"
 
 # with-mocks
 fake = { version = "2.4", optional = true, features = ["derive"] }

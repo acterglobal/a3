@@ -1,3 +1,5 @@
+use serde::{Serialize, Deserialize};
+
 mod color;
 mod faq;
 mod news;
@@ -8,6 +10,7 @@ pub use faq::Faq;
 pub use news::News;
 pub use tag::Tag;
 
+
 #[cfg(feature = "with-mocks")]
 pub mod mocks {
     pub use super::color::mocks::ColorFaker;
@@ -17,5 +20,6 @@ pub mod mocks {
 
 #[derive(Serialize, Deserialize)]
 pub enum EffektioModel {
-    TextMessage()
+//    News(News),
+    TextMessage(),
 }

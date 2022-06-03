@@ -1,18 +1,23 @@
 use matrix_sdk_base::{deserialized_responses::SyncRoomEvent, store::StateStore};
 use crate::events::{AnyEffektioMessageLikeEvent, NewsEvent};
 use ruma::{
-    ruma::events::OriginalMessageLikeEvent,
+    events::{
+        OriginalMessageLikeEvent, AnyMessageLikeEvent, MessageLikeEvent,
+        reaction::ReactionEventContent,
+    },
     OwnedEventId, OwnedRoomId
 };
+use crate::store::Store;
+use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 #[allow(dead_code)]
-pub struct Executor<'a> {
-    store: &'a dyn StateStore,
+pub struct Executor {
+    store: Arc<Store>,
 }
 
-impl<'a> Executor<'a> {
-    pub fn new(store: &'a dyn StateStore) -> Self {
+impl Executor {
+    pub fn new(store: Arc<Store>) -> Self {
         Executor { store }
     }
 
@@ -24,6 +29,7 @@ impl<'a> Executor<'a> {
                 self.handle_regular_matrix_message(m).await?
             }
             AnyEffektioMessageLikeEvent::News(NewsEvent::Dev(n)) => {
+                unimplemented!()
                 
             }
         })
@@ -32,22 +38,31 @@ impl<'a> Executor<'a> {
 
 // Regular Matrix Message System
 
-impl<'a> Executor<'a> {
+impl Executor {
 
     pub async fn handle_regular_matrix_message(&self, event: AnyMessageLikeEvent) -> anyhow::Result<Option<OwnedEventId>> {
         match event {
             AnyMessageLikeEvent::RoomMessage(ml) => {
                 match ml {
                     MessageLikeEvent::Original(m) => {
+                        unimplemented!()
+                        // creates a new entry
+                    }
+                    MessageLikeEvent::Redacted(m) => {
+                        unimplemented!()
                         // creates a new entry
                     }
 
                 }
             }
+            _ => {
+                unimplemented!()
+            }
         }
     }
 
     pub async fn handle_reaction(&self, event: OriginalMessageLikeEvent<ReactionEventContent>) -> anyhow::Result<()> {
+        unimplemented!()
 
     } 
 }
@@ -58,23 +73,22 @@ mod tests {
     use super::*;
     use super::super::events::{NewsEvent, NewsEventDevContent};
     use ruma::{room_id, event_id};
-    use matrix_sdk_base::store::MemoryStore;
+    use std::sync::Arc;
+    use crate::store::test_helpers::test_store;
 
-    fn new_executor<'a>(store: &'a MemoryStore) -> Executor<'a> {
-        Executor::new(store)
+    fn new_executor() -> Executor {
+        Executor::new(Arc::new(test_store()))
     }
 
     #[tokio::test]
     async fn smoke_test() {
-        let store = MemoryStore::default();
-        let exec = new_executor(&store);
+        let exec = new_executor();
     }
 
 
     #[tokio::test]
     async fn news_event() {
-        let store = MemoryStore::default();
-        let exec = new_executor(&store);
+        let exec = new_executor();
         let json = serde_json::json!({
             "event": {
                 "content": {
