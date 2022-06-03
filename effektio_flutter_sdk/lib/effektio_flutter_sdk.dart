@@ -103,11 +103,15 @@ class EffektioSdk {
     return client;
   }
 
-  Future<ffi.Client> signUp(String username, String password,
-      String displayName, String token,) async {
+  Future<ffi.Client> signUp(
+    String username,
+    String password,
+    String displayName,
+    String token,
+  ) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
-      if (await client.userId() == username) {
+      if ((await client.userId()).toString() == username) {
         return client;
       }
     }
