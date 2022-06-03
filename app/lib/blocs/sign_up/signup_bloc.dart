@@ -40,10 +40,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   ) async {
     final sdk = await EffektioSdk.instance;
     if (!username.contains(':')) {
-      username = '${username}:effektio.org';
+      username = '$username:effektio.org';
     }
     if (!username.startsWith('@')) {
-      username = '@${username}';
+      username = '@$username';
     }
     Client client = await sdk.signUp(
       username,
@@ -62,8 +62,10 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     try {
       await signUp(event.username, event.password, event.name, event.token);
       emit(state.copywith(formStatus: SubmissionSuccess()));
+      emit(state.copywith(formStatus: const InitialFormStatus()));
     } catch (e) {
       emit(state.copywith(formStatus: SubmissionFailed(e as String)));
+      emit(state.copywith(formStatus: const InitialFormStatus()));
     }
   }
 }

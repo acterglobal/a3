@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:themed/themed.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -27,7 +28,6 @@ class _SignupScreentate extends State<SignupScreen> {
   final tokenController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final nameController = TextEditingController();
-  bool signUpclicked = false;
 
   @override
   void dispose() {
@@ -50,21 +50,22 @@ class _SignupScreentate extends State<SignupScreen> {
               child: BlocListener<SignUpBloc, SignUpState>(
                 listener: (context, state) {
                   final formStatus = state.formStatus;
-                  if (formStatus is SubmissionFailed && signUpclicked) {
+                  if (formStatus is SubmissionFailed) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         duration: Duration(seconds: 5),
-                        backgroundColor: Colors.redAccent,
+                        backgroundColor: AuthTheme.authFailed,
                         content: Text(
-                          'Registration failed: ${formStatus.exception.toString()}',
+                          '${AppLocalizations.of(context)!.registerFailed}, ${formStatus.exception.toString()}',
                         ),
                       ),
                     );
                   } else if (formStatus is SubmissionSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.greenAccent,
-                        content: Text('Registration successful'),
+                      SnackBar(
+                        backgroundColor: AuthTheme.authSuccess,
+                        content:
+                            Text(AppLocalizations.of(context)!.registerSuccess),
                       ),
                     );
                     Navigator.pushNamed(context, '/');
@@ -87,49 +88,41 @@ class _SignupScreentate extends State<SignupScreen> {
                         height: 40,
                       ),
                       Text(
-                        'Lets get Started',
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        AppLocalizations.of(context)!.onboardText,
+                        style: AuthTheme.authTitleStyle,
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
-                        'Create an account to explore',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w300,
-                        ),
+                        AppLocalizations.of(context)!.createAccountText,
+                        style: AuthTheme.authbodyStyle,
                       ),
                       SizedBox(
                         height: 20,
                       ),
                       signUpOnboardingTextField(
-                        'Name',
+                        AppLocalizations.of(context)!.name,
                         nameController,
-                        'Please enter Your Name',
+                        AppLocalizations.of(context)!.missingName,
                         SignUpOnboardingTextFieldEnum.name,
                       ),
                       signUpOnboardingTextField(
-                        'Username',
+                        AppLocalizations.of(context)!.username,
                         userNameController,
-                        'Please enter Username',
+                        AppLocalizations.of(context)!.emptyUsername,
                         SignUpOnboardingTextFieldEnum.userName,
                       ),
                       signUpOnboardingTextField(
-                        'Password',
+                        AppLocalizations.of(context)!.password,
                         passwordController,
-                        'Please enter Password',
+                        AppLocalizations.of(context)!.emptyPassword,
                         SignUpOnboardingTextFieldEnum.password,
                       ),
                       signUpOnboardingTextField(
-                        'Token',
+                        AppLocalizations.of(context)!.token,
                         tokenController,
-                        'Please enter Token',
+                        AppLocalizations.of(context)!.emptyToken,
                         SignUpOnboardingTextFieldEnum.token,
                       ),
                       SizedBox(
@@ -146,24 +139,27 @@ class _SignupScreentate extends State<SignupScreen> {
                             children: <TextSpan>[
                               TextSpan(
                                 text:
-                                    'By clicking to sign up you agree to our ',
+                                    '${AppLocalizations.of(context)!.termsText1} ',
                               ),
                               TextSpan(
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     debugPrint('Terms of Service"');
                                   },
-                                text: 'Terms and Condition',
+                                text: AppLocalizations.of(context)!.termsText2,
                                 style: AuthTheme.authbodyStyle +
                                     AppCommonTheme.primaryColor,
                               ),
-                              TextSpan(text: ' and that you have read our '),
+                              TextSpan(
+                                text:
+                                    ' ${AppLocalizations.of(context)!.termsText3} ',
+                              ),
                               TextSpan(
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     debugPrint('policy"');
                                   },
-                                text: 'Privacy Policy',
+                                text: AppLocalizations.of(context)!.termsText4,
                                 style: AuthTheme.authbodyStyle +
                                     AppCommonTheme.primaryColor,
                               ),
@@ -180,11 +176,6 @@ class _SignupScreentate extends State<SignupScreen> {
                               ? CircularProgressIndicator()
                               : CustomOnbaordingButton(
                                   onPressed: () {
-                                    signUpclicked = true;
-                                    Future.delayed(Duration(seconds: 1))
-                                        .then((_) {
-                                      signUpclicked = false;
-                                    });
                                     if (_formKey.currentState!.validate()) {
                                       context.read<SignUpBloc>().add(
                                             SignUpSubmitted(
@@ -199,7 +190,7 @@ class _SignupScreentate extends State<SignupScreen> {
                                           );
                                     }
                                   },
-                                  title: 'Sign up',
+                                  title: AppLocalizations.of(context)!.signUp,
                                 );
                         }),
                       ),
@@ -210,7 +201,7 @@ class _SignupScreentate extends State<SignupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Already have an account ?  ',
+                            '${AppLocalizations.of(context)!.haveAccount}  ',
                             style: AuthTheme.authbodyStyle,
                           ),
                           InkWell(
@@ -223,7 +214,7 @@ class _SignupScreentate extends State<SignupScreen> {
                               );
                             },
                             child: Text(
-                              'Sign in ',
+                              AppLocalizations.of(context)!.login,
                               style: AuthTheme.authbodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),

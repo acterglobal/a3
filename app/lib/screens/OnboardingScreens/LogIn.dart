@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (formStatus is SubmissionFailed) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        backgroundColor: Colors.redAccent,
+                        backgroundColor: AuthTheme.authFailed,
                         content: Text(
                           '${AppLocalizations.of(context)!.loginFailed}: ${formStatus.exception.toString()}',
                         ),
@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   } else if (formStatus is SubmissionSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        backgroundColor: Colors.greenAccent,
+                        backgroundColor: AuthTheme.authSuccess,
                         content:
                             Text(AppLocalizations.of(context)!.loginSuccess),
                       ),
@@ -94,9 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 35,
                       ),
                       signInOnboardingTextField(
-                        AppLocalizations.of(context)!.email,
+                        AppLocalizations.of(context)!.username,
                         userNameController,
-                        AppLocalizations.of(context)!.emptyEmail,
+                        AppLocalizations.of(context)!.emptyUsername,
                         SignInOnboardingTextFieldEnum.userName,
                       ),
                       SizedBox(
