@@ -7,6 +7,7 @@ use ruma::{
     },
     OwnedEventId, OwnedRoomId
 };
+use anyhow::Context;
 use crate::store::Store;
 use std::sync::Arc;
 
@@ -28,9 +29,10 @@ impl Executor {
             AnyEffektioMessageLikeEvent::Matrix(m) => {
                 self.handle_regular_matrix_message(m).await?
             }
-            AnyEffektioMessageLikeEvent::News(NewsEvent::Dev(n)) => {
-                unimplemented!()
-                
+            AnyEffektioMessageLikeEvent::News(NewsEvent::Dev(m)) => {
+                let id = event.event_id().context("event is missing the event_id")?;
+                self.store.set_model(id.to_string(), m, vec!["type-news".to_owned(), "section-news".to_owned(),]).await?;
+                Some(id)
             }
         })
     }
