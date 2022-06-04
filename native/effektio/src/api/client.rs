@@ -13,13 +13,19 @@ pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
-    ruma::events::StateEventType,
+    ruma::events::room::{
+        member::StrippedRoomMemberEvent,
+        message::{
+            MessageType, OriginalSyncRoomMessageEvent,
+            RoomMessageEventContent, TextMessageEventContent,
+        },
+    },
     Client as MatrixClient, LoopCtrl, Session,
 };
-
 use parking_lot::RwLock;
 use ruma::events::room::MediaSource;
-use std::sync::Arc;
+use std::{fs::File, sync::Arc};
+use tokio::sync::Mutex;
 use url::Url;
 
 #[derive(Default, Builder, Debug)]
@@ -52,10 +58,10 @@ static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
 static PURPOSE_VALUE: &str = "org.effektio";
 
 async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Conversation>) {
-    stream::iter(client.rooms().into_iter())
+    let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
-            (Vec::new(), Vec::new()),
-            async move |(mut groups, mut conversations), room| {
+            (Vec::new(), Vec::new(), client),
+            async move |(mut groups, mut conversations, client), room| {
                 let is_effektio_group = {
                     #[allow(clippy::match_like_matches_macro)]
                     if let Ok(Some(_)) = room
@@ -75,18 +81,25 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
 
                 if is_effektio_group {
                     groups.push(Group {
-                        inner: Room { room },
+                        inner: Room {
+                            room,
+                            client: client.clone(),
+                        },
                     });
                 } else {
                     conversations.push(Conversation {
-                        inner: Room { room },
+                        inner: Room {
+                            room,
+                            client: client.clone(),
+                        },
                     });
                 }
 
-                (groups, conversations)
+                (groups, conversations, client)
             },
         )
-        .await
+        .await;
+    (groups, convos)
 }
 
 impl Client {
@@ -104,9 +117,8 @@ impl Client {
             client
                 .sync_with_callback(matrix_sdk::config::SyncSettings::new(), |_response| async {
                     if !state.read().has_first_synced {
-                        state.write().has_first_synced = true
+                        state.write().has_first_synced = true;
                     }
-
                     if state.read().should_stop_syncing {
                         state.write().is_syncing = false;
                         return LoopCtrl::Break;
@@ -114,6 +126,23 @@ impl Client {
                         state.write().is_syncing = true;
                     }
                     LoopCtrl::Continue
+                })
+                .await;
+            client
+                .register_event_handler(|ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| async move {
+                    if ev.state_key != c.user_id().await.unwrap() {
+                        return;
+                    }
+                })
+                .await;
+            client
+                .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom| async move {
+                    if let MatrixRoom::Joined(room) = room {
+                        let msg_body = match ev.content.msgtype {
+                            MessageType::Text(TextMessageEventContent { body, .. }) => body,
+                            _ => return,
+                        };
+                    }
                 })
                 .await;
         });
@@ -127,7 +156,7 @@ impl Client {
 
     /// Indication whether we are currently syncing
     pub fn is_syncing(&self) -> bool {
-        self.state.read().has_first_synced
+        self.state.read().is_syncing
     }
 
     /// Is this a guest account?
@@ -197,7 +226,10 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 if let Some(room) = l.get_room(&room_id) {
-                    return Ok(Room { room });
+                    return Ok(Room {
+                        room,
+                        client: l.clone(),
+                    });
                 }
                 bail!("Room not found")
             })

@@ -138,6 +138,10 @@ object Conversation {
     /// returns the event_id as given by the server of the event soon after
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
+
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
+    fn accept_invitation() -> Future<Result<bool>>;
 }
 
 object Group {

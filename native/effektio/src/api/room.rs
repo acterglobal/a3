@@ -8,10 +8,21 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
-        EventId, OwnedUserId,
+        events::{
+            room::{
+                member::StrippedRoomMemberEvent,
+                message::{
+                    MessageType, OriginalSyncRoomMessageEvent,
+                    RoomMessageEventContent, TextMessageEventContent,
+                },
+            },
+            AnyMessageLikeEventContent,
+        },
+        EventId, OwnedUserId, UserId,
     },
+    Client as MatrixClient,
 };
+use tokio::time::{sleep, Duration};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -45,6 +56,7 @@ impl Member {
 }
 
 pub struct Room {
+    pub(crate) client: MatrixClient,
     pub(crate) room: MatrixRoom,
 }
 
@@ -191,6 +203,52 @@ impl Room {
                     )
                     .await?;
                 Ok(r.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn invite_user(&self, user_id: String) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let user = <&UserId>::try_from(user_id.as_str()).unwrap();
+                room.invite_user_by_id(user).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn accept_invitation(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Invited(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't join a room we are not invited")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let mut delay = 2;
+                while let Err(err) = room.accept_invitation().await {
+                    // retry autojoin due to synapse sending invites, before the
+                    // invited user can join for more information see
+                    // https://github.com/matrix-org/synapse/issues/4345
+                    eprintln!("Failed to join room {} ({:?}), retrying in {}s", room.room_id(), err, delay);
+
+                    sleep(Duration::from_secs(delay)).await;
+                    delay *= 2;
+
+                    if delay > 3600 {
+                        eprintln!("Can't join room {} ({:?})", room.room_id(), err);
+                        break;
+                    }
+                }
+                println!("Successfully joined room {}", room.room_id());
+                Ok(delay <= 3600)
             })
             .await?
     }
