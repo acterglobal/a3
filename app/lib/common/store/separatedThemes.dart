@@ -75,6 +75,8 @@ class AuthTheme {
   static const hintTextColor = ColorRef(Colors.grey, id: 'HT');
   static const textFieldTextColor = ColorRef(Colors.white, id: 'TFT');
   static const forgotPasswordColor = ColorRef(Color(0xff008080), id: 'FP');
+  static const authSuccess = ColorRef(Colors.greenAccent, id: 'AS');
+  static const authFailed = ColorRef(Colors.redAccent, id: 'AF');
 
   static const authTitleStyle = TextStyleRef(
     TextStyle(

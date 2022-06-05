@@ -53,7 +53,6 @@ class EffektioSdk {
     String appDocPath = appDocDir.path;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList('sessions') ?? []);
-    // TODO: parallel?!?
     bool loggedIn = false;
     for (var token in sessions) {
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
@@ -95,6 +94,38 @@ class EffektioSdk {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     final client = await _api.loginNewClient(appDocPath, username, password);
+    if (_clients.length == 1 && _clients[0].isGuest()) {
+      // we are replacing a guest account
+      _clients.removeAt(0);
+    }
+    _clients.add(client);
+    await _persistSessions();
+    return client;
+  }
+
+  Future<ffi.Client> signUp(
+    String username,
+    String password,
+    String displayName,
+    String token,
+  ) async {
+    // To be removed when client management is implemented.
+    for (final client in _clients) {
+      if ((await client.userId()).toString() == username) {
+        return client;
+      }
+    }
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    final client = await _api.registerWithRegistrationToken(
+      appDocPath,
+      username,
+      password,
+      token,
+    );
+    final ac = await client.account();
+    await ac.setDisplayName(displayName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       _clients.removeAt(0);
