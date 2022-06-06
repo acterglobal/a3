@@ -13,7 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class NewsSideBar extends StatefulWidget {
-  const NewsSideBar({Key? key, required this.client, required this.news, required this.index})
+  const NewsSideBar(
+      {Key? key, required this.client, required this.news, required this.index})
       : super(key: key);
   final ffi.Client client;
   final ffi.News news;
@@ -32,14 +33,16 @@ class _NewsSideBarState extends State<NewsSideBar> {
     commentController
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
-          TextPosition(offset: commentController.text.length));
+        TextPosition(offset: commentController.text.length),
+      );
   }
 
   _onBackspacePressed() {
     commentController
       ..text = commentController.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
-          TextPosition(offset: commentController.text.length));
+        TextPosition(offset: commentController.text.length),
+      );
   }
 
   static List<String> listPlayers = <String>[
@@ -80,23 +83,25 @@ class _NewsSideBarState extends State<NewsSideBar> {
     var fgColor =
         convertColor(widget.news.fgColor(), AppCommonTheme.primaryColor);
 
-    TextStyle style = Theme.of(context)
-        .textTheme
-        .bodyText1!
-        .copyWith(fontSize: 13, color: fgColor, shadows: [
-      Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
-    ],);
+    TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
+      fontSize: 13,
+      color: fgColor,
+      shadows: [
+        Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
+      ],
+    );
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Center(
-            child: LikeButton(
-          likeCount: widget.news.likesCount().toString(),
-          style: style,
-          color: fgColor,
-          index: widget.index,
-        ),),
+          child: LikeButton(
+            likeCount: widget.news.likesCount().toString(),
+            style: style,
+            color: fgColor,
+            index: widget.index,
+          ),
+        ),
         _sideBarItem(
           'comment',
           widget.news.commentsCount().toString(),
@@ -109,7 +114,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
     );
   }
 
-  // ignore: always_declare_return_types
   _profileImageButton(Color color) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
@@ -144,9 +148,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
     );
   }
 
-  // ignore: always_declare_return_types
   _sideBarItem(String iconName, String label, Color? color, TextStyle style) {
-
     return GestureDetector(
       onTap: (() {
         if (iconName == 'comment') {

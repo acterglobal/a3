@@ -8,7 +8,8 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:expandable_text/expandable_text.dart';
 
 class NewsItem extends StatefulWidget {
-  const NewsItem({Key? key, required this.client, required this.news, required this.index})
+  const NewsItem(
+      {Key? key, required this.client, required this.news, required this.index})
       : super(key: key);
   final Client client;
   final News news;
@@ -103,7 +104,11 @@ class _NewsItemState extends State<NewsItem> {
               child: Container(
                 height: MediaQuery.of(context).size.height / 2.5,
                 child: InkWell(
-                  child: NewsSideBar(client: widget.client, news: widget.news, index: widget.index,),
+                  child: NewsSideBar(
+                    client: widget.client,
+                    news: widget.news,
+                    index: widget.index,
+                  ),
                 ),
               ),
             ),
