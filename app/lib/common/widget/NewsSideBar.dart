@@ -13,9 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class NewsSideBar extends StatefulWidget {
-  const NewsSideBar(
-      {Key? key, required this.client, required this.news, required this.index})
-      : super(key: key);
+  const NewsSideBar({
+    Key? key,
+    required this.client,
+    required this.news,
+    required this.index,
+  }) : super(key: key);
   final ffi.Client client;
   final ffi.News news;
   final int index;
