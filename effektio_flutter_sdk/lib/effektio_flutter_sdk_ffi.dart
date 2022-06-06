@@ -1605,90 +1605,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationInstallEventOnStrippedStateMemberFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _conversationInstallEventOnStrippedStateMemberFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __conversationInstallEventOnRoomMessageFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _conversationInstallEventOnRoomMessageFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
   String? __groupDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -2600,6 +2516,47 @@ class Api {
     return tmp7;
   }
 
+  String? __conversationListenToMemberEventsStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _conversationListenToMemberEventsStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp9 = utf8.decode(tmp11_0.asTypedList(tmp12));
+    if (tmp13 > 0) {
+      final ffi.Pointer<ffi.Void> tmp11_0;
+      tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      this.__deallocate(tmp11_0, tmp13 * 1, 1);
+    }
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -3100,26 +3057,15 @@ class Api {
           int Function(
     int,
   )>();
-  late final _conversationInstallEventOnStrippedStateMemberPtr = _lookup<
+  late final _conversationListenToMemberEventsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ConversationListenToMemberEventsReturn Function(
     ffi.Int64,
-  )>>("__Conversation_install_event_on_stripped_state_member");
+  )>>("__Conversation_listen_to_member_events");
 
-  late final _conversationInstallEventOnStrippedStateMember =
-      _conversationInstallEventOnStrippedStateMemberPtr.asFunction<
-          int Function(
-    int,
-  )>();
-  late final _conversationInstallEventOnRoomMessagePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__Conversation_install_event_on_room_message");
-
-  late final _conversationInstallEventOnRoomMessage =
-      _conversationInstallEventOnRoomMessagePtr.asFunction<
-          int Function(
+  late final _conversationListenToMemberEvents =
+      _conversationListenToMemberEventsPtr.asFunction<
+          _ConversationListenToMemberEventsReturn Function(
     int,
   )>();
   late final _groupDisplayNamePtr = _lookup<
@@ -3646,39 +3592,6 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationInstallEventOnStrippedStateMemberFuturePollPtr =
-      _lookup<
-          ffi.NativeFunction<
-              _ConversationInstallEventOnStrippedStateMemberFuturePollReturn
-                  Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Conversation_install_event_on_stripped_state_member_future_poll");
-
-  late final _conversationInstallEventOnStrippedStateMemberFuturePoll =
-      _conversationInstallEventOnStrippedStateMemberFuturePollPtr.asFunction<
-          _ConversationInstallEventOnStrippedStateMemberFuturePollReturn
-              Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _conversationInstallEventOnRoomMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationInstallEventOnRoomMessageFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Conversation_install_event_on_room_message_future_poll");
-
-  late final _conversationInstallEventOnRoomMessageFuturePoll =
-      _conversationInstallEventOnRoomMessageFuturePollPtr.asFunction<
-          _ConversationInstallEventOnRoomMessageFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _groupDisplayNameFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _GroupDisplayNameFuturePollReturn Function(
@@ -3967,6 +3880,23 @@ class Api {
 
   late final _clientFaqsFuturePoll = _clientFaqsFuturePollPtr.asFunction<
       _ClientFaqsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationListenToMemberEventsStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationListenToMemberEventsStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_listen_to_member_events_stream_poll");
+
+  late final _conversationListenToMemberEventsStreamPoll =
+      _conversationListenToMemberEventsStreamPollPtr.asFunction<
+          _ConversationListenToMemberEventsStreamPollReturn Function(
+    int,
     int,
     int,
     int,
@@ -5089,35 +5019,34 @@ class Conversation {
     return tmp2;
   }
 
-  Future<bool> installEventOnStrippedStateMember() {
+  /// a stream of incoming member events
+  Stream<String> listenToMemberEvents() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationInstallEventOnStrippedStateMember(
+    final tmp1 = _api._conversationListenToMemberEvents(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__Conversation_install_event_on_stripped_state_member_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__conversationInstallEventOnStrippedStateMemberFuturePoll);
-    return tmp2;
-  }
-
-  Future<bool> installEventOnRoomMessage() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationInstallEventOnRoomMessage(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__Conversation_install_event_on_room_message_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__conversationInstallEventOnRoomMessageFuturePoll);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(
+        _api, tmp7_0, "__Conversation_listen_to_member_events_stream_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = _nativeStream(
+        tmp7_1, _api.__conversationListenToMemberEventsStreamPoll);
     return tmp2;
   }
 
@@ -5178,6 +5107,7 @@ class Group {
     return tmp2;
   }
 
+  /// the members currently in the room
   Future<Member> getMember(
     UserId user,
   ) {
@@ -5742,6 +5672,19 @@ class _RoomMessageBodyReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _ConversationListenToMemberEventsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _MemberDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -6002,38 +5945,6 @@ class _ConversationInviteUserFuturePollReturn extends ffi.Struct {
 }
 
 class _ConversationAcceptInvitationFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _ConversationInstallEventOnStrippedStateMemberFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _ConversationInstallEventOnRoomMessageFuturePollReturn
-    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -6358,6 +6269,17 @@ class _ClientFaqsFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _ConversationListenToMemberEventsStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class FfiListConversation extends Iterable<Conversation>

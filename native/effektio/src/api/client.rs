@@ -8,25 +8,19 @@ use effektio_core::{
     RestoreToken,
 };
 use futures::{stream, Stream, StreamExt};
-use lazy_static::lazy_static;
-pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
-    ruma::events::room::{
-        member::StrippedRoomMemberEvent,
-        message::{
-            MessageType, OriginalSyncRoomMessageEvent,
-            RoomMessageEventContent, TextMessageEventContent,
+    ruma::{
+        events::room::message::{
+            MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent,
         },
+        OwnedUserId, RoomId,
     },
-    Client as MatrixClient, LoopCtrl, Session,
+    Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::RwLock;
-use ruma::events::room::MediaSource;
-use std::{fs::File, sync::Arc};
-use tokio::sync::Mutex;
-use url::Url;
+use std::sync::Arc;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -129,13 +123,6 @@ impl Client {
                 })
                 .await;
             client
-                .register_event_handler(|ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| async move {
-                    if ev.state_key != c.user_id().await.unwrap() {
-                        return;
-                    }
-                })
-                .await;
-            client
                 .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom| async move {
                     if let MatrixRoom::Joined(room) = room {
                         let msg_body = match ev.content.msgtype {
@@ -210,7 +197,7 @@ impl Client {
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<ruma::OwnedUserId> {
+    pub async fn user_id(&self) -> Result<OwnedUserId> {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {

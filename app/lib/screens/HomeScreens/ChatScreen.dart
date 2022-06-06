@@ -17,6 +17,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:themed/themed.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
@@ -34,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
   TimelineStream? _stream;
   bool isLoading = false;
   int _page = 0;
+
   @override
   void initState() {
     _user = types.User(
@@ -41,6 +43,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     isLoading = true;
     super.initState();
+    widget.room.listenToMemberEvents().listen((event) {
+      _handleInvitation(event);
+    });
     _getTimeline().whenComplete(
       () => {_handleEndReached(), _newEvent()},
     );
@@ -285,6 +290,54 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       _messages = [..._messages, ...nextMessages];
       _page = _page + 1;
+    });
+  }
+
+  void _handleInvitation(event) {
+    Future.delayed(Duration.zero, () {
+      Flushbar(
+        title: 'Hey Ninja',
+        message:
+            'Lorem Ipsum is simply dummy text of the printing and typesetting industry',
+        flushbarPosition: FlushbarPosition.TOP,
+        flushbarStyle: FlushbarStyle.FLOATING,
+        reverseAnimationCurve: Curves.decelerate,
+        forwardAnimationCurve: Curves.elasticOut,
+        backgroundColor: Colors.red,
+        boxShadows: const [
+          BoxShadow(color: Colors.blue, offset: Offset(0, 2), blurRadius: 3)
+        ],
+        backgroundGradient:
+            LinearGradient(colors: const [Colors.blueGrey, Colors.black]),
+        isDismissible: false,
+        duration: Duration(seconds: 4),
+        icon: Icon(
+          Icons.check,
+          color: Colors.greenAccent,
+        ),
+        mainButton: FlatButton(
+          onPressed: () {},
+          child: Text('CLAP', style: TextStyle(color: Colors.amber)),
+        ),
+        showProgressIndicator: true,
+        progressIndicatorBackgroundColor: Colors.blueGrey,
+        titleText: Text(
+          event,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+            color: Colors.yellow,
+          ),
+        ),
+        messageText: Text(
+          'You killed that giant monster in the city. Congratulations!',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            color: Colors.green,
+          ),
+        ),
+      ).show(context);
     });
   }
 

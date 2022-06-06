@@ -2,7 +2,10 @@ use super::messages::{sync_event_to_message, RoomMessage};
 use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
-use futures::{pin_mut, stream, Stream, StreamExt};
+use futures::{
+    pin_mut, stream, Stream, StreamExt,
+    channel::mpsc::{channel, Sender, Receiver},
+};
 use matrix_sdk::ruma;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
@@ -22,6 +25,8 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
+use parking_lot::Mutex;
+use std::sync::Arc;
 use tokio::time::{sleep, Duration};
 
 pub struct Member {
@@ -117,6 +122,31 @@ impl Room {
             .await?
     }
 
+    pub fn listen_to_member_events(&self) -> Result<Receiver<String>> {
+        let room_id = self.room.room_id().to_owned().clone();
+        let client = self.client.clone();
+        let (tx, rx) = channel(10); // dropping after more than 10 items queued
+        let sender_arc = Arc::new(Mutex::new(tx));
+        RUNTIME.block_on(async move {
+            client
+                .register_event_handler(move |ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| {
+                    let sender_arc = sender_arc.clone();
+                    let room_id = room_id.clone();
+                    async move {
+                        let s = sender_arc.lock();
+                        if room.room_id() == room_id {
+                            if let Err(e) = s.clone().try_send(ev.sender.to_string()) {
+                                log::warn!("Dropping member event for {}: {}", room_id, e);
+                            }
+                        }
+                        // the lock is unlocked here when `s` goes out of scope.
+                    }
+                })
+                .await;
+        });
+        Ok(rx)
+    }
+
     pub async fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
         RUNTIME
@@ -157,6 +187,7 @@ impl Room {
             })
             .await?
     }
+
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()

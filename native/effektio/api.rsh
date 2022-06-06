@@ -142,6 +142,9 @@ object Conversation {
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
     fn accept_invitation() -> Future<Result<bool>>;
+
+    /// a stream of incoming member events
+    fn listen_to_member_events() -> Result<Stream<string>>;
 }
 
 object Group {
@@ -154,7 +157,7 @@ object Group {
     /// the members currently in the group
     fn active_members() -> Future<Result<Vec<Member>>>;
 
-    // the members currently in the room
+    /// the members currently in the room
     fn get_member(user: UserId) -> Future<Result<Member>>;
 }
 

@@ -57,6 +57,7 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   emoji_picker_flutter: ^1.1.2
   expandable_text: ^2.3.0
+  another_flushbar: ^1.10.29
 
 
 dev_dependencies:
