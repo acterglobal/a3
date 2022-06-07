@@ -24,6 +24,12 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
 
   Future<Client> login(String username, String password) async {
     final sdk = await EffektioSdk.instance;
+    if (!username.contains(':')) {
+      username = '$username:effektio.org';
+    }
+    if (!username.startsWith('@')) {
+      username = '@$username';
+    }
     Client client = await sdk.login(username, password);
     return client;
   }
@@ -34,8 +40,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     try {
       await login(event.username, event.password);
       emit(state.copywith(formStatus: SubmissionSuccess()));
+      emit(state.copywith(formStatus: const InitialFormStatus()));
     } catch (e) {
       emit(state.copywith(formStatus: SubmissionFailed(e as String)));
+      emit(state.copywith(formStatus: const InitialFormStatus()));
     }
   }
 }
