@@ -323,10 +323,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                   ),
                                   Text(
                                     AppLocalizations.of(context)!.logOut,
-                                    style: GoogleFonts.montserrat(
-                                      fontSize: 16,
-                                      color: AppCommonTheme.primaryColor,
-                                    ),
+                                    style: SideMenuAndProfileTheme.signOutText,
                                   )
                                 ],
                               ),
