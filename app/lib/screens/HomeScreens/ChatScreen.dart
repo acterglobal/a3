@@ -158,7 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ) {
                 if (snapshot.hasData) {
                   return Text(
-                    '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.emptyPlaceholderText}',
+                    '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
                     style:
                         ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
                   );

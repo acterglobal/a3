@@ -68,24 +68,26 @@ class _ChatListState extends State<ChatList> {
           ),
         ],
       ),
-      body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 18,
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.chat,
-                  style: AppCommonTheme.appBartitleStyle,
-                ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.only(
+                left: 18,
               ),
-              const SizedBox(
-                height: 10,
+              child: Text(
+                AppLocalizations.of(context)!.chat,
+                style: AppCommonTheme.appBartitleStyle,
               ),
-              FutureBuilder<Client>(
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: FutureBuilder<Client>(
                 future: widget.client,
                 builder:
                     (BuildContext context, AsyncSnapshot<Client> snapshot) {
@@ -169,8 +171,8 @@ class _ChatListState extends State<ChatList> {
                   }
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
