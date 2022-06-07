@@ -4,23 +4,28 @@ use derive_builder::Builder;
 use effektio_core::{
     mocks::{gen_mock_faqs, gen_mock_news},
     models::{Faq, News},
-    ruma::api::client::account::register,
     RestoreToken,
 };
-use futures::{stream, Stream, StreamExt};
-use lazy_static::lazy_static;
-pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
-use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
-    room::Room as MatrixRoom,
-    ruma::events::StateEventType,
-    Client as MatrixClient, LoopCtrl, Session,
+use futures::{
+    stream, Stream, StreamExt,
+    channel::mpsc::{channel, Sender, Receiver},
 };
-
-use parking_lot::RwLock;
-use ruma::events::room::MediaSource;
-use std::sync::Arc;
-use url::Url;
+use matrix_sdk::{
+    config::SyncSettings,
+    encryption::verification::{SasVerification, Verification},
+    media::{MediaFormat, MediaRequest},
+    ruma::{
+        self,
+        events::{
+            room::message::MessageType,
+            AnySyncMessageLikeEvent, AnySyncRoomEvent, AnyToDeviceEvent, SyncMessageLikeEvent,
+        },
+        RoomId, UserId,
+    },
+    Client as MatrixClient, LoopCtrl,
+};
+use parking_lot::{Mutex, RwLock};
+use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -89,6 +94,28 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
         .await
 }
 
+async fn print_devices(user_id: &UserId, client: &MatrixClient) {
+    println!("Devices of user {}", user_id);
+    for device in client.encryption().get_user_devices(user_id).await.unwrap().devices() {
+        println!(
+            "   {:<10} {:<30} {:<}",
+            device.device_id(),
+            device.display_name().unwrap_or("-"),
+            device.verified(),
+        );
+    }
+}
+
+fn print_result(sas: &SasVerification) {
+    let device = sas.other_device();
+    println!(
+        "Successfully verified device {} {} {:?}",
+        device.user_id(),
+        device.device_id(),
+        device.local_trust_state(),
+    );
+}
+
 impl Client {
     pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
@@ -97,26 +124,135 @@ impl Client {
         }
     }
 
-    pub(crate) fn start_sync(&self) {
+    pub(crate) fn start_sync(&self) -> Result<Receiver<SasVerification>> {
         let client = self.client.clone();
         let state = self.state.clone();
-        RUNTIME.spawn(async move {
-            client
-                .sync_with_callback(matrix_sdk::config::SyncSettings::new(), |_response| async {
-                    if !state.read().has_first_synced {
-                        state.write().has_first_synced = true
-                    }
+        let (tx, mut rx) = channel(10); // dropping after more than 10 items queued
+        let sas_arc = Arc::new(Mutex::new(tx));
 
-                    if state.read().should_stop_syncing {
-                        state.write().is_syncing = false;
-                        return LoopCtrl::Break;
-                    } else if !state.read().is_syncing {
-                        state.write().is_syncing = true;
+        RUNTIME.spawn(async move {
+            let client_ref = &client;
+            let state_ref = &state;
+            let initial_sync = Arc::new(AtomicBool::from(true));
+            let initial_ref = &initial_sync;
+
+            client
+                .sync_with_callback(SyncSettings::new(), move |response| {
+                    let sas_arc = sas_arc.clone();
+                    async move {
+                        let s = sas_arc.lock();
+                        let client = &client_ref;
+                        let state = &state_ref;
+                        let initial = &initial_ref;
+
+                        for event in response.to_device.events.iter().filter_map(|ev| ev.deserialize().ok()) {
+                            match event {
+                                AnyToDeviceEvent::KeyVerificationStart(ev) => {
+                                    if let Some(Verification::SasV1(sas)) = client
+                                        .encryption()
+                                        .get_verification(&ev.sender, ev.content.transaction_id.as_str())
+                                        .await
+                                    {
+                                        println!(
+                                            "Starting verification with {} {}",
+                                            &sas.other_device().user_id(),
+                                            &sas.other_device().device_id(),
+                                        );
+                                        print_devices(&ev.sender, client).await;
+                                        sas.accept().await.unwrap();
+                                    }
+                                }
+                                AnyToDeviceEvent::KeyVerificationKey(ev) => {
+                                    if let Some(Verification::SasV1(sas)) = client
+                                        .encryption()
+                                        .get_verification(&ev.sender, ev.content.transaction_id.as_str())
+                                        .await
+                                    {}
+                                }
+                                AnyToDeviceEvent::KeyVerificationMac(ev) => {
+                                    if let Some(Verification::SasV1(sas)) = client
+                                        .encryption()
+                                        .get_verification(&ev.sender, ev.content.transaction_id.as_str())
+                                        .await
+                                    {
+                                        if sas.is_done() {
+                                            print_result(&sas);
+                                            print_devices(&ev.sender, client).await;
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+
+                        if !initial.load(Ordering::SeqCst) {
+                            for (_room_id, room_info) in response.rooms.join {
+                                for event in room_info.timeline.events.iter().filter_map(|ev| ev.event.deserialize().ok()) {
+                                    if let AnySyncRoomEvent::MessageLike(event) = event {
+                                        match event {
+                                            AnySyncMessageLikeEvent::RoomMessage(
+                                                SyncMessageLikeEvent::Original(m),
+                                            ) => {
+                                                if let MessageType::VerificationRequest(_) = &m.content.msgtype {
+                                                    let request = client
+                                                        .encryption()
+                                                        .get_verification_request(&m.sender, &m.event_id)
+                                                        .await
+                                                        .expect("Request object wasn't created");
+                                                    request
+                                                        .accept()
+                                                        .await
+                                                        .expect("Can't accept verification request");
+                                                }
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationKey(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                if let Some(Verification::SasV1(sas)) = client
+                                                    .encryption()
+                                                    .get_verification(&ev.sender, ev.content.relates_to.event_id.as_str())
+                                                    .await
+                                                {}
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationMac(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                if let Some(Verification::SasV1(sas)) = client
+                                                    .encryption()
+                                                    .get_verification(&ev.sender, ev.content.relates_to.event_id.as_str())
+                                                    .await
+                                                {
+                                                    if sas.is_done() {
+                                                        print_result(&sas);
+                                                        print_devices(&ev.sender, client).await;
+                                                    }
+                                                }
+                                            }
+                                            _ => ()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        initial.store(false, Ordering::SeqCst);
+
+                        if !(*state).read().has_first_synced {
+                            (*state).write().has_first_synced = true
+                        }
+                        if (*state).read().should_stop_syncing {
+                            (*state).write().is_syncing = false;
+                            return LoopCtrl::Break;
+                        } else if !(*state).read().is_syncing {
+                            (*state).write().is_syncing = true;
+                        }
+                        LoopCtrl::Continue
+                        // the lock is unlocked here when `s` goes out of scope.
                     }
-                    LoopCtrl::Continue
                 })
                 .await;
         });
+        Ok(rx)
     }
 
     /// Indication whether we've received a first sync response since
@@ -127,7 +263,7 @@ impl Client {
 
     /// Indication whether we are currently syncing
     pub fn is_syncing(&self) -> bool {
-        self.state.read().has_first_synced
+        self.state.read().is_syncing
     }
 
     /// Is this a guest account?

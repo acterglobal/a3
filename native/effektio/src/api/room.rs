@@ -1,13 +1,12 @@
 use super::messages::{sync_event_to_message, RoomMessage};
 use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
-use effektio_core::RestoreToken;
 use futures::{pin_mut, stream, Stream, StreamExt};
-use matrix_sdk::ruma;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
+        self,
         events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
         EventId, OwnedUserId,
     },
