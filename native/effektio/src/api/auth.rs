@@ -4,8 +4,6 @@ use anyhow::{bail, Context, Result};
 use assign::assign;
 use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
-use futures::Stream;
-use lazy_static::lazy_static;
 use matrix_sdk::Session;
 use tokio::runtime;
 use url::Url;

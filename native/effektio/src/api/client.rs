@@ -43,6 +43,8 @@ pub struct ClientState {
 pub struct Client {
     client: MatrixClient,
     state: Arc<RwLock<ClientState>>,
+    to_device_rx: Option<Receiver<String>>,
+    sync_msg_like_rx: Option<Receiver<String>>,
 }
 
 impl std::ops::Deref for Client {
@@ -121,64 +123,89 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
+            to_device_rx: None,
+            sync_msg_like_rx: None,
         }
     }
 
-    pub(crate) fn start_sync(&self) -> Result<Receiver<SasVerification>> {
+    pub(crate) fn start_sync(&self) {
         let client = self.client.clone();
         let state = self.state.clone();
-        let (tx, mut rx) = channel(10); // dropping after more than 10 items queued
-        let sas_arc = Arc::new(Mutex::new(tx));
+        let (to_device_tx, to_device_rx) = channel(10); // dropping after more than 10 items queued
+        let to_device_mutex = Arc::new(Mutex::new(to_device_tx));
+        let (sync_msg_like_tx, sync_msg_like_rx) = channel(10); // dropping after more than 10 items queued
+        let sync_msg_like_mutex = Arc::new(Mutex::new(sync_msg_like_tx));
+        let initial_sync = Arc::new(AtomicBool::from(true));
 
         RUNTIME.spawn(async move {
-            let client_ref = &client;
-            let state_ref = &state;
-            let initial_sync = Arc::new(AtomicBool::from(true));
-            let initial_ref = &initial_sync;
+            let client = client.clone();
+            let state = state.clone();
+            let initial_sync = initial_sync.clone();
 
             client
+                .clone()
                 .sync_with_callback(SyncSettings::new(), move |response| {
-                    let sas_arc = sas_arc.clone();
+                    let client = client.clone();
+                    let state = state.clone();
+                    let initial_sync = initial_sync.clone();
+                    let to_device_mutex = to_device_mutex.clone();
+                    let sync_msg_like_mutex = sync_msg_like_mutex.clone();
+
                     async move {
-                        let s = sas_arc.lock();
-                        let client = &client_ref;
-                        let state = &state_ref;
-                        let initial = &initial_ref;
+                        let t = to_device_mutex.lock();
+                        let s = sync_msg_like_mutex.lock();
+                        let client = client.clone();
+                        let state = state.clone();
+                        let initial = initial_sync.clone();
 
                         for event in response.to_device.events.iter().filter_map(|ev| ev.deserialize().ok()) {
                             match event {
+                                AnyToDeviceEvent::KeyVerificationRequest(ev) => {
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
+                                    }
+                                }
+                                AnyToDeviceEvent::KeyVerificationReady(ev) => {
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
+                                    }
+                                }
                                 AnyToDeviceEvent::KeyVerificationStart(ev) => {
-                                    if let Some(Verification::SasV1(sas)) = client
-                                        .encryption()
-                                        .get_verification(&ev.sender, ev.content.transaction_id.as_str())
-                                        .await
-                                    {
-                                        println!(
-                                            "Starting verification with {} {}",
-                                            &sas.other_device().user_id(),
-                                            &sas.other_device().device_id(),
-                                        );
-                                        print_devices(&ev.sender, client).await;
-                                        sas.accept().await.unwrap();
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
+                                    }
+                                }
+                                AnyToDeviceEvent::KeyVerificationCancel(ev) => {
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
+                                    }
+                                }
+                                AnyToDeviceEvent::KeyVerificationAccept(ev) => {
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
                                     }
                                 }
                                 AnyToDeviceEvent::KeyVerificationKey(ev) => {
-                                    if let Some(Verification::SasV1(sas)) = client
-                                        .encryption()
-                                        .get_verification(&ev.sender, ev.content.transaction_id.as_str())
-                                        .await
-                                    {}
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
+                                    }
                                 }
                                 AnyToDeviceEvent::KeyVerificationMac(ev) => {
-                                    if let Some(Verification::SasV1(sas)) = client
-                                        .encryption()
-                                        .get_verification(&ev.sender, ev.content.transaction_id.as_str())
-                                        .await
-                                    {
-                                        if sas.is_done() {
-                                            print_result(&sas);
-                                            print_devices(&ev.sender, client).await;
-                                        }
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
+                                    }
+                                }
+                                AnyToDeviceEvent::KeyVerificationDone(ev) => {
+                                    let txn_id = ev.content.transaction_id.to_string();
+                                    if let Err(e) = t.clone().try_send(txn_id.clone()) {
+                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
                                     }
                                 }
                                 _ => {}
@@ -194,38 +221,66 @@ impl Client {
                                                 SyncMessageLikeEvent::Original(m),
                                             ) => {
                                                 if let MessageType::VerificationRequest(_) = &m.content.msgtype {
-                                                    let request = client
-                                                        .encryption()
-                                                        .get_verification_request(&m.sender, &m.event_id)
-                                                        .await
-                                                        .expect("Request object wasn't created");
-                                                    request
-                                                        .accept()
-                                                        .await
-                                                        .expect("Can't accept verification request");
+                                                    let evt_id = m.event_id.to_string();
+                                                    if let Err(e) = s.clone().try_send(evt_id.clone()) {
+                                                        log::warn!("Dropping event for {}: {}", evt_id, e);
+                                                    }
+                                                }
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationReady(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
+                                                }
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationStart(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
+                                                }
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationCancel(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
+                                                }
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationAccept(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
                                                 }
                                             }
                                             AnySyncMessageLikeEvent::KeyVerificationKey(
                                                 SyncMessageLikeEvent::Original(ev),
                                             ) => {
-                                                if let Some(Verification::SasV1(sas)) = client
-                                                    .encryption()
-                                                    .get_verification(&ev.sender, ev.content.relates_to.event_id.as_str())
-                                                    .await
-                                                {}
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
+                                                }
                                             }
                                             AnySyncMessageLikeEvent::KeyVerificationMac(
                                                 SyncMessageLikeEvent::Original(ev),
                                             ) => {
-                                                if let Some(Verification::SasV1(sas)) = client
-                                                    .encryption()
-                                                    .get_verification(&ev.sender, ev.content.relates_to.event_id.as_str())
-                                                    .await
-                                                {
-                                                    if sas.is_done() {
-                                                        print_result(&sas);
-                                                        print_devices(&ev.sender, client).await;
-                                                    }
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
+                                                }
+                                            }
+                                            AnySyncMessageLikeEvent::KeyVerificationDone(
+                                                SyncMessageLikeEvent::Original(ev),
+                                            ) => {
+                                                let txn_id = ev.content.relates_to.event_id.to_string();
+                                                if let Err(e) = s.clone().try_send(txn_id.clone()) {
+                                                    log::warn!("Dropping event for {}: {}", txn_id, e);
                                                 }
                                             }
                                             _ => ()
@@ -252,7 +307,16 @@ impl Client {
                 })
                 .await;
         });
-        Ok(rx)
+        self.to_device_rx = Some(to_device_rx);
+        self.sync_msg_like_rx = Some(sync_msg_like_rx);
+    }
+
+    pub fn get_to_device_rx(&self) -> Receiver<String> {
+        self.to_device_rx.unwrap()
+    }
+
+    pub fn get_sync_msg_like_rx(&self) -> Receiver<String> {
+        self.sync_msg_like_rx.unwrap()
     }
 
     /// Indication whether we've received a first sync response since

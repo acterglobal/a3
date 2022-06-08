@@ -188,6 +188,12 @@ object Account {
 object Client {
     // Special
 
+    /// ToDeviceEvent listener
+    fn get_to_device_rx() -> Stream<string>;
+
+    /// SyncMessageLikeEvent listener
+    fn get_sync_msg_like_rx() -> Stream<string>;
+
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;
 

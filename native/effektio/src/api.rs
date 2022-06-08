@@ -29,7 +29,6 @@ pub use client::{Client, ClientStateBuilder};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::Group;
-pub use matrix_sdk::encryption::verification::SasVerification;
 pub use messages::RoomMessage;
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
