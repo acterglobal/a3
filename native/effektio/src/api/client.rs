@@ -8,7 +8,7 @@ use effektio_core::{
 };
 use futures::{
     stream, Stream, StreamExt,
-    channel::mpsc::{channel, Sender, Receiver},
+    channel::mpsc::Sender,
 };
 use matrix_sdk::{
     config::SyncSettings,
@@ -26,6 +26,7 @@ use matrix_sdk::{
 };
 use parking_lot::{Mutex, RwLock};
 use std::sync::{atomic::{AtomicBool, Ordering}, Arc};
+// use tokio::sync::broadcast::Sender;
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -43,8 +44,6 @@ pub struct ClientState {
 pub struct Client {
     client: MatrixClient,
     state: Arc<RwLock<ClientState>>,
-    to_device_rx: Option<Receiver<String>>,
-    sync_msg_like_rx: Option<Receiver<String>>,
 }
 
 impl std::ops::Deref for Client {
@@ -123,17 +122,13 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            to_device_rx: None,
-            sync_msg_like_rx: None,
         }
     }
 
-    pub(crate) fn start_sync(&self) {
+    pub(crate) fn start_sync(&self, to_device_tx: Sender<String>, sync_msg_like_tx: Sender<String>) {
         let client = self.client.clone();
         let state = self.state.clone();
-        let (to_device_tx, to_device_rx) = channel(10); // dropping after more than 10 items queued
         let to_device_mutex = Arc::new(Mutex::new(to_device_tx));
-        let (sync_msg_like_tx, sync_msg_like_rx) = channel(10); // dropping after more than 10 items queued
         let sync_msg_like_mutex = Arc::new(Mutex::new(sync_msg_like_tx));
         let initial_sync = Arc::new(AtomicBool::from(true));
 
@@ -297,26 +292,17 @@ impl Client {
                         }
                         if (*state).read().should_stop_syncing {
                             (*state).write().is_syncing = false;
+                            // the lock is unlocked here when `s` goes out of scope.
                             return LoopCtrl::Break;
                         } else if !(*state).read().is_syncing {
                             (*state).write().is_syncing = true;
                         }
-                        LoopCtrl::Continue
                         // the lock is unlocked here when `s` goes out of scope.
+                        LoopCtrl::Continue
                     }
                 })
                 .await;
         });
-        self.to_device_rx = Some(to_device_rx);
-        self.sync_msg_like_rx = Some(sync_msg_like_rx);
-    }
-
-    pub fn get_to_device_rx(&self) -> Receiver<String> {
-        self.to_device_rx.unwrap()
-    }
-
-    pub fn get_sync_msg_like_rx(&self) -> Receiver<String> {
-        self.sync_msg_like_rx.unwrap()
     }
 
     /// Indication whether we've received a first sync response since
