@@ -68,6 +68,14 @@ class SideMenuAndProfileTheme {
       color: profileUserIdTextColor,
     ),
   );
+
+  static const signOutText = TextStyleRef(
+    TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      color: AppCommonTheme.primaryColor,
+    ),
+  );
 }
 
 class AuthTheme {
