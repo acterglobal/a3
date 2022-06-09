@@ -122,31 +122,6 @@ impl Room {
             .await?
     }
 
-    pub fn listen_to_member_events(&self) -> Result<Receiver<String>> {
-        let room_id = self.room.room_id().to_owned().clone();
-        let client = self.client.clone();
-        let (tx, rx) = channel(10); // dropping after more than 10 items queued
-        let sender_arc = Arc::new(Mutex::new(tx));
-        RUNTIME.block_on(async move {
-            client
-                .register_event_handler(move |ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| {
-                    let sender_arc = sender_arc.clone();
-                    let room_id = room_id.clone();
-                    async move {
-                        let s = sender_arc.lock();
-                        if room.room_id() == room_id {
-                            if let Err(e) = s.clone().try_send(ev.sender.to_string()) {
-                                log::warn!("Dropping member event for {}: {}", room_id, e);
-                            }
-                        }
-                        // the lock is unlocked here when `s` goes out of scope.
-                    }
-                })
-                .await;
-        });
-        Ok(rx)
-    }
-
     pub async fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
         RUNTIME
@@ -238,6 +213,31 @@ impl Room {
             .await?
     }
 
+    pub fn listen_to_member_events(&self) -> Result<Receiver<String>> {
+        let room_id = self.room.room_id().to_owned().clone();
+        let client = self.client.clone();
+        let (tx, rx) = channel::<String>(10); // dropping after more than 10 items queued
+        let sender_arc = Arc::new(Mutex::new(tx));
+        RUNTIME.block_on(async move {
+            client
+                .register_event_handler(move |ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| {
+                    let sender_arc = sender_arc.clone();
+                    let room_id = room_id.clone();
+                    async move {
+                        let s = sender_arc.lock();
+                        if room.room_id() == room_id {
+                            if let Err(e) = s.clone().try_send(ev.sender.to_string()) {
+                                log::warn!("Dropping member event for {}: {}", room_id, e);
+                            }
+                        }
+                        // the lock is unlocked here when `s` goes out of scope.
+                    }
+                })
+                .await;
+        });
+        Ok(rx)
+    }
+
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
@@ -268,17 +268,47 @@ impl Room {
                     // retry autojoin due to synapse sending invites, before the
                     // invited user can join for more information see
                     // https://github.com/matrix-org/synapse/issues/4345
-                    eprintln!("Failed to join room {} ({:?}), retrying in {}s", room.room_id(), err, delay);
+                    eprintln!("Failed to accept room {} ({:?}), retrying in {}s", room.room_id(), err, delay);
 
                     sleep(Duration::from_secs(delay)).await;
                     delay *= 2;
 
                     if delay > 3600 {
-                        eprintln!("Can't join room {} ({:?})", room.room_id(), err);
+                        eprintln!("Can't accept room {} ({:?})", room.room_id(), err);
                         break;
                     }
                 }
-                println!("Successfully joined room {}", room.room_id());
+                println!("Successfully accepted room {}", room.room_id());
+                Ok(delay <= 3600)
+            })
+            .await?
+    }
+
+    pub async fn reject_invitation(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Invited(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't join a room we are not invited")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let mut delay = 2;
+                while let Err(err) = room.reject_invitation().await {
+                    // retry autojoin due to synapse sending invites, before the
+                    // invited user can join for more information see
+                    // https://github.com/matrix-org/synapse/issues/4345
+                    eprintln!("Failed to reject room {} ({:?}), retrying in {}s", room.room_id(), err, delay);
+
+                    sleep(Duration::from_secs(delay)).await;
+                    delay *= 2;
+
+                    if delay > 3600 {
+                        eprintln!("Can't reject room {} ({:?})", room.room_id(), err);
+                        break;
+                    }
+                }
+                println!("Successfully rejected room {}", room.room_id());
                 Ok(delay <= 3600)
             })
             .await?
