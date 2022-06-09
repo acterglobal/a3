@@ -69,108 +69,110 @@ class _ChatListState extends State<ChatList> {
         ],
       ),
       body: Container(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(
-                  left: 18,
-                ),
-                child: Text(
-                  AppLocalizations.of(context)!.chat,
-                  style: AppCommonTheme.appBartitleStyle,
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.only(
+                left: 18,
               ),
-              const SizedBox(
-                height: 10,
+              child: Text(
+                AppLocalizations.of(context)!.chat,
+                style: AppCommonTheme.appBartitleStyle,
               ),
-              FutureBuilder<Client>(
-                future: widget.client,
-                builder:
-                    (BuildContext context, AsyncSnapshot<Client> snapshot) {
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    return SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.5,
-                      width: MediaQuery.of(context).size.width,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: Container(
+                child: FutureBuilder<Client>(
+                  future: widget.client,
+                  builder:
+                      (BuildContext context, AsyncSnapshot<Client> snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height / 1.5,
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppCommonTheme.primaryColor,
+                          ),
                         ),
-                      ),
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    return FutureBuilder<FfiListConversation>(
-                      future: snapshot.requireData
-                          .conversations(), // a previously-obtained Future<String> or null
-                      builder: (
-                        BuildContext context,
-                        AsyncSnapshot<FfiListConversation> snapshot,
-                      ) {
-                        if (snapshot.hasData) {
-                          return ChatOverview(
-                            user: user,
-                            rooms: snapshot.requireData.toList(),
-                          );
-                        } else {
-                          return Center(
+                      );
+                    }
+                    if (snapshot.hasData) {
+                      return FutureBuilder<FfiListConversation>(
+                        future: snapshot.requireData
+                            .conversations(), // a previously-obtained Future<String> or null
+                        builder: (
+                          BuildContext context,
+                          AsyncSnapshot<FfiListConversation> snapshot,
+                        ) {
+                          if (snapshot.hasData) {
+                            return ChatOverview(
+                              user: user,
+                              rooms: snapshot.requireData.toList(),
+                            );
+                          } else {
+                            return Center(
+                              child: Container(
+                                height: MediaQuery.of(context).size.height,
+                                width: MediaQuery.of(context).size.width,
+                                color: AppCommonTheme.backgroundColor,
+                                child: Text(
+                                  AppLocalizations.of(context)!.loadingConvo,
+                                  style: ChatTheme01.emptyMsgTitle,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    } else {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height / 6,
+                          ),
+                          Center(
                             child: Container(
-                              height: MediaQuery.of(context).size.height,
-                              width: MediaQuery.of(context).size.width,
-                              color: AppCommonTheme.backgroundColor,
-                              child: Text(
-                                AppLocalizations.of(context)!.loadingConvo,
-                                style: ChatTheme01.emptyMsgTitle,
+                              child: SvgPicture.asset(
+                                'assets/images/empty_messages.svg',
                               ),
                             ),
-                          );
-                        }
-                      },
-                    );
-                  } else {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height / 6,
-                        ),
-                        Center(
-                          child: Container(
-                            child: SvgPicture.asset(
-                              'assets/images/empty_messages.svg',
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            AppLocalizations.of(context)!.loadingConvo + '...',
+                            style: ChatTheme01.emptyMsgTitle,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Center(
+                            child: Container(
+                              height: MediaQuery.of(context).size.height / 3,
+                              width: MediaQuery.of(context).size.width / 1.5,
+                              child: Text(
+                                'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                                style: ChatTheme01.chatBodyStyle,
+                                overflow: TextOverflow.clip,
+                                textAlign: TextAlign.center,
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          AppLocalizations.of(context)!.loadingConvo + '...',
-                          style: ChatTheme01.emptyMsgTitle,
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Center(
-                          child: Container(
-                            height: MediaQuery.of(context).size.height / 3,
-                            width: MediaQuery.of(context).size.width / 1.5,
-                            child: Text(
-                              'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                              style: ChatTheme01.chatBodyStyle,
-                              overflow: TextOverflow.clip,
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                },
+                        ],
+                      );
+                    }
+                  },
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
