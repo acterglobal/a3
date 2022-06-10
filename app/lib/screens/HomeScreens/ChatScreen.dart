@@ -35,6 +35,7 @@ class _ChatScreenState extends State<ChatScreen> {
       id: widget.user!,
     );
     chatController.init(widget.room, _user);
+
     super.initState();
   }
 
@@ -195,23 +196,22 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      body: Obx(
-        () => SafeArea(
-          bottom: false,
-          child: chatController.isLoading.value
-              ? Center(
-                  child: Container(
-                    height: 15,
-                    width: 15,
-                    child: CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
-                    ),
-                  ),
-                )
-              : GetBuilder<ChatController>(
-                  id: 'Chat',
-                  builder: (ChatController controller) {
-                    return Chat(
+      body: GetBuilder<ChatController>(
+          id: 'Chat',
+          builder: (ChatController controller) {
+            return SafeArea(
+              bottom: false,
+              child: controller.isLoading
+                  ? Center(
+                      child: Container(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      ),
+                    )
+                  : Chat(
                       l10n: ChatL10nEn(
                         emptyChatPlaceholder: '',
                         attachmentButtonAccessibilityLabel: '',
@@ -242,13 +242,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       },
                       //Whenever users starts typing on keyboard, this will trigger the function
                       onTextChanged: (text) async {
-                        await controller.room.typingNotice(true);
+                        await chatController.room.typingNotice(true);
                       },
                       showUserAvatars: true,
                       onAttachmentPressed: _handleAttachmentPressed,
-                      onPreviewDataFetched: controller.handlePreviewDataFetched,
-                      onMessageTap: controller.handleMessageTap,
-                      onEndReached: controller.handleEndReached,
+                      onPreviewDataFetched:
+                          chatController.handlePreviewDataFetched,
+                      onMessageTap: chatController.handleMessageTap,
+                      onEndReached: chatController.handleEndReached,
                       onEndReachedThreshold: 0.75,
                       emptyState: EmptyPlaceholder(),
                       //Custom Theme class, see lib/common/store/chatTheme.dart
@@ -262,11 +263,9 @@ class _ChatScreenState extends State<ChatScreen> {
                         deliveredIcon:
                             SvgPicture.asset('assets/images/sentIcon.svg'),
                       ),
-                    );
-                  },
-                ),
-        ),
-      ),
+                    ),
+            );
+          }),
     );
   }
 }

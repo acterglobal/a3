@@ -15,9 +15,9 @@ class ChatController extends GetxController {
   static ChatController get instance =>
       Get.put<ChatController>(ChatController());
 
-  List<types.Message> messages = [];
+  List<types.Message> messages = <types.Message>[];
   TimelineStream? _stream;
-  RxBool isLoading = false.obs;
+  bool isLoading = false;
   int _page = 0;
   late final Conversation room;
   late final types.User user;
@@ -26,7 +26,8 @@ class ChatController extends GetxController {
   init(Conversation convoRoom, types.User convoUser) async {
     room = convoRoom;
     user = convoUser;
-    isLoading.value = true;
+    isLoading = true;
+    update(['Chat']);
     _stream = await room.timeline();
     var _messages = await _stream!.paginateBackwards(10);
     for (RoomMessage message in _messages) {
@@ -50,30 +51,47 @@ class ChatController extends GetxController {
         messages.removeAt(0);
         messages.insert(0, lm);
       }
-      isLoading.value = false;
+      isLoading = false;
+      update(['Chat']);
     } else {
-      isLoading.value = false;
+      isLoading = false;
+      update(['Chat']);
     }
+    newEvent();
+    // isSeenMessage();
   }
 
+  // void isSeenMessage() async {
+  //   bool isSeen = await room.readReceipt(messages.first.id);
+  //   if (isSeen) {
+  //     var lm = await room.latestMessage();
+  //     types.TextMessage msg = types.TextMessage(
+  //       author: user,
+  //       id: lm.eventId(),
+  //       text: lm.body(),
+  //       showStatus: true,
+  //       status: isSeen ? types.Status.seen : types.Status.delivered,
+  //     );
+  //     messages.removeAt(0);
+  //     messages.insert(0, msg);
+  //     update(['Chat']);
+  //   }
+  // }
+
   //waits for new event
-  void newEvent() async {
+  Future<void> newEvent() async {
     await _stream!.next();
     var newEvent = await room.latestMessage();
     final eventUser = types.User(
       id: newEvent.sender(),
     );
-    if (newEvent.sender() != eventUser.id) {
-      final textMessage = types.TextMessage(
-        id: newEvent.eventId(),
-        author: eventUser,
-        text: newEvent.body(),
-      );
-      messages.insert(0, textMessage);
-      update(['Chat']);
-    } else {
-      update(['Chat']);
-    }
+    final textMessage = types.TextMessage(
+      id: newEvent.eventId(),
+      author: eventUser,
+      text: newEvent.body(),
+    );
+    messages.insert(0, textMessage);
+    update(['Chat']);
   }
 
   //preview message link
@@ -175,7 +193,7 @@ class ChatController extends GetxController {
   //Pagination Control
   Future<void> handleEndReached() async {
     final _messages = await _stream!.paginateBackwards(10);
-    final List<types.Message> nextMessages = [];
+    final List<types.Message> nextMessages = <types.Message>[];
     for (RoomMessage message in _messages) {
       types.TextMessage m = types.TextMessage(
         author: types.User(id: message.sender()),
