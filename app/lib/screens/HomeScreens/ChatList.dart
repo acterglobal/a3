@@ -23,7 +23,7 @@ class _ChatListState extends State<ChatList> {
   @override
   void initState() {
     super.initState();
-    _getUser().whenComplete(() => {setState(() {})});
+    _getUser().whenComplete(() => setState(() {}));
   }
 
   @override

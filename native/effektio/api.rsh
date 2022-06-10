@@ -144,9 +144,21 @@ object Conversation {
 
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
+    fn is_joined() -> bool;
+
+    fn is_invited() -> bool;
+
+    fn is_left() -> bool;
+
     fn accept_invitation() -> Future<Result<bool>>;
 
     fn reject_invitation() -> Future<Result<bool>>;
+
+    fn join() -> Future<Result<bool>>;
+
+    fn leave() -> Future<Result<bool>>;
+
+    fn get_my_inviter() -> Future<Result<Account>>;
 }
 
 object Group {

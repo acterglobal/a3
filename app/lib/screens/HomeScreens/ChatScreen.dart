@@ -8,7 +8,7 @@ import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, TimelineStream, RoomMessage, FfiListMember;
+    show Account, Conversation, TimelineStream, RoomMessage, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -35,20 +35,31 @@ class _ChatScreenState extends State<ChatScreen> {
   TimelineStream? _stream;
   bool isLoading = false;
   int _page = 0;
+  bool _isJoined = false;
+  bool _isInvited = false;
+  Account? _inviter;
 
   @override
   void initState() {
     _user = types.User(
       id: widget.user!,
     );
+    _isJoined = widget.room.isJoined();
+    _isInvited = widget.room.isInvited();
     isLoading = true;
+
     super.initState();
+
+    if (_isJoined) {
+      _fetchTimeline().whenComplete(
+        () => {_handleEndReached(), _newEvent()},
+      );
+    } else {
+      _fetchInviter();
+    }
     widget.room.listenToMemberEvents().listen((event) {
       _handleInvitation(event);
     });
-    _getTimeline().whenComplete(
-      () => {_handleEndReached(), _newEvent()},
-    );
   }
 
   @override
@@ -56,7 +67,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  Future<void> _getTimeline() async {
+  Future<void> _fetchTimeline() async {
     _stream = await widget.room.timeline();
     var messages = await _stream!.paginateBackwards(10);
     for (RoomMessage message in messages) {
@@ -93,23 +104,41 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Future<void> _fetchInviter() async {
+    final inviter = await widget.room.getMyInviter();
+    setState(() {
+      _inviter = inviter;
+      isLoading = false;
+    });
+  }
+
   //will detect if any new event is arrived and will re-render the screen
   void _newEvent() async {
     await _stream!.next();
     var newEvent = await widget.room.latestMessage();
-    final user = types.User(
-      id: newEvent.sender(),
-    );
-    if (newEvent.sender() != _user.id) {
+    if (newEvent.sender() == _user.id) {
+      // my message should be inserted too
+      // because chatting from other devices (ex: web) should be seen
+      final textMessage = types.TextMessage(
+        id: newEvent.eventId(),
+        author: _user,
+        text: newEvent.body(),
+      );
+      setState(() {
+        _messages.insert(0, textMessage);
+      });
+    } else {
+      final user = types.User(
+        id: newEvent.sender(),
+      );
       final textMessage = types.TextMessage(
         id: newEvent.eventId(),
         author: user,
         text: newEvent.body(),
       );
-      _messages.insert(0, textMessage);
-      setState(() {});
-    } else {
-      setState(() {});
+      setState(() {
+        _messages.insert(0, textMessage);
+      });
     }
   }
 
@@ -310,7 +339,7 @@ class _ChatScreenState extends State<ChatScreen> {
         backgroundGradient:
             LinearGradient(colors: const [Colors.blueGrey, Colors.black]),
         isDismissible: false,
-        duration: Duration(seconds: 4),
+        duration: Duration(minutes: 1),
         icon: Icon(
           Icons.check,
           color: Colors.greenAccent,
@@ -409,17 +438,44 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
-            child: Container(
-              height: 45,
-              width: 45,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: CustomAvatar(
-                  avatar: widget.room.avatar(),
-                  displayName: widget.room.displayName(),
-                  radius: 20,
-                  isGroup: true,
-                  stringName: '',
+            child: GestureDetector(
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext ctx) => AlertDialog(
+                    title: Text('Leave this room'),
+                    content: Text('Are you sure to leave this room?'),
+                    actions: [
+                      FlatButton(
+                        onPressed: () async {
+                          await widget.room.leave();
+                          Navigator.pop(ctx);
+                          Navigator.pop(context); // go back to ChatList page
+                        },
+                        child: Text('Yes'),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                        },
+                        child: Text('No'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              child: Container(
+                height: 45,
+                width: 45,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: CustomAvatar(
+                    avatar: widget.room.avatar(),
+                    displayName: widget.room.displayName(),
+                    radius: 20,
+                    isGroup: true,
+                    stringName: '',
+                  ),
                 ),
               ),
             ),
@@ -428,61 +484,119 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: SafeArea(
         bottom: false,
-        child: isLoading
-            ? Center(
-                child: Container(
-                  height: 15,
-                  width: 15,
-                  child: CircularProgressIndicator(
-                    color: AppCommonTheme.primaryColor,
-                  ),
-                ),
-              )
-            : Chat(
-                l10n: ChatL10nEn(
-                  emptyChatPlaceholder: '',
-                  attachmentButtonAccessibilityLabel: '',
-                  fileButtonAccessibilityLabel: '',
-                  inputPlaceholder: AppLocalizations.of(context)!.message,
-                  sendButtonAccessibilityLabel: '',
-                ),
-                messages: _messages,
-                onSendPressed: _handleSendPressed,
-                user: _user,
-                //custom avatar builder
-                avatarBuilder: (userId) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: CustomAvatar(
-                      avatar: widget.room.avatar(),
-                      displayName: null,
-                      radius: 15,
-                      isGroup: false,
-                      stringName: getNameFromId(userId),
+        child: _buildBody(context),
+      ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    if (isLoading) {
+      return Center(
+        child: Container(
+          height: 15,
+          width: 15,
+          child: CircularProgressIndicator(
+            color: AppCommonTheme.primaryColor,
+          ),
+        ),
+      );
+    }
+    if (!_isJoined && _isInvited) {
+      return ListView(
+        children: [
+          Card(
+            margin: EdgeInsets.all(4),
+            child: Expanded(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: CustomAvatar(
+                      avatar: _inviter?.avatar() ?? widget.room.avatar(),
+                      displayName:
+                          _inviter?.displayName() ?? widget.room.displayName(),
+                      radius: 20,
+                      isGroup: true,
+                      stringName: '',
                     ),
-                  );
-                },
-                //Whenever users starts typing on keyboard, this will trigger the function
-                onTextChanged: (text) async {
-                  await widget.room.typingNotice(true);
-                },
-                showUserAvatars: true,
-                onAttachmentPressed: _handleAttachmentPressed,
-                onPreviewDataFetched: _handlePreviewDataFetched,
-                onMessageTap: _handleMessageTap,
-                onEndReached: _handleEndReached,
-                onEndReachedThreshold: 0.75,
-                emptyState: EmptyPlaceholder(),
-                //Custom Theme class, see lib/common/store/chatTheme.dart
-                theme: EffektioChatTheme(
-                  attachmentButtonIcon:
-                      SvgPicture.asset('assets/images/attachment.svg'),
-                  sendButtonIcon:
-                      SvgPicture.asset('assets/images/sendIcon.svg'),
-                  seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
-                  deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
-                ),
+                    title: Text('ABC'),
+                    subtitle: Text('XYZ'),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 8, right: 4),
+                          child: RaisedButton(
+                            padding: const EdgeInsets.all(8),
+                            textColor: Colors.white,
+                            color: Colors.greenAccent,
+                            onPressed: () {},
+                            child: const Text('Accept'),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(left: 4, right: 8),
+                          child: RaisedButton(
+                            padding: const EdgeInsets.all(8),
+                            textColor: Colors.white,
+                            color: Colors.redAccent,
+                            onPressed: () {},
+                            child: const Text('Decline'),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+            ),
+          ),
+        ],
+      );
+    }
+    return Chat(
+      l10n: ChatL10nEn(
+        emptyChatPlaceholder: '',
+        attachmentButtonAccessibilityLabel: '',
+        fileButtonAccessibilityLabel: '',
+        inputPlaceholder: AppLocalizations.of(context)!.message,
+        sendButtonAccessibilityLabel: '',
+      ),
+      messages: _messages,
+      onSendPressed: _handleSendPressed,
+      user: _user,
+      //custom avatar builder
+      avatarBuilder: (userId) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: CustomAvatar(
+            avatar: widget.room.avatar(),
+            displayName: null,
+            radius: 15,
+            isGroup: false,
+            stringName: getNameFromId(userId),
+          ),
+        );
+      },
+      //Whenever users starts typing on keyboard, this will trigger the function
+      onTextChanged: (text) async {
+        await widget.room.typingNotice(true);
+      },
+      showUserAvatars: true,
+      onAttachmentPressed: _handleAttachmentPressed,
+      onPreviewDataFetched: _handlePreviewDataFetched,
+      onMessageTap: _handleMessageTap,
+      onEndReached: _handleEndReached,
+      onEndReachedThreshold: 0.75,
+      emptyState: EmptyPlaceholder(),
+      //Custom Theme class, see lib/common/store/chatTheme.dart
+      theme: EffektioChatTheme(
+        attachmentButtonIcon: SvgPicture.asset('assets/images/attachment.svg'),
+        sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
+        seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
+        deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
       ),
     );
   }

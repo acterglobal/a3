@@ -1,5 +1,5 @@
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, RUNTIME};
+use super::{api, Account, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{
@@ -13,13 +13,13 @@ use matrix_sdk::{
     ruma::{
         events::{
             room::{
-                member::StrippedRoomMemberEvent,
+                member::{RoomMemberEvent, StrippedRoomMemberEvent},
                 message::{
                     MessageType, OriginalSyncRoomMessageEvent,
                     RoomMessageEventContent, TextMessageEventContent,
                 },
             },
-            AnyMessageLikeEventContent,
+            AnyMessageLikeEventContent, StateEventType,
         },
         EventId, OwnedUserId, UserId,
     },
@@ -254,6 +254,30 @@ impl Room {
             .await?
     }
 
+    pub fn is_joined(&self) -> bool {
+        if let MatrixRoom::Joined(r) = &self.room {
+            return true;
+        } else {
+            return false;
+        };
+    }
+
+    pub fn is_invited(&self) -> bool {
+        if let MatrixRoom::Invited(r) = &self.room {
+            return true;
+        } else {
+            return false;
+        };
+    }
+
+    pub fn is_left(&self) -> bool {
+        if let MatrixRoom::Left(r) = &self.room {
+            return true;
+        } else {
+            return false;
+        };
+    }
+
     pub async fn accept_invitation(&self) -> Result<bool> {
         let room = if let MatrixRoom::Invited(r) = &self.room {
             r.clone()
@@ -310,6 +334,62 @@ impl Room {
                 }
                 println!("Successfully rejected room {}", room.room_id());
                 Ok(delay <= 3600)
+            })
+            .await?
+    }
+
+    pub async fn join(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Left(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't join a room we are not left")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                room.join().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn leave(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't leave a room we are not joined")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                room.leave().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn get_my_inviter(&self) -> Result<Account> {
+        let l = self.client.clone();
+        let room = if let MatrixRoom::Invited(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't get a room we are not invited")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let my_uid = l.user_id().await.unwrap();
+                let member_event = room
+                    .get_state_event(StateEventType::RoomMember, my_uid.as_str())
+                    .await
+                    .unwrap()
+                    .unwrap()
+                    .deserialize()
+                    .unwrap();
+                let sender_id = member_event.sender();
+                let sender_id = UserId::parse(sender_id)?;
+                let client = MatrixClient::builder().user_id(&sender_id).build().await.unwrap();
+                Ok(Account::new(client.account()))
             })
             .await?
     }

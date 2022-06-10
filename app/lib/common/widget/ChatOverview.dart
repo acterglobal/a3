@@ -74,8 +74,12 @@ class ChatListItem extends StatelessWidget {
         future: room.displayName(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
+            String title = snapshot.requireData;
+            if (room.isInvited()) {
+              title += ' - Invited';
+            }
             return Text(
-              snapshot.requireData,
+              title,
               style: ChatTheme01.chatTitleStyle,
             );
           } else {
