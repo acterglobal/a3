@@ -8,7 +8,6 @@ pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
-    ruma::events::StateEventType,
     Account as MatrixAccount, Client as MatrixClient, LoopCtrl, Session,
 };
 
@@ -21,6 +20,7 @@ use url::Url;
 #[derive(Clone)]
 pub struct Account {
     account: MatrixAccount,
+    user_id: String,
 }
 
 impl std::ops::Deref for Account {
@@ -31,8 +31,12 @@ impl std::ops::Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: MatrixAccount) -> Self {
-        Account { account }
+    pub fn new(account: MatrixAccount, user_id: String) -> Self {
+        Account { account, user_id }
+    }
+
+    pub fn user_id(&self) -> String {
+        self.user_id.clone()
     }
 
     pub async fn display_name(&self) -> Result<String> {

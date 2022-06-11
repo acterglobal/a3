@@ -8,7 +8,13 @@ import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Account, Conversation, TimelineStream, RoomMessage, FfiListMember;
+    show
+        Account,
+        Conversation,
+        TimelineStream,
+        RoomMessage,
+        FfiListAccount,
+        FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -37,7 +43,6 @@ class _ChatScreenState extends State<ChatScreen> {
   int _page = 0;
   bool _isJoined = false;
   bool _isInvited = false;
-  Account? _inviter;
 
   @override
   void initState() {
@@ -55,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
         () => {_handleEndReached(), _newEvent()},
       );
     } else {
-      _fetchInviter();
+      isLoading = false;
     }
     widget.room.listenToMemberEvents().listen((event) {
       _handleInvitation(event);
@@ -102,14 +107,6 @@ class _ChatScreenState extends State<ChatScreen> {
         isLoading = false;
       });
     }
-  }
-
-  Future<void> _fetchInviter() async {
-    final inviter = await widget.room.getMyInviter();
-    setState(() {
-      _inviter = inviter;
-      isLoading = false;
-    });
   }
 
   //will detect if any new event is arrived and will re-render the screen
@@ -502,59 +499,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     if (!_isJoined && _isInvited) {
-      return ListView(
-        children: [
-          Card(
-            margin: EdgeInsets.all(4),
-            child: Expanded(
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: CustomAvatar(
-                      avatar: _inviter?.avatar() ?? widget.room.avatar(),
-                      displayName:
-                          _inviter?.displayName() ?? widget.room.displayName(),
-                      radius: 20,
-                      isGroup: true,
-                      stringName: '',
-                    ),
-                    title: Text('ABC'),
-                    subtitle: Text('XYZ'),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.only(left: 8, right: 4),
-                          child: RaisedButton(
-                            padding: const EdgeInsets.all(8),
-                            textColor: Colors.white,
-                            color: Colors.greenAccent,
-                            onPressed: () {},
-                            child: const Text('Accept'),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          margin: EdgeInsets.only(left: 4, right: 8),
-                          child: RaisedButton(
-                            padding: const EdgeInsets.all(8),
-                            textColor: Colors.white,
-                            color: Colors.redAccent,
-                            onPressed: () {},
-                            child: const Text('Decline'),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      );
+      return _buildInviterList();
     }
     return Chat(
       l10n: ChatL10nEn(
@@ -598,6 +543,89 @@ class _ChatScreenState extends State<ChatScreen> {
         seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
         deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
       ),
+    );
+  }
+
+  Widget _buildInviterList() {
+    return FutureBuilder<FfiListAccount>(
+      future: widget.room.getInvitedUsers(),
+      builder: (BuildContext context, AsyncSnapshot<FfiListAccount> snapshot) {
+        if (snapshot.hasData) {
+          return ListView.builder(
+            itemCount: snapshot.requireData.length + 1,
+            itemBuilder: (BuildContext context, int index) {
+              if (index < snapshot.requireData.length) {
+                final Account account = snapshot.requireData[index];
+                debugPrint('inviter user id: ' + account.userId());
+                return ListTile(
+                  leading: CustomAvatar(
+                    avatar: account.avatar(),
+                    displayName: account.displayName(),
+                    radius: 20,
+                    isGroup: true,
+                    stringName: '',
+                  ),
+                  title: _buildText(account.displayName()),
+                  subtitle: _buildText(account.displayName()),
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(left: 8, right: 4),
+                      child: RaisedButton(
+                        padding: const EdgeInsets.all(8),
+                        textColor: Colors.white,
+                        color: Colors.greenAccent,
+                        onPressed: () {},
+                        child: const Text('Accept'),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: EdgeInsets.only(left: 4, right: 8),
+                      child: RaisedButton(
+                        padding: const EdgeInsets.all(8),
+                        textColor: Colors.white,
+                        color: Colors.redAccent,
+                        onPressed: () {},
+                        child: const Text('Decline'),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          return Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: AppCommonTheme.backgroundColor,
+              child: Text(
+                AppLocalizations.of(context)!.loadingConvo,
+                style: ChatTheme01.emptyMsgTitle,
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildText(Future<String> title) {
+    return FutureBuilder<String>(
+      future: title,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          return Text(snapshot.requireData);
+        } else {
+          return SizedBox();
+        }
+      },
     );
   }
 }

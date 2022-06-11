@@ -224,7 +224,8 @@ impl Client {
     }
 
     pub async fn account(&self) -> Result<Account> {
-        Ok(Account::new(self.client.account()))
+        let user_id = self.client.user_id().await.unwrap();
+        Ok(Account::new(self.client.account(), user_id.as_str().to_owned()))
     }
 
     pub async fn display_name(&self) -> Result<String> {

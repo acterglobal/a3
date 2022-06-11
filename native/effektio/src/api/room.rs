@@ -19,7 +19,7 @@ use matrix_sdk::{
                     RoomMessageEventContent, TextMessageEventContent,
                 },
             },
-            AnyMessageLikeEventContent, StateEventType,
+            AnyMessageLikeEventContent,
         },
         EventId, OwnedUserId, UserId,
     },
@@ -368,8 +368,8 @@ impl Room {
             .await?
     }
 
-    pub async fn get_my_inviter(&self) -> Result<Account> {
-        let l = self.client.clone();
+    pub async fn get_invited_users(&self) -> Result<Vec<Account>> {
+        let my_client = self.client.clone();
         let room = if let MatrixRoom::Invited(r) = &self.room {
             r.clone()
         } else {
@@ -378,18 +378,17 @@ impl Room {
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let my_uid = l.user_id().await.unwrap();
-                let member_event = room
-                    .get_state_event(StateEventType::RoomMember, my_uid.as_str())
+                let invited = my_client
+                    .store()
+                    .get_invited_user_ids(room.room_id())
                     .await
-                    .unwrap()
-                    .unwrap()
-                    .deserialize()
                     .unwrap();
-                let sender_id = member_event.sender();
-                let sender_id = UserId::parse(sender_id)?;
-                let client = MatrixClient::builder().user_id(&sender_id).build().await.unwrap();
-                Ok(Account::new(client.account()))
+                let mut accounts: Vec<Account> = vec![];
+                for user_id in invited.iter() {
+                    let other_client = MatrixClient::builder().user_id(&user_id).build().await.unwrap();
+                    accounts.push(Account::new(other_client.account(), user_id.as_str().to_owned()));
+                }
+                Ok(accounts)
             })
             .await?
     }

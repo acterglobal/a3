@@ -158,7 +158,7 @@ object Conversation {
 
     fn leave() -> Future<Result<bool>>;
 
-    fn get_my_inviter() -> Future<Result<Account>>;
+    fn get_invited_users() -> Future<Result<Vec<Account>>>;
 }
 
 object Group {
@@ -189,6 +189,8 @@ object Member {
 }
 
 object Account {
+    fn user_id() -> string;
+
     /// The display_name of the account
     fn display_name() -> Future<Result<string>>;
 

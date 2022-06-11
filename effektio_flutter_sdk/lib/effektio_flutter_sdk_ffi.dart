@@ -1731,7 +1731,7 @@ class Api {
     return tmp7;
   }
 
-  Account? __conversationGetMyInviterFuturePoll(
+  FfiListAccount? __conversationGetInvitedUsersFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1745,7 +1745,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationGetMyInviterFuturePoll(
+    final tmp6 = _conversationGetInvitedUsersFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -1770,9 +1770,10 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Account");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListAccount");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = Account._(this, tmp13_1);
+    final tmp14 = FfiListAccount._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -3300,14 +3301,14 @@ class Api {
       int Function(
     int,
   )>();
-  late final _conversationGetMyInviterPtr = _lookup<
+  late final _conversationGetInvitedUsersPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Conversation_get_my_inviter");
+  )>>("__Conversation_get_invited_users");
 
-  late final _conversationGetMyInviter =
-      _conversationGetMyInviterPtr.asFunction<
+  late final _conversationGetInvitedUsers =
+      _conversationGetInvitedUsersPtr.asFunction<
           int Function(
     int,
   )>();
@@ -3381,6 +3382,16 @@ class Api {
 
   late final _memberUserId = _memberUserIdPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _accountUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          _AccountUserIdReturn Function(
+    ffi.Int64,
+  )>>("__Account_user_id");
+
+  late final _accountUserId = _accountUserIdPtr.asFunction<
+      _AccountUserIdReturn Function(
     int,
   )>();
   late final _accountDisplayNamePtr = _lookup<
@@ -3880,17 +3891,17 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationGetMyInviterFuturePollPtr = _lookup<
+  late final _conversationGetInvitedUsersFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationGetMyInviterFuturePollReturn Function(
+          _ConversationGetInvitedUsersFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_get_my_inviter_future_poll");
+  )>>("__Conversation_get_invited_users_future_poll");
 
-  late final _conversationGetMyInviterFuturePoll =
-      _conversationGetMyInviterFuturePollPtr.asFunction<
-          _ConversationGetMyInviterFuturePollReturn Function(
+  late final _conversationGetInvitedUsersFuturePoll =
+      _conversationGetInvitedUsersFuturePollPtr.asFunction<
+          _ConversationGetInvitedUsersFuturePollReturn Function(
     int,
     int,
     int,
@@ -4204,6 +4215,55 @@ class Api {
     int,
     int,
   )>();
+  FfiListAccount createFfiListAccount() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListAccountCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListAccount");
+    return FfiListAccount._(this, list_box);
+  }
+
+  late final _ffiListAccountCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListAccountCreate");
+
+  late final _ffiListAccountCreate =
+      _ffiListAccountCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListAccountLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListAccountLen");
+
+  late final _ffiListAccountLen =
+      _ffiListAccountLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListAccountElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListAccountElementAt");
+
+  late final _ffiListAccountElementAt =
+      _ffiListAccountElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListAccountRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListAccountRemove");
+
+  late final _ffiListAccountRemove =
+      _ffiListAccountRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListAccountAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListAccountAdd");
+
+  late final _ffiListAccountAdd =
+      _ffiListAccountAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListAccountInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListAccountInsert");
+
+  late final _ffiListAccountInsert =
+      _ffiListAccountInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListConversation createFfiListConversation() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListConversationCreate());
@@ -5430,19 +5490,19 @@ class Conversation {
     return tmp2;
   }
 
-  Future<Account> getMyInviter() {
+  Future<FfiListAccount> getInvitedUsers() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationGetMyInviter(
+    final tmp1 = _api._conversationGetInvitedUsers(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
     final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_get_my_inviter_future_drop");
+        _Box(_api, tmp3_0, "__Conversation_get_invited_users_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationGetMyInviterFuturePoll);
+        _nativeFuture(tmp3_1, _api.__conversationGetInvitedUsersFuturePoll);
     return tmp2;
   }
 
@@ -5601,6 +5661,25 @@ class Account {
   final _Box _box;
 
   Account._(this._api, this._box);
+
+  String userId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._accountUserId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
 
   /// The display_name of the account
   Future<String> displayName() {
@@ -6092,6 +6171,15 @@ class _MemberDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _AccountUserIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _LoginNewClientFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -6400,7 +6488,7 @@ class _ConversationLeaveFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationGetMyInviterFuturePollReturn extends ffi.Struct {
+class _ConversationGetInvitedUsersFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -6736,6 +6824,66 @@ class _ConversationListenToMemberEventsStreamPollReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class FfiListAccount extends Iterable<Account>
+    implements CustomIterable<Account> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListAccount._(this._api, this._box);
+
+  @override
+  Iterator<Account> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListAccountLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Account elementAt(int index) {
+    final address = _api._ffiListAccountElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Account._(_api, reference);
+  }
+
+  Account operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Account remove(int index) {
+    final address = _api._ffiListAccountRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Account");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Account._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(Account element) {
+    _api._ffiListAccountAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Account element) {
+    _api._ffiListAccountInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
 }
 
 class FfiListConversation extends Iterable<Conversation>
