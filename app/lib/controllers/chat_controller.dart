@@ -61,23 +61,6 @@ class ChatController extends GetxController {
     // isSeenMessage();
   }
 
-  // void isSeenMessage() async {
-  //   bool isSeen = await room.readReceipt(messages.first.id);
-  //   if (isSeen) {
-  //     var lm = await room.latestMessage();
-  //     types.TextMessage msg = types.TextMessage(
-  //       author: user,
-  //       id: lm.eventId(),
-  //       text: lm.body(),
-  //       showStatus: true,
-  //       status: isSeen ? types.Status.seen : types.Status.delivered,
-  //     );
-  //     messages.removeAt(0);
-  //     messages.insert(0, msg);
-  //     update(['Chat']);
-  //   }
-  // }
-
   //waits for new event
   Future<void> newEvent() async {
     await _stream!.next();
