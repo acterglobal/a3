@@ -197,75 +197,75 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
       body: GetBuilder<ChatController>(
-          id: 'Chat',
-          builder: (ChatController controller) {
-            return SafeArea(
-              bottom: false,
-              child: controller.isLoading
-                  ? Center(
-                      child: Container(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
-                        ),
-                      ),
-                    )
-                  : Chat(
-                      l10n: ChatL10nEn(
-                        emptyChatPlaceholder: '',
-                        attachmentButtonAccessibilityLabel: '',
-                        fileButtonAccessibilityLabel: '',
-                        inputPlaceholder: AppLocalizations.of(context)!.message,
-                        sendButtonAccessibilityLabel: '',
-                      ),
-                      messages: chatController.messages,
-                      onSendPressed: chatController.handleSendPressed,
-                      user: _user,
-                      //custom avatar builder
-                      avatarBuilder: (userId) {
-                        return GetBuilder<ChatController>(
-                          id: 'Avatar',
-                          builder: (ChatController controller) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: CustomAvatar(
-                                avatar: widget.room.avatar(),
-                                displayName: null,
-                                radius: 15,
-                                isGroup: false,
-                                stringName: getNameFromId(userId),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      //Whenever users starts typing on keyboard, this will trigger the function
-                      onTextChanged: (text) async {
-                        await chatController.room.typingNotice(true);
-                      },
-                      showUserAvatars: true,
-                      onAttachmentPressed: _handleAttachmentPressed,
-                      onPreviewDataFetched:
-                          chatController.handlePreviewDataFetched,
-                      onMessageTap: chatController.handleMessageTap,
-                      onEndReached: chatController.handleEndReached,
-                      onEndReachedThreshold: 0.75,
-                      emptyState: EmptyPlaceholder(),
-                      //Custom Theme class, see lib/common/store/chatTheme.dart
-                      theme: EffektioChatTheme(
-                        attachmentButtonIcon:
-                            SvgPicture.asset('assets/images/attachment.svg'),
-                        sendButtonIcon:
-                            SvgPicture.asset('assets/images/sendIcon.svg'),
-                        seenIcon:
-                            SvgPicture.asset('assets/images/seenIcon.svg'),
-                        deliveredIcon:
-                            SvgPicture.asset('assets/images/sentIcon.svg'),
+        id: 'Chat',
+        builder: (ChatController controller) {
+          return SafeArea(
+            bottom: false,
+            child: controller.isLoading
+                ? Center(
+                    child: Container(
+                      height: 15,
+                      width: 15,
+                      child: CircularProgressIndicator(
+                        color: AppCommonTheme.primaryColor,
                       ),
                     ),
-            );
-          }),
+                  )
+                : Chat(
+                    l10n: ChatL10nEn(
+                      emptyChatPlaceholder: '',
+                      attachmentButtonAccessibilityLabel: '',
+                      fileButtonAccessibilityLabel: '',
+                      inputPlaceholder: AppLocalizations.of(context)!.message,
+                      sendButtonAccessibilityLabel: '',
+                    ),
+                    messages: chatController.messages,
+                    onSendPressed: chatController.handleSendPressed,
+                    user: _user,
+                    //custom avatar builder
+                    avatarBuilder: (userId) {
+                      return GetBuilder<ChatController>(
+                        id: 'Avatar',
+                        builder: (ChatController controller) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: CustomAvatar(
+                              avatar: widget.room.avatar(),
+                              displayName: null,
+                              radius: 15,
+                              isGroup: false,
+                              stringName: getNameFromId(userId),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    //Whenever users starts typing on keyboard, this will trigger the function
+                    onTextChanged: (text) async {
+                      await chatController.room.typingNotice(true);
+                    },
+                    showUserAvatars: true,
+                    onAttachmentPressed: _handleAttachmentPressed,
+                    onPreviewDataFetched:
+                        chatController.handlePreviewDataFetched,
+                    onMessageTap: chatController.handleMessageTap,
+                    onEndReached: chatController.handleEndReached,
+                    onEndReachedThreshold: 0.75,
+                    emptyState: EmptyPlaceholder(),
+                    //Custom Theme class, see lib/common/store/chatTheme.dart
+                    theme: EffektioChatTheme(
+                      attachmentButtonIcon:
+                          SvgPicture.asset('assets/images/attachment.svg'),
+                      sendButtonIcon:
+                          SvgPicture.asset('assets/images/sendIcon.svg'),
+                      seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
+                      deliveredIcon:
+                          SvgPicture.asset('assets/images/sentIcon.svg'),
+                    ),
+                  ),
+          );
+        },
+      ),
     );
   }
 }
