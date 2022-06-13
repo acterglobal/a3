@@ -21,6 +21,10 @@ jobs:
         with:
           toolchain: nightly
           components: clippy
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: "10.0"
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
