@@ -21,17 +21,13 @@ jobs:
         with:
           toolchain: nightly
           components: clippy
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@v1
-        with:
-          version: "10.0"
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest
           ndk-version: r22
       - run: |
-          cargo install cargo-make
+          cargo install cargo-make --version 0.35.12
           cargo make setup-android
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
