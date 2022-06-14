@@ -25,7 +25,7 @@ jobs:
       - uses: nttld/setup-ndk@v1
         with:
           # FIXME: cargo-ndk doesn't work with latest
-          ndk-version: r22
+          ndk-version: r22b
       - run: |
           cargo install cargo-make
           cargo make setup-android
@@ -34,10 +34,10 @@ jobs:
         with:
           channel: 'stable'
       - name: Build Android FFI
-        run: cargo make --profile release android
+        run: cargo make --profile release android-arm
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-      - run: flutter build apk --target-platform android-x86_64 --release
+      - run: flutter build apk --target-platform android-arm64 --release
         working-directory: ./app
 
   build-ios:
