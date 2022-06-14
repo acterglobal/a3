@@ -12,11 +12,11 @@ env:
 jobs:
 
   build-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Build Android
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -27,8 +27,6 @@ jobs:
           # FIXME: cargo-ndk doesn't work with latest
           ndk-version: r22
       - run: |
-          sudo apt update
-          sudo apt install gcc-10 g++-10
           cargo install cargo-make
           cargo make setup-android
       - uses: subosito/flutter-action@v2
