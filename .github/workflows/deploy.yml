@@ -27,7 +27,7 @@ jobs:
           # FIXME: cargo-ndk doesn't work with latest
           ndk-version: r22
       - run: |
-          cargo install cargo-make --version 0.35.12
+          cargo install cargo-make
           cargo make setup-android
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
