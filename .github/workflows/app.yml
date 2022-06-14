@@ -22,10 +22,10 @@ jobs:
         with:
           toolchain: nightly
       - uses: Swatinem/rust-cache@v1
-      - name: Install NDK
-        run: |
-          ${ANDROID_HOME}/tools/bin/sdkmanager --sdk_root=${ANDROID_HOME} --install "ndk;22.0.7026061"
-          export ANDROID_NDK_HOME="$ANDROID_HOME/ndk"
+      - uses: nttld/setup-ndk@v1
+        with:
+          # FIXME: cargo-ndk doesn't work with latest
+          ndk-version: r22
       - run: |
           cargo install cargo-make
           cargo make setup-android
