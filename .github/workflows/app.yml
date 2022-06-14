@@ -12,11 +12,11 @@ env:
 jobs:
 
   build-android:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Build Android
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -34,10 +34,10 @@ jobs:
         with:
           channel: 'stable'
       - name: Build Android FFI
-        run: cargo make --profile release android-arm
+        run: cargo make --profile release android
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-      - run: flutter build apk --target-platform android-arm64 --release
+      - run: flutter build apk --target-platform android-x86_64 --release
         working-directory: ./app
 
   build-ios:
