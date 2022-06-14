@@ -52,6 +52,16 @@ features = [
     "anyhow",
 ]
 
+#   ----  Github CI/CD bugfix about Ubuntu
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.x86_64-pc-windows-gnu]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "linker=clang", "-C", "link-arg=-fuse-ld=lld"]
+
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 tracing-wasm = "0.2.1"
