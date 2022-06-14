@@ -27,7 +27,9 @@ jobs:
         with:
           # FIXME: cargo-ndk doesn't work with latest
           ndk-version: r22
-      - run: |
+      - name: Copy ndk utilities for cargo make
+        run: |
+          rmdir -r /usr/local/lib/android/sdk/ndk-bundle/toolchains
           mkdir -p /usr/local/lib/android/sdk/ndk-bundle/toolchains
           cp -R ${{ steps.install-ndk-22.outputs.ndk-path }}/toolchains/llvm /usr/local/lib/android/sdk/ndk-bundle/toolchains
       - run: |
