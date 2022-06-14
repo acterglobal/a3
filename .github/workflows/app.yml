@@ -33,6 +33,11 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
+      - run:
+          # cargo-ndk hack: duplicate aarch64-linux-android-ar
+          |
+          mkdir -p /usr/local/lib/android/sdk/ndk-bundle/toolchains
+          cp -R $ANDROID_NDK_HOME/22.1.7171670/toolchains/llvm /usr/local/lib/android/sdk/ndk-bundle/toolchains
       - name: Build Android FFI
         run: cargo make --profile release android-arm
       - name: Ensure ffi-interface is up to date
