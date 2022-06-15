@@ -1,5 +1,5 @@
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, Account, TimelineStream, RUNTIME};
+use super::{api, Account, RUNTIME, TimelineStream};
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{
@@ -19,7 +19,8 @@ use matrix_sdk::{
                     RoomMessageEventContent, TextMessageEventContent,
                 },
             },
-            AnyMessageLikeEventContent,
+            AnyMessageLikeEventContent, AnySyncMessageLikeEvent,
+            AnySyncRoomEvent, SyncMessageLikeEvent,
         },
         EventId, OwnedUserId, UserId,
     },
@@ -254,27 +255,15 @@ impl Room {
             .await?
     }
 
-    pub fn is_joined(&self) -> bool {
+    pub fn status(&self) -> Option<String> {
         if let MatrixRoom::Joined(r) = &self.room {
-            return true;
+            return Some("joined".to_owned());
+        } else if let MatrixRoom::Invited(r) = &self.room {
+            return Some("invited".to_owned());
+        } else if let MatrixRoom::Left(r) = &self.room {
+            return Some("left".to_owned());
         } else {
-            return false;
-        };
-    }
-
-    pub fn is_invited(&self) -> bool {
-        if let MatrixRoom::Invited(r) = &self.room {
-            return true;
-        } else {
-            return false;
-        };
-    }
-
-    pub fn is_left(&self) -> bool {
-        if let MatrixRoom::Left(r) = &self.room {
-            return true;
-        } else {
-            return false;
+            return None;
         };
     }
 
@@ -392,11 +381,53 @@ impl Room {
             })
             .await?
     }
+
+    pub async fn invited_from(&self) -> Result<String> {
+        let room = if let MatrixRoom::Invited(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't get a room we are not invited")
+        };
+        RUNTIME
+            .spawn(async move {
+                let stream = room
+                    .timeline_backward()
+                    .await
+                    .context("Failed acquiring timeline streams")?;
+                pin_mut!(stream);
+                loop {
+                    match stream.next().await {
+                        None => break,
+                        Some(Ok(e)) => {
+                            if let Some(content) = event_content(e.event.deserialize().unwrap()) {
+                                return Ok(content);
+                            }
+                        }
+                        _ => {
+                            // we ignore errors
+                        }
+                    }
+                }
+
+                bail!("No Message found")
+            })
+            .await?
+    }
 }
 
 impl std::ops::Deref for Room {
     type Target = MatrixRoom;
     fn deref(&self) -> &MatrixRoom {
         &self.room
+    }
+}
+
+fn event_content(ev: AnySyncRoomEvent) -> Option<String> {
+    if let AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+        SyncMessageLikeEvent::Original(event),
+    )) = ev {
+        Some(event.content.msgtype.body().to_owned())
+    } else {
+        None
     }
 }

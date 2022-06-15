@@ -41,27 +41,21 @@ class _ChatScreenState extends State<ChatScreen> {
   TimelineStream? _stream;
   bool isLoading = false;
   int _page = 0;
-  bool _isJoined = false;
-  bool _isInvited = false;
+  String? _status;
 
   @override
   void initState() {
     _user = types.User(
       id: widget.user!,
     );
-    _isJoined = widget.room.isJoined();
-    _isInvited = widget.room.isInvited();
+    _status = widget.room.status();
     isLoading = true;
 
     super.initState();
 
-    if (_isJoined) {
-      _fetchTimeline().whenComplete(
-        () => {_handleEndReached(), _newEvent()},
-      );
-    } else {
-      isLoading = false;
-    }
+    _fetchTimeline().whenComplete(
+      () => {_handleEndReached(), _newEvent()},
+    );
     widget.room.listenToMemberEvents().listen((event) {
       _handleInvitation(event);
     });
@@ -73,40 +67,41 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _fetchTimeline() async {
-    _stream = await widget.room.timeline();
-    var messages = await _stream!.paginateBackwards(10);
-    for (RoomMessage message in messages) {
-      types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
-        id: message.eventId(),
-        text: message.body(),
-      );
-      _messages.add(m);
-    }
-    setState(() {
-      isLoading = false;
-    });
-    if (_messages.isNotEmpty) {
-      if (_messages.first.author.id == _user.id) {
-        bool isSeen = await widget.room.readReceipt(_messages.first.id);
-        types.TextMessage lm = types.TextMessage(
-          author: _user,
-          id: _messages.first.id,
-          text: messages.first.body(),
-          showStatus: true,
-          status: isSeen ? Status.seen : Status.delivered,
+    if (_status == 'invited') {
+      var text = await widget.room.invitedFrom();
+      debugPrint('fetchTimeline: ' + text);
+      setState(() => isLoading = false);
+    } else if (_status == 'joined') {
+      _stream = await widget.room.timeline();
+      var messages = await _stream!.paginateBackwards(10);
+      for (RoomMessage message in messages) {
+        types.TextMessage m = types.TextMessage(
+          author: types.User(id: message.sender()),
+          id: message.eventId(),
+          text: message.body(),
         );
-        _messages.removeAt(0);
-        _messages.insert(0, lm);
+        _messages.add(m);
       }
-      setState(() {
-        isLoading = false;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
+      setState(() => isLoading = false);
+      if (_messages.isNotEmpty) {
+        if (_messages.first.author.id == _user.id) {
+          bool isSeen = await widget.room.readReceipt(_messages.first.id);
+          types.TextMessage lm = types.TextMessage(
+            author: _user,
+            id: _messages.first.id,
+            text: messages.first.body(),
+            showStatus: true,
+            status: isSeen ? Status.seen : Status.delivered,
+          );
+          _messages.removeAt(0);
+          _messages.insert(0, lm);
+        }
+        setState(() => isLoading = false);
+      } else {
+        setState(() => isLoading = false);
+      }
+    } else if (_status == 'left') {
+    } else {}
   }
 
   //will detect if any new event is arrived and will re-render the screen
@@ -498,7 +493,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    if (!_isJoined && _isInvited) {
+    if (_status == 'invited') {
       return _buildInviterList();
     }
     return Chat(

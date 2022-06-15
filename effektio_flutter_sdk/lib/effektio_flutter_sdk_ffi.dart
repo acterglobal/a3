@@ -1777,6 +1777,56 @@ class Api {
     return tmp7;
   }
 
+  String? __conversationInvitedFromFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationInvitedFromFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
   String? __groupDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -3229,34 +3279,14 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationIsJoinedPtr = _lookup<
+  late final _conversationStatusPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _ConversationStatusReturn Function(
     ffi.Int64,
-  )>>("__Conversation_is_joined");
+  )>>("__Conversation_status");
 
-  late final _conversationIsJoined = _conversationIsJoinedPtr.asFunction<
-      int Function(
-    int,
-  )>();
-  late final _conversationIsInvitedPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-    ffi.Int64,
-  )>>("__Conversation_is_invited");
-
-  late final _conversationIsInvited = _conversationIsInvitedPtr.asFunction<
-      int Function(
-    int,
-  )>();
-  late final _conversationIsLeftPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-    ffi.Int64,
-  )>>("__Conversation_is_left");
-
-  late final _conversationIsLeft = _conversationIsLeftPtr.asFunction<
-      int Function(
+  late final _conversationStatus = _conversationStatusPtr.asFunction<
+      _ConversationStatusReturn Function(
     int,
   )>();
   late final _conversationAcceptInvitationPtr = _lookup<
@@ -3310,6 +3340,16 @@ class Api {
   late final _conversationGetInvitedUsers =
       _conversationGetInvitedUsersPtr.asFunction<
           int Function(
+    int,
+  )>();
+  late final _conversationInvitedFromPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Conversation_invited_from");
+
+  late final _conversationInvitedFrom = _conversationInvitedFromPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _groupDisplayNamePtr = _lookup<
@@ -3902,6 +3942,21 @@ class Api {
   late final _conversationGetInvitedUsersFuturePoll =
       _conversationGetInvitedUsersFuturePollPtr.asFunction<
           _ConversationGetInvitedUsersFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationInvitedFromFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationInvitedFromFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_invited_from_future_poll");
+
+  late final _conversationInvitedFromFuturePoll =
+      _conversationInvitedFromFuturePollPtr.asFunction<
+          _ConversationInvitedFromFuturePollReturn Function(
     int,
     int,
     int,
@@ -5397,36 +5452,26 @@ class Conversation {
     return tmp6;
   }
 
-  bool isJoined() {
+  String? status() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationIsJoined(
+    final tmp1 = _api._conversationStatus(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  bool isInvited() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationIsInvited(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  bool isLeft() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationIsLeft(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -5503,6 +5548,22 @@ class Conversation {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 =
         _nativeFuture(tmp3_1, _api.__conversationGetInvitedUsersFuturePoll);
+    return tmp2;
+  }
+
+  Future<String> invitedFrom() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationInvitedFrom(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Conversation_invited_from_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__conversationInvitedFromFuturePoll);
     return tmp2;
   }
 
@@ -6160,6 +6221,17 @@ class _ConversationListenToMemberEventsReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _ConversationStatusReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _MemberDisplayNameReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -6501,6 +6573,25 @@ class _ConversationGetInvitedUsersFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _ConversationInvitedFromFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _GroupDisplayNameFuturePollReturn extends ffi.Struct {

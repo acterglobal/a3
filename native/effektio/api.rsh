@@ -144,11 +144,7 @@ object Conversation {
 
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
-    fn is_joined() -> bool;
-
-    fn is_invited() -> bool;
-
-    fn is_left() -> bool;
+    fn status() -> Option<string>;
 
     fn accept_invitation() -> Future<Result<bool>>;
 
@@ -159,6 +155,8 @@ object Conversation {
     fn leave() -> Future<Result<bool>>;
 
     fn get_invited_users() -> Future<Result<Vec<Account>>>;
+
+    fn invited_from() -> Future<Result<string>>;
 }
 
 object Group {
