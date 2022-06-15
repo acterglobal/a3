@@ -58,7 +58,6 @@ class ChatController extends GetxController {
       update(['Chat']);
     }
     newEvent();
-    // isSeenMessage();
   }
 
   //waits for new event
