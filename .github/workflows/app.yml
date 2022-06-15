@@ -24,8 +24,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
-          # FIXME: cargo-ndk doesn't work with latest
-          ndk-version: r22
+          ndk-version: r23
       - run: |
           cargo install cargo-make
           cargo make setup-android
