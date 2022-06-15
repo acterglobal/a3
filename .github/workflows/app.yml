@@ -25,6 +25,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          components: rust-src
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
