@@ -16,6 +16,10 @@ jobs:
     name: Build Android
     continue-on-error: true
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
@@ -24,10 +28,11 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
-          ndk-version: r23
-      - run: |
-          cargo install cargo-make
-          cargo make setup-android
+          ndk-version: r23c
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+      - name: Rust Android Setup
+        run: cargo make setup-android
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
