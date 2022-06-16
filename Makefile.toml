@@ -16,7 +16,7 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 description = "set up the system for android"
 script = [
-  "cargo install cargo-ndk --version 2.6.0", # version downgrade for: unable to find library -lgcc error
+  "cargo install cargo-ndk --version",
 ]
 
 [tasks.setup-ios]
@@ -172,7 +172,7 @@ args = [
   "--target",
   "${ANDROID_BUILD_TARGET}",
   "build",
-  "-Zbuild-std",
+  "-Zbuild-std"
 ]
 
 [tasks.android-build-release]
