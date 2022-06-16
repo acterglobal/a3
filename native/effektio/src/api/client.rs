@@ -1,26 +1,19 @@
-use super::{api, Account, Conversation, Group, Room, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
     mocks::{gen_mock_faqs, gen_mock_news},
     models::{Faq, News},
-    ruma::api::client::account::register,
     RestoreToken,
 };
 use futures::{stream, Stream, StreamExt};
-use lazy_static::lazy_static;
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
-    room::Room as MatrixRoom,
-    ruma::events::StateEventType,
-    Client as MatrixClient, LoopCtrl, Session,
+    Client as MatrixClient, LoopCtrl,
 };
-
 use parking_lot::RwLock;
-use ruma::events::room::MediaSource;
 use std::sync::Arc;
-use url::Url;
+
+use super::{api, Account, Conversation, Group, Room, RUNTIME};
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {

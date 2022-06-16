@@ -1,12 +1,14 @@
-use super::messages::{sync_event_to_message, RoomMessage};
-use super::RUNTIME;
-
 use anyhow::{Context, Result};
 use core::pin::Pin;
-use futures::lock::Mutex;
-use futures::{pin_mut, StreamExt};
+use futures::{
+    lock::Mutex,
+    pin_mut, StreamExt,
+};
 use matrix_sdk::{deserialized_responses::SyncRoomEvent, room::Room, Client};
 use std::sync::Arc;
+
+use super::messages::{sync_event_to_message, RoomMessage};
+use super::RUNTIME;
 
 type BackwardMsgStream =
     Pin<Box<dyn futures::Stream<Item = Result<SyncRoomEvent, matrix_sdk::Error>> + Send>>;

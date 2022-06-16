@@ -1667,7 +1667,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationSaveFileFuturePoll(
+  String? __conversationSaveFileFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1692,6 +1692,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -1705,7 +1707,13 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -3065,12 +3073,12 @@ class Api {
   )>();
   late final _imageDescriptionSizePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _ImageDescriptionSizeReturn Function(
     ffi.Int64,
   )>>("__ImageDescription_size");
 
   late final _imageDescriptionSize = _imageDescriptionSizePtr.asFunction<
-      int Function(
+      _ImageDescriptionSizeReturn Function(
     int,
   )>();
   late final _imageDescriptionWidthPtr = _lookup<
@@ -3115,12 +3123,12 @@ class Api {
   )>();
   late final _fileDescriptionSizePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _FileDescriptionSizeReturn Function(
     ffi.Int64,
   )>>("__FileDescription_size");
 
   late final _fileDescriptionSize = _fileDescriptionSizePtr.asFunction<
-      int Function(
+      _FileDescriptionSizeReturn Function(
     int,
   )>();
   late final _timelineStreamNextPtr = _lookup<
@@ -3269,14 +3277,20 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
     ffi.Uint32,
+    ffi.Uint8,
     ffi.Uint32,
+    ffi.Uint8,
     ffi.Uint32,
   )>>("__Conversation_send_image_message");
 
   late final _conversationSendImageMessage =
       _conversationSendImageMessagePtr.asFunction<
           int Function(
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -5050,7 +5064,7 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// m.audio, m.emote, m.file, m.image, m.location, m.service_notice, m.text, m.video or m.key.verification.request
+  /// the type of massage, like audio, text, image, file, etc
   String msgtype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -5071,7 +5085,7 @@ class RoomMessage {
   }
 
   /// contains source data, name, mimetype, size, width and height
-  ImageDescription imageDescription() {
+  ImageDescription? imageDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageImageDescription(
@@ -5079,28 +5093,18 @@ class RoomMessage {
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
+      return null;
     }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_ImageDescription");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = ImageDescription._(_api, tmp7_1);
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDescription");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ImageDescription._(_api, tmp4_1);
     return tmp2;
   }
 
   /// contains source data, name, mimetype and size
-  FileDescription fileDescription() {
+  FileDescription? fileDescription() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._roomMessageFileDescription(
@@ -5108,23 +5112,13 @@ class RoomMessage {
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
     if (tmp3 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
+      return null;
     }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_FileDescription");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = FileDescription._(_api, tmp7_1);
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDescription");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = FileDescription._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -5184,15 +5178,19 @@ class ImageDescription {
     return tmp2;
   }
 
-  /// file size
-  int size() {
+  /// file size in bytes
+  int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._imageDescriptionSize(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -5284,15 +5282,19 @@ class FileDescription {
     return tmp2;
   }
 
-  /// file size
-  int size() {
+  /// file size in bytes
+  int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._fileDescriptionSize(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -5559,16 +5561,16 @@ class Conversation {
     String uri,
     String name,
     String mimetype,
-    int size,
-    int width,
-    int height,
+    int? size,
+    int? width,
+    int? height,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
     final tmp13 = size;
-    final tmp15 = width;
-    final tmp17 = height;
+    final tmp17 = width;
+    final tmp21 = height;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -5582,6 +5584,9 @@ class Conversation {
     var tmp14 = 0;
     var tmp16 = 0;
     var tmp18 = 0;
+    var tmp20 = 0;
+    var tmp22 = 0;
+    var tmp24 = 0;
     tmp0 = _box.borrow();
     final tmp1_0 = utf8.encode(tmp1);
     tmp3 = tmp1_0.length;
@@ -5604,10 +5609,28 @@ class Conversation {
     tmp10_1.setAll(0, tmp9_0);
     tmp10 = tmp10_0.address;
     tmp12 = tmp11;
-    tmp14 = tmp13;
-    tmp16 = tmp15;
-    tmp18 = tmp17;
-    final tmp19 = _api._conversationSendImageMessage(
+    if (tmp13 == null) {
+      tmp14 = 0;
+    } else {
+      tmp14 = 1;
+      final tmp15 = tmp13;
+      tmp16 = tmp15;
+    }
+    if (tmp17 == null) {
+      tmp18 = 0;
+    } else {
+      tmp18 = 1;
+      final tmp19 = tmp17;
+      tmp20 = tmp19;
+    }
+    if (tmp21 == null) {
+      tmp22 = 0;
+    } else {
+      tmp22 = 1;
+      final tmp23 = tmp21;
+      tmp24 = tmp23;
+    }
+    final tmp25 = _api._conversationSendImageMessage(
       tmp0,
       tmp2,
       tmp3,
@@ -5621,18 +5644,23 @@ class Conversation {
       tmp14,
       tmp16,
       tmp18,
+      tmp20,
+      tmp22,
+      tmp24,
     );
-    final tmp21 = tmp19;
-    final ffi.Pointer<ffi.Void> tmp21_0 = ffi.Pointer.fromAddress(tmp21);
-    final tmp21_1 =
-        _Box(_api, tmp21_0, "__Conversation_send_image_message_future_drop");
-    tmp21_1._finalizer = _api._registerFinalizer(tmp21_1);
-    final tmp20 =
-        _nativeFuture(tmp21_1, _api.__conversationSendImageMessageFuturePoll);
-    return tmp20;
+    final tmp27 = tmp25;
+    final ffi.Pointer<ffi.Void> tmp27_0 = ffi.Pointer.fromAddress(tmp27);
+    final tmp27_1 =
+        _Box(_api, tmp27_0, "__Conversation_send_image_message_future_drop");
+    tmp27_1._finalizer = _api._registerFinalizer(tmp27_1);
+    final tmp26 =
+        _nativeFuture(tmp27_1, _api.__conversationSendImageMessageFuturePoll);
+    return tmp26;
   }
 
   /// decrypted image file data
+  /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
+  /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
   Future<FfiBufferUint8> imageBinary(
     String eventId,
   ) {
@@ -5733,7 +5761,7 @@ class Conversation {
   }
 
   /// save file in specified path
-  Future<bool> saveFile(
+  Future<String> saveFile(
     String eventId,
     String dirPath,
   ) {
@@ -6444,12 +6472,6 @@ class _RoomMessageImageDescriptionReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
 }
 
 class _RoomMessageFileDescriptionReturn extends ffi.Struct {
@@ -6457,12 +6479,6 @@ class _RoomMessageFileDescriptionReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
 }
 
 class _ImageDescriptionNameReturn extends ffi.Struct {
@@ -6483,6 +6499,13 @@ class _ImageDescriptionMimetypeReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _ImageDescriptionSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
 }
 
 class _ImageDescriptionWidthReturn extends ffi.Struct {
@@ -6517,6 +6540,13 @@ class _FileDescriptionMimetypeReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _FileDescriptionSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
 }
 
 class _MemberDisplayNameReturn extends ffi.Struct {
@@ -6827,8 +6857,12 @@ class _ConversationSaveFileFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ConversationFilePathFuturePollReturn extends ffi.Struct {

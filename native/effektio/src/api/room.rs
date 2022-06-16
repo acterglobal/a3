@@ -1,5 +1,3 @@
-use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, RUNTIME};
 use anyhow::{bail, Context, Result};
 use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::{
@@ -16,6 +14,9 @@ use matrix_sdk::{
     Client as MatrixClient,
 };
 use std::{fs::File, io::Write, path::PathBuf};
+
+use super::messages::{sync_event_to_message, RoomMessage};
+use super::{api, TimelineStream, RUNTIME};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -212,9 +213,9 @@ impl Room {
         uri: String,
         name: String,
         mimetype: String,
-        size: u32,
-        width: u32,
-        height: u32,
+        size: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
     ) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
@@ -226,9 +227,9 @@ impl Room {
                 let path = PathBuf::from(uri);
                 let mut image = File::open(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-                    height: Some(UInt::from(height)),
-                    width: Some(UInt::from(width)),
-                    size: Some(UInt::from(size)),
+                    height: height.map(UInt::from),
+                    width: width.map(UInt::from),
+                    size: size.map(UInt::from),
                     blurhash: None,
                 }));
                 let mime_type: mime::Mime = mimetype.parse().unwrap();
@@ -252,26 +253,26 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                match evt.event.deserialize() {
-                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                        MessageLikeEvent::Original(m),
-                    ))) => match &m.content.msgtype {
-                        MessageType::Image(content) => {
-                            let source = content.source.clone();
-                            let data = client
-                                .get_media_content(
-                                    &MediaRequest {
-                                        source,
-                                        format: MediaFormat::File,
-                                    },
-                                    false,
-                                )
-                                .await?;
-                            Ok(api::FfiBuffer::new(data))
-                        }
-                        _ => bail!("Invalid file format"),
-                    },
-                    _ => bail!("Invalid file format"),
+                if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() {
+                    if let MessageType::Image(content) = &m.content.msgtype {
+                        let source = content.source.clone();
+                        let data = client
+                            .get_media_content(
+                                &MediaRequest {
+                                    source,
+                                    format: MediaFormat::File,
+                                },
+                                false,
+                            )
+                            .await?;
+                        Ok(api::FfiBuffer::new(data))
+                    } else {
+                        bail!("Invalid file format")
+                    }
+                } else {
+                    bail!("Invalid file format")
                 }
             })
             .await?
@@ -305,7 +306,7 @@ impl Room {
             .await?
     }
 
-    pub async fn save_file(&self, event_id: String, dir_path: String) -> Result<bool> {
+    pub async fn save_file(&self, event_id: String, dir_path: String) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -317,37 +318,38 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                match evt.event.deserialize() {
-                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                        MessageLikeEvent::Original(m),
-                    ))) => match m.content.msgtype {
-                        MessageType::File(content) => {
-                            let source = content.source.clone();
-                            let name = content.body.clone();
-                            let mut path = PathBuf::from(dir_path.clone());
-                            path.push(name);
-                            let mut file = File::create(path.clone())?;
-                            let data = client
-                                .get_media_content(
-                                    &MediaRequest {
-                                        source,
-                                        format: MediaFormat::File,
-                                    },
-                                    false,
-                                )
-                                .await?;
-                            file.write_all(&data)?;
-                            let key =
-                                [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
-                            client
-                                .store()
-                                .set_custom_value(&key, path.to_str().unwrap().as_bytes().to_vec())
-                                .await?;
-                            Ok(true)
-                        }
-                        _ => Ok(false),
-                    },
-                    _ => Ok(false),
+                if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() {
+                    if let MessageType::File(content) = m.content.msgtype {
+                        let source = content.source.clone();
+                        let name = content.body.clone();
+                        let mut path = PathBuf::from(dir_path.clone());
+                        path.push(name);
+                        let mut file = File::create(path.clone())?;
+                        let data = client
+                            .get_media_content(
+                                &MediaRequest {
+                                    source,
+                                    format: MediaFormat::File,
+                                },
+                                false,
+                            )
+                            .await?;
+                        file.write_all(&data)?;
+                        let key =
+                            [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
+                        let path_text = path.to_str().expect("Path was generated from strings. Must be string");
+                        client
+                            .store()
+                            .set_custom_value(&key, path_text.as_bytes().to_vec())
+                            .await?;
+                        Ok(path_text.to_owned())
+                    } else {
+                        bail!("This message type is not file")
+                    }
+                } else {
+                    bail!("It is not message")
                 }
             })
             .await?
@@ -364,28 +366,27 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                match evt.event.deserialize() {
-                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                        MessageLikeEvent::Original(m),
-                    ))) => match m.content.msgtype {
-                        MessageType::File(content) => {
-                            let key = [
-                                room.room_id().as_str().as_bytes(),
-                                event_id.as_str().as_bytes(),
-                            ]
-                            .concat();
-                            let path = client.store().get_custom_value(&key).await?;
-                            match path {
-                                Some(value) => {
-                                    let text = std::str::from_utf8(&value).unwrap();
-                                    Ok(text.to_owned())
-                                }
-                                None => Ok("".to_owned()),
-                            }
+                if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize() {
+                    if let MessageType::File(content) = m.content.msgtype {
+                        let key = [
+                            room.room_id().as_str().as_bytes(),
+                            event_id.as_str().as_bytes(),
+                        ]
+                        .concat();
+                        let path = client.store().get_custom_value(&key).await?;
+                        if let Some(value) = path {
+                            let text = std::str::from_utf8(&value).unwrap();
+                            Ok(text.to_owned())
+                        } else {
+                            bail!("Couldn't get the path of saved file")
                         }
-                        _ => Ok("".to_owned()),
-                    },
-                    _ => Ok("".to_owned()),
+                    } else {
+                        bail!("This message type is not file")
+                    }
+                } else {
+                    bail!("It is not message")
                 }
             })
             .await?

@@ -232,51 +232,55 @@ class ChatController extends GetxController {
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
-      FileDescription description = message.fileDescription();
-      types.FileMessage m = types.FileMessage(
-        author: types.User(id: message.sender()),
-        createdAt: message.originServerTs() * 1000,
-        id: message.eventId(),
-        name: description.name(),
-        size: description.size(),
-        uri: '',
-      );
-      _insertMessage(m, container);
+      FileDescription? description = message.fileDescription();
+      if (description != null) {
+        types.FileMessage m = types.FileMessage(
+          author: types.User(id: message.sender()),
+          createdAt: message.originServerTs() * 1000,
+          id: message.eventId(),
+          name: description.name(),
+          size: description.size() ?? 0,
+          uri: '',
+        );
+        _insertMessage(m, container);
+      }
       if (isLoading.isFalse) {
         update(['Chat']);
       }
     } else if (msgtype == 'm.image') {
       String eventId = message.eventId();
-      ImageDescription description = message.imageDescription();
-      types.ImageMessage m = types.ImageMessage(
-        author: types.User(id: message.sender()),
-        createdAt: message.originServerTs() * 1000,
-        height: description.height()?.toDouble(),
-        id: eventId,
-        name: description.name(),
-        size: description.size(),
-        uri: '',
-        width: description.width()?.toDouble(),
-      );
-      _insertMessage(m, container);
-      if (isLoading.isFalse) {
-        update(['Chat']);
-      }
-      room.imageBinary(eventId).then((data) async {
-        await mtx.acquire();
-        for (var i = 0; i < messages.length; i++) {
-          if (messages[i].id == eventId) {
-            messages[i] = messages[i].copyWith(
-              metadata: {
-                'binary': data.asTypedList(),
-              },
-            );
-            break;
-          }
+      ImageDescription? description = message.imageDescription();
+      if (description != null) {
+        types.ImageMessage m = types.ImageMessage(
+          author: types.User(id: message.sender()),
+          createdAt: message.originServerTs() * 1000,
+          height: description.height()?.toDouble(),
+          id: eventId,
+          name: description.name(),
+          size: description.size() ?? 0,
+          uri: '',
+          width: description.width()?.toDouble(),
+        );
+        _insertMessage(m, container);
+        if (isLoading.isFalse) {
+          update(['Chat']);
         }
-        update(['Chat']);
-        mtx.release();
-      });
+        room.imageBinary(eventId).then((data) async {
+          await mtx.acquire();
+          for (var i = 0; i < messages.length; i++) {
+            if (messages[i].id == eventId) {
+              messages[i] = messages[i].copyWith(
+                metadata: {
+                  'binary': data.asTypedList(),
+                },
+              );
+              break;
+            }
+          }
+          update(['Chat']);
+          mtx.release();
+        });
+      }
     } else if (msgtype == 'm.location') {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
