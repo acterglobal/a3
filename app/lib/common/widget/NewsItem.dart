@@ -5,12 +5,18 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:expandable_text/expandable_text.dart';
 
 class NewsItem extends StatefulWidget {
-  const NewsItem({Key? key, required this.client, required this.news})
-      : super(key: key);
+  const NewsItem({
+    Key? key,
+    required this.client,
+    required this.news,
+    required this.index,
+  }) : super(key: key);
   final Client client;
   final News news;
+  final int index;
 
   @override
   _NewsItemState createState() => _NewsItemState();
@@ -41,14 +47,15 @@ class _NewsItemState extends State<NewsItem> {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Expanded(
-              flex: 3,
+              flex: 5,
               // ignore: sized_box_for_whitespace
               child: Container(
                 height: MediaQuery.of(context).size.height / 4,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: Column(
                     children: <Widget>[
+                      const Spacer(),
                       Text(
                         'Lorem Ipsum is simply dummy text of the printing and',
                         style: GoogleFonts.roboto(
@@ -67,8 +74,14 @@ class _NewsItemState extends State<NewsItem> {
                       // ignore: prefer_const_constructors
                       SizedBox(height: 10),
                       // ignore: prefer_const_constructors
-                      Text(
+                      ExpandableText(
                         widget.news.text() ?? '',
+                        maxLines: 2,
+                        expandText: '',
+                        expandOnTextTap: true,
+                        collapseOnTextTap: true,
+                        animation: true,
+                        linkColor: fgColor,
                         style: GoogleFonts.roboto(
                           color: fgColor,
                           fontSize: 14,
@@ -82,16 +95,24 @@ class _NewsItemState extends State<NewsItem> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
               ),
             ),
             Expanded(
+              flex: 1,
               // ignore: sized_box_for_whitespace
               child: Container(
                 height: MediaQuery.of(context).size.height / 2.5,
-                child: NewsSideBar(client: widget.client, news: widget.news),
+                child: InkWell(
+                  child: NewsSideBar(
+                    client: widget.client,
+                    news: widget.news,
+                    index: widget.index,
+                  ),
+                ),
               ),
             ),
           ],

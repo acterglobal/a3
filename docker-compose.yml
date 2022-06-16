@@ -7,7 +7,7 @@ services:
     build:
         context: .github/effektio-synapse-ci
         dockerfile: Dockerfile
-    image: lightyear/effekio-synapse-ci:latest
+    image: lightyear/effektio-synapse-ci:latest
     restart: unless-stopped
     environment:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml

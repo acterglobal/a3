@@ -68,6 +68,14 @@ class SideMenuAndProfileTheme {
       color: profileUserIdTextColor,
     ),
   );
+
+  static const signOutText = TextStyleRef(
+    TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
+      color: AppCommonTheme.primaryColor,
+    ),
+  );
 }
 
 class AuthTheme {
@@ -75,6 +83,8 @@ class AuthTheme {
   static const hintTextColor = ColorRef(Colors.grey, id: 'HT');
   static const textFieldTextColor = ColorRef(Colors.white, id: 'TFT');
   static const forgotPasswordColor = ColorRef(Color(0xff008080), id: 'FP');
+  static const authSuccess = ColorRef(Colors.greenAccent, id: 'AS');
+  static const authFailed = ColorRef(Colors.redAccent, id: 'AF');
 
   static const authTitleStyle = TextStyleRef(
     TextStyle(
@@ -113,6 +123,7 @@ class ChatTheme01 {
       color: latestChatTextColor,
     ),
   );
+
   static const latestChatDateStyle = TextStyleRef(
     TextStyle(
       fontSize: 11,
@@ -120,6 +131,7 @@ class ChatTheme01 {
       color: latestChatTextColor,
     ),
   );
+
   static const chatBodyStyle = TextStyleRef(
     TextStyle(
       fontSize: 14,
