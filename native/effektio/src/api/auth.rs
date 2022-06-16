@@ -1,14 +1,11 @@
-use super::{Client, ClientStateBuilder, RUNTIME};
-use crate::platform;
 use anyhow::{bail, Context, Result};
 use assign::assign;
 use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
-use futures::Stream;
-use lazy_static::lazy_static;
 use matrix_sdk::Session;
-use tokio::runtime;
-use url::Url;
+
+use super::{Client, ClientStateBuilder, RUNTIME};
+use crate::platform;
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
@@ -105,17 +102,16 @@ pub async fn register_with_registration_token(
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),
                         password: Some(&password),
-
                         auth: Some(uiaa::AuthData::RegistrationToken(
                             uiaa::RegistrationToken::new(&registration_token),
                         )),
                     });
                     client.register(request).await?;
                 } else {
-                    anyhow::bail!("Server did not indicate how to  allow registration.");
+                    bail!("Server did not indicate how to  allow registration.");
                 }
             } else {
-                anyhow::bail!("Server is not set up to allow registration.");
+                bail!("Server is not set up to allow registration.");
             }
 
             let c = Client::new(
