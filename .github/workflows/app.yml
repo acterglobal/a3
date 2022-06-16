@@ -70,8 +70,7 @@ jobs:
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - uses: Swatinem/rust-cache@v1
-      - run: |
-          cargo make setup-ios
+      - run: cargo make setup-ios
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
