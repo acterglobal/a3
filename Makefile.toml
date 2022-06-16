@@ -16,7 +16,7 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 description = "set up the system for android"
 script = [
-  "cargo install cargo-ndk --version",
+  "cargo install cargo-ndk",
 ]
 
 [tasks.setup-ios]
