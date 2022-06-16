@@ -24,11 +24,10 @@ jobs:
       - uses: Swatinem/rust-cache@v1
       - uses: nttld/setup-ndk@v1
         with:
-          # FIXME: cargo-ndk doesn't work with latest
-          ndk-version: r22
-      - run: |
-          cargo install cargo-make
-          cargo make setup-android
+          ndk-version: r23c
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+      - run: cargo make setup-android
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
@@ -71,10 +70,10 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
       - uses: Swatinem/rust-cache@v1
-      - run: |
-          cargo install cargo-make
-          cargo make setup-ios
+      - run: cargo make setup-ios
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:

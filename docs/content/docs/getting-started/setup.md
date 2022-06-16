@@ -17,8 +17,8 @@ You'll need a recent:
  - [Rustup](https://rustup.rs/) setup for Rust
  - Android NDK / XCode setup for the target - and device or simulator set up
  - [flutter](https://docs.flutter.dev/get-started/install)
- -
-_Note_ on the Android NDK. [Because of a change with the paths, you need to have NDKv22 install](https://github.com/bbqsrc/cargo-ndk/issues/38) (v23 and above don't work at the moment).
+
+_Note_ on the Android NDK. We use `cargo-ndk` internally, which we've only tested with NDK r23. If you have troubles, try removing the NDK and installing version r23.
 
 ## Setup
 
@@ -27,7 +27,7 @@ You need `cargo make` for managing and building the native core artefacts. Insta
 
 Then you run the init once in the root of the repository:
 
-`cargo make init`
+`cargo make setup`
 
 You also need to build the core SDK once first:
 
