@@ -172,6 +172,7 @@ args = [
   "--target",
   "${ANDROID_BUILD_TARGET}",
   "build",
+  "-Zbuild-std",
 ]
 
 [tasks.android-build-release]
@@ -185,6 +186,7 @@ args = [
   "--target",
   "${ANDROID_BUILD_TARGET}",
   "build",
+  "-Zbuild-std",
   "--release"
 ]
 

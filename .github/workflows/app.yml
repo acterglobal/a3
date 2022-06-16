@@ -11,38 +11,50 @@ env:
 
 jobs:
 
+  cancel-others:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
   build-android:
     runs-on: ubuntu-latest
     name: Build Android
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+
       - uses: Swatinem/rust-cache@v1
+
       - uses: nttld/setup-ndk@v1
         id: install-ndk-22
         with:
-          # FIXME: cargo-ndk doesn't work with latest
-          ndk-version: r22
-      - name: Copy ndk utilities for cargo make
-        run: |
-          rm -r /usr/local/lib/android/sdk/ndk-bundle/toolchains
-          mkdir -p /usr/local/lib/android/sdk/ndk-bundle/toolchains
-          cp -R ${{ steps.install-ndk-22.outputs.ndk-path }}/toolchains/llvm /usr/local/lib/android/sdk/ndk-bundle/toolchains
-      - run: |
-          cargo install cargo-make
-          cargo make setup-android
+          ndk-version: r23c
+
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-android
+
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
           channel: 'stable'
+
       - name: Build Android FFI
         run: cargo make --profile release android-arm
+
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+
       - run: flutter build apk --target-platform android-arm64 --release
         working-directory: ./app
 
@@ -56,9 +68,10 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
       - uses: Swatinem/rust-cache@v1
       - run: |
-          cargo install cargo-make
           cargo make setup-ios
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
@@ -92,8 +105,17 @@ jobs:
         with:
           toolchain: nightly
 
-      - run: cargo install cargo-make
-        name: "Install cargo-make"
+      - uses: Swatinem/rust-cache@v1
+
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r23c
+
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-android
 
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"

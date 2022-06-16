@@ -45,7 +45,7 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                let display_name = l.set_display_name(name).await?;
+                l.set_display_name(name).await?;
                 Ok(true)
             })
             .await?
