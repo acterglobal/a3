@@ -33,6 +33,34 @@ pub enum NewsEvent {
     Dev(ruma::events::MessageLikeEvent<NewsEventDevContent>),
 }
 
+impl NewsEvent {
+    pub fn to_model(&self) -> anyhow::Result<crate::models::EffektioModel> {
+        let content = if let NewsEvent::Dev(ruma::events::MessageLikeEvent::Original(inner)) = self {
+            &inner.content
+        } else  {
+            anyhow::bail!("not the proper event");
+        };
+        let (bg_color, fg_color) = if let Some(color) = &content.colors {
+            (color.background.clone(), color.color.clone())
+        } else {
+            (None, None)
+        };
+        let text = content.contents.iter().find_map(|m| { if let NewsContentType::Text(t) = m { Some(t.body.clone())} else { None } });
+        Ok(crate::models::EffektioModel::News(
+            crate::models::News {
+                text,
+                bg_color,
+                fg_color,
+                comments_count: 0,
+                likes_count: 0,
+                image: None,
+                tags: Default::default(),
+            }
+        ))
+
+    }
+}
+
 impl TryFrom<&SyncRoomEvent> for NewsEvent {
     type Error = anyhow::Error;
 

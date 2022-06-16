@@ -18,8 +18,16 @@ pub mod mocks {
     pub use super::news::gen_mocks as gen_mock_news;
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum EffektioModel {
-//    News(News),
-    TextMessage(),
+    News(News),
+//    TextMessage(),
+}
+
+impl EffektioModel {
+    pub fn indizes(&self) -> Vec<String> {
+        match self {
+            EffektioModel::News(_) => vec!["type-news".to_string(), "section-news".to_string()],
+        }
+    }
 }
