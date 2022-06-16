@@ -27,7 +27,7 @@ impl Store {
         T: Serialize,
     {
         let set_key = key.as_bytes();
-        let value = bincode::serialize(&model)?;
+        let value = rmp_serde::encode::to_vec(&model)?;
         self.inner.set_custom_value(set_key, value).await?;
 
         let mut updated = Vec::new();
@@ -44,7 +44,7 @@ impl Store {
                 // idx not yet loaded, refresh from inner stores
                 let idx_store = format!("efk-idx-{}", idx_key);
                 let inner_vec = if let Some(inner) = self.inner.get_custom_value(idx_store.as_bytes()).await? {
-                    let mut v = bincode::deserialize::<Vec<String>>(&inner)?;
+                    let mut v = rmp_serde::decode::from_slice::<Vec<String>>(&inner)?;
                     v.push(key.clone());
                     v
                 } else  {
@@ -69,7 +69,7 @@ impl Store {
     {
         let set_key = key.as_bytes();
         if let Some(v) = self.inner.get_custom_value(key.as_bytes()).await? {
-            Ok(Some(bincode::deserialize(&v)?))
+            Ok(Some(rmp_serde::decode::from_slice(&v)?))
         } else {
             Ok(None)
         }
@@ -84,7 +84,7 @@ impl Store {
         let mut idx_map = self.indizes.lock_mut();
         let idx_store = format!("efk-idx-{}", key);
         if let Some(inner) = self.inner.get_custom_value(idx_store.as_bytes()).await? {
-            let inner_vec = bincode::deserialize::<Vec<String>>(&inner)?;
+            let inner_vec = rmp_serde::decode::from_slice::<Vec<String>>(&inner)?;
             idx_map.insert_cloned(key, MutableVec::new_with_values(inner_vec.clone()));
             return Ok(Some(inner_vec))
         } else  {
@@ -98,7 +98,7 @@ impl Store {
             let idx_key = format!("efk-idx-{}", name);
             self.inner.set_custom_value(
                 idx_key.as_bytes(),
-                bincode::serialize(mapper.get(&name).context("Index unknown")?.lock_ref().as_slice())?
+                rmp_serde::encode::to_vec(mapper.get(&name).context("Index unknown")?.lock_ref().as_slice())?
             ).await?;
         }
 
