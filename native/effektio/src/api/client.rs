@@ -7,9 +7,7 @@ use effektio_core::{
 };
 use futures::{stream, Stream, StreamExt};
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
-use matrix_sdk::{
-    Client as MatrixClient, LoopCtrl,
-};
+use matrix_sdk::{Client as MatrixClient, LoopCtrl};
 use parking_lot::RwLock;
 use std::sync::Arc;
 

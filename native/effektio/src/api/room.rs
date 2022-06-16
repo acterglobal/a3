@@ -255,7 +255,8 @@ impl Room {
                 let evt = room.event(&eid).await?;
                 if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() {
+                ))) = evt.event.deserialize()
+                {
                     if let MessageType::Image(content) = &m.content.msgtype {
                         let source = content.source.clone();
                         let data = client
@@ -320,7 +321,8 @@ impl Room {
                 let evt = room.event(&eid).await?;
                 if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() {
+                ))) = evt.event.deserialize()
+                {
                     if let MessageType::File(content) = m.content.msgtype {
                         let source = content.source.clone();
                         let name = content.body.clone();
@@ -339,7 +341,9 @@ impl Room {
                         file.write_all(&data)?;
                         let key =
                             [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
-                        let path_text = path.to_str().expect("Path was generated from strings. Must be string");
+                        let path_text = path
+                            .to_str()
+                            .expect("Path was generated from strings. Must be string");
                         client
                             .store()
                             .set_custom_value(&key, path_text.as_bytes().to_vec())
@@ -368,7 +372,8 @@ impl Room {
                 let evt = room.event(&eid).await?;
                 if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize() {
+                ))) = evt.event.deserialize()
+                {
                     if let MessageType::File(content) = m.content.msgtype {
                         let key = [
                             room.room_id().as_str().as_bytes(),

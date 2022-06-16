@@ -119,7 +119,8 @@ impl FileDescription {
 pub fn sync_event_to_message(sync_event: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
     if let Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
         SyncMessageLikeEvent::Original(m),
-    ))) = sync_event.event.deserialize() {
+    ))) = sync_event.event.deserialize()
+    {
         Some(RoomMessage {
             fallback: m.content.body().to_string(),
             room,

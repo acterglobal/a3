@@ -1,9 +1,6 @@
 use anyhow::{Context, Result};
 use core::pin::Pin;
-use futures::{
-    lock::Mutex,
-    pin_mut, StreamExt,
-};
+use futures::{lock::Mutex, pin_mut, StreamExt};
 use matrix_sdk::{deserialized_responses::SyncRoomEvent, room::Room, Client};
 use std::sync::Arc;
 
