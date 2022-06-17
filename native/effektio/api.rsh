@@ -94,6 +94,45 @@ object RoomMessage {
 
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;
+
+    /// m.audio, m.emote, m.file, m.image, m.location, m.service_notice, m.text, m.video or m.key.verification.request
+    fn msgtype() -> string;
+
+    /// contains source data, name, mimetype, size, width and height
+    fn image_description() -> Result<ImageDescription>;
+
+    /// contains source data, name, mimetype and size
+    fn file_description() -> Result<FileDescription>;
+}
+
+object ImageDescription {
+
+    /// file name
+    fn name() -> string;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size
+    fn size() -> u64;
+
+    /// image width
+    fn width() -> Option<u64>;
+
+    /// image height
+    fn height() -> Option<u64>;
+}
+
+object FileDescription {
+
+    /// file name
+    fn name() -> string;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size
+    fn size() -> u64;
 }
 
 /// Timeline with Room Events
@@ -157,6 +196,18 @@ object Conversation {
     fn get_invited_users() -> Future<Result<Vec<Account>>>;
 
     fn invited_from() -> Future<Result<string>>;
+    fn send_image_message(uri: string, name: string, mimetype: string, size: u32, width: u32, height: u32) -> Future<Result<string>>;
+
+    /// decrypted image file data
+    fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
+
+    fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
+
+    /// save file in specified path
+    fn save_file(event_id: string, dir_path: string) -> Future<Result<bool>>;
+
+    /// get the path that file was saved
+    fn file_path(event_id: string) -> Future<Result<string>>;
 }
 
 object Group {

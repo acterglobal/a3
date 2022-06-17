@@ -8,6 +8,7 @@ use futures::{
 };
 use matrix_sdk::ruma;
 use matrix_sdk::{
+    attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
@@ -19,15 +20,15 @@ use matrix_sdk::{
                     RoomMessageEventContent, TextMessageEventContent,
                 },
             },
-            AnyMessageLikeEventContent, AnySyncMessageLikeEvent,
-            AnySyncRoomEvent, SyncMessageLikeEvent,
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
+            AnySyncMessageLikeEvent, AnySyncRoomEvent, MessageLikeEvent, SyncMessageLikeEvent,
         },
-        EventId, OwnedUserId, UserId,
+        EventId, OwnedUserId, UInt, UserId,
     },
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
-use std::sync::Arc;
+use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 use tokio::time::{sleep, Duration};
 
 pub struct Member {
@@ -125,13 +126,19 @@ impl Room {
 
     pub async fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let (forward, backward) = room
                     .timeline()
                     .await
                     .context("Failed acquiring timeline streams")?;
-                Ok(TimelineStream::new(Box::pin(forward), Box::pin(backward)))
+                Ok(TimelineStream::new(
+                    Box::pin(forward),
+                    Box::pin(backward),
+                    client,
+                    room,
+                ))
             })
             .await?
     }
@@ -149,7 +156,7 @@ impl Room {
                     match stream.next().await {
                         None => break,
                         Some(Ok(e)) => {
-                            if let Some(a) = sync_event_to_message(e) {
+                            if let Some(a) = sync_event_to_message(e, room.clone()) {
                                 return Ok(a);
                             }
                         }
@@ -251,6 +258,39 @@ impl Room {
                 let user = <&UserId>::try_from(user_id.as_str()).unwrap();
                 room.invite_user_by_id(user).await?;
                 Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_image_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: u32,
+        width: u32,
+        height: u32,
+    ) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut image = File::open(path)?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
+                    height: Some(UInt::from(height)),
+                    width: Some(UInt::from(width)),
+                    size: Some(UInt::from(size)),
+                    blurhash: None,
+                }));
+                let mime_type: mime::Mime = mimetype.parse().unwrap();
+                let r = room
+                    .send_attachment(name.as_str(), &mime_type, &mut image, config)
+                    .await?;
+                Ok(r.event_id.to_string())
             })
             .await?
     }
@@ -382,6 +422,43 @@ impl Room {
             .await?
     }
 
+    pub async fn image_binary(&self, event_id: String) -> Result<api::FfiBuffer<u8>> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let client = self.client.clone();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let eid = EventId::parse(event_id.clone())?;
+                let evt = room.event(&eid).await?;
+                match evt.event.deserialize() {
+                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                        MessageLikeEvent::Original(m),
+                    ))) => match &m.content.msgtype {
+                        MessageType::Image(content) => {
+                            let source = content.source.clone();
+                            let data = client
+                                .get_media_content(
+                                    &MediaRequest {
+                                        source,
+                                        format: MediaFormat::File,
+                                    },
+                                    false,
+                                )
+                                .await?;
+                            Ok(api::FfiBuffer::new(data))
+                        }
+                        _ => bail!("Invalid file format"),
+                    },
+                    _ => bail!("Invalid file format"),
+                }
+            })
+            .await?
+    }
+
     pub async fn invited_from(&self) -> Result<String> {
         let room = if let MatrixRoom::Invited(r) = &self.room {
             r.clone()
@@ -410,6 +487,120 @@ impl Room {
                 }
 
                 bail!("No Message found")
+            })
+            .await?
+    }
+
+    pub async fn send_file_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: u32,
+    ) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut image = File::open(path)?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
+                    size: Some(UInt::from(size)),
+                }));
+                let mime_type: mime::Mime = mimetype.parse().unwrap();
+                let r = room
+                    .send_attachment(name.as_str(), &mime_type, &mut image, config)
+                    .await?;
+                Ok(r.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn save_file(&self, event_id: String, dir_path: String) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let client = self.client.clone();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let eid = EventId::parse(event_id.clone())?;
+                let evt = room.event(&eid).await?;
+                match evt.event.deserialize() {
+                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                        MessageLikeEvent::Original(m),
+                    ))) => match m.content.msgtype {
+                        MessageType::File(content) => {
+                            let source = content.source.clone();
+                            let name = content.body.clone();
+                            let mut path = PathBuf::from(dir_path.clone());
+                            path.push(name);
+                            let mut file = File::create(path.clone())?;
+                            let data = client
+                                .get_media_content(
+                                    &MediaRequest {
+                                        source,
+                                        format: MediaFormat::File,
+                                    },
+                                    false,
+                                )
+                                .await?;
+                            file.write_all(&data)?;
+                            let key =
+                                [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
+                            client
+                                .store()
+                                .set_custom_value(&key, path.to_str().unwrap().as_bytes().to_vec())
+                                .await?;
+                            Ok(true)
+                        }
+                        _ => Ok(false),
+                    },
+                    _ => Ok(false),
+                }
+            })
+            .await?
+    }
+
+    pub async fn file_path(&self, event_id: String) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let eid = EventId::parse(event_id.clone())?;
+                let evt = room.event(&eid).await?;
+                match evt.event.deserialize() {
+                    Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                        MessageLikeEvent::Original(m),
+                    ))) => match m.content.msgtype {
+                        MessageType::File(content) => {
+                            let key = [
+                                room.room_id().as_str().as_bytes(),
+                                event_id.as_str().as_bytes(),
+                            ]
+                            .concat();
+                            let path = client.store().get_custom_value(&key).await?;
+                            match path {
+                                Some(value) => {
+                                    let text = std::str::from_utf8(&value).unwrap();
+                                    Ok(text.to_owned())
+                                }
+                                None => Ok("".to_owned()),
+                            }
+                        }
+                        _ => Ok("".to_owned()),
+                    },
+                    _ => Ok("".to_owned()),
+                }
             })
             .await?
     }
