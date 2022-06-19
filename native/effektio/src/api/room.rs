@@ -25,7 +25,7 @@ use matrix_sdk::{
         },
         EventId, OwnedUserId, UInt, UserId,
     },
-    Client as MatrixClient,
+    Client as MatrixClient, RoomType,
 };
 use parking_lot::Mutex;
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
@@ -295,16 +295,12 @@ impl Room {
             .await?
     }
 
-    pub fn status(&self) -> Option<String> {
-        if let MatrixRoom::Joined(r) = &self.room {
-            return Some("joined".to_owned());
-        } else if let MatrixRoom::Invited(r) = &self.room {
-            return Some("invited".to_owned());
-        } else if let MatrixRoom::Left(r) = &self.room {
-            return Some("left".to_owned());
-        } else {
-            return None;
-        };
+    pub fn room_type(&self) -> String {
+        match self.room.room_type() {
+            RoomType::Joined => "joined".to_owned(),
+            RoomType::Left => "left".to_owned(),
+            RoomType::Invited => "invited".to_owned(),
+        }
     }
 
     pub async fn accept_invitation(&self) -> Result<bool> {
@@ -470,20 +466,32 @@ impl Room {
                 let stream = room
                     .timeline_backward()
                     .await
-                    .context("Failed acquiring timeline streams")?;
+                    .expect("Failed acquiring timeline streams");
                 pin_mut!(stream);
-                loop {
-                    match stream.next().await {
-                        None => break,
-                        Some(Ok(e)) => {
-                            if let Some(content) = event_content(e.event.deserialize().unwrap()) {
-                                return Ok(content);
+                while let Some(item) = stream.next().await {
+                    println!("{:?}", item);
+                    match item {
+                        Ok(ev) => {
+                            if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
+                                println!("{}", content);
+                                return Ok("123 - invited".to_owned());
+                                // return Ok(content);
                             }
-                        }
-                        _ => {
-                            // we ignore errors
-                        }
+                        },
+                        Err(err) => {
+                            println!("Some error occurred!");
+                        },
                     }
+                    // if let Ok(ev) = item.clone() {
+                    //     if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
+                    //         println!("{}", content);
+                    //         return Ok("123 - invited".to_owned());
+                    //         // return Ok(content);
+                    //     }
+                    // }
+                    // if let Err(err) = item {
+                    //     println!("Some error occurred!");
+                    // }
                 }
 
                 bail!("No Message found")
@@ -620,5 +628,101 @@ fn event_content(ev: AnySyncRoomEvent) -> Option<String> {
         Some(event.content.msgtype.body().to_owned())
     } else {
         None
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use anyhow::Result;
+    use matrix_sdk::{
+        config::SyncSettings,
+        room::Room as MatrixRoom,
+        ruma::events::room::message::{OriginalSyncRoomMessageEvent, SyncRoomMessageEvent},
+        Client as MatrixClient,
+    };
+    use ruma::{room_id, OwnedUserId};
+    use zenv::{zenv, Zenv};
+
+    use crate::{
+        api::{room::Room, Client, ClientStateBuilder},
+        platform,
+    };
+
+    async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: MatrixRoom) {
+        println!("room message");
+        if let MatrixRoom::Invited(ref room) = room {
+            println!("invited event");
+        }
+        if let MatrixRoom::Joined(room) = room {
+            // let msg_body = match event.content.msgtype {
+            //     MessageType::Text(TextMessageEventContent { body, .. }) => body,
+            //     _ => return,
+            // };
+
+            // if msg_body.contains("!party") {
+            //     let content = RoomMessageEventContent::text_plain("🎉🎊🥳 let's PARTY!! 🥳🎊🎉");
+
+            //     println!("sending");
+
+            //     // send our message to the room we found the "!party" command in
+            //     // the last parameter is an optional transaction id which we don't
+            //     // care about.
+            //     room.send(content, None).await.unwrap();
+
+            //     println!("message sent");
+            // }
+        }
+    }
+    
+    async fn login_and_sync(
+        homeserver_url: String,
+        base_path: String,
+        username: String,
+        password: String,
+    ) -> Result<Client> {
+        let mut client_builder = MatrixClient::builder().homeserver_url(homeserver_url);
+
+        #[cfg(feature = "sled")]
+        {
+            let state_store = matrix_sdk_sled::StateStore::open_with_path(base_path)?;
+            client_builder = client_builder.state_store(state_store);
+        }
+
+        let client = client_builder.build().await.unwrap();
+        client.login(&username, &password, None, Some("command bot")).await?;
+        println!("logged in as {}", username);
+
+        client.sync_once(SyncSettings::default()).await;
+        client.register_event_handler(on_room_message).await;
+
+        let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
+        client.sync(settings).await;
+        println!("456");
+
+        let c = Client::new(
+            client,
+            ClientStateBuilder::default().is_guest(false).build()?,
+        );
+        Ok(c)
+    }
+
+    #[tokio::test]
+    async fn test_invited_from() {
+        let z = Zenv::new(".env", false).parse().unwrap();
+        let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
+        let base_path: String = z.get("BASE_PATH").unwrap().to_owned();
+        let username: String = z.get("USERNAME").unwrap().to_owned();
+        let password: String = z.get("PASSWORD").unwrap().to_owned();
+
+        let client = login_and_sync(homeserver_url, base_path, username, password)
+            .await
+            .unwrap();
+
+        let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
+        let room: Room = client.room(room_id).await.expect("Expected room to be available");
+        let inviter: String = room.invited_from().await.expect("Expected id of user that invited me");
+        println!("inviter: {}", inviter);
+
+        assert_eq!(1, 1);
     }
 }

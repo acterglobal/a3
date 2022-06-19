@@ -34,23 +34,23 @@ class ChatController extends GetxController {
   late final Conversation room;
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
-  String? _roomStatus;
+  String? _roomType;
 
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
     room = convoRoom;
     user = convoUser;
-    _roomStatus = room.status();
+    _roomType = room.roomType();
     _fetchTimeline();
   }
 
   Future<void> _fetchTimeline() async {
-    if (_roomStatus == 'invited') {
+    if (_roomType == 'invited') {
       isLoading.value = true;
       var text = await room.invitedFrom();
       debugPrint('fetchTimeline: ' + text);
       isLoading.value = false;
-    } else if (_roomStatus == 'joined') {
+    } else if (_roomType == 'joined') {
       isLoading.value = true;
       _stream = await room.timeline();
       // i am fetching messages from remote
@@ -70,7 +70,7 @@ class ChatController extends GetxController {
         }
       }
       mtx.release();
-    } else if (_roomStatus == 'left') {}
+    } else if (_roomType == 'left') {}
   }
 
   //waits for new event

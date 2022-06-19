@@ -183,7 +183,7 @@ object Conversation {
 
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
-    fn status() -> Option<string>;
+    fn room_type() -> string;
 
     fn accept_invitation() -> Future<Result<bool>>;
 

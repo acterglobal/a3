@@ -3630,14 +3630,14 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationStatusPtr = _lookup<
+  late final _conversationRoomTypePtr = _lookup<
       ffi.NativeFunction<
-          _ConversationStatusReturn Function(
+          _ConversationRoomTypeReturn Function(
     ffi.Int64,
-  )>>("__Conversation_status");
+  )>>("__Conversation_room_type");
 
-  late final _conversationStatus = _conversationStatusPtr.asFunction<
-      _ConversationStatusReturn Function(
+  late final _conversationRoomType = _conversationRoomTypePtr.asFunction<
+      _ConversationRoomTypeReturn Function(
     int,
   )>();
   late final _conversationAcceptInvitationPtr = _lookup<
@@ -6244,25 +6244,21 @@ class Conversation {
     return tmp6;
   }
 
-  String? status() {
+  String roomType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._conversationStatus(
+    final tmp1 = _api._conversationRoomType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
-    if (tmp6 > 0) {
-      final ffi.Pointer<ffi.Void> tmp4_0;
-      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
     return tmp2;
   }
@@ -7356,15 +7352,13 @@ class _ConversationListenToMemberEventsReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _ConversationStatusReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
+class _ConversationRoomTypeReturn extends ffi.Struct {
   @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
   @ffi.Uint64()
   external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _MemberDisplayNameReturn extends ffi.Struct {

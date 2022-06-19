@@ -295,6 +295,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     return GetBuilder<ChatController>(
       id: 'Chat',
+      init: chatController,
       builder: (ChatController controller) {
         return Chat(
           l10n: ChatL10nEn(
@@ -304,8 +305,8 @@ class _ChatScreenState extends State<ChatScreen> {
             inputPlaceholder: AppLocalizations.of(context)!.message,
             sendButtonAccessibilityLabel: '',
           ),
-          messages: chatController.messages,
-          onSendPressed: chatController.handleSendPressed,
+          messages: controller.messages,
+          onSendPressed: controller.handleSendPressed,
           user: _user,
           //custom avatar builder
           avatarBuilder: _avatarBuilder,

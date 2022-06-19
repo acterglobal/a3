@@ -75,7 +75,8 @@ class ChatListItem extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             String title = snapshot.requireData;
-            if (room.status() == 'invited') {
+            debugPrint(room.roomType());
+            if (room.roomType() == 'invited') {
               title += ' - Invited';
             }
             return Text(
