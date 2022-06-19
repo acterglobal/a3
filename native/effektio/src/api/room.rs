@@ -695,9 +695,9 @@ mod tests {
         client.sync_once(SyncSettings::default()).await;
         client.register_event_handler(on_room_message).await;
 
-        let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
-        client.sync(settings).await;
-        println!("456");
+        // let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
+        // client.sync(settings).await;
+        // println!("456");
 
         let c = Client::new(
             client,
