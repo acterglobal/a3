@@ -8,22 +8,24 @@ class EmptyPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(height: MediaQuery.of(context).size.height / 6),
-        SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
-        const SizedBox(height: 10),
-       Text(
-          '${AppLocalizations.of(context)!.noMessages} ...',
-          style: ChatTheme01.emptyMsgTitle,
-        ),
-        const SizedBox(height: 20),
-        Text(
-          AppLocalizations.of(context)!.startConvo,
-          style: ChatTheme01.chatBodyStyle,
-        ),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(height: MediaQuery.of(context).size.height / 6),
+          SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
+          const SizedBox(height: 10),
+          Text(
+            '${AppLocalizations.of(context)!.noMessages} ...',
+            style: ChatTheme01.emptyMsgTitle,
+          ),
+          const SizedBox(height: 20),
+          Text(
+            AppLocalizations.of(context)!.startConvo,
+            style: ChatTheme01.chatBodyStyle,
+          ),
+        ],
+      ),
     );
   }
 }
