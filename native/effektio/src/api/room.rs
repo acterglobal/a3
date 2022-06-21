@@ -21,7 +21,8 @@ use matrix_sdk::{
                 },
             },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
-            AnySyncMessageLikeEvent, AnySyncRoomEvent, MessageLikeEvent, SyncMessageLikeEvent,
+            AnySyncMessageLikeEvent, AnySyncRoomEvent, MessageLikeEvent,
+            StateEventType, SyncMessageLikeEvent,
         },
         EventId, OwnedUserId, UInt, UserId,
     },
@@ -463,38 +464,44 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let stream = room
-                    .timeline_backward()
-                    .await
-                    .expect("Failed acquiring timeline streams");
-                pin_mut!(stream);
-                while let Some(item) = stream.next().await {
-                    println!("{:?}", item);
-                    match item {
-                        Ok(ev) => {
-                            if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
-                                println!("{}", content);
-                                return Ok("123 - invited".to_owned());
-                                // return Ok(content);
-                            }
-                        },
-                        Err(err) => {
-                            println!("Some error occurred!");
-                        },
-                    }
-                    // if let Ok(ev) = item.clone() {
-                    //     if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
-                    //         println!("{}", content);
-                    //         return Ok("123 - invited".to_owned());
-                    //         // return Ok(content);
-                    //     }
-                    // }
-                    // if let Err(err) = item {
-                    //     println!("Some error occurred!");
-                    // }
-                }
+                let ev = room
+                    .get_state_event(StateEventType::RoomMember, "")
+                    .await?
+                    .and_then(|e| e.deserialize().ok());
+                println!("{:?}", ev);
+                return Ok("123 - invited".to_owned());
+                // let stream = room
+                //     .timeline_backward()
+                //     .await
+                //     .expect("Failed acquiring timeline streams");
+                // pin_mut!(stream);
+                // while let Some(item) = stream.next().await {
+                //     println!("{:?}", item);
+                //     match item {
+                //         Ok(ev) => {
+                //             if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
+                //                 println!("{}", content);
+                //                 return Ok("123 - invited".to_owned());
+                //                 // return Ok(content);
+                //             }
+                //         },
+                //         Err(err) => {
+                //             println!("Some error occurred!");
+                //         },
+                //     }
+                //     // if let Ok(ev) = item.clone() {
+                //     //     if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
+                //     //         println!("{}", content);
+                //     //         return Ok("123 - invited".to_owned());
+                //     //         // return Ok(content);
+                //     //     }
+                //     // }
+                //     // if let Err(err) = item {
+                //     //     println!("Some error occurred!");
+                //     // }
+                // }
 
-                bail!("No Message found")
+                // bail!("No Message found")
             })
             .await?
     }
@@ -634,46 +641,28 @@ fn event_content(ev: AnySyncRoomEvent) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
+    use futures::StreamExt;
     use matrix_sdk::{
         config::SyncSettings,
         room::Room as MatrixRoom,
-        ruma::events::room::message::{OriginalSyncRoomMessageEvent, SyncRoomMessageEvent},
-        Client as MatrixClient,
+        ruma::events::{
+            room::{
+                member::StrippedRoomMemberEvent,
+                message::{OriginalSyncRoomMessageEvent, SyncRoomMessageEvent},
+            },
+            AnyStrippedStateEvent, AnySyncMessageLikeEvent, AnySyncRoomEvent, SyncMessageLikeEvent,
+        },
+        Client as MatrixClient, LoopCtrl,
     };
-    use ruma::{room_id, OwnedUserId};
+    use std::time::Duration;
+    use tokio::time::sleep;
     use zenv::{zenv, Zenv};
 
     use crate::{
-        api::{room::Room, Client, ClientStateBuilder},
+        api::{room::Room, Client, ClientStateBuilder, login_new_client},
         platform,
     };
 
-    async fn on_room_message(event: OriginalSyncRoomMessageEvent, room: MatrixRoom) {
-        println!("room message");
-        if let MatrixRoom::Invited(ref room) = room {
-            println!("invited event");
-        }
-        if let MatrixRoom::Joined(room) = room {
-            // let msg_body = match event.content.msgtype {
-            //     MessageType::Text(TextMessageEventContent { body, .. }) => body,
-            //     _ => return,
-            // };
-
-            // if msg_body.contains("!party") {
-            //     let content = RoomMessageEventContent::text_plain("🎉🎊🥳 let's PARTY!! 🥳🎊🎉");
-
-            //     println!("sending");
-
-            //     // send our message to the room we found the "!party" command in
-            //     // the last parameter is an optional transaction id which we don't
-            //     // care about.
-            //     room.send(content, None).await.unwrap();
-
-            //     println!("message sent");
-            // }
-        }
-    }
-    
     async fn login_and_sync(
         homeserver_url: String,
         base_path: String,
@@ -692,8 +681,21 @@ mod tests {
         client.login(&username, &password, None, Some("command bot")).await?;
         println!("logged in as {}", username);
 
-        client.sync_once(SyncSettings::default()).await;
-        client.register_event_handler(on_room_message).await;
+        let sync_settings = SyncSettings::new().timeout(Duration::from_secs(5));
+        client
+            .sync_with_callback(sync_settings, |response| async move {
+                for (room_id, room) in response.rooms.invite {
+                    for event in room.invite_state.events {
+                        if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
+                            println!("room id: {:?}", room_id);
+                            println!("sender: {:?}", member.sender);
+                            return LoopCtrl::Break;
+                        }
+                    }
+                }
+                LoopCtrl::Continue
+            })
+            .await;
 
         // let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
         // client.sync(settings).await;
@@ -714,14 +716,28 @@ mod tests {
         let username: String = z.get("USERNAME").unwrap().to_owned();
         let password: String = z.get("PASSWORD").unwrap().to_owned();
 
-        let client = login_and_sync(homeserver_url, base_path, username, password)
+        // let client = login_and_sync(homeserver_url, base_path, username, password)
+        //     .await
+        //     .unwrap();
+
+        // let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
+        // let room: Room = client.room(room_id).await.expect("Expected room to be available");
+        // let inviter: String = room.invited_from().await.expect("Expected id of user that invited me");
+        // println!("inviter: {}", inviter);
+
+        // mut is needed for get_past_invitation_rx to return mut
+        let mut response = login_new_client(base_path, username, password)
             .await
             .unwrap();
-
-        let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
-        let room: Room = client.room(room_id).await.expect("Expected room to be available");
-        let inviter: String = room.invited_from().await.expect("Expected id of user that invited me");
-        println!("inviter: {}", inviter);
+        sleep(Duration::from_secs(5)).await;
+        if let Ok(past_invitation_rx) = response.get_past_invitation_rx() {
+            if let Some(past_invitation) = past_invitation_rx.recv().unwrap() {
+                let room_id = past_invitation.get_room_id();
+                let sender = past_invitation.get_sender();
+                println!("room id: {}", room_id);
+                println!("sender: {}", sender);
+            }
+        }
 
         assert_eq!(1, 1);
     }

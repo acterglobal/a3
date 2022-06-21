@@ -7,19 +7,25 @@ use effektio_core::{
     ruma::api::client::account::register,
     RestoreToken,
 };
-use futures::{stream, Stream, StreamExt};
+use futures::{
+    stream, Stream, StreamExt,
+    channel::mpsc::{channel, Sender, Receiver},
+};
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        events::room::message::{
-            MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent,
+        events::{
+            room::message::{
+                MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent,
+            },
+            AnyStrippedStateEvent,
         },
         OwnedUserId, RoomId,
     },
     Client as MatrixClient, LoopCtrl,
 };
-use parking_lot::RwLock;
+use parking_lot::{Mutex, RwLock};
 use std::sync::Arc;
 
 #[derive(Default, Builder, Debug)]
@@ -104,24 +110,49 @@ impl Client {
         }
     }
 
-    pub(crate) fn start_sync(&self) {
+    pub(crate) fn start_sync(&self) -> Result<Receiver<Invitation>> {
         let client = self.client.clone();
         let state = self.state.clone();
+        let (past_invitation_tx, mut past_invitation_rx) = channel::<Invitation>(10); // dropping after more than 10 items queued
+        let past_invitation_tx_arc = Arc::new(Mutex::new(past_invitation_tx));
         RUNTIME.spawn(async move {
+            // past events
             client
-                .sync_with_callback(matrix_sdk::config::SyncSettings::new(), |_response| async {
-                    if !state.read().has_first_synced {
-                        state.write().has_first_synced = true;
+                .sync_with_callback(matrix_sdk::config::SyncSettings::new(), move |response| {
+                    let state = state.clone();
+                    let past_invitation_tx_arc = past_invitation_tx_arc.clone();
+                    async move {
+                        if !state.read().has_first_synced {
+                            let arc_lock = past_invitation_tx_arc.lock();
+                            for (room_id, room) in response.rooms.invite {
+                                for event in room.invite_state.events {
+                                    if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
+                                        println!("room id: {:?}", room_id);
+                                        println!("sender: {:?}", member.sender);
+                                        let invitation = Invitation {
+                                            room_id: room_id.to_string(),
+                                            sender: member.sender.to_string(),
+                                        };
+                                        if let Err(e) = arc_lock.clone().try_send(invitation) {
+                                            log::warn!("Dropping member event for {}: {}", room_id, e);
+                                        }
+                                    }
+                                }
+                            }
+                            // the lock is unlocked here when `s` goes out of scope.
+                            state.write().has_first_synced = true;
+                        }
+                        if state.read().should_stop_syncing {
+                            state.write().is_syncing = false;
+                            return LoopCtrl::Break;
+                        } else if !state.read().is_syncing {
+                            state.write().is_syncing = true;
+                        }
+                        LoopCtrl::Continue
                     }
-                    if state.read().should_stop_syncing {
-                        state.write().is_syncing = false;
-                        return LoopCtrl::Break;
-                    } else if !state.read().is_syncing {
-                        state.write().is_syncing = true;
-                    }
-                    LoopCtrl::Continue
                 })
                 .await;
+            // current events
             client
                 .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom| async move {
                     if let MatrixRoom::Joined(room) = room {
@@ -133,6 +164,7 @@ impl Client {
                 })
                 .await;
         });
+        Ok(past_invitation_rx)
     }
 
     /// Indication whether we've received a first sync response since
@@ -254,5 +286,20 @@ impl Client {
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         self.account().await?.avatar().await
+    }
+}
+
+pub struct Invitation {
+    pub room_id: String,
+    pub sender: String,
+}
+
+impl Invitation {
+    pub fn get_room_id(&self) -> String {
+        self.room_id.clone()
+    }
+
+    pub fn get_sender(&self) -> String {
+        self.sender.clone()
     }
 }

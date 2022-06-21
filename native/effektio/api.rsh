@@ -1,20 +1,30 @@
+object Invitation {
+    fn get_room_id() -> string;
+    fn get_sender() -> string;
+}
+
+object LoginResponse {
+    fn get_client() -> Client;
+    fn get_past_invitation_rx() -> Result<Stream<Invitation>>;
+}
 
 /// Initialize logging
 fn init_logging(filter: Option<string>) -> Result<()>;
 
 /// Create a new client for homeserver at url with storage at data_path
-fn login_new_client(basepath: string, username: string, password: string) -> Future<Result<Client>>;
+fn login_new_client(basepath: string, username: string, password: string) -> Future<Result<LoginResponse>>;
 
 /// Create a new client from the restore token
-fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Client>>;
+fn login_with_token(basepath: string, restore_token: string) -> Future<Result<LoginResponse>>;
 
 /// Create a new client anonymous client connecting to the homeserver
-fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
+fn guest_client(basepath: string, homeserver: string) -> Future<Result<LoginResponse>>;
+
+/// Create a new client from the restore token
+fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<LoginResponse>>;
 
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
-/// Create a new client from the restore token
-fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
 
 
 /// Representing a color
