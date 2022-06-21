@@ -12,6 +12,7 @@ use futures::{
     channel::mpsc::{channel, Sender, Receiver},
 };
 use matrix_sdk::{
+    config::SyncSettings,
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
@@ -26,7 +27,7 @@ use matrix_sdk::{
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -115,16 +116,28 @@ impl Client {
         let state = self.state.clone();
         let (past_invitation_tx, mut past_invitation_rx) = channel::<Invitation>(10); // dropping after more than 10 items queued
         let past_invitation_tx_arc = Arc::new(Mutex::new(past_invitation_tx));
+        let sync_settings = SyncSettings::new()/*.timeout(Duration::from_secs(5))*/;
         RUNTIME.spawn(async move {
             // past events
             client
-                .sync_with_callback(matrix_sdk::config::SyncSettings::new(), move |response| {
+                .sync_with_callback(sync_settings, move |response| {
                     let state = state.clone();
                     let past_invitation_tx_arc = past_invitation_tx_arc.clone();
                     async move {
                         if !state.read().has_first_synced {
+                            state.write().has_first_synced = true;
+                        }
+                        if state.read().should_stop_syncing {
+                            state.write().is_syncing = false;
+                            return LoopCtrl::Break;
+                        } else {
+                            if !state.read().is_syncing {
+                                state.write().is_syncing = true;
+                            }
                             let arc_lock = past_invitation_tx_arc.lock();
+                            println!("start_sync: {}", response.rooms.invite.len());
                             for (room_id, room) in response.rooms.invite {
+                                println!("start_sync");
                                 for event in room.invite_state.events {
                                     if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
                                         println!("room id: {:?}", room_id);
@@ -140,13 +153,6 @@ impl Client {
                                 }
                             }
                             // the lock is unlocked here when `s` goes out of scope.
-                            state.write().has_first_synced = true;
-                        }
-                        if state.read().should_stop_syncing {
-                            state.write().is_syncing = false;
-                            return LoopCtrl::Break;
-                        } else if !state.read().is_syncing {
-                            state.write().is_syncing = true;
                         }
                         LoopCtrl::Continue
                     }

@@ -641,7 +641,7 @@ fn event_content(ev: AnySyncRoomEvent) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
-    use futures::StreamExt;
+    use futures::{pin_mut, StreamExt};
     use matrix_sdk::{
         config::SyncSettings,
         room::Room as MatrixRoom,
@@ -709,7 +709,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_invited_from() {
+    async fn test_invited_from() -> Result<()> {
         let z = Zenv::new(".env", false).parse().unwrap();
         let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
         let base_path: String = z.get("BASE_PATH").unwrap().to_owned();
@@ -729,16 +729,22 @@ mod tests {
         let mut response = login_new_client(base_path, username, password)
             .await
             .unwrap();
+        println!("123");
         sleep(Duration::from_secs(5)).await;
+        println!("456");
         if let Ok(past_invitation_rx) = response.get_past_invitation_rx() {
-            if let Some(past_invitation) = past_invitation_rx.recv().unwrap() {
+            pin_mut!(past_invitation_rx);
+            if let Some(past_invitation) = past_invitation_rx.next().await {
                 let room_id = past_invitation.get_room_id();
                 let sender = past_invitation.get_sender();
                 println!("room id: {}", room_id);
                 println!("sender: {}", sender);
             }
         }
+        sleep(Duration::from_secs(5)).await;
+        println!("789");
 
-        assert_eq!(1, 1);
+        // assert_eq!(1, 1);
+        Ok(())
     }
 }
