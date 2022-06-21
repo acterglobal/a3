@@ -6,6 +6,7 @@ import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:effektio/controllers/chat_controller.dart';
+import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Conversation, FfiListMember;
@@ -176,19 +177,34 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: Container(
-              height: 45,
-              width: 45,
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: CustomAvatar(
-                  avatar: widget.room.avatar(),
-                  displayName: widget.room.displayName(),
-                  radius: 20,
-                  isGroup: true,
-                  stringName: '',
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatProfileScreen(
+                    room: widget.room,
+                    user: widget.user,
+                    isGroup: true,
+                    isAdmin: true,
+                  ),
+                ),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Container(
+                height: 45,
+                width: 45,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: CustomAvatar(
+                    avatar: widget.room.avatar(),
+                    displayName: widget.room.displayName(),
+                    radius: 20,
+                    isGroup: true,
+                    stringName: '',
+                  ),
                 ),
               ),
             ),
