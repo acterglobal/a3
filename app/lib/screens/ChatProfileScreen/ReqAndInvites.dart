@@ -149,7 +149,8 @@ class _RequestScreenState extends State<RequestScreen> {
                               trailing: Text(
                                 'Accept',
                                 style: TextStyle(
-                                    color: AppCommonTheme.primaryColor),
+                                  color: AppCommonTheme.primaryColor,
+                                ),
                               ),
                             ),
                           );

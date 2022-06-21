@@ -116,7 +116,9 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             child: Text(
                               'Share',
                               style: TextStyle(
-                                  color: Colors.white, fontSize: 16.0),
+                                color: Colors.white,
+                                fontSize: 16.0,
+                              ),
                             ),
                           )
                         ],
@@ -156,7 +158,9 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             child: Text(
                               'Scan QR Code',
                               style: TextStyle(
-                                  color: Colors.white, fontSize: 16.0),
+                                color: Colors.white,
+                                fontSize: 16.0,
+                              ),
                             ),
                           )
                         ],
@@ -196,7 +200,9 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             child: Text(
                               'Reset Link',
                               style: TextStyle(
-                                  color: Colors.white, fontSize: 16.0),
+                                color: Colors.white,
+                                fontSize: 16.0,
+                              ),
                             ),
                           )
                         ],

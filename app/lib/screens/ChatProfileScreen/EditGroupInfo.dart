@@ -9,12 +9,12 @@ class EditGroupInfoScreen extends StatefulWidget {
   final String name;
   final String description;
 
-  const EditGroupInfoScreen(
-      {Key? key,
-      required this.room,
-      required this.name,
-      required this.description})
-      : super(key: key);
+  const EditGroupInfoScreen({
+    Key? key,
+    required this.room,
+    required this.name,
+    required this.description,
+  }) : super(key: key);
 
   @override
   _EditGroupInfoState createState() => _EditGroupInfoState();

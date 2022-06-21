@@ -72,7 +72,9 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                     '@' + snapshot.requireData,
                     overflow: TextOverflow.clip,
                     style: TextStyle(
-                        color: AppCommonTheme.primaryColor, fontSize: 16.0),
+                      color: AppCommonTheme.primaryColor,
+                      fontSize: 16.0,
+                    ),
                   );
                 } else {
                   return const Text('Loading Name');
