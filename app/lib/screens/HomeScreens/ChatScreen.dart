@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'dart:io';
 import 'package:effektio/common/store/chatTheme.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
@@ -12,10 +13,12 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Conversation, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
@@ -30,6 +33,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   late final _user;
   ChatController chatController = ChatController.instance;
+
   @override
   void initState() {
     _user = types.User(
@@ -45,7 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _handleAttachmentPressed() {
+  void _handleAttachmentPressed(BuildContext context) {
     showModalBottomSheet<void>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -57,9 +61,7 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () {
-                    chatController.handleImageSelection(context);
-                  },
+                  onTap: () => chatController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -71,9 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           'Photo',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: TextStyle(color: Colors.white),
                         ),
                       )
                     ],
@@ -81,9 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () {
-                    chatController.handleFileSelection(context);
-                  },
+                  onTap: () => chatController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -109,6 +107,57 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       },
     );
+  }
+
+  Widget _avatarBuilder(String userId) {
+    return GetBuilder<ChatController>(
+      id: 'Avatar',
+      builder: (ChatController controller) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: CustomAvatar(
+            avatar: widget.room.avatar(),
+            displayName: null,
+            radius: 15,
+            isGroup: false,
+            stringName: getNameFromId(userId),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _imageMessageBuilder(
+    types.ImageMessage imageMessage, {
+    required int messageWidth,
+  }) {
+    if (imageMessage.uri.isEmpty) {
+      // binary data
+      if (imageMessage.metadata?.containsKey('binary') ?? false) {
+        return Image.memory(
+          imageMessage.metadata?['binary'],
+          width: messageWidth.toDouble(),
+        );
+      } else {
+        return Image.memory(
+          kTransparentImage,
+          width: messageWidth.toDouble(),
+        );
+      }
+    } else if (isURL(imageMessage.uri)) {
+      // remote url
+      return Image.network(
+        imageMessage.uri,
+        width: messageWidth.toDouble(),
+      );
+    } else {
+      // local path
+      // the image that just sent is displayed from local not remote
+      return Image.file(
+        File(imageMessage.uri),
+        width: messageWidth.toDouble(),
+      );
+    }
   }
 
   @override
@@ -214,75 +263,62 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Obx(
         () => SafeArea(
           bottom: false,
-          child: chatController.isLoading.value
-              ? Center(
-                  child: Container(
-                    height: 15,
-                    width: 15,
-                    child: CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
-                    ),
-                  ),
-                )
-              : GetBuilder<ChatController>(
-                  id: 'Chat',
-                  builder: (ChatController controller) {
-                    return Chat(
-                      l10n: ChatL10nEn(
-                        emptyChatPlaceholder: '',
-                        attachmentButtonAccessibilityLabel: '',
-                        fileButtonAccessibilityLabel: '',
-                        inputPlaceholder: AppLocalizations.of(context)!.message,
-                        sendButtonAccessibilityLabel: '',
-                      ),
-                      messages: chatController.messages,
-                      onSendPressed: chatController.handleSendPressed,
-                      user: _user,
-                      //custom avatar builder
-                      avatarBuilder: (userId) {
-                        return GetBuilder<ChatController>(
-                          id: 'Avatar',
-                          builder: (ChatController controller) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: CustomAvatar(
-                                avatar: widget.room.avatar(),
-                                displayName: null,
-                                radius: 15,
-                                isGroup: false,
-                                stringName: getNameFromId(userId),
-                              ),
-                            );
-                          },
-                        );
-                      },
-                      //Whenever users starts typing on keyboard, this will trigger the function
-                      onTextChanged: (text) async {
-                        await controller.room.typingNotice(true);
-                      },
-                      showUserAvatars: true,
-                      onAttachmentPressed: _handleAttachmentPressed,
-                      onPreviewDataFetched: controller.handlePreviewDataFetched,
-                      onMessageTap: controller.handleMessageTap,
-                      onEndReached: controller.handleEndReached,
-                      onEndReachedThreshold: 0.75,
-                      emptyState: EmptyPlaceholder(),
-                      //Custom Theme class, see lib/common/store/chatTheme.dart
-                      theme: EffektioChatTheme(
-                        attachmentButtonIcon:
-                            SvgPicture.asset('assets/images/attachment.svg'),
-                        sendButtonIcon:
-                            SvgPicture.asset('assets/images/sendIcon.svg'),
-                        seenIcon:
-                            SvgPicture.asset('assets/images/seenIcon.svg'),
-                        deliveredIcon:
-                            SvgPicture.asset('assets/images/sentIcon.svg'),
-                      ),
-                    );
-                  },
-                ),
+          child: _buildBody(context),
         ),
       ),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    if (chatController.isLoading.isTrue) {
+      return Center(
+        child: Container(
+          height: 15,
+          width: 15,
+          child: CircularProgressIndicator(
+            color: AppCommonTheme.primaryColor,
+          ),
+        ),
+      );
+    }
+    return GetBuilder<ChatController>(
+      id: 'Chat',
+      builder: (ChatController controller) {
+        return Chat(
+          l10n: ChatL10nEn(
+            emptyChatPlaceholder: '',
+            attachmentButtonAccessibilityLabel: '',
+            fileButtonAccessibilityLabel: '',
+            inputPlaceholder: AppLocalizations.of(context)!.message,
+            sendButtonAccessibilityLabel: '',
+          ),
+          messages: chatController.messages,
+          onSendPressed: chatController.handleSendPressed,
+          user: _user,
+          //custom avatar builder
+          avatarBuilder: _avatarBuilder,
+          imageMessageBuilder: _imageMessageBuilder,
+          //Whenever users starts typing on keyboard, this will trigger the function
+          onTextChanged: (text) async {
+            await controller.room.typingNotice(true);
+          },
+          showUserAvatars: true,
+          onAttachmentPressed: () => _handleAttachmentPressed(context),
+          onPreviewDataFetched: controller.handlePreviewDataFetched,
+          onMessageTap: controller.handleMessageTap,
+          onEndReached: controller.handleEndReached,
+          onEndReachedThreshold: 0.75,
+          emptyState: EmptyPlaceholder(),
+          //Custom Theme class, see lib/common/store/chatTheme.dart
+          theme: EffektioChatTheme(
+            attachmentButtonIcon:
+                SvgPicture.asset('assets/images/attachment.svg'),
+            sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
+            seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
+            deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
+          ),
+        );
+      },
     );
   }
 }

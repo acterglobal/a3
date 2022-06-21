@@ -1,22 +1,10 @@
-use super::{api, Conversation, Group, Room, RUNTIME};
-use anyhow::{bail, Context, Result};
-use derive_builder::Builder;
-use effektio_core::RestoreToken;
-use futures::{stream, Stream, StreamExt};
-use lazy_static::lazy_static;
+use anyhow::{Context, Result};
 pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
-use matrix_sdk::{
-    media::{MediaFormat, MediaRequest},
-    room::Room as MatrixRoom,
-    ruma::events::StateEventType,
-    Account as MatrixAccount, Client as MatrixClient, LoopCtrl, Session,
-};
-
-use parking_lot::RwLock;
-use ruma::events::room::MediaSource;
+use matrix_sdk::{media::MediaFormat, Account as MatrixAccount};
 use std::io::Cursor;
-use std::sync::Arc;
 use url::Url;
+
+use super::{api, RUNTIME};
 
 #[derive(Clone)]
 pub struct Account {
@@ -54,7 +42,7 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                let display_name = l.set_display_name(name).await?;
+                l.set_display_name(name).await?;
                 Ok(true)
             })
             .await?

@@ -1,15 +1,27 @@
 // ignore_for_file: always_declare_return_types
 
+import 'dart:io';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, TimelineStream, RoomMessage;
+    show
+        Conversation,
+        FileDescription,
+        ImageDescription,
+        RoomMessage,
+        TimelineStream;
 import 'package:file_picker/file_picker.dart';
+import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+import 'package:mutex/mutex.dart';
 import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+final mtx = Mutex(); // acquire this mutex, when updating state
 
 class ChatController extends GetxController {
   static ChatController get instance =>
@@ -21,6 +33,7 @@ class ChatController extends GetxController {
   int _page = 0;
   late final Conversation room;
   late final types.User user;
+  final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
 
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
@@ -28,50 +41,31 @@ class ChatController extends GetxController {
     user = convoUser;
     isLoading.value = true;
     _stream = await room.timeline();
+    // i am fetching messages from remote
     var _messages = await _stream!.paginateBackwards(10);
+    mtx.acquire();
     for (RoomMessage message in _messages) {
-      types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
-        id: message.eventId(),
-        text: message.body(),
-      );
-      messages.add(m);
+      _loadMessage(message, messages);
     }
+    isLoading.value = false;
     if (messages.isNotEmpty) {
       if (messages.first.author.id == user.id) {
         bool isSeen = await room.readReceipt(messages.first.id);
-        types.TextMessage lm = types.TextMessage(
-          author: user,
-          id: messages.first.id,
-          text: _messages.first.body(),
+        messages[0] = messages[0].copyWith(
           showStatus: true,
           status: isSeen ? types.Status.seen : types.Status.delivered,
         );
-        messages.removeAt(0);
-        messages.insert(0, lm);
       }
-      isLoading.value = false;
-    } else {
-      isLoading.value = false;
     }
+    mtx.release();
   }
 
   //waits for new event
-  void newEvent() async {
+  Future<void> newEvent() async {
     await _stream!.next();
-    var newEvent = await room.latestMessage();
-    final eventUser = types.User(
-      id: newEvent.sender(),
-    );
-    if (newEvent.sender() != eventUser.id) {
-      final textMessage = types.TextMessage(
-        id: newEvent.eventId(),
-        author: eventUser,
-        text: newEvent.body(),
-      );
-      messages.insert(0, textMessage);
-      update(['Chat']);
-    } else {
+    var message = await room.latestMessage();
+    if (message.sender() != user.id) {
+      _loadMessage(message, messages);
       update(['Chat']);
     }
   }
@@ -91,7 +85,9 @@ class ChatController extends GetxController {
   }
 
   //push messages in conversation
-  void handleSendPressed(types.PartialText message) async {
+  Future<void> handleSendPressed(types.PartialText message) async {
+    // image or video is sent automatically
+    // user will click "send" button explicitly for text only
     await room.typingNotice(false);
     var eventId = await room.sendPlainMessage(message.text);
     final textMessage = types.TextMessage(
@@ -106,7 +102,7 @@ class ChatController extends GetxController {
   }
 
   //image selection
-  void handleImageSelection(BuildContext context) async {
+  Future<void> handleImageSelection(BuildContext context) async {
     final result = await ImagePicker().pickImage(
       imageQuality: 70,
       maxWidth: 1440,
@@ -116,22 +112,26 @@ class ChatController extends GetxController {
     if (result != null) {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
+      final mimeType = lookupMimeType(result.path);
+      var eventId = await room.sendImageMessage(
+        result.path,
+        result.name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+      );
 
+      // i am sending message
       final message = types.ImageMessage(
         author: user,
         createdAt: DateTime.now().millisecondsSinceEpoch,
         height: image.height.toDouble(),
-        id: randomString(),
+        id: eventId,
         name: result.name,
         size: bytes.length,
         uri: result.path,
         width: image.width.toDouble(),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('The File that is uploaded isn\'t sent to the server.'),
-        ),
       );
       Navigator.pop(context);
       messages.insert(0, message);
@@ -140,12 +140,21 @@ class ChatController extends GetxController {
   }
 
   //file selection
-  void handleFileSelection(BuildContext context) async {
+  Future<void> handleFileSelection(BuildContext context) async {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
 
     if (result != null && result.files.single.path != null) {
+      final mimeType = lookupMimeType(result.files.single.path!);
+      await room.sendFileMessage(
+        result.files.single.path!,
+        result.files.single.name,
+        mimeType!,
+        result.files.single.size,
+      );
+
+      // i am sending message
       final message = types.FileMessage(
         author: user,
         createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -154,38 +163,139 @@ class ChatController extends GetxController {
         size: result.files.single.size,
         uri: result.files.single.path!,
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('The File that is uploaded isn\'t sent to the server.'),
-        ),
-      );
       Navigator.pop(context);
       messages.insert(0, message);
       update(['Chat']);
     }
   }
 
-  void handleMessageTap(BuildContext context, types.Message message) async {
+  Future<void> handleMessageTap(
+    BuildContext context,
+    types.Message message,
+  ) async {
     if (message is types.FileMessage) {
-      await OpenFile.open(message.uri);
+      String filePath = await room.filePath(message.id);
+      if (filePath.isEmpty) {
+        Directory? rootPath = await getTemporaryDirectory();
+        String? dirPath = await FilesystemPicker.open(
+          title: 'Save to folder',
+          context: context,
+          rootDirectory: rootPath,
+          fsType: FilesystemType.folder,
+          pickText: 'Save file to this folder',
+          folderIconColor: Colors.teal,
+          requestPermission: !_isDesktop
+              ? () async => await Permission.storage.request().isGranted
+              : null,
+        );
+        if (dirPath != null) {
+          await room.saveFile(message.id, dirPath);
+        }
+      } else {
+        final result = await OpenFile.open(filePath);
+        if (result.message.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result.message),
+            ),
+          );
+        }
+      }
     }
   }
 
   //Pagination Control
   Future<void> handleEndReached() async {
-    final _messages = await _stream!.paginateBackwards(10);
+    final msgs = await _stream!.paginateBackwards(10);
     final List<types.Message> nextMessages = [];
-    for (RoomMessage message in _messages) {
-      types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
-        id: message.eventId(),
-        text: message.body(),
-      );
-      nextMessages.add(m);
+    // i am fetching messages from remote
+    for (RoomMessage message in msgs) {
+      _loadMessage(message, nextMessages);
     }
     messages = [...messages, ...nextMessages];
     _page = _page + 1;
     update(['Chat']);
+  }
+
+  void _insertMessage(types.Message m, List<types.Message> c) {
+    for (var i = 0; i < c.length; i++) {
+      if (c[i].createdAt! < m.createdAt!) {
+        c.insert(i, m);
+        return;
+      }
+    }
+    c.add(m);
+  }
+
+  void _loadMessage(RoomMessage message, List<types.Message> container) {
+    String msgtype = message.msgtype();
+    if (msgtype == 'm.audio') {
+    } else if (msgtype == 'm.emote') {
+    } else if (msgtype == 'm.file') {
+      FileDescription? description = message.fileDescription();
+      if (description != null) {
+        types.FileMessage m = types.FileMessage(
+          author: types.User(id: message.sender()),
+          createdAt: message.originServerTs() * 1000,
+          id: message.eventId(),
+          name: description.name(),
+          size: description.size() ?? 0,
+          uri: '',
+        );
+        _insertMessage(m, container);
+      }
+      if (isLoading.isFalse) {
+        update(['Chat']);
+      }
+    } else if (msgtype == 'm.image') {
+      String eventId = message.eventId();
+      ImageDescription? description = message.imageDescription();
+      if (description != null) {
+        types.ImageMessage m = types.ImageMessage(
+          author: types.User(id: message.sender()),
+          createdAt: message.originServerTs() * 1000,
+          height: description.height()?.toDouble(),
+          id: eventId,
+          name: description.name(),
+          size: description.size() ?? 0,
+          uri: '',
+          width: description.width()?.toDouble(),
+        );
+        _insertMessage(m, container);
+        if (isLoading.isFalse) {
+          update(['Chat']);
+        }
+        room.imageBinary(eventId).then((data) async {
+          await mtx.acquire();
+          for (var i = 0; i < messages.length; i++) {
+            if (messages[i].id == eventId) {
+              messages[i] = messages[i].copyWith(
+                metadata: {
+                  'binary': data.asTypedList(),
+                },
+              );
+              break;
+            }
+          }
+          update(['Chat']);
+          mtx.release();
+        });
+      }
+    } else if (msgtype == 'm.location') {
+    } else if (msgtype == 'm.notice') {
+    } else if (msgtype == 'm.server_notice') {
+    } else if (msgtype == 'm.text') {
+      types.TextMessage m = types.TextMessage(
+        author: types.User(id: message.sender()),
+        createdAt: message.originServerTs() * 1000,
+        id: message.eventId(),
+        text: message.body(),
+      );
+      _insertMessage(m, container);
+      if (isLoading.isFalse) {
+        update(['Chat']);
+      }
+    } else if (msgtype == 'm.video') {
+    } else if (msgtype == 'm.key.verification.request') {}
   }
 }
