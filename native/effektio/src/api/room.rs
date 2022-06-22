@@ -7,7 +7,8 @@ use matrix_sdk::{
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, MessageLikeEvent,
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, AnyStrippedStateEvent,
+            AnySyncRoomEvent, AnySyncStateEvent, MessageLikeEvent, StateEventType,
         },
         EventId, OwnedUserId, UInt,
     },
@@ -396,11 +397,101 @@ impl Room {
             })
             .await?
     }
+
+    pub async fn get_inviter(&self) -> Result<String> {
+        let room = if let MatrixRoom::Invited(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let events = room.get_state_events(StateEventType::RoomMember).await?;
+                println!("state events: {}", events.len());
+                for event in events {
+                    println!("xxx");
+                    if let Ok(AnySyncStateEvent::RoomMember(member)) = event.deserialize() {
+                        println!("sender: {}", member.sender());
+                    }
+                }
+                Ok("123".to_owned())
+            })
+            .await?
+    }
 }
 
 impl std::ops::Deref for Room {
     type Target = MatrixRoom;
     fn deref(&self) -> &MatrixRoom {
         &self.room
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use anyhow::Result;
+    use matrix_sdk::{
+        config::SyncSettings,
+        Client as MatrixClient, LoopCtrl,
+    };
+    use tokio::time::{Duration, sleep};
+    use zenv::Zenv;
+
+    use crate::api::{room::Room, Client, ClientStateBuilder, login_new_client};
+
+    async fn login_and_sync(
+        homeserver_url: String,
+        base_path: String,
+        username: String,
+        password: String,
+    ) -> Result<Client> {
+        let mut client_builder = MatrixClient::builder().homeserver_url(homeserver_url);
+
+        #[cfg(feature = "sled")]
+        {
+            let state_store = matrix_sdk_sled::StateStore::open_with_path(base_path)?;
+            client_builder = client_builder.state_store(state_store);
+        }
+
+        let client = client_builder.build().await.unwrap();
+        client.login(&username, &password, None, Some("command bot")).await?;
+        println!("logged in as {}", username);
+
+        let sync_settings = SyncSettings::new().timeout(Duration::from_secs(5));
+        client.sync_once(sync_settings).await.unwrap();
+
+        // let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
+        // client.sync(settings).await;
+        // println!("456");
+
+        let c = Client::new(
+            client,
+            ClientStateBuilder::default().is_guest(false).build()?,
+        );
+        Ok(c)
+    }
+
+    #[tokio::test]
+    async fn test_get_inviter() -> Result<()> {
+        let z = Zenv::new(".env", false).parse()?;
+        let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
+        let base_path: String = z.get("BASE_PATH").unwrap().to_owned();
+        let username: String = z.get("USERNAME").unwrap().to_owned();
+        let password: String = z.get("PASSWORD").unwrap().to_owned();
+
+        let client = login_and_sync(homeserver_url, base_path, username, password).await?;
+
+        // let client = login_new_client(base_path, username, password).await?;
+
+        sleep(Duration::from_secs(5)).await;
+
+        let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
+        let room: Room = client.room(room_id).await.expect("Expected room to be available");
+        let res: String = room.get_inviter().await?;
+        println!("inviter: {}", res);
+
+        assert_eq!(1, 1);
+        Ok(())
     }
 }
