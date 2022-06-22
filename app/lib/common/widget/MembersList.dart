@@ -17,9 +17,6 @@ class MembersList extends StatefulWidget {
 }
 
 class MembersListState extends State<MembersList> {
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, color: Colors.white);
-
   @override
   Widget build(BuildContext context) {
     return Column(

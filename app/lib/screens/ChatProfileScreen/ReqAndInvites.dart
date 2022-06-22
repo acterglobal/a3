@@ -1,6 +1,8 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/widget/PendingReqListView.dart';
+import 'package:effektio/common/widget/ReqListView.dart';
 import 'package:flutter/material.dart';
 
 class RequestScreen extends StatefulWidget {
@@ -67,19 +69,7 @@ class _RequestScreenState extends State<RequestScreen> {
                               right: 8.0,
                               top: 8.0,
                             ),
-                            child: ListTile(
-                              leading: const CircleAvatar(
-                                backgroundColor: Colors.white,
-                              ),
-                              title: const Text(
-                                'Ben',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              trailing: Text(
-                                'Pending',
-                                style: TextStyle(color: Colors.grey[700]),
-                              ),
-                            ),
+                            child: PendingReqListView(name: 'Ben'),
                           );
                         },
                       ),
@@ -132,27 +122,13 @@ class _RequestScreenState extends State<RequestScreen> {
                         itemCount: reqLength,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          return const Padding(
+                          return Padding(
                             padding: EdgeInsets.only(
                               left: 8.0,
                               right: 8.0,
                               top: 8.0,
                             ),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: Colors.white,
-                              ),
-                              title: Text(
-                                'Ben',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              trailing: Text(
-                                'Accept',
-                                style: TextStyle(
-                                  color: AppCommonTheme.primaryColor,
-                                ),
-                              ),
-                            ),
+                            child: ReqListView(name: 'Ben'),
                           );
                         },
                       ),

@@ -75,7 +75,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 16.0),
               ),
             ),
-            Flexible(
+            SingleChildScrollView(
               child: TextField(
                 style: const TextStyle(color: Colors.white),
                 controller: nameController,

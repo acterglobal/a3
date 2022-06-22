@@ -18,9 +18,6 @@ class InviteListView extends StatefulWidget {
 }
 
 class InviteListViewState extends State<InviteListView> {
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, color: Colors.white);
-
   @override
   Widget build(BuildContext context) {
     return Column(
