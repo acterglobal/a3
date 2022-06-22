@@ -6,6 +6,8 @@ class AppCommonTheme {
   static const backgroundColor = ColorRef(Color.fromRGBO(36, 38, 50, 1));
   static const svgIconColor = ColorRef(Colors.white, id: 'NavBar');
   static const textFieldColor = ColorRef(Color(0xff171717));
+  static const darkShade = ColorRef(Color(0xff333540));
+  static const greenButtonColor = ColorRef(Color(0xff33C481));
   static const dividerColor = ColorRef(Colors.grey);
   static const transparentColor = ColorRef(Colors.transparent);
   static const appBarTitleColor = ColorRef(Colors.white, id: 'ABT');
@@ -107,10 +109,20 @@ class ChatTheme01 {
   static const chatListTextColor = ColorRef(Colors.white, id: 'CLT');
   static const latestChatTextColor = ColorRef(Colors.white, id: 'LCT');
   static const chatBodyTextColor = ColorRef(Colors.white, id: 'CBT');
+  static const leaveBtnBg = ColorRef(Color(0xff594848));
+  static const redText = ColorRef(Color(0xffFF4B4B));
 
   static const chatTitleStyle = TextStyleRef(
     TextStyle(
       fontSize: 15,
+      fontWeight: FontWeight.w600,
+      color: chatListTextColor,
+    ),
+  );
+
+  static const chatProfileTitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 22,
       fontWeight: FontWeight.w600,
       color: chatListTextColor,
     ),
