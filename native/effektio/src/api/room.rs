@@ -644,14 +644,7 @@ mod tests {
     use futures::{pin_mut, StreamExt};
     use matrix_sdk::{
         config::SyncSettings,
-        room::Room as MatrixRoom,
-        ruma::events::{
-            room::{
-                member::StrippedRoomMemberEvent,
-                message::{OriginalSyncRoomMessageEvent, SyncRoomMessageEvent},
-            },
-            AnyStrippedStateEvent, AnySyncMessageLikeEvent, AnySyncRoomEvent, SyncMessageLikeEvent,
-        },
+        ruma::events::AnyStrippedStateEvent,
         Client as MatrixClient, LoopCtrl,
     };
     use std::time::Duration;
@@ -681,12 +674,13 @@ mod tests {
         client.login(&username, &password, None, Some("command bot")).await?;
         println!("logged in as {}", username);
 
-        let sync_settings = SyncSettings::new().timeout(Duration::from_secs(5));
+        let sync_settings = SyncSettings::new().timeout(Duration::from_secs(10));
         client
             .sync_with_callback(sync_settings, |response| async move {
                 for (room_id, room) in response.rooms.invite {
                     for event in room.invite_state.events {
                         if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
+                            println!("member: {:?}", member);
                             println!("room id: {:?}", room_id);
                             println!("sender: {:?}", member.sender);
                             return LoopCtrl::Break;
@@ -716,33 +710,16 @@ mod tests {
         let username: String = z.get("USERNAME").unwrap().to_owned();
         let password: String = z.get("PASSWORD").unwrap().to_owned();
 
-        // let client = login_and_sync(homeserver_url, base_path, username, password)
-        //     .await
-        //     .unwrap();
-
+        let client = login_and_sync(homeserver_url, base_path, username, password).await?;
         // let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
         // let room: Room = client.room(room_id).await.expect("Expected room to be available");
         // let inviter: String = room.invited_from().await.expect("Expected id of user that invited me");
         // println!("inviter: {}", inviter);
 
-        // mut is needed for get_past_invitation_rx to return mut
-        let mut response = login_new_client(base_path, username, password)
-            .await
-            .unwrap();
-        println!("123");
-        sleep(Duration::from_secs(5)).await;
-        println!("456");
-        if let Ok(past_invitation_rx) = response.get_past_invitation_rx() {
-            pin_mut!(past_invitation_rx);
-            if let Some(past_invitation) = past_invitation_rx.next().await {
-                let room_id = past_invitation.get_room_id();
-                let sender = past_invitation.get_sender();
-                println!("room id: {}", room_id);
-                println!("sender: {}", sender);
-            }
-        }
-        sleep(Duration::from_secs(5)).await;
-        println!("789");
+        // // mut is needed for get_past_invitation_rx to return mut
+        // let mut response = login_new_client(base_path, username, password).await?;
+        // println!("123");
+        // sleep(Duration::from_secs(15)).await;
 
         // assert_eq!(1, 1);
         Ok(())

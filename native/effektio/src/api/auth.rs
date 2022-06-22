@@ -10,23 +10,7 @@ use matrix_sdk::Session;
 use tokio::runtime;
 use url::Url;
 
-pub struct LoginResponse {
-    client: Client,
-    past_invitation_rx: Result<Receiver<Invitation>>,
-}
-
-impl LoginResponse {
-    pub fn get_client(&self) -> &Client {
-        &self.client
-    }
-
-    // mut is needed to wrap invitation with stream in api.rsh
-    pub fn get_past_invitation_rx(&mut self) -> &mut Result<Receiver<Invitation>> {
-        &mut self.past_invitation_rx
-    }
-}
-
-pub async fn guest_client(base_path: String, homeurl: String) -> Result<LoginResponse> {
+pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
     let mut guest_registration = register::v3::Request::new();
     guest_registration.kind = register::RegistrationKind::Guest;
@@ -47,16 +31,13 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<LoginRes
                 client,
                 ClientStateBuilder::default().is_guest(true).build()?,
             );
-            let mut past_invitation_rx = c.start_sync();
-            Ok(LoginResponse {
-                client: c,
-                past_invitation_rx,
-            })
+            c.start_sync();
+            Ok(c)
         })
         .await?
 }
 
-pub async fn login_with_token(base_path: String, restore_token: String) -> Result<LoginResponse> {
+pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
     let RestoreToken {
         session,
         homeurl,
@@ -73,11 +54,8 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
                 client,
                 ClientStateBuilder::default().is_guest(is_guest).build()?,
             );
-            let mut past_invitation_rx = c.start_sync();
-            Ok(LoginResponse {
-                client: c,
-                past_invitation_rx,
-            })
+            c.start_sync();
+            Ok(c)
         })
         .await?
 }
@@ -86,7 +64,7 @@ pub async fn login_new_client(
     base_path: String,
     username: String,
     password: String,
-) -> Result<LoginResponse> {
+) -> Result<Client> {
     let user = ruma::OwnedUserId::try_from(username.clone())?;
     let mut config = platform::new_client_config(base_path, username)?.user_id(&user);
     if user.server_name().as_str() == "effektio.org" {
@@ -103,11 +81,8 @@ pub async fn login_new_client(
                 client,
                 ClientStateBuilder::default().is_guest(false).build()?,
             );
-            let mut past_invitation_rx = c.start_sync();
-            Ok(LoginResponse {
-                client: c,
-                past_invitation_rx,
-            })
+            c.start_sync();
+            Ok(c)
         })
         .await?
 }
@@ -117,7 +92,7 @@ pub async fn register_with_registration_token(
     username: String,
     password: String,
     registration_token: String,
-) -> Result<LoginResponse> {
+) -> Result<Client> {
     let user = ruma::OwnedUserId::try_from(username.clone())?;
     let config = platform::new_client_config(base_path, username.clone())?.user_id(&user);
     // First we need to log in.
@@ -147,11 +122,8 @@ pub async fn register_with_registration_token(
                 client,
                 ClientStateBuilder::default().is_guest(false).build()?,
             );
-            let mut past_invitation_rx = c.start_sync();
-            Ok(LoginResponse {
-                client: c,
-                past_invitation_rx,
-            })
+            c.start_sync();
+            Ok(c)
         })
         .await?
 }
