@@ -407,14 +407,50 @@ impl Room {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
+                let events = room.get_state_events(StateEventType::PolicyRuleRoom).await?;
+                println!("policy rule room: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::PolicyRuleServer).await?;
+                println!("policy rule server: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::PolicyRuleUser).await?;
+                println!("policy rule user: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomAliases).await?;
+                println!("room aliases: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomAvatar).await?;
+                println!("room avatar: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomCanonicalAlias).await?;
+                println!("room canonical alias: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomCreate).await?;
+                println!("room create: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomEncryption).await?;
+                println!("room encryption: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomGuestAccess).await?;
+                println!("room guest access: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomHistoryVisibility).await?;
+                println!("room history visibility: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomJoinRules).await?;
+                println!("room join rules: {} {:?}", events.len(), events);
                 let events = room.get_state_events(StateEventType::RoomMember).await?;
-                println!("state events: {}", events.len());
-                for event in events {
-                    println!("xxx");
-                    if let Ok(AnySyncStateEvent::RoomMember(member)) = event.deserialize() {
-                        println!("sender: {}", member.sender());
-                    }
-                }
+                println!("room member: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomName).await?;
+                println!("room name: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomPinnedEvents).await?;
+                println!("room pinned events: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomPowerLevels).await?;
+                println!("room power levels: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomServerAcl).await?;
+                println!("room server acl: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomThirdPartyInvite).await?;
+                println!("room third party invite: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomTombstone).await?;
+                println!("room tombstone: {} {:?}", events.len(), events);
+                let events = room.get_state_events(StateEventType::RoomTopic).await?;
+                println!("room topic: {} {:?}", events.len(), events);
+                // for event in events {
+                //     println!("xxx");
+                //     if let Ok(AnySyncStateEvent::RoomMember(member)) = event.deserialize() {
+                //         println!("sender: {}", member.sender());
+                //     }
+                // }
                 Ok("123".to_owned())
             })
             .await?
@@ -479,10 +515,11 @@ mod tests {
         let base_path: String = z.get("BASE_PATH").unwrap().to_owned();
         let username: String = z.get("USERNAME").unwrap().to_owned();
         let password: String = z.get("PASSWORD").unwrap().to_owned();
+        std::env::set_var("RUST_BACKTRACE", "1");
 
-        let client = login_and_sync(homeserver_url, base_path, username, password).await?;
+        // let client = login_and_sync(homeserver_url, base_path, username, password).await?;
 
-        // let client = login_new_client(base_path, username, password).await?;
+        let client = login_new_client(base_path, username, password).await?;
 
         sleep(Duration::from_secs(5)).await;
 
