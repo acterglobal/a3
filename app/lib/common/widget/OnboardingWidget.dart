@@ -1,16 +1,9 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 // CLASS BUTTON
 
-import 'package:effektio/blocs/login/signIn_bloc.dart';
-import 'package:effektio/blocs/login/signIn_event.dart';
-import 'package:effektio/blocs/login/signIn_state.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/blocs/sign_up/signup_bloc.dart';
-import 'package:effektio/blocs/sign_up/signup_event.dart';
-import 'package:effektio/blocs/sign_up/signup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 // ignore: must_be_immutable
 class CustomOnbaordingButton extends StatelessWidget {
@@ -50,6 +43,7 @@ class CustomOnbaordingButton extends StatelessWidget {
 }
 
 enum SignUpOnboardingTextFieldEnum { name, userName, password, token }
+
 // ON BOARDING TEXT FILED
 // ignore: unused_element
 Widget signUpOnboardingTextField(
@@ -65,56 +59,56 @@ Widget signUpOnboardingTextField(
       color: AppCommonTheme.textFieldColor,
       borderRadius: BorderRadius.circular(4),
     ),
-    child: BlocBuilder<SignUpBloc, SignUpState>(
-      builder: (context, state) {
-        return TextFormField(
-          inputFormatters: (type == SignUpOnboardingTextFieldEnum.userName) ||
-                  (type == SignUpOnboardingTextFieldEnum.password)
-              ? [
-                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                ]
-              : [],
-          obscureText: type == SignUpOnboardingTextFieldEnum.password,
-          controller: controller,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
-            border: InputBorder.none,
+    child: TextFormField(
+      inputFormatters: (type == SignUpOnboardingTextFieldEnum.userName) ||
+              (type == SignUpOnboardingTextFieldEnum.password)
+          ? [
+              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+            ]
+          : [],
+      obscureText: type == SignUpOnboardingTextFieldEnum.password,
+      controller: controller,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
+        border: InputBorder.none,
 
-            hintText: hintText, // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
-          ),
-          style: TextStyle(color: Colors.white),
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return validatorText;
-            }
-            return null;
-          },
-          onChanged: (value) {
-            switch (type) {
-              case SignUpOnboardingTextFieldEnum.name:
-                context
-                    .read<SignUpBloc>()
-                    .add(SignUpNameChanged(name: value.trim()));
-                break;
-              case SignUpOnboardingTextFieldEnum.userName:
-                context
-                    .read<SignUpBloc>()
-                    .add(SignUpUsernameChanged(username: value.trim()));
-                break;
-              case SignUpOnboardingTextFieldEnum.password:
-                context
-                    .read<SignUpBloc>()
-                    .add(SignUpPasswordChanged(password: value.trim()));
-                break;
-              case SignUpOnboardingTextFieldEnum.token:
-                context
-                    .read<SignUpBloc>()
-                    .add(SignUpTokenChanged(token: value.trim()));
-                break;
-            }
-          },
-        );
+        hintText: hintText, // pass the hint text parameter here
+        hintStyle: TextStyle(color: Colors.grey),
+      ),
+      style: TextStyle(color: Colors.white),
+      validator: (val) {
+        if (val == null || val.trim().isEmpty) {
+          return validatorText;
+        }
+        return null;
+      },
+      onChanged: (value) {
+        switch (type) {
+          case SignUpOnboardingTextFieldEnum.name:
+            controller.text = value;
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+            break;
+          case SignUpOnboardingTextFieldEnum.userName:
+            controller.text = value;
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+            break;
+          case SignUpOnboardingTextFieldEnum.password:
+            controller.text = value;
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+            break;
+          case SignUpOnboardingTextFieldEnum.token:
+            controller.text = value;
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+            break;
+        }
       },
     ),
   );
@@ -135,44 +129,42 @@ Widget signInOnboardingTextField(
       color: AppCommonTheme.textFieldColor,
       borderRadius: BorderRadius.circular(4),
     ),
-    child: BlocBuilder<SignInBloc, SignInState>(
-      builder: (context, state) {
-        return TextFormField(
-          inputFormatters: [
-            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-          ],
-          obscureText: type == SignInOnboardingTextFieldEnum.password,
-          controller: controller,
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
-            border: InputBorder.none,
+    child: TextFormField(
+      inputFormatters: [
+        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+      ],
+      obscureText: type == SignInOnboardingTextFieldEnum.password,
+      controller: controller,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
+        border: InputBorder.none,
 
-            hintText: hintText, // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
-          ),
-          style: TextStyle(color: Colors.white),
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return validatorText;
-            }
+        hintText: hintText, // pass the hint text parameter here
+        hintStyle: TextStyle(color: Colors.grey),
+      ),
+      style: TextStyle(color: Colors.white),
+      validator: (val) {
+        if (val == null || val.trim().isEmpty) {
+          return validatorText;
+        }
 
-            return null;
-          },
-          onChanged: (value) {
-            switch (type) {
-              case SignInOnboardingTextFieldEnum.userName:
-                context
-                    .read<SignInBloc>()
-                    .add(SignInUsernameChanged(username: value.trim()));
-                break;
-              case SignInOnboardingTextFieldEnum.password:
-                context
-                    .read<SignInBloc>()
-                    .add(SignInPasswordChanged(password: value.trim()));
-                break;
-            }
-          },
-        );
+        return null;
+      },
+      onChanged: (value) {
+        switch (type) {
+          case SignInOnboardingTextFieldEnum.userName:
+            controller.text = value;
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+            break;
+          case SignInOnboardingTextFieldEnum.password:
+            controller.text = value;
+            controller.selection = TextSelection.fromPosition(
+              TextPosition(offset: controller.text.length),
+            );
+            break;
+        }
       },
     ),
   );
