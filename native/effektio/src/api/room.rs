@@ -2,13 +2,17 @@ use anyhow::{bail, Context, Result};
 use futures::{pin_mut, stream, Stream, StreamExt};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
+    deserialized_responses::SyncRoomEvent,
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
         events::{
-            room::message::{MessageType, RoomMessageEventContent},
+            room::{
+                member::{MembershipState, RoomMemberEventContent},
+                message::{MessageType, RoomMessageEventContent},
+            },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, AnyStrippedStateEvent,
-            AnySyncRoomEvent, AnySyncStateEvent, MessageLikeEvent, StateEventType,
+            AnySyncRoomEvent, AnySyncStateEvent, MessageLikeEvent, OriginalSyncStateEvent, StateEventType, SyncStateEvent,
         },
         EventId, OwnedUserId, UInt,
     },
@@ -17,7 +21,7 @@ use matrix_sdk::{
 use std::{fs::File, io::Write, path::PathBuf};
 
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, RUNTIME};
+use super::{api, InvitationStream, TimelineStream, RUNTIME};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -122,6 +126,25 @@ impl Room {
                     .await
                     .context("Failed acquiring timeline streams")?;
                 Ok(TimelineStream::new(
+                    Box::pin(forward),
+                    Box::pin(backward),
+                    client,
+                    room,
+                ))
+            })
+            .await?
+    }
+
+    pub async fn invitation_history(&self) -> Result<InvitationStream> {
+        let room = self.room.clone();
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let (forward, backward) = room
+                    .timeline()
+                    .await
+                    .context("Failed acquiring invitation streams")?;
+                Ok(InvitationStream::new(
                     Box::pin(forward),
                     Box::pin(backward),
                     client,
@@ -428,17 +451,67 @@ impl std::ops::Deref for Room {
     }
 }
 
+pub struct Invitation {
+    event_id: String,
+    sender: String,
+}
+
+impl Invitation {
+    pub fn get_event_id(&self) -> String {
+        self.event_id.clone()
+    }
+
+    pub fn get_sender(&self) -> String {
+        self.sender.clone()
+    }
+}
+
+pub fn sync_event_to_history(sync_event: SyncRoomEvent, room: MatrixRoom) -> Option<Invitation> {
+    if let Ok(AnySyncRoomEvent::State(state)) = sync_event.event.deserialize()
+    {
+        println!("state");
+        println!("{:?}", state);
+    }
+    if let Ok(AnySyncRoomEvent::State(AnySyncStateEvent::RoomMember(member))) = sync_event.event.deserialize()
+    {
+        println!("sync_event");
+        println!("{:?}", sync_event);
+        println!("member");
+        println!("{:?}", member.state_key());
+        if let SyncStateEvent::Original(
+            OriginalSyncStateEvent {
+                content: RoomMemberEventContent {
+                    avatar_url, displayname, is_direct, membership, third_party_invite, blurhash, reason, join_authorized_via_users_server, ..
+                },
+                event_id, sender, origin_server_ts, state_key, ..
+            },
+        ) = member
+        {
+            println!("123");
+            if membership == MembershipState::Invite {
+                return Some(Invitation {
+                    event_id: event_id.to_string(),
+                    sender: sender.to_string(),
+                });
+            }
+        }
+    }
+    None
+}
+
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
     use matrix_sdk::{
         config::SyncSettings,
+        room::Room as MatrixRoom,
+        ruma::{room_id, events::StateEventType},
         Client as MatrixClient, LoopCtrl,
     };
     use tokio::time::{Duration, sleep};
     use zenv::Zenv;
 
-    use crate::api::{room::Room, Client, ClientStateBuilder, login_new_client};
+    use crate::api::{room::Room, Client, ClientStateBuilder, InvitationStream, login_new_client};
 
     async fn login_and_sync(
         homeserver_url: String,
@@ -458,8 +531,19 @@ mod tests {
         client.login(&username, &password, None, Some("command bot")).await?;
         println!("logged in as {}", username);
 
-        let sync_settings = SyncSettings::new().timeout(Duration::from_secs(5));
+        let sync_settings = SyncSettings::new()/*.timeout(Duration::from_secs(5))*/;
         client.sync_once(sync_settings).await.unwrap();
+
+        let room_id = room_id!("!jXsqlnitogAbTTSksT:effektio.org");
+        let room = client.get_invited_room(room_id).unwrap();
+
+        let room = Room {
+            client: client.clone(),
+            room: MatrixRoom::Invited(room),
+        };
+        let stream: InvitationStream = room.invitation_history().await?;
+        let invitations = stream.paginate_backwards(10).await?;
+        println!("invitation len: {}", invitations.len());
 
         // let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
         // client.sync(settings).await;
@@ -480,16 +564,17 @@ mod tests {
         let username: String = z.get("USERNAME").unwrap().to_owned();
         let password: String = z.get("PASSWORD").unwrap().to_owned();
 
-        let client = login_and_sync(homeserver_url, base_path, username, password).await?;
+        // let client = login_and_sync(homeserver_url, base_path, username, password).await?;
 
-        // let client = login_new_client(base_path, username, password).await?;
+        let client = login_new_client(base_path, username, password).await?;
 
         sleep(Duration::from_secs(5)).await;
 
         let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
         let room: Room = client.room(room_id).await.expect("Expected room to be available");
-        let res: String = room.get_inviter().await?;
-        println!("inviter: {}", res);
+        let stream: InvitationStream = room.invitation_history().await?;
+        let invitations = stream.paginate_backwards(3).await?;
+        println!("invitation len: {}", invitations.len());
 
         assert_eq!(1, 1);
         Ok(())
