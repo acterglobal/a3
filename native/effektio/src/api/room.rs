@@ -429,8 +429,8 @@ impl Room {
                 println!("room history visibility: {} {:?}", events.len(), events);
                 let events = room.get_state_events(StateEventType::RoomJoinRules).await?;
                 println!("room join rules: {} {:?}", events.len(), events);
-                let events = room.get_state_events(StateEventType::RoomMember).await?;
-                println!("room member: {} {:?}", events.len(), events);
+                let room_member_events = room.get_state_events(StateEventType::RoomMember).await?;
+                println!("room member: {} {:?}", room_member_events.len(), room_member_events);
                 let events = room.get_state_events(StateEventType::RoomName).await?;
                 println!("room name: {} {:?}", events.len(), events);
                 let events = room.get_state_events(StateEventType::RoomPinnedEvents).await?;
@@ -451,7 +451,14 @@ impl Room {
                 //         println!("sender: {}", member.sender());
                 //     }
                 // }
-                Ok("123".to_owned())
+                let user_id = client.user_id().await.unwrap();
+                let event = room.get_state_event(StateEventType::RoomMember, user_id.to_string().as_str()).await?;
+                println!("get_state_event: {:?}", event);
+                if room_member_events.len() == 0 {
+                    Ok("No".to_owned())
+                } else {
+                    Ok("Yes".to_owned())
+                }
             })
             .await?
     }
@@ -523,7 +530,7 @@ mod tests {
 
         sleep(Duration::from_secs(5)).await;
 
-        let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
+        let room_id: String = "!jKEBNbuUeVwZptOIaV:effektio.org".to_owned();
         let room: Room = client.room(room_id).await.expect("Expected room to be available");
         let res: String = room.get_inviter().await?;
         println!("inviter: {}", res);
