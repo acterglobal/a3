@@ -34,7 +34,7 @@ class InviteInfoWidget extends StatelessWidget {
             ),
             subtitle: RichText(
               text: TextSpan(
-                text: 'Invited you to the ',
+                text: 'Invited you to join ',
                 style: AppCommonTheme.appBartitleStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
