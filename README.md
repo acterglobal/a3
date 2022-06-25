@@ -17,14 +17,14 @@ This package exports a widget, the `RiverPagedBuilder` that will build your infi
 
 The `RiverPagedBuilder` expects a Riverpod [StateNotifierProvider](https://riverpod.dev/docs/providers/state_notifier_provider)
 
-This `StateNotifierProvider` must implement two methods to ensure everything works correctly, it must have a `load method`.
+This `StateNotifierProvider` must implement two methods to ensure everything works correctly, it must have a `load method`, and a `nextPageKeyBuilder` method, these will be explained below.
 
 `riverpod_infinite_scroll` helps us to ensure that our `StateNotifier` will respect these constraints with the choice of two classes:
 
 You can either use the simple: 
- - `PagedState` - a state that has all the properties that `riverpod_infinite_scroll` needs
+ - `PagedState` - a state that has all the properties that `riverpod_infinite_scroll` needs and is intended for simple states only containing a list of `records`
 
-Or if you need more flexbility you can implement 
+Or if you need more flexbility to handle a more complex state object you can implement 
  - `PagedNotifierMixin` - a mixin that ensure your `StateNotifier` will implement the `load` method with the correct types.
 
 ## Example - Simple version
@@ -245,20 +245,6 @@ Where does this `String page` get set? Well some of you may have noticed this `f
             firstPageKey: 'CustomArgString',
 ```
 
-Your custom arg for `firstPageKey` does not have to be a `String` it can be any type as specified when you declared your Notifier:
-
-```dart
-class CustomExampleNotifier extends StateNotifier<CustomExampleState>
-    with PagedNotifierMixin<String, User, CustomExampleState> {
-```
-You could for example pass an Enum: 
-
-```dart
-class CustomExampleNotifier extends StateNotifier<CustomExampleState>
-    with PagedNotifierMixin<MyEnumType, User, CustomExampleState> {
-```
-and then just change the `load` and `RiverPagedBuilder` Generics to match. 
-
 Also, in this example, we have used a custom state that extends `PagedState`, because we need another custom parameter `filterByCity`:
 
 ```dart
@@ -300,6 +286,20 @@ Also, in this example, we have used a custom state that extends `PagedState`, be
    	    }
     }
 ```
+
+Your custom arg for `firstPageKey` does not have to be a `String` it can be any type as specified when you declared your Notifier:
+
+```dart
+class CustomExampleNotifier extends StateNotifier<CustomExampleState>
+    with PagedNotifierMixin<String, User, CustomExampleState> {
+```
+You could for example pass an Enum: 
+
+```dart
+class CustomExampleNotifier extends StateNotifier<CustomExampleState>
+    with PagedNotifierMixin<MyEnumType, User, CustomExampleState> {
+```
+and then just change the Generics of `load` and `RiverPagedBuilder` and your state object that extends `PagedState` to match. 
 
 ## Custom wrapper for loading/error/try again states
 
