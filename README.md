@@ -120,7 +120,7 @@ void  add(Post  post) {
 
 ## A more custom example
 
-If you need to keep track of a more complex state than a simple list of `records` `Riverpod Infinite Scroll` also provides a more customizable approach.
+If you need to keep track of a more complex state than a simple list of `records` **Riverpod Infinite Scroll** also provides a more customizable approach.
 Let's suppose we need to fetch from a paginated API that return a list of users:
 
 ```dart
