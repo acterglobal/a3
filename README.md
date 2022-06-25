@@ -83,6 +83,7 @@ And the `StateNotifier`
 
       EasyExampleNotifier():
       super(
+        //load is a required method of PagedNotifier
         load: (page, limit) => Future.delayed(const  Duration(seconds: 2), () {
           // This simulates a network call to an api that returns paginated posts
           return [
@@ -91,6 +92,8 @@ And the `StateNotifier`
           const  Post(id: 3, title: "My third work", image: "https://www.mywebsite.com/image3"),
           ];
         }),
+        
+        //nextPageKeyBuilder is a required method of PagedNotifier
         nextPageKeyBuilder: NextPageKeyBuilderDefault.mysqlPagination,
       );      
 
