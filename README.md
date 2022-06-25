@@ -25,7 +25,7 @@ You can either use the simple:
  - `PagedState` - a state that has all the properties that `riverpod_infinite_scroll` needs
 
 Or if you need more flexbility you can implement 
- - `PagedNotifierMixin` - a mixin that ensure the `StateNotifier` will implement the right `load` method
+ - `PagedNotifierMixin` - a mixin that ensure your `StateNotifier` will implement the `load` method with the correct types.
 
 ## Example - Simple version
 
