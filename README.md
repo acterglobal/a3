@@ -106,6 +106,7 @@ And the `StateNotifier`
       }
     }
 
+    //create a global provider as you would normally in riverpod:
     final  easyExampleProvider = StateNotifierProvider<EasyExampleNotifier, PagedState<int, Post>>((_) => EasyExampleNotifier());
 ```
 
