@@ -163,7 +163,7 @@ Now let's have a look of how we can create a more custom `StateNotifier`, we hav
       const  User({ required  this.id, required  this.name, required  this.profilePicture });
     }
 ```
-And we have the `StateNotifier` that manage those users
+And we have the `StateNotifier` that manages those users
       
 ```dart    
     class CustomExampleNotifier extends  StateNotifier<CustomExampleState> with  PagedNotifierMixin<String, User, CustomExampleState> {
