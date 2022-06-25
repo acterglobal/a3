@@ -15,9 +15,9 @@ import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 This package exports a widget, the `RiverPagedBuilder` that will build your infinite, scrollable list.
 
-The `RiverPagedBuilder` expects a Riverpod `StateNotifierProvider` 
+The `RiverPagedBuilder` expects a Riverpod [StateNotifierProvider](https://riverpod.dev/docs/providers/state_notifier_provider)
 
-This `StateNotifierProvider` must have a few things to ensure everything works correctly, it must have a `load method` and it must have a state that has the list of the elements, an error, and a variable that hold the next page that the load function will use, examples are below.
+This `StateNotifierProvider` must implement two methods to ensure everything works correctly, it must have a `load method` and it must have a state that has the list of the elements, an error, and a variable that hold the next page that the load function will use, examples and explanations are below.
 
 `riverpod_infinite_scroll` helps us to ensure that our `StateNotifier` will respect these constraints with the choice of two classes:
 
