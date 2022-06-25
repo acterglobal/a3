@@ -132,7 +132,7 @@ Let's suppose we need to fetch from a paginated API that return a list of users:
         return  Scaffold(
           appBar: AppBar(),
           body: RiverPagedBuilder<String, User>(
-            firstPageKey: '',
+            firstPageKey: 'CustomArgString',
             provider: customExampleProvider,
             itemBuilder: (context, item, index) => ListTile(
               leading: Image.network(item.profilePicture),
@@ -166,51 +166,71 @@ Now let's have a look of how we can create a more custom `StateNotifier`, we hav
 And we have the `StateNotifier` that manages those users
       
 ```dart    
-    class CustomExampleNotifier extends  StateNotifier<CustomExampleState> with  PagedNotifierMixin<String, User, CustomExampleState> {
+class CustomExampleNotifier extends StateNotifier<CustomExampleState>
+    with PagedNotifierMixin<String, User, CustomExampleState> {
+  CustomExampleNotifier() : super(const CustomExampleState());
 
-    CustomExampleNotifier() :
-	    super(const  CustomExampleState());
-    
-	    @override
-	    Future<List<User>?> load(String  page, int  limit) async {
-          try {
-            var  users = await  Future.delayed(const  Duration(seconds: 3), () {
-              // This simulates a network call to an api that returns paginated users
-              return [
-                const  User(id: "abcdef", name: "John", profilePicture: "https://www.mywebsite.com/images/1"),
-                const  User(id: "asdfgh", name: "Mary", profilePicture: "https://www.mywebsite.com/images/2"),
-                const  User(id: "qwerty", name: "Robert", profilePicture: "https://www.mywebsite.com/images/3")
-              ];
-            });
-        
-          // we then update state accordingly
-            state = state.copyWith(
-              records: [...(state.records ?? []), ...users],
-              nextPageKey: users.length < limit ? null : users[users.length - 1].id
-            );
-          }
-          catch (e) {
-            // in case of error we should notifiy the listeners
-            state = state.copyWith(
-              error: e.toString()
-            );
-          }
-	    }
+  @override
+  Future<List<User>?> load(String page, int limit) async {
+    try {
+      var users = await Future.delayed(const Duration(seconds: 3), () {
+        // This simulates a network call to an api that returns paginated users
+        return [
+          const User(
+              id: "abcdef",
+              name: "John",
+              profilePicture: "https://www.mywebsite.com/images/1"),
+          const User(
+              id: "asdfgh",
+              name: "Mary",
+              profilePicture: "https://www.mywebsite.com/images/2"),
+          const User(
+              id: "qwerty",
+              name: "Robert",
+              profilePicture: "https://www.mywebsite.com/images/3")
+        ];
+      });
 
-	    // Super simple example of custom methods of the StateNotifier
-	    void  add(User  user) {
-		    state = state.copyWith(records: [ ...(state.records ?? []), user ]);
-	    }
-	    
-	    void  delete(User  user) {
-		    state = state.copyWith(records: [ ...(state.records ?? []) ]..remove(user));
-	    }
+      // we then update state accordingly
+      state = state.copyWith(records: [
+        ...(state.records ?? []),
+        ...users
+      ], nextPageKey: users.length < limit ? null : users[users.length - 1].id);
+    } catch (e) {
+      // in case of error we should notifiy the listeners
+      state = state.copyWith(error: e.toString());
     }
-    
-    final  customExampleProvider = StateNotifierProvider<CustomExampleNotifier, CustomExampleState>((_) => CustomExampleNotifier());
+  }
+
+  // Super simple example of custom methods of the StateNotifier
+  void add(User user) {
+    state = state.copyWith(records: [...(state.records ?? []), user]);
+  }
+
+  void delete(User user) {
+    state = state.copyWith(records: [...(state.records ?? [])]..remove(user));
+  }
+}
+
+final customExampleProvider =
+    StateNotifierProvider<CustomExampleNotifier, CustomExampleState>(
+        (_) => CustomExampleNotifier());
+
 ```
 
 As we see in this case we didn't use `PagedNotifier`, instead we used a normal Riverpod `StateNotifier` with the `PagedNotifierMixin` which ensures the notifier has a correct `load` method.
+
+Let's take a closer look at :
+
+```dart
+ Future<List<User>?> load(String page, int limit) async {
+```
+Where does this `String page` get set? Well some of you may have noticed this `firstPageKey` whatever string is in there will be passed to the `page` argument of `load`:  
+
+```dart
+ body: RiverPagedBuilder<String, User>(
+            firstPageKey: 'CustomArgString',
+```
 
 Also, in this example, we have used a custom state that extends `PagedState`, because we need another custom parameter `filterByCity`:
 
