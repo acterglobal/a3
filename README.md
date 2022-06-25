@@ -245,6 +245,20 @@ Where does this `String page` get set? Well some of you may have noticed this `f
             firstPageKey: 'CustomArgString',
 ```
 
+Your custom arg for `firstPageKey` does not have to be a `String` it can be any type as specified when you declared your Notifier:
+
+```dart
+class CustomExampleNotifier extends StateNotifier<CustomExampleState>
+    with PagedNotifierMixin<String, User, CustomExampleState> {
+```
+You could for example pass an Enum: 
+
+```dart
+class CustomExampleNotifier extends StateNotifier<CustomExampleState>
+    with PagedNotifierMixin<MyEnumType, User, CustomExampleState> {
+```
+and then just change the `load` and `RiverPagedBuilder` Generics to match. 
+
 Also, in this example, we have used a custom state that extends `PagedState`, because we need another custom parameter `filterByCity`:
 
 ```dart
