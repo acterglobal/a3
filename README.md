@@ -1,6 +1,6 @@
 # Riverpod Infinite Scroll
 
-Hi! This package is a plugin for `[infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination)` that is designed to work with [Riverpod](https://riverpod.dev).
+Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
 # How it works
 
@@ -10,7 +10,7 @@ The `RiverPagedBuilder` expects a Riverpod `StateNotifierProvider`
 
 This `StateNotifierProvider` must have a few things to ensure everything works correctly, it must have a `load method` and it must have a state that has the list of the elements, an error, and a variable that hold the next page that the load function will use, examples are below.
 
-`riverpod_infinite_scroll` helps us to ensure that the `StateNotifier` we are using respect this constraints with two classes:
+`riverpod_infinite_scroll` helps us to ensure that our `StateNotifier` will respect these constraints with the choice of two classes:
 
 You can either use the simple: 
  - `PagedState` - a state that has all the properties that `riverpod_infinite_scroll` needs
