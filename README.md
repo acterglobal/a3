@@ -2,6 +2,15 @@
 
 Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
+# Getting started:
+```bash
+flutter pub get riverpod_infinite_scroll
+flutter pub get infinite_scroll_pagination
+
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
+```
+
 # How it works
 
 This package exports a widget, the `RiverPagedBuilder` that will build your infinite, scrollable list.
