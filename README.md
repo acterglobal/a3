@@ -22,10 +22,9 @@ This `StateNotifierProvider` must implement two methods to ensure everything wor
 `riverpod_infinite_scroll` helps us to ensure that our `StateNotifier` will respect these constraints with the choice of two classes:
 
 You can either use the simple: 
- - `PagedState` - a state that has all the properties that `riverpod_infinite_scroll` needs and is intended for simple states only containing a list of `records`
+- `PagedNotifier` - You can create a class that extends `PagedNotifier` a notifier that has already all the properties that `riverpod_infinite_scroll` needs and is intended for simple states only containing a list of `records`
 
-Or if you need more flexbility to handle a more complex state object you can implement 
- - `PagedNotifierMixin` - a mixin that ensure your `StateNotifier` will implement the `load` method with the correct types.
+- Or if you need more flexbility to handle a more complex state object you can use a StateNotifier that use `PagedState` (or a state that extends PagedState) - in such case a mixin that ensure your `StateNotifier` will implement the `load` method with the correct types is provided from `PagedNotifierMixin`
 
 ## Example - Simple version
 
