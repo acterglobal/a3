@@ -81,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Photo',
+                          AppLocalizations.of(context)!.photo,
                           style: TextStyle(color: Colors.white),
                         ),
                       )
@@ -101,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'File',
+                          AppLocalizations.of(context)!.file,
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -205,7 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     style: ChatTheme01.chatTitleStyle,
                   );
                 } else {
-                  return Text('Loading Name');
+                  return Text(AppLocalizations.of(context)!.loadingName);
                 }
               },
             ),
@@ -343,7 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     height: MediaQuery.of(context).size.height * 0.25,
                     width: MediaQuery.of(context).size.width,
                     child: Text(
-                      'You have been Invited to join this room.',
+                      AppLocalizations.of(context)!.invitationText1,
                       style: AppCommonTheme.appBartitleStyle
                           .copyWith(fontSize: 14),
                     ),

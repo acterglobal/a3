@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InviteInfoWidget extends StatelessWidget {
   const InviteInfoWidget({
@@ -34,7 +35,7 @@ class InviteInfoWidget extends StatelessWidget {
             ),
             subtitle: RichText(
               text: TextSpan(
-                text: 'Invited you to join ',
+                text: AppLocalizations.of(context)!.invitationText2,
                 style: AppCommonTheme.appBartitleStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -69,7 +70,7 @@ class InviteInfoWidget extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Accept',
+                    AppLocalizations.of(context)!.accept,
                     style: AppCommonTheme.appBartitleStyle
                         .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
@@ -90,7 +91,7 @@ class InviteInfoWidget extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Decline',
+                    AppLocalizations.of(context)!.decline,
                     style: AppCommonTheme.appBartitleStyle
                         .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                   ),

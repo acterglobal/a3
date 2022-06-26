@@ -48,16 +48,17 @@ class _ChatListState extends State<ChatList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leadingWidth: MediaQuery.of(context).size.width / 5,
+        leadingWidth: MediaQuery.of(context).size.width * 0.2,
         toolbarHeight: MediaQuery.of(context).size.height / 15,
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.only(left: 10),
+        leading: FittedBox(
+          fit: BoxFit.scaleDown,
           child: TextButton(
             onPressed: () {},
             child: Text(
               AppLocalizations.of(context)!.select,
               style: ChatTheme01.chatTitleStyle + AppCommonTheme.primaryColor,
+              textAlign: TextAlign.center,
             ),
           ),
         ),
@@ -100,7 +101,7 @@ class _ChatListState extends State<ChatList> {
                       alignment: Alignment.topLeft,
                       padding: const EdgeInsets.only(left: 18),
                       child: Text(
-                        'Invites',
+                        AppLocalizations.of(context)!.invites,
                         style: AppCommonTheme.appBartitleStyle
                             .copyWith(fontSize: 16),
                       ),
