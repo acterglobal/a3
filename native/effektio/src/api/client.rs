@@ -8,7 +8,7 @@ use effektio_core::{
 };
 use futures::{
     stream, Stream, StreamExt,
-    channel::mpsc::Sender,
+    channel::mpsc::{Receiver, Sender},
 };
 use matrix_sdk::{
     config::SyncSettings,
@@ -44,6 +44,8 @@ pub struct ClientState {
 pub struct Client {
     client: MatrixClient,
     state: Arc<RwLock<ClientState>>,
+    to_device_rx: Arc<Mutex<Receiver<String>>>,
+    sync_msg_like_rx: Arc<Mutex<Receiver<String>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -118,10 +120,12 @@ fn print_result(sas: &SasVerification) {
 }
 
 impl Client {
-    pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
+    pub(crate) fn new(client: MatrixClient, state: ClientState, to_device_rx: Receiver<String>, sync_msg_like_rx: Receiver<String>) -> Self {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
+            to_device_rx: Arc::new(Mutex::new(to_device_rx)),
+            sync_msg_like_rx: Arc::new(Mutex::new(sync_msg_like_rx)),
         }
     }
 
@@ -420,5 +424,312 @@ impl Client {
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         self.account().await?.avatar().await
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use anyhow::Result;
+    use matrix_sdk::{
+        config::SyncSettings,
+        encryption::verification::{SasVerification, Verification},
+        ruma::{
+            events::{
+                room::message::MessageType,
+                AnySyncMessageLikeEvent, AnySyncRoomEvent, AnyToDeviceEvent,
+            },
+            UserId,
+        },
+        store::StateStore,
+        Client as MatrixClient, LoopCtrl, Result as MatrixResult,
+    };
+    #[cfg(feature = "e2e-encryption")]
+    use matrix_sdk_crypto::{
+        verification::event_enums::{AcceptContent, KeyContent, MacContent, OutgoingContent, StartContent},
+        OlmError, OlmMachine,
+    };
+    use ruma::{
+        api::client::sync::sync_events::v3::{DeviceLists, ToDevice},
+        events::SyncMessageLikeEvent,
+    };
+    use std::{
+        env, io,
+        process::exit,
+        sync::{atomic::{AtomicBool, Ordering}, Arc},
+    };
+    use url::Url;
+    use zenv::Zenv;
+
+    async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
+        println!("Does the emoji match: {:?}", sas.emoji());
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("error: unable to read user input");
+
+        match input.trim().to_lowercase().as_ref() {
+            "yes" | "true" | "ok" => {
+                sas.confirm().await.unwrap();
+
+                if sas.is_done() {
+                    print_result(&sas);
+                    print_devices(sas.other_device().user_id(), &client).await;
+                }
+            }
+            _ => sas.cancel().await.unwrap(),
+        }
+    }
+
+    fn print_result(sas: &SasVerification) {
+        let device = sas.other_device();
+
+        println!(
+            "Successfully verified device {} {} {:?}",
+            device.user_id(),
+            device.device_id(),
+            device.local_trust_state(),
+        );
+    }
+
+    async fn print_devices(user_id: &UserId, client: &MatrixClient) {
+        println!("Devices of user {}", user_id);
+
+        for device in client.encryption().get_user_devices(user_id).await.unwrap().devices() {
+            println!(
+                "   {:<10} {:<30} {:<}",
+                device.device_id(),
+                device.display_name().unwrap_or("-"),
+                device.verified()
+            );
+        }
+    }
+
+    async fn login(homeserver_url: String, base_path: &str, username: &str, password: &str) -> MatrixResult<()> {
+        let homeserver_url = Url::parse(&homeserver_url).expect("Couldn't parse the homeserver URL");
+        let mut client_builder = MatrixClient::builder().homeserver_url(homeserver_url);
+
+        let state_store = StateStore::open_with_path(base_path)?;
+        client_builder = client_builder.state_store(Box::new(state_store));
+        let client = client_builder.build().await.unwrap();
+
+        client.login(username, password, None, Some("rust-sdk")).await?;
+
+        let user_id = client.user_id().await.unwrap();
+        let device_id = client.device_id().await.unwrap();
+        if let Some(device) = client
+            .encryption()
+            .get_device(&user_id, &device_id)
+            .await?
+        {
+            println!("{:?}", device.verified());
+        }
+
+        let client_ref = &client;
+        let initial_sync = Arc::new(AtomicBool::new(true));
+        let initial_ref = &initial_sync;
+
+        client
+            .sync_with_callback(SyncSettings::new(), |response| async move {
+                let client = &client_ref;
+                let initial = &initial_ref;
+
+                for event in response.to_device.events.iter().filter_map(|ev| ev.deserialize().ok()) {
+                    match event {
+                        AnyToDeviceEvent::KeyVerificationRequest(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationRequest");
+                            println!("sender: {}", e.sender);
+                            println!("from_device: {}", e.content.from_device);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                            println!("methods: {:?}", e.content.methods);
+                            println!("timestamp: {:?}", e.content.timestamp);
+                            let request = event.accept().unwrap();
+                            let content = OutgoingContent::try_from(request).unwrap();
+                            let content = AcceptContent::try_from(&content).unwrap();
+                        }
+                        AnyToDeviceEvent::KeyVerificationReady(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationReady");
+                            println!("sender: {}", e.sender);
+                            println!("from_device: {}", e.content.from_device);
+                            println!("methods: {:?}", e.content.methods);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                        }
+                        AnyToDeviceEvent::KeyVerificationStart(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationStart");
+                            println!("sender: {}", e.sender);
+                            println!("from_device: {}", e.content.from_device);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                            println!("method: {:?}", e.content.method);
+                            // if let Some(Verification::SasV1(sas)) = client
+                            //     .encryption()
+                            //     .get_verification(&e.sender, e.content.transaction_id.as_str())
+                            //     .await
+                            // {
+                            //     println!(
+                            //         "Starting verification with {} {}",
+                            //         &sas.other_device().user_id(),
+                            //         &sas.other_device().device_id(),
+                            //     );
+                            //     print_devices(&e.sender, client).await;
+                            //     sas.accept().await.unwrap();
+                            // }
+                        }
+                        AnyToDeviceEvent::KeyVerificationCancel(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationCancel");
+                            println!("sender: {}", e.sender);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                            println!("reason: {}", e.content.reason);
+                            println!("code: {:?}", e.content.code);
+                        }
+                        AnyToDeviceEvent::KeyVerificationAccept(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationAccept");
+                            println!("sender: {}", e.sender);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                            println!("method: {:?}", e.content.method);
+                        }
+                        AnyToDeviceEvent::KeyVerificationKey(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationKey");
+                            println!("sender: {}", e.sender);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                            println!("key: {:?}", e.content.key);
+                            // if let Some(Verification::SasV1(sas)) = client
+                            //     .encryption()
+                            //     .get_verification(&e.sender, e.content.transaction_id.as_str())
+                            //     .await
+                            // {
+                            //     tokio::spawn(wait_for_confirmation((*client).clone(), sas));
+                            // }
+                        }
+                        AnyToDeviceEvent::KeyVerificationMac(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationMac");
+                            println!("sender: {}", e.sender);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                            println!("mac: {:?}", e.content.mac);
+                            println!("keys: {:?}", e.content.keys);
+                            // if let Some(Verification::SasV1(sas)) = client
+                            //     .encryption()
+                            //     .get_verification(&e.sender, e.content.transaction_id.as_str())
+                            //     .await
+                            // {
+                            //     if sas.is_done() {
+                            //         print_result(&sas);
+                            //         print_devices(&e.sender, client).await;
+                            //     }
+                            // }
+                        }
+                        AnyToDeviceEvent::KeyVerificationDone(e) => {
+                            println!("AnyToDeviceEvent::KeyVerificationDone");
+                            println!("sender: {}", e.sender);
+                            println!("transaction_id: {}", e.content.transaction_id);
+                        }
+                        _ => (),
+                    }
+                }
+
+                if !initial.load(Ordering::SeqCst) {
+                    for (room_id, room_info) in response.rooms.join {
+                        for event in room_info.timeline.events.iter().filter_map(|e| e.event.deserialize().ok()) {
+                            if let AnySyncRoomEvent::MessageLike(event) = event {
+                                match event {
+                                    AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
+                                        println!("AnySyncMessageLikeEvent::RoomMessage");
+                                        // if let MessageType::VerificationRequest(_) = &m.content.msgtype {
+                                        //     let request = client
+                                        //         .encryption()
+                                        //         .get_verification_request(&m.sender, &m.event_id)
+                                        //         .await
+                                        //         .expect("Request object wasn't created");
+                                        //     request
+                                        //         .accept()
+                                        //         .await
+                                        //         .expect("Can't accept verification request");
+                                        // }
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationReady");
+                                        println!("sender: {}", e.sender);
+                                        println!("from_device: {}", e.content.from_device);
+                                        println!("methods: {:?}", e.content.methods);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationStart");
+                                        println!("sender: {}", e.sender);
+                                        println!("from_device: {}", e.content.from_device);
+                                        println!("method: {:?}", e.content.method);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationCancel");
+                                        println!("sender: {}", e.sender);
+                                        println!("reason: {}", e.content.reason);
+                                        println!("code: {:?}", e.content.code);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationAccept");
+                                        println!("sender: {}", e.sender);
+                                        println!("method: {:?}", e.content.method);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationKey");
+                                        println!("sender: {}", e.sender);
+                                        println!("key: {:?}", e.content.key);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                        // if let Some(Verification::SasV1(sas)) = client
+                                        //     .encryption()
+                                        //     .get_verification(&e.sender, e.content.relates_to.event_id.as_str())
+                                        //     .await
+                                        // {
+                                        //     tokio::spawn(wait_for_confirmation((*client).clone(), sas));
+                                        // }
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationMac");
+                                        println!("sender: {}", e.sender);
+                                        println!("mac: {:?}", e.content.mac);
+                                        println!("keys: {:?}", e.content.keys);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                        // if let Some(Verification::SasV1(sas)) = client
+                                        //     .encryption()
+                                        //     .get_verification(&e.sender, e.content.relates_to.event_id.as_str())
+                                        //     .await
+                                        // {
+                                        //     if sas.is_done() {
+                                        //         print_result(&sas);
+                                        //         print_devices(&e.sender, client).await;
+                                        //     }
+                                        // }
+                                    }
+                                    AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(e)) => {
+                                        println!("AnySyncMessageLikeEvent::KeyVerificationDone");
+                                        println!("sender: {}", e.sender);
+                                        println!("relates_to: {:?}", e.content.relates_to);
+                                    }
+                                    _ => (),
+                                }
+                            }
+                        }
+                    }
+                }
+
+                initial.store(false, Ordering::SeqCst);
+                LoopCtrl::Continue
+            })
+            .await;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_cross_signing() -> Result<()> {
+        let z = Zenv::new(".env", false).parse()?;
+        let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
+        let base_path: &str = z.get("BASE_PATH").unwrap();
+        let username: &str = z.get("USERNAME").unwrap();
+        let password: &str = z.get("PASSWORD").unwrap();
+
+        login(homeserver_url, base_path, username, password).await?;
+
+        Ok(())
     }
 }

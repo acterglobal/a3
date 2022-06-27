@@ -9,19 +9,13 @@ fn login_new_client(basepath: string, username: string, password: string) -> Fut
 fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Client>>;
 
 /// Create a new client anonymous client connecting to the homeserver
-fn guest_client(basepath: string, homeserver: string) -> Future<Result<LoginResponse>>;
+fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
 
 /// Create a new client from the restore token
 fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
-
-object LoginResponse {
-    fn get_client() -> Client;
-    fn get_to_device_rx() -> Stream<string>;
-    fn get_sync_msg_like_rx() -> Stream<string>;
-}
 
 /// Representing a color
 object Color {
