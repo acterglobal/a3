@@ -1,9 +1,12 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
 import 'dart:io';
+import 'dart:math';
+import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:effektio/controllers/chat_controller.dart';
@@ -32,6 +35,9 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   late final _user;
+  String roomName = '';
+  bool roomState = false;
+  final Random random = Random();
   ChatController chatController = ChatController.instance;
 
   @override
@@ -39,6 +45,9 @@ class _ChatScreenState extends State<ChatScreen> {
     _user = types.User(
       id: widget.user!,
     );
+    //roomState is true in case of invited and false if already joined
+    //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
+    roomState = random.nextBool();
     chatController.init(widget.room, _user);
     super.initState();
   }
@@ -72,7 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'Photo',
+                          AppLocalizations.of(context)!.photo,
                           style: TextStyle(color: Colors.white),
                         ),
                       )
@@ -92,7 +101,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          'File',
+                          AppLocalizations.of(context)!.file,
                           style: TextStyle(
                             color: Colors.white,
                           ),
@@ -186,7 +195,8 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FutureBuilder<String>(
-              future: widget.room.displayName(),
+              future:
+                  widget.room.displayName().then((value) => roomName = value),
               builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
                 if (snapshot.hasData) {
                   return Text(
@@ -195,7 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     style: ChatTheme01.chatTitleStyle,
                   );
                 } else {
-                  return Text('Loading Name');
+                  return Text(AppLocalizations.of(context)!.loadingName);
                 }
               },
             ),
@@ -284,39 +294,72 @@ class _ChatScreenState extends State<ChatScreen> {
     return GetBuilder<ChatController>(
       id: 'Chat',
       builder: (ChatController controller) {
-        return Chat(
-          l10n: ChatL10nEn(
-            emptyChatPlaceholder: '',
-            attachmentButtonAccessibilityLabel: '',
-            fileButtonAccessibilityLabel: '',
-            inputPlaceholder: AppLocalizations.of(context)!.message,
-            sendButtonAccessibilityLabel: '',
-          ),
-          messages: chatController.messages,
-          onSendPressed: chatController.handleSendPressed,
-          user: _user,
-          //custom avatar builder
-          avatarBuilder: _avatarBuilder,
-          imageMessageBuilder: _imageMessageBuilder,
-          //Whenever users starts typing on keyboard, this will trigger the function
-          onTextChanged: (text) async {
-            await controller.room.typingNotice(true);
-          },
-          showUserAvatars: true,
-          onAttachmentPressed: () => _handleAttachmentPressed(context),
-          onPreviewDataFetched: controller.handlePreviewDataFetched,
-          onMessageTap: controller.handleMessageTap,
-          onEndReached: controller.handleEndReached,
-          onEndReachedThreshold: 0.75,
-          emptyState: EmptyPlaceholder(),
-          //Custom Theme class, see lib/common/store/chatTheme.dart
-          theme: EffektioChatTheme(
-            attachmentButtonIcon:
-                SvgPicture.asset('assets/images/attachment.svg'),
-            sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
-            seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
-            deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
-          ),
+        return Stack(
+          children: [
+            Chat(
+              l10n: ChatL10nEn(
+                emptyChatPlaceholder: '',
+                attachmentButtonAccessibilityLabel: '',
+                fileButtonAccessibilityLabel: '',
+                inputPlaceholder: AppLocalizations.of(context)!.message,
+                sendButtonAccessibilityLabel: '',
+              ),
+              messages: chatController.messages,
+              sendButtonVisibilityMode: roomState
+                  ? SendButtonVisibilityMode.hidden
+                  : SendButtonVisibilityMode.editing,
+              onSendPressed: chatController.handleSendPressed,
+              user: _user,
+              disableImageGallery: roomState ? true : false,
+              //custom avatar builder
+              avatarBuilder: _avatarBuilder,
+              imageMessageBuilder: _imageMessageBuilder,
+              //Whenever users starts typing on keyboard, this will trigger the function
+              onTextChanged: (text) async {
+                await controller.room.typingNotice(true);
+              },
+              showUserAvatars: true,
+              onAttachmentPressed: () => _handleAttachmentPressed(context),
+              onPreviewDataFetched: controller.handlePreviewDataFetched,
+              onMessageTap: controller.handleMessageTap,
+              onEndReached: roomState ? null : controller.handleEndReached,
+              onEndReachedThreshold: 0.75,
+              emptyState: EmptyPlaceholder(),
+              //Custom Theme class, see lib/common/store/chatTheme.dart
+              theme: EffektioChatTheme(
+                attachmentButtonIcon:
+                    SvgPicture.asset('assets/images/attachment.svg'),
+                sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
+                seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
+                deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
+              ),
+            ),
+            roomState
+                ? Container(
+                    alignment: Alignment.topLeft,
+                    padding:
+                        const EdgeInsets.only(top: 10, bottom: 20, left: 10),
+                    color: AppCommonTheme.backgroundColor,
+                    height: MediaQuery.of(context).size.height * 0.25,
+                    width: MediaQuery.of(context).size.width,
+                    child: Text(
+                      AppLocalizations.of(context)!.invitationText1,
+                      style: AppCommonTheme.appBartitleStyle
+                          .copyWith(fontSize: 14),
+                    ),
+                  )
+                : Container(),
+            roomState
+                ? Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: InviteInfoWidget(
+                      avatarColor: Colors.white,
+                      inviter: inviters[random.nextInt(inviters.length)],
+                      groupName: roomName,
+                    ),
+                  )
+                : Container(),
+          ],
         );
       },
     );

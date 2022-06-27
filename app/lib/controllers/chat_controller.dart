@@ -34,7 +34,6 @@ class ChatController extends GetxController {
   late final Conversation room;
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
-
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
     room = convoRoom;
@@ -99,6 +98,7 @@ class ChatController extends GetxController {
       showStatus: true,
     );
     messages.insert(0, textMessage);
+    update(['Chat']);
   }
 
   //image selection
