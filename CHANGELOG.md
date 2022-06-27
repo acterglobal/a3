@@ -17,3 +17,8 @@
 ## 1.0.4
 
 * Bug next page key
+
+## 1.0.5
+
+* Pull to refresh bug fix
+* Rewrite README with a better english
