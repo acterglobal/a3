@@ -69,10 +69,12 @@ impl Mock {
         sleep(Duration::from_millis(300)).await;
         let _bashir = ensure_user(homeserver, "bashir", "bashir").await?;
         sleep(Duration::from_millis(300)).await;
-        // let _miles = ensure_user(homeserver, "miles", "miles").await?;
-        // sleep(Duration::from_millis(300)).await;
-        // let _dax = ensure_user(homeserver, "dax", "dax").await?;
-        // sleep(Duration::from_millis(300)).await;
+        let _miles = ensure_user(homeserver, "miles", "miles").await?;
+        sleep(Duration::from_millis(300)).await;
+        let _dax = ensure_user(homeserver, "dax", "dax").await?;
+        sleep(Duration::from_millis(300)).await;
+
+        log::warn!("Done ensuring users");
 
         Ok(())
     }

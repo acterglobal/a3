@@ -129,20 +129,23 @@ jobs:
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
-      - name: Start Android emulator
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
-        with:
-          cmd: flutter doctor -v
-          api: 28
-          tag: default
-          abi: x86
+      - name: run cargo integration tests
+        run: cargo test -p effektio -- --ignored
 
-      - name: Versions
-        run: |
-          sdkmanager platform-tools
-          adb devices
-          echo $ANDROID_HOME
+      # - name: Start Android emulator
+      #   uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
+      #   with:
+      #     cmd: flutter doctor -v
+      #     api: 28
+      #     tag: default
+      #     abi: x86
 
-      - run: flutter test -d android integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-        name: "running tests"
-        working-directory: ./app
+      # - name: Versions
+      #   run: |
+      #     sdkmanager platform-tools
+      #     adb devices
+      #     echo $ANDROID_HOME
+
+      # - run: flutter test -d android integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+      #   name: "running tests"
+      #   working-directory: ./app
