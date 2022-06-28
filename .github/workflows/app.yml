@@ -130,6 +130,8 @@ jobs:
         run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
       - name: run cargo integration tests
+        env:
+          HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
         run: cargo test -p effektio -- --ignored
 
       # - name: Start Android emulator
