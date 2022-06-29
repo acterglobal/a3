@@ -21,8 +21,8 @@ class ChatOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      scrollDirection: Axis.vertical,
       padding: const EdgeInsets.only(top: 10),
       itemCount: rooms.length,
       itemBuilder: (BuildContext context, int index) {

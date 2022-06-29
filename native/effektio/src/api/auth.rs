@@ -114,17 +114,16 @@ pub async fn register_with_registration_token(
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),
                         password: Some(&password),
-
                         auth: Some(uiaa::AuthData::RegistrationToken(
                             uiaa::RegistrationToken::new(&registration_token),
                         )),
                     });
                     client.register(request).await?;
                 } else {
-                    anyhow::bail!("Server did not indicate how to  allow registration.");
+                    bail!("Server did not indicate how to  allow registration.");
                 }
             } else {
-                anyhow::bail!("Server is not set up to allow registration.");
+                bail!("Server is not set up to allow registration.");
             }
 
             let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued

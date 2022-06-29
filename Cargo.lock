@@ -874,6 +874,7 @@ dependencies = [
  "log",
  "log-panics",
  "matrix-sdk",
+ "mime",
  "parking_lot 0.11.2",
  "ruma",
  "sanitize-filename-reader-friendly",

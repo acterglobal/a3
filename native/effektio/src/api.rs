@@ -1,11 +1,10 @@
-use crate::platform;
-use anyhow::{bail, Context, Result};
+use anyhow::Result;
 use futures::Stream;
 use lazy_static::lazy_static;
-use matrix_sdk::Session;
 pub use ruma;
 use tokio::runtime;
-use url::Url;
+
+use crate::platform;
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
@@ -27,7 +26,7 @@ pub use client::{Client, ClientStateBuilder, CrossSigningEvent};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::Group;
-pub use messages::RoomMessage;
+pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 
