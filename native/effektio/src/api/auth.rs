@@ -1,4 +1,4 @@
-use super::{Client, ClientStateBuilder, RUNTIME};
+use super::{Client, ClientStateBuilder, CrossSigningEvent, RUNTIME};
 use crate::platform;
 use anyhow::{bail, Context, Result};
 use assign::assign;
@@ -6,8 +6,6 @@ use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
 use futures::channel::mpsc::{channel, Receiver};
 use matrix_sdk::Session;
-use std::sync::Arc;
-// use tokio::sync::broadcast::{channel, Receiver};
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
@@ -26,11 +24,11 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                     .context("device id is given by server")?,
             };
             client.restore_login(session).await?;
-            let (to_device_tx, to_device_rx) = channel::<String>(10); // dropping after more than 10 items queued
-            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<String>(10); // dropping after more than 10 items queued
+            let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
+            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(true).build()?,
+                ClientStateBuilder::default().is_guest(true).build().unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
@@ -53,11 +51,11 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         .spawn(async move {
             let client = config.build().await?;
             client.restore_login(session).await?;
-            let (to_device_tx, to_device_rx) = channel::<String>(10); // dropping after more than 10 items queued
-            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<String>(10); // dropping after more than 10 items queued
+            let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
+            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(is_guest).build()?,
+                ClientStateBuilder::default().is_guest(is_guest).build().unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
@@ -84,11 +82,11 @@ pub async fn login_new_client(
         .spawn(async move {
             let client = config.build().await?;
             client.login(user, &password, None, None).await?;
-            let (to_device_tx, to_device_rx) = channel::<String>(10); // dropping after more than 10 items queued
-            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<String>(10); // dropping after more than 10 items queued
+            let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
+            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build()?,
+                ClientStateBuilder::default().is_guest(false).build().unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
@@ -129,11 +127,11 @@ pub async fn register_with_registration_token(
                 anyhow::bail!("Server is not set up to allow registration.");
             }
 
-            let (to_device_tx, to_device_rx) = channel::<String>(10); // dropping after more than 10 items queued
-            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<String>(10); // dropping after more than 10 items queued
+            let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
+            let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build()?,
+                ClientStateBuilder::default().is_guest(false).build().unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
