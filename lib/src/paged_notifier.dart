@@ -8,6 +8,7 @@ typedef LoadFunction<PageKeyType, ItemType> = Future<List<ItemType>?> Function(
 typedef NextPageKeyBuilder<PageKeyType, ItemType> = PageKeyType? Function(
     List<ItemType>? lastItems, PageKeyType page, int limit);
 
+/// A [StateNotifier] that has already all the properties that `riverpod_infinite_scroll` needs and is intended for simple states only containing a list of `records`
 class PagedNotifier<PageKeyType, ItemType>
     extends StateNotifier<PagedState<PageKeyType, ItemType>>
     with

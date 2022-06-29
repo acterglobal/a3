@@ -18,6 +18,8 @@ typedef InfiniteScrollAutoDisposeProvider<PageKeyType, ItemType>
             PagedState<PageKeyType, ItemType>>,
         PagedState<PageKeyType, ItemType>>;
 
+/// [RiverPagedBuilder] will build your infinite, scrollable list.
+/// It expects a Riverpod [StateNotifierProvider]
 class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
   final InfiniteScrollProvider<PageKeyType, ItemType>? _provider;
   final InfiniteScrollAutoDisposeProvider<PageKeyType, ItemType>?

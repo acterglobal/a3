@@ -22,3 +22,5 @@
 
 * Pull to refresh bug fix
 * Rewrite README with a better english
+* Added == hashcode and toString method to the PagedNotifier
+* Added documentation on single classes
