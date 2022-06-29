@@ -42,13 +42,12 @@ class PagedNotifier<PageKeyType, ItemType>
     try {
       final records = await _load(page, limit);
       state = state.copyWith(
-        records: [
-          ...(state.records ?? <ItemType>[]),
-          ...(records ?? <ItemType>[])
-        ],
-        nextPageKey: nextPageKeyBuilder(records, page, limit),
-        previousPageKeys: { ...state.previousPageKeys, page }.toList()
-      );
+          records: [
+            ...(state.records ?? <ItemType>[]),
+            ...(records ?? <ItemType>[])
+          ],
+          nextPageKey: nextPageKeyBuilder(records, page, limit),
+          previousPageKeys: {...state.previousPageKeys, page}.toList());
       return records;
     } catch (e) {
       if (mounted) {

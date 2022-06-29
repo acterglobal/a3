@@ -17,7 +17,7 @@ class EasyExampleNotifier extends PagedNotifier<int, Post> {
                 20,
                 (index) => Post(
                     id: index,
-                    title: "My ${index + ( (limit * page) - limit )} work",
+                    title: "My ${index + ((limit * page) - limit)} work",
                     image: "https://via.placeholder.com/150/92c952"));
           }),
           nextPageKeyBuilder: NextPageKeyBuilderDefault.mysqlPagination,

@@ -25,9 +25,7 @@ class PagedState<PageKeyType, ItemType> {
       List<PageKeyType>? previousPageKeys}) {
     return PagedState<PageKeyType, ItemType>(
         records: records ?? this.records,
-        error: error == undefined 
-            ? this.error 
-            : error,
+        error: error == undefined ? this.error : error,
         nextPageKey: nextPageKey == undefined
             ? this.nextPageKey
             : nextPageKey as PageKeyType?,
@@ -46,8 +44,10 @@ class PagedState<PageKeyType, ItemType> {
             other is PagedState &&
             const DeepCollectionEquality().equals(other.records, records) &&
             const DeepCollectionEquality().equals(other.error, e) &&
-            const DeepCollectionEquality().equals(other.nextPageKey, nextPageKey) &&
-            const DeepCollectionEquality().equals(other.previousPageKeys, previousPageKeys));
+            const DeepCollectionEquality()
+                .equals(other.nextPageKey, nextPageKey) &&
+            const DeepCollectionEquality()
+                .equals(other.previousPageKeys, previousPageKeys));
   }
 
   @override

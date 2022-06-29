@@ -29,8 +29,11 @@ class CustomExampleState extends PagedState<String, User> {
       dynamic error,
       dynamic nextPageKey,
       List<String>? previousPageKeys}) {
-    final sup = super
-        .copyWith(records: records, error: error, nextPageKey: nextPageKey, previousPageKeys: previousPageKeys);
+    final sup = super.copyWith(
+        records: records,
+        error: error,
+        nextPageKey: nextPageKey,
+        previousPageKeys: previousPageKeys);
     return CustomExampleState(
         filterByCity: filterByCity ?? this.filterByCity,
         records: sup.records,
