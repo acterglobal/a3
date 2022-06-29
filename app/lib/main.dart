@@ -25,6 +25,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:themed/themed.dart';
 
 void main() async {
+  await startApp();
+}
+
+Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
@@ -142,6 +146,7 @@ class _EffektioHomeState extends State<EffektioHome> {
 
     return DefaultTabController(
       length: 5,
+      key: Key("bottom-bar"),
       child: SafeArea(
         child: Scaffold(
           appBar: tabIndex <= 3
