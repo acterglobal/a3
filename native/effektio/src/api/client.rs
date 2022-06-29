@@ -29,6 +29,8 @@ use std::sync::{
     Arc,
 };
 
+use super::{api, Account, Conversation, Group, Room, RUNTIME};
+
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
     #[builder(default)]

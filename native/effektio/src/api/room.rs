@@ -6,15 +6,19 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         self,
-        events::{room::message::RoomMessageEventContent, AnyMessageLikeEventContent},
-        EventId, OwnedUserId,
+        events::{
+            room::message::{MessageType, RoomMessageEventContent},
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
+            MessageLikeEvent,
+        },
+        EventId, OwnedUserId, UInt,
     },
     Client as MatrixClient,
 };
 use std::{fs::File, io::Write, path::PathBuf};
 
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, RUNTIME};
+use super::{api, RUNTIME, TimelineStream};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
