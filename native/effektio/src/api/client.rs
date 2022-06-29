@@ -79,8 +79,8 @@ impl CrossSigningEvent {
 pub struct Client {
     client: MatrixClient,
     state: Arc<RwLock<ClientState>>,
-    to_device_rx: Arc<Mutex<Receiver<CrossSigningEvent>>>, // mutex for sync, arc for clone
-    sync_msg_like_rx: Arc<Mutex<Receiver<CrossSigningEvent>>>, // mutex for sync, arc for clone
+    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone
+    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone
 }
 
 impl std::ops::Deref for Client {
@@ -139,13 +139,13 @@ impl Client {
         to_device_rx: Receiver<CrossSigningEvent>,
         sync_msg_like_rx: Receiver<CrossSigningEvent>,
     ) -> Self {
-        let to_device_arc = Arc::new(Mutex::new(to_device_rx));
-        let sync_msg_like_arc = Arc::new(Mutex::new(sync_msg_like_rx));
+        let to_device_arc = Mutex::new(Some(to_device_rx));
+        let sync_msg_like_arc = Mutex::new(Some(sync_msg_like_rx));
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            to_device_rx: Arc::clone(&to_device_arc),
-            sync_msg_like_rx: Arc::clone(&sync_msg_like_arc),
+            to_device_rx: Arc::new(to_device_arc),
+            sync_msg_like_rx: Arc::new(sync_msg_like_arc),
         }
     }
 
@@ -544,12 +544,12 @@ impl Client {
         self.account().await?.avatar().await
     }
 
-    pub fn get_to_device_rx(&self) -> Result<Receiver<CrossSigningEvent>> {
-        Ok(*Arc::clone(&self.to_device_rx).lock())
+    pub fn get_to_device_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
+        self.to_device_rx.lock().take()
     }
 
-    pub fn get_sync_msg_like_rx(&self) -> Result<Receiver<CrossSigningEvent>> {
-        Ok(*Arc::clone(&self.sync_msg_like_rx).lock())
+    pub fn get_sync_msg_like_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
+        self.sync_msg_like_rx.lock().take()
     }
 }
 

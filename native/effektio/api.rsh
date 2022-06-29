@@ -233,9 +233,9 @@ object Client {
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
-    fn get_to_device_rx() -> Result<Stream<CrossSigningEvent>>;
+    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
 
-    fn get_sync_msg_like_rx() -> Result<Stream<CrossSigningEvent>>;
+    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
 }
 
 object CrossSigningEvent {
