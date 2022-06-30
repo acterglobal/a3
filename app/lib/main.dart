@@ -146,7 +146,7 @@ class _EffektioHomeState extends State<EffektioHome> {
 
     return DefaultTabController(
       length: 5,
-      key: Key("bottom-bar"),
+      key: const Key('bottom-bar'),
       child: SafeArea(
         child: Scaffold(
           appBar: tabIndex <= 3
