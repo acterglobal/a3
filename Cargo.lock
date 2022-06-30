@@ -903,6 +903,7 @@ dependencies = [
  "flexi_logger",
  "log",
  "matrix-sdk",
+ "matrix-sdk-base",
  "mime",
  "term-table",
  "tokio",

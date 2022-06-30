@@ -26,3 +26,8 @@ path = "../core"
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
 default-features = false
 features = ["native-tls"]
+
+
+[dependencies.matrix-sdk-base]
+git = "https://github.com/matrix-org/matrix-rust-sdk/"
+default-features = false
