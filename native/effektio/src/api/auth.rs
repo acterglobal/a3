@@ -28,7 +28,10 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(true).build().unwrap(),
+                ClientStateBuilder::default()
+                    .is_guest(true)
+                    .build()
+                    .unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
@@ -55,7 +58,10 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(is_guest).build().unwrap(),
+                ClientStateBuilder::default()
+                    .is_guest(is_guest)
+                    .build()
+                    .unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
@@ -86,7 +92,10 @@ pub async fn login_new_client(
             let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build().unwrap(),
+                ClientStateBuilder::default()
+                    .is_guest(false)
+                    .build()
+                    .unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );
@@ -130,7 +139,10 @@ pub async fn register_with_registration_token(
             let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build().unwrap(),
+                ClientStateBuilder::default()
+                    .is_guest(false)
+                    .build()
+                    .unwrap(),
                 to_device_rx,
                 sync_msg_like_rx,
             );

@@ -8,8 +8,7 @@ use matrix_sdk::{
         self,
         events::{
             room::message::{MessageType, RoomMessageEventContent},
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
-            MessageLikeEvent,
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, MessageLikeEvent,
         },
         EventId, OwnedUserId, UInt,
     },
@@ -18,7 +17,7 @@ use matrix_sdk::{
 use std::{fs::File, io::Write, path::PathBuf};
 
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, RUNTIME, TimelineStream};
+use super::{api, TimelineStream, RUNTIME};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
