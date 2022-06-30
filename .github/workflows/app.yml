@@ -134,20 +134,10 @@ jobs:
           HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
         run: cargo test -p effektio -- --ignored
 
-      - name: Start Android emulator
+      - name: Run integration testss on Android emulator
         uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
         with:
-          cmd: flutter doctor -v
+          cmd: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
           api: 28
           tag: default
           abi: x86
-
-      - name: Versions
-        run: |
-          sdkmanager platform-tools
-          adb devices
-          echo $ANDROID_HOME
-
-      - run: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-        name: "running tests"
-        working-directory: ./app
