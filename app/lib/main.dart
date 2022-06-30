@@ -87,6 +87,8 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
   int tabIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     _client = makeClient();
@@ -96,6 +98,30 @@ class _EffektioHomeState extends State<EffektioHome> {
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    // emoji verification
+    client.getToDeviceRx()!.listen((event) async {
+      String eventName = event.getEventName();
+      String eventId = event.getEventId();
+      String sender = event.getSender();
+      debugPrint(eventName);
+      if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
+        await client.acceptVerificationRequest(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
+        await client.acceptVerificationStart(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationKey') {
+        List<int> emoji = await client.getVerificationEmoji(sender, eventId);
+        _scaffoldKey.currentState!.showSnackBar(
+          SnackBar(
+            content: Text(
+              String.fromCharCodes(emoji, 0, emoji.length - 1),
+              style: TextStyle(fontSize: 24),
+            ),
+          ),
+        );
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationMac') {
+        await client.reviewVerificationMac(sender, eventId);
+      }
+    });
     return client;
   }
 
@@ -223,6 +249,7 @@ class _EffektioHomeState extends State<EffektioHome> {
               },
             ),
           ),
+          key: _scaffoldKey,
         ),
       ),
     );
@@ -246,6 +273,7 @@ class _EffektioHomeState extends State<EffektioHome> {
                 ),
               ),
             ),
+            key: _scaffoldKey,
           );
         }
       },

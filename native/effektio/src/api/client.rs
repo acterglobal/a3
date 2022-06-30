@@ -80,8 +80,8 @@ impl CrossSigningEvent {
 pub struct Client {
     client: MatrixClient,
     state: Arc<RwLock<ClientState>>,
-    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone
-    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone
+    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
 }
 
 impl std::ops::Deref for Client {
@@ -562,6 +562,142 @@ impl Client {
     pub fn get_sync_msg_like_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
         self.sync_msg_like_rx.lock().take()
     }
+
+    pub async fn accept_verification_request(&self, sender: String, event_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                let request = client
+                    .encryption()
+                    .get_verification_request(&sender, event_id.as_str())
+                    .await
+                    .expect("Request object wasn't created");
+                request
+                    .accept()
+                    .await
+                    .expect("Can't accept verification request");
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn accept_verification_start(&self, sender: String, event_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, event_id.as_str())
+                    .await
+                {
+                    sas.accept().await.unwrap();
+                    Ok(true)
+                } else {
+                    Ok(false)
+                }
+            })
+            .await?
+    }
+
+    pub async fn get_verification_emoji(&self, sender: String, event_id: String) -> Result<Vec<u32>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, event_id.as_str())
+                    .await
+                {
+                    if let Some(items) = sas.emoji() {
+                        let sequence = items
+                            .iter()
+                            .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                            .collect::<Vec<_>>();
+                        return Ok(sequence);
+                    }
+                }
+                Ok(vec![])
+            })
+            .await?
+    }
+
+    pub async fn confirm_verification_key(&self, sender: String, event_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, event_id.as_str())
+                    .await
+                {
+                    sas.confirm().await.unwrap();
+                    Ok(sas.is_done())
+                } else {
+                    Ok(false)
+                }
+            })
+            .await?
+    }
+
+    pub async fn mismatch_verification_key(&self, sender: String, event_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, event_id.as_str())
+                    .await
+                {
+                    sas.mismatch().await.unwrap();
+                    Ok(true)
+                } else {
+                    Ok(false)
+                }
+            })
+            .await?
+    }
+
+    pub async fn cancel_verification_key(&self, sender: String, event_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, event_id.as_str())
+                    .await
+                {
+                    sas.cancel().await.unwrap();
+                    Ok(true)
+                } else {
+                    Ok(false)
+                }
+            })
+            .await?
+    }
+
+    pub async fn review_verification_mac(&self, sender: String, event_id: String) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, event_id.as_str())
+                    .await
+                {
+                    Ok(sas.is_done())
+                } else {
+                    Ok(false)
+                }
+            })
+            .await?
+    }
 }
 
 async fn print_devices(user_id: &UserId, client: &MatrixClient) {
@@ -616,6 +752,13 @@ mod tests {
 
     async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
         println!("Does the emoji match: {:?}", sas.emoji());
+        if let Some(items) = sas.emoji() {
+            let sequence = items
+                .iter()
+                .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                .collect::<Vec<_>>();
+            println!("{:?}", sequence);
+        }
 
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("error: unable to read user input");
