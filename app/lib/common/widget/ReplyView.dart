@@ -20,9 +20,6 @@ class ReplyViewState extends State<ReplyView> {
   bool liked = false;
   int likeCount = 0;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, color: Colors.white);
-
   @override
   Widget build(BuildContext context) {
     return Padding(

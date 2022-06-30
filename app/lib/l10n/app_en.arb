@@ -49,8 +49,10 @@
     "termsText1":"By clicking to sign up you agree to our",
     "termsText2":"Terms and Condition",
     "termsText3":"and that you have read our",
-    "termsText4":"Privacy Policy"
-
-
-
+    "termsText4":"Privacy Policy",
+    "invites": "Invites",
+    "invitationText1":"You have been invited to join this room.",
+    "invitationText2":"Invited you to join ",
+    "accept":"Accept",
+    "decline":"Decline"
 }

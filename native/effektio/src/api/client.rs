@@ -1,10 +1,8 @@
-use super::{api, Account, Conversation, Group, Room, RUNTIME};
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
     mocks::{gen_mock_faqs, gen_mock_news},
     models::{Faq, News},
-    ruma::api::client::account::register,
     RestoreToken,
 };
 use futures::{
@@ -28,6 +26,8 @@ use matrix_sdk::{
 };
 use parking_lot::{Mutex, RwLock};
 use std::{sync::Arc, time::Duration};
+
+use super::{api, Account, Conversation, Group, Room, RUNTIME};
 
 #[derive(Default, Clone, Debug)]
 pub struct Invitation {
