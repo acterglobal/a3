@@ -136,6 +136,222 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
     (groups, convos)
 }
 
+// thread callback must be global function, not member function
+async fn handle_to_device_event(
+    event: &AnyToDeviceEvent,
+    client: &MatrixClient,
+    tx: &mut Sender<CrossSigningEvent>,
+) {
+    match event {
+        AnyToDeviceEvent::KeyVerificationRequest(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationReady(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationReady".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationStart(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationStart".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationCancel(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationCancel".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationAccept(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationAccept".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationKey(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationKey".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationMac(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationMac".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        AnyToDeviceEvent::KeyVerificationDone(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnyToDeviceEvent::KeyVerificationDone".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+        _ => {}
+    }
+}
+
+// thread callback must be global function, not member function
+async fn handle_any_sync_event(
+    event: &AnySyncMessageLikeEvent,
+    client: &MatrixClient,
+    tx: &mut Sender<CrossSigningEvent>,
+) {
+    match event {
+        AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
+            if let MessageType::VerificationRequest(_) = &m.content.msgtype {
+                let sender = m.sender.to_string();
+                let evt_id = m.event_id.to_string();
+                let evt = CrossSigningEvent::new(
+                    "AnySyncMessageLikeEvent::RoomMessage".to_owned(),
+                    evt_id.clone(),
+                    sender,
+                );
+                if let Err(e) = tx.try_send(evt) {
+                    log::warn!("Dropping event for {}: {}", evt_id, e);
+                }
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationAccept".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationKey".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationMac".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(ev)) => {
+            let sender = ev.sender.to_string();
+            let evt_id = ev.event_id.to_string();
+            let evt = CrossSigningEvent::new(
+                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                evt_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping event for {}: {}", evt_id, e);
+            }
+        }
+        _ => {}
+    }
+}
+
 impl Client {
     pub(crate) fn new(
         client: MatrixClient,
@@ -187,229 +403,30 @@ impl Client {
                         let mut to_device_tx = (*to_device_arc).clone();
                         let mut sync_msg_like_tx = (*sync_msg_like_arc).clone();
 
-                        for event in response.to_device.events.iter().filter_map(|e| e.deserialize().ok()) {
-                            match event {
-                                AnyToDeviceEvent::KeyVerificationRequest(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationReady(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationReady".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationStart(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationStart".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationCancel(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationCancel".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationAccept(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationAccept".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationKey(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationKey".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationMac(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationMac".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                AnyToDeviceEvent::KeyVerificationDone(ev) => {
-                                    let sender = ev.sender.to_string();
-                                    let txn_id = ev.content.transaction_id.to_string();
-                                    let evt = CrossSigningEvent::new(
-                                        "AnyToDeviceEvent::KeyVerificationDone".to_owned(),
-                                        txn_id.clone(),
-                                        sender,
-                                    );
-                                    if let Err(e) = to_device_tx.try_send(evt) {
-                                        log::warn!("Dropping transaction for {}: {}", txn_id, e);
-                                    }
-                                }
-                                _ => {}
-                            }
+                        for event in response
+                            .to_device
+                            .events
+                            .iter()
+                            .filter_map(|e| e.deserialize().ok())
+                        {
+                            handle_to_device_event(&event, &client, &mut to_device_tx);
                         }
 
                         if !initial.load(Ordering::SeqCst) {
                             for (room_id, room_info) in response.rooms.join {
-                                for event in room_info.timeline.events.iter().filter_map(|ev| ev.event.deserialize().ok()) {
+                                for event in room_info
+                                    .timeline
+                                    .events
+                                    .iter()
+                                    .filter_map(|ev| ev.event.deserialize().ok())
+                                {
                                     if let AnySyncRoomEvent::MessageLike(event) = event {
-                                        match event {
-                                            AnySyncMessageLikeEvent::RoomMessage(
-                                                SyncMessageLikeEvent::Original(m),
-                                            ) => {
-                                                if let MessageType::VerificationRequest(_) = &m.content.msgtype {
-                                                    let sender = m.sender.to_string();
-                                                    let evt_id = m.event_id.to_string();
-                                                    let evt = CrossSigningEvent::new(
-                                                        "AnySyncMessageLikeEvent::RoomMessage".to_owned(),
-                                                        evt_id.clone(),
-                                                        sender,
-                                                    );
-                                                    if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                        log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                    }
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationReady(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationStart(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationCancel(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationAccept(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationAccept".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationKey(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationKey".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationMac(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationMac".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            AnySyncMessageLikeEvent::KeyVerificationDone(
-                                                SyncMessageLikeEvent::Original(ev),
-                                            ) => {
-                                                let sender = ev.sender.to_string();
-                                                let evt_id = ev.event_id.to_string();
-                                                let evt = CrossSigningEvent::new(
-                                                    "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                                                    evt_id.clone(),
-                                                    sender,
-                                                );
-                                                if let Err(e) = sync_msg_like_tx.try_send(evt) {
-                                                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                                                }
-                                            }
-                                            _ => ()
-                                        }
+                                        handle_any_sync_event(
+                                            &event,
+                                            &client,
+                                            &mut sync_msg_like_tx,
+                                        )
+                                        .await;
                                     }
                                 }
                             }
@@ -834,7 +851,7 @@ mod tests {
         }
     }
 
-    async fn handle_to_device_event(event: &AnyToDeviceEvent, client: &MatrixClient) {
+    async fn test_handle_to_device_event(event: &AnyToDeviceEvent, client: &MatrixClient) {
         match event {
             AnyToDeviceEvent::KeyVerificationRequest(ev) => {
                 println!("AnyToDeviceEvent::KeyVerificationRequest");
@@ -932,7 +949,7 @@ mod tests {
         }
     }
 
-    async fn handle_any_sync_event(event: &AnySyncMessageLikeEvent, client: &MatrixClient) {
+    async fn test_handle_any_sync_event(event: &AnySyncMessageLikeEvent, client: &MatrixClient) {
         match event {
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
                 println!("AnySyncMessageLikeEvent::RoomMessage");
@@ -1057,7 +1074,7 @@ mod tests {
                     .iter()
                     .filter_map(|e| e.deserialize().ok())
                 {
-                    handle_to_device_event(&event, client).await;
+                    test_handle_to_device_event(&event, client).await;
                 }
 
                 if !initial.load(Ordering::SeqCst) {
@@ -1069,7 +1086,7 @@ mod tests {
                             .filter_map(|e| e.event.deserialize().ok())
                         {
                             if let AnySyncRoomEvent::MessageLike(event) = event {
-                                handle_any_sync_event(&event, client).await;
+                                test_handle_any_sync_event(&event, client).await;
                             }
                         }
                     }
@@ -1083,8 +1100,8 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
-    async fn test_emoji_verification() -> Result<()> {
+    // #[tokio::test]
+    async fn launch_emoji_verification() -> Result<()> {
         let z = Zenv::new(".env", false).parse()?;
         let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
         let base_path: &str = z.get("BASE_PATH").unwrap();
