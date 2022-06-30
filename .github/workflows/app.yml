@@ -126,6 +126,13 @@ jobs:
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
 
+      - name: Create matrix admin user
+        uses: addnab/docker-run-action@v3
+        with:
+          image: "lightyear/effekio-synapse-ci:latest"
+          options: -v synapse-data:/data --link synapse --entrypoint="/bin/bash -c"
+          run: register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008
+
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
