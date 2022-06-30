@@ -21,6 +21,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'dart:async';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themed/themed.dart';
 
@@ -87,7 +88,6 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
   int tabIndex = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -105,25 +105,146 @@ class _EffektioHomeState extends State<EffektioHome> {
       String sender = event.getSender();
       debugPrint(eventName);
       if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
-        await client.acceptVerificationRequest(sender, eventId);
+        await onKeyVerificationRequest(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
+        await onKeyVerificationReady(sender, eventId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
-        await client.acceptVerificationStart(sender, eventId);
+        await onKeyVerificationStart(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationCancel') {
+        await onKeyVerificationCancel(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationAccept') {
+        await onKeyVerificationAccept(sender, eventId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationKey') {
-        List<int> emoji = await client.getVerificationEmoji(sender, eventId);
-        _scaffoldKey.currentState!.showSnackBar(
-          SnackBar(
-            content: Text(
-              String.fromCharCodes(emoji, 0, emoji.length - 1),
-              style: TextStyle(fontSize: 24),
-            ),
-          ),
-        );
+        await onKeyVerificationKey(sender, eventId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationMac') {
-        await client.reviewVerificationMac(sender, eventId);
+        await onKeyVerificationMac(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationDone') {
+        await onKeyVerificationDone(sender, eventId);
       }
     });
     return client;
   }
+
+  Future<void> onKeyVerificationRequest(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: GestureDetector(
+          child: Column(
+            children: [
+              Text('Verification Request'),
+              Text(sender),
+            ],
+          ),
+          onTap: () async {
+            var client = await _client;
+            await client.acceptVerificationRequest(sender, eventId);
+            Get.back();
+            c.complete();
+          },
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationReady(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationStart(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text('Verify this login'),
+            Text(
+              'Scan the code with your other device or switch and scan with this device.',
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text('Scan with this device'),
+                trailing: Icon(Icons.camera),
+              ),
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text("Can't scan"),
+                trailing: Icon(Icons.arrow_right),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.acceptVerificationStart(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationCancel(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationAccept(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationKey(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    var client = await _client;
+    List<int> emoji = await client.getVerificationEmoji(sender, eventId);
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text('Verify this login'),
+            Text(
+              'Compare the unique emoji, ensuring they appear in the same order.',
+            ),
+            Text(
+              String.fromCharCodes(emoji, 0, emoji.length - 1),
+              style: TextStyle(fontSize: 24),
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text("They don't match"),
+                trailing: Icon(Icons.close),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.mismatchVerificationKey(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text('They match'),
+                trailing: Icon(Icons.check),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.confirmVerificationKey(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationMac(String sender, String eventId) async {
+    var client = await _client;
+    await client.reviewVerificationMac(sender, eventId);
+  }
+
+  Future<void> onKeyVerificationDone(String sender, String eventId) async {}
 
   BottomNavigationBarItem navBaritem(String icon, String activeIcon) {
     return BottomNavigationBarItem(
@@ -249,7 +370,6 @@ class _EffektioHomeState extends State<EffektioHome> {
               },
             ),
           ),
-          key: _scaffoldKey,
         ),
       ),
     );
@@ -273,7 +393,6 @@ class _EffektioHomeState extends State<EffektioHome> {
                 ),
               ),
             ),
-            key: _scaffoldKey,
           );
         }
       },
