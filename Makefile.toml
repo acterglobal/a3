@@ -84,6 +84,19 @@ dependencies = [
   "post-android",
   ]
 
+
+[tasks.android-ci]
+description = "development android i686 emulator"
+category = "Build"
+dependencies = [
+  "ffigen",
+  "pre-android",
+  "android-i686",
+  "android-i686-release",
+  "post-android-i686",
+  "post-android",
+  ]
+
 [tasks.android-arm]
 description = "build android ARM64 for actual device"
 category = "Build"
