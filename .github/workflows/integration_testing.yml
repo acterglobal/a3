@@ -73,7 +73,7 @@ jobs:
         uses: malinskiy/action-android/emulator-run-cmd@release/0.1.2
         with:
           cmd: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-          api: 30
+          api: 28
           tag: default
           abi: x86
 
