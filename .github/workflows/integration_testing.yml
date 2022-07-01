@@ -19,49 +19,49 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  # rust:
-  #   runs-on: ubuntu-latest
-  #   name: Rust Integration Tests
-  #   continue-on-error: true
-  #   services:
-  #     synapse:
-  #       image: "lightyear/effektio-synapse-ci:latest"
-  #       volumes:
-  #         - synapse-data:/data
-  #       ports: 
-  #         - 8008:8008
-  #         - 8009:8009
-  #         - 8448:8448
-  #   steps:
-  #     - uses: actions/checkout@v2
+  rust:
+    runs-on: ubuntu-latest
+    name: Rust Integration Tests
+    continue-on-error: true
+    services:
+      synapse:
+        image: "lightyear/effektio-synapse-ci:latest"
+        volumes:
+          - synapse-data:/data
+        ports:
+          - 8008:8008
+          - 8009:8009
+          - 8448:8448
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Create matrix admin user
-  #       uses: addnab/docker-run-action@v3
-  #       with:
-  #         image: "lightyear/effektio-synapse-ci:latest"
-  #         options: -v synapse-data:/data --link synapse
-  #         shell: bash
-  #         run: 'register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008'
+      - name: Create matrix admin user
+        uses: addnab/docker-run-action@v3
+        with:
+          image: "lightyear/effektio-synapse-ci:latest"
+          options: -v synapse-data:/data --link synapse
+          shell: bash
+          run: 'register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008'
 
-  #     - name: Install supported toolchain
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: nightly
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
 
-  #     - uses: subosito/flutter-action@v2
-  #       name: "Set up flutter"
-  #       with:
-  #         channel: 'stable'
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
 
-  #     - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v1
 
-  #     - name: Initialize e2ee mock data
-  #       run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
+      - name: Initialize e2ee mock data
+        run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
-  #     - name: run cargo integration tests
-  #       env:
-  #         HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
-  #       run: cargo test -p effektio -- --ignored
+      - name: run cargo integration tests
+        env:
+          HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
+        run: cargo test -p effektio -- --ignored
 
   flutter:
     runs-on: ubuntu-latest
@@ -124,6 +124,6 @@ jobs:
         with:
           api-level: 29
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          script: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+          script: cd app && flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
 
     
