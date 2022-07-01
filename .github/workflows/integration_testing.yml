@@ -119,9 +119,9 @@ jobs:
         run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
       - name: Run integration testss on Android emulator
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
+        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.2
         with:
           cmd: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-          api: 28
+          api: 30
           tag: default
           abi: x86
