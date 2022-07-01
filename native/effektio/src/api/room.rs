@@ -81,9 +81,10 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(api::FfiBuffer::new(
+                let binary = api::FfiBuffer::new(
                     r.avatar(MediaFormat::File).await?.context("No avatar")?,
-                ))
+                );
+                Ok(binary)
             })
             .await?
     }
@@ -92,12 +93,13 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(r.active_members()
+                let members = r.active_members()
                     .await
                     .context("No members")?
                     .into_iter()
                     .map(|member| Member { member })
-                    .collect())
+                    .collect();
+                Ok(members)
             })
             .await?
     }
@@ -106,12 +108,13 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(r.active_members_no_sync()
+                let members = r.active_members_no_sync()
                     .await
                     .context("No members")?
                     .into_iter()
                     .map(|member| Member { member })
-                    .collect())
+                    .collect();
+                Ok(members)
             })
             .await?
     }
@@ -135,12 +138,13 @@ impl Room {
                     .timeline()
                     .await
                     .context("Failed acquiring timeline streams")?;
-                Ok(TimelineStream::new(
+                let stream = TimelineStream::new(
                     Box::pin(forward),
                     Box::pin(backward),
                     client,
                     room,
-                ))
+                );
+                Ok(stream)
             })
             .await?
     }
@@ -653,6 +657,7 @@ mod tests {
         ruma::events::AnyStrippedStateEvent,
         Client as MatrixClient, LoopCtrl,
     };
+    use serde_json::Value;
     use std::time::Duration;
     use tokio::time::sleep;
     use zenv::{zenv, Zenv};
@@ -677,29 +682,35 @@ mod tests {
         }
 
         let client = client_builder.build().await.unwrap();
-        client.login(&username, &password, None, Some("command bot")).await?;
+        client.login(&username.clone(), &password, None, Some("command bot")).await?;
         println!("logged in as {}", username);
 
         let sync_settings = SyncSettings::new().timeout(Duration::from_secs(10));
         client
-            .sync_with_callback(sync_settings, |response| async move {
-                for (room_id, room) in response.rooms.invite {
-                    for event in room.invite_state.events {
-                        if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
-                            println!("member: {:?}", member);
-                            println!("room id: {:?}", room_id);
-                            println!("sender: {:?}", member.sender);
-                            return LoopCtrl::Break;
+            .sync_with_callback(sync_settings, move |response| {
+                let username = username.clone();
+
+                async move {
+                    for (room_id, room) in response.rooms.invite {
+                        for event in room.invite_state.events {
+                            if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
+                                if member.state_key == username {
+                                    println!("event: {:?}", event);
+                                    println!("member: {:?}", member);
+                                    let v: Value = serde_json::from_str(event.json().get()).unwrap();
+                                    println!("event id: {}", v["event_id"]);
+                                    println!("timestamp: {}", v["origin_server_ts"]);
+                                    println!("room id: {:?}", room_id);
+                                    println!("sender: {:?}", member.sender);
+                                    println!("state key: {:?}", member.state_key);
+                                }
+                            }
                         }
                     }
+                    return LoopCtrl::Break;
                 }
-                LoopCtrl::Continue
             })
             .await;
-
-        // let settings = SyncSettings::default().token(client.sync_token().await.unwrap());
-        // client.sync(settings).await;
-        // println!("456");
 
         let c = Client::new(
             client,
@@ -709,25 +720,19 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_invited_from() -> Result<()> {
+    async fn launch_past_invitation() -> Result<()> {
         let z = Zenv::new(".env", false).parse().unwrap();
         let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
         let base_path: String = z.get("BASE_PATH").unwrap().to_owned();
         let username: String = z.get("USERNAME").unwrap().to_owned();
         let password: String = z.get("PASSWORD").unwrap().to_owned();
 
-        let client = login_and_sync(homeserver_url, base_path, username, password).await?;
-        // let room_id: String = "!jXsqlnitogAbTTSksT:effektio.org".to_owned();
-        // let room: Room = client.room(room_id).await.expect("Expected room to be available");
-        // let inviter: String = room.invited_from().await.expect("Expected id of user that invited me");
-        // println!("inviter: {}", inviter);
+        // let client = login_and_sync(homeserver_url, base_path, username, password).await?;
 
-        // // mut is needed for get_past_invitation_rx to return mut
-        // let mut response = login_new_client(base_path, username, password).await?;
-        // println!("123");
-        // sleep(Duration::from_secs(15)).await;
+        let client = login_new_client(base_path, username, password).await?;
+        println!("123");
+        sleep(Duration::from_secs(15)).await;
 
-        // assert_eq!(1, 1);
         Ok(())
     }
 }

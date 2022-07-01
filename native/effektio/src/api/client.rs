@@ -25,6 +25,7 @@ use matrix_sdk::{
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
+use serde_json::Value;
 use std::{sync::Arc, time::Duration};
 
 use super::{api, Account, Conversation, Group, Room, RUNTIME};
@@ -32,6 +33,7 @@ use super::{api, Account, Conversation, Group, Room, RUNTIME};
 #[derive(Default, Clone, Debug)]
 pub struct Invitation {
     event_id: String,
+    timestamp: u64,
     room_id: String,
     sender: String,
 }
@@ -39,6 +41,10 @@ pub struct Invitation {
 impl Invitation {
     pub fn get_event_id(&self) -> String {
         self.event_id.clone()
+    }
+
+    pub fn get_timestamp(&self) -> u64 {
+        self.timestamp
     }
 
     pub fn get_room_id(&self) -> String {
@@ -138,40 +144,55 @@ impl Client {
         let client = self.client.clone();
         let state = self.state.clone();
         let sync_settings = SyncSettings::new().timeout(Duration::from_secs(5));
+
         RUNTIME.spawn(async move {
+            let state = state.clone();
+            let user_id = client.user_id().await.expect("No User ID found");
+
             // past events
             client
-                .sync_with_callback(sync_settings, |response| async {
-                    if !state.read().has_first_synced {
-                        state.write().has_first_synced = true;
-                    }
-                    if state.read().should_stop_syncing {
-                        state.write().is_syncing = false;
-                        return LoopCtrl::Break;
-                    } else {
-                        if !state.read().is_syncing {
-                            state.write().is_syncing = true;
-                        }
-                        println!("start_sync: {}", response.rooms.invite.len());
-                        for (room_id, room) in response.rooms.invite {
-                            println!("start_sync");
-                            for event in room.invite_state.events {
-                                if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
-                                    println!("event id: {:?}", event);
-                                    println!("room id: {:?}", room_id);
-                                    println!("sender: {:?}", member.sender);
-                                    let invitation = Invitation {
-                                        event_id: "123".to_owned(),
-                                        room_id: room_id.to_string(),
-                                        sender: member.sender.to_string(),
-                                    };
-                                    state.write().invitations.push(invitation);
+                .sync_with_callback(sync_settings, move |response| {
+                    println!("start_sync");
+                    let state = state.clone();
+                    let user_id = user_id.clone();
+
+                    async move {
+                        if !state.read().has_first_synced {
+                            state.write().has_first_synced = true;
+                            println!("start_sync: {}", response.rooms.invite.len());
+                            for (room_id, room) in response.rooms.invite {
+                                println!("start_sync");
+                                for event in room.invite_state.events {
+                                    if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
+                                        if member.state_key == user_id.as_str() {
+                                            println!("event: {:?}", event);
+                                            println!("member: {:?}", member);
+                                            let v: Value = serde_json::from_str(event.json().get()).unwrap();
+                                            println!("event id: {}", v["event_id"]);
+                                            println!("timestamp: {}", v["origin_server_ts"]);
+                                            println!("room id: {:?}", room_id);
+                                            println!("sender: {:?}", member.sender);
+                                            println!("state key: {:?}", member.state_key);
+                                            state.write().invitations.push(Invitation {
+                                                event_id: v["event_id"].as_str().unwrap().to_owned(),
+                                                timestamp: v["origin_server_ts"].as_u64().unwrap(),
+                                                room_id: room_id.to_string(),
+                                                sender: member.sender.to_string(),
+                                            });
+                                        }
+                                    }
                                 }
                             }
+                            // the lock is unlocked here when `s` goes out of scope.
                         }
-                        // the lock is unlocked here when `s` goes out of scope.
+                        if state.read().should_stop_syncing {
+                            state.write().is_syncing = false;
+                            return LoopCtrl::Break;
+                        } else if !state.read().is_syncing {
+                            state.write().is_syncing = true;
+                        }
+                        LoopCtrl::Continue
                     }
-                    LoopCtrl::Continue
                 })
                 .await;
             // current events

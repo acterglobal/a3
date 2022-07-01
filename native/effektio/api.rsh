@@ -1,5 +1,4 @@
 object Invitation {
-    fn get_event_id() -> string;
     fn get_room_id() -> string;
     fn get_sender() -> string;
 }
