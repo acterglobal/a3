@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [ main ]
 
-name: App
+name: Integration Tests
 
 env:
   RELEASE: true
@@ -87,8 +87,6 @@ jobs:
           shell: bash
           run: 'register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008'
 
-     - uses: malinskiy/action-android/install-sdk@release/0.1.2
-
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -128,3 +126,4 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           script: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
 
+    
