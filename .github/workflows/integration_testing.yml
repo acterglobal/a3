@@ -64,7 +64,7 @@ jobs:
   #       run: cargo test -p effektio -- --ignored
 
   flutter-test:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     name: Flutter Integration Tests
     continue-on-error: true
     services:
@@ -88,12 +88,14 @@ jobs:
           run: 'register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008'
 
       - name: Run Tests on Android Emulator
+        timeout-minutes: 10
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          script: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-          api-level: 28
+          api-level: 29
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           arch: x86_64
-  
+          script: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+
   # flutter:
   #   runs-on: macos-latest
   #   name: Flutter Integration Tests
