@@ -64,22 +64,37 @@ jobs:
   #       run: cargo test -p effektio -- --ignored
 
   flutter-test:
-    runs-on: ubuntu-latest
-    name: just api test
+    runs-on: macos-latest
+    name: Flutter Integration Tests
+    continue-on-error: true
+    services:
+      synapse:
+        image: "lightyear/effektio-synapse-ci:latest"
+        volumes:
+          - synapse-data:/data
+        ports:
+          - 8008:8008
+          - 8009:8009
+          - 8448:8448
     steps:
       - uses: actions/checkout@v2
-      - uses: malinskiy/action-android/install-sdk@release/0.1.2
-      - name: Run integration testss on Android emulator
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.2
+
+      - name: Create matrix admin user
+        uses: addnab/docker-run-action@v3
         with:
-          cmd: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-          api: 28
-          tag: default
-          abi: x86
+          image: "lightyear/effektio-synapse-ci:latest"
+          options: -v synapse-data:/data --link synapse
+          shell: bash
+          run: 'register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008'
 
-
+      - name: Run Tests on Android Emulator
+        uses: reactivecircus/android-emulator-runner@v2
+          script: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+          api-level: 28
+          arch: x86_64
+  
   # flutter:
-  #   runs-on: ubuntu-latest
+  #   runs-on: macos-latest
   #   name: Flutter Integration Tests
   #   continue-on-error: true
   #   services:
@@ -135,10 +150,8 @@ jobs:
   #     - name: Initialize e2ee mock data
   #       run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
-  #     - name: Run integration testss on Android emulator
-  #       uses: malinskiy/action-android/emulator-run-cmd@release/0.1.2
-  #       with:
-  #         cmd: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-  #         api: 30
-  #         tag: default
-  #         abi: x86
+  #     - name: Run Tests on Android Emulator
+  #       uses: reactivecircus/android-emulator-runner@v2
+  #         script: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+  #         api-level: 28
+  #         arch: x86_64
