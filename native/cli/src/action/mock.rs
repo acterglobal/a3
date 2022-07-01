@@ -2,35 +2,30 @@ use anyhow::Result;
 use clap::{crate_version, Parser};
 
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
-use matrix_sdk_base::store::{StoreConfig, MemoryStore};
 use effektio_core::ruma;
+use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
 use ruma::{
-    RoomName,
-    room::RoomType,
-    serde::Raw,
-    events::{
-        AnyInitialStateEvent, InitialStateEvent,
-        space::parent::SpaceParentEventContent,
-    },
     api::client::{
         account::register::v3::Request as RegistrationRequest,
         room::{
-            create_room::v3::Request as CreateRoomRequest,
-            create_room::v3::CreationContent,
+            create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
             Visibility,
         },
-        uiaa
+        uiaa,
     },
     assign,
+    events::{space::parent::SpaceParentEventContent, AnyInitialStateEvent, InitialStateEvent},
+    room::RoomType,
+    serde::Raw,
+    RoomName,
 };
 
 use std::time::Duration;
 use tokio::time::sleep;
 
 fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
-    let store_config = StoreConfig::new()
-        .state_store(Box::new(MemoryStore::new()));
+    let store_config = StoreConfig::new().state_store(Box::new(MemoryStore::new()));
 
     Ok(Client::builder()
         .user_agent(&format!("effektio-cli/{}", crate_version!()))
@@ -57,7 +52,7 @@ async fn register(homeserver: &str, username: &str, password: &str) -> Result<Cl
 }
 
 async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result<Client> {
-   let cl = match register(homeserver, username, password).await {
+    let cl = match register(homeserver, username, password).await {
         Ok(cl) => cl,
         Err(e) => {
             log::warn!("Could not register {:}, {:}", username, e);
@@ -106,26 +101,27 @@ impl Mock {
         let morn = ensure_user(homeserver, "morn", "morn").await?;
         let keiko = ensure_user(homeserver, "keiko", "keiko").await?;
 
-
         log::warn!("Done ensuring users");
 
         let prom_name = RoomName::parse("Promenade")?;
 
-        let promenade = admin.create_room(assign!(CreateRoomRequest::new(), {
-            creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
-                room_type: Some(RoomType::Space)
-            }))?),
-            is_direct: false,
-            invite: &team,
-            name: Some(&prom_name),
-            visibility: Visibility::Public,
-        })).await?;
+        let promenade = admin
+            .create_room(assign!(CreateRoomRequest::new(), {
+                creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
+                    room_type: Some(RoomType::Space)
+                }))?),
+                is_direct: false,
+                invite: &team,
+                name: Some(&prom_name),
+                visibility: Visibility::Public,
+            }))
+            .await?;
 
         let quark_customers = [
             quark.user_id().await.expect("quarks UserId is set"),
             rom.user_id().await.expect("roms UserId is set"),
             morn.user_id().await.expect("morns UserId is set"),
-            jadzia.user_id().await.expect("jadzias UserId is set")
+            jadzia.user_id().await.expect("jadzias UserId is set"),
         ];
 
         let quarks_name = RoomName::parse("Quarks'")?;
@@ -137,19 +133,20 @@ impl Mock {
         //     )?
         // ];
 
-        let quarks = admin.create_room(assign!(CreateRoomRequest::new(), {
-            creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
-                room_type: Some(RoomType::Space)
-            }))?),
-            // initial_state: &quarks_states
-            is_direct: false,
-            invite: &quark_customers,
-            name: Some(&quarks_name),
-            visibility: Visibility::Public,
-        })).await?;
+        let quarks = admin
+            .create_room(assign!(CreateRoomRequest::new(), {
+                creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
+                    room_type: Some(RoomType::Space)
+                }))?),
+                // initial_state: &quarks_states
+                is_direct: false,
+                invite: &quark_customers,
+                name: Some(&quarks_name),
+                visibility: Visibility::Public,
+            }))
+            .await?;
 
         log::warn!("Done creating spaces");
-
 
         Ok(())
     }
