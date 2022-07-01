@@ -42,14 +42,12 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
       - name: Create matrix admin user
         uses: addnab/docker-run-action@v3
         with:
           image: "lightyear/effekio-synapse-ci:latest"
-          options: -v synapse-data:/data --link synapse --entrypoint="/bin/bash -c"
+          options: -v synapse-data:/data --link synapse
+          shell: bash
           run: register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008
 
       - name: Initialize e2ee mock data

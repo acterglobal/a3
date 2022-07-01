@@ -79,6 +79,7 @@ dependencies = [
   "ffigen",
   "pre-android",
   "android-x86_64",
+  "android-x86_64-release",
   "post-android-x86_64",
   "post-android",
   ]
