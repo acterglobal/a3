@@ -15,14 +15,10 @@ use ruma::{
         uiaa,
     },
     assign,
-    events::{space::parent::SpaceParentEventContent, AnyInitialStateEvent, InitialStateEvent},
     room::RoomType,
     serde::Raw,
     RoomName,
 };
-
-use std::time::Duration;
-use tokio::time::sleep;
 
 fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
     let store_config = StoreConfig::new().state_store(Box::new(MemoryStore::new()));
@@ -99,13 +95,13 @@ impl Mock {
         let quark = ensure_user(homeserver, "quark", "quark").await?;
         let rom = ensure_user(homeserver, "rom", "rom").await?;
         let morn = ensure_user(homeserver, "morn", "morn").await?;
-        let keiko = ensure_user(homeserver, "keiko", "keiko").await?;
+        let _keiko = ensure_user(homeserver, "keiko", "keiko").await?;
 
         log::warn!("Done ensuring users");
 
         let prom_name = RoomName::parse("Promenade")?;
 
-        let promenade = admin
+        let _promenade = admin
             .create_room(assign!(CreateRoomRequest::new(), {
                 creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
                     room_type: Some(RoomType::Space)
@@ -133,7 +129,7 @@ impl Mock {
         //     )?
         // ];
 
-        let quarks = admin
+        let _quarks = admin
             .create_room(assign!(CreateRoomRequest::new(), {
                 creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
                     room_type: Some(RoomType::Space)
