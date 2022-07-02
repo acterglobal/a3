@@ -142,12 +142,9 @@ async fn handle_to_device_event(
     client: &MatrixClient,
     tx: &mut Sender<CrossSigningEvent>,
 ) {
-    println!("handle_to_device_event: {:?}", event);
     match event {
         AnyToDeviceEvent::KeyVerificationRequest(ev) => {
             let sender = ev.sender.to_string();
-            println!("Verification Request from {}", sender);
-            log::warn!("Verification Request from {}", sender);
             let txn_id = ev.content.transaction_id.to_string();
             let evt = CrossSigningEvent::new(
                 "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
@@ -416,8 +413,6 @@ impl Client {
                             .await
                             .unwrap()
                             .unwrap();
-                        println!("Device {}'s verified: {:?}", &device_id, device.verified());
-                        println!("ToDevice events: {:?}", response.to_device.events);
 
                         for event in response
                             .to_device
@@ -425,8 +420,7 @@ impl Client {
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
-                            println!("deserialized event: {:?}", event);
-                            handle_to_device_event(&event, &client, &mut to_device_tx);
+                            handle_to_device_event(&event, &client, &mut to_device_tx).await;
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -1133,7 +1127,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    // #[tokio::test]
     async fn launch_emoji_verification_original_login() -> Result<()> {
         let z = Zenv::new(".env", false).parse()?;
         let base_path: &str = z.get("BASE_PATH").unwrap();
