@@ -142,9 +142,12 @@ async fn handle_to_device_event(
     client: &MatrixClient,
     tx: &mut Sender<CrossSigningEvent>,
 ) {
+    println!("handle_to_device_event: {:?}", event);
     match event {
         AnyToDeviceEvent::KeyVerificationRequest(ev) => {
             let sender = ev.sender.to_string();
+            println!("Verification Request from {}", sender);
+            log::warn!("Verification Request from {}", sender);
             let txn_id = ev.content.transaction_id.to_string();
             let evt = CrossSigningEvent::new(
                 "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
@@ -169,6 +172,8 @@ async fn handle_to_device_event(
         }
         AnyToDeviceEvent::KeyVerificationStart(ev) => {
             let sender = ev.sender.to_string();
+            println!("Verification Start from {}", sender);
+            log::warn!("Verification Start from {}", sender);
             let txn_id = ev.content.transaction_id.to_string();
             let evt = CrossSigningEvent::new(
                 "AnyToDeviceEvent::KeyVerificationStart".to_owned(),
@@ -403,12 +408,24 @@ impl Client {
                         let mut to_device_tx = (*to_device_arc).clone();
                         let mut sync_msg_like_tx = (*sync_msg_like_arc).clone();
 
+                        let user_id = client.user_id().await.unwrap();
+                        let device_id = client.device_id().await.unwrap();
+                        let device = client
+                            .encryption()
+                            .get_device(&user_id, &device_id)
+                            .await
+                            .unwrap()
+                            .unwrap();
+                        println!("Device {}'s verified: {:?}", &device_id, device.verified());
+                        println!("ToDevice events: {:?}", response.to_device.events);
+
                         for event in response
                             .to_device
                             .events
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
+                            println!("deserialized event: {:?}", event);
                             handle_to_device_event(&event, &client, &mut to_device_tx);
                         }
 
@@ -778,20 +795,22 @@ mod tests {
         store::StateStore,
         Client as MatrixClient, LoopCtrl, Result as MatrixResult,
     };
-    use ruma::{
-        api::client::sync::sync_events::v3::{DeviceLists, ToDevice},
-        events::SyncMessageLikeEvent,
-    };
+    use ruma::events::SyncMessageLikeEvent;
     use std::{
-        env, io,
+        env, fs, io,
+        path::Path,
         process::exit,
         sync::{
             atomic::{AtomicBool, Ordering},
             Arc,
         },
+        time::Duration,
     };
+    use tokio::time::sleep;
     use url::Url;
     use zenv::Zenv;
+
+    use crate::api::login_new_client;
 
     async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
         println!("Does the emoji match: {:?}", sas.emoji());
@@ -944,6 +963,7 @@ mod tests {
                 println!("AnyToDeviceEvent::KeyVerificationDone");
                 println!("sender: {}", ev.sender);
                 println!("transaction_id: {}", ev.content.transaction_id);
+                exit(0);
             }
             _ => (),
         }
@@ -1101,7 +1121,7 @@ mod tests {
     }
 
     // #[tokio::test]
-    async fn launch_emoji_verification() -> Result<()> {
+    async fn launch_emoji_verification_custom_login() -> Result<()> {
         let z = Zenv::new(".env", false).parse()?;
         let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
         let base_path: &str = z.get("BASE_PATH").unwrap();
@@ -1109,6 +1129,29 @@ mod tests {
         let password: &str = z.get("PASSWORD").unwrap();
 
         login(homeserver_url, base_path, username, password).await?;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn launch_emoji_verification_original_login() -> Result<()> {
+        let z = Zenv::new(".env", false).parse()?;
+        let base_path: &str = z.get("BASE_PATH").unwrap();
+        let username: &str = z.get("USERNAME").unwrap();
+        let password: &str = z.get("PASSWORD").unwrap();
+
+        // once verified, that device should meet verification case no more
+        // so it is needed to remove cache of verification
+        // on every launch, delete storage directory
+        // don't know why this is needed about only original login
+        // this is not needed for my custom login
+        let dir_path = Path::new(base_path).join(username.replace(":", "_"));
+        if dir_path.exists() {
+            fs::remove_dir_all(dir_path).unwrap();
+        }
+
+        let client = login_new_client(base_path.to_owned(), username.to_owned(), password.to_owned()).await?;
+        sleep(Duration::from_secs(3600)).await;
 
         Ok(())
     }
