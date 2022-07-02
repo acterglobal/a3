@@ -1144,7 +1144,12 @@ mod tests {
             fs::remove_dir_all(dir_path).unwrap();
         }
 
-        let client = login_new_client(base_path.to_owned(), username.to_owned(), password.to_owned()).await?;
+        let client = login_new_client(
+            base_path.to_owned(),
+            username.to_owned(),
+            password.to_owned(),
+        )
+        .await?;
         sleep(Duration::from_secs(3600)).await;
 
         Ok(())
