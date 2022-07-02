@@ -5,16 +5,18 @@ import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
-import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show CrossSigningEvent;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -87,6 +89,8 @@ class EffektioHome extends StatefulWidget {
 
 class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
+  Stream<CrossSigningEvent>? _toDeviceRx;
+  late StreamSubscription<CrossSigningEvent> _toDeviceSubscription;
   int tabIndex = 0;
 
   @override
@@ -99,7 +103,8 @@ class _EffektioHomeState extends State<EffektioHome> {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
     // emoji verification
-    client.getToDeviceRx()!.listen((event) async {
+    _toDeviceRx = client.getToDeviceRx();
+    _toDeviceSubscription = _toDeviceRx!.listen((event) async {
       String eventName = event.getEventName();
       String eventId = event.getEventId();
       String sender = event.getSender();
@@ -120,6 +125,10 @@ class _EffektioHomeState extends State<EffektioHome> {
         await onKeyVerificationMac(sender, eventId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationDone') {
         await onKeyVerificationDone(sender, eventId);
+        // clean up event listener
+        Future.delayed(const Duration(seconds: 1), () {
+          _toDeviceSubscription.cancel();
+        });
       }
     });
     return client;
