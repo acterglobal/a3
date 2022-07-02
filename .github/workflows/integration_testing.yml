@@ -119,7 +119,7 @@ jobs:
         run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
 
       - name: Run Tests on Android Emulator
-        timeout-minutes: 10
+        timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
