@@ -49,9 +49,10 @@
     "termsText1":"Indem Sie auf Anmelden klicken, erklären Sie sich mit unserer",
     "termsText2":"Allgemeine Geschäftsbedingungen (AGB)",
     "termsText3":"und dass Sie unsere",
-    "termsText4":"Datenschutzregeln"
-
-
-
-
+    "termsText4":"Datenschutzregeln",
+    "invites": "Lädt ein",
+    "invitationText1":"Sie wurden eingeladen, diesem Raum beizutreten.",
+    "invitationText2":"Ich habe Sie eingeladen, mitzumachen ",
+    "accept":"Annehmen",
+    "decline":"Abfall"
 }
