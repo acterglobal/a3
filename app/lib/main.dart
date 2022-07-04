@@ -84,12 +84,21 @@ class EffektioHome extends StatefulWidget {
   _EffektioHomeState createState() => _EffektioHomeState();
 }
 
-class _EffektioHomeState extends State<EffektioHome> {
+class _EffektioHomeState extends State<EffektioHome>
+    with TickerProviderStateMixin {
   late Future<Client> _client;
   int tabIndex = 0;
+  late TabController _tabController;
+
   @override
   void initState() {
     _client = makeClient();
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        tabIndex = _tabController.index;
+      });
+    });
     super.initState();
   }
 
@@ -110,6 +119,14 @@ class _EffektioHomeState extends State<EffektioHome> {
       ),
       activeIcon: Container(
         margin: const EdgeInsets.only(top: 10),
+        decoration: BoxDecoration(
+          border: Border(
+            top: BorderSide(
+              color: AppCommonTheme.primaryColor,
+              width: 2,
+            ),
+          ),
+        ),
         child: SvgPicture.asset(
           activeIcon,
           color: AppCommonTheme.primaryColor,
@@ -127,17 +144,6 @@ class _EffektioHomeState extends State<EffektioHome> {
       null,
       'Chat',
       'Notifications'
-    ];
-    List<Widget> _widgetOptions = <Widget>[
-      NewsScreen(
-        client: client,
-      ),
-      FaqOverviewScreen(client: client),
-      NewsScreen(
-        client: client,
-      ),
-      ChatList(client: _client),
-      NotificationScreen(),
     ];
 
     return DefaultTabController(
@@ -172,56 +178,99 @@ class _EffektioHomeState extends State<EffektioHome> {
                         margin: const EdgeInsets.only(bottom: 10, right: 10),
                         child: Icon(Icons.search),
                       ),
-                      onPressed: () {
-                        setState(() {});
-                      },
+                      onPressed: () {},
                     )
                   ],
                 ),
-          body: _widgetOptions.elementAt(tabIndex),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              NewsScreen(
+                client: client,
+              ),
+              FaqOverviewScreen(client: client),
+              NewsScreen(
+                client: client,
+              ),
+              ChatList(client: _client),
+              NotificationScreen(),
+            ],
+          ),
           drawer: SideDrawer(
             client: _client,
           ),
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(color: Colors.grey, offset: Offset(0, -0.5)),
-              ],
+          bottomNavigationBar: TabBar(
+            labelColor: AppCommonTheme.primaryColor,
+            unselectedLabelColor: AppCommonTheme.svgIconColor,
+            controller: _tabController,
+            indicator: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: AppCommonTheme.primaryColor, width: 3.0),
+              ),
             ),
-            child: BottomNavigationBar(
-              backgroundColor: AppCommonTheme.backgroundColor,
-              items: <BottomNavigationBarItem>[
-                navBaritem(
-                  'assets/images/newsfeed_linear.svg',
-                  'assets/images/newsfeed_bold.svg',
+            tabs: [
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 0
+                      ? SvgPicture.asset(
+                          'assets/images/newsfeed_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/newsfeed_linear.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/menu_linear.svg',
-                  'assets/images/menu_bold.svg',
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 1
+                      ? SvgPicture.asset(
+                          'assets/images/menu_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/menu_linear.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/add.svg',
-                  'assets/images/add.svg',
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 2
+                      ? SvgPicture.asset(
+                          'assets/images/add.svg',
+                          color: AppCommonTheme.primaryColor,
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/add.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/chat_linear.svg',
-                  'assets/images/chat_bold.svg',
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 3
+                      ? SvgPicture.asset(
+                          'assets/images/chat_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/chat_linear.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/notification_linear.svg',
-                  'assets/images/notification_bold.svg',
-                )
-              ],
-              currentIndex: tabIndex,
-              showUnselectedLabels: true,
-              iconSize: 30,
-              type: BottomNavigationBarType.fixed,
-              onTap: (value) {
-                setState(() {
-                  tabIndex = value;
-                });
-              },
-            ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 4
+                      ? SvgPicture.asset(
+                          'assets/images/notification_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/notification_linear.svg',
+                        ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
