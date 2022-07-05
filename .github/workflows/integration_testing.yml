@@ -124,6 +124,6 @@ jobs:
         with:
           api-level: 29
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
-          script: cd app && flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
+          script: cd app && flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://10.0.2.2:${{ job.services.synapse.ports['8008'] }}
 
     
