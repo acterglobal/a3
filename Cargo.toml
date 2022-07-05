@@ -3,6 +3,8 @@ members = [
   "native/*",
 ]
 
+default-members = ["native/effektio"]
+
 [profile.release]
 lto = true
 panic = 'unwind'
