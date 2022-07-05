@@ -1,6 +1,15 @@
 object Invitation {
+    /// get the event id of this invitation
+    fn get_event_id() -> Option<string>;
+
+    /// get the timestamp of this invitation
+    fn get_timestamp() -> Option<u64>;
+
+    /// get the room id of this invitation
     fn get_room_id() -> string;
-    fn get_sender() -> string;
+
+    /// get the user id of this invitation sender
+    fn get_sender() -> Option<string>;
 }
 
 /// Initialize logging
@@ -186,22 +195,28 @@ object Conversation {
     /// a stream of incoming member events
     fn listen_to_member_events() -> Result<Stream<string>>;
 
+    /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 
+    /// get the user status on this room
     fn room_type() -> string;
 
+    /// accept invitation about me to this room
     fn accept_invitation() -> Future<Result<bool>>;
 
+    /// reject invitation about me to this room
     fn reject_invitation() -> Future<Result<bool>>;
 
+    /// join this room
     fn join() -> Future<Result<bool>>;
 
+    /// leave this room
     fn leave() -> Future<Result<bool>>;
 
-    fn get_invited_users() -> Future<Result<Vec<Account>>>;
+    /// get the users that were invited to this room
+    fn get_invitees() -> Future<Result<Vec<Account>>>;
 
-    fn invited_from() -> Future<Result<string>>;
-
+    /// send the image message to this room
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// decrypted image file data
@@ -209,6 +224,7 @@ object Conversation {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// send the file message to this room
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
 
     /// save file in specified path
@@ -312,4 +328,7 @@ object Client {
 
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
+
+    /// Get the invitation list
+    fn invitations() -> Vec<Invitation>;
 }

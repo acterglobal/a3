@@ -6,7 +6,7 @@ use url::Url;
 
 use super::{api, RUNTIME};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Account {
     account: MatrixAccount,
     user_id: String,

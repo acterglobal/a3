@@ -20,7 +20,8 @@ use matrix_sdk::{
             },
             AnyStrippedStateEvent,
         },
-        OwnedUserId, RoomId,
+        serde::Raw,
+        OwnedUserId, RoomId, UserId,
     },
     Client as MatrixClient, LoopCtrl,
 };
@@ -32,18 +33,18 @@ use super::{api, Account, Conversation, Group, Room, RUNTIME};
 
 #[derive(Default, Clone, Debug)]
 pub struct Invitation {
-    event_id: String,
-    timestamp: u64,
+    event_id: Option<String>,
+    timestamp: Option<u64>,
     room_id: String,
-    sender: String,
+    sender: Option<String>,
 }
 
 impl Invitation {
-    pub fn get_event_id(&self) -> String {
+    pub fn get_event_id(&self) -> Option<String> {
         self.event_id.clone()
     }
 
-    pub fn get_timestamp(&self) -> u64 {
+    pub fn get_timestamp(&self) -> Option<u64> {
         self.timestamp
     }
 
@@ -51,7 +52,7 @@ impl Invitation {
         self.room_id.clone()
     }
 
-    pub fn get_sender(&self) -> String {
+    pub fn get_sender(&self) -> Option<String> {
         self.sender.clone()
     }
 }
@@ -132,6 +133,36 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
     (groups, convos)
 }
 
+// thread callback must be global function, not member function
+async fn handle_stripped_state_event(
+    event: &Raw<AnyStrippedStateEvent>,
+    user_id: &UserId,
+    room_id: &RoomId,
+    state: &RwLock<ClientState>,
+) {
+    match event.deserialize() {
+        Ok(AnyStrippedStateEvent::RoomMember(member)) => {
+            if member.state_key == user_id.as_str() {
+                println!("event: {:?}", event);
+                println!("member: {:?}", member);
+                let v: Value = serde_json::from_str(event.json().get()).unwrap();
+                println!("event id: {}", v["event_id"]);
+                println!("timestamp: {}", v["origin_server_ts"]);
+                println!("room id: {:?}", room_id);
+                println!("sender: {:?}", member.sender);
+                println!("state key: {:?}", member.state_key);
+                state.write().invitations.push(Invitation {
+                    event_id: Some(v["event_id"].as_str().unwrap().to_owned()),
+                    timestamp: v["origin_server_ts"].as_u64(),
+                    room_id: room_id.to_string(),
+                    sender: Some(member.sender.to_string()),
+                });
+            }
+        }
+        _ => {}
+    }
+}
+
 impl Client {
     pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
@@ -149,38 +180,30 @@ impl Client {
             let state = state.clone();
             let user_id = client.user_id().await.expect("No User ID found");
 
-            // past events
+            // load cached events
+            for room in client.invited_rooms() {
+                let room_id = room.room_id();
+                println!("invited room id: {}", room_id.as_str());
+                state.write().invitations.push(Invitation {
+                    event_id: None,
+                    timestamp: None,
+                    room_id: room_id.to_string(),
+                    sender: None,
+                });
+            }
+
+            // fetch the events that received when offline
             client
                 .sync_with_callback(sync_settings, move |response| {
-                    println!("start_sync");
                     let state = state.clone();
                     let user_id = user_id.clone();
 
                     async move {
                         if !state.read().has_first_synced {
                             state.write().has_first_synced = true;
-                            println!("start_sync: {}", response.rooms.invite.len());
                             for (room_id, room) in response.rooms.invite {
-                                println!("start_sync");
                                 for event in room.invite_state.events {
-                                    if let Ok(AnyStrippedStateEvent::RoomMember(member)) = event.deserialize() {
-                                        if member.state_key == user_id.as_str() {
-                                            println!("event: {:?}", event);
-                                            println!("member: {:?}", member);
-                                            let v: Value = serde_json::from_str(event.json().get()).unwrap();
-                                            println!("event id: {}", v["event_id"]);
-                                            println!("timestamp: {}", v["origin_server_ts"]);
-                                            println!("room id: {:?}", room_id);
-                                            println!("sender: {:?}", member.sender);
-                                            println!("state key: {:?}", member.state_key);
-                                            state.write().invitations.push(Invitation {
-                                                event_id: v["event_id"].as_str().unwrap().to_owned(),
-                                                timestamp: v["origin_server_ts"].as_u64().unwrap(),
-                                                room_id: room_id.to_string(),
-                                                sender: member.sender.to_string(),
-                                            });
-                                        }
-                                    }
+                                    handle_stripped_state_event(&event, &user_id, &room_id, &state);
                                 }
                             }
                             // the lock is unlocked here when `s` goes out of scope.
@@ -195,7 +218,8 @@ impl Client {
                     }
                 })
                 .await;
-            // current events
+
+            // monitor current events
             client
                 .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom| async move {
                     if let MatrixRoom::Joined(room) = room {
@@ -328,5 +352,9 @@ impl Client {
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         self.account().await?.avatar().await
+    }
+
+    pub fn invitations(&self) -> Vec<Invitation> {
+        self.state.read().invitations.clone()
     }
 }

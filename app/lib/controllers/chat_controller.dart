@@ -34,43 +34,34 @@ class ChatController extends GetxController {
   late final Conversation room;
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
-  String? _roomType;
 
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
     room = convoRoom;
     user = convoUser;
-    _roomType = room.roomType();
-    _fetchTimeline();
+    await _fetchTimeline();
   }
 
   Future<void> _fetchTimeline() async {
-    if (_roomType == 'invited') {
-      isLoading.value = true;
-      var text = await room.invitedFrom();
-      debugPrint('fetchTimeline: ' + text);
-      isLoading.value = false;
-    } else if (_roomType == 'joined') {
-      isLoading.value = true;
-      _stream = await room.timeline();
-      // i am fetching messages from remote
-      var _messages = await _stream!.paginateBackwards(10);
-      mtx.acquire();
-      for (RoomMessage message in _messages) {
-        _loadMessage(message, messages);
+    isLoading.value = true;
+    _stream = await room.timeline();
+    // i am fetching messages from remote
+    var _messages = await _stream!.paginateBackwards(10);
+    mtx.acquire();
+    for (RoomMessage message in _messages) {
+      _loadMessage(message, messages);
+    }
+    isLoading.value = false;
+    if (messages.isNotEmpty) {
+      if (messages.first.author.id == user.id) {
+        bool isSeen = await room.readReceipt(messages.first.id);
+        messages[0] = messages[0].copyWith(
+          showStatus: true,
+          status: isSeen ? types.Status.seen : types.Status.delivered,
+        );
       }
-      isLoading.value = false;
-      if (messages.isNotEmpty) {
-        if (messages.first.author.id == user.id) {
-          bool isSeen = await room.readReceipt(messages.first.id);
-          messages[0] = messages[0].copyWith(
-            showStatus: true,
-            status: isSeen ? types.Status.seen : types.Status.delivered,
-          );
-        }
-      }
-      mtx.release();
-    } else if (_roomType == 'left') {}
+    }
+    mtx.release();
   }
 
   //waits for new event

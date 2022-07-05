@@ -399,7 +399,7 @@ impl Room {
             .await?
     }
 
-    pub async fn get_invited_users(&self) -> Result<Vec<Account>> {
+    pub async fn get_invitees(&self) -> Result<Vec<Account>> {
         let my_client = self.client.clone();
         let room = if let MatrixRoom::Invited(r) = &self.room {
             r.clone()
@@ -458,56 +458,6 @@ impl Room {
                 } else {
                     bail!("Invalid file format")
                 }
-            })
-            .await?
-    }
-
-    pub async fn invited_from(&self) -> Result<String> {
-        let room = if let MatrixRoom::Invited(r) = &self.room {
-            r.clone()
-        } else {
-            bail!("Can't get a room we are not invited")
-        };
-        RUNTIME
-            .spawn(async move {
-                let ev = room
-                    .get_state_event(StateEventType::RoomMember, "")
-                    .await?
-                    .and_then(|e| e.deserialize().ok());
-                println!("{:?}", ev);
-                return Ok("123 - invited".to_owned());
-                // let stream = room
-                //     .timeline_backward()
-                //     .await
-                //     .expect("Failed acquiring timeline streams");
-                // pin_mut!(stream);
-                // while let Some(item) = stream.next().await {
-                //     println!("{:?}", item);
-                //     match item {
-                //         Ok(ev) => {
-                //             if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
-                //                 println!("{}", content);
-                //                 return Ok("123 - invited".to_owned());
-                //                 // return Ok(content);
-                //             }
-                //         },
-                //         Err(err) => {
-                //             println!("Some error occurred!");
-                //         },
-                //     }
-                //     // if let Ok(ev) = item.clone() {
-                //     //     if let Some(content) = event_content(ev.event.deserialize().unwrap()) {
-                //     //         println!("{}", content);
-                //     //         return Ok("123 - invited".to_owned());
-                //     //         // return Ok(content);
-                //     //     }
-                //     // }
-                //     // if let Err(err) = item {
-                //     //     println!("Some error occurred!");
-                //     // }
-                // }
-
-                // bail!("No Message found")
             })
             .await?
     }
