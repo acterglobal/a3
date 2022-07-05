@@ -108,34 +108,6 @@ class _EffektioHomeState extends State<EffektioHome>
     return client;
   }
 
-  BottomNavigationBarItem navBaritem(String icon, String activeIcon) {
-    return BottomNavigationBarItem(
-      icon: Container(
-        margin: const EdgeInsets.only(top: 10),
-        child: SvgPicture.asset(
-          icon,
-          color: AppCommonTheme.svgIconColor,
-        ),
-      ),
-      activeIcon: Container(
-        margin: const EdgeInsets.only(top: 10),
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: AppCommonTheme.primaryColor,
-              width: 2,
-            ),
-          ),
-        ),
-        child: SvgPicture.asset(
-          activeIcon,
-          color: AppCommonTheme.primaryColor,
-        ),
-      ),
-      label: '',
-    );
-  }
-
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,
