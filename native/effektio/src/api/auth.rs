@@ -62,6 +62,16 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
+    let client = login_new_client_no_sync(base_path, username, password).await?;
+    client.start_sync();
+    Ok(client)
+}
+
+pub async fn login_new_client_no_sync(
+    base_path: String,
+    username: String,
+    password: String,
+) -> Result<Client> {
     let user = ruma::OwnedUserId::try_from(username.clone())?;
     let mut config = platform::new_client_config(base_path, username)?.user_id(&user);
 
@@ -89,7 +99,6 @@ pub async fn login_new_client(
                 client,
                 ClientStateBuilder::default().is_guest(false).build()?,
             );
-            c.start_sync();
             Ok(c)
         })
         .await?

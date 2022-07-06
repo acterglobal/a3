@@ -95,14 +95,16 @@ impl Client {
         }
     }
 
-    pub(crate) fn start_sync(&self) {
+    pub(crate) fn start_sync(&self) -> futures_signals::signal::Receiver<bool> {
         let client = self.client.clone();
         let state = self.state.clone();
+        let (sender, recv) = futures_signals::signal::channel(false);
         RUNTIME.spawn(async move {
             client
                 .sync_with_callback(matrix_sdk::config::SyncSettings::new(), |_response| async {
+                    let _ = sender.send(true);
                     if !state.read().has_first_synced {
-                        state.write().has_first_synced = true
+                        state.write().has_first_synced = true;
                     }
 
                     if state.read().should_stop_syncing {
@@ -115,6 +117,7 @@ impl Client {
                 })
                 .await;
         });
+        return recv
     }
 
     /// Indication whether we've received a first sync response since

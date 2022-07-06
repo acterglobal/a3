@@ -1,5 +1,7 @@
 use anyhow::Result;
-use effektio::api::{guest_client, login_new_client};
+use effektio::api::{
+    guest_client, login_new_client, login_with_token, login_new_client_no_sync
+};
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -17,7 +19,6 @@ async fn can_guest_login() -> Result<()> {
     Ok(())
 }
 
-
 #[tokio::test]
 #[ignore]
 async fn sisko_can_login() -> Result<()> {
@@ -27,11 +28,9 @@ async fn sisko_can_login() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@sisko:ds9.effektio.org".to_owned(),
         "sisko".to_owned(),
-    )
-    .await?;
+    ).await?;
     Ok(())
 }
-
 
 #[tokio::test]
 #[ignore]
@@ -42,7 +41,28 @@ async fn kyra_can_login() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@kyra:ds9.effektio.org".to_owned(),
         "kyra".to_owned(),
-    )
-    .await?;
+    ).await?;
+    Ok(())
+}
+
+#[tokio::test]
+#[ignore]
+async fn kyra_can_restore() -> Result<()> {
+    let _ = env_logger::try_init();
+    let tmp_dir = TempDir::new()?;
+    let client = login_new_client_no_sync(
+        tmp_dir.path().to_str().expect("always works").to_owned(),
+        "@kyra:ds9.effektio.org".to_owned(),
+        "kyra".to_owned(),
+    ).await?;
+    let token = client.restore_token().await?;
+    let user_id = client.user_id().await?;
+    drop(client);
+
+    let client = login_with_token(
+        tmp_dir.path().to_str().expect("always works").to_owned(),
+        token
+    ).await?;
+    assert_eq!(client.user_id().await?, user_id);
     Ok(())
 }
