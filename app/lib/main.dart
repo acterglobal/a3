@@ -2,6 +2,7 @@
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
@@ -175,10 +176,15 @@ class _EffektioHomeState extends State<EffektioHome>
             labelColor: AppCommonTheme.primaryColor,
             unselectedLabelColor: AppCommonTheme.svgIconColor,
             controller: _tabController,
-            indicator: BoxDecoration(
-              border: Border(
-                top: BorderSide(color: AppCommonTheme.primaryColor, width: 3.0),
-              ),
+            indicator: MaterialIndicator(
+              height: 5,
+              bottomLeftRadius: 8,
+              bottomRightRadius: 8,
+              topLeftRadius: 0,
+              topRightRadius: 0,
+              horizontalPadding: 12,
+              tabPosition: TabPosition.top,
+              color: AppCommonTheme.primaryColor,
             ),
             tabs: [
               Container(
