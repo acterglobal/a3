@@ -36,7 +36,19 @@ pub use effektio_core::mocks::*;
 pub type UserId = ruma::OwnedUserId;
 pub type EventId = ruma::OwnedEventId;
 
+#[cfg(not(doctest))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
+
+#[cfg(doctest)]
+mod api {
+    /// helpers for doctests, as ffigen for some reason can't find the path
+    pub struct FfiBuffer<T>(Vec<T>);
+    impl<T> FfiBuffer<T> {
+        pub fn new(inner: Vec<T>) -> FfiBuffer<T> {
+            FfiBuffer(inner)
+        }
+    }
+}
 
 fn init_logging(filter: Option<String>) -> Result<()> {
     platform::init_logging(filter)?;

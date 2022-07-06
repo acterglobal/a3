@@ -79,7 +79,21 @@ dependencies = [
   "ffigen",
   "pre-android",
   "android-x86_64",
+  "android-x86_64-release",
   "post-android-x86_64",
+  "post-android",
+  ]
+
+
+[tasks.android-ci]
+description = "development android i686 emulator"
+category = "Build"
+dependencies = [
+  "ffigen",
+  "pre-android",
+  "android-i686",
+  "android-i686-release",
+  "post-android-i686",
   "post-android",
   ]
 
