@@ -80,11 +80,11 @@ pub async fn login_new_client_no_sync(
             // effektio.org has problems with the .well-known-setup at the moment
             config = config.homeserver_url("https://matrix.effektio.org");
         }
-        "ds9.effektio.org" => { // this is our local CI test environment
+        "ds9.effektio.org" => {
+            // this is our local CI test environment
             config = config.homeserver_url(
                 option_env!("HOMESERVER")
-                    .unwrap_or("http://localhost:8118")
-                    .to_string()
+                    .unwrap_or("http://localhost:8118"),
             );
         }
         _ => {}

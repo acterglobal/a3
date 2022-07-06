@@ -117,7 +117,7 @@ impl Client {
                 })
                 .await;
         });
-        return recv
+        recv
     }
 
     /// Indication whether we've received a first sync response since
