@@ -134,7 +134,7 @@ class _ChatListState extends State<ChatList> {
               child: InviteInfoWidget(
                 avatarColor: Colors.white,
                 inviter: uniqueInvitations[index].getSender() ?? 'Unknown',
-                groupName: uniqueInvitations[index].getRoomId(),
+                groupName: uniqueInvitations[index].getRoomName(),
               ),
             );
           },
@@ -194,9 +194,7 @@ class _ChatListState extends State<ChatList> {
               SizedBox(height: MediaQuery.of(context).size.height / 6),
               Center(
                 child: Container(
-                  child: SvgPicture.asset(
-                    'assets/images/empty_messages.svg',
-                  ),
+                  child: SvgPicture.asset('assets/images/empty_messages.svg'),
                 ),
               ),
               SizedBox(height: 20),

@@ -8,6 +8,9 @@ object Invitation {
     /// get the room id of this invitation
     fn get_room_id() -> string;
 
+    /// get the room name of this invitation
+    fn get_room_name() -> string;
+
     /// get the user id of this invitation sender
     fn get_sender() -> Option<string>;
 }

@@ -36,6 +36,7 @@ pub struct Invitation {
     event_id: Option<String>,
     timestamp: Option<u64>,
     room_id: String,
+    room_name: String,
     sender: Option<String>,
 }
 
@@ -50,6 +51,10 @@ impl Invitation {
 
     pub fn get_room_id(&self) -> String {
         self.room_id.clone()
+    }
+
+    pub fn get_room_name(&self) -> String {
+        self.room_name.clone()
     }
 
     pub fn get_sender(&self) -> Option<String> {
@@ -138,6 +143,7 @@ async fn handle_stripped_state_event(
     event: &Raw<AnyStrippedStateEvent>,
     user_id: &UserId,
     room_id: &RoomId,
+    room_name: String,
     state: &RwLock<ClientState>,
 ) {
     match event.deserialize() {
@@ -155,6 +161,7 @@ async fn handle_stripped_state_event(
                     event_id: Some(v["event_id"].as_str().unwrap().to_owned()),
                     timestamp: v["origin_server_ts"].as_u64(),
                     room_id: room_id.to_string(),
+                    room_name,
                     sender: Some(member.sender.to_string()),
                 });
             }
@@ -177,6 +184,7 @@ impl Client {
         let sync_settings = SyncSettings::new().timeout(Duration::from_secs(5));
 
         RUNTIME.spawn(async move {
+            let client = client.clone();
             let state = state.clone();
             let user_id = client.user_id().await.expect("No User ID found");
 
@@ -184,17 +192,23 @@ impl Client {
             for room in client.invited_rooms() {
                 let room_id = room.room_id();
                 println!("invited room id: {}", room_id.as_str());
+                let r = client.get_room(&room_id).unwrap();
+                let room_name = r.display_name().await.unwrap();
+                println!("invited room name: {}", room_name.to_string());
                 state.write().invitations.push(Invitation {
                     event_id: None,
                     timestamp: None,
                     room_id: room_id.to_string(),
+                    room_name: room_name.to_string(),
                     sender: None,
                 });
             }
 
             // fetch the events that received when offline
             client
-                .sync_with_callback(sync_settings, move |response| {
+                .clone()
+                .sync_with_callback(sync_settings, |response| {
+                    let client = client.clone();
                     let state = state.clone();
                     let user_id = user_id.clone();
 
@@ -202,8 +216,10 @@ impl Client {
                         if !state.read().has_first_synced {
                             state.write().has_first_synced = true;
                             for (room_id, room) in response.rooms.invite {
+                                let r = client.get_room(&room_id).unwrap();
+                                let room_name = r.display_name().await.unwrap();
                                 for event in room.invite_state.events {
-                                    handle_stripped_state_event(&event, &user_id, &room_id, &state);
+                                    handle_stripped_state_event(&event, &user_id, &room_id, room_name.to_string(), &state);
                                 }
                             }
                             // the lock is unlocked here when `s` goes out of scope.
@@ -221,6 +237,7 @@ impl Client {
 
             // monitor current events
             client
+                .clone()
                 .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom| async move {
                     if let MatrixRoom::Joined(room) = room {
                         let msg_body = match ev.content.msgtype {

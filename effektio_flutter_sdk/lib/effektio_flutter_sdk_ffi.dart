@@ -3124,6 +3124,16 @@ class Api {
       _InvitationGetRoomIdReturn Function(
     int,
   )>();
+  late final _invitationGetRoomNamePtr = _lookup<
+      ffi.NativeFunction<
+          _InvitationGetRoomNameReturn Function(
+    ffi.Int64,
+  )>>("__Invitation_get_room_name");
+
+  late final _invitationGetRoomName = _invitationGetRoomNamePtr.asFunction<
+      _InvitationGetRoomNameReturn Function(
+    int,
+  )>();
   late final _invitationGetSenderPtr = _lookup<
       ffi.NativeFunction<
           _InvitationGetSenderReturn Function(
@@ -5308,6 +5318,26 @@ class Invitation {
     return tmp2;
   }
 
+  /// get the room name of this invitation
+  String getRoomName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._invitationGetRoomName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// get the user id of this invitation sender
   String? getSender() {
     var tmp0 = 0;
@@ -7299,6 +7329,15 @@ class _InvitationGetTimestampReturn extends ffi.Struct {
 }
 
 class _InvitationGetRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _InvitationGetRoomNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
