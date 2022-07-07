@@ -71,7 +71,8 @@ jobs:
         with:
           command: clippy
           args: -p effektio --target ${{matrix.target}} -- -D warnings
-      - name: Unit tests
+      - uses: actions-rs/cargo@v1
+        name: Unit tests
         with:
           command: test
           args: -p effektio --target ${{matrix.target}} --lib
