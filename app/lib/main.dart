@@ -1,26 +1,29 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
+import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
-import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:flutter/foundation.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk, Client;
+    show Client, EffektioSdk;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show SyncState, CrossSigningEvent;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:effektio/l10n/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:async';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themed/themed.dart';
 
@@ -56,7 +59,7 @@ class _EffektioState extends State<Effektio> {
   @override
   Widget build(BuildContext context) {
     return Themed(
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         title: 'Effektio',
@@ -90,7 +93,10 @@ class EffektioHome extends StatefulWidget {
 
 class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
+  Stream<CrossSigningEvent>? _toDeviceRx;
+  late StreamSubscription<CrossSigningEvent> _toDeviceSubscription;
   int tabIndex = 0;
+
   @override
   void initState() {
     _client = makeClient();
@@ -100,8 +106,159 @@ class _EffektioHomeState extends State<EffektioHome> {
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    SyncState syncer = client.startSync();
+    // emoji verification
+    _toDeviceRx = syncer.getToDeviceRx();
+    _toDeviceSubscription = _toDeviceRx!.listen((event) async {
+      String eventName = event.getEventName();
+      String eventId = event.getEventId();
+      String sender = event.getSender();
+      debugPrint(eventName);
+      if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
+        await onKeyVerificationRequest(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
+        await onKeyVerificationReady(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
+        await onKeyVerificationStart(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationCancel') {
+        await onKeyVerificationCancel(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationAccept') {
+        await onKeyVerificationAccept(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationKey') {
+        await onKeyVerificationKey(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationMac') {
+        await onKeyVerificationMac(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationDone') {
+        await onKeyVerificationDone(sender, eventId);
+        // clean up event listener
+        Future.delayed(const Duration(seconds: 1), () {
+          _toDeviceSubscription.cancel();
+        });
+      }
+    });
     return client;
   }
+
+  Future<void> onKeyVerificationRequest(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: GestureDetector(
+          child: Column(
+            children: [
+              Text('Verification Request'),
+              Text(sender),
+            ],
+          ),
+          onTap: () async {
+            var client = await _client;
+            await client.acceptVerificationRequest(sender, eventId);
+            Get.back();
+            c.complete();
+          },
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationReady(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationStart(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text('Verify this login'),
+            Text(
+              'Scan the code with your other device or switch and scan with this device.',
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text('Scan with this device'),
+                trailing: Icon(Icons.camera),
+              ),
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text("Can't scan"),
+                trailing: Icon(Icons.arrow_right),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.acceptVerificationStart(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationCancel(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationAccept(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationKey(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    var client = await _client;
+    List<int> emoji = await client.getVerificationEmoji(sender, eventId);
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text('Verify this login'),
+            Text(
+              'Compare the unique emoji, ensuring they appear in the same order.',
+            ),
+            Text(
+              String.fromCharCodes(emoji, 0, emoji.length - 1),
+              style: TextStyle(fontSize: 24),
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text("They don't match"),
+                trailing: Icon(Icons.close),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.mismatchVerificationKey(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text('They match'),
+                trailing: Icon(Icons.check),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.confirmVerificationKey(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationMac(String sender, String eventId) async {
+    var client = await _client;
+    await client.reviewVerificationMac(sender, eventId);
+  }
+
+  Future<void> onKeyVerificationDone(String sender, String eventId) async {}
 
   BottomNavigationBarItem navBaritem(String icon, String activeIcon) {
     return BottomNavigationBarItem(

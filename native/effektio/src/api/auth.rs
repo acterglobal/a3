@@ -1,11 +1,11 @@
+use super::{Client, ClientStateBuilder, CrossSigningEvent, SyncState, RUNTIME};
+use crate::platform;
 use anyhow::{bail, Context, Result};
 use assign::assign;
 use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
+use futures::channel::mpsc::{channel, Receiver};
 use matrix_sdk::Session;
-
-use super::{Client, ClientStateBuilder, RUNTIME};
-use crate::platform;
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
@@ -26,9 +26,11 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(true).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(true)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?
@@ -49,25 +51,17 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(is_guest).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(is_guest)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?
 }
 
 pub async fn login_new_client(
-    base_path: String,
-    username: String,
-    password: String,
-) -> Result<Client> {
-    let client = login_new_client_no_sync(base_path, username, password).await?;
-    client.start_sync();
-    Ok(client)
-}
-
-pub async fn login_new_client_no_sync(
     base_path: String,
     username: String,
     password: String,
@@ -95,7 +89,10 @@ pub async fn login_new_client_no_sync(
             client.login(user, &password, None, None).await?;
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(false)
+                    .build()
+                    .unwrap(),
             );
             Ok(c)
         })
@@ -134,9 +131,11 @@ pub async fn register_with_registration_token(
 
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(false)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?

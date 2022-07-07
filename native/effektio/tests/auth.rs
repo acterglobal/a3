@@ -1,5 +1,5 @@
 use anyhow::Result;
-use effektio::api::{guest_client, login_new_client, login_new_client_no_sync, login_with_token};
+use effektio::api::{guest_client, login_new_client, login_with_token};
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -50,7 +50,7 @@ async fn kyra_can_login() -> Result<()> {
 async fn kyra_can_restore() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
-    let client = login_new_client_no_sync(
+    let client = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@kyra:ds9.effektio.org".to_owned(),
         "kyra".to_owned(),

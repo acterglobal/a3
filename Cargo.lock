@@ -899,6 +899,7 @@ dependencies = [
  "tracing-wasm",
  "url",
  "wasm-bindgen-futures",
+ "zenv",
 ]
 
 [[package]]
@@ -3658,6 +3659,12 @@ dependencies = [
  "serde",
  "zeroize",
 ]
+
+[[package]]
+name = "zenv"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9796800451fe49442dbf89682907514649afd7222894c686e62762454c986007"
 
 [[package]]
 name = "zeroize"
