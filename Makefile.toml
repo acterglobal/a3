@@ -178,6 +178,7 @@ dependencies = [
 [tasks.android-build]
 private = true
 condition = { env_true = ["DEV"], env_set = ["ANDROID_BUILD_TARGET"] }
+env = { CARGO_BUILD_RUSTFLAGS = "-C strip=debuginfo" }
 command = "cargo"
 args = [
   "ndk",
@@ -186,7 +187,7 @@ args = [
   "--target",
   "${ANDROID_BUILD_TARGET}",
   "build",
-  "-Zbuild-std"
+  "-Zbuild-std",
 ]
 
 [tasks.android-build-release]
