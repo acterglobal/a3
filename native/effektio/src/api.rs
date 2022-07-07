@@ -22,7 +22,8 @@ mod stream;
 
 pub use account::Account;
 pub use auth::{
-    guest_client, login_new_client, login_with_token, register_with_registration_token,
+    guest_client, login_new_client, login_new_client_no_sync, login_with_token,
+    register_with_registration_token,
 };
 pub use client::{Client, ClientStateBuilder};
 pub use conversation::Conversation;
