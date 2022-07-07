@@ -71,11 +71,15 @@ jobs:
         with:
           command: clippy
           args: -p effektio --target ${{matrix.target}} -- -D warnings
-      - uses: actions-rs/cargo@v1
-        name: Test
+      - name: Unit tests
         with:
           command: test
-          args: -p effektio --target ${{matrix.target}}
+          args: -p effektio --target ${{matrix.target}} --lib
+      - uses: actions-rs/cargo@v1
+        name: Doctests
+        with:
+          command: test
+          args: -p effektio --target ${{matrix.target}} --doc
 
   ffigen:
     name: FFI-Gen up-to-date
