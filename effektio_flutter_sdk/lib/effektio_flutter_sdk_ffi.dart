@@ -2980,7 +2980,7 @@ class Api {
     return tmp7;
   }
 
-  CrossSigningEvent? __clientGetToDeviceRxStreamPoll(
+  CrossSigningEvent? __syncStateGetToDeviceRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -2998,7 +2998,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientGetToDeviceRxStreamPoll(
+    final tmp8 = _syncStateGetToDeviceRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3016,7 +3016,7 @@ class Api {
     return tmp9;
   }
 
-  CrossSigningEvent? __clientGetSyncMsgLikeRxStreamPoll(
+  CrossSigningEvent? __syncStateGetSyncMsgLikeRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3034,7 +3034,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientGetSyncMsgLikeRxStreamPoll(
+    final tmp8 = _syncStateGetSyncMsgLikeRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3894,6 +3894,37 @@ class Api {
     int,
     int,
   )>();
+  late final _syncStateGetToDeviceRxPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetToDeviceRxReturn Function(
+    ffi.Int64,
+  )>>("__SyncState_get_to_device_rx");
+
+  late final _syncStateGetToDeviceRx = _syncStateGetToDeviceRxPtr.asFunction<
+      _SyncStateGetToDeviceRxReturn Function(
+    int,
+  )>();
+  late final _syncStateGetSyncMsgLikeRxPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetSyncMsgLikeRxReturn Function(
+    ffi.Int64,
+  )>>("__SyncState_get_sync_msg_like_rx");
+
+  late final _syncStateGetSyncMsgLikeRx =
+      _syncStateGetSyncMsgLikeRxPtr.asFunction<
+          _SyncStateGetSyncMsgLikeRxReturn Function(
+    int,
+  )>();
+  late final _clientStartSyncPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_start_sync");
+
+  late final _clientStartSync = _clientStartSyncPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _clientRestoreTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4032,26 +4063,6 @@ class Api {
 
   late final _clientFaqs = _clientFaqsPtr.asFunction<
       int Function(
-    int,
-  )>();
-  late final _clientGetToDeviceRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientGetToDeviceRxReturn Function(
-    ffi.Int64,
-  )>>("__Client_get_to_device_rx");
-
-  late final _clientGetToDeviceRx = _clientGetToDeviceRxPtr.asFunction<
-      _ClientGetToDeviceRxReturn Function(
-    int,
-  )>();
-  late final _clientGetSyncMsgLikeRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientGetSyncMsgLikeRxReturn Function(
-    ffi.Int64,
-  )>>("__Client_get_sync_msg_like_rx");
-
-  late final _clientGetSyncMsgLikeRx = _clientGetSyncMsgLikeRxPtr.asFunction<
-      _ClientGetSyncMsgLikeRxReturn Function(
     int,
   )>();
   late final _clientAcceptVerificationRequestPtr = _lookup<
@@ -4944,35 +4955,35 @@ class Api {
     int,
     int,
   )>();
-  late final _clientGetToDeviceRxStreamPollPtr = _lookup<
+  late final _syncStateGetToDeviceRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientGetToDeviceRxStreamPollReturn Function(
+          _SyncStateGetToDeviceRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_get_to_device_rx_stream_poll");
+  )>>("__SyncState_get_to_device_rx_stream_poll");
 
-  late final _clientGetToDeviceRxStreamPoll =
-      _clientGetToDeviceRxStreamPollPtr.asFunction<
-          _ClientGetToDeviceRxStreamPollReturn Function(
+  late final _syncStateGetToDeviceRxStreamPoll =
+      _syncStateGetToDeviceRxStreamPollPtr.asFunction<
+          _SyncStateGetToDeviceRxStreamPollReturn Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _clientGetSyncMsgLikeRxStreamPollPtr = _lookup<
+  late final _syncStateGetSyncMsgLikeRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientGetSyncMsgLikeRxStreamPollReturn Function(
+          _SyncStateGetSyncMsgLikeRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_get_sync_msg_like_rx_stream_poll");
+  )>>("__SyncState_get_sync_msg_like_rx_stream_poll");
 
-  late final _clientGetSyncMsgLikeRxStreamPoll =
-      _clientGetSyncMsgLikeRxStreamPollPtr.asFunction<
-          _ClientGetSyncMsgLikeRxStreamPollReturn Function(
+  late final _syncStateGetSyncMsgLikeRxStreamPoll =
+      _syncStateGetSyncMsgLikeRxStreamPollPtr.asFunction<
+          _SyncStateGetSyncMsgLikeRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -6832,12 +6843,80 @@ class Account {
   }
 }
 
+class SyncState {
+  final Api _api;
+  final _Box _box;
+
+  SyncState._(this._api, this._box);
+
+  /// Get event handler of AnyToDeviceEvent
+  Stream<CrossSigningEvent>? getToDeviceRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateGetToDeviceRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "__SyncState_get_to_device_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(tmp4_1, _api.__syncStateGetToDeviceRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Get event handler of AnySyncMessageLikeEvent
+  Stream<CrossSigningEvent>? getSyncMsgLikeRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateGetSyncMsgLikeRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "__SyncState_get_sync_msg_like_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 =
+        _nativeStream(tmp4_1, _api.__syncStateGetSyncMsgLikeRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Main entry point for `effektio`.
 class Client {
   final Api _api;
   final _Box _box;
 
   Client._(this._api, this._box);
+
+  /// start the sync
+  SyncState startSync() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientStartSync(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_SyncState");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = SyncState._(_api, tmp3_1);
+    return tmp2;
+  }
 
   /// Get the restore token for this session
   Future<String> restoreToken() {
@@ -7039,45 +7118,6 @@ class Client {
     final tmp3_1 = _Box(_api, tmp3_0, "__Client_faqs_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientFaqsFuturePoll);
-    return tmp2;
-  }
-
-  /// Get event handler of AnyToDeviceEvent
-  Stream<CrossSigningEvent>? getToDeviceRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientGetToDeviceRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Client_get_to_device_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientGetToDeviceRxStreamPoll);
-    return tmp2;
-  }
-
-  /// Get event handler of AnySyncMessageLikeEvent
-  Stream<CrossSigningEvent>? getSyncMsgLikeRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientGetSyncMsgLikeRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_get_sync_msg_like_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientGetSyncMsgLikeRxStreamPoll);
     return tmp2;
   }
 
@@ -7734,14 +7774,14 @@ class _MemberDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ClientGetToDeviceRxReturn extends ffi.Struct {
+class _SyncStateGetToDeviceRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ClientGetSyncMsgLikeRxReturn extends ffi.Struct {
+class _SyncStateGetSyncMsgLikeRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -8520,14 +8560,14 @@ class _ClientReviewVerificationMacFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientGetToDeviceRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetToDeviceRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ClientGetSyncMsgLikeRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetSyncMsgLikeRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

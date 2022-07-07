@@ -6,7 +6,7 @@ use effektio_core::{
     RestoreToken,
 };
 use futures::{
-    channel::mpsc::{Receiver, Sender},
+    channel::mpsc::{channel, Receiver, Sender},
     stream, Stream, StreamExt,
 };
 use matrix_sdk::{
@@ -76,8 +76,6 @@ impl CrossSigningEvent {
 pub struct Client {
     client: MatrixClient,
     state: Arc<RwLock<ClientState>>,
-    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
 }
 
 impl std::ops::Deref for Client {
@@ -354,40 +352,67 @@ async fn handle_any_sync_event(
     }
 }
 
-impl Client {
-    pub(crate) fn new(
-        client: MatrixClient,
-        state: ClientState,
+#[derive(Clone)]
+pub struct SyncState {
+    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    first_synced_rx: Arc<Mutex<Option<futures_signals::signal::Receiver<bool>>>>,
+}
+
+impl SyncState {
+    pub fn new(
         to_device_rx: Receiver<CrossSigningEvent>,
         sync_msg_like_rx: Receiver<CrossSigningEvent>,
+        first_synced_rx: futures_signals::signal::Receiver<bool>,
     ) -> Self {
-        let to_device_arc = Mutex::new(Some(to_device_rx));
-        let sync_msg_like_arc = Mutex::new(Some(sync_msg_like_rx));
-        Client {
-            client,
-            state: Arc::new(RwLock::new(state)),
-            to_device_rx: Arc::new(to_device_arc),
-            sync_msg_like_rx: Arc::new(sync_msg_like_arc),
+        let to_device_rx = Arc::new(Mutex::new(Some(to_device_rx)));
+        let sync_msg_like_rx = Arc::new(Mutex::new(Some(sync_msg_like_rx)));
+        let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
+
+        Self {
+            to_device_rx,
+            sync_msg_like_rx,
+            first_synced_rx,
         }
     }
 
-    pub(crate) fn start_sync(
-        &self,
-        to_device_tx: Sender<CrossSigningEvent>,
-        sync_msg_like_tx: Sender<CrossSigningEvent>,
-    ) {
+    pub fn get_first_synced_rx(&self) -> Option<futures_signals::signal::Receiver<bool>> {
+        self.first_synced_rx.lock().take()
+    }
+
+    pub fn get_to_device_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
+        self.to_device_rx.lock().take()
+    }
+
+    pub fn get_sync_msg_like_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
+        self.sync_msg_like_rx.lock().take()
+    }
+}
+
+impl Client {
+    pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
+        Client {
+            client,
+            state: Arc::new(RwLock::new(state)),
+        }
+    }
+
+    pub(crate) fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
+        let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
+
+        let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
+        let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
         let to_device_arc = Arc::new(to_device_tx);
         let sync_msg_like_arc = Arc::new(sync_msg_like_tx);
+        let first_synced_arc = Arc::new(first_synced_tx);
         let initial_sync = Arc::new(AtomicBool::from(true));
+        let sync_state = SyncState::new(to_device_rx, sync_msg_like_rx, first_synced_rx);
 
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
-            let to_device_arc = Arc::clone(&to_device_arc); // can't clone Sender so will wrap with Arc
-            let sync_msg_like_arc = Arc::clone(&sync_msg_like_arc); // can't clone Sender so will wrap with Arc
-            let initial_sync = initial_sync.clone();
 
             client
                 .clone()
@@ -397,6 +422,7 @@ impl Client {
                     let to_device_arc = to_device_arc.clone();
                     let sync_msg_like_arc = sync_msg_like_arc.clone();
                     let initial_sync = initial_sync.clone();
+                    let first_synced_arc = first_synced_arc.clone();
 
                     async move {
                         let client = client.clone();
@@ -445,6 +471,7 @@ impl Client {
 
                         initial.store(false, Ordering::SeqCst);
 
+                        let _ = first_synced_arc.send(true);
                         if !(*state).read().has_first_synced {
                             (*state).write().has_first_synced = true
                         }
@@ -461,6 +488,7 @@ impl Client {
                 })
                 .await;
         });
+        sync_state
     }
 
     /// Indication whether we've received a first sync response since
@@ -581,14 +609,6 @@ impl Client {
 
     pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
         self.account().await?.avatar().await
-    }
-
-    pub fn get_to_device_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
-        self.to_device_rx.lock().take()
-    }
-
-    pub fn get_sync_msg_like_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
-        self.sync_msg_like_rx.lock().take()
     }
 
     pub async fn accept_verification_request(
@@ -1139,7 +1159,7 @@ mod tests {
         // on every launch, delete storage directory
         // don't know why this is needed about only original login
         // this is not needed for my custom login
-        let dir_path = Path::new(base_path).join(username.replace(":", "_"));
+        let dir_path = Path::new(base_path).join(username.replace(':', "_"));
         if dir_path.exists() {
             fs::remove_dir_all(dir_path).unwrap();
         }

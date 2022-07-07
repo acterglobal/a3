@@ -16,7 +16,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show CrossSigningEvent;
+    show SyncState, CrossSigningEvent;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -106,8 +106,9 @@ class _EffektioHomeState extends State<EffektioHome> {
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    SyncState syncer = client.startSync();
     // emoji verification
-    _toDeviceRx = client.getToDeviceRx();
+    _toDeviceRx = syncer.getToDeviceRx();
     _toDeviceSubscription = _toDeviceRx!.listen((event) async {
       String eventName = event.getEventName();
       String eventId = event.getEventId();

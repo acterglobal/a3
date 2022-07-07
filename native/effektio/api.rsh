@@ -236,11 +236,20 @@ object Account {
     fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<bool>>;
 }
 
+object SyncState {
+    /// Get event handler of AnyToDeviceEvent
+    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
 
+    /// Get event handler of AnySyncMessageLikeEvent
+    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
+}
 
 /// Main entry point for `effektio`.
 object Client {
     // Special
+
+    /// start the sync
+    fn start_sync() -> SyncState;
 
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;
@@ -286,12 +295,6 @@ object Client {
 
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
-
-    /// Get event handler of AnyToDeviceEvent
-    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
-
-    /// Get event handler of AnySyncMessageLikeEvent
-    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
 
     /// Accept the AnyToDeviceEvent::KeyVerificationRequest
     fn accept_verification_request(sender: string, event_id: string) -> Future<Result<bool>>;
