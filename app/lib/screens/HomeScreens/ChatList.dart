@@ -89,16 +89,6 @@ class _ChatListState extends State<ChatList> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      alignment: Alignment.topLeft,
-                      padding: const EdgeInsets.only(left: 18),
-                      child: Text(
-                        AppLocalizations.of(context)!.invites,
-                        style: AppCommonTheme.appBartitleStyle
-                            .copyWith(fontSize: 16),
-                      ),
-                    ),
-                    SizedBox(height: 10),
                     buildInvitedRooms(),
                     buildJoinedRooms(),
                   ],
@@ -119,25 +109,42 @@ class _ChatListState extends State<ChatList> {
           return SizedBox.shrink();
         }
         FfiListInvitation invitations = snapshot.requireData.invitations();
+        if (invitations.isEmpty) {
+          return SizedBox.shrink();
+        }
         // user may be invited from multiple people of same room
         var seen = <String>{};
-        List<Invitation> uniqueInvitations =
+        List<Invitation> distinct =
             invitations.where((item) => seen.add(item.getRoomId())).toList();
-        return ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: uniqueInvitations.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              height: MediaQuery.of(context).size.height / 5,
-              width: MediaQuery.of(context).size.width,
-              child: InviteInfoWidget(
-                avatarColor: Colors.white,
-                inviter: uniqueInvitations[index].getSender() ?? 'Unknown',
-                groupName: uniqueInvitations[index].getRoomName(),
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.invitedRooms,
+                style: AppCommonTheme.appBartitleStyle.copyWith(fontSize: 16),
               ),
-            );
-          },
+            ),
+            SizedBox(height: 10),
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: distinct.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  height: MediaQuery.of(context).size.height / 5,
+                  width: MediaQuery.of(context).size.width,
+                  child: InviteInfoWidget(
+                    avatarColor: Colors.white,
+                    inviter: distinct[index].getSender() ?? 'Unknown',
+                    groupName: distinct[index].getRoomName(),
+                  ),
+                );
+              },
+            ),
+          ],
         );
       },
     );
