@@ -82,10 +82,8 @@ pub async fn login_new_client_no_sync(
         }
         "ds9.effektio.org" => {
             // this is our local CI test environment
-            config = config.homeserver_url(
-                option_env!("HOMESERVER")
-                    .unwrap_or("http://localhost:8118"),
-            );
+            config =
+                config.homeserver_url(option_env!("HOMESERVER").unwrap_or("http://localhost:8118"));
         }
         _ => {}
     };
