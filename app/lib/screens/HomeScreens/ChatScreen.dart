@@ -11,17 +11,17 @@ import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Conversation, FfiListMember;
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatController chatController = ChatController.instance;
+  ChatController chatController = Get.find<ChatController>();
 
   @override
   void initState() {

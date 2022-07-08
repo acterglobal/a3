@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'dart:async';
 import 'package:effektio/common/store/appTheme.dart';
+import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
+import 'package:effektio/controllers/chat_controller.dart';
+import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
@@ -11,16 +14,15 @@ import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:flutter/foundation.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show EffektioSdk, Client;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:effektio/l10n/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:async';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themed/themed.dart';
 
@@ -91,9 +93,11 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome> {
   late Future<Client> _client;
   int tabIndex = 0;
+
   @override
   void initState() {
     _client = makeClient();
+    Get.put(ChatController());
     super.initState();
   }
 

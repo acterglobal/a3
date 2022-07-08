@@ -24,9 +24,6 @@ import 'package:permission_handler/permission_handler.dart';
 final mtx = Mutex(); // acquire this mutex, when updating state
 
 class ChatController extends GetxController {
-  static ChatController get instance =>
-      Get.put<ChatController>(ChatController());
-
   List<types.Message> messages = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
