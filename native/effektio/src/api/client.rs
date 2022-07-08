@@ -74,8 +74,8 @@ impl CrossSigningEvent {
 
 #[derive(Clone)]
 pub struct Client {
-    client: MatrixClient,
-    state: Arc<RwLock<ClientState>>,
+    pub(crate) client: MatrixClient,
+    pub(crate) state: Arc<RwLock<ClientState>>,
 }
 
 impl std::ops::Deref for Client {
@@ -390,14 +390,14 @@ impl SyncState {
 }
 
 impl Client {
-    pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
+    pub fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
         }
     }
 
-    pub(crate) fn start_sync(&self) -> SyncState {
+    pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
         let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
@@ -516,6 +516,7 @@ impl Client {
             is_guest: self.state.read().is_guest,
         })?)
     }
+
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
         let c = self.client.clone();

@@ -20,7 +20,7 @@ cbindgen = "0.20.0"
 [dependencies]
 anyhow = "1.0.51"
 assign = "1.1.1"
-derive_builder = "0.10.2"
+derive_builder = { version = "0.10.2" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
 futures-signals = "0.3.28"

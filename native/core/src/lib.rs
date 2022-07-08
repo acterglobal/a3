@@ -6,6 +6,7 @@ pub use ruma;
 pub mod events;
 pub mod models;
 pub mod support;
+pub mod statics;
 pub use support::RestoreToken;
 
 #[cfg(feature = "with-mocks")]
