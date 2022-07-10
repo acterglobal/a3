@@ -1,10 +1,11 @@
 # Riverpod Infinite Scroll
 
+
 Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
-https://user-images.githubusercontent.com/772917/178153075-f8a1f4d6-dece-4572-a17e-cded551dddb4.mp4
-
-https://user-images.githubusercontent.com/772917/178153086-671dea90-2b11-4e9b-be7e-f9565c6bbfaa.mp4
+Easy | Custom
+- | -
+https://user-images.githubusercontent.com/772917/178153075-f8a1f4d6-dece-4572-a17e-cded551dddb4.mp4 | https://user-images.githubusercontent.com/772917/178153086-671dea90-2b11-4e9b-be7e-f9565c6bbfaa.mp4
 
 
 
