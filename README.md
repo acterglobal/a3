@@ -4,8 +4,8 @@ Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/pa
 
 <table style="padding:10px;height:150px">
   <tr>
-    <td><video autoplay src="https://user-images.githubusercontent.com/772917/178153075-f8a1f4d6-dece-4572-a17e-cded551dddb4.mp4" style="max-height:200px;"></td>
-    <td><video autoplay src="https://user-images.githubusercontent.com/772917/178153086-671dea90-2b11-4e9b-be7e-f9565c6bbfaa.mp4" style="max-height:200px;"></td> 
+    <td><video autoplay src="https://user-images.githubusercontent.com/772917/178153075-f8a1f4d6-dece-4572-a17e-cded551dddb4.mp4" style="height:200px;"></td>
+    <td><video autoplay src="https://user-images.githubusercontent.com/772917/178153086-671dea90-2b11-4e9b-be7e-f9565c6bbfaa.mp4" style="height:200px;"></td> 
   </tr>
 </table>
  
