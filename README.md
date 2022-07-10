@@ -2,9 +2,9 @@
 
 Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
-<table style="padding:10px;height:150px">
+<table style="padding:10px;height:100px">
   <tr>
-    <td><video height="100px" src="https://user-images.githubusercontent.com/772917/178153075-f8a1f4d6-dece-4572-a17e-cded551dddb4.mp4" style="height:200px;"></td>
+    <td height="100px"><video height="100px" src="https://user-images.githubusercontent.com/772917/178153075-f8a1f4d6-dece-4572-a17e-cded551dddb4.mp4" style="height:200px;"></td>
     <td><video autoplay src="https://user-images.githubusercontent.com/772917/178153086-671dea90-2b11-4e9b-be7e-f9565c6bbfaa.mp4" style="height:200px;"></td> 
   </tr>
 </table>
