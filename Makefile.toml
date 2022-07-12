@@ -16,20 +16,20 @@ LIB_OUT_DIR = "release"
 [tasks.setup-android]
 description = "set up the system for android"
 script = [
-  "cargo install cargo-ndk",
+    "cargo install cargo-ndk",
 ]
 
 [tasks.setup-ios]
 description = "set up the system for iOS"
 script = [
-  "cargo install cargo-lipo",
+    "cargo install cargo-lipo",
 ]
 
 [tasks.setup]
 description = "set up the system"
 dependencies = [
-  "setup-android",
-  "setup-ios",
+    "setup-android",
+    "setup-ios",
 ]
 
 [tasks.ffigen]
@@ -41,7 +41,7 @@ script = [
     """,
 ]
 dependencies = [
-  "check-ffi"
+    "check-ffi"
 ]
 
 [tasks.init]
@@ -76,23 +76,37 @@ disabled = true
 description = "development android x86_64 emulator"
 category = "Build"
 dependencies = [
-  "ffigen",
-  "pre-android",
-  "android-x86_64",
-  "post-android-x86_64",
-  "post-android",
-  ]
+    "ffigen",
+    "pre-android",
+    "android-x86_64",
+    "android-x86_64-release",
+    "post-android-x86_64",
+    "post-android",
+]
+
+
+[tasks.android-ci]
+description = "development android i686 emulator"
+category = "Build"
+dependencies = [
+    "ffigen",
+    "pre-android",
+    "android-i686",
+    "android-i686-release",
+    "post-android-i686",
+    "post-android",
+]
 
 [tasks.android-arm]
 description = "build android ARM64 for actual device"
 category = "Build"
 dependencies = [
-  "pre-android",
-  "android-aarch64",
-  "android-aarch64-release",
-  "post-android-aarch64",
-  "post-android",
-  ]
+    "pre-android",
+    "android-aarch64",
+    "android-aarch64-release",
+    "post-android-aarch64",
+    "post-android",
+]
 
 
 [tasks.build]
@@ -164,14 +178,16 @@ dependencies = [
 [tasks.android-build]
 private = true
 condition = { env_true = ["DEV"], env_set = ["ANDROID_BUILD_TARGET"] }
+env = { CARGO_BUILD_RUSTFLAGS = "-C strip=debuginfo" }
 command = "cargo"
 args = [
-  "ndk",
-  "--platform",
-  "${ANDROID_PLATFORM_VERSION}",
-  "--target",
-  "${ANDROID_BUILD_TARGET}",
-  "build",
+    "ndk",
+    "--platform",
+    "${ANDROID_PLATFORM_VERSION}",
+    "--target",
+    "${ANDROID_BUILD_TARGET}",
+    "build",
+    "-Zbuild-std",
 ]
 
 [tasks.android-build-release]
@@ -179,13 +195,14 @@ private = true
 condition = { env_true = ["RELEASE"], env_set = ["ANDROID_BUILD_TARGET"] }
 command = "cargo"
 args = [
-  "ndk",
-  "--platform",
-  "${ANDROID_PLATFORM_VERSION}",
-  "--target",
-  "${ANDROID_BUILD_TARGET}",
-  "build",
-  "--release"
+    "ndk",
+    "--platform",
+    "${ANDROID_PLATFORM_VERSION}",
+    "--target",
+    "${ANDROID_BUILD_TARGET}",
+    "build",
+    "-Zbuild-std",
+    "--release"
 ]
 
 [tasks.android-aarch64]

@@ -1,14 +1,12 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
-import 'package:effektio/blocs/login/form_submission_status.dart';
-import 'package:effektio/blocs/login/signIn_bloc.dart';
-import 'package:effektio/blocs/login/signIn_event.dart';
-import 'package:effektio/blocs/login/signIn_state.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
+import 'package:effektio/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,15 +18,43 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
+  final loginController = Get.put(LoginController());
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    emailController.dispose();
-    passwordController.dispose();
+    Get.delete<LoginController>();
     super.dispose();
+  }
+
+  Future<bool> _loginValidate() async {
+    bool isLoggedIn = false;
+    await loginController.loginSubmitted().then(
+          (value) => {
+            if (value)
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.loginSuccess),
+                    backgroundColor: AuthTheme.authSuccess,
+                    duration: const Duration(seconds: 4),
+                  ),
+                ),
+                isLoggedIn = true,
+              }
+            else
+              {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context)!.loginFailed),
+                    backgroundColor: AuthTheme.authFailed,
+                    duration: const Duration(seconds: 4),
+                  ),
+                ),
+                isLoggedIn = false,
+              }
+          },
+        );
+    return isLoggedIn;
   }
 
   @override
@@ -37,31 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            BlocProvider(
-              create: (context) => SignInBloc(),
-              child: BlocListener<SignInBloc, SignInState>(
-                listener: (context, state) {
-                  final formStatus = state.formStatus;
-                  if (formStatus is SubmissionFailed) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.redAccent,
-                        content: Text(
-                          'Login failed: ${formStatus.exception.toString()}',
-                        ),
-                      ),
-                    );
-                  } else if (formStatus is SubmissionSuccess) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.greenAccent,
-                        content: Text('Login successful'),
-                      ),
-                    );
-                    Navigator.pushNamed(context, '/');
-                  }
-                },
-                child: Form(
+            GetBuilder<LoginController>(
+              builder: (LoginController controller) {
+                return Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -78,65 +82,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 40,
                       ),
                       Text(
-                        'Welcome Back',
+                        AppLocalizations.of(context)!.welcomeBack,
                         style: AuthTheme.authTitleStyle,
                       ),
                       SizedBox(
                         height: 10,
                       ),
                       Text(
-                        'Sign in to Continue',
+                        AppLocalizations.of(context)!.signInContinue,
                         style: AuthTheme.authbodyStyle,
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: 20, right: 20, top: 100),
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: AppCommonTheme.textFieldColor,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: BlocBuilder<SignInBloc, SignInState>(
-                          builder: (context, state) {
-                            return TextFormField(
-                              controller: emailController,
-                              decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(
-                                  left: 10.0,
-                                  top: 12,
-                                  right: 10,
-                                ),
-
-                                border: InputBorder.none,
-                                hintText:
-                                    'Email Address', // pass the hint text parameter here
-                                hintStyle:
-                                    TextStyle(color: AuthTheme.hintTextColor),
-                              ),
-                              style: TextStyle(
-                                  color: AuthTheme.textFieldTextColor),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter email';
-                                }
-                                if (!value[0].startsWith('@')) {
-                                  return 'Please enter correct username format (starts with @)';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) => context
-                                  .read<SignInBloc>()
-                                  .add(SignInUsernameChanged(username: value)),
-                            );
-                          },
-                        ),
+                      SizedBox(
+                        height: 35,
+                      ),
+                      signInOnboardingTextField(
+                        AppLocalizations.of(context)!.username,
+                        controller.username,
+                        AppLocalizations.of(context)!.emptyUsername,
+                        SignInOnboardingTextFieldEnum.userName,
                       ),
                       SizedBox(
                         height: 20,
                       ),
-                      onboardingTextField(
-                        'Password',
-                        passwordController,
-                        'Please enter Password',
+                      signInOnboardingTextField(
+                        AppLocalizations.of(context)!.password,
+                        controller.password,
+                        AppLocalizations.of(context)!.emptyPassword,
+                        SignInOnboardingTextFieldEnum.password,
                       ),
                       Container(
                         margin: EdgeInsets.only(right: 20),
@@ -145,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            'Forgot Password?',
+                            AppLocalizations.of(context)!.forgotPassword,
                             style: AuthTheme.authbodyStyle +
                                 AuthTheme.forgotPasswordColor,
                           ),
@@ -154,25 +126,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         height: 100,
                       ),
-                      BlocBuilder<SignInBloc, SignInState>(
-                        builder: ((context, state) {
-                          return state.formStatus is FormSubmitting
-                              ? CircularProgressIndicator()
-                              : CustomOnbaordingButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      context.read<SignInBloc>().add(
-                                            SignInSubmitted(
-                                              username: emailController.text,
-                                              password: passwordController.text,
-                                            ),
-                                          );
-                                    }
-                                  },
-                                  title: 'Login',
-                                );
-                        }),
-                      ),
+                      controller.isSubmitting
+                          ? CircularProgressIndicator(
+                              color: AppCommonTheme.primaryColor,
+                            )
+                          : CustomOnbaordingButton(
+                              onPressed: () async {
+                                controller.isSubmitting = true;
+                                if (_formKey.currentState!.validate()) {
+                                  await _loginValidate().then(
+                                    (value) => {
+                                      if (value)
+                                        {
+                                          Navigator.pushReplacementNamed(
+                                            context,
+                                            '/',
+                                          ),
+                                        }
+                                    },
+                                  );
+                                }
+                              },
+                              title: AppLocalizations.of(context)!.login,
+                            ),
                       SizedBox(
                         height: 20,
                       ),
@@ -180,15 +156,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account ?  ",
+                            AppLocalizations.of(context)!.noAccount,
                             style: AuthTheme.authbodyStyle,
                           ),
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(context, '/signup');
+                              Get.delete<LoginController>();
+                              Navigator.pushReplacementNamed(
+                                context,
+                                '/signup',
+                              );
                             },
                             child: Text(
-                              'Sign up ',
+                              AppLocalizations.of(context)!.signUp,
                               style: AuthTheme.authbodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),
@@ -197,8 +177,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
                     ],
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ],
         ),

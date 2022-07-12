@@ -7,7 +7,7 @@ services:
     build:
         context: .github/effektio-synapse-ci
         dockerfile: Dockerfile
-    image: lightyear/effekio-synapse-ci:latest
+    image: lightyear/effektio-synapse-ci:latest
     restart: unless-stopped
     environment:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
@@ -16,3 +16,13 @@ services:
     ports:
       - 8448:8448/tcp
       - 8118:8008/tcp
+
+  setup-admin:
+    image: "lightyear/effektio-synapse-ci:latest"
+    restart: "no"
+    volumes:
+      - ./.local/docker-data:/data:r
+    links:
+      - synapse
+    entrypoint: "/bin/bash -c"
+    command: '"register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008"'

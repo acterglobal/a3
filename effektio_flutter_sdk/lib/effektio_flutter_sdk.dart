@@ -12,8 +12,10 @@ export './effektio_flutter_sdk_ffi.dart' show Client;
 //   EffektioClient(this.client);
 // }
 
-const DEFAULT_SERVER = String.fromEnvironment("DEFAULT_EFFEKTIO_SERVER",
-    defaultValue: 'https://matrix.effektio.org');
+const defaultServer = String.fromEnvironment(
+  'DEFAULT_EFFEKTIO_SERVER',
+  defaultValue: 'https://matrix.effektio.org',
+);
 
 Color convertColor(ffi.Color? primary, Color fallback) {
   if (primary == null) {
@@ -51,7 +53,6 @@ class EffektioSdk {
     String appDocPath = appDocDir.path;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList('sessions') ?? []);
-    // TODO: parallel?!?
     bool loggedIn = false;
     for (var token in sessions) {
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
@@ -60,7 +61,7 @@ class EffektioSdk {
     }
 
     if (_clients.isEmpty) {
-      ffi.Client client = await _api.guestClient(appDocPath, DEFAULT_SERVER);
+      ffi.Client client = await _api.guestClient(appDocPath, defaultServer);
       clients.add(client);
       loggedIn = await client.loggedIn();
       await _persistSessions();
@@ -85,7 +86,7 @@ class EffektioSdk {
   Future<ffi.Client> login(String username, String password) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
-      if (await client.userId() == username) {
+      if ((await client.userId()).toString() == username) {
         return client;
       }
     }
@@ -93,6 +94,38 @@ class EffektioSdk {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     final client = await _api.loginNewClient(appDocPath, username, password);
+    if (_clients.length == 1 && _clients[0].isGuest()) {
+      // we are replacing a guest account
+      _clients.removeAt(0);
+    }
+    _clients.add(client);
+    await _persistSessions();
+    return client;
+  }
+
+  Future<ffi.Client> signUp(
+    String username,
+    String password,
+    String displayName,
+    String token,
+  ) async {
+    // To be removed when client management is implemented.
+    for (final client in _clients) {
+      if ((await client.userId()).toString() == username) {
+        return client;
+      }
+    }
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    final client = await _api.registerWithRegistrationToken(
+      appDocPath,
+      username,
+      password,
+      token,
+    );
+    final ac = await client.account();
+    await ac.setDisplayName(displayName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       _clients.removeAt(0);

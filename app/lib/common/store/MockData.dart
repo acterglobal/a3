@@ -22,3 +22,18 @@ final List<Image> newsFeeds = [
     fit: BoxFit.cover,
   ),
 ];
+final List<String> inviters = [
+  'Ben',
+  'Amita',
+  'Bitfriend',
+  'Talha',
+  'Sachinta'
+];
+
+final List<String> groups = [
+  'Effektio',
+  'Tech',
+  'All Hands',
+  'Effektio Chat Test',
+  'Football Lovers',
+];

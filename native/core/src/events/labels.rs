@@ -3,7 +3,7 @@ use serde; // 1.0.136
 use serde::de::{Deserialize, Deserializer, SeqAccess, Visitor};
 use serde::ser::{Serialize, SerializeSeq, Serializer};
 
-#[derive(Debug, PartialEq, Default)]
+#[derive(Debug, PartialEq, Eq, Default)]
 pub struct Labels {
     msgtype: Option<String>,
     tags: Vec<String>,

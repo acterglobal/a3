@@ -72,10 +72,15 @@ jobs:
           command: clippy
           args: -p effektio --target ${{matrix.target}} -- -D warnings
       - uses: actions-rs/cargo@v1
-        name: Test
+        name: Unit tests
         with:
           command: test
-          args: -p effektio --target ${{matrix.target}}
+          args: -p effektio --target ${{matrix.target}} --lib
+      - uses: actions-rs/cargo@v1
+        name: Doctests
+        with:
+          command: test
+          args: -p effektio --target ${{matrix.target}} --doc
 
   ffigen:
     name: FFI-Gen up-to-date
@@ -89,9 +94,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
       - name: "Build FFI interface"
-        run: |
-          cargo install cargo-make
-          cargo make ffigen
+        run: cargo make ffigen
       - name: "Check file is no different"
         run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart

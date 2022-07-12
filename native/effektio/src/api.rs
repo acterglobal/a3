@@ -1,11 +1,10 @@
-use crate::platform;
-use anyhow::{bail, Context, Result};
+use anyhow::Result;
 use futures::Stream;
 use lazy_static::lazy_static;
-use matrix_sdk::Session;
 pub use ruma;
 use tokio::runtime;
-use url::Url;
+
+use crate::platform;
 
 lazy_static! {
     static ref RUNTIME: runtime::Runtime =
@@ -25,11 +24,11 @@ pub use account::Account;
 pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
-pub use client::{Client, ClientStateBuilder};
+pub use client::{Client, ClientStateBuilder, CrossSigningEvent, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::Group;
-pub use messages::RoomMessage;
+pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 
@@ -39,7 +38,19 @@ pub use effektio_core::mocks::*;
 pub type UserId = ruma::OwnedUserId;
 pub type EventId = ruma::OwnedEventId;
 
+#[cfg(not(doctest))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
+
+#[cfg(doctest)]
+mod api {
+    /// helpers for doctests, as ffigen for some reason can't find the path
+    pub struct FfiBuffer<T>(Vec<T>);
+    impl<T> FfiBuffer<T> {
+        pub fn new(inner: Vec<T>) -> FfiBuffer<T> {
+            FfiBuffer(inner)
+        }
+    }
+}
 
 fn init_logging(filter: Option<String>) -> Result<()> {
     platform::init_logging(filter)?;

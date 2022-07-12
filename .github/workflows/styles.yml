@@ -10,14 +10,14 @@ jobs:
 
   rust-style:
     runs-on: ubuntu-latest
-    name: Rust
+    name: Rust Formatting
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: rustfmt
+          components: rustfmt,clippy
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1
         name: Rust Format
@@ -26,21 +26,23 @@ jobs:
           args: --all --check
 
   dart-style:
-    name: Flutter
+    name: Flutter Analyze
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
+
       - name: version
         run: flutter --version
-        working-directory: effektio_flutter_sdk
-      - run: flutter analyze
-        name: lint app
-        working-directory: app
-      - working-directory: effektio_flutter_sdk
-        run: flutter pub get
+
       - working-directory: effektio_flutter_sdk
         run: flutter analyze
         name: lint effektio_flutter_sdk
+
+      - working-directory: app
+        run: |
+          flutter pub get
+          flutter analyze
+        name: lint app

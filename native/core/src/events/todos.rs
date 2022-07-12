@@ -15,7 +15,7 @@ pub enum SpecialTaskListRole {
     Trash,
 }
 
-#[derive(Clone, Serialize_repr, Deserialize_repr, PartialEq, Debug)]
+#[derive(Clone, Serialize_repr, Deserialize_repr, PartialEq, Eq, Debug)]
 #[repr(u8)]
 /// Implementing Priority according to
 /// <https://www.rfc-editor.org/rfc/rfc8984.html#section-4.4.1>

@@ -1,14 +1,11 @@
-use super::{Client, ClientStateBuilder, RUNTIME};
+use super::{Client, ClientStateBuilder, CrossSigningEvent, SyncState, RUNTIME};
 use crate::platform;
 use anyhow::{bail, Context, Result};
 use assign::assign;
 use effektio_core::ruma::api::client::{account::register, uiaa};
 use effektio_core::RestoreToken;
-use futures::Stream;
-use lazy_static::lazy_static;
+use futures::channel::mpsc::{channel, Receiver};
 use matrix_sdk::Session;
-use tokio::runtime;
-use url::Url;
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
@@ -29,9 +26,11 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(true).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(true)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?
@@ -52,9 +51,11 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(is_guest).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(is_guest)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?
@@ -66,7 +67,21 @@ pub async fn login_new_client(
     password: String,
 ) -> Result<Client> {
     let user = ruma::OwnedUserId::try_from(username.clone())?;
-    let config = platform::new_client_config(base_path, username)?.user_id(&user);
+    let mut config = platform::new_client_config(base_path, username)?.user_id(&user);
+
+    match user.server_name().as_str() {
+        "effektio.org" => {
+            // effektio.org has problems with the .well-known-setup at the moment
+            config = config.homeserver_url("https://matrix.effektio.org");
+        }
+        "ds9.effektio.org" => {
+            // this is our local CI test environment
+            config =
+                config.homeserver_url(option_env!("HOMESERVER").unwrap_or("http://localhost:8118"));
+        }
+        _ => {}
+    };
+
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -74,9 +89,11 @@ pub async fn login_new_client(
             client.login(user, &password, None, None).await?;
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(false)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?
@@ -100,24 +117,25 @@ pub async fn register_with_registration_token(
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),
                         password: Some(&password),
-
                         auth: Some(uiaa::AuthData::RegistrationToken(
                             uiaa::RegistrationToken::new(&registration_token),
                         )),
                     });
                     client.register(request).await?;
                 } else {
-                    anyhow::bail!("Server did not indicate how to  allow registration.");
+                    bail!("Server did not indicate how to  allow registration.");
                 }
             } else {
-                anyhow::bail!("Server is not set up to allow registration.");
+                bail!("Server is not set up to allow registration.");
             }
 
             let c = Client::new(
                 client,
-                ClientStateBuilder::default().is_guest(false).build()?,
+                ClientStateBuilder::default()
+                    .is_guest(false)
+                    .build()
+                    .unwrap(),
             );
-            c.start_sync();
             Ok(c)
         })
         .await?
