@@ -4,7 +4,7 @@ Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/pa
 
 | Easy | Custom |
 | ---- | ------ |
-| ![easy](readme_assets/easy.gif) | k |
+| ![easy](readme_assets/easy.gif) | ![custom](readme_assets/custom.gif) |
 
  
 # Getting started:
