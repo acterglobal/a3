@@ -47,6 +47,7 @@ You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse
 allow_guest_access: true
 enable_registration_without_verification: true
 enable_registration: true
+registration_shared_secret: "randomly_generated_string"
 
 rc_message:
   per_second: 1000
