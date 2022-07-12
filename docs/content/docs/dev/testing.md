@@ -41,7 +41,7 @@ flutter test
 
 ### Infrastructure
 
-You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with the following settings included (in the `homserver.yaml`):
+You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with the following settings included (in the `homeserver.yaml`):
 
 ```yaml
 
