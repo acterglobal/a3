@@ -2,7 +2,7 @@
 
 Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
-| Easy | Custom |
+| [Easy](#example---simple-version) | [Custom](#a-more-custom-example) |
 | ---- | ------ |
 | ![easy](readme_assets/easy.gif) | ![custom](readme_assets/custom.gif) |
 
