@@ -79,7 +79,7 @@ If you are running synapse on a virtual or remote machine, don't forget update t
 #### Mock data
 The integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
-`cargo run -p effektio-cli -- $HOMESERVER`
+`cargo run -p effektio-cli -- mock $HOMESERVER`
 
 **Reset docker**
 To start the docker-compose afresh:
