@@ -15,7 +15,7 @@ top = false
 
 We are using [regular unit tests as by the Rust Book](https://doc.rust-lang.org/book/ch11-00-testing.html). You can run them with `cargo test` .
 
-_Note_: For async unit test, we are using `tokio` so mark them with `#[tokio:test]` (rather than `#[test]). Example:
+_Note_: For async unit test, we are using `tokio` so mark them with `#[tokio:test]` (rather than `#[test]`). Example:
 
 ```rust
 use anyhow::Result;
@@ -41,26 +41,33 @@ flutter test
 
 ### Infrastructure
 
-You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with the following settings included (in the `homeserver.yaml`):
+You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/).
+
+Please change `bind_addresses` of `listeners` from `['::1', '127.0.0.1']` to `['0.0.0.0']`, that means any address and allows remote connection (non-localhost).
+
+Please turn off the public profile of server firewall, that allows synapse to accept the request from external. If you are running `Ubuntu` linux, you can use `gufw` app to do it.
+
+![Ubuntu Firewall](../../../static/images/ubuntu-firewall.png)
+
+And please include the following settings (in the `homeserver.yaml`):
 
 ```yaml
-
 allow_guest_access: true
 enable_registration_without_verification: true
 enable_registration: true
 
 rc_message:
- per_second: 1000
- burst_count: 1000
+  per_second: 1000
+  burst_count: 1000
 
 rc_registration:
- per_second: 1000
- burst_count: 1000
+  per_second: 1000
+  burst_count: 1000
 
 rc_login:
- address:
-   per_second: 1000
-   burst_count: 1000
+  address:
+    per_second: 1000
+    burst_count: 1000
 ```
 
 and an `admin` account with the username `admin` and passwort `admin` (which you can create with `register_new_matrix_user -u admin -p admin -a -c $HOMESERVER_CONFIG_PATH $HOMESERVER_URL`).
