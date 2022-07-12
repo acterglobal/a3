@@ -16,7 +16,7 @@ use effektio_core::{
         assign,
         room::RoomType,
         serde::Raw,
-        RoomName, OwnedRoomName, OwnedUserId,
+        RoomName, OwnedRoomName, OwnedUserId, RoomAliasId,
     }
 };
 use effektio::{Client as EfkClient, CreateGroupSettingsBuilder};
@@ -139,33 +139,76 @@ impl Mock {
 
         let ops_settings = CreateGroupSettingsBuilder::default()
             .name(RoomName::parse("Ops").expect("static won't fail").to_owned())
+            .alias("ops:ds9.effektio.org".to_owned())
             .invites(team_ids)
             .build()?;
 
-        let ops_id = admin
+        match admin
             .create_effektio_group(ops_settings)
-            .await?;
+            .await
+        {
+            Ok(ops_id) => {
+                log::info!("Ops Room Id: {:?}", ops_id);
+            }
+            Err(x) if x.is::<matrix_sdk::HttpError>() => {
+                let inner = x.downcast::<matrix_sdk::HttpError>().expect("already checked");
+                log::warn!("Problem creating Ops Room: {:?}", inner);
+            }
+            Err(e) => {
+                log::error!("Creating Ops Room failed: {:?}", e);
+            }
+        }
+        
 
         let promenade_settings = CreateGroupSettingsBuilder::default()
             .name(RoomName::parse("Promenade").expect("static won't fail").to_owned())
+            .alias("promenade:ds9.effektio.org".to_owned())
             .visibility(Visibility::Public)
             .invites(civilians_ids)
             .build()?;
-
-        let promenade_room_id = admin
+        
+        match admin
             .create_effektio_group(promenade_settings)
-            .await?;
+            .await
+        {
+            Ok(promenade_room_id) => {
+                log::info!("Promenade Room Id: {:?}", promenade_room_id);
+            }
+            Err(x) if x.is::<matrix_sdk::HttpError>() => {
+                let inner = x.downcast::<matrix_sdk::HttpError>().expect("already checked");
+                log::warn!("Problem creating Promenade Room: {:?}", inner);
+            }
+            Err(e) => {
+                log::error!("Creating Promenade Room failed: {:?}", e);
+            }
+        }
+            
 
         let quarks_settings = CreateGroupSettingsBuilder::default()
             .name(RoomName::parse("Quarks'").expect("static won't fail").to_owned())
+            .alias("quarks:ds9.effektio.org".to_owned())
             .visibility(Visibility::Public)
             .invites(quark_customer_ids)
             .build()?;
 
-        let quarks_id = admin
+        match admin
             .create_effektio_group(quarks_settings)
-            .await?;
+            .await
         
+        {
+            Ok(quarks_id) => {
+                log::info!("Quarks Room Id: {:?}", quarks_id);
+            }
+            Err(x) if x.is::<matrix_sdk::HttpError>() => {
+                let inner = x.downcast::<matrix_sdk::HttpError>().expect("already checked");
+                log::warn!("Problem creating Quarks Room: {:?}", inner);
+            }
+            Err(e) => {
+                log::error!("Creating Quarks Room failed: {:?}", e);
+            }
+        }
+        
+
         log::warn!("Done creating spaces");
 
         let mut everyone = Vec::new();

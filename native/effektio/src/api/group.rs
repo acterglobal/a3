@@ -2,7 +2,10 @@ use super::room::Room;
 use super::client::Client;
 use crate::api::RUNTIME;
 use effektio_core::{
-    statics::default_effektio_group_states,
+    statics::{
+        default_effektio_group_states,
+        initial_state_for_alias,
+    },
     ruma::{
         api::client::{
             account::register::v3::Request as RegistrationRequest,
@@ -15,7 +18,7 @@ use effektio_core::{
         assign,
         room::RoomType,
         serde::Raw,
-        OwnedRoomName, OwnedUserId, OwnedRoomId,
+        OwnedRoomName, OwnedUserId, OwnedRoomId, OwnedRoomAliasId,
     }
 };
 use derive_builder::Builder;
@@ -40,6 +43,8 @@ pub struct CreateGroupSettings {
     visibility: Visibility,
     #[builder(default="Vec::new()")]
     invites: Vec<OwnedUserId>,
+    #[builder(setter(strip_option))]
+    alias: Option<String>,
 }
 
 // impl CreateGroupSettingsBuilder {
@@ -53,15 +58,16 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let default_initial_states = default_effektio_group_states();
+                let initial_states = default_effektio_group_states();
 
                 Ok(c.create_room(assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
                         room_type: Some(RoomType::Space)
                     }))?),
-                    initial_state: &default_initial_states,
+                    initial_state: &initial_states,
                     is_direct: false,
                     invite: &settings.invites,
+                    room_alias_name: settings.alias.as_ref().map(|s| &**s),
                     name: settings.name.as_ref().map(|x| x.as_ref()),
                     visibility: settings.visibility,
                 }))

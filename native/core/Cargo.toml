@@ -13,6 +13,7 @@ license-file = "../../LICENSE.txt"
 with-mocks = ["fake", 'rand']
 
 [dependencies]
+assign = "1.1.1"
 serde = "1.0.136"
 serde_repr = "0.1"
 csscolorparser = { version = "0.5.0", features = ["serde"] }
