@@ -5,6 +5,7 @@ target
 .idea
 .local
 
+effektio_flutter_sdk/ios/libeffektio.a
 native/effektio/src/api_generated.rs
 native/effektio/bindings.h
 native/effektio/bindings.dart
