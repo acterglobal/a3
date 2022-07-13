@@ -4,6 +4,7 @@ target
 .vscode
 .idea
 .local
+.DS_Store
 
 effektio_flutter_sdk/ios/libeffektio.a
 native/effektio/src/api_generated.rs
