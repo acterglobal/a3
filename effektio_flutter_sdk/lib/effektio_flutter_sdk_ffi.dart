@@ -2762,7 +2762,7 @@ class Api {
     return tmp7;
   }
 
-  List<int>? __clientGetVerificationEmojiFuturePoll(
+  FfiListEmojiUnit? __clientGetVerificationEmojiFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2787,8 +2787,6 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2802,13 +2800,11 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Uint32> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = tmp13_0.asTypedList(tmp14).toList();
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 4, 4);
-    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListEmojiUnit");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListEmojiUnit._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -4248,6 +4244,26 @@ class Api {
           _CrossSigningEventGetSenderReturn Function(
     int,
   )>();
+  late final _emojiUnitGetSymbolPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__EmojiUnit_get_symbol");
+
+  late final _emojiUnitGetSymbol = _emojiUnitGetSymbolPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _emojiUnitGetDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          _EmojiUnitGetDescriptionReturn Function(
+    ffi.Int64,
+  )>>("__EmojiUnit_get_description");
+
+  late final _emojiUnitGetDescription = _emojiUnitGetDescriptionPtr.asFunction<
+      _EmojiUnitGetDescriptionReturn Function(
+    int,
+  )>();
   late final _loginNewClientFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _LoginNewClientFuturePollReturn Function(
@@ -5027,6 +5043,55 @@ class Api {
 
   late final _ffiListConversationInsert =
       _ffiListConversationInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListEmojiUnit createFfiListEmojiUnit() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListEmojiUnitCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListEmojiUnit");
+    return FfiListEmojiUnit._(this, list_box);
+  }
+
+  late final _ffiListEmojiUnitCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListEmojiUnitCreate");
+
+  late final _ffiListEmojiUnitCreate =
+      _ffiListEmojiUnitCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListEmojiUnitLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListEmojiUnitLen");
+
+  late final _ffiListEmojiUnitLen =
+      _ffiListEmojiUnitLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListEmojiUnitElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListEmojiUnitElementAt");
+
+  late final _ffiListEmojiUnitElementAt =
+      _ffiListEmojiUnitElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListEmojiUnitRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListEmojiUnitRemove");
+
+  late final _ffiListEmojiUnitRemove =
+      _ffiListEmojiUnitRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListEmojiUnitAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListEmojiUnitAdd");
+
+  late final _ffiListEmojiUnitAdd =
+      _ffiListEmojiUnitAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListEmojiUnitInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListEmojiUnitInsert");
+
+  late final _ffiListEmojiUnitInsert =
+      _ffiListEmojiUnitInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListFaq createFfiListFaq() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListFaqCreate());
@@ -5693,18 +5758,6 @@ class UserId {
     }
     return tmp2;
   }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class EventId {
-  final Api _api;
-  final _Box _box;
-
-  EventId._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -7177,7 +7230,7 @@ class Client {
     return tmp10;
   }
 
-  Future<List<int>> getVerificationEmoji(
+  Future<FfiListEmojiUnit> getVerificationEmoji(
     String sender,
     String eventId,
   ) {
@@ -7495,6 +7548,51 @@ class CrossSigningEvent {
   }
 }
 
+/// Extend the return value of getVerificationEmoji function
+class EmojiUnit {
+  final Api _api;
+  final _Box _box;
+
+  EmojiUnit._(this._api, this._box);
+
+  /// binary representation of emoji unicode
+  int getSymbol() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiUnitGetSymbol(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// text description of emoji unicode
+  String getDescription() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiUnitGetDescription(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class _InitLoggingReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -7767,6 +7865,15 @@ class _CrossSigningEventGetEventIdReturn extends ffi.Struct {
 }
 
 class _CrossSigningEventGetSenderReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EmojiUnitGetDescriptionReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -8454,10 +8561,6 @@ class _ClientGetVerificationEmojiFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _ClientConfirmVerificationKeyFuturePollReturn extends ffi.Struct {
@@ -8587,6 +8690,66 @@ class FfiListConversation extends Iterable<Conversation>
   void insert(int index, Conversation element) {
     _api._ffiListConversationInsert(
         _box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListEmojiUnit extends Iterable<EmojiUnit>
+    implements CustomIterable<EmojiUnit> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListEmojiUnit._(this._api, this._box);
+
+  @override
+  Iterator<EmojiUnit> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListEmojiUnitLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  EmojiUnit elementAt(int index) {
+    final address = _api._ffiListEmojiUnitElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return EmojiUnit._(_api, reference);
+  }
+
+  EmojiUnit operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  EmojiUnit remove(int index) {
+    final address = _api._ffiListEmojiUnitRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_EmojiUnit");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return EmojiUnit._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(EmojiUnit element) {
+    _api._ffiListEmojiUnitAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, EmojiUnit element) {
+    _api._ffiListEmojiUnitInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

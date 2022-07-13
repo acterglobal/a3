@@ -78,8 +78,6 @@ object UserId {
     //fn localpart() -> string;
 }
 
-object EventId {}
-
 /// A room Message metadata and content
 object RoomMessage {
 
@@ -299,7 +297,7 @@ object Client {
     /// Accept the AnyToDeviceEvent::KeyVerificationStart
     fn accept_verification_start(sender: string, event_id: string) -> Future<Result<bool>>;
 
-    fn get_verification_emoji(sender: string, event_id: string) -> Future<Result<Vec<u32>>>;
+    fn get_verification_emoji(sender: string, event_id: string) -> Future<Result<Vec<EmojiUnit>>>;
 
     /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
     fn confirm_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
@@ -324,4 +322,13 @@ object CrossSigningEvent {
 
     /// Get user id of event sender
     fn get_sender() -> string;
+}
+
+/// Extend the return value of getVerificationEmoji function
+object EmojiUnit {
+    /// binary representation of emoji unicode
+    fn get_symbol() -> u32;
+
+    /// text description of emoji unicode
+    fn get_description() -> string;
 }
