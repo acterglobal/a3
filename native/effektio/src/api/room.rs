@@ -4,7 +4,6 @@ use futures::{
     pin_mut, stream, Stream, StreamExt,
     channel::mpsc::{channel, Sender, Receiver},
 };
-use matrix_sdk::ruma;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},

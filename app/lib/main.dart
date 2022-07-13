@@ -3,19 +3,22 @@ import 'dart:async';
 import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
-import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk, Client;
+    show Client, EffektioSdk;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show CrossSigningEvent, SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,7 +61,7 @@ class _EffektioState extends State<Effektio> {
   @override
   Widget build(BuildContext context) {
     return Themed(
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         title: 'Effektio',
@@ -90,42 +93,183 @@ class EffektioHome extends StatefulWidget {
   _EffektioHomeState createState() => _EffektioHomeState();
 }
 
-class _EffektioHomeState extends State<EffektioHome> {
+class _EffektioHomeState extends State<EffektioHome>
+    with TickerProviderStateMixin {
   late Future<Client> _client;
+  Stream<CrossSigningEvent>? _toDeviceRx;
+  late StreamSubscription<CrossSigningEvent> _toDeviceSubscription;
   int tabIndex = 0;
+  late TabController _tabController;
 
   @override
   void initState() {
     _client = makeClient();
     Get.put(ChatController());
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        tabIndex = _tabController.index;
+      });
+    });
     super.initState();
   }
 
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    SyncState syncer = client.startSync();
+    // emoji verification
+    _toDeviceRx = syncer.getToDeviceRx();
+    _toDeviceSubscription = _toDeviceRx!.listen((event) async {
+      String eventName = event.getEventName();
+      String eventId = event.getEventId();
+      String sender = event.getSender();
+      debugPrint(eventName);
+      if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
+        await onKeyVerificationRequest(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
+        await onKeyVerificationReady(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
+        await onKeyVerificationStart(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationCancel') {
+        await onKeyVerificationCancel(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationAccept') {
+        await onKeyVerificationAccept(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationKey') {
+        await onKeyVerificationKey(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationMac') {
+        await onKeyVerificationMac(sender, eventId);
+      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationDone') {
+        await onKeyVerificationDone(sender, eventId);
+        // clean up event listener
+        Future.delayed(const Duration(seconds: 1), () {
+          _toDeviceSubscription.cancel();
+        });
+      }
+    });
     return client;
   }
 
-  BottomNavigationBarItem navBaritem(String icon, String activeIcon) {
-    return BottomNavigationBarItem(
-      icon: Container(
-        margin: const EdgeInsets.only(top: 10),
-        child: SvgPicture.asset(
-          icon,
-          color: AppCommonTheme.svgIconColor,
+  Future<void> onKeyVerificationRequest(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: GestureDetector(
+          child: Column(
+            children: [
+              Text('Verification Request'),
+              Text(sender),
+            ],
+          ),
+          onTap: () async {
+            var client = await _client;
+            await client.acceptVerificationRequest(sender, eventId);
+            Get.back();
+            c.complete();
+          },
         ),
       ),
-      activeIcon: Container(
-        margin: const EdgeInsets.only(top: 10),
-        child: SvgPicture.asset(
-          activeIcon,
-          color: AppCommonTheme.primaryColor,
-        ),
-      ),
-      label: '',
     );
+    return c.future;
   }
+
+  Future<void> onKeyVerificationReady(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationStart(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text('Verify this login'),
+            Text(
+              'Scan the code with your other device or switch and scan with this device.',
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text('Scan with this device'),
+                trailing: Icon(Icons.camera),
+              ),
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text("Can't scan"),
+                trailing: Icon(Icons.arrow_right),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.acceptVerificationStart(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationCancel(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationAccept(String sender, String eventId) async {}
+
+  Future<void> onKeyVerificationKey(String sender, String eventId) async {
+    Completer<void> c = Completer();
+    var client = await _client;
+    List<int> emoji = await client.getVerificationEmoji(sender, eventId);
+    Get.bottomSheet(
+      Container(
+        color: Colors.blue,
+        child: Column(
+          children: [
+            Text('Verify this login'),
+            Text(
+              'Compare the unique emoji, ensuring they appear in the same order.',
+            ),
+            Text(
+              String.fromCharCodes(emoji, 0, emoji.length - 1),
+              style: TextStyle(fontSize: 24),
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text("They don't match"),
+                trailing: Icon(Icons.close),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.mismatchVerificationKey(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+            GestureDetector(
+              child: ListTile(
+                title: Text('They match'),
+                trailing: Icon(Icons.check),
+              ),
+              onTap: () async {
+                var client = await _client;
+                await client.confirmVerificationKey(sender, eventId);
+                Get.back();
+                c.complete();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    return c.future;
+  }
+
+  Future<void> onKeyVerificationMac(String sender, String eventId) async {
+    var client = await _client;
+    await client.reviewVerificationMac(sender, eventId);
+  }
+
+  Future<void> onKeyVerificationDone(String sender, String eventId) async {}
 
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
@@ -135,17 +279,6 @@ class _EffektioHomeState extends State<EffektioHome> {
       null,
       'Chat',
       'Notifications'
-    ];
-    List<Widget> _widgetOptions = <Widget>[
-      NewsScreen(
-        client: client,
-      ),
-      FaqOverviewScreen(client: client),
-      NewsScreen(
-        client: client,
-      ),
-      ChatList(client: _client),
-      NotificationScreen(),
     ];
 
     return DefaultTabController(
@@ -181,56 +314,104 @@ class _EffektioHomeState extends State<EffektioHome> {
                         margin: const EdgeInsets.only(bottom: 10, right: 10),
                         child: Icon(Icons.search),
                       ),
-                      onPressed: () {
-                        setState(() {});
-                      },
+                      onPressed: () {},
                     )
                   ],
                 ),
-          body: _widgetOptions.elementAt(tabIndex),
+          body: TabBarView(
+            controller: _tabController,
+            children: [
+              NewsScreen(
+                client: client,
+              ),
+              FaqOverviewScreen(client: client),
+              NewsScreen(
+                client: client,
+              ),
+              ChatList(client: _client),
+              NotificationScreen(),
+            ],
+          ),
           drawer: SideDrawer(
             client: _client,
           ),
-          bottomNavigationBar: Container(
-            decoration: BoxDecoration(
-              boxShadow: [
-                BoxShadow(color: Colors.grey, offset: Offset(0, -0.5)),
-              ],
+          bottomNavigationBar: TabBar(
+            labelColor: AppCommonTheme.primaryColor,
+            unselectedLabelColor: AppCommonTheme.svgIconColor,
+            controller: _tabController,
+            indicator: MaterialIndicator(
+              height: 5,
+              bottomLeftRadius: 8,
+              bottomRightRadius: 8,
+              topLeftRadius: 0,
+              topRightRadius: 0,
+              horizontalPadding: 12,
+              tabPosition: TabPosition.top,
+              color: AppCommonTheme.primaryColor,
             ),
-            child: BottomNavigationBar(
-              backgroundColor: AppCommonTheme.backgroundColor,
-              items: <BottomNavigationBarItem>[
-                navBaritem(
-                  'assets/images/newsfeed_linear.svg',
-                  'assets/images/newsfeed_bold.svg',
+            tabs: [
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 0
+                      ? SvgPicture.asset(
+                          'assets/images/newsfeed_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/newsfeed_linear.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/menu_linear.svg',
-                  'assets/images/menu_bold.svg',
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 1
+                      ? SvgPicture.asset(
+                          'assets/images/menu_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/menu_linear.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/add.svg',
-                  'assets/images/add.svg',
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 2
+                      ? SvgPicture.asset(
+                          'assets/images/add.svg',
+                          color: AppCommonTheme.primaryColor,
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/add.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/chat_linear.svg',
-                  'assets/images/chat_bold.svg',
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 3
+                      ? SvgPicture.asset(
+                          'assets/images/chat_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/chat_linear.svg',
+                        ),
                 ),
-                navBaritem(
-                  'assets/images/notification_linear.svg',
-                  'assets/images/notification_bold.svg',
-                )
-              ],
-              currentIndex: tabIndex,
-              showUnselectedLabels: true,
-              iconSize: 30,
-              type: BottomNavigationBarType.fixed,
-              onTap: (value) {
-                setState(() {
-                  tabIndex = value;
-                });
-              },
-            ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Tab(
+                  icon: tabIndex == 4
+                      ? SvgPicture.asset(
+                          'assets/images/notification_bold.svg',
+                        )
+                      : SvgPicture.asset(
+                          'assets/images/notification_linear.svg',
+                        ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
