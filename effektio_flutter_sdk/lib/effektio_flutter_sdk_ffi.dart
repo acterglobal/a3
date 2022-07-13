@@ -2230,34 +2230,6 @@ class Api {
     return tmp7;
   }
 
-  bool? __clientLoggedInFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientLoggedInFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    if (tmp8 == 0) {
-      return null;
-    }
-    final tmp7 = tmp9 > 0;
-    return tmp7;
-  }
-
   Account? __clientAccountFuturePoll(
     int boxed,
     int postCobject,
@@ -3967,7 +3939,7 @@ class Api {
   )>();
   late final _clientLoggedInPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          ffi.Uint8 Function(
     ffi.Int64,
   )>>("__Client_logged_in");
 
@@ -4701,21 +4673,6 @@ class Api {
   late final _clientRestoreTokenFuturePoll =
       _clientRestoreTokenFuturePollPtr.asFunction<
           _ClientRestoreTokenFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _clientLoggedInFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientLoggedInFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_logged_in_future_poll");
-
-  late final _clientLoggedInFuturePoll =
-      _clientLoggedInFuturePollPtr.asFunction<
-          _ClientLoggedInFuturePollReturn Function(
     int,
     int,
     int,
@@ -6970,17 +6927,14 @@ class Client {
   }
 
   /// Whether the client is logged in
-  Future<bool> loggedIn() {
+  bool loggedIn() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientLoggedIn(
       tmp0,
     );
     final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_logged_in_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientLoggedInFuturePoll);
+    final tmp2 = tmp3 > 0;
     return tmp2;
   }
 
@@ -8299,13 +8253,6 @@ class _ClientRestoreTokenFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
-}
-
-class _ClientLoggedInFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
 }
 
 class _ClientAccountFuturePollReturn extends ffi.Struct {

@@ -5,7 +5,7 @@ use effektio_core::matrix_sdk::{Client, ClientBuilder};
 use effektio_core::ruma;
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
-use ruma::{
+use effektio_core::ruma::{
     api::client::{
         account::register::v3::Request as RegistrationRequest,
         room::{

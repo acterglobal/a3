@@ -264,7 +264,7 @@ object Client {
     fn is_syncing() -> bool;
 
     /// Whether the client is logged in
-    fn logged_in() -> Future<bool>;
+    fn logged_in() -> bool;
 
     /// return the account of the logged in user, if given
     fn account() -> Future<Result<Account>>;

@@ -491,11 +491,6 @@ typedef struct __Client_restore_token_future_pollReturn {
   uint64_t ret7;
 } __Client_restore_token_future_pollReturn;
 
-typedef struct __Client_logged_in_future_pollReturn {
-  uint8_t ret0;
-  uint8_t ret1;
-} __Client_logged_in_future_pollReturn;
-
 typedef struct __Client_account_future_pollReturn {
   uint8_t ret0;
   uint8_t ret1;
@@ -915,7 +910,7 @@ uint8_t __Client_has_first_synced(int64_t tmp1);
 
 uint8_t __Client_is_syncing(int64_t tmp1);
 
-int64_t __Client_logged_in(int64_t tmp1);
+uint8_t __Client_logged_in(int64_t tmp1);
 
 int64_t __Client_account(int64_t tmp1);
 
@@ -1180,12 +1175,6 @@ struct __Client_restore_token_future_pollReturn __Client_restore_token_future_po
                                                                                    int64_t tmp5);
 
 void __Client_restore_token_future_drop(int64_t, int64_t boxed);
-
-struct __Client_logged_in_future_pollReturn __Client_logged_in_future_poll(int64_t tmp1,
-                                                                           int64_t tmp3,
-                                                                           int64_t tmp5);
-
-void __Client_logged_in_future_drop(int64_t, int64_t boxed);
 
 struct __Client_account_future_pollReturn __Client_account_future_poll(int64_t tmp1,
                                                                        int64_t tmp3,

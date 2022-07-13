@@ -35,8 +35,8 @@ pub use stream::TimelineStream;
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
 
-pub type UserId = ruma::OwnedUserId;
-pub type EventId = ruma::OwnedEventId;
+pub type UserId = effektio_core::ruma::OwnedUserId;
+pub type EventId = effektio_core::ruma::OwnedEventId;
 
 #[cfg(not(doctest))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");

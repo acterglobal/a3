@@ -15,7 +15,7 @@ use std::path::PathBuf;
 pub struct PostNews {
     /// The room you want to post the news to
     #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
-    pub room: Box<ruma::RoomId>,
+    pub room: Box<effektio_core::ruma::RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,
 
