@@ -86,7 +86,7 @@ pub async fn login_new_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            client.login(user, &password, None, None).await?;
+            client.login_username(&user, &password).send().await?;
             let c = Client::new(
                 client,
                 ClientStateBuilder::default()

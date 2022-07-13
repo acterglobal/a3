@@ -3,7 +3,6 @@ use clap::Parser;
 
 use crate::config::{LoginConfig, ENV_ROOM};
 use effektio_core::events;
-use effektio_core::ruma;
 
 use log::info;
 use std::ffi::OsStr;

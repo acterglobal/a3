@@ -53,7 +53,7 @@ async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result
             default_client_config(homeserver)?.build().await?
         }
     };
-    cl.login(username, password, None, None).await?;
+    cl.login_username(username, password).send().await?;
     Ok(cl)
 }
 

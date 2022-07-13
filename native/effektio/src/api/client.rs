@@ -435,7 +435,7 @@ impl Client {
                         let device_id = client.device_id().unwrap();
                         let device = client
                             .encryption()
-                            .get_device(&user_id, &device_id)
+                            .get_device(user_id, device_id)
                             .await
                             .unwrap()
                             .unwrap();
@@ -802,6 +802,7 @@ mod tests {
         ruma::{
             events::{
                 room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
+                SyncMessageLikeEvent,
                 AnyToDeviceEvent,
             },
             UserId,
@@ -809,7 +810,6 @@ mod tests {
         store::StateStore,
         Client as MatrixClient, LoopCtrl, Result as MatrixResult,
     };
-    use ruma::events::SyncMessageLikeEvent;
     use std::{
         env, fs, io,
         path::Path,
@@ -1076,11 +1076,13 @@ mod tests {
         let mut client_builder = MatrixClient::builder().homeserver_url(homeserver_url);
 
         let state_store = StateStore::open_with_path(base_path)?;
-        client_builder = client_builder.state_store(Box::new(state_store));
+        client_builder = client_builder.state_store(state_store);
         let client = client_builder.build().await.unwrap();
 
         client
-            .login(username, password, None, Some("rust-sdk"))
+            .login_username(username, password)
+            .initial_device_display_name("rust-sdk")
+            .send()
             .await?;
 
         let client_ref = &client;
@@ -1092,8 +1094,8 @@ mod tests {
                 let client = &client_ref;
                 let initial = &initial_ref;
 
-                let user_id = client.user_id().await.unwrap();
-                let device_id = client.device_id().await.unwrap();
+                let user_id = client.user_id().unwrap();
+                let device_id = client.device_id().unwrap();
                 let device = client
                     .encryption()
                     .get_device(&user_id, &device_id)

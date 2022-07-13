@@ -53,7 +53,8 @@ impl LoginConfig {
             .await?;
 
         client
-            .login(username.localpart(), &password, None, None)
+            .login_username(username.localpart(), &password)
+            .send()
             .await?;
 
         Ok(client)
