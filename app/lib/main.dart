@@ -99,7 +99,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late StreamSubscription<CrossSigningEvent> _toDeviceSubscription;
   int tabIndex = 0;
   late TabController _tabController;
-
+  bool isLoading = false;
   @override
   void initState() {
     _client = makeClient();
@@ -150,62 +150,241 @@ class _EffektioHomeState extends State<EffektioHome>
 
   Future<void> onKeyVerificationRequest(String sender, String eventId) async {
     Completer<void> c = Completer();
+    isLoading = false;
     Get.bottomSheet(
-      Container(
-        color: Colors.blue,
-        child: GestureDetector(
-          child: Column(
-            children: [
-              Text('Verification Request'),
-              Text(sender),
-            ],
-          ),
-          onTap: () async {
-            var client = await _client;
-            await client.acceptVerificationRequest(sender, eventId);
-            Get.back();
-            c.complete();
-          },
-        ),
+      StatefulBuilder(
+        builder: (context, setState) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: AppCommonTheme.darkShade,
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(
+                          'assets/images/baseline-devices.svg'),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Verification Request',
+                      style: AppCommonTheme.appBartitleStyle
+                          .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          Get.back();
+                        },
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                RichText(
+                  text: TextSpan(
+                    text: 'Verification Requested from ',
+                    style: AppCommonTheme.appBartitleStyle
+                        .copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: sender,
+                        style: AppCommonTheme.appBartitleStyle.copyWith(
+                          color: AppCommonTheme.primaryColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 15),
+                SvgPicture.asset(
+                  'assets/images/lock.svg',
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  height: MediaQuery.of(context).size.height * 0.2,
+                ),
+                const SizedBox(height: 15),
+                isLoading
+                    ? SizedBox(
+                        child: SizedBox(
+                          child: CircularProgressIndicator(
+                            color: AppCommonTheme.primaryColor,
+                          ),
+                        ),
+                      )
+                    : elevatedButton(
+                        'Start Verifying',
+                        AppCommonTheme.greenButtonColor,
+                        () => {
+                          setState(() {
+                            isLoading = true;
+                          }),
+                          onKeyVerificationReady(sender, eventId),
+                          c.complete()
+                        },
+                        AppCommonTheme.appBartitleStyle.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+              ],
+            ),
+          );
+        },
       ),
     );
     return c.future;
   }
 
-  Future<void> onKeyVerificationReady(String sender, String eventId) async {}
+  Future<void> onKeyVerificationReady(String sender, String eventId) async {
+    var client = await _client;
+    await client.acceptVerificationRequest(sender, eventId);
+  }
 
   Future<void> onKeyVerificationStart(String sender, String eventId) async {
+    isLoading = false;
+    Get.back();
     Completer<void> c = Completer();
     Get.bottomSheet(
       Container(
-        color: Colors.blue,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: AppCommonTheme.darkShade,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Verify this login'),
-            Text(
-              'Scan the code with your other device or switch and scan with this device.',
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SvgPicture.asset(
+                    'assets/images/baseline-devices.svg',
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  'Verify your new session',
+                  style: AppCommonTheme.appBartitleStyle
+                      .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Get.back();
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            GestureDetector(
-              child: ListTile(
-                title: Text('Scan with this device'),
-                trailing: Icon(Icons.camera),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(
+                'Scan the QR code below to Verify',
+                style: AppCommonTheme.appBartitleStyle.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: AppCommonTheme.dividerColor,
+                ),
               ),
             ),
-            GestureDetector(
-              child: ListTile(
-                title: Text("Can't scan"),
-                trailing: Icon(Icons.arrow_right),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(
+                    color: AppCommonTheme.dividerColor,
+                  ),
+                ),
               ),
-              onTap: () async {
-                var client = await _client;
-                await client.acceptVerificationStart(sender, eventId);
-                Get.back();
-                c.complete();
-              },
+            ),
+            TextButton(
+              onPressed: () {},
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SvgPicture.asset(
+                      'assets/images/camera.svg',
+                      color: AppCommonTheme.primaryColor,
+                      height: 14,
+                      width: 14,
+                    ),
+                  ),
+                  Text(
+                    'Scan other code/device',
+                    style: AppCommonTheme.appBartitleStyle.copyWith(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: AppCommonTheme.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: RichText(
+                textAlign: TextAlign.center,
+                softWrap: true,
+                text: TextSpan(
+                  text:
+                      'If this wasn\'t you, your account may be compromised. Manage your security in ',
+                  style: AppCommonTheme.appBartitleStyle.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: AppCommonTheme.dividerColor,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Settings',
+                      style: AppCommonTheme.appBartitleStyle.copyWith(
+                        color: AppCommonTheme.primaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Center(
+              child: TextButton(
+                onPressed: () async {
+                  var client = await _client;
+                  await client.acceptVerificationStart(sender, eventId);
+                  Get.back();
+                  c.complete();
+                },
+                child: Text(
+                  'Can\'t Scan',
+                  style: AppCommonTheme.appBartitleStyle.copyWith(
+                    color: AppCommonTheme.primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
+      isDismissible: false,
     );
     return c.future;
   }
@@ -220,40 +399,132 @@ class _EffektioHomeState extends State<EffektioHome>
     List<int> emoji = await client.getVerificationEmoji(sender, eventId);
     Get.bottomSheet(
       Container(
-        color: Colors.blue,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: AppCommonTheme.darkShade,
+        ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Verify this login'),
-            Text(
-              'Compare the unique emoji, ensuring they appear in the same order.',
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SvgPicture.asset(
+                    'assets/images/baseline-devices.svg',
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  'Verify by Emoji',
+                  style: AppCommonTheme.appBartitleStyle
+                      .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Get.back();
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              String.fromCharCodes(emoji, 0, emoji.length - 1),
-              style: TextStyle(fontSize: 24),
-            ),
-            GestureDetector(
-              child: ListTile(
-                title: Text("They don't match"),
-                trailing: Icon(Icons.close),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+              child: Text(
+                'Confirm the unique emoji appears on the other session, that are in the same order',
+                style: AppCommonTheme.appBartitleStyle.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: AppCommonTheme.dividerColor,
+                ),
               ),
-              onTap: () async {
-                var client = await _client;
-                await client.mismatchVerificationKey(sender, eventId);
-                Get.back();
-                c.complete();
-              },
             ),
-            GestureDetector(
-              child: ListTile(
-                title: Text('They match'),
-                trailing: Icon(Icons.check),
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                height: MediaQuery.of(context).size.height * 0.28,
+                width: MediaQuery.of(context).size.width * 0.90,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.0),
+                  color: AppCommonTheme.backgroundColor,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: GridView.count(
+                    crossAxisCount: 4,
+                    crossAxisSpacing: 10.0,
+                    children: List.generate(emoji.length, (index) {
+                      return GridTile(
+                        child: Text(
+                          String.fromCharCode(emoji[index]),
+                          style: TextStyle(fontSize: 32),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
               ),
-              onTap: () async {
-                var client = await _client;
-                await client.confirmVerificationKey(sender, eventId);
-                Get.back();
-                c.complete();
-              },
+            ),
+            const SizedBox(height: 5.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.only(left: 20),
+                  width: MediaQuery.of(context).size.width * 0.48,
+                  child: elevatedButton(
+                    'They don\'t match',
+                    AppCommonTheme.primaryColor,
+                    () async {
+                      var client = await _client;
+                      await client.mismatchVerificationKey(
+                        sender,
+                        eventId,
+                      );
+                      Get.back();
+                      c.complete();
+                    },
+                    AppCommonTheme.appBartitleStyle
+                        .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                const SizedBox(width: 5.0),
+                Container(
+                  padding: const EdgeInsets.only(right: 20),
+                  width: MediaQuery.of(context).size.width * 0.48,
+                  child: elevatedButton(
+                    'They match',
+                    AppCommonTheme.greenButtonColor,
+                    () async {
+                      await onKeyVerificationWaiting(sender, eventId);
+                      Get.back();
+                      c.complete();
+                    },
+                    AppCommonTheme.appBartitleStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Center(
+              child: TextButton(
+                onPressed: () async {},
+                child: Text(
+                  'QR Scan Instead',
+                  style: AppCommonTheme.appBartitleStyle.copyWith(
+                    color: AppCommonTheme.primaryColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -267,9 +538,112 @@ class _EffektioHomeState extends State<EffektioHome>
     await client.reviewVerificationMac(sender, eventId);
   }
 
-  Future<void> onKeyVerificationDone(String sender, String eventId) async {}
+  Future<void> onKeyVerificationWaiting(String sender, String eventId) async {
+    var client = await _client;
+    await client
+        .confirmVerificationKey(
+          sender,
+          eventId,
+        )
+        .whenComplete(
+          () => {Get.back(), onKeyVerificationDone(sender, eventId)},
+        );
+    Get.bottomSheet(
+      Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10.0),
+                child: SvgPicture.asset(
+                  'assets/images/baseline-devices.svg',
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                'Verify by Emoji',
+                style: AppCommonTheme.appBartitleStyle
+                    .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          SizedBox(height: 20.0),
+          Text(
+            'Waiting for match...',
+            style: AppCommonTheme.appBartitleStyle.copyWith(
+              color: AppCommonTheme.dividerColor,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-  
+  Future<void> onKeyVerificationDone(String sender, String eventId) async {
+    Get.bottomSheet(
+      Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: AppCommonTheme.darkShade,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10.0),
+                  child: SvgPicture.asset(
+                    'assets/images/baseline-devices.svg',
+                  ),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  'Verified',
+                  style: AppCommonTheme.appBartitleStyle
+                      .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10.0),
+                  child: IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () {
+                      Get.back();
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+              child: Text(
+                'You can now read secure messages on your new device, and other users will know they can trust it.',
+                style: AppCommonTheme.appBartitleStyle.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: AppCommonTheme.dividerColor,
+                ),
+              ),
+            ),
+            const SizedBox(height: 15.0),
+            Center(
+              child: SvgPicture.asset(
+                'assets/images/lock.svg',
+                width: MediaQuery.of(context).size.width * 0.2,
+                height: MediaQuery.of(context).size.height * 0.2,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,

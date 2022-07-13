@@ -27,3 +27,21 @@ String randomString() {
   final values = List<int>.generate(16, (i) => random.nextInt(255));
   return base64UrlEncode(values);
 }
+
+Widget elevatedButton(
+  String title,
+  Color color,
+  VoidCallback? callback,
+  TextStyle textstyle,
+) {
+  return ElevatedButton(
+    onPressed: callback,
+    style: ElevatedButton.styleFrom(
+      primary: color,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ),
+    child: Text(title, style: textstyle),
+  );
+}
