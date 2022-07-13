@@ -802,8 +802,7 @@ mod tests {
         ruma::{
             events::{
                 room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
-                SyncMessageLikeEvent,
-                AnyToDeviceEvent,
+                AnyToDeviceEvent, SyncMessageLikeEvent,
             },
             UserId,
         },
