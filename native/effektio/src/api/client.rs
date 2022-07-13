@@ -677,10 +677,12 @@ impl Client {
                     if let Some(items) = sas.emoji() {
                         let sequence = items
                             .iter()
-                            .map(|e| EmojiUnit::new(
-                                e.symbol.chars().collect::<Vec<_>>()[0] as u32,
-                                e.description.to_string(),
-                            ))
+                            .map(|e| {
+                                EmojiUnit::new(
+                                    e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                                    e.description.to_string(),
+                                )
+                            })
                             .collect::<Vec<_>>();
                         return Ok(sequence);
                     }
@@ -830,17 +832,19 @@ mod tests {
     use url::Url;
     use zenv::Zenv;
 
-    use crate::api::{EmojiUnit, login_new_client};
+    use crate::api::{login_new_client, EmojiUnit};
 
     async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
         println!("Does the emoji match: {:?}", sas.emoji());
         if let Some(items) = sas.emoji() {
             let sequence = items
                 .iter()
-                .map(|e| EmojiUnit::new(
-                    e.symbol.chars().collect::<Vec<_>>()[0] as u32,
-                    e.description.to_string(),
-                ))
+                .map(|e| {
+                    EmojiUnit::new(
+                        e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                        e.description.to_string(),
+                    )
+                })
                 .collect::<Vec<_>>();
             println!("{:?}", sequence);
         }
