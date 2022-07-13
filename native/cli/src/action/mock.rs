@@ -2,7 +2,6 @@ use anyhow::Result;
 use clap::{crate_version, Parser};
 
 use effektio_core::matrix_sdk::{Client, ClientBuilder};
-use effektio_core::ruma;
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
 use effektio_core::ruma::{
@@ -17,11 +16,10 @@ use effektio_core::ruma::{
     assign,
     room::RoomType,
     serde::Raw,
-    RoomName,
 };
 
 fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
-    let store_config = StoreConfig::new().state_store(Box::new(MemoryStore::new()));
+    let store_config = StoreConfig::new().state_store(MemoryStore::new());
 
     Ok(Client::builder()
         .user_agent(&format!("effektio-cli/{}", crate_version!()))
@@ -83,13 +81,13 @@ impl Mock {
         let odo = ensure_user(homeserver, "odo", "odo").await?;
 
         let team = [
-            sisko.user_id().await.expect("siskos UserId is set"),
-            kyra.user_id().await.expect("kyras UserId is set"),
-            worf.user_id().await.expect("worfs' UserId is set"),
-            bashir.user_id().await.expect("bashirs userId is set"),
-            miles.user_id().await.expect("miles UserId is set"),
-            jadzia.user_id().await.expect("jadzia UserId is set"),
-            odo.user_id().await.expect("odos UserId is set"),
+            sisko.user_id().expect("siskos UserId is set").to_owned(),
+            kyra.user_id().expect("kyras UserId is set").to_owned(),
+            worf.user_id().expect("worfs' UserId is set").to_owned(),
+            bashir.user_id().expect("bashirs userId is set").to_owned(),
+            miles.user_id().expect("miles UserId is set").to_owned(),
+            jadzia.user_id().expect("jadzia UserId is set").to_owned(),
+            odo.user_id().expect("odos UserId is set").to_owned(),
         ];
 
         let quark = ensure_user(homeserver, "quark", "quark").await?;
@@ -99,7 +97,7 @@ impl Mock {
 
         log::warn!("Done ensuring users");
 
-        let prom_name = RoomName::parse("Promenade")?;
+        let prom_name = "Promenade".to_owned();
 
         let _promenade = admin
             .create_room(assign!(CreateRoomRequest::new(), {
@@ -114,13 +112,13 @@ impl Mock {
             .await?;
 
         let quark_customers = [
-            quark.user_id().await.expect("quarks UserId is set"),
-            rom.user_id().await.expect("roms UserId is set"),
-            morn.user_id().await.expect("morns UserId is set"),
-            jadzia.user_id().await.expect("jadzias UserId is set"),
+            quark.user_id().expect("quarks UserId is set").to_owned(),
+            rom.user_id().expect("roms UserId is set").to_owned(),
+            morn.user_id().expect("morns UserId is set").to_owned(),
+            jadzia.user_id().expect("jadzias UserId is set").to_owned(),
         ];
 
-        let quarks_name = RoomName::parse("Quarks'")?;
+        let quarks_name = "Quarks'".to_owned();
         // let quarks_states = [
         //     Raw::new(
         //         assign!(SpaceParentEventContent::new(), {
