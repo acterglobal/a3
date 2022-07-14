@@ -207,7 +207,7 @@ class CrossSigning {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Text(
-                'Scan the QR code below to Verify',
+                'Scan the QR code below to verify',
                 style: AppCommonTheme.appBartitleStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
@@ -267,7 +267,7 @@ class CrossSigning {
                   ),
                   children: <TextSpan>[
                     TextSpan(
-                      text: 'Settings',
+                      text: 'Settings.',
                       style: AppCommonTheme.appBartitleStyle.copyWith(
                         color: AppCommonTheme.primaryColor,
                         fontSize: 12,
@@ -355,7 +355,7 @@ class CrossSigning {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                   child: Text(
-                    'Confirm the unique emoji appears on the other session, that are in the same order',
+                    'Confirm the unique emoji appears on the other session, that are in the same order.',
                     style: AppCommonTheme.appBartitleStyle.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
