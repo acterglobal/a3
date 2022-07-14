@@ -94,8 +94,6 @@ object UserId {
     //fn localpart() -> string;
 }
 
-object EventId {}
-
 /// A room Message metadata and content
 object RoomMessage {
 
@@ -341,7 +339,7 @@ object Client {
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
     /// Get the invitation list
-    fn invitations() -> Vec<Invitation>;
+    fn pending_invitations() -> Vec<Invitation>;
 
     /// Accept the AnyToDeviceEvent::KeyVerificationRequest
     fn accept_verification_request(sender: string, event_id: string) -> Future<Result<bool>>;

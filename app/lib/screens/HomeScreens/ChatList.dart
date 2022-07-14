@@ -108,14 +108,16 @@ class _ChatListState extends State<ChatList> {
         if (!snapshot.hasData) {
           return SizedBox.shrink();
         }
-        FfiListInvitation invitations = snapshot.requireData.invitations();
-        if (invitations.isEmpty) {
+        FfiListInvitation pendingInvitations =
+            snapshot.requireData.pendingInvitations();
+        if (pendingInvitations.isEmpty) {
           return SizedBox.shrink();
         }
         // user may be invited from multiple people of same room
         var seen = <String>{};
-        List<Invitation> distinct =
-            invitations.where((item) => seen.add(item.getRoomId())).toList();
+        List<Invitation> distinct = pendingInvitations
+            .where((item) => seen.add(item.getRoomId()))
+            .toList();
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [

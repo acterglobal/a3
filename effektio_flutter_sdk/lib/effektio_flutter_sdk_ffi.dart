@@ -4511,14 +4511,15 @@ class Api {
       int Function(
     int,
   )>();
-  late final _clientInvitationsPtr = _lookup<
+  late final _clientPendingInvitationsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_invitations");
+  )>>("__Client_pending_invitations");
 
-  late final _clientInvitations = _clientInvitationsPtr.asFunction<
-      int Function(
+  late final _clientPendingInvitations =
+      _clientPendingInvitationsPtr.asFunction<
+          int Function(
     int,
   )>();
   late final _clientAcceptVerificationRequestPtr = _lookup<
@@ -6488,18 +6489,6 @@ class UserId {
   }
 }
 
-class EventId {
-  final Api _api;
-  final _Box _box;
-
-  EventId._(this._api, this._box);
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 /// A room Message metadata and content
 class RoomMessage {
   final Api _api;
@@ -8084,10 +8073,10 @@ class Client {
   }
 
   /// Get the invitation list
-  FfiListInvitation invitations() {
+  FfiListInvitation pendingInvitations() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientInvitations(
+    final tmp1 = _api._clientPendingInvitations(
       tmp0,
     );
     final tmp3 = tmp1;

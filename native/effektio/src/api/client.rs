@@ -81,7 +81,7 @@ pub struct ClientState {
     #[builder(default)]
     pub should_stop_syncing: bool,
     #[builder(default)]
-    pub invitations: Vec<Invitation>,
+    pub pending_invitations: Vec<Invitation>,
 }
 
 #[derive(Clone)]
@@ -194,7 +194,7 @@ async fn handle_stripped_state_event(
                 println!("room id: {:?}", room_id);
                 println!("sender: {:?}", member.sender);
                 println!("state key: {:?}", member.state_key);
-                state.write().invitations.push(Invitation {
+                state.write().pending_invitations.push(Invitation {
                     event_id: Some(v["event_id"].as_str().unwrap().to_owned()),
                     timestamp: v["origin_server_ts"].as_u64(),
                     room_id: room_id.to_string(),
@@ -495,7 +495,7 @@ impl Client {
                 let r = client.get_room(&room_id).unwrap();
                 let room_name = r.display_name().await.unwrap();
                 println!("invited room name: {}", room_name.to_string());
-                state.write().invitations.push(Invitation {
+                state.write().pending_invitations.push(Invitation {
                     event_id: None,
                     timestamp: None,
                     room_id: room_id.to_string(),
@@ -721,8 +721,8 @@ impl Client {
         self.account().await?.avatar().await
     }
 
-    pub fn invitations(&self) -> Vec<Invitation> {
-        self.state.read().invitations.clone()
+    pub fn pending_invitations(&self) -> Vec<Invitation> {
+        self.state.read().pending_invitations.clone()
     }
 
     pub async fn accept_verification_request(
