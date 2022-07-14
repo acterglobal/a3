@@ -203,6 +203,12 @@ typedef struct __CrossSigningEvent_get_senderReturn {
   uint64_t ret2;
 } __CrossSigningEvent_get_senderReturn;
 
+typedef struct __EmojiUnit_get_descriptionReturn {
+  int64_t ret0;
+  uint64_t ret1;
+  uint64_t ret2;
+} __EmojiUnit_get_descriptionReturn;
+
 typedef struct __login_new_client_future_pollReturn {
   uint8_t ret0;
   uint8_t ret1;
@@ -601,8 +607,6 @@ typedef struct __Client_get_verification_emoji_future_pollReturn {
   uint64_t ret3;
   uint64_t ret4;
   int64_t ret5;
-  uint64_t ret6;
-  uint64_t ret7;
 } __Client_get_verification_emoji_future_pollReturn;
 
 typedef struct __Client_confirm_verification_key_future_pollReturn {
@@ -754,8 +758,6 @@ void drop_box_Faq(int64_t, int64_t boxed);
 struct __UserId_to_stringReturn __UserId_to_string(int64_t tmp1);
 
 void drop_box_UserId(int64_t, int64_t boxed);
-
-void drop_box_EventId(int64_t, int64_t boxed);
 
 struct __RoomMessage_event_idReturn __RoomMessage_event_id(int64_t tmp1);
 
@@ -995,6 +997,12 @@ struct __CrossSigningEvent_get_event_idReturn __CrossSigningEvent_get_event_id(i
 struct __CrossSigningEvent_get_senderReturn __CrossSigningEvent_get_sender(int64_t tmp1);
 
 void drop_box_CrossSigningEvent(int64_t, int64_t boxed);
+
+uint32_t __EmojiUnit_get_symbol(int64_t tmp1);
+
+struct __EmojiUnit_get_descriptionReturn __EmojiUnit_get_description(int64_t tmp1);
+
+void drop_box_EmojiUnit(int64_t, int64_t boxed);
 
 struct __login_new_client_future_pollReturn __login_new_client_future_poll(int64_t tmp1,
                                                                            int64_t tmp3,
@@ -1299,6 +1307,20 @@ uintptr_t __FfiListConversationRemove(uintptr_t boxed, uint32_t index);
 void __FfiListConversationAdd(uintptr_t boxed, uintptr_t element);
 
 void __FfiListConversationInsert(uintptr_t boxed, uint32_t index, uintptr_t element);
+
+uintptr_t __FfiListEmojiUnitCreate(void);
+
+void drop_box_FfiListEmojiUnit(int64_t, int64_t boxed);
+
+uint32_t __FfiListEmojiUnitLen(uintptr_t boxed);
+
+uintptr_t __FfiListEmojiUnitElementAt(uintptr_t boxed, uint32_t index);
+
+uintptr_t __FfiListEmojiUnitRemove(uintptr_t boxed, uint32_t index);
+
+void __FfiListEmojiUnitAdd(uintptr_t boxed, uintptr_t element);
+
+void __FfiListEmojiUnitInsert(uintptr_t boxed, uint32_t index, uintptr_t element);
 
 uintptr_t __FfiListFaqCreate(void);
 

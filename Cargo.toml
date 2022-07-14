@@ -6,6 +6,5 @@ members = [
 default-members = ["native/effektio"]
 
 [profile.release]
-lto = true
 panic = 'unwind'
 codegen-units = 1
