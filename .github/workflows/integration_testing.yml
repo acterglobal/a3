@@ -61,7 +61,7 @@ jobs:
       - name: run cargo integration tests
         env:
           HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
-        run: cargo test -p effektio -- --ignored
+        run: cargo test -p effektio-test -- --nocapture
 
   # flutter:
   #   runs-on: ubuntu-latest
