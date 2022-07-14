@@ -17,7 +17,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState, CrossSigningEvent;
+    show CrossSigningEvent, FfiListEmojiUnit, SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -217,7 +217,8 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<void> onKeyVerificationKey(String sender, String eventId) async {
     Completer<void> c = Completer();
     var client = await _client;
-    List<int> emoji = await client.getVerificationEmoji(sender, eventId);
+    FfiListEmojiUnit emoji = await client.getVerificationEmoji(sender, eventId);
+    List<int> emojiCodes = emoji.map((e) => e.getSymbol()).toList();
     Get.bottomSheet(
       Container(
         color: Colors.blue,
@@ -228,7 +229,7 @@ class _EffektioHomeState extends State<EffektioHome>
               'Compare the unique emoji, ensuring they appear in the same order.',
             ),
             Text(
-              String.fromCharCodes(emoji, 0, emoji.length - 1),
+              String.fromCharCodes(emojiCodes, 0, emoji.length - 1),
               style: TextStyle(fontSize: 24),
             ),
             GestureDetector(
@@ -269,7 +270,6 @@ class _EffektioHomeState extends State<EffektioHome>
 
   Future<void> onKeyVerificationDone(String sender, String eventId) async {}
 
-  
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,

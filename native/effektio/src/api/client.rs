@@ -51,7 +51,7 @@ pub struct CrossSigningEvent {
 }
 
 impl CrossSigningEvent {
-    pub fn new(event_name: String, event_id: String, sender: String) -> Self {
+    pub(crate) fn new(event_name: String, event_id: String, sender: String) -> Self {
         CrossSigningEvent {
             event_name,
             event_id,
@@ -69,6 +69,29 @@ impl CrossSigningEvent {
 
     pub fn get_sender(&self) -> String {
         self.sender.clone()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct EmojiUnit {
+    symbol: u32,
+    description: String,
+}
+
+impl EmojiUnit {
+    pub(crate) fn new(symbol: u32, description: String) -> Self {
+        EmojiUnit {
+            symbol,
+            description,
+        }
+    }
+
+    pub fn get_symbol(&self) -> u32 {
+        self.symbol
+    }
+
+    pub fn get_description(&self) -> String {
+        self.description.clone()
     }
 }
 
@@ -661,7 +684,7 @@ impl Client {
         &self,
         sender: String,
         event_id: String,
-    ) -> Result<Vec<u32>> {
+    ) -> Result<Vec<EmojiUnit>> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -674,7 +697,12 @@ impl Client {
                     if let Some(items) = sas.emoji() {
                         let sequence = items
                             .iter()
-                            .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                            .map(|e| {
+                                EmojiUnit::new(
+                                    e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                                    e.description.to_string(),
+                                )
+                            })
                             .collect::<Vec<_>>();
                         return Ok(sequence);
                     }
@@ -823,14 +851,19 @@ mod tests {
     use url::Url;
     use zenv::Zenv;
 
-    use crate::api::login_new_client;
+    use crate::api::{login_new_client, EmojiUnit};
 
     async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
         println!("Does the emoji match: {:?}", sas.emoji());
         if let Some(items) = sas.emoji() {
             let sequence = items
                 .iter()
-                .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                .map(|e| {
+                    EmojiUnit::new(
+                        e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                        e.description.to_string(),
+                    )
+                })
                 .collect::<Vec<_>>();
             println!("{:?}", sequence);
         }
