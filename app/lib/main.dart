@@ -117,7 +117,7 @@ class _EffektioHomeState extends State<EffektioHome>
     crossSigning.startCrossSigning(client);
     return client;
   }
-
+  
   Widget homeScreen(BuildContext context, Client client) {
     List<String?> _titles = <String?>[
       null,
