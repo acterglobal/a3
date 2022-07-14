@@ -315,6 +315,8 @@ class CrossSigning {
     Completer<void> c = Completer();
     FfiListEmojiUnit emoji = await client.getVerificationEmoji(sender, eventId);
     List<int> emojiCodes = emoji.map((e) => e.getSymbol()).toList();
+    List<String> emojiDescriptions =
+        emoji.map((e) => e.getDescription()).toList();
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setState) {
@@ -374,15 +376,26 @@ class CrossSigning {
                       color: AppCommonTheme.backgroundColor,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: GridView.count(
                         crossAxisCount: 4,
                         crossAxisSpacing: 10.0,
+                        mainAxisSpacing: 10.0,
                         children: List.generate(emoji.length, (index) {
                           return GridTile(
                             child: Text(
                               String.fromCharCode(emojiCodes[index]),
                               style: TextStyle(fontSize: 32),
+                              textAlign: TextAlign.center,
+                            ),
+                            footer: Text(
+                              emojiDescriptions[index],
+                              style: AppCommonTheme.appBartitleStyle.copyWith(
+                                fontSize: 14,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           );
                         }),
