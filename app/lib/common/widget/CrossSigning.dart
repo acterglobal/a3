@@ -147,6 +147,7 @@ class CrossSigning {
           );
         },
       ),
+      isDismissible: false,
     );
     return c.future;
   }
@@ -472,6 +473,7 @@ class CrossSigning {
           );
         },
       ),
+      isDismissible: false,
     );
     return c.future;
   }
@@ -549,6 +551,7 @@ class CrossSigning {
           );
         },
       ),
+      isDismissible: false,
     );
   }
 }
