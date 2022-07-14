@@ -3,7 +3,6 @@ use effektio::api::{guest_client, login_new_client, login_with_token};
 use tempfile::TempDir;
 
 #[tokio::test]
-#[ignore]
 async fn can_guest_login() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
@@ -18,7 +17,6 @@ async fn can_guest_login() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
 async fn sisko_can_login() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
@@ -32,7 +30,6 @@ async fn sisko_can_login() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
 async fn kyra_can_login() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
@@ -46,7 +43,6 @@ async fn kyra_can_login() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
 async fn kyra_can_restore() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;

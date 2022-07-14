@@ -875,7 +875,6 @@ dependencies = [
  "cbindgen",
  "derive_builder",
  "effektio-core",
- "env_logger 0.9.0",
  "ffi-gen",
  "ffi-gen-macro",
  "futures",
@@ -890,7 +889,6 @@ dependencies = [
  "sanitize-filename-reader-friendly",
  "serde",
  "serde_json",
- "tempfile",
  "tokio",
  "tracing",
  "tracing-android",
@@ -934,6 +932,17 @@ dependencies = [
  "serde_json",
  "serde_repr",
  "url",
+]
+
+[[package]]
+name = "effektio-test"
+version = "0.1.0"
+dependencies = [
+ "effektio",
+ "env_logger 0.9.0",
+ "tempfile",
+ "tokio",
+ "zenv",
 ]
 
 [[package]]
