@@ -100,6 +100,7 @@ class _EffektioHomeState extends State<EffektioHome>
   int tabIndex = 0;
   late TabController _tabController;
   bool isLoading = false;
+  late bool waitForMatch;
   @override
   void initState() {
     _client = makeClient();
@@ -122,6 +123,7 @@ class _EffektioHomeState extends State<EffektioHome>
       String eventName = event.getEventName();
       String eventId = event.getEventId();
       String sender = event.getSender();
+      waitForMatch = false;
       debugPrint(eventName);
       if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
         await onKeyVerificationRequest(sender, eventId);
@@ -398,136 +400,158 @@ class _EffektioHomeState extends State<EffektioHome>
     var client = await _client;
     List<int> emoji = await client.getVerificationEmoji(sender, eventId);
     Get.bottomSheet(
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: AppCommonTheme.darkShade,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      StatefulBuilder(
+        builder: (context, setState) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: AppCommonTheme.darkShade,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SvgPicture.asset(
-                    'assets/images/baseline-devices.svg',
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(
+                        'assets/images/baseline-devices.svg',
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      'Verify by Emoji',
+                      style: AppCommonTheme.appBartitleStyle
+                          .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: Icon(Icons.close),
+                        onPressed: () {
+                          Get.back();
+                        },
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 5),
-                Text(
-                  'Verify by Emoji',
-                  style: AppCommonTheme.appBartitleStyle
-                      .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                Spacer(),
                 Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      Get.back();
-                    },
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-              child: Text(
-                'Confirm the unique emoji appears on the other session, that are in the same order',
-                style: AppCommonTheme.appBartitleStyle.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppCommonTheme.dividerColor,
-                ),
-              ),
-            ),
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                height: MediaQuery.of(context).size.height * 0.28,
-                width: MediaQuery.of(context).size.width * 0.90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: AppCommonTheme.backgroundColor,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: GridView.count(
-                    crossAxisCount: 4,
-                    crossAxisSpacing: 10.0,
-                    children: List.generate(emoji.length, (index) {
-                      return GridTile(
-                        child: Text(
-                          String.fromCharCode(emoji[index]),
-                          style: TextStyle(fontSize: 32),
-                        ),
-                      );
-                    }),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 5.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 20),
-                  width: MediaQuery.of(context).size.width * 0.48,
-                  child: elevatedButton(
-                    'They don\'t match',
-                    AppCommonTheme.primaryColor,
-                    () async {
-                      var client = await _client;
-                      await client.mismatchVerificationKey(
-                        sender,
-                        eventId,
-                      );
-                      Get.back();
-                      c.complete();
-                    },
-                    AppCommonTheme.appBartitleStyle
-                        .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                const SizedBox(width: 5.0),
-                Container(
-                  padding: const EdgeInsets.only(right: 20),
-                  width: MediaQuery.of(context).size.width * 0.48,
-                  child: elevatedButton(
-                    'They match',
-                    AppCommonTheme.greenButtonColor,
-                    () async {
-                      await onKeyVerificationWaiting(sender, eventId);
-                      Get.back();
-                      c.complete();
-                    },
-                    AppCommonTheme.appBartitleStyle.copyWith(
+                  padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                  child: Text(
+                    'Confirm the unique emoji appears on the other session, that are in the same order',
+                    style: AppCommonTheme.appBartitleStyle.copyWith(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w400,
+                      color: AppCommonTheme.dividerColor,
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    height: MediaQuery.of(context).size.height * 0.28,
+                    width: MediaQuery.of(context).size.width * 0.90,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: AppCommonTheme.backgroundColor,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: GridView.count(
+                        crossAxisCount: 4,
+                        crossAxisSpacing: 10.0,
+                        children: List.generate(emoji.length, (index) {
+                          return GridTile(
+                            child: Text(
+                              String.fromCharCode(emoji[index]),
+                              style: TextStyle(fontSize: 32),
+                            ),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5.0),
+                waitForMatch
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Waiting for match...',
+                            style: AppCommonTheme.appBartitleStyle.copyWith(
+                              color: AppCommonTheme.dividerColor,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.only(left: 20),
+                            width: MediaQuery.of(context).size.width * 0.48,
+                            child: elevatedButton(
+                              'They don\'t match',
+                              AppCommonTheme.primaryColor,
+                              () async {
+                                var client = await _client;
+                                await client.mismatchVerificationKey(
+                                  sender,
+                                  eventId,
+                                );
+                                Get.back();
+                                c.complete();
+                              },
+                              AppCommonTheme.appBartitleStyle.copyWith(
+                                  fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          const SizedBox(width: 5.0),
+                          Container(
+                            padding: const EdgeInsets.only(right: 20),
+                            width: MediaQuery.of(context).size.width * 0.48,
+                            child: elevatedButton(
+                              'They match',
+                              AppCommonTheme.greenButtonColor,
+                              () async {
+                                setState(() {
+                                  waitForMatch = true;
+                                });
+                                await onKeyVerificationMac(sender, eventId);
+                                client.confirmVerificationKey(sender, eventId);
+                                Get.back();
+                                c.complete();
+                              },
+                              AppCommonTheme.appBartitleStyle.copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                Center(
+                  child: TextButton(
+                    onPressed: () async {},
+                    child: Text(
+                      'QR Scan Instead',
+                      style: AppCommonTheme.appBartitleStyle.copyWith(
+                        color: AppCommonTheme.primaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
               ],
             ),
-            Center(
-              child: TextButton(
-                onPressed: () async {},
-                child: Text(
-                  'QR Scan Instead',
-                  style: AppCommonTheme.appBartitleStyle.copyWith(
-                    color: AppCommonTheme.primaryColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
     return c.future;
@@ -538,51 +562,8 @@ class _EffektioHomeState extends State<EffektioHome>
     await client.reviewVerificationMac(sender, eventId);
   }
 
-  Future<void> onKeyVerificationWaiting(String sender, String eventId) async {
-    var client = await _client;
-    await client
-        .confirmVerificationKey(
-          sender,
-          eventId,
-        )
-        .whenComplete(
-          () => {Get.back(), onKeyVerificationDone(sender, eventId)},
-        );
-    Get.bottomSheet(
-      Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10.0),
-                child: SvgPicture.asset(
-                  'assets/images/baseline-devices.svg',
-                ),
-              ),
-              const SizedBox(width: 5),
-              Text(
-                'Verify by Emoji',
-                style: AppCommonTheme.appBartitleStyle
-                    .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          SizedBox(height: 20.0),
-          Text(
-            'Waiting for match...',
-            style: AppCommonTheme.appBartitleStyle.copyWith(
-              color: AppCommonTheme.dividerColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> onKeyVerificationDone(String sender, String eventId) async {
+    Get.back();
     Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
