@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState, CrossSigningEvent, Client;
+    show SyncState, CrossSigningEvent, Client, FfiListEmojiUnit;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -313,7 +313,8 @@ class CrossSigning {
     Client client,
   ) async {
     Completer<void> c = Completer();
-    List<int> emoji = await client.getVerificationEmoji(sender, eventId);
+    FfiListEmojiUnit emoji = await client.getVerificationEmoji(sender, eventId);
+    List<int> emojiCodes = emoji.map((e) => e.getSymbol()).toList();
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setState) {
@@ -380,7 +381,7 @@ class CrossSigning {
                         children: List.generate(emoji.length, (index) {
                           return GridTile(
                             child: Text(
-                              String.fromCharCode(emoji[index]),
+                              String.fromCharCode(emojiCodes[index]),
                               style: TextStyle(fontSize: 32),
                             ),
                           );
