@@ -126,7 +126,6 @@ description = "build iOS targets"
 category = "Build"
 dependencies = ["ios-build", "ios-release", "post-ios"]
 
-
 [tasks.ios-build]
 condition = { platforms = ["mac"], env_true = ["DEV"] }
 description = "Build ios targets."
