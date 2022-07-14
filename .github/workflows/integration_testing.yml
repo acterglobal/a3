@@ -53,6 +53,9 @@ jobs:
         with:
           channel: 'stable'
 
+      - uses: rui314/setup-mold@v1
+        name: "Setup mold linker"
+
       - uses: Swatinem/rust-cache@v1
 
       - name: Initialize e2ee mock data
@@ -61,7 +64,9 @@ jobs:
       - name: run cargo integration tests
         env:
           HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
-        run: cargo test -p effektio -- --ignored
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
+        run: cargo test -p effektio-test -- --nocapture
 
   # flutter:
   #   runs-on: ubuntu-latest
