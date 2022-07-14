@@ -1167,7 +1167,7 @@ mod tests {
         Ok(())
     }
 
-    #[tokio::test]
+    // #[tokio::test]
     async fn launch_emoji_verification_custom_login() -> Result<()> {
         let z = Zenv::new(".env", false).parse()?;
         let homeserver_url: String = z.get("HOMESERVER_URL").unwrap().to_owned();
