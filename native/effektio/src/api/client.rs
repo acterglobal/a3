@@ -9,6 +9,7 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     stream, Stream, StreamExt,
 };
+use futures_signals::signal::{SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{SasVerification, Verification},
@@ -394,6 +395,7 @@ async fn handle_joined_room_event(
                 log::warn!("Dropping transaction for {}: {}", txn_id, e);
             }
         }
+        &_ => todo!(),
     }
 }
 
@@ -421,8 +423,10 @@ impl SyncState {
         self.event_rx.lock().take()
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<futures_signals::signal::Receiver<bool>> {
-        self.first_synced_rx.lock().take()
+    pub fn get_first_synced_rx(
+        &self,
+    ) -> Option<SignalStream<futures_signals::signal::Receiver<bool>>> {
+        self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 }
 
@@ -491,12 +495,7 @@ impl Client {
                                     .filter_map(|ev| ev.event.deserialize().ok())
                                 {
                                     if let AnySyncRoomEvent::MessageLike(event) = event {
-                                        handle_any_sync_event(
-                                            &event,
-                                            &client,
-                                            &mut event_tx,
-                                        )
-                                        .await;
+                                        handle_any_sync_event(&event, &client, &mut event_tx).await;
                                     }
                                 }
                             }
