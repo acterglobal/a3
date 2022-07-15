@@ -96,18 +96,18 @@ To run the rust integration tests, you need a fresh integration testing infrastr
 
 #### Custom Environment variable under Windows PowerShell
 
-You can set up environment variable for `cargo` as following:
+You can set up environment variable for `cargo` as following (assuming the server is accessible at `10.0.0.1:8008`):
 
 ```bash
-$Env:HOMESERVER="http://192.168.142.131:8008"; cargo test -p effektio-test -- --nocapture
+$Env:HOMESERVER="http://10.0.0.1:8008"; cargo test -p effektio-test -- --nocapture
 ```
 
 #### Custom Environment variable under Linux Shell
 
-You can set up environment variable for `cargo` as following:
+You can set up environment variable for `cargo` as following (assuming the server is available at `10.0.0.1:8008`):
 
 ```bash
-HOMESERVER="http://192.168.142.131:8008" cargo test -p effektio-test -- --nocapture
+HOMESERVER="http://10.0.0.1:8008" cargo test -p effektio-test -- --nocapture
 ```
 
 ### Flutter UI integration tests
