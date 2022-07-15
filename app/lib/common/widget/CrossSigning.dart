@@ -29,7 +29,8 @@ class CrossSigning {
       waitForMatch = false;
       debugPrint(eventName);
       if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
-        await _onKeyVerificationRequest(sender, eventId, client);
+        // await _onKeyVerificationRequest(sender, eventId, client);
+        await _onKeyVerificationDone(sender, eventId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
         await _onKeyVerificationReady(sender, eventId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
@@ -515,12 +516,26 @@ class CrossSigning {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(height: 25.0),
+                const SizedBox(height: 25.0),
                 Center(
                   child: SvgPicture.asset(
                     'assets/images/lock.svg',
                     width: MediaQuery.of(context).size.width * 0.15,
                     height: MediaQuery.of(context).size.height * 0.15,
+                  ),
+                ),
+                const SizedBox(height: 25.0),
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    child: elevatedButton(
+                      'Got it!',
+                      CrossSigningSheetTheme.greenButtonColor,
+                      () {
+                        Get.back();
+                      },
+                      CrossSigningSheetTheme.buttonTextStyle,
+                    ),
                   ),
                 ),
               ],
