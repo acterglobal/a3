@@ -57,6 +57,7 @@ features = [
 #    "qrcode",
     "sled",
     "anyhow",
+    "experimental-timeline",
 ]
 
 #   ----   WASM
@@ -68,7 +69,7 @@ wasm-bindgen-futures = "0.4.28"
 [target.'cfg(target_os = "android")'.dependencies]
 tracing-android = "0.2"
 android_logger = "0.10.1"
-tokio = { version = "1", features = ["rt-multi-thread", "parking_lot", "sync"] }
+tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"

@@ -19,7 +19,7 @@ services:
 
   setup-admin:
     image: "lightyear/effektio-synapse-ci:latest"
-    restart: "no"
+    restart: on-failure
     volumes:
       - ./.local/docker-data:/data:r
     links:

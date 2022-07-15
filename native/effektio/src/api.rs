@@ -24,7 +24,7 @@ pub use account::Account;
 pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
-pub use client::{Client, ClientStateBuilder, CrossSigningEvent, Invitation, SyncState};
+pub use client::{Client, ClientStateBuilder, CrossSigningEvent, EmojiUnit, Invitation, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::Group;
@@ -35,8 +35,8 @@ pub use stream::TimelineStream;
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
 
-pub type UserId = ruma::OwnedUserId;
-pub type EventId = ruma::OwnedEventId;
+pub type UserId = effektio_core::ruma::OwnedUserId;
+pub type EventId = effektio_core::ruma::OwnedEventId;
 
 #[cfg(not(doctest))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");

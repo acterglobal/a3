@@ -92,7 +92,7 @@ pub struct CrossSigningEvent {
 }
 
 impl CrossSigningEvent {
-    pub fn new(event_name: String, event_id: String, sender: String) -> Self {
+    pub(crate) fn new(event_name: String, event_id: String, sender: String) -> Self {
         CrossSigningEvent {
             event_name,
             event_id,
@@ -110,6 +110,29 @@ impl CrossSigningEvent {
 
     pub fn get_sender(&self) -> String {
         self.sender.clone()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct EmojiUnit {
+    symbol: u32,
+    description: String,
+}
+
+impl EmojiUnit {
+    pub(crate) fn new(symbol: u32, description: String) -> Self {
+        EmojiUnit {
+            symbol,
+            description,
+        }
+    }
+
+    pub fn get_symbol(&self) -> u32 {
+        self.symbol
+    }
+
+    pub fn get_description(&self) -> String {
+        self.description.clone()
     }
 }
 
@@ -522,11 +545,11 @@ impl Client {
                         let mut to_device_tx = (*to_device_arc).clone();
                         let mut sync_msg_like_tx = (*sync_msg_like_arc).clone();
 
-                        let user_id = client.user_id().await.unwrap();
-                        let device_id = client.device_id().await.unwrap();
+                        let user_id = client.user_id().unwrap();
+                        let device_id = client.device_id().unwrap();
                         let device = client
                             .encryption()
-                            .get_device(&user_id, &device_id)
+                            .get_device(user_id, device_id)
                             .await
                             .unwrap()
                             .unwrap();
@@ -617,7 +640,7 @@ impl Client {
     }
 
     pub async fn restore_token(&self) -> Result<String> {
-        let session = self.client.session().await.context("Missing session")?;
+        let session = self.client.session().context("Missing session")?.clone();
         let homeurl = self.client.homeserver().await;
         Ok(serde_json::to_string(&RestoreToken {
             session,
@@ -666,7 +689,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = l.user_id().await.context("No User ID found")?;
+                let user_id = l.user_id().context("No User ID found")?.to_owned();
                 Ok(user_id)
             })
             .await?
@@ -711,7 +734,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let device_id = l.device_id().await.context("No Device ID found")?;
+                let device_id = l.device_id().context("No Device ID found")?;
                 Ok(device_id.as_str().to_string())
             })
             .await?
@@ -775,7 +798,7 @@ impl Client {
         &self,
         sender: String,
         event_id: String,
-    ) -> Result<Vec<u32>> {
+    ) -> Result<Vec<EmojiUnit>> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -788,7 +811,12 @@ impl Client {
                     if let Some(items) = sas.emoji() {
                         let sequence = items
                             .iter()
-                            .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                            .map(|e| {
+                                EmojiUnit::new(
+                                    e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                                    e.description.to_string(),
+                                )
+                            })
                             .collect::<Vec<_>>();
                         return Ok(sequence);
                     }
@@ -916,14 +944,13 @@ mod tests {
         ruma::{
             events::{
                 room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
-                AnyToDeviceEvent,
+                AnyToDeviceEvent, SyncMessageLikeEvent,
             },
             UserId,
         },
         store::StateStore,
         Client as MatrixClient, LoopCtrl, Result as MatrixResult,
     };
-    use ruma::events::SyncMessageLikeEvent;
     use std::{
         env, fs, io,
         path::Path,
@@ -938,14 +965,19 @@ mod tests {
     use url::Url;
     use zenv::Zenv;
 
-    use crate::api::login_new_client;
+    use crate::api::{login_new_client, EmojiUnit};
 
     async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
         println!("Does the emoji match: {:?}", sas.emoji());
         if let Some(items) = sas.emoji() {
             let sequence = items
                 .iter()
-                .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                .map(|e| {
+                    EmojiUnit::new(
+                        e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                        e.description.to_string(),
+                    )
+                })
                 .collect::<Vec<_>>();
             println!("{:?}", sequence);
         }
@@ -1190,11 +1222,13 @@ mod tests {
         let mut client_builder = MatrixClient::builder().homeserver_url(homeserver_url);
 
         let state_store = StateStore::open_with_path(base_path)?;
-        client_builder = client_builder.state_store(Box::new(state_store));
+        client_builder = client_builder.state_store(state_store);
         let client = client_builder.build().await.unwrap();
 
         client
-            .login(username, password, None, Some("rust-sdk"))
+            .login_username(username, password)
+            .initial_device_display_name("rust-sdk")
+            .send()
             .await?;
 
         let client_ref = &client;
@@ -1206,8 +1240,8 @@ mod tests {
                 let client = &client_ref;
                 let initial = &initial_ref;
 
-                let user_id = client.user_id().await.unwrap();
-                let device_id = client.device_id().await.unwrap();
+                let user_id = client.user_id().unwrap();
+                let device_id = client.device_id().unwrap();
                 let device = client
                     .encryption()
                     .get_device(&user_id, &device_id)
