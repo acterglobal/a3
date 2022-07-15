@@ -11,4 +11,8 @@ public class SwiftEffektioFlutterSdkPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     result("iOS " + UIDevice.current.systemVersion)
   }
+    public func dummyMethodToEnforceBundling() {
+    // This will never be executed
+    __gen_mock_news();
+  }
 }

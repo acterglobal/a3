@@ -55,6 +55,7 @@ features = [
 #    "qrcode",
     "sled",
     "anyhow",
+    "experimental-timeline",
 ]
 
 #   ----   WASM
