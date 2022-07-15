@@ -90,6 +90,22 @@ To start the docker-compose afresh:
 
 Don't forget to rerun the `mock data` generation again.
 
+#### Custom Environment variable under Windows PowerShell
+
+You can set up environment variable for `cargo` as following:
+
+```
+$Env:HOMESERVER="http://192.168.142.131:8008"; cargo test -p effektio-test -- --nocapture
+```
+
+#### Custom Environment variable under Linux Shell
+
+You can set up environment variable for `cargo` as following:
+
+```
+HOMESERVER="http://192.168.142.131:8008" cargo test -p effektio-test -- --nocapture
+```
+
 ### Rust integration tests
 
 To run the rust integration tests, you need a fresh integration testing infrastructure (see above) availabe at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
