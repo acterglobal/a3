@@ -131,7 +131,7 @@ condition = { platforms = ["mac"], env_true = ["DEV"] }
 description = "Build ios targets."
 category = "Build"
 command = "cargo"
-args = ["lipo"]
+args = ["lipo", "--targets", "aarch64-apple-ios-sim"]
 
 [tasks.ios-release]
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }
@@ -151,7 +151,7 @@ script = [
     """,
     """
     cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/native/${CARGO_MAKE_CRATE_CURRENT_WORKSPACE_MEMBER}/bindings.h \
-    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/bindings.h
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/ios/Classes/EffektioFlutterSdkPlugin.h
     """,
 ]
 
