@@ -65,7 +65,7 @@ class CrossSigning {
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.0),
-              color: AppCommonTheme.darkShade,
+              color: CrossSigningSheetTheme.backgroundColor,
             ),
             child: Column(
               children: [
@@ -80,8 +80,7 @@ class CrossSigning {
                     const SizedBox(width: 5),
                     Text(
                       'Verification Request',
-                      style: AppCommonTheme.appBartitleStyle
-                          .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                     const Spacer(),
                     Padding(
@@ -100,15 +99,13 @@ class CrossSigning {
                 RichText(
                   text: TextSpan(
                     text: 'Verification Requested from ',
-                    style: AppCommonTheme.appBartitleStyle
-                        .copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+                    style: CrossSigningSheetTheme.secondaryTextStyle,
                     children: <TextSpan>[
                       TextSpan(
                         text: sender,
-                        style: AppCommonTheme.appBartitleStyle.copyWith(
-                          color: AppCommonTheme.primaryColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                        style:
+                            CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                          color: CrossSigningSheetTheme.redButtonColor,
                         ),
                       ),
                     ],
@@ -124,7 +121,7 @@ class CrossSigning {
                 isLoading
                     ? SizedBox(
                         child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
+                          color: CrossSigningSheetTheme.loadingIndicatorColor,
                         ),
                       )
                     : elevatedButton(
@@ -137,10 +134,7 @@ class CrossSigning {
                           _onKeyVerificationReady(sender, eventId, client),
                           c.complete()
                         },
-                        AppCommonTheme.appBartitleStyle.copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                        ),
+                        CrossSigningSheetTheme.buttonTextStyle,
                       ),
               ],
             ),
@@ -172,7 +166,7 @@ class CrossSigning {
       Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.0),
-          color: AppCommonTheme.darkShade,
+          color: CrossSigningSheetTheme.backgroundColor,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -188,8 +182,7 @@ class CrossSigning {
                 const SizedBox(width: 5),
                 Text(
                   'Verify your new session',
-                  style: AppCommonTheme.appBartitleStyle
-                      .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
                 const Spacer(),
                 Padding(
@@ -208,11 +201,7 @@ class CrossSigning {
               padding: const EdgeInsets.all(10.0),
               child: Text(
                 'Scan the QR code below to verify',
-                style: AppCommonTheme.appBartitleStyle.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppCommonTheme.dividerColor,
-                ),
+                style: CrossSigningSheetTheme.secondaryTextStyle,
               ),
             ),
             Center(
@@ -222,7 +211,7 @@ class CrossSigning {
                   height: 100,
                   width: 100,
                   child: CircularProgressIndicator(
-                    color: AppCommonTheme.dividerColor,
+                    color: CrossSigningSheetTheme.loadingIndicatorColor,
                   ),
                 ),
               ),
@@ -243,10 +232,9 @@ class CrossSigning {
                   ),
                   Text(
                     'Scan other code/device',
-                    style: AppCommonTheme.appBartitleStyle.copyWith(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                    style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                       color: AppCommonTheme.primaryColor,
+                      fontSize: 12,
                     ),
                   ),
                 ],
@@ -260,18 +248,15 @@ class CrossSigning {
                 text: TextSpan(
                   text:
                       'If this wasn\'t you, your account may be compromised. Manage your security in ',
-                  style: AppCommonTheme.appBartitleStyle.copyWith(
+                  style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                     fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: AppCommonTheme.dividerColor,
                   ),
                   children: <TextSpan>[
                     TextSpan(
                       text: 'Settings.',
-                      style: AppCommonTheme.appBartitleStyle.copyWith(
-                        color: AppCommonTheme.primaryColor,
+                      style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                         fontSize: 12,
-                        fontWeight: FontWeight.w400,
+                        color: AppCommonTheme.primaryColor,
                       ),
                     ),
                   ],
@@ -287,10 +272,9 @@ class CrossSigning {
                 },
                 child: Text(
                   'Can\'t Scan',
-                  style: AppCommonTheme.appBartitleStyle.copyWith(
-                    color: AppCommonTheme.primaryColor,
+                  style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                     fontSize: 12,
-                    fontWeight: FontWeight.w400,
+                    color: AppCommonTheme.primaryColor,
                   ),
                 ),
               ),
@@ -323,7 +307,7 @@ class CrossSigning {
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.0),
-              color: AppCommonTheme.darkShade,
+              color: CrossSigningSheetTheme.backgroundColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,10 +323,9 @@ class CrossSigning {
                     const SizedBox(width: 5),
                     Text(
                       'Verify by Emoji',
-                      style: AppCommonTheme.appBartitleStyle
-                          .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Padding(
                       padding: const EdgeInsets.only(right: 10.0),
                       child: IconButton(
@@ -359,11 +342,7 @@ class CrossSigning {
                   padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                   child: Text(
                     'Confirm the unique emoji appears on the other session, that are in the same order.',
-                    style: AppCommonTheme.appBartitleStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppCommonTheme.dividerColor,
-                    ),
+                    style: CrossSigningSheetTheme.secondaryTextStyle,
                   ),
                 ),
                 Center(
@@ -373,7 +352,7 @@ class CrossSigning {
                     width: MediaQuery.of(context).size.width * 0.90,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
-                      color: AppCommonTheme.backgroundColor,
+                      color: CrossSigningSheetTheme.gridBackgroundColor,
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -390,10 +369,9 @@ class CrossSigning {
                             ),
                             footer: Text(
                               emojiDescriptions[index],
-                              style: AppCommonTheme.appBartitleStyle.copyWith(
-                                fontSize: 14,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w400,
+                              style: CrossSigningSheetTheme.secondaryTextStyle
+                                  .copyWith(
+                                color: CrossSigningSheetTheme.primaryTextColor,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -410,11 +388,7 @@ class CrossSigning {
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
                             'Waiting for match...',
-                            style: AppCommonTheme.appBartitleStyle.copyWith(
-                              color: AppCommonTheme.dividerColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: CrossSigningSheetTheme.secondaryTextStyle,
                           ),
                         ),
                       )
@@ -426,7 +400,7 @@ class CrossSigning {
                             width: MediaQuery.of(context).size.width * 0.48,
                             child: elevatedButton(
                               'They don\'t match',
-                              AppCommonTheme.primaryColor,
+                              CrossSigningSheetTheme.redButtonColor,
                               () async {
                                 await client.mismatchVerificationKey(
                                   sender,
@@ -435,10 +409,7 @@ class CrossSigning {
                                 Get.back();
                                 c.complete();
                               },
-                              AppCommonTheme.appBartitleStyle.copyWith(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              CrossSigningSheetTheme.buttonTextStyle,
                             ),
                           ),
                           const SizedBox(width: 5.0),
@@ -447,7 +418,7 @@ class CrossSigning {
                             width: MediaQuery.of(context).size.width * 0.48,
                             child: elevatedButton(
                               'They match',
-                              AppCommonTheme.greenButtonColor,
+                              CrossSigningSheetTheme.greenButtonColor,
                               () async {
                                 setState(() {
                                   waitForMatch = true;
@@ -461,10 +432,7 @@ class CrossSigning {
                                 Get.back();
                                 c.complete();
                               },
-                              AppCommonTheme.appBartitleStyle.copyWith(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              CrossSigningSheetTheme.buttonTextStyle,
                             ),
                           ),
                         ],
@@ -474,10 +442,10 @@ class CrossSigning {
                     onPressed: () async {},
                     child: Text(
                       'QR Scan Instead',
-                      style: AppCommonTheme.appBartitleStyle.copyWith(
+                      style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                         color: AppCommonTheme.primaryColor,
-                        fontSize: 12,
                         fontWeight: FontWeight.w500,
+                        fontSize: 12,
                       ),
                     ),
                   ),
@@ -508,7 +476,7 @@ class CrossSigning {
           return Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15.0),
-              color: AppCommonTheme.darkShade,
+              color: CrossSigningSheetTheme.backgroundColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -524,8 +492,7 @@ class CrossSigning {
                     const SizedBox(width: 5.0),
                     Text(
                       'Verified',
-                      style: AppCommonTheme.appBartitleStyle
-                          .copyWith(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                     const Spacer(),
                     Padding(
@@ -544,11 +511,7 @@ class CrossSigning {
                   padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                   child: Text(
                     'You can now read secure messages on your new device, and other users will know they can trust it.',
-                    style: AppCommonTheme.appBartitleStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      color: AppCommonTheme.dividerColor,
-                    ),
+                    style: CrossSigningSheetTheme.secondaryTextStyle,
                     textAlign: TextAlign.center,
                   ),
                 ),
