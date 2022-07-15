@@ -8,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show SyncState, CrossSigningEvent, Client, FfiListEmojiUnit;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 class CrossSigning {
@@ -29,8 +30,7 @@ class CrossSigning {
       waitForMatch = false;
       debugPrint(eventName);
       if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
-        // await _onKeyVerificationRequest(sender, eventId, client);
-        await _onKeyVerificationDone(sender, eventId);
+        await _onKeyVerificationRequest(sender, eventId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
         await _onKeyVerificationReady(sender, eventId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
@@ -80,7 +80,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      'Verification Request',
+                      AppLocalizations.of(context)!.verificationRequestText1,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                     const Spacer(),
@@ -99,7 +99,8 @@ class CrossSigning {
                 const SizedBox(height: 10.0),
                 RichText(
                   text: TextSpan(
-                    text: 'Verification Requested from ',
+                    text:
+                        AppLocalizations.of(context)!.verificationRequestText2,
                     style: CrossSigningSheetTheme.secondaryTextStyle,
                     children: <TextSpan>[
                       TextSpan(
@@ -126,7 +127,7 @@ class CrossSigning {
                         ),
                       )
                     : elevatedButton(
-                        'Start Verifying',
+                        AppLocalizations.of(context)!.startVerifying,
                         AppCommonTheme.greenButtonColor,
                         () => {
                           setState(() {
@@ -164,125 +165,127 @@ class CrossSigning {
     Get.back();
     Completer<void> c = Completer();
     Get.bottomSheet(
-      Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: CrossSigningSheetTheme.backgroundColor,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10.0),
-                  child: SvgPicture.asset(
-                    'assets/images/baseline-devices.svg',
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  'Verify your new session',
-                  style: CrossSigningSheetTheme.primaryTextStyle,
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
-                  child: IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () {
-                      Get.back();
-                    },
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Text(
-                'Scan the QR code below to verify',
-                style: CrossSigningSheetTheme.secondaryTextStyle,
-              ),
-            ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: CircularProgressIndicator(
-                    color: CrossSigningSheetTheme.loadingIndicatorColor,
-                  ),
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      StatefulBuilder(builder: (context, setState) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15.0),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  Container(
+                    padding: const EdgeInsets.all(10.0),
                     child: SvgPicture.asset(
-                      'assets/images/camera.svg',
-                      color: AppCommonTheme.primaryColor,
-                      height: 14,
-                      width: 14,
+                      'assets/images/baseline-devices.svg',
                     ),
                   ),
+                  const SizedBox(width: 5),
                   Text(
-                    'Scan other code/device',
-                    style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                      color: AppCommonTheme.primaryColor,
-                      fontSize: 12,
+                    AppLocalizations.of(context)!.verifySessionText1,
+                    style: CrossSigningSheetTheme.primaryTextStyle,
+                  ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        Get.back();
+                      },
+                      color: Colors.white,
                     ),
                   ),
                 ],
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: RichText(
-                textAlign: TextAlign.center,
-                softWrap: true,
-                text: TextSpan(
-                  text:
-                      'If this wasn\'t you, your account may be compromised. Manage your security in ',
-                  style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                    fontSize: 12,
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(
+                  AppLocalizations.of(context)!.verifySessionText2,
+                  style: CrossSigningSheetTheme.secondaryTextStyle,
+                ),
+              ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(25.0),
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: CircularProgressIndicator(
+                      color: CrossSigningSheetTheme.loadingIndicatorColor,
+                    ),
                   ),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: 'Settings.',
-                      style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                        fontSize: 12,
+                ),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.asset(
+                        'assets/images/camera.svg',
                         color: AppCommonTheme.primaryColor,
+                        height: 14,
+                        width: 14,
+                      ),
+                    ),
+                    Text(
+                      AppLocalizations.of(context)!.verifySessionText3,
+                      style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                        color: AppCommonTheme.primaryColor,
+                        fontSize: 12,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Center(
-              child: TextButton(
-                onPressed: () async {
-                  await client.acceptVerificationStart(sender, eventId);
-                  Get.back();
-                  c.complete();
-                },
-                child: Text(
-                  'Can\'t Scan',
-                  style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                    fontSize: 12,
-                    color: AppCommonTheme.primaryColor,
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                  text: TextSpan(
+                    text: AppLocalizations.of(context)!.verifySessionText4,
+                    style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                      fontSize: 12,
+                    ),
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: AppLocalizations.of(context)!.settings,
+                        style:
+                            CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                          fontSize: 12,
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+              Center(
+                child: TextButton(
+                  onPressed: () async {
+                    await client.acceptVerificationStart(sender, eventId);
+                    Get.back();
+                    c.complete();
+                  },
+                  child: Text(
+                    AppLocalizations.of(context)!.verifySessionText5,
+                    style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                      fontSize: 12,
+                      color: AppCommonTheme.primaryColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
       isDismissible: false,
     );
     return c.future;
@@ -323,7 +326,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      'Verify by Emoji',
+                      AppLocalizations.of(context)!.emojiVerificationText1,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                     const Spacer(),
@@ -342,7 +345,7 @@ class CrossSigning {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                   child: Text(
-                    'Confirm the unique emoji appears on the other session, that are in the same order.',
+                    AppLocalizations.of(context)!.emojiVerificationText2,
                     style: CrossSigningSheetTheme.secondaryTextStyle,
                   ),
                 ),
@@ -388,7 +391,8 @@ class CrossSigning {
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
-                            'Waiting for match...',
+                            AppLocalizations.of(context)!
+                                .emojiVerificationText3,
                             style: CrossSigningSheetTheme.secondaryTextStyle,
                           ),
                         ),
@@ -400,7 +404,8 @@ class CrossSigning {
                             padding: const EdgeInsets.only(left: 20),
                             width: MediaQuery.of(context).size.width * 0.48,
                             child: elevatedButton(
-                              'They don\'t match',
+                              AppLocalizations.of(context)!
+                                  .emojiVerificationText4,
                               CrossSigningSheetTheme.redButtonColor,
                               () async {
                                 await client.mismatchVerificationKey(
@@ -418,7 +423,8 @@ class CrossSigning {
                             padding: const EdgeInsets.only(right: 20),
                             width: MediaQuery.of(context).size.width * 0.48,
                             child: elevatedButton(
-                              'They match',
+                              AppLocalizations.of(context)!
+                                  .emojiVerificationText5,
                               CrossSigningSheetTheme.greenButtonColor,
                               () async {
                                 setState(() {
@@ -442,7 +448,7 @@ class CrossSigning {
                   child: TextButton(
                     onPressed: () async {},
                     child: Text(
-                      'QR Scan Instead',
+                      AppLocalizations.of(context)!.emojiVerificationText6,
                       style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                         color: AppCommonTheme.primaryColor,
                         fontWeight: FontWeight.w500,
@@ -492,7 +498,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5.0),
                     Text(
-                      'Verified',
+                      AppLocalizations.of(context)!.verified,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                     const Spacer(),
@@ -511,7 +517,7 @@ class CrossSigning {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
                   child: Text(
-                    'You can now read secure messages on your new device, and other users will know they can trust it.',
+                    AppLocalizations.of(context)!.emojiVerifiedText1,
                     style: CrossSigningSheetTheme.secondaryTextStyle,
                     textAlign: TextAlign.center,
                   ),
@@ -529,7 +535,7 @@ class CrossSigning {
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.25,
                     child: elevatedButton(
-                      'Got it!',
+                      AppLocalizations.of(context)!.emojiVerifiedText2,
                       CrossSigningSheetTheme.greenButtonColor,
                       () {
                         Get.back();
