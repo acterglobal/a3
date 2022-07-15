@@ -235,11 +235,11 @@ object Account {
 }
 
 object SyncState {
-    /// Get event handler of AnyToDeviceEvent
-    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
+    /// Get event handler of GenericEvent
+    fn get_event_rx() -> Option<Stream<GenericEvent>>;
 
     /// Get event handler of AnySyncMessageLikeEvent
-    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
+    fn get_first_synced_rx() -> Option<Stream<bool>>;
 }
 
 /// Main entry point for `effektio`.
@@ -316,7 +316,7 @@ object Client {
 }
 
 /// Deliver emoji verification event from rust to flutter
-object CrossSigningEvent {
+object GenericEvent {
     /// Get event name
     fn get_event_name() -> string;
 

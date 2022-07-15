@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState, CrossSigningEvent, Client, FfiListEmojiUnit;
+    show Client, FfiListEmojiUnit, GenericEvent, SyncState;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,8 +17,8 @@ class CrossSigning {
   late String eventName;
   late String eventId;
   late String sender;
-  Stream<CrossSigningEvent>? _toDeviceRx;
-  late StreamSubscription<CrossSigningEvent> _toDeviceSubscription;
+  Stream<GenericEvent>? _toDeviceRx;
+  late StreamSubscription<GenericEvent> _toDeviceSubscription;
 
   void startCrossSigning(Client client) async {
     SyncState syncer = client.startSync();

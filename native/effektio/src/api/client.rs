@@ -44,15 +44,15 @@ pub struct ClientState {
 }
 
 #[derive(Clone)]
-pub struct CrossSigningEvent {
+pub struct GenericEvent {
     event_name: String,
     event_id: String,
     sender: String,
 }
 
-impl CrossSigningEvent {
+impl GenericEvent {
     pub(crate) fn new(event_name: String, event_id: String, sender: String) -> Self {
-        CrossSigningEvent {
+        GenericEvent {
             event_name,
             event_id,
             sender,
@@ -161,13 +161,13 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
 async fn handle_to_device_event(
     event: &AnyToDeviceEvent,
     client: &MatrixClient,
-    tx: &mut Sender<CrossSigningEvent>,
+    tx: &mut Sender<GenericEvent>,
 ) {
     match event {
         AnyToDeviceEvent::KeyVerificationRequest(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -179,7 +179,7 @@ async fn handle_to_device_event(
         AnyToDeviceEvent::KeyVerificationReady(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationReady".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -193,7 +193,7 @@ async fn handle_to_device_event(
             println!("Verification Start from {}", sender);
             log::warn!("Verification Start from {}", sender);
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationStart".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -205,7 +205,7 @@ async fn handle_to_device_event(
         AnyToDeviceEvent::KeyVerificationCancel(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationCancel".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -217,7 +217,7 @@ async fn handle_to_device_event(
         AnyToDeviceEvent::KeyVerificationAccept(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationAccept".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -229,7 +229,7 @@ async fn handle_to_device_event(
         AnyToDeviceEvent::KeyVerificationKey(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationKey".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -241,7 +241,7 @@ async fn handle_to_device_event(
         AnyToDeviceEvent::KeyVerificationMac(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationMac".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -253,7 +253,7 @@ async fn handle_to_device_event(
         AnyToDeviceEvent::KeyVerificationDone(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnyToDeviceEvent::KeyVerificationDone".to_owned(),
                 txn_id.clone(),
                 sender,
@@ -270,14 +270,14 @@ async fn handle_to_device_event(
 async fn handle_any_sync_event(
     event: &AnySyncMessageLikeEvent,
     client: &MatrixClient,
-    tx: &mut Sender<CrossSigningEvent>,
+    tx: &mut Sender<GenericEvent>,
 ) {
     match event {
         AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
             if let MessageType::VerificationRequest(_) = &m.content.msgtype {
                 let sender = m.sender.to_string();
                 let evt_id = m.event_id.to_string();
-                let evt = CrossSigningEvent::new(
+                let evt = GenericEvent::new(
                     "AnySyncMessageLikeEvent::RoomMessage".to_owned(),
                     evt_id.clone(),
                     sender,
@@ -290,7 +290,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -302,7 +302,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -314,7 +314,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -326,7 +326,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationAccept".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -338,7 +338,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationKey".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -350,7 +350,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationMac".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -362,7 +362,7 @@ async fn handle_any_sync_event(
         AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
+            let evt = GenericEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
                 evt_id.clone(),
                 sender,
@@ -375,40 +375,54 @@ async fn handle_any_sync_event(
     }
 }
 
+// thread callback must be global function, not member function
+async fn handle_joined_room_event(
+    event: &AnyToDeviceEvent,
+    client: &MatrixClient,
+    tx: &mut Sender<GenericEvent>,
+) {
+    match event {
+        AnyToDeviceEvent::KeyVerificationRequest(ev) => {
+            let sender = ev.sender.to_string();
+            let txn_id = ev.content.transaction_id.to_string();
+            let evt = GenericEvent::new(
+                "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
+                txn_id.clone(),
+                sender,
+            );
+            if let Err(e) = tx.try_send(evt) {
+                log::warn!("Dropping transaction for {}: {}", txn_id, e);
+            }
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct SyncState {
-    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    event_rx: Arc<Mutex<Option<Receiver<GenericEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<futures_signals::signal::Receiver<bool>>>>,
 }
 
 impl SyncState {
     pub fn new(
-        to_device_rx: Receiver<CrossSigningEvent>,
-        sync_msg_like_rx: Receiver<CrossSigningEvent>,
+        event_rx: Receiver<GenericEvent>,
         first_synced_rx: futures_signals::signal::Receiver<bool>,
     ) -> Self {
-        let to_device_rx = Arc::new(Mutex::new(Some(to_device_rx)));
-        let sync_msg_like_rx = Arc::new(Mutex::new(Some(sync_msg_like_rx)));
+        let event_rx = Arc::new(Mutex::new(Some(event_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
-            to_device_rx,
-            sync_msg_like_rx,
+            event_rx,
             first_synced_rx,
         }
     }
 
+    pub fn get_event_rx(&self) -> Option<Receiver<GenericEvent>> {
+        self.event_rx.lock().take()
+    }
+
     pub fn get_first_synced_rx(&self) -> Option<futures_signals::signal::Receiver<bool>> {
         self.first_synced_rx.lock().take()
-    }
-
-    pub fn get_to_device_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
-        self.to_device_rx.lock().take()
-    }
-
-    pub fn get_sync_msg_like_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
-        self.sync_msg_like_rx.lock().take()
     }
 }
 
@@ -425,13 +439,11 @@ impl Client {
         let state = self.state.clone();
         let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
 
-        let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
-        let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
-        let to_device_arc = Arc::new(to_device_tx);
-        let sync_msg_like_arc = Arc::new(sync_msg_like_tx);
+        let (event_tx, event_rx) = channel::<GenericEvent>(10); // dropping after more than 10 items queued
+        let event_arc = Arc::new(event_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
+        let sync_state = SyncState::new(event_rx, first_synced_rx);
         let initial_sync = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(to_device_rx, sync_msg_like_rx, first_synced_rx);
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -442,17 +454,15 @@ impl Client {
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
                     let state = state.clone();
-                    let to_device_arc = to_device_arc.clone();
-                    let sync_msg_like_arc = sync_msg_like_arc.clone();
-                    let initial_sync = initial_sync.clone();
+                    let event_arc = event_arc.clone();
                     let first_synced_arc = first_synced_arc.clone();
+                    let initial_sync = initial_sync.clone();
 
                     async move {
                         let client = client.clone();
                         let state = state.clone();
                         let initial = initial_sync.clone();
-                        let mut to_device_tx = (*to_device_arc).clone();
-                        let mut sync_msg_like_tx = (*sync_msg_like_arc).clone();
+                        let mut event_tx = (*event_arc).clone();
 
                         let user_id = client.user_id().unwrap();
                         let device_id = client.device_id().unwrap();
@@ -469,7 +479,7 @@ impl Client {
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
-                            handle_to_device_event(&event, &client, &mut to_device_tx).await;
+                            handle_to_device_event(&event, &client, &mut event_tx).await;
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -484,7 +494,7 @@ impl Client {
                                         handle_any_sync_event(
                                             &event,
                                             &client,
-                                            &mut sync_msg_like_tx,
+                                            &mut event_tx,
                                         )
                                         .await;
                                     }
