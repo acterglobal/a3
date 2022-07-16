@@ -27,7 +27,7 @@ pub use auth::{
 pub use client::{Client, ClientStateBuilder, CrossSigningEvent, EmojiUnit, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
-pub use group::{Group, CreateGroupSettings, CreateGroupSettingsBuilder};
+pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
