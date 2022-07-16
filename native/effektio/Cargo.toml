@@ -42,8 +42,6 @@ url = "2.2.2"
 [dev-dependencies]
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 zenv = "0.8.0"
-tempfile = "3.3.0"
-env_logger = "0.9.0"
 
 [dependencies.effektio-core]
 path = "../core"
@@ -57,6 +55,7 @@ features = [
 #    "qrcode",
     "sled",
     "anyhow",
+    "experimental-timeline",
 ]
 
 #   ----   WASM
@@ -68,7 +67,7 @@ wasm-bindgen-futures = "0.4.28"
 [target.'cfg(target_os = "android")'.dependencies]
 tracing-android = "0.2"
 android_logger = "0.10.1"
-tokio = { version = "1", features = ["rt-multi-thread", "parking_lot", "sync"] }
+tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"

@@ -1,11 +1,9 @@
-use super::room::Room;
 use super::client::Client;
+use super::room::Room;
 use crate::api::RUNTIME;
+use anyhow::Result;
+use derive_builder::Builder;
 use effektio_core::{
-    statics::{
-        default_effektio_group_states,
-        initial_state_for_alias,
-    },
     ruma::{
         api::client::{
             account::register::v3::Request as RegistrationRequest,
@@ -18,11 +16,10 @@ use effektio_core::{
         assign,
         room::RoomType,
         serde::Raw,
-        OwnedRoomName, OwnedUserId, OwnedRoomId, OwnedRoomAliasId,
-    }
+        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+    },
+    statics::{default_effektio_group_states, initial_state_for_alias},
 };
-use derive_builder::Builder;
-use anyhow::Result;
 
 pub struct Group {
     pub(crate) inner: Room,
@@ -38,10 +35,10 @@ impl std::ops::Deref for Group {
 #[derive(Builder, Default, Clone)]
 pub struct CreateGroupSettings {
     #[builder(setter(strip_option))]
-    name: Option<OwnedRoomName>,
-    #[builder(default="Visibility::Private")]
+    name: Option<String>,
+    #[builder(default = "Visibility::Private")]
     visibility: Visibility,
-    #[builder(default="Vec::new()")]
+    #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
     #[builder(setter(strip_option))]
     alias: Option<String>,
@@ -54,7 +51,10 @@ pub struct CreateGroupSettings {
 // }
 
 impl Client {
-    pub async fn create_effektio_group(&self, settings: CreateGroupSettings) -> Result<OwnedRoomId> {
+    pub async fn create_effektio_group(
+        &self,
+        settings: CreateGroupSettings,
+    ) -> Result<OwnedRoomId> {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -73,7 +73,7 @@ impl Client {
                 }))
                 .await?
                 .room_id)
-            }).await?
+            })
+            .await?
     }
-
 }

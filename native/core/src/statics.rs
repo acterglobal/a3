@@ -1,7 +1,4 @@
-use ruma::{
-  serde::Raw,
-  events::AnyInitialStateEvent,
-};
+use matrix_sdk::ruma::{events::AnyInitialStateEvent, serde::Raw, OwnedRoomAliasId};
 use serde_json::{json, value::to_raw_value};
 
 const EFFEKTIO_SUBTYPE_CONTENT: &str = r#"{
@@ -31,28 +28,27 @@ const ENCRYPTION: &str = r#"{
   }
 }"#;
 
-
 /// Generate the default set ot initial states for effektio teams
 pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
-  [EFFEKTIO_SUBTYPE_CONTENT, HISTORY, ENCRYPTION]
-    .into_iter()
-    .map(|a|{
-      serde_json::from_str::<Raw<AnyInitialStateEvent>>(a)
-        .expect("static don't fail")
-    })
-    .collect()
+    [EFFEKTIO_SUBTYPE_CONTENT, HISTORY, ENCRYPTION]
+        .into_iter()
+        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
+        .collect()
 }
 
 pub fn initial_state_for_alias(
-  main_alias: &ruma::OwnedRoomAliasId,
-  alt_aliases: &Vec<ruma::OwnedRoomAliasId>
+    main_alias: &OwnedRoomAliasId,
+    alt_aliases: &Vec<OwnedRoomAliasId>,
 ) -> Raw<AnyInitialStateEvent> {
-  Raw::from_json(to_raw_value(&json!({
-    "type": "m.room.canonical_alias",
-    "state_key": "",
-    "content": {
-        "alias": Some(main_alias),
-        "alt_aliases": alt_aliases,
-      }
-    })).expect("static doesn't fail"))
+    Raw::from_json(
+        to_raw_value(&json!({
+        "type": "m.room.canonical_alias",
+        "state_key": "",
+        "content": {
+            "alias": Some(main_alias),
+            "alt_aliases": alt_aliases,
+          }
+        }))
+        .expect("static doesn't fail"),
+    )
 }

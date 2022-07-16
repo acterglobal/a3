@@ -1,9 +1,9 @@
 use anyhow::Result;
 use clap::{crate_version, Parser};
 
+use effektio::{Client as EfkClient, CreateGroupSettingsBuilder};
 use effektio_core::{
     matrix_sdk::{Client, ClientBuilder},
-    statics::default_effektio_group_states,
     ruma::{
         api::client::{
             account::register::v3::Request as RegistrationRequest,
@@ -16,15 +16,14 @@ use effektio_core::{
         assign,
         room::RoomType,
         serde::Raw,
-        RoomName, OwnedRoomName, OwnedUserId, RoomAliasId,
-    }
+        OwnedRoomName, OwnedUserId, RoomAliasId, RoomName,
+    },
+    statics::default_effektio_group_states,
 };
-use effektio::{Client as EfkClient, CreateGroupSettingsBuilder};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
-
 fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
-    let store_config = StoreConfig::new().state_store(Box::new(MemoryStore::new()));
+    let store_config = StoreConfig::new().state_store(MemoryStore::new());
 
     Ok(Client::builder()
         .user_agent(&format!("effektio-cli/{}", crate_version!()))
@@ -94,120 +93,116 @@ impl Mock {
         let civilians = [&quark, &rom, &morn, &keiko];
         let quark_customers = [&quark, &rom, &morn, &jadzia, &kyra, &miles, &bashir];
 
-        let team_ids : Vec<OwnedUserId> = futures::future::join_all(team
-                .iter()
-                .map(|a| a.user_id())
-            )
-            .await
-            .into_iter()
-            .map(|a| a.expect("everyone here has an id"))
-            .collect();
+        let team_ids: Vec<OwnedUserId> =
+            futures::future::join_all(team.iter().map(|a| a.user_id()))
+                .await
+                .into_iter()
+                .map(|a| a.expect("everyone here has an id"))
+                .collect();
 
-        let civilians_ids : Vec<OwnedUserId> = futures::future::join_all(civilians
-                .iter()
-                .map(|a| a.user_id())
-            )
-            .await
-            .into_iter()
-            .map(|a| a.expect("everyone here has an id"))
-            .collect();
+        let civilians_ids: Vec<OwnedUserId> =
+            futures::future::join_all(civilians.iter().map(|a| a.user_id()))
+                .await
+                .into_iter()
+                .map(|a| a.expect("everyone here has an id"))
+                .collect();
 
-        let quark_customer_ids : Vec<OwnedUserId> = futures::future::join_all(quark_customers
-                .iter()
-                .map(|a| a.user_id())
-            )
-            .await
-            .into_iter()
-            .map(|a| a.expect("everyone here has an id"))
-            .collect();
-
+        let quark_customer_ids: Vec<OwnedUserId> =
+            futures::future::join_all(quark_customers.iter().map(|a| a.user_id()))
+                .await
+                .into_iter()
+                .map(|a| a.expect("everyone here has an id"))
+                .collect();
 
         let mut everyone = Vec::new();
         everyone.extend_from_slice(&team);
         everyone.extend_from_slice(&civilians);
 
-        let everyones_ids : Vec<OwnedUserId> = futures::future::join_all(everyone
-                .iter()
-                .map(|a| a.user_id())
-            )
-            .await
-            .into_iter()
-            .map(|a| a.expect("everyone here has an id"))
-            .collect();
-        
+        let everyones_ids: Vec<OwnedUserId> =
+            futures::future::join_all(everyone.iter().map(|a| a.user_id()))
+                .await
+                .into_iter()
+                .map(|a| a.expect("everyone here has an id"))
+                .collect();
+
         log::warn!("Done ensuring users");
 
         let ops_settings = CreateGroupSettingsBuilder::default()
-            .name(RoomName::parse("Ops").expect("static won't fail").to_owned())
+            .name(
+                RoomName::parse("Ops")
+                    .expect("static won't fail")
+                    .to_owned(),
+            )
             .alias("ops:ds9.effektio.org".to_owned())
             .invites(team_ids)
             .build()?;
 
-        match admin
-            .create_effektio_group(ops_settings)
-            .await
-        {
+        match admin.create_effektio_group(ops_settings).await {
             Ok(ops_id) => {
                 log::info!("Ops Room Id: {:?}", ops_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x.downcast::<matrix_sdk::HttpError>().expect("already checked");
+                let inner = x
+                    .downcast::<matrix_sdk::HttpError>()
+                    .expect("already checked");
                 log::warn!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
                 log::error!("Creating Ops Room failed: {:?}", e);
             }
         }
-        
 
         let promenade_settings = CreateGroupSettingsBuilder::default()
-            .name(RoomName::parse("Promenade").expect("static won't fail").to_owned())
+            .name(
+                RoomName::parse("Promenade")
+                    .expect("static won't fail")
+                    .to_owned(),
+            )
             .alias("promenade:ds9.effektio.org".to_owned())
             .visibility(Visibility::Public)
             .invites(civilians_ids)
             .build()?;
-        
-        match admin
-            .create_effektio_group(promenade_settings)
-            .await
-        {
+
+        match admin.create_effektio_group(promenade_settings).await {
             Ok(promenade_room_id) => {
                 log::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x.downcast::<matrix_sdk::HttpError>().expect("already checked");
+                let inner = x
+                    .downcast::<matrix_sdk::HttpError>()
+                    .expect("already checked");
                 log::warn!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
                 log::error!("Creating Promenade Room failed: {:?}", e);
             }
         }
-            
 
         let quarks_settings = CreateGroupSettingsBuilder::default()
-            .name(RoomName::parse("Quarks'").expect("static won't fail").to_owned())
+            .name(
+                RoomName::parse("Quarks'")
+                    .expect("static won't fail")
+                    .to_owned(),
+            )
             .alias("quarks:ds9.effektio.org".to_owned())
             .visibility(Visibility::Public)
             .invites(quark_customer_ids)
             .build()?;
 
-        match admin
-            .create_effektio_group(quarks_settings)
-            .await
-        
-        {
+        match admin.create_effektio_group(quarks_settings).await {
             Ok(quarks_id) => {
                 log::info!("Quarks Room Id: {:?}", quarks_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
-                let inner = x.downcast::<matrix_sdk::HttpError>().expect("already checked");
+                let inner = x
+                    .downcast::<matrix_sdk::HttpError>()
+                    .expect("already checked");
                 log::warn!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
                 log::error!("Creating Quarks Room failed: {:?}", e);
             }
         }
-        
 
         log::warn!("Done creating spaces");
 
