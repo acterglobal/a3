@@ -235,8 +235,11 @@ object Account {
 }
 
 object SyncState {
-    /// Get event handler of GenericEvent
-    fn get_event_rx() -> Option<Stream<GenericEvent>>;
+    /// Get event handler of EmojiVerificationEvent
+    fn get_emoji_verification_event_rx() -> Option<Stream<EmojiVerificationEvent>>;
+
+    /// Get event handler of EphemeralEvent
+    fn get_ephemeral_event_rx() -> Option<Stream<EphemeralEvent>>;
 
     /// Get event handler of AnySyncMessageLikeEvent
     fn get_first_synced_rx() -> Option<Stream<bool>>;
@@ -316,7 +319,7 @@ object Client {
 }
 
 /// Deliver emoji verification event from rust to flutter
-object GenericEvent {
+object EmojiVerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 
@@ -325,6 +328,15 @@ object GenericEvent {
 
     /// Get user id of event sender
     fn get_sender() -> string;
+}
+
+/// Deliver emoji verification event from rust to flutter
+object EphemeralEvent {
+    /// Get event name
+    fn get_event_name() -> string;
+
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
 }
 
 /// Extend the return value of getVerificationEmoji function

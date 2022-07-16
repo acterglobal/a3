@@ -2948,7 +2948,7 @@ class Api {
     return tmp7;
   }
 
-  CrossSigningEvent? __syncStateGetToDeviceRxStreamPoll(
+  EmojiVerificationEvent? __syncStateGetEmojiVerificationEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -2966,7 +2966,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetToDeviceRxStreamPoll(
+    final tmp8 = _syncStateGetEmojiVerificationEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2978,13 +2978,13 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_CrossSigningEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_EmojiVerificationEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = CrossSigningEvent._(this, tmp11_1);
+    final tmp9 = EmojiVerificationEvent._(this, tmp11_1);
     return tmp9;
   }
 
-  CrossSigningEvent? __syncStateGetSyncMsgLikeRxStreamPoll(
+  EphemeralEvent? __syncStateGetEphemeralEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3002,7 +3002,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetSyncMsgLikeRxStreamPoll(
+    final tmp8 = _syncStateGetEphemeralEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3014,9 +3014,42 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_CrossSigningEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_EphemeralEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = CrossSigningEvent._(this, tmp11_1);
+    final tmp9 = EphemeralEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
+  bool? __syncStateGetFirstSyncedRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _syncStateGetFirstSyncedRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
     return tmp9;
   }
 
@@ -3862,25 +3895,37 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetToDeviceRxPtr = _lookup<
+  late final _syncStateGetEmojiVerificationEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetToDeviceRxReturn Function(
+          _SyncStateGetEmojiVerificationEventRxReturn Function(
     ffi.Int64,
-  )>>("__SyncState_get_to_device_rx");
+  )>>("__SyncState_get_emoji_verification_event_rx");
 
-  late final _syncStateGetToDeviceRx = _syncStateGetToDeviceRxPtr.asFunction<
-      _SyncStateGetToDeviceRxReturn Function(
+  late final _syncStateGetEmojiVerificationEventRx =
+      _syncStateGetEmojiVerificationEventRxPtr.asFunction<
+          _SyncStateGetEmojiVerificationEventRxReturn Function(
     int,
   )>();
-  late final _syncStateGetSyncMsgLikeRxPtr = _lookup<
+  late final _syncStateGetEphemeralEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetSyncMsgLikeRxReturn Function(
+          _SyncStateGetEphemeralEventRxReturn Function(
     ffi.Int64,
-  )>>("__SyncState_get_sync_msg_like_rx");
+  )>>("__SyncState_get_ephemeral_event_rx");
 
-  late final _syncStateGetSyncMsgLikeRx =
-      _syncStateGetSyncMsgLikeRxPtr.asFunction<
-          _SyncStateGetSyncMsgLikeRxReturn Function(
+  late final _syncStateGetEphemeralEventRx =
+      _syncStateGetEphemeralEventRxPtr.asFunction<
+          _SyncStateGetEphemeralEventRxReturn Function(
+    int,
+  )>();
+  late final _syncStateGetFirstSyncedRxPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetFirstSyncedRxReturn Function(
+    ffi.Int64,
+  )>>("__SyncState_get_first_synced_rx");
+
+  late final _syncStateGetFirstSyncedRx =
+      _syncStateGetFirstSyncedRxPtr.asFunction<
+          _SyncStateGetFirstSyncedRxReturn Function(
     int,
   )>();
   late final _clientStartSyncPtr = _lookup<
@@ -4194,37 +4239,58 @@ class Api {
     int,
     int,
   )>();
-  late final _crossSigningEventGetEventNamePtr = _lookup<
+  late final _emojiVerificationEventGetEventNamePtr = _lookup<
       ffi.NativeFunction<
-          _CrossSigningEventGetEventNameReturn Function(
+          _EmojiVerificationEventGetEventNameReturn Function(
     ffi.Int64,
-  )>>("__CrossSigningEvent_get_event_name");
+  )>>("__EmojiVerificationEvent_get_event_name");
 
-  late final _crossSigningEventGetEventName =
-      _crossSigningEventGetEventNamePtr.asFunction<
-          _CrossSigningEventGetEventNameReturn Function(
+  late final _emojiVerificationEventGetEventName =
+      _emojiVerificationEventGetEventNamePtr.asFunction<
+          _EmojiVerificationEventGetEventNameReturn Function(
     int,
   )>();
-  late final _crossSigningEventGetEventIdPtr = _lookup<
+  late final _emojiVerificationEventGetEventIdPtr = _lookup<
       ffi.NativeFunction<
-          _CrossSigningEventGetEventIdReturn Function(
+          _EmojiVerificationEventGetEventIdReturn Function(
     ffi.Int64,
-  )>>("__CrossSigningEvent_get_event_id");
+  )>>("__EmojiVerificationEvent_get_event_id");
 
-  late final _crossSigningEventGetEventId =
-      _crossSigningEventGetEventIdPtr.asFunction<
-          _CrossSigningEventGetEventIdReturn Function(
+  late final _emojiVerificationEventGetEventId =
+      _emojiVerificationEventGetEventIdPtr.asFunction<
+          _EmojiVerificationEventGetEventIdReturn Function(
     int,
   )>();
-  late final _crossSigningEventGetSenderPtr = _lookup<
+  late final _emojiVerificationEventGetSenderPtr = _lookup<
       ffi.NativeFunction<
-          _CrossSigningEventGetSenderReturn Function(
+          _EmojiVerificationEventGetSenderReturn Function(
     ffi.Int64,
-  )>>("__CrossSigningEvent_get_sender");
+  )>>("__EmojiVerificationEvent_get_sender");
 
-  late final _crossSigningEventGetSender =
-      _crossSigningEventGetSenderPtr.asFunction<
-          _CrossSigningEventGetSenderReturn Function(
+  late final _emojiVerificationEventGetSender =
+      _emojiVerificationEventGetSenderPtr.asFunction<
+          _EmojiVerificationEventGetSenderReturn Function(
+    int,
+  )>();
+  late final _ephemeralEventGetEventNamePtr = _lookup<
+      ffi.NativeFunction<
+          _EphemeralEventGetEventNameReturn Function(
+    ffi.Int64,
+  )>>("__EphemeralEvent_get_event_name");
+
+  late final _ephemeralEventGetEventName =
+      _ephemeralEventGetEventNamePtr.asFunction<
+          _EphemeralEventGetEventNameReturn Function(
+    int,
+  )>();
+  late final _ephemeralEventGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          _EphemeralEventGetRoomIdReturn Function(
+    ffi.Int64,
+  )>>("__EphemeralEvent_get_room_id");
+
+  late final _ephemeralEventGetRoomId = _ephemeralEventGetRoomIdPtr.asFunction<
+      _EphemeralEventGetRoomIdReturn Function(
     int,
   )>();
   late final _emojiUnitGetSymbolPtr = _lookup<
@@ -4928,35 +4994,52 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetToDeviceRxStreamPollPtr = _lookup<
+  late final _syncStateGetEmojiVerificationEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetToDeviceRxStreamPollReturn Function(
+          _SyncStateGetEmojiVerificationEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_to_device_rx_stream_poll");
+  )>>("__SyncState_get_emoji_verification_event_rx_stream_poll");
 
-  late final _syncStateGetToDeviceRxStreamPoll =
-      _syncStateGetToDeviceRxStreamPollPtr.asFunction<
-          _SyncStateGetToDeviceRxStreamPollReturn Function(
+  late final _syncStateGetEmojiVerificationEventRxStreamPoll =
+      _syncStateGetEmojiVerificationEventRxStreamPollPtr.asFunction<
+          _SyncStateGetEmojiVerificationEventRxStreamPollReturn Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _syncStateGetSyncMsgLikeRxStreamPollPtr = _lookup<
+  late final _syncStateGetEphemeralEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetSyncMsgLikeRxStreamPollReturn Function(
+          _SyncStateGetEphemeralEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_sync_msg_like_rx_stream_poll");
+  )>>("__SyncState_get_ephemeral_event_rx_stream_poll");
 
-  late final _syncStateGetSyncMsgLikeRxStreamPoll =
-      _syncStateGetSyncMsgLikeRxStreamPollPtr.asFunction<
-          _SyncStateGetSyncMsgLikeRxStreamPollReturn Function(
+  late final _syncStateGetEphemeralEventRxStreamPoll =
+      _syncStateGetEphemeralEventRxStreamPollPtr.asFunction<
+          _SyncStateGetEphemeralEventRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _syncStateGetFirstSyncedRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetFirstSyncedRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__SyncState_get_first_synced_rx_stream_poll");
+
+  late final _syncStateGetFirstSyncedRxStreamPoll =
+      _syncStateGetFirstSyncedRxStreamPollPtr.asFunction<
+          _SyncStateGetFirstSyncedRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -6859,11 +6942,32 @@ class SyncState {
 
   SyncState._(this._api, this._box);
 
-  /// Get event handler of AnyToDeviceEvent
-  Stream<CrossSigningEvent>? getToDeviceRx() {
+  /// Get event handler of EmojiVerificationEvent
+  Stream<EmojiVerificationEvent>? getEmojiVerificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetToDeviceRx(
+    final tmp1 = _api._syncStateGetEmojiVerificationEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0,
+        "__SyncState_get_emoji_verification_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__syncStateGetEmojiVerificationEventRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Get event handler of EphemeralEvent
+  Stream<EphemeralEvent>? getEphemeralEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateGetEphemeralEventRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -6873,17 +6977,18 @@ class SyncState {
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
     final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_to_device_rx_stream_drop");
+        _Box(_api, tmp4_0, "__SyncState_get_ephemeral_event_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__syncStateGetToDeviceRxStreamPoll);
+    final tmp2 =
+        _nativeStream(tmp4_1, _api.__syncStateGetEphemeralEventRxStreamPoll);
     return tmp2;
   }
 
   /// Get event handler of AnySyncMessageLikeEvent
-  Stream<CrossSigningEvent>? getSyncMsgLikeRx() {
+  Stream<bool>? getFirstSyncedRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetSyncMsgLikeRx(
+    final tmp1 = _api._syncStateGetFirstSyncedRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -6893,10 +6998,10 @@ class SyncState {
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
     final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_sync_msg_like_rx_stream_drop");
+        _Box(_api, tmp4_0, "__SyncState_get_first_synced_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 =
-        _nativeStream(tmp4_1, _api.__syncStateGetSyncMsgLikeRxStreamPoll);
+        _nativeStream(tmp4_1, _api.__syncStateGetFirstSyncedRxStreamPoll);
     return tmp2;
   }
 
@@ -7470,17 +7575,17 @@ class Client {
 }
 
 /// Deliver emoji verification event from rust to flutter
-class CrossSigningEvent {
+class EmojiVerificationEvent {
   final Api _api;
   final _Box _box;
 
-  CrossSigningEvent._(this._api, this._box);
+  EmojiVerificationEvent._(this._api, this._box);
 
   /// Get event name
   String getEventName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._crossSigningEventGetEventName(
+    final tmp1 = _api._emojiVerificationEventGetEventName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7500,7 +7605,7 @@ class CrossSigningEvent {
   String getEventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._crossSigningEventGetEventId(
+    final tmp1 = _api._emojiVerificationEventGetEventId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7520,7 +7625,60 @@ class CrossSigningEvent {
   String getSender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._crossSigningEventGetSender(
+    final tmp1 = _api._emojiVerificationEventGetSender(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Deliver emoji verification event from rust to flutter
+class EphemeralEvent {
+  final Api _api;
+  final _Box _box;
+
+  EphemeralEvent._(this._api, this._box);
+
+  /// Get event name
+  String getEventName() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._ephemeralEventGetEventName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Get transaction id or flow id
+  String getRoomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._ephemeralEventGetRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7826,21 +7984,28 @@ class _MemberDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _SyncStateGetToDeviceRxReturn extends ffi.Struct {
+class _SyncStateGetEmojiVerificationEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _SyncStateGetSyncMsgLikeRxReturn extends ffi.Struct {
+class _SyncStateGetEphemeralEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _CrossSigningEventGetEventNameReturn extends ffi.Struct {
+class _SyncStateGetFirstSyncedRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -7849,7 +8014,7 @@ class _CrossSigningEventGetEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _CrossSigningEventGetEventIdReturn extends ffi.Struct {
+class _EmojiVerificationEventGetEventIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -7858,7 +8023,25 @@ class _CrossSigningEventGetEventIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _CrossSigningEventGetSenderReturn extends ffi.Struct {
+class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EphemeralEventGetEventNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _EphemeralEventGetRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -8610,17 +8793,24 @@ class _ClientReviewVerificationMacFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SyncStateGetToDeviceRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetEmojiVerificationEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _SyncStateGetSyncMsgLikeRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetEphemeralEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 
