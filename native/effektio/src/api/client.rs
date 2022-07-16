@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    mocks::{gen_mock_faqs, gen_mock_news},
+    mocks::gen_mock_faqs,
     models::{Faq, News},
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
@@ -547,10 +547,6 @@ impl Client {
                 Ok(conversations)
             })
             .await?
-    }
-
-    pub async fn latest_news(&self) -> Result<Vec<News>> {
-        Ok(gen_mock_news())
     }
 
     pub async fn faqs(&self) -> Result<Vec<Faq>> {

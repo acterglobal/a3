@@ -1,5 +1,5 @@
 use anyhow::Result;
-use effektio::api::{guest_client, login_new_client, login_with_token};
+use effektio::api::login_new_client;
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -16,11 +16,34 @@ async fn sisko_posts_news() -> Result<()> {
         .sync_once(Default::default())
         .await
         .expect("sync works");
-    let news = client.latest_news().await?;
     let ops = client
         .get_group("#ops:ds9.effektio.org".to_owned())
         .await
         .expect("Promenade exists");
+
+    let news_draft = ops
+        .news_draft()
+        .expect("we are in, we can create news drafts");
+    news_draft
+        .add_text("This is a simple text example".to_owned())
+        .await?;
+    let event_id = news_draft.send().await?;
+    client
+        .sync_once(Default::default())
+        .await
+        .expect("sync works");
+    // we should have
+    let latest_news_item = client
+        .latest_news()
+        .await?
+        .into_iter()
+        .next()
+        .expect("we should have a news item");
+    // assert_eq!(
+    //     latest_news_item.event_id(),
+    //     event_id,
+    //     "Latest news isn't the item, we just sent",
+    // );
 
     Ok(())
 }

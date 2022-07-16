@@ -99,19 +99,8 @@ impl Client {
                 None => bail!("Room not found"),
             }
         } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            println!("room_id: {:}", alias_id);
             for group in self.groups().await?.into_iter() {
-                println!(
-                    "found a room: {} - {:?}",
-                    group.inner.room.display_name().await?,
-                    group.inner.room.canonical_alias()
-                );
                 if let Some(group_alias) = group.inner.room.canonical_alias() {
-                    println!(
-                        "found a room with alias: {:},  {:}",
-                        group_alias,
-                        group_alias == alias_id
-                    );
                     if group_alias == alias_id {
                         return Ok(group);
                     }

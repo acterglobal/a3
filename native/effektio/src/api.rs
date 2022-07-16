@@ -17,6 +17,7 @@ mod client;
 mod conversation;
 mod group;
 mod messages;
+mod news;
 mod room;
 mod stream;
 
