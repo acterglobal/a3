@@ -19,7 +19,7 @@ use matrix_sdk::{
             room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
             AnyToDeviceEvent, SyncMessageLikeEvent,
         },
-        RoomId, UserId,
+        OwnedRoomAliasId, OwnedRoomId, RoomId, UserId,
     },
     Client as MatrixClient, LoopCtrl,
 };
@@ -540,7 +540,6 @@ impl Client {
         })?)
     }
 
-
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
         let c = self.client.clone();
         RUNTIME
@@ -559,6 +558,36 @@ impl Client {
                 Ok(groups)
             })
             .await?
+    }
+    pub async fn get_group(&self, alias_or_id: String) -> Result<Group> {
+        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
+            match self.get_room(&room_id) {
+                Some(room) => Ok(Group {
+                    inner: Room {
+                        room,
+                        client: self.client.clone(),
+                    },
+                }),
+                None => bail!("Room not found"),
+            }
+        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
+            println!("room_id: {:}", alias_id);
+            for group in self.groups().await?.into_iter() {
+                if let Some(group_alias) = group.inner.room.canonical_alias() {
+                    println!(
+                        "found a room with alias: {:},  {:}",
+                        group_alias,
+                        group_alias == alias_id
+                    );
+                    if group_alias == alias_id {
+                        return Ok(group);
+                    }
+                }
+            }
+            bail!("Room with alias not found")
+        } else {
+            bail!("Neither roomId nor alias found")
+        }
     }
 
     pub async fn latest_news(&self) -> Result<Vec<News>> {

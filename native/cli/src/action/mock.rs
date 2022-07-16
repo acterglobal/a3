@@ -6,19 +6,10 @@ use effektio_core::{
     matrix_sdk::{Client, ClientBuilder},
     ruma::{
         api::client::{
-            account::register::v3::Request as RegistrationRequest,
-            room::{
-                create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
-                Visibility,
-            },
-            uiaa,
+            account::register::v3::Request as RegistrationRequest, room::Visibility, uiaa,
         },
-        assign,
-        room::RoomType,
-        serde::Raw,
-        OwnedRoomName, OwnedUserId, RoomAliasId, RoomName,
+        assign, OwnedUserId,
     },
-    statics::default_effektio_group_states,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
@@ -57,7 +48,7 @@ async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result
             default_client_config(homeserver)?.build().await?
         }
     };
-    cl.login(username, password, None, None).await?;
+    cl.login_username(username, password).send().await?;
     Ok(EfkClient::new(cl, Default::default()))
 }
 
@@ -128,12 +119,8 @@ impl Mock {
         log::warn!("Done ensuring users");
 
         let ops_settings = CreateGroupSettingsBuilder::default()
-            .name(
-                RoomName::parse("Ops")
-                    .expect("static won't fail")
-                    .to_owned(),
-            )
-            .alias("ops:ds9.effektio.org".to_owned())
+            .name("Ops".to_owned())
+            .alias("ops".to_owned())
             .invites(team_ids)
             .build()?;
 
@@ -153,12 +140,8 @@ impl Mock {
         }
 
         let promenade_settings = CreateGroupSettingsBuilder::default()
-            .name(
-                RoomName::parse("Promenade")
-                    .expect("static won't fail")
-                    .to_owned(),
-            )
-            .alias("promenade:ds9.effektio.org".to_owned())
+            .name("Promenade".to_owned())
+            .alias("promenade".to_owned())
             .visibility(Visibility::Public)
             .invites(civilians_ids)
             .build()?;
@@ -179,12 +162,8 @@ impl Mock {
         }
 
         let quarks_settings = CreateGroupSettingsBuilder::default()
-            .name(
-                RoomName::parse("Quarks'")
-                    .expect("static won't fail")
-                    .to_owned(),
-            )
-            .alias("quarks:ds9.effektio.org".to_owned())
+            .name("Quarks'".to_owned())
+            .alias("quarks".to_owned())
             .visibility(Visibility::Public)
             .invites(quark_customer_ids)
             .build()?;
