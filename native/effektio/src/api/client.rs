@@ -3,6 +3,7 @@ use derive_builder::Builder;
 use effektio_core::{
     mocks::{gen_mock_faqs, gen_mock_news},
     models::{Faq, News},
+    statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
 };
 use futures::{
@@ -108,11 +109,9 @@ impl std::ops::Deref for Client {
     }
 }
 
-static PURPOSE_FIELD: &str = "m.room.purpose";
-static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
-static PURPOSE_VALUE: &str = "org.effektio";
-
-async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Conversation>) {
+pub(crate) async fn devide_groups_from_common(
+    client: MatrixClient,
+) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
@@ -120,12 +119,12 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
                 let is_effektio_group = {
                     #[allow(clippy::match_like_matches_macro)]
                     if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_VALUE)
+                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
                         .await
                     {
                         true
                     } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_VALUE)
+                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
                         .await
                     {
                         true
@@ -548,46 +547,6 @@ impl Client {
                 Ok(conversations)
             })
             .await?
-    }
-
-    pub async fn groups(&self) -> Result<Vec<Group>> {
-        let c = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let (groups, _) = devide_groups_from_common(c).await;
-                Ok(groups)
-            })
-            .await?
-    }
-    pub async fn get_group(&self, alias_or_id: String) -> Result<Group> {
-        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
-            match self.get_room(&room_id) {
-                Some(room) => Ok(Group {
-                    inner: Room {
-                        room,
-                        client: self.client.clone(),
-                    },
-                }),
-                None => bail!("Room not found"),
-            }
-        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
-            println!("room_id: {:}", alias_id);
-            for group in self.groups().await?.into_iter() {
-                if let Some(group_alias) = group.inner.room.canonical_alias() {
-                    println!(
-                        "found a room with alias: {:},  {:}",
-                        group_alias,
-                        group_alias == alias_id
-                    );
-                    if group_alias == alias_id {
-                        return Ok(group);
-                    }
-                }
-            }
-            bail!("Room with alias not found")
-        } else {
-            bail!("Neither roomId nor alias found")
-        }
     }
 
     pub async fn latest_news(&self) -> Result<Vec<News>> {

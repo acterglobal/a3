@@ -17,8 +17,8 @@ async fn sisko_posts_news() -> Result<()> {
         .await
         .expect("sync works");
     let news = client.latest_news().await?;
-    let promenade = client
-        .get_group("#promenade:ds9.effektio.org".to_owned())
+    let ops = client
+        .get_group("#ops:ds9.effektio.org".to_owned())
         .await
         .expect("Promenade exists");
 

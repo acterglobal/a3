@@ -10,6 +10,7 @@ use effektio_core::{
         },
         assign, OwnedUserId,
     },
+    statics::default_effektio_group_states,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 

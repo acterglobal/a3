@@ -1,7 +1,7 @@
-use super::client::Client;
+use super::client::{devide_groups_from_common, Client};
 use super::room::Room;
 use crate::api::RUNTIME;
-use anyhow::Result;
+use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
     ruma::{
@@ -75,5 +75,51 @@ impl Client {
                 .room_id)
             })
             .await?
+    }
+
+    pub async fn groups(&self) -> Result<Vec<Group>> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let (groups, _) = devide_groups_from_common(c).await;
+                Ok(groups)
+            })
+            .await?
+    }
+
+    pub async fn get_group(&self, alias_or_id: String) -> Result<Group> {
+        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
+            match self.get_room(&room_id) {
+                Some(room) => Ok(Group {
+                    inner: Room {
+                        room,
+                        client: self.client.clone(),
+                    },
+                }),
+                None => bail!("Room not found"),
+            }
+        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
+            println!("room_id: {:}", alias_id);
+            for group in self.groups().await?.into_iter() {
+                println!(
+                    "found a room: {} - {:?}",
+                    group.inner.room.display_name().await?,
+                    group.inner.room.canonical_alias()
+                );
+                if let Some(group_alias) = group.inner.room.canonical_alias() {
+                    println!(
+                        "found a room with alias: {:},  {:}",
+                        group_alias,
+                        group_alias == alias_id
+                    );
+                    if group_alias == alias_id {
+                        return Ok(group);
+                    }
+                }
+            }
+            bail!("Room with alias not found")
+        } else {
+            bail!("Neither roomId nor alias provided")
+        }
     }
 }

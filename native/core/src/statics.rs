@@ -1,14 +1,9 @@
 use matrix_sdk::ruma::{events::AnyInitialStateEvent, serde::Raw, OwnedRoomAliasId};
 use serde_json::{json, value::to_raw_value};
 
-const EFFEKTIO_SUBTYPE_CONTENT: &str = r#"{
-  "type": "m.room.purpose",
-  "state_key": "effektio.team",
-  "content": {
-    "m.enabled": true,
-    "m.importance_level": 50
-  }
-}"#;
+pub static PURPOSE_FIELD: &str = "m.room.purpose";
+pub static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
+pub static PURPOSE_TEAM_VALUE: &str = "org.effektio.team";
 
 const HISTORY: &str = r#"{
   "type": "m.room.history_visibility",
@@ -30,10 +25,24 @@ const ENCRYPTION: &str = r#"{
 
 /// Generate the default set ot initial states for effektio teams
 pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
-    [EFFEKTIO_SUBTYPE_CONTENT, HISTORY, ENCRYPTION]
+    let mut v: Vec<Raw<AnyInitialStateEvent>> = [HISTORY, ENCRYPTION]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
-        .collect()
+        .collect();
+
+    v.push(Raw::from_json(
+        to_raw_value(&json!({
+                "type": PURPOSE_FIELD_DEV,
+                "state_key": PURPOSE_TEAM_VALUE,
+                "content": {
+                  "m.enabled": true,
+                  "m.importance_level": 50
+                }
+              }
+        ))
+        .expect("static parsing of subtype doesn't fail"),
+    ));
+    v
 }
 
 pub fn initial_state_for_alias(
