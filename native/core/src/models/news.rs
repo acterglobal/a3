@@ -1,4 +1,5 @@
 use super::{Color, Tag};
+use matrix_sdk::ruma::OwnedEventId;
 
 #[cfg(feature = "with-mocks")]
 use super::mocks::ColorFaker;
@@ -51,6 +52,10 @@ pub struct News {
 }
 
 impl News {
+    pub fn event_id(&self) -> OwnedEventId {
+        OwnedEventId::try_from("$DCtqUwJhmslGOcylXIxLuvcaBV2GLwZPAUCA1HlVKQw")
+            .expect("static owned id works")
+    }
     pub fn text(&self) -> Option<String> {
         self.text.clone()
     }

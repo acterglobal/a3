@@ -17,6 +17,7 @@ mod client;
 mod conversation;
 mod group;
 mod messages;
+mod news;
 mod room;
 mod stream;
 
@@ -27,7 +28,7 @@ pub use auth::{
 pub use client::{Client, ClientStateBuilder, CrossSigningEvent, EmojiUnit, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
-pub use group::Group;
+pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
@@ -38,10 +39,11 @@ pub use effektio_core::mocks::*;
 pub type UserId = effektio_core::ruma::OwnedUserId;
 pub type EventId = effektio_core::ruma::OwnedEventId;
 
-#[cfg(not(doctest))]
+#[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
-#[cfg(doctest)]
+#[cfg(not(all(not(doctest), feature = "dart")))]
+#[allow(clippy::module_inception)]
 mod api {
     /// helpers for doctests, as ffigen for some reason can't find the path
     pub struct FfiBuffer<T>(Vec<T>);

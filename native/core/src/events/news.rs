@@ -18,7 +18,7 @@ pub enum NewsContentType {
 }
 
 /// The payload for our news event.
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "org.effektio.dev.news", kind = MessageLike)]
 pub struct NewsEventDevContent {
     pub contents: Vec<NewsContentType>,
