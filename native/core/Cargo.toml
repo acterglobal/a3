@@ -10,7 +10,7 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [features]
-with-mocks = ["fake", 'rand']
+with-mocks = ["fake", "rand"]
 
 [dependencies]
 assign = "1.1.1"

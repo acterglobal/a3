@@ -14,9 +14,6 @@ fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 /// Create a new client from the restore token
 fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
 
-/// generate news mock items
-fn gen_mock_news() -> Vec<News>;
-
 /// Representing a color
 object Color {
     /// as rgba in u8

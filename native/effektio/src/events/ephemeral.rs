@@ -4,7 +4,7 @@ use matrix_sdk::{
     Client,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct EphemeralEvent {
     event_name: String,
     room_id: String,
