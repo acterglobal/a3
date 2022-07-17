@@ -1,11 +1,13 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    mocks::gen_mock_faqs,
     models::{Faq, News},
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
 };
+
+#[cfg(feature = "with-mocks")]
+use effektio_core::mocks::gen_mock_faqs;
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     stream, Stream, StreamExt,
@@ -549,6 +551,7 @@ impl Client {
             .await?
     }
 
+    #[cfg(feature = "with-mocks")]
     pub async fn faqs(&self) -> Result<Vec<Faq>> {
         Ok(gen_mock_faqs())
     }

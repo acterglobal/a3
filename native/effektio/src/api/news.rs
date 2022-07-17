@@ -1,8 +1,9 @@
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
+#[cfg(feature = "with-mocks")]
+use effektio_core::mocks::gen_mock_news;
 use effektio_core::{
     events,
-    mocks::gen_mock_news,
     models::News,
     ruma::{OwnedEventId, OwnedRoomId},
 };
@@ -13,6 +14,7 @@ use std::fs::File;
 use std::path::PathBuf; // FIXME: make these optional for wasm
 
 impl Client {
+    #[cfg(feature = "with-mocks")]
     pub async fn latest_news(&self) -> Result<Vec<News>> {
         Ok(gen_mock_news())
     }

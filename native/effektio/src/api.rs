@@ -39,10 +39,10 @@ pub use effektio_core::mocks::*;
 pub type UserId = effektio_core::ruma::OwnedUserId;
 pub type EventId = effektio_core::ruma::OwnedEventId;
 
-#[cfg(not(doctest))]
+#[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
-#[cfg(doctest)]
+#[cfg(not(all(not(doctest), feature = "dart")))]
 mod api {
     /// helpers for doctests, as ffigen for some reason can't find the path
     pub struct FfiBuffer<T>(Vec<T>);
