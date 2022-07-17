@@ -1,8 +1,9 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    mocks::{gen_mock_faqs, gen_mock_news},
+    mocks::gen_mock_faqs,
     models::{Faq, News},
+    statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
 };
 use futures::{
@@ -71,8 +72,8 @@ impl EmojiUnit {
 
 #[derive(Clone)]
 pub struct Client {
-    client: MatrixClient,
-    state: Arc<RwLock<ClientState>>,
+    pub(crate) client: MatrixClient,
+    pub(crate) state: Arc<RwLock<ClientState>>,
 }
 
 impl std::ops::Deref for Client {
@@ -82,11 +83,9 @@ impl std::ops::Deref for Client {
     }
 }
 
-static PURPOSE_FIELD: &str = "m.room.purpose";
-static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
-static PURPOSE_VALUE: &str = "org.effektio";
-
-async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Conversation>) {
+pub(crate) async fn devide_groups_from_common(
+    client: MatrixClient,
+) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
@@ -94,12 +93,12 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
                 let is_effektio_group = {
                     #[allow(clippy::match_like_matches_macro)]
                     if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_VALUE)
+                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
                         .await
                     {
                         true
                     } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_VALUE)
+                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
                         .await
                     {
                         true
@@ -165,14 +164,14 @@ impl SyncState {
 }
 
 impl Client {
-    pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
+    pub fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
         }
     }
 
-    pub(crate) fn start_sync(&self) -> SyncState {
+    pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
 
@@ -332,20 +331,6 @@ impl Client {
                 Ok(conversations)
             })
             .await?
-    }
-
-    pub async fn groups(&self) -> Result<Vec<Group>> {
-        let c = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let (groups, _) = devide_groups_from_common(c).await;
-                Ok(groups)
-            })
-            .await?
-    }
-
-    pub async fn latest_news(&self) -> Result<Vec<News>> {
-        Ok(gen_mock_news())
     }
 
     pub async fn faqs(&self) -> Result<Vec<Faq>> {

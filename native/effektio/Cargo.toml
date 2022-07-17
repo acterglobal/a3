@@ -9,9 +9,10 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = [ "with-mocks" ]
+default = [ "with-mocks", "dart" ]
 with-mocks = [ "effektio-core/with-mocks" ]
 cbindgen = [ ]
+dart = [ ]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
@@ -20,7 +21,7 @@ cbindgen = "0.20.0"
 [dependencies]
 anyhow = "1.0.51"
 assign = "1.1.1"
-derive_builder = "0.10.2"
+derive_builder = { version = "0.10.2" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
 futures-signals = "0.3.28"
@@ -50,12 +51,12 @@ path = "../core"
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
 default-features = false
 features = [
-    "e2e-encryption",
-    "rustls-tls",
-#    "qrcode",
-    "sled",
     "anyhow",
+    "e2e-encryption",
     "experimental-timeline",
+#    "qrcode",
+    "rustls-tls",
+    "sled",
 ]
 
 #   ----   WASM
@@ -65,9 +66,9 @@ wasm-bindgen-futures = "0.4.28"
 
 #   ----  ANDROID
 [target.'cfg(target_os = "android")'.dependencies]
-tracing-android = "0.2"
 android_logger = "0.10.1"
 tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
+tracing-android = "0.2"
 
 [lib]
 name = "effektio"

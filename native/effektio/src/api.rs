@@ -17,6 +17,7 @@ mod client;
 mod conversation;
 mod group;
 mod messages;
+mod news;
 mod room;
 mod stream;
 
@@ -28,7 +29,7 @@ pub use client::{Client, ClientStateBuilder, EmojiUnit, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use events::{EmojiVerificationEvent, EphemeralEvent};
-pub use group::Group;
+pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;

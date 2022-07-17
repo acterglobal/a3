@@ -291,6 +291,10 @@ object Client {
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;
 
+    /// Get the following group the user is part of by
+    /// roomId or room alias;
+    fn get_group(id_or_alias: string) -> Future<Result<Group>>;
+
     /// Get the latest News for the client
     fn latest_news() -> Future<Result<Vec<News>>>;
 

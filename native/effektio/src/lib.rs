@@ -12,3 +12,6 @@ pub mod platform;
 #[rustfmt::skip]
 #[cfg(feature = "cbindgen")]
 pub mod api_generated;
+
+
+pub use api::*;
