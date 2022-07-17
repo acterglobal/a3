@@ -43,6 +43,7 @@ pub type EventId = effektio_core::ruma::OwnedEventId;
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
 
 #[cfg(not(all(not(doctest), feature = "dart")))]
+#[allow(clippy::module_inception)]
 mod api {
     /// helpers for doctests, as ffigen for some reason can't find the path
     pub struct FfiBuffer<T>(Vec<T>);
