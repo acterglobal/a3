@@ -8,7 +8,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-effektio = { path = "../effektio" }
+effektio = { path = "../effektio", default-features = false }
 anyhow = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 zenv = "0.8.0"

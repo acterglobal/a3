@@ -15,7 +15,7 @@ fn main() {
         path.as_path().to_str().unwrap()
     );
 
-    if std::env::var("SKIP_FFIGEN").is_err() {
+    if std::env::var("SKIP_FFIGEN").is_err() && std::env::var("CARGO_FEATURE_DART").is_ok() {
         // general FFI-gen
         let ffigen = FfiGen::new(&path).expect("Could not parse api.rsh");
         let dart = crate_dir.join(API_DART_FILENAME);

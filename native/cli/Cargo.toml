@@ -24,6 +24,7 @@ path = "../core"
 
 [dependencies.effektio]
 path = "../effektio" 
+default-features = false
 
 [dependencies.matrix-sdk]
 # FIXME: temp to configure feature 

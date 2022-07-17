@@ -9,9 +9,10 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = [ "with-mocks" ]
+default = [ "with-mocks", "dart" ]
 with-mocks = [ "effektio-core/with-mocks" ]
 cbindgen = [ ]
+dart = [ ]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
