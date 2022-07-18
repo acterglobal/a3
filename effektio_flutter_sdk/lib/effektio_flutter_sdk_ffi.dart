@@ -3017,7 +3017,7 @@ class Api {
     return tmp9;
   }
 
-  EphemeralEvent? __syncStateGetEphemeralEventRxStreamPoll(
+  TypingNotification? __syncStateGetTypingNotificationRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3035,7 +3035,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetEphemeralEventRxStreamPoll(
+    final tmp8 = _syncStateGetTypingNotificationRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3047,9 +3047,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_EphemeralEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TypingNotification");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = EphemeralEvent._(this, tmp11_1);
+    final tmp9 = TypingNotification._(this, tmp11_1);
     return tmp9;
   }
 
@@ -3935,15 +3935,15 @@ class Api {
           _SyncStateGetEmojiVerificationEventRxReturn Function(
     int,
   )>();
-  late final _syncStateGetEphemeralEventRxPtr = _lookup<
+  late final _syncStateGetTypingNotificationRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetEphemeralEventRxReturn Function(
+          _SyncStateGetTypingNotificationRxReturn Function(
     ffi.Int64,
-  )>>("__SyncState_get_ephemeral_event_rx");
+  )>>("__SyncState_get_typing_notification_rx");
 
-  late final _syncStateGetEphemeralEventRx =
-      _syncStateGetEphemeralEventRxPtr.asFunction<
-          _SyncStateGetEphemeralEventRxReturn Function(
+  late final _syncStateGetTypingNotificationRx =
+      _syncStateGetTypingNotificationRxPtr.asFunction<
+          _SyncStateGetTypingNotificationRxReturn Function(
     int,
   )>();
   late final _syncStateGetFirstSyncedRxPtr = _lookup<
@@ -4317,25 +4317,26 @@ class Api {
           _EmojiVerificationEventGetSenderReturn Function(
     int,
   )>();
-  late final _ephemeralEventGetEventNamePtr = _lookup<
+  late final _typingNotificationGetEventNamePtr = _lookup<
       ffi.NativeFunction<
-          _EphemeralEventGetEventNameReturn Function(
+          _TypingNotificationGetEventNameReturn Function(
     ffi.Int64,
-  )>>("__EphemeralEvent_get_event_name");
+  )>>("__TypingNotification_get_event_name");
 
-  late final _ephemeralEventGetEventName =
-      _ephemeralEventGetEventNamePtr.asFunction<
-          _EphemeralEventGetEventNameReturn Function(
+  late final _typingNotificationGetEventName =
+      _typingNotificationGetEventNamePtr.asFunction<
+          _TypingNotificationGetEventNameReturn Function(
     int,
   )>();
-  late final _ephemeralEventGetRoomIdPtr = _lookup<
+  late final _typingNotificationGetRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _EphemeralEventGetRoomIdReturn Function(
+          _TypingNotificationGetRoomIdReturn Function(
     ffi.Int64,
-  )>>("__EphemeralEvent_get_room_id");
+  )>>("__TypingNotification_get_room_id");
 
-  late final _ephemeralEventGetRoomId = _ephemeralEventGetRoomIdPtr.asFunction<
-      _EphemeralEventGetRoomIdReturn Function(
+  late final _typingNotificationGetRoomId =
+      _typingNotificationGetRoomIdPtr.asFunction<
+          _TypingNotificationGetRoomIdReturn Function(
     int,
   )>();
   late final _emojiUnitGetSymbolPtr = _lookup<
@@ -5071,18 +5072,18 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetEphemeralEventRxStreamPollPtr = _lookup<
+  late final _syncStateGetTypingNotificationRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetEphemeralEventRxStreamPollReturn Function(
+          _SyncStateGetTypingNotificationRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_ephemeral_event_rx_stream_poll");
+  )>>("__SyncState_get_typing_notification_rx_stream_poll");
 
-  late final _syncStateGetEphemeralEventRxStreamPoll =
-      _syncStateGetEphemeralEventRxStreamPollPtr.asFunction<
-          _SyncStateGetEphemeralEventRxStreamPollReturn Function(
+  late final _syncStateGetTypingNotificationRxStreamPoll =
+      _syncStateGetTypingNotificationRxStreamPollPtr.asFunction<
+          _SyncStateGetTypingNotificationRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -7002,7 +7003,7 @@ class SyncState {
 
   SyncState._(this._api, this._box);
 
-  /// Get event handler of EmojiVerificationEvent
+  /// Get event handler of emoji verification
   Stream<EmojiVerificationEvent>? getEmojiVerificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -7023,11 +7024,11 @@ class SyncState {
     return tmp2;
   }
 
-  /// Get event handler of EphemeralEvent
-  Stream<EphemeralEvent>? getEphemeralEventRx() {
+  /// Get event handler of typing notification
+  Stream<TypingNotification>? getTypingNotificationRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetEphemeralEventRx(
+    final tmp1 = _api._syncStateGetTypingNotificationRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7036,11 +7037,11 @@ class SyncState {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_ephemeral_event_rx_stream_drop");
+    final tmp4_1 = _Box(
+        _api, tmp4_0, "__SyncState_get_typing_notification_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__syncStateGetEphemeralEventRxStreamPoll);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__syncStateGetTypingNotificationRxStreamPoll);
     return tmp2;
   }
 
@@ -7740,17 +7741,17 @@ class EmojiVerificationEvent {
 }
 
 /// Deliver emoji verification event from rust to flutter
-class EphemeralEvent {
+class TypingNotification {
   final Api _api;
   final _Box _box;
 
-  EphemeralEvent._(this._api, this._box);
+  TypingNotification._(this._api, this._box);
 
   /// Get event name
   String getEventName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._ephemeralEventGetEventName(
+    final tmp1 = _api._typingNotificationGetEventName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7770,7 +7771,7 @@ class EphemeralEvent {
   String getRoomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._ephemeralEventGetRoomId(
+    final tmp1 = _api._typingNotificationGetRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8083,7 +8084,7 @@ class _SyncStateGetEmojiVerificationEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SyncStateGetEphemeralEventRxReturn extends ffi.Struct {
+class _SyncStateGetTypingNotificationRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -8124,7 +8125,7 @@ class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _EphemeralEventGetEventNameReturn extends ffi.Struct {
+class _TypingNotificationGetEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -8133,7 +8134,7 @@ class _EphemeralEventGetEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _EphemeralEventGetRoomIdReturn extends ffi.Struct {
+class _TypingNotificationGetRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -8907,7 +8908,7 @@ class _SyncStateGetEmojiVerificationEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SyncStateGetEphemeralEventRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetTypingNotificationRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

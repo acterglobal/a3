@@ -1,5 +1,5 @@
 mod emoji_verification;
-mod ephemeral;
+mod typing_notification;
 
 pub use emoji_verification::*;
-pub use ephemeral::*;
+pub use typing_notification::*;

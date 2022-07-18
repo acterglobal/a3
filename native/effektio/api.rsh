@@ -232,11 +232,11 @@ object Account {
 }
 
 object SyncState {
-    /// Get event handler of EmojiVerificationEvent
+    /// Get event handler of emoji verification
     fn get_emoji_verification_event_rx() -> Option<Stream<EmojiVerificationEvent>>;
 
-    /// Get event handler of EphemeralEvent
-    fn get_ephemeral_event_rx() -> Option<Stream<EphemeralEvent>>;
+    /// Get event handler of typing notification
+    fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
 
     /// Get event handler of AnySyncMessageLikeEvent
     fn get_first_synced_rx() -> Option<Stream<bool>>;
@@ -332,7 +332,7 @@ object EmojiVerificationEvent {
 }
 
 /// Deliver emoji verification event from rust to flutter
-object EphemeralEvent {
+object TypingNotification {
     /// Get event name
     fn get_event_name() -> string;
 

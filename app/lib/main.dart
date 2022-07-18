@@ -121,11 +121,11 @@ class _EffektioHomeState extends State<EffektioHome>
       syncer.getEmojiVerificationEventRx()!,
       client,
     );
-    syncer.getEphemeralEventRx()!.listen((event) {
+    syncer.getTypingNotificationRx()!.listen((event) {
       String eventName = event.getEventName();
       String roomId = event.getRoomId();
       debugPrint(eventName);
-      debugPrint('ephemeral event for ' + roomId);
+      debugPrint('typing notification for ' + roomId);
     });
     return client;
   }

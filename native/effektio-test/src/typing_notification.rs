@@ -32,7 +32,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut rx = kyra_syncer.get_ephemeral_event_rx().unwrap();
+    let mut rx = kyra_syncer.get_typing_notification_rx().unwrap();
 
     loop {
         match rx.try_next() {
