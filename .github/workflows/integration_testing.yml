@@ -97,21 +97,28 @@ jobs:
         with:
           python-version: 3.8
 
-      - uses: michaelkaye/setup-matrix-synapse@v1.0.3
+      - uses: gnunicorn/setup-matrix-synapse@main
         with:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
+          serverName: "ds9.effektio.org"
           public_baseurl: "http://10.0.2.2:8118/"
+          customConfig: |
+            {
+              "allow_guest_access": true,
+              "enable_registration_without_verification": true,
+              "enable_registration": true
+            }
+
+      - name: Initialize e2ee mock data
+        run: cargo run -p effektio-cli -- mock http://localhost:8118/
 
       - name: Build Native
         run: cargo make --profile release ios
 
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-
-      - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://10.0.2.2:8118/
 
       - uses: futureware-tech/simulator-action@v1
         with:
@@ -150,21 +157,27 @@ jobs:
         with:
           python-version: 3.8
 
-      - uses: michaelkaye/setup-matrix-synapse@v1.0.3
+      - uses: gnunicorn/setup-matrix-synapse@main
         with:
           uploadLogs: false
           httpPort: 8118
           disableRateLimiting: true
+          serverName: "ds9.effektio.org"
           public_baseurl: "http://10.0.2.2:8118/"
+          customConfig: |
+            {
+              "allow_guest_access": true,
+              "enable_registration_without_verification": true,
+              "enable_registration": true
+
+      - name: Initialize e2ee mock data
+        run: cargo run -p effektio-cli -- mock http://localhost:8118/
 
       - name: Build Native
         run: cargo make --profile release ios
 
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-
-      - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://10.0.2.2:8118/
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2
