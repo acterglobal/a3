@@ -247,17 +247,14 @@ impl Client {
                                     .iter()
                                     .filter_map(|ev| ev.event.deserialize().ok())
                                 {
-                                    match event {
-                                        AnySyncRoomEvent::MessageLike(evt) => {
-                                            handle_emoji_sync_msg_event(
-                                                &room_id,
-                                                &evt,
-                                                &client,
-                                                &mut emoji_verification_event_tx,
-                                            )
-                                            .await;
-                                        }
-                                        _ => {}
+                                    if let AnySyncRoomEvent::MessageLike(evt) = event {
+                                        handle_emoji_sync_msg_event(
+                                            &room_id,
+                                            &evt,
+                                            &client,
+                                            &mut emoji_verification_event_tx,
+                                        )
+                                        .await;
                                     }
                                 }
                                 for event in room_info
