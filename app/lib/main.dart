@@ -18,7 +18,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show EphemeralEvent, SyncState;
+    show SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
