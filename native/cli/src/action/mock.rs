@@ -10,7 +10,6 @@ use effektio_core::{
         },
         assign, OwnedUserId,
     },
-    statics::default_effektio_group_states,
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
@@ -110,7 +109,7 @@ impl Mock {
         everyone.extend_from_slice(&team);
         everyone.extend_from_slice(&civilians);
 
-        let everyones_ids: Vec<OwnedUserId> =
+        let _everyones_ids: Vec<OwnedUserId> =
             futures::future::join_all(everyone.iter().map(|a| a.user_id()))
                 .await
                 .into_iter()

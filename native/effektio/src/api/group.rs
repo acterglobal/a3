@@ -67,7 +67,7 @@ impl Client {
                     initial_state: &initial_states,
                     is_direct: false,
                     invite: &settings.invites,
-                    room_alias_name: settings.alias.as_ref().map(|s| &**s),
+                    room_alias_name: settings.alias.as_deref(),
                     name: settings.name.as_ref().map(|x| x.as_ref()),
                     visibility: settings.visibility,
                 }))

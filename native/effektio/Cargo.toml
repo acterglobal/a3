@@ -12,7 +12,7 @@ license-file = "../../LICENSE.txt"
 default = [ "with-mocks", "dart" ]
 with-mocks = [ "effektio-core/with-mocks" ]
 cbindgen = [ ]
-dart = [ ]
+dart = [ "with-mocks" ]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
