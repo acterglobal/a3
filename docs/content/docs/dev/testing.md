@@ -88,6 +88,12 @@ To start the docker-compose afresh:
 2. remove the data at `rm -rf .local`
 3. start the service with `docker-compose up -d`
 
+**Reset database (in case of SQLite)**
+1. Stop service with `sudo systemctl stop matrix-synapse`
+2. Delete this file `/var/lib/matrix-synapse/homeserver.db`
+3. Start service with `sudo systemctl start matrix-synapse`
+4. Run this command `cargo run -p effektio-cli -- mock $HOMESERVER`
+
 Don't forget to rerun the `mock data` generation again.
 
 ### Rust integration tests
