@@ -27,9 +27,7 @@ pub async fn handle_typing_notification(
     tx: &mut Sender<TypingNotification>,
 ) {
     if let AnySyncEphemeralRoomEvent::Typing(ev) = event {
-        let evt = TypingNotification::new(
-            room_id.to_string(),
-        );
+        let evt = TypingNotification::new(room_id.to_string());
         if let Err(e) = tx.try_send(evt) {
             log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
