@@ -6,20 +6,12 @@ use matrix_sdk::{
 
 #[derive(Clone, Debug)]
 pub struct TypingNotification {
-    event_name: String,
     room_id: String,
 }
 
 impl TypingNotification {
-    pub(crate) fn new(event_name: String, room_id: String) -> Self {
-        Self {
-            event_name,
-            room_id,
-        }
-    }
-
-    pub fn get_event_name(&self) -> String {
-        self.event_name.clone()
+    pub(crate) fn new(room_id: String) -> Self {
+        Self { room_id }
     }
 
     pub fn get_room_id(&self) -> String {
@@ -36,7 +28,6 @@ pub async fn handle_typing_notification(
 ) {
     if let AnySyncEphemeralRoomEvent::Typing(ev) = event {
         let evt = TypingNotification::new(
-            "AnySyncEphemeralRoomEvent::Typing".to_owned(),
             room_id.to_string(),
         );
         if let Err(e) = tx.try_send(evt) {

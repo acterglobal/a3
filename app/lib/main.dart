@@ -122,10 +122,7 @@ class _EffektioHomeState extends State<EffektioHome>
       client,
     );
     syncer.getTypingNotificationRx()!.listen((event) {
-      String eventName = event.getEventName();
-      String roomId = event.getRoomId();
-      debugPrint(eventName);
-      debugPrint('typing notification for ' + roomId);
+      debugPrint('typing notification for ' + event.getRoomId());
     });
     return client;
   }
