@@ -257,19 +257,16 @@ impl Client {
                                         .await;
                                     }
                                 }
-                                for event in room_info
-                                    .ephemeral
-                                    .events
-                                    .iter()
-                                    .filter_map(|ev| ev.deserialize().ok())
-                                {
-                                    handle_typing_notification(
-                                        &room_id,
-                                        &event,
-                                        &client,
-                                        &mut typing_notification_tx,
-                                    )
-                                    .await;
+                                for event in room_info.ephemeral.events {
+                                    if let Some(ev) = event.deserialize().ok() {
+                                        handle_typing_notification(
+                                            &room_id,
+                                            &ev,
+                                            &client,
+                                            &mut typing_notification_tx,
+                                        )
+                                        .await;
+                                    }
                                 }
                             }
                         }
