@@ -105,11 +105,9 @@ jobs:
           serverName: "ds9.effektio.org"
           public_baseurl: "http://10.0.2.2:8118/"
           customConfig: |
-            {
-              "allow_guest_access": true,
-              "enable_registration_without_verification": true,
-              "enable_registration": true
-            }
+            allow_guest_access: true
+            enable_registration_without_verification: true
+            enable_registration: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:8118/
@@ -165,11 +163,9 @@ jobs:
           serverName: "ds9.effektio.org"
           public_baseurl: "http://10.0.2.2:8118/"
           customConfig: |
-            {
-              "allow_guest_access": true,
-              "enable_registration_without_verification": true,
-              "enable_registration": true
-            }
+            allow_guest_access: true
+            enable_registration_without_verification: true
+            enable_registration: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:8118/
