@@ -51,12 +51,12 @@ path = "../core"
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
 default-features = false
 features = [
-    "e2e-encryption",
-    "rustls-tls",
-#    "qrcode",
-    "sled",
     "anyhow",
+    "e2e-encryption",
     "experimental-timeline",
+#   "qrcode",
+    "rustls-tls",
+    "sled",
 ]
 
 #   ----   WASM

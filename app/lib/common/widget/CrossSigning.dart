@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState, CrossSigningEvent, Client, FfiListEmojiUnit;
+    show Client, EmojiVerificationEvent, FfiListEmojiUnit;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,19 +14,16 @@ import 'package:get/get.dart';
 class CrossSigning {
   bool waitForMatch = false;
   bool isLoading = false;
-  late String eventName;
-  late String eventId;
-  late String sender;
-  Stream<CrossSigningEvent>? _toDeviceRx;
-  late StreamSubscription<CrossSigningEvent> _toDeviceSubscription;
+  late StreamSubscription<EmojiVerificationEvent> _subscription;
 
-  void startCrossSigning(Client client) async {
-    SyncState syncer = client.startSync();
-    _toDeviceRx = syncer.getToDeviceRx();
-    _toDeviceSubscription = _toDeviceRx!.listen((event) async {
-      eventName = event.getEventName();
-      eventId = event.getEventId();
-      sender = event.getSender();
+  void startCrossSigning(
+    Stream<EmojiVerificationEvent> receiver,
+    Client client,
+  ) async {
+    _subscription = receiver.listen((event) async {
+      String eventName = event.getEventName();
+      String eventId = event.getEventId();
+      String sender = event.getSender();
       waitForMatch = false;
       debugPrint(eventName);
       if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
@@ -47,7 +44,7 @@ class CrossSigning {
         await _onKeyVerificationDone(sender, eventId);
         // clean up event listener
         Future.delayed(const Duration(seconds: 1), () {
-          _toDeviceSubscription.cancel();
+          _subscription.cancel();
         });
       }
     });

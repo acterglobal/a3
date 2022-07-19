@@ -235,11 +235,11 @@ object Account {
 }
 
 object SyncState {
-    /// Get event handler of AnyToDeviceEvent
-    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
+    /// Get event handler of first synchronization on every launch
+    fn get_first_synced_rx() -> Option<Stream<bool>>;
 
-    /// Get event handler of AnySyncMessageLikeEvent
-    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
+    /// Get event handler of emoji verification
+    fn get_emoji_verification_event_rx() -> Option<Stream<EmojiVerificationEvent>>;
 }
 
 /// Main entry point for `effektio`.
@@ -320,7 +320,7 @@ object Client {
 }
 
 /// Deliver emoji verification event from rust to flutter
-object CrossSigningEvent {
+object EmojiVerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 

@@ -9,21 +9,17 @@ use effektio_core::{
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
 use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
+    channel::mpsc::{channel, Receiver},
     stream, Stream, StreamExt,
+};
+use futures_signals::signal::{
+    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
 use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{SasVerification, Verification},
     media::{MediaFormat, MediaRequest},
-    ruma::{
-        self,
-        events::{
-            room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
-            AnyToDeviceEvent, SyncMessageLikeEvent,
-        },
-        OwnedRoomAliasId, OwnedRoomId, RoomId, UserId,
-    },
+    ruma::{events::AnySyncRoomEvent, OwnedUserId, RoomId, UserId},
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
@@ -32,7 +28,11 @@ use std::sync::{
     Arc,
 };
 
-use super::{api, Account, Conversation, Group, Room, RUNTIME};
+use super::{
+    api::FfiBuffer,
+    events::{handle_emoji_sync_msg_event, handle_emoji_to_device_event, EmojiVerificationEvent},
+    Account, Conversation, Group, Room, RUNTIME,
+};
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -44,35 +44,6 @@ pub struct ClientState {
     pub is_syncing: bool,
     #[builder(default)]
     pub should_stop_syncing: bool,
-}
-
-#[derive(Clone)]
-pub struct CrossSigningEvent {
-    event_name: String,
-    event_id: String,
-    sender: String,
-}
-
-impl CrossSigningEvent {
-    pub(crate) fn new(event_name: String, event_id: String, sender: String) -> Self {
-        CrossSigningEvent {
-            event_name,
-            event_id,
-            sender,
-        }
-    }
-
-    pub fn get_event_name(&self) -> String {
-        self.event_name.clone()
-    }
-
-    pub fn get_event_id(&self) -> String {
-        self.event_id.clone()
-    }
-
-    pub fn get_sender(&self) -> String {
-        self.sender.clone()
-    }
 }
 
 #[derive(Clone, Debug)]
@@ -158,258 +129,32 @@ pub(crate) async fn devide_groups_from_common(
     (groups, convos)
 }
 
-// thread callback must be global function, not member function
-async fn handle_to_device_event(
-    event: &AnyToDeviceEvent,
-    client: &MatrixClient,
-    tx: &mut Sender<CrossSigningEvent>,
-) {
-    match event {
-        AnyToDeviceEvent::KeyVerificationRequest(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationReady(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationReady".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationStart(ev) => {
-            let sender = ev.sender.to_string();
-            println!("Verification Start from {}", sender);
-            log::warn!("Verification Start from {}", sender);
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationStart".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationCancel(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationCancel".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationAccept(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationAccept".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationKey(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationKey".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationMac(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationMac".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        AnyToDeviceEvent::KeyVerificationDone(ev) => {
-            let sender = ev.sender.to_string();
-            let txn_id = ev.content.transaction_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnyToDeviceEvent::KeyVerificationDone".to_owned(),
-                txn_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping transaction for {}: {}", txn_id, e);
-            }
-        }
-        _ => {}
-    }
-}
-
-// thread callback must be global function, not member function
-async fn handle_any_sync_event(
-    event: &AnySyncMessageLikeEvent,
-    client: &MatrixClient,
-    tx: &mut Sender<CrossSigningEvent>,
-) {
-    match event {
-        AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
-            if let MessageType::VerificationRequest(_) = &m.content.msgtype {
-                let sender = m.sender.to_string();
-                let evt_id = m.event_id.to_string();
-                let evt = CrossSigningEvent::new(
-                    "AnySyncMessageLikeEvent::RoomMessage".to_owned(),
-                    evt_id.clone(),
-                    sender,
-                );
-                if let Err(e) = tx.try_send(evt) {
-                    log::warn!("Dropping event for {}: {}", evt_id, e);
-                }
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationAccept".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationKey".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationMac".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(ev)) => {
-            let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
-            let evt = CrossSigningEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                evt_id.clone(),
-                sender,
-            );
-            if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
-            }
-        }
-        _ => {}
-    }
-}
-
 #[derive(Clone)]
 pub struct SyncState {
-    to_device_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    sync_msg_like_rx: Arc<Mutex<Option<Receiver<CrossSigningEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    first_synced_rx: Arc<Mutex<Option<futures_signals::signal::Receiver<bool>>>>,
+    emoji_verification_event_rx: Arc<Mutex<Option<Receiver<EmojiVerificationEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
 impl SyncState {
     pub fn new(
-        to_device_rx: Receiver<CrossSigningEvent>,
-        sync_msg_like_rx: Receiver<CrossSigningEvent>,
-        first_synced_rx: futures_signals::signal::Receiver<bool>,
+        emoji_verification_event_rx: Receiver<EmojiVerificationEvent>,
+        first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
-        let to_device_rx = Arc::new(Mutex::new(Some(to_device_rx)));
-        let sync_msg_like_rx = Arc::new(Mutex::new(Some(sync_msg_like_rx)));
+        let emoji_verification_event_rx = Arc::new(Mutex::new(Some(emoji_verification_event_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
-            to_device_rx,
-            sync_msg_like_rx,
+            emoji_verification_event_rx,
             first_synced_rx,
         }
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<futures_signals::signal::Receiver<bool>> {
-        self.first_synced_rx.lock().take()
+    pub fn get_emoji_verification_event_rx(&self) -> Option<Receiver<EmojiVerificationEvent>> {
+        self.emoji_verification_event_rx.lock().take()
     }
 
-    pub fn get_to_device_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
-        self.to_device_rx.lock().take()
-    }
-
-    pub fn get_sync_msg_like_rx(&self) -> Option<Receiver<CrossSigningEvent>> {
-        self.sync_msg_like_rx.lock().take()
+    pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
+        self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 }
 
@@ -426,13 +171,11 @@ impl Client {
         let state = self.state.clone();
         let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
 
-        let (to_device_tx, to_device_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
-        let (sync_msg_like_tx, sync_msg_like_rx) = channel::<CrossSigningEvent>(10); // dropping after more than 10 items queued
-        let to_device_arc = Arc::new(to_device_tx);
-        let sync_msg_like_arc = Arc::new(sync_msg_like_tx);
+        let (emoji_verification_event_tx, emoji_verification_event_rx) = channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
+        let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
         let initial_sync = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(to_device_rx, sync_msg_like_rx, first_synced_rx);
+        let sync_state = SyncState::new(emoji_verification_event_rx, first_synced_rx);
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -443,8 +186,7 @@ impl Client {
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
                     let state = state.clone();
-                    let to_device_arc = to_device_arc.clone();
-                    let sync_msg_like_arc = sync_msg_like_arc.clone();
+                    let emoji_verification_event_arc = emoji_verification_event_arc.clone();
                     let initial_sync = initial_sync.clone();
                     let first_synced_arc = first_synced_arc.clone();
 
@@ -452,8 +194,7 @@ impl Client {
                         let client = client.clone();
                         let state = state.clone();
                         let initial = initial_sync.clone();
-                        let mut to_device_tx = (*to_device_arc).clone();
-                        let mut sync_msg_like_tx = (*sync_msg_like_arc).clone();
+                        let mut emoji_verification_event_tx = (*emoji_verification_event_arc).clone();
 
                         let user_id = client.user_id().unwrap();
                         let device_id = client.device_id().unwrap();
@@ -470,7 +211,7 @@ impl Client {
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
-                            handle_to_device_event(&event, &client, &mut to_device_tx).await;
+                            handle_emoji_to_device_event(&event, &client, &mut emoji_verification_event_tx).await;
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -481,11 +222,12 @@ impl Client {
                                     .iter()
                                     .filter_map(|ev| ev.event.deserialize().ok())
                                 {
-                                    if let AnySyncRoomEvent::MessageLike(event) = event {
-                                        handle_any_sync_event(
-                                            &event,
+                                    if let AnySyncRoomEvent::MessageLike(evt) = event {
+                                        handle_emoji_sync_msg_event(
+                                            &room_id,
+                                            &evt,
                                             &client,
-                                            &mut sync_msg_like_tx,
+                                            &mut emoji_verification_event_tx,
                                         )
                                         .await;
                                     }
@@ -564,7 +306,7 @@ impl Client {
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<ruma::OwnedUserId> {
+    pub async fn user_id(&self) -> Result<OwnedUserId> {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -618,7 +360,7 @@ impl Client {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         self.account().await?.avatar().await
     }
 

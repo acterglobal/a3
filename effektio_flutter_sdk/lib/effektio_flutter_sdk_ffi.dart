@@ -2993,7 +2993,7 @@ class Api {
     return tmp7;
   }
 
-  CrossSigningEvent? __syncStateGetToDeviceRxStreamPoll(
+  bool? __syncStateGetFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3011,7 +3011,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetToDeviceRxStreamPoll(
+    final tmp8 = _syncStateGetFirstSyncedRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3022,14 +3022,11 @@ class Api {
     if (tmp10 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_CrossSigningEvent");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = CrossSigningEvent._(this, tmp11_1);
+    final tmp9 = tmp11 > 0;
     return tmp9;
   }
 
-  CrossSigningEvent? __syncStateGetSyncMsgLikeRxStreamPoll(
+  EmojiVerificationEvent? __syncStateGetEmojiVerificationEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3047,7 +3044,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetSyncMsgLikeRxStreamPoll(
+    final tmp8 = _syncStateGetEmojiVerificationEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3059,9 +3056,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_CrossSigningEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_EmojiVerificationEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = CrossSigningEvent._(this, tmp11_1);
+    final tmp9 = EmojiVerificationEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -3907,25 +3904,26 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetToDeviceRxPtr = _lookup<
+  late final _syncStateGetFirstSyncedRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetToDeviceRxReturn Function(
+          _SyncStateGetFirstSyncedRxReturn Function(
     ffi.Int64,
-  )>>("__SyncState_get_to_device_rx");
+  )>>("__SyncState_get_first_synced_rx");
 
-  late final _syncStateGetToDeviceRx = _syncStateGetToDeviceRxPtr.asFunction<
-      _SyncStateGetToDeviceRxReturn Function(
+  late final _syncStateGetFirstSyncedRx =
+      _syncStateGetFirstSyncedRxPtr.asFunction<
+          _SyncStateGetFirstSyncedRxReturn Function(
     int,
   )>();
-  late final _syncStateGetSyncMsgLikeRxPtr = _lookup<
+  late final _syncStateGetEmojiVerificationEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetSyncMsgLikeRxReturn Function(
+          _SyncStateGetEmojiVerificationEventRxReturn Function(
     ffi.Int64,
-  )>>("__SyncState_get_sync_msg_like_rx");
+  )>>("__SyncState_get_emoji_verification_event_rx");
 
-  late final _syncStateGetSyncMsgLikeRx =
-      _syncStateGetSyncMsgLikeRxPtr.asFunction<
-          _SyncStateGetSyncMsgLikeRxReturn Function(
+  late final _syncStateGetEmojiVerificationEventRx =
+      _syncStateGetEmojiVerificationEventRxPtr.asFunction<
+          _SyncStateGetEmojiVerificationEventRxReturn Function(
     int,
   )>();
   late final _clientStartSyncPtr = _lookup<
@@ -4255,37 +4253,37 @@ class Api {
     int,
     int,
   )>();
-  late final _crossSigningEventGetEventNamePtr = _lookup<
+  late final _emojiVerificationEventGetEventNamePtr = _lookup<
       ffi.NativeFunction<
-          _CrossSigningEventGetEventNameReturn Function(
+          _EmojiVerificationEventGetEventNameReturn Function(
     ffi.Int64,
-  )>>("__CrossSigningEvent_get_event_name");
+  )>>("__EmojiVerificationEvent_get_event_name");
 
-  late final _crossSigningEventGetEventName =
-      _crossSigningEventGetEventNamePtr.asFunction<
-          _CrossSigningEventGetEventNameReturn Function(
+  late final _emojiVerificationEventGetEventName =
+      _emojiVerificationEventGetEventNamePtr.asFunction<
+          _EmojiVerificationEventGetEventNameReturn Function(
     int,
   )>();
-  late final _crossSigningEventGetEventIdPtr = _lookup<
+  late final _emojiVerificationEventGetEventIdPtr = _lookup<
       ffi.NativeFunction<
-          _CrossSigningEventGetEventIdReturn Function(
+          _EmojiVerificationEventGetEventIdReturn Function(
     ffi.Int64,
-  )>>("__CrossSigningEvent_get_event_id");
+  )>>("__EmojiVerificationEvent_get_event_id");
 
-  late final _crossSigningEventGetEventId =
-      _crossSigningEventGetEventIdPtr.asFunction<
-          _CrossSigningEventGetEventIdReturn Function(
+  late final _emojiVerificationEventGetEventId =
+      _emojiVerificationEventGetEventIdPtr.asFunction<
+          _EmojiVerificationEventGetEventIdReturn Function(
     int,
   )>();
-  late final _crossSigningEventGetSenderPtr = _lookup<
+  late final _emojiVerificationEventGetSenderPtr = _lookup<
       ffi.NativeFunction<
-          _CrossSigningEventGetSenderReturn Function(
+          _EmojiVerificationEventGetSenderReturn Function(
     ffi.Int64,
-  )>>("__CrossSigningEvent_get_sender");
+  )>>("__EmojiVerificationEvent_get_sender");
 
-  late final _crossSigningEventGetSender =
-      _crossSigningEventGetSenderPtr.asFunction<
-          _CrossSigningEventGetSenderReturn Function(
+  late final _emojiVerificationEventGetSender =
+      _emojiVerificationEventGetSenderPtr.asFunction<
+          _EmojiVerificationEventGetSenderReturn Function(
     int,
   )>();
   late final _emojiUnitGetSymbolPtr = _lookup<
@@ -5004,35 +5002,35 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetToDeviceRxStreamPollPtr = _lookup<
+  late final _syncStateGetFirstSyncedRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetToDeviceRxStreamPollReturn Function(
+          _SyncStateGetFirstSyncedRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_to_device_rx_stream_poll");
+  )>>("__SyncState_get_first_synced_rx_stream_poll");
 
-  late final _syncStateGetToDeviceRxStreamPoll =
-      _syncStateGetToDeviceRxStreamPollPtr.asFunction<
-          _SyncStateGetToDeviceRxStreamPollReturn Function(
+  late final _syncStateGetFirstSyncedRxStreamPoll =
+      _syncStateGetFirstSyncedRxStreamPollPtr.asFunction<
+          _SyncStateGetFirstSyncedRxStreamPollReturn Function(
     int,
     int,
     int,
     int,
   )>();
-  late final _syncStateGetSyncMsgLikeRxStreamPollPtr = _lookup<
+  late final _syncStateGetEmojiVerificationEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetSyncMsgLikeRxStreamPollReturn Function(
+          _SyncStateGetEmojiVerificationEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_sync_msg_like_rx_stream_poll");
+  )>>("__SyncState_get_emoji_verification_event_rx_stream_poll");
 
-  late final _syncStateGetSyncMsgLikeRxStreamPoll =
-      _syncStateGetSyncMsgLikeRxStreamPollPtr.asFunction<
-          _SyncStateGetSyncMsgLikeRxStreamPollReturn Function(
+  late final _syncStateGetEmojiVerificationEventRxStreamPoll =
+      _syncStateGetEmojiVerificationEventRxStreamPollPtr.asFunction<
+          _SyncStateGetEmojiVerificationEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -6935,11 +6933,11 @@ class SyncState {
 
   SyncState._(this._api, this._box);
 
-  /// Get event handler of AnyToDeviceEvent
-  Stream<CrossSigningEvent>? getToDeviceRx() {
+  /// Get event handler of first synchronization on every launch
+  Stream<bool>? getFirstSyncedRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetToDeviceRx(
+    final tmp1 = _api._syncStateGetFirstSyncedRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -6949,17 +6947,18 @@ class SyncState {
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
     final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_to_device_rx_stream_drop");
+        _Box(_api, tmp4_0, "__SyncState_get_first_synced_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__syncStateGetToDeviceRxStreamPoll);
+    final tmp2 =
+        _nativeStream(tmp4_1, _api.__syncStateGetFirstSyncedRxStreamPoll);
     return tmp2;
   }
 
-  /// Get event handler of AnySyncMessageLikeEvent
-  Stream<CrossSigningEvent>? getSyncMsgLikeRx() {
+  /// Get event handler of emoji verification
+  Stream<EmojiVerificationEvent>? getEmojiVerificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetSyncMsgLikeRx(
+    final tmp1 = _api._syncStateGetEmojiVerificationEventRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -6968,11 +6967,11 @@ class SyncState {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_sync_msg_like_rx_stream_drop");
+    final tmp4_1 = _Box(_api, tmp4_0,
+        "__SyncState_get_emoji_verification_event_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__syncStateGetSyncMsgLikeRxStreamPoll);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__syncStateGetEmojiVerificationEventRxStreamPoll);
     return tmp2;
   }
 
@@ -7578,17 +7577,17 @@ class Client {
 }
 
 /// Deliver emoji verification event from rust to flutter
-class CrossSigningEvent {
+class EmojiVerificationEvent {
   final Api _api;
   final _Box _box;
 
-  CrossSigningEvent._(this._api, this._box);
+  EmojiVerificationEvent._(this._api, this._box);
 
   /// Get event name
   String getEventName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._crossSigningEventGetEventName(
+    final tmp1 = _api._emojiVerificationEventGetEventName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7608,7 +7607,7 @@ class CrossSigningEvent {
   String getEventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._crossSigningEventGetEventId(
+    final tmp1 = _api._emojiVerificationEventGetEventId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7628,7 +7627,7 @@ class CrossSigningEvent {
   String getSender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._crossSigningEventGetSender(
+    final tmp1 = _api._emojiVerificationEventGetSender(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7934,21 +7933,21 @@ class _MemberDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _SyncStateGetToDeviceRxReturn extends ffi.Struct {
+class _SyncStateGetFirstSyncedRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _SyncStateGetSyncMsgLikeRxReturn extends ffi.Struct {
+class _SyncStateGetEmojiVerificationEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _CrossSigningEventGetEventNameReturn extends ffi.Struct {
+class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -7957,7 +7956,7 @@ class _CrossSigningEventGetEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _CrossSigningEventGetEventIdReturn extends ffi.Struct {
+class _EmojiVerificationEventGetEventIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -7966,7 +7965,7 @@ class _CrossSigningEventGetEventIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _CrossSigningEventGetSenderReturn extends ffi.Struct {
+class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -8733,14 +8732,14 @@ class _ClientReviewVerificationMacFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SyncStateGetToDeviceRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
+  @ffi.Uint8()
   external int arg1;
 }
 
-class _SyncStateGetSyncMsgLikeRxStreamPollReturn extends ffi.Struct {
+class _SyncStateGetEmojiVerificationEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
