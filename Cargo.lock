@@ -884,6 +884,7 @@ dependencies = [
  "anyhow",
  "effektio",
  "env_logger 0.9.0",
+ "futures",
  "tempfile",
  "tokio",
  "zenv",
