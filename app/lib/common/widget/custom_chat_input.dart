@@ -265,9 +265,14 @@ class CustomChatInput extends StatelessWidget {
                           child: SvgPicture.asset('assets/images/sendIcon.svg'),
                         ),
                       if (!controller.isSendButtonVisible)
-                        SvgPicture.asset(
-                          'assets/images/camera.svg',
-                          fit: BoxFit.none,
+                        InkWell(
+                          onTap: () {
+                            controller.handleImageSelection(context);
+                          },
+                          child: SvgPicture.asset(
+                            'assets/images/camera.svg',
+                            fit: BoxFit.none,
+                          ),
                         ),
                       const SizedBox(width: 10),
                       if (!controller.isSendButtonVisible)
