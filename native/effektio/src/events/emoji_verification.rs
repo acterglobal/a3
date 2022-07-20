@@ -77,7 +77,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                "AnySyncMessageLikeEvent::KeyVerificationStart".to_owned(),
                 evt_id.clone(),
                 sender,
             );
@@ -89,7 +89,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                "AnySyncMessageLikeEvent::KeyVerificationCancel".to_owned(),
                 evt_id.clone(),
                 sender,
             );
@@ -137,7 +137,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let evt_id = ev.event_id.to_string();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                "AnySyncMessageLikeEvent::KeyVerificationDone".to_owned(),
                 evt_id.clone(),
                 sender,
             );
