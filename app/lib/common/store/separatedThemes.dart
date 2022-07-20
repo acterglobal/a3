@@ -235,3 +235,35 @@ class NotificationTheme {
     ),
   );
 }
+
+class CrossSigningSheetTheme {
+  static const backgroundColor = ColorRef(Color(0xff333540));
+  static const primaryTextColor = ColorRef(Colors.white, id: 'ABT');
+  static const secondaryTextColor = ColorRef(Colors.grey);
+  static const greenButtonColor = ColorRef(Color(0xff33C481));
+  static const redButtonColor = ColorRef(Color(0xffEC2758));
+  static const gridBackgroundColor = ColorRef(Color.fromRGBO(36, 38, 50, 1));
+  static const loadingIndicatorColor = ColorRef(Colors.grey);
+
+  static const primaryTextStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: primaryTextColor,
+    ),
+  );
+  static const secondaryTextStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: secondaryTextColor,
+    ),
+  );
+  static const buttonTextStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: primaryTextColor,
+    ),
+  );
+}

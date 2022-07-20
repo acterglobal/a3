@@ -32,3 +32,14 @@ The current system has a problem with the latest android native development kit 
 ## iOS Build
 
 The iOS build doesn't work right now, see [#10](https://github.com/effektio/effektio/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.
+
+The following is iOS build steps.
+Unlike android, ios needs small space of 2~3 GB.
+
+1. Install `flutter v2.10.5`. `v3+` seems to have some problem in macos.
+2. Install the latest version of `rust`.
+3. Install `cargo-make`.
+4. Run `cargo make ios` in root directory of this project.
+5. Run `flutter pub get` in `app` directory of this project.
+6. Uncomment `# platform :ios, '9.0'` in Podfile of `app/ios` directory.
+7. Run `flutter run`.

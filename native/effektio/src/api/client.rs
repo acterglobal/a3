@@ -1,10 +1,13 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    mocks::{gen_mock_faqs, gen_mock_news},
     models::{Faq, News},
+    statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
 };
+
+#[cfg(feature = "with-mocks")]
+use effektio_core::mocks::gen_mock_faqs;
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     stream, Stream, StreamExt,
@@ -19,7 +22,7 @@ use matrix_sdk::{
             room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
             AnyToDeviceEvent, SyncMessageLikeEvent,
         },
-        RoomId, UserId,
+        OwnedRoomAliasId, OwnedRoomId, RoomId, UserId,
     },
     Client as MatrixClient, LoopCtrl,
 };
@@ -51,7 +54,7 @@ pub struct CrossSigningEvent {
 }
 
 impl CrossSigningEvent {
-    pub fn new(event_name: String, event_id: String, sender: String) -> Self {
+    pub(crate) fn new(event_name: String, event_id: String, sender: String) -> Self {
         CrossSigningEvent {
             event_name,
             event_id,
@@ -72,10 +75,33 @@ impl CrossSigningEvent {
     }
 }
 
+#[derive(Clone, Debug)]
+pub struct EmojiUnit {
+    symbol: u32,
+    description: String,
+}
+
+impl EmojiUnit {
+    pub(crate) fn new(symbol: u32, description: String) -> Self {
+        EmojiUnit {
+            symbol,
+            description,
+        }
+    }
+
+    pub fn get_symbol(&self) -> u32 {
+        self.symbol
+    }
+
+    pub fn get_description(&self) -> String {
+        self.description.clone()
+    }
+}
+
 #[derive(Clone)]
 pub struct Client {
-    client: MatrixClient,
-    state: Arc<RwLock<ClientState>>,
+    pub(crate) client: MatrixClient,
+    pub(crate) state: Arc<RwLock<ClientState>>,
 }
 
 impl std::ops::Deref for Client {
@@ -85,11 +111,9 @@ impl std::ops::Deref for Client {
     }
 }
 
-static PURPOSE_FIELD: &str = "m.room.purpose";
-static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
-static PURPOSE_VALUE: &str = "org.effektio";
-
-async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Conversation>) {
+pub(crate) async fn devide_groups_from_common(
+    client: MatrixClient,
+) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
@@ -97,12 +121,12 @@ async fn devide_groups_from_common(client: MatrixClient) -> (Vec<Group>, Vec<Con
                 let is_effektio_group = {
                     #[allow(clippy::match_like_matches_macro)]
                     if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_VALUE)
+                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
                         .await
                     {
                         true
                     } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_VALUE)
+                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
                         .await
                     {
                         true
@@ -390,14 +414,14 @@ impl SyncState {
 }
 
 impl Client {
-    pub(crate) fn new(client: MatrixClient, state: ClientState) -> Self {
+    pub fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
         }
     }
 
-    pub(crate) fn start_sync(&self) -> SyncState {
+    pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
         let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
@@ -431,11 +455,11 @@ impl Client {
                         let mut to_device_tx = (*to_device_arc).clone();
                         let mut sync_msg_like_tx = (*sync_msg_like_arc).clone();
 
-                        let user_id = client.user_id().await.unwrap();
-                        let device_id = client.device_id().await.unwrap();
+                        let user_id = client.user_id().unwrap();
+                        let device_id = client.device_id().unwrap();
                         let device = client
                             .encryption()
-                            .get_device(&user_id, &device_id)
+                            .get_device(user_id, device_id)
                             .await
                             .unwrap()
                             .unwrap();
@@ -508,7 +532,7 @@ impl Client {
     }
 
     pub async fn restore_token(&self) -> Result<String> {
-        let session = self.client.session().await.context("Missing session")?;
+        let session = self.client.session().context("Missing session")?.clone();
         let homeurl = self.client.homeserver().await;
         Ok(serde_json::to_string(&RestoreToken {
             session,
@@ -527,20 +551,7 @@ impl Client {
             .await?
     }
 
-    pub async fn groups(&self) -> Result<Vec<Group>> {
-        let c = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let (groups, _) = devide_groups_from_common(c).await;
-                Ok(groups)
-            })
-            .await?
-    }
-
-    pub async fn latest_news(&self) -> Result<Vec<News>> {
-        Ok(gen_mock_news())
-    }
-
+    #[cfg(feature = "with-mocks")]
     pub async fn faqs(&self) -> Result<Vec<Faq>> {
         Ok(gen_mock_faqs())
     }
@@ -557,7 +568,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = l.user_id().await.context("No User ID found")?;
+                let user_id = l.user_id().context("No User ID found")?.to_owned();
                 Ok(user_id)
             })
             .await?
@@ -601,7 +612,7 @@ impl Client {
         let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let device_id = l.device_id().await.context("No Device ID found")?;
+                let device_id = l.device_id().context("No Device ID found")?;
                 Ok(device_id.as_str().to_string())
             })
             .await?
@@ -661,7 +672,7 @@ impl Client {
         &self,
         sender: String,
         event_id: String,
-    ) -> Result<Vec<u32>> {
+    ) -> Result<Vec<EmojiUnit>> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -674,7 +685,12 @@ impl Client {
                     if let Some(items) = sas.emoji() {
                         let sequence = items
                             .iter()
-                            .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                            .map(|e| {
+                                EmojiUnit::new(
+                                    e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                                    e.description.to_string(),
+                                )
+                            })
                             .collect::<Vec<_>>();
                         return Ok(sequence);
                     }
@@ -802,14 +818,13 @@ mod tests {
         ruma::{
             events::{
                 room::message::MessageType, AnySyncMessageLikeEvent, AnySyncRoomEvent,
-                AnyToDeviceEvent,
+                AnyToDeviceEvent, SyncMessageLikeEvent,
             },
             UserId,
         },
         store::StateStore,
         Client as MatrixClient, LoopCtrl, Result as MatrixResult,
     };
-    use ruma::events::SyncMessageLikeEvent;
     use std::{
         env, fs, io,
         path::Path,
@@ -824,14 +839,19 @@ mod tests {
     use url::Url;
     use zenv::Zenv;
 
-    use crate::api::login_new_client;
+    use crate::api::{login_new_client, EmojiUnit};
 
     async fn wait_for_confirmation(client: MatrixClient, sas: SasVerification) {
         println!("Does the emoji match: {:?}", sas.emoji());
         if let Some(items) = sas.emoji() {
             let sequence = items
                 .iter()
-                .map(|e| e.symbol.chars().collect::<Vec<_>>()[0] as u32)
+                .map(|e| {
+                    EmojiUnit::new(
+                        e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                        e.description.to_string(),
+                    )
+                })
                 .collect::<Vec<_>>();
             println!("{:?}", sequence);
         }
@@ -1076,11 +1096,13 @@ mod tests {
         let mut client_builder = MatrixClient::builder().homeserver_url(homeserver_url);
 
         let state_store = StateStore::open_with_path(base_path)?;
-        client_builder = client_builder.state_store(Box::new(state_store));
+        client_builder = client_builder.state_store(state_store);
         let client = client_builder.build().await.unwrap();
 
         client
-            .login(username, password, None, Some("rust-sdk"))
+            .login_username(username, password)
+            .initial_device_display_name("rust-sdk")
+            .send()
             .await?;
 
         let client_ref = &client;
@@ -1092,8 +1114,8 @@ mod tests {
                 let client = &client_ref;
                 let initial = &initial_ref;
 
-                let user_id = client.user_id().await.unwrap();
-                let device_id = client.device_id().await.unwrap();
+                let user_id = client.user_id().unwrap();
+                let device_id = client.device_id().unwrap();
                 let device = client
                     .encryption()
                     .get_device(&user_id, &device_id)

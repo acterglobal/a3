@@ -1,0 +1,19 @@
+[package]
+name = "effektio-test"
+description = "internal integration tests for effektio"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.effektio]
+path = "../effektio"
+default-features = false
+features = ["with-mocks"]
+[dependencies]
+anyhow = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+zenv = "0.8.0"
+tempfile = "3.3.0"
+env_logger = "0.9.0"
