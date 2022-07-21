@@ -10,7 +10,7 @@ use matrix_sdk::{
     Client,
 };
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct EmojiVerificationEvent {
     event_name: String,
     event_id: String,
