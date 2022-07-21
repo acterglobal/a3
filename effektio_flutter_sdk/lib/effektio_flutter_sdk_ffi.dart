@@ -4264,15 +4264,15 @@ class Api {
           _EmojiVerificationEventGetEventNameReturn Function(
     int,
   )>();
-  late final _emojiVerificationEventGetEventIdPtr = _lookup<
+  late final _emojiVerificationEventGetTxnIdPtr = _lookup<
       ffi.NativeFunction<
-          _EmojiVerificationEventGetEventIdReturn Function(
+          _EmojiVerificationEventGetTxnIdReturn Function(
     ffi.Int64,
-  )>>("__EmojiVerificationEvent_get_event_id");
+  )>>("__EmojiVerificationEvent_get_txn_id");
 
-  late final _emojiVerificationEventGetEventId =
-      _emojiVerificationEventGetEventIdPtr.asFunction<
-          _EmojiVerificationEventGetEventIdReturn Function(
+  late final _emojiVerificationEventGetTxnId =
+      _emojiVerificationEventGetTxnIdPtr.asFunction<
+          _EmojiVerificationEventGetTxnIdReturn Function(
     int,
   )>();
   late final _emojiVerificationEventGetSenderPtr = _lookup<
@@ -7604,10 +7604,10 @@ class EmojiVerificationEvent {
   }
 
   /// Get transaction id or flow id
-  String getEventId() {
+  String getTxnId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._emojiVerificationEventGetEventId(
+    final tmp1 = _api._emojiVerificationEventGetTxnId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -7956,7 +7956,7 @@ class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _EmojiVerificationEventGetEventIdReturn extends ffi.Struct {
+class _EmojiVerificationEventGetTxnIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

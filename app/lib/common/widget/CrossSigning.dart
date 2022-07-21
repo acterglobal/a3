@@ -22,26 +22,26 @@ class CrossSigning {
   ) async {
     _subscription = receiver.listen((event) async {
       String eventName = event.getEventName();
-      String eventId = event.getEventId();
+      String txnId = event.getTxnId();
       String sender = event.getSender();
       waitForMatch = false;
       debugPrint(eventName);
       if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
-        await _onKeyVerificationRequest(sender, eventId, client);
+        await _onKeyVerificationRequest(sender, txnId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
-        await _onKeyVerificationReady(sender, eventId, client);
+        await _onKeyVerificationReady(sender, txnId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
-        await _onKeyVerificationStart(sender, eventId, client);
+        await _onKeyVerificationStart(sender, txnId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationCancel') {
-        await _onKeyVerificationCancel(sender, eventId);
+        await _onKeyVerificationCancel(sender, txnId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationAccept') {
-        await _onKeyVerificationAccept(sender, eventId);
+        await _onKeyVerificationAccept(sender, txnId);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationKey') {
-        await _onKeyVerificationKey(sender, eventId, client);
+        await _onKeyVerificationKey(sender, txnId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationMac') {
-        await _onKeyVerificationMac(sender, eventId, client);
+        await _onKeyVerificationMac(sender, txnId, client);
       } else if (eventName == 'AnyToDeviceEvent::KeyVerificationDone') {
-        await _onKeyVerificationDone(sender, eventId);
+        await _onKeyVerificationDone(sender, txnId);
         // clean up event listener
         Future.delayed(const Duration(seconds: 1), () {
           _subscription.cancel();
@@ -52,7 +52,7 @@ class CrossSigning {
 
   Future<void> _onKeyVerificationRequest(
     String sender,
-    String eventId,
+    String txnId,
     Client client,
   ) async {
     Completer<void> c = Completer();
@@ -130,7 +130,7 @@ class CrossSigning {
                           setState(() {
                             isLoading = true;
                           }),
-                          _onKeyVerificationReady(sender, eventId, client),
+                          _onKeyVerificationReady(sender, txnId, client),
                           c.complete()
                         },
                         CrossSigningSheetTheme.buttonTextStyle,
@@ -147,15 +147,15 @@ class CrossSigning {
 
   Future<void> _onKeyVerificationReady(
     String sender,
-    String eventId,
+    String txnId,
     Client _client,
   ) async {
-    await _client.acceptVerificationRequest(sender, eventId);
+    await _client.acceptVerificationRequest(sender, txnId);
   }
 
   Future<void> _onKeyVerificationStart(
     String sender,
-    String eventId,
+    String txnId,
     Client client,
   ) async {
     isLoading = false;
@@ -268,7 +268,7 @@ class CrossSigning {
                 Center(
                   child: TextButton(
                     onPressed: () async {
-                      await client.acceptVerificationStart(sender, eventId);
+                      await client.acceptVerificationStart(sender, txnId);
                       Get.back();
                       c.complete();
                     },
@@ -291,17 +291,17 @@ class CrossSigning {
     return c.future;
   }
 
-  Future<void> _onKeyVerificationCancel(String sender, String eventId) async {}
+  Future<void> _onKeyVerificationCancel(String sender, String txnId) async {}
 
-  Future<void> _onKeyVerificationAccept(String sender, String eventId) async {}
+  Future<void> _onKeyVerificationAccept(String sender, String txnId) async {}
 
   Future<void> _onKeyVerificationKey(
     String sender,
-    String eventId,
+    String txnId,
     Client client,
   ) async {
     Completer<void> c = Completer();
-    FfiListEmojiUnit emoji = await client.getVerificationEmoji(sender, eventId);
+    FfiListEmojiUnit emoji = await client.getVerificationEmoji(sender, txnId);
     List<int> emojiCodes = emoji.map((e) => e.getSymbol()).toList();
     List<String> emojiDescriptions =
         emoji.map((e) => e.getDescription()).toList();
@@ -410,7 +410,7 @@ class CrossSigning {
                               () async {
                                 await client.mismatchVerificationKey(
                                   sender,
-                                  eventId,
+                                  txnId,
                                 );
                                 Get.back();
                                 c.complete();
@@ -432,10 +432,10 @@ class CrossSigning {
                                 });
                                 await _onKeyVerificationMac(
                                   sender,
-                                  eventId,
+                                  txnId,
                                   client,
                                 );
-                                client.confirmVerificationKey(sender, eventId);
+                                client.confirmVerificationKey(sender, txnId);
                                 Get.back();
                                 c.complete();
                               },
@@ -469,13 +469,13 @@ class CrossSigning {
 
   Future<void> _onKeyVerificationMac(
     String sender,
-    String eventId,
+    String txnId,
     Client client,
   ) async {
-    await client.reviewVerificationMac(sender, eventId);
+    await client.reviewVerificationMac(sender, txnId);
   }
 
-  Future<void> _onKeyVerificationDone(String sender, String eventId) async {
+  Future<void> _onKeyVerificationDone(String sender, String txnId) async {
     Get.back();
     Get.bottomSheet(
       StatefulBuilder(

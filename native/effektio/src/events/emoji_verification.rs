@@ -13,15 +13,15 @@ use matrix_sdk::{
 #[derive(Clone, Debug)]
 pub struct EmojiVerificationEvent {
     event_name: String,
-    event_id: String,
+    txn_id: String,
     sender: String,
 }
 
 impl EmojiVerificationEvent {
-    pub(crate) fn new(event_name: String, event_id: String, sender: String) -> Self {
+    pub(crate) fn new(event_name: String, txn_id: String, sender: String) -> Self {
         Self {
             event_name,
-            event_id,
+            txn_id,
             sender,
         }
     }
@@ -30,8 +30,8 @@ impl EmojiVerificationEvent {
         self.event_name.clone()
     }
 
-    pub fn get_event_id(&self) -> String {
-        self.event_id.clone()
+    pub fn get_txn_id(&self) -> String {
+        self.txn_id.clone()
     }
 
     pub fn get_sender(&self) -> String {
@@ -50,99 +50,99 @@ pub async fn handle_emoji_sync_msg_event(
         AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
             if let MessageType::VerificationRequest(_) = &m.content.msgtype {
                 let sender = m.sender.to_string();
-                let evt_id = m.event_id.to_string();
+                let txn_id = m.event_id.to_string();
                 let evt = EmojiVerificationEvent::new(
                     "AnySyncMessageLikeEvent::RoomMessage".to_owned(),
-                    evt_id.clone(),
+                    txn_id.clone(),
                     sender,
                 );
                 if let Err(e) = tx.try_send(evt) {
-                    log::warn!("Dropping event for {}: {}", evt_id, e);
+                    log::warn!("Dropping event for {}: {}", txn_id, e);
                 }
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationStart".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationCancel".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationAccept".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationKey".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationMac".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(ev)) => {
             let sender = ev.sender.to_string();
-            let evt_id = ev.event_id.to_string();
+            let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
                 "AnySyncMessageLikeEvent::KeyVerificationDone".to_owned(),
-                evt_id.clone(),
+                txn_id.clone(),
                 sender,
             );
             if let Err(e) = tx.try_send(evt) {
-                log::warn!("Dropping event for {}: {}", evt_id, e);
+                log::warn!("Dropping event for {}: {}", txn_id, e);
             }
         }
         _ => {}

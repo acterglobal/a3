@@ -325,7 +325,7 @@ object EmojiVerificationEvent {
     fn get_event_name() -> string;
 
     /// Get transaction id or flow id
-    fn get_event_id() -> string;
+    fn get_txn_id() -> string;
 
     /// Get user id of event sender
     fn get_sender() -> string;
