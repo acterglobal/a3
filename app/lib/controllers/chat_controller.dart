@@ -34,8 +34,21 @@ class ChatController extends GetxController {
   late final Conversation room;
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
+
+  RxBool isEmojiVisible = false.obs;
+  RxBool isattachmentVisible = false.obs;
+  FocusNode focusNode = FocusNode();
+  TextEditingController textEditingController = TextEditingController();
+  bool isSendButtonVisible = false;
+
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        isEmojiVisible.value = false;
+        isattachmentVisible.value = false;
+      }
+    });
     room = convoRoom;
     user = convoUser;
     isLoading.value = true;
@@ -84,16 +97,16 @@ class ChatController extends GetxController {
   }
 
   //push messages in conversation
-  Future<void> handleSendPressed(types.PartialText message) async {
+  Future<void> handleSendPressed(String message) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await room.typingNotice(false);
-    var eventId = await room.sendPlainMessage(message.text);
+    var eventId = await room.sendPlainMessage(message);
     final textMessage = types.TextMessage(
       author: user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: eventId,
-      text: message.text,
+      text: message,
       status: types.Status.sent,
       showStatus: true,
     );
@@ -297,5 +310,17 @@ class ChatController extends GetxController {
       }
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
+  }
+
+  void sendButtonUpdate() {
+    isSendButtonVisible = textEditingController.text.trim().isNotEmpty;
+    update();
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    textEditingController.dispose();
+    focusNode.removeListener(() {});
   }
 }
