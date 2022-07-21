@@ -88,7 +88,8 @@ class ChatController extends GetxController {
     types.PreviewData previewData,
   ) {
     final index = messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = messages[index].copyWith(previewData: previewData);
+    final updatedMessage = (messages[index] as types.TextMessage)
+        .copyWith(previewData: previewData);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       messages[index] = updatedMessage;
