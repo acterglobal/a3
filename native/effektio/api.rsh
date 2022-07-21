@@ -299,24 +299,24 @@ object Client {
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
     /// Accept the AnyToDeviceEvent::KeyVerificationRequest
-    fn accept_verification_request(sender: string, event_id: string) -> Future<Result<bool>>;
+    fn accept_verification_request(sender: string, txn_id: string) -> Future<Result<bool>>;
 
     /// Accept the AnyToDeviceEvent::KeyVerificationStart
-    fn accept_verification_start(sender: string, event_id: string) -> Future<Result<bool>>;
+    fn accept_verification_start(sender: string, txn_id: string) -> Future<Result<bool>>;
 
-    fn get_verification_emoji(sender: string, event_id: string) -> Future<Result<Vec<EmojiUnit>>>;
+    fn get_verification_emoji(sender: string, txn_id: string) -> Future<Result<Vec<EmojiUnit>>>;
 
     /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
-    fn confirm_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    fn confirm_verification_key(sender: string, txn_id: string) -> Future<Result<bool>>;
 
     /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-    fn mismatch_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    fn mismatch_verification_key(sender: string, txn_id: string) -> Future<Result<bool>>;
 
     /// Cancel the AnyToDeviceEvent::KeyVerificationKey
-    fn cancel_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    fn cancel_verification_key(sender: string, txn_id: string) -> Future<Result<bool>>;
 
     /// Review the AnyToDeviceEvent::KeyVerificationMac
-    fn review_verification_mac(sender: string, event_id: string) -> Future<Result<bool>>;
+    fn review_verification_mac(sender: string, txn_id: string) -> Future<Result<bool>>;
 }
 
 /// Deliver emoji verification event from rust to flutter

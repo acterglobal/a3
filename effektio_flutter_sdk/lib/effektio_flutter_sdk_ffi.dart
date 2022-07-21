@@ -7238,10 +7238,10 @@ class Client {
   /// Accept the AnyToDeviceEvent::KeyVerificationRequest
   Future<bool> acceptVerificationRequest(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -7286,10 +7286,10 @@ class Client {
   /// Accept the AnyToDeviceEvent::KeyVerificationStart
   Future<bool> acceptVerificationStart(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -7333,10 +7333,10 @@ class Client {
 
   Future<FfiListEmojiUnit> getVerificationEmoji(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -7381,10 +7381,10 @@ class Client {
   /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
   Future<bool> confirmVerificationKey(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -7429,10 +7429,10 @@ class Client {
   /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
   Future<bool> mismatchVerificationKey(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -7477,10 +7477,10 @@ class Client {
   /// Cancel the AnyToDeviceEvent::KeyVerificationKey
   Future<bool> cancelVerificationKey(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -7525,10 +7525,10 @@ class Client {
   /// Review the AnyToDeviceEvent::KeyVerificationMac
   Future<bool> reviewVerificationMac(
     String sender,
-    String eventId,
+    String txnId,
   ) {
     final tmp1 = sender;
-    final tmp5 = eventId;
+    final tmp5 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
     var tmp3 = 0;

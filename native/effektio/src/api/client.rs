@@ -367,7 +367,7 @@ impl Client {
     pub async fn accept_verification_request(
         &self,
         sender: String,
-        event_id: String,
+        txn_id: String,
     ) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
@@ -375,7 +375,7 @@ impl Client {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 let request = client
                     .encryption()
-                    .get_verification_request(&sender, event_id.as_str())
+                    .get_verification_request(&sender, txn_id.as_str())
                     .await
                     .expect("Request object wasn't created");
                 request
@@ -390,7 +390,7 @@ impl Client {
     pub async fn accept_verification_start(
         &self,
         sender: String,
-        event_id: String,
+        txn_id: String,
     ) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
@@ -398,7 +398,7 @@ impl Client {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 if let Some(Verification::SasV1(sas)) = client
                     .encryption()
-                    .get_verification(&sender, event_id.as_str())
+                    .get_verification(&sender, txn_id.as_str())
                     .await
                 {
                     sas.accept().await.unwrap();
@@ -413,7 +413,7 @@ impl Client {
     pub async fn get_verification_emoji(
         &self,
         sender: String,
-        event_id: String,
+        txn_id: String,
     ) -> Result<Vec<EmojiUnit>> {
         let client = self.client.clone();
         RUNTIME
@@ -421,7 +421,7 @@ impl Client {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 if let Some(Verification::SasV1(sas)) = client
                     .encryption()
-                    .get_verification(&sender, event_id.as_str())
+                    .get_verification(&sender, txn_id.as_str())
                     .await
                 {
                     if let Some(items) = sas.emoji() {
@@ -442,14 +442,14 @@ impl Client {
             .await?
     }
 
-    pub async fn confirm_verification_key(&self, sender: String, event_id: String) -> Result<bool> {
+    pub async fn confirm_verification_key(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 if let Some(Verification::SasV1(sas)) = client
                     .encryption()
-                    .get_verification(&sender, event_id.as_str())
+                    .get_verification(&sender, txn_id.as_str())
                     .await
                 {
                     sas.confirm().await.unwrap();
@@ -464,7 +464,7 @@ impl Client {
     pub async fn mismatch_verification_key(
         &self,
         sender: String,
-        event_id: String,
+        txn_id: String,
     ) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
@@ -472,7 +472,7 @@ impl Client {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 if let Some(Verification::SasV1(sas)) = client
                     .encryption()
-                    .get_verification(&sender, event_id.as_str())
+                    .get_verification(&sender, txn_id.as_str())
                     .await
                 {
                     sas.mismatch().await.unwrap();
@@ -484,14 +484,14 @@ impl Client {
             .await?
     }
 
-    pub async fn cancel_verification_key(&self, sender: String, event_id: String) -> Result<bool> {
+    pub async fn cancel_verification_key(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 if let Some(Verification::SasV1(sas)) = client
                     .encryption()
-                    .get_verification(&sender, event_id.as_str())
+                    .get_verification(&sender, txn_id.as_str())
                     .await
                 {
                     sas.cancel().await.unwrap();
@@ -503,14 +503,14 @@ impl Client {
             .await?
     }
 
-    pub async fn review_verification_mac(&self, sender: String, event_id: String) -> Result<bool> {
+    pub async fn review_verification_mac(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
                 if let Some(Verification::SasV1(sas)) = client
                     .encryption()
-                    .get_verification(&sender, event_id.as_str())
+                    .get_verification(&sender, txn_id.as_str())
                     .await
                 {
                     Ok(sas.is_done())
