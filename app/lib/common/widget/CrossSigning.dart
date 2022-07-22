@@ -26,21 +26,21 @@ class CrossSigning {
       String sender = event.getSender();
       waitForMatch = false;
       debugPrint(eventName);
-      if (eventName == 'AnyToDeviceEvent::KeyVerificationRequest') {
+      if (eventName == 'm.key.verification.request') {
         await _onKeyVerificationRequest(sender, txnId, client);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationReady') {
+      } else if (eventName == 'm.key.verification.ready') {
         await _onKeyVerificationReady(sender, txnId, client);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationStart') {
+      } else if (eventName == 'm.key.verification.start') {
         await _onKeyVerificationStart(sender, txnId, client);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationCancel') {
+      } else if (eventName == 'm.key.verification.cancel') {
         await _onKeyVerificationCancel(sender, txnId);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationAccept') {
+      } else if (eventName == 'm.key.verification.accept') {
         await _onKeyVerificationAccept(sender, txnId);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationKey') {
+      } else if (eventName == 'm.key.verification.key') {
         await _onKeyVerificationKey(sender, txnId, client);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationMac') {
+      } else if (eventName == 'm.key.verification.mac') {
         await _onKeyVerificationMac(sender, txnId, client);
-      } else if (eventName == 'AnyToDeviceEvent::KeyVerificationDone') {
+      } else if (eventName == 'm.key.verification.done') {
         await _onKeyVerificationDone(sender, txnId);
         // clean up event listener
         Future.delayed(const Duration(seconds: 1), () {

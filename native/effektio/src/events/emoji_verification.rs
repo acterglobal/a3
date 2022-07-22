@@ -52,7 +52,7 @@ pub async fn handle_emoji_sync_msg_event(
                 let sender = m.sender.to_string();
                 let txn_id = m.event_id.to_string();
                 let evt = EmojiVerificationEvent::new(
-                    "AnySyncMessageLikeEvent::RoomMessage".to_owned(),
+                    "m.room.message".to_owned(),
                     txn_id.clone(),
                     sender,
                 );
@@ -65,7 +65,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationReady".to_owned(),
+                "m.key.verification.ready".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -77,7 +77,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationStart".to_owned(),
+                "m.key.verification.start".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -89,7 +89,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationCancel".to_owned(),
+                "m.key.verification.cancel".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -101,7 +101,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationAccept".to_owned(),
+                "m.key.verification.accept".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -113,7 +113,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationKey".to_owned(),
+                "m.key.verification.key".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -125,7 +125,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationMac".to_owned(),
+                "m.key.verification.mac".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -137,7 +137,7 @@ pub async fn handle_emoji_sync_msg_event(
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
             let evt = EmojiVerificationEvent::new(
-                "AnySyncMessageLikeEvent::KeyVerificationDone".to_owned(),
+                "m.key.verification.done".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -159,8 +159,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationRequest(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.request");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationRequest".to_owned(),
+                "m.key.verification.request".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -171,8 +172,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationReady(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.ready");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationReady".to_owned(),
+                "m.key.verification.ready".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -182,11 +184,10 @@ pub async fn handle_emoji_to_device_event(
         }
         AnyToDeviceEvent::KeyVerificationStart(ev) => {
             let sender = ev.sender.to_string();
-            println!("Verification Start from {}", sender);
-            log::warn!("Verification Start from {}", sender);
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.start");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationStart".to_owned(),
+                "m.key.verification.start".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -197,8 +198,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationCancel(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.cancel");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationCancel".to_owned(),
+                "m.key.verification.cancel".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -209,8 +211,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationAccept(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.accept");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationAccept".to_owned(),
+                "m.key.verification.accept".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -221,8 +224,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationKey(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.key");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationKey".to_owned(),
+                "m.key.verification.key".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -233,8 +237,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationMac(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.mac");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationMac".to_owned(),
+                "m.key.verification.mac".to_owned(),
                 txn_id.clone(),
                 sender,
             );
@@ -245,8 +250,9 @@ pub async fn handle_emoji_to_device_event(
         AnyToDeviceEvent::KeyVerificationDone(ev) => {
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            println!("m.key.verification.done");
             let evt = EmojiVerificationEvent::new(
-                "AnyToDeviceEvent::KeyVerificationDone".to_owned(),
+                "m.key.verification.done".to_owned(),
                 txn_id.clone(),
                 sender,
             );

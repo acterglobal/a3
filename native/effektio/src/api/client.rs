@@ -19,7 +19,10 @@ use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{SasVerification, Verification},
     media::{MediaFormat, MediaRequest},
-    ruma::{events::AnySyncRoomEvent, OwnedUserId, RoomId, UserId},
+    ruma::{
+        events::{key::verification::VerificationMethod, AnySyncRoomEvent},
+        OwnedUserId, RoomId, UserId,
+    },
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
@@ -387,6 +390,54 @@ impl Client {
             .await?
     }
 
+    pub async fn accept_verification_request_with_methods(
+        &self,
+        sender: String,
+        txn_id: String,
+        methods: Vec<String>,
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                let request = client
+                    .encryption()
+                    .get_verification_request(&sender, txn_id.as_str())
+                    .await
+                    .expect("Request object wasn't created");
+                let _methods: Vec<VerificationMethod> = methods.iter().map(|e| e.as_str().into()).collect();
+                request
+                    .accept_with_methods(_methods)
+                    .await
+                    .expect("Can't accept verification request");
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn start_sas_verification(
+        &self,
+        sender: String,
+        txn_id: String,
+    ) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
+                let request = client
+                    .encryption()
+                    .get_verification_request(&sender, txn_id.as_str())
+                    .await
+                    .expect("Request object wasn't created");
+                let sas_verification = request
+                    .start_sas()
+                    .await
+                    .expect("Can't accept verification request");
+                Ok(sas_verification.is_some())
+            })
+            .await?
+    }
+
     pub async fn accept_verification_start(
         &self,
         sender: String,
@@ -649,7 +700,7 @@ mod tests {
     async fn test_handle_to_device_event(event: &AnyToDeviceEvent, client: &MatrixClient) {
         match event {
             AnyToDeviceEvent::KeyVerificationRequest(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationRequest");
+                println!("m.key.verification.request");
                 println!("sender: {}", ev.sender);
                 println!("from_device: {}", ev.content.from_device);
                 println!("transaction_id: {}", ev.content.transaction_id);
@@ -666,14 +717,14 @@ mod tests {
                     .expect("Can't accept verification request");
             }
             AnyToDeviceEvent::KeyVerificationReady(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationReady");
+                println!("m.key.verification.ready");
                 println!("sender: {}", ev.sender);
                 println!("from_device: {}", ev.content.from_device);
                 println!("methods: {:?}", ev.content.methods);
                 println!("transaction_id: {}", ev.content.transaction_id);
             }
             AnyToDeviceEvent::KeyVerificationStart(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationStart");
+                println!("m.key.verification.start");
                 println!("sender: {}", ev.sender);
                 println!("from_device: {}", ev.content.from_device);
                 println!("transaction_id: {}", ev.content.transaction_id);
@@ -693,20 +744,20 @@ mod tests {
                 }
             }
             AnyToDeviceEvent::KeyVerificationCancel(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationCancel");
+                println!("m.key.verification.cancel");
                 println!("sender: {}", ev.sender);
                 println!("transaction_id: {}", ev.content.transaction_id);
                 println!("reason: {}", ev.content.reason);
                 println!("code: {:?}", ev.content.code);
             }
             AnyToDeviceEvent::KeyVerificationAccept(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationAccept");
+                println!("m.key.verification.accept");
                 println!("sender: {}", ev.sender);
                 println!("transaction_id: {}", ev.content.transaction_id);
                 println!("method: {:?}", ev.content.method);
             }
             AnyToDeviceEvent::KeyVerificationKey(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationKey");
+                println!("m.key.verification.key");
                 println!("sender: {}", ev.sender);
                 println!("transaction_id: {}", ev.content.transaction_id);
                 println!("key: {:?}", ev.content.key);
@@ -719,7 +770,7 @@ mod tests {
                 }
             }
             AnyToDeviceEvent::KeyVerificationMac(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationMac");
+                println!("m.key.verification.mac");
                 println!("sender: {}", ev.sender);
                 println!("transaction_id: {}", ev.content.transaction_id);
                 println!("mac: {:?}", ev.content.mac);
@@ -736,7 +787,7 @@ mod tests {
                 }
             }
             AnyToDeviceEvent::KeyVerificationDone(ev) => {
-                println!("AnyToDeviceEvent::KeyVerificationDone");
+                println!("m.key.verification.done");
                 println!("sender: {}", ev.sender);
                 println!("transaction_id: {}", ev.content.transaction_id);
                 exit(0);
@@ -748,7 +799,7 @@ mod tests {
     async fn test_handle_any_sync_event(event: &AnySyncMessageLikeEvent, client: &MatrixClient) {
         match event {
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
-                println!("AnySyncMessageLikeEvent::RoomMessage");
+                println!("m.room.message");
                 if let MessageType::VerificationRequest(_) = &m.content.msgtype {
                     let request = client
                         .encryption()
@@ -762,34 +813,34 @@ mod tests {
                 }
             }
             AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationReady");
+                println!("m.key.verification.ready");
                 println!("sender: {}", ev.sender);
                 println!("from_device: {}", ev.content.from_device);
                 println!("methods: {:?}", ev.content.methods);
                 println!("relates_to: {:?}", ev.content.relates_to);
             }
             AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationStart");
+                println!("m.key.verification.start");
                 println!("sender: {}", ev.sender);
                 println!("from_device: {}", ev.content.from_device);
                 println!("method: {:?}", ev.content.method);
                 println!("relates_to: {:?}", ev.content.relates_to);
             }
             AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationCancel");
+                println!("m.key.verification.cancel");
                 println!("sender: {}", ev.sender);
                 println!("reason: {}", ev.content.reason);
                 println!("code: {:?}", ev.content.code);
                 println!("relates_to: {:?}", ev.content.relates_to);
             }
             AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationAccept");
+                println!("m.key.verification.accept");
                 println!("sender: {}", ev.sender);
                 println!("method: {:?}", ev.content.method);
                 println!("relates_to: {:?}", ev.content.relates_to);
             }
             AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationKey");
+                println!("m.key.verification.key");
                 println!("sender: {}", ev.sender);
                 println!("key: {:?}", ev.content.key);
                 println!("relates_to: {:?}", ev.content.relates_to);
@@ -802,7 +853,7 @@ mod tests {
                 }
             }
             AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationMac");
+                println!("m.key.verification.mac");
                 println!("sender: {}", ev.sender);
                 println!("mac: {:?}", ev.content.mac);
                 println!("keys: {:?}", ev.content.keys);
@@ -819,7 +870,7 @@ mod tests {
                 }
             }
             AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(ev)) => {
-                println!("AnySyncMessageLikeEvent::KeyVerificationDone");
+                println!("m.key.verification.done");
                 println!("sender: {}", ev.sender);
                 println!("relates_to: {:?}", ev.content.relates_to);
             }
