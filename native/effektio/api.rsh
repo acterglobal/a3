@@ -298,19 +298,29 @@ object Client {
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
-    /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+    /// Bob accepts the verification request from Alice
     fn accept_verification_request(sender: string, txn_id: string) -> Future<Result<bool>>;
 
-    /// Accept the AnyToDeviceEvent::KeyVerificationStart
-    fn accept_verification_start(sender: string, txn_id: string) -> Future<Result<bool>>;
+    /// Bob accepts the verification request from Alice with specified methods
+    fn accept_verification_request_with_methods(sender: string, txn_id: string, methods: Vec<string>) -> Future<Result<bool>>;
 
+    /// Alice starts the SAS verification
+    fn start_sas_verification(sender: string, txn_id: string) -> Future<Result<bool>>;
+
+    /// Bob accepts the SAS verification
+    fn accept_sas_verification(sender: string, txn_id: string) -> Future<Result<bool>>;
+
+    /// Alice and Bob sends the verification key
+    fn send_verification_key() -> Future<Result<bool>>;
+
+    /// Alice and Bob gets the verification emoji
     fn get_verification_emoji(sender: string, txn_id: string) -> Future<Result<Vec<EmojiUnit>>>;
 
-    /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
-    fn confirm_verification_key(sender: string, txn_id: string) -> Future<Result<bool>>;
+    /// Alice and Bob confirms the SAS verification matches
+    fn confirm_sas_verification(sender: string, txn_id: string) -> Future<Result<bool>>;
 
     /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-    fn mismatch_verification_key(sender: string, txn_id: string) -> Future<Result<bool>>;
+    fn mismatch_sas_verification(sender: string, txn_id: string) -> Future<Result<bool>>;
 
     /// Cancel the AnyToDeviceEvent::KeyVerificationKey
     fn cancel_verification_key(sender: string, txn_id: string) -> Future<Result<bool>>;

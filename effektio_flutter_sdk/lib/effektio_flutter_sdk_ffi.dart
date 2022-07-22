@@ -2737,7 +2737,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __clientAcceptVerificationStartFuturePoll(
+  bool? __clientAcceptVerificationRequestWithMethodsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2751,7 +2751,133 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientAcceptVerificationStartFuturePoll(
+    final tmp6 = _clientAcceptVerificationRequestWithMethodsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __clientStartSasVerificationFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientStartSasVerificationFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __clientAcceptSasVerificationFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientAcceptSasVerificationFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  bool? __clientSendVerificationKeyFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientSendVerificationKeyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4115,7 +4241,7 @@ class Api {
     int,
     int,
   )>();
-  late final _clientAcceptVerificationStartPtr = _lookup<
+  late final _clientAcceptVerificationRequestWithMethodsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -4125,10 +4251,11 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Client_accept_verification_start");
+    ffi.Int64,
+  )>>("__Client_accept_verification_request_with_methods");
 
-  late final _clientAcceptVerificationStart =
-      _clientAcceptVerificationStartPtr.asFunction<
+  late final _clientAcceptVerificationRequestWithMethods =
+      _clientAcceptVerificationRequestWithMethodsPtr.asFunction<
           int Function(
     int,
     int,
@@ -4136,6 +4263,64 @@ class Api {
     int,
     int,
     int,
+    int,
+    int,
+  )>();
+  late final _clientStartSasVerificationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_start_sas_verification");
+
+  late final _clientStartSasVerification =
+      _clientStartSasVerificationPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientAcceptSasVerificationPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_accept_sas_verification");
+
+  late final _clientAcceptSasVerification =
+      _clientAcceptSasVerificationPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientSendVerificationKeyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_send_verification_key");
+
+  late final _clientSendVerificationKey =
+      _clientSendVerificationKeyPtr.asFunction<
+          int Function(
     int,
   )>();
   late final _clientGetVerificationEmojiPtr = _lookup<
@@ -4912,17 +5097,62 @@ class Api {
     int,
     int,
   )>();
-  late final _clientAcceptVerificationStartFuturePollPtr = _lookup<
+  late final _clientAcceptVerificationRequestWithMethodsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientAcceptVerificationStartFuturePollReturn Function(
+          _ClientAcceptVerificationRequestWithMethodsFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_accept_verification_start_future_poll");
+  )>>("__Client_accept_verification_request_with_methods_future_poll");
 
-  late final _clientAcceptVerificationStartFuturePoll =
-      _clientAcceptVerificationStartFuturePollPtr.asFunction<
-          _ClientAcceptVerificationStartFuturePollReturn Function(
+  late final _clientAcceptVerificationRequestWithMethodsFuturePoll =
+      _clientAcceptVerificationRequestWithMethodsFuturePollPtr.asFunction<
+          _ClientAcceptVerificationRequestWithMethodsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientStartSasVerificationFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientStartSasVerificationFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_start_sas_verification_future_poll");
+
+  late final _clientStartSasVerificationFuturePoll =
+      _clientStartSasVerificationFuturePollPtr.asFunction<
+          _ClientStartSasVerificationFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientAcceptSasVerificationFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientAcceptSasVerificationFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_accept_sas_verification_future_poll");
+
+  late final _clientAcceptSasVerificationFuturePoll =
+      _clientAcceptSasVerificationFuturePollPtr.asFunction<
+          _ClientAcceptSasVerificationFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientSendVerificationKeyFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSendVerificationKeyFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_send_verification_key_future_poll");
+
+  late final _clientSendVerificationKeyFuturePoll =
+      _clientSendVerificationKeyFuturePollPtr.asFunction<
+          _ClientSendVerificationKeyFuturePollReturn Function(
     int,
     int,
     int,
@@ -5181,6 +5411,55 @@ class Api {
 
   late final _ffiListFaqInsert =
       _ffiListFaqInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListFfiString createFfiListFfiString() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListFfiStringCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListFfiString");
+    return FfiListFfiString._(this, list_box);
+  }
+
+  late final _ffiListFfiStringCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListFfiStringCreate");
+
+  late final _ffiListFfiStringCreate =
+      _ffiListFfiStringCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListFfiStringLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListFfiStringLen");
+
+  late final _ffiListFfiStringLen =
+      _ffiListFfiStringLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListFfiStringElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListFfiStringElementAt");
+
+  late final _ffiListFfiStringElementAt =
+      _ffiListFfiStringElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListFfiStringRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListFfiStringRemove");
+
+  late final _ffiListFfiStringRemove =
+      _ffiListFfiStringRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListFfiStringAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListFfiStringAdd");
+
+  late final _ffiListFfiStringAdd =
+      _ffiListFfiStringAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListFfiStringInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListFfiStringInsert");
+
+  late final _ffiListFfiStringInsert =
+      _ffiListFfiStringInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListGroup createFfiListGroup() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListGroupCreate());
@@ -7283,8 +7562,61 @@ class Client {
     return tmp10;
   }
 
-  /// Accept the AnyToDeviceEvent::KeyVerificationStart
-  Future<bool> acceptVerificationStart(
+  /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+  Future<bool> acceptVerificationRequestWithMethods(
+    String sender,
+    String txnId,
+    FfiListFfiString methods,
+  ) {
+    final tmp1 = sender;
+    final tmp5 = txnId;
+    final tmp9 = methods;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    var tmp10 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    tmp10 = tmp9._box.move();
+    final tmp11 = _api._clientAcceptVerificationRequestWithMethods(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+      tmp10,
+    );
+    final tmp13 = tmp11;
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(_api, tmp13_0,
+        "__Client_accept_verification_request_with_methods_future_drop");
+    tmp13_1._finalizer = _api._registerFinalizer(tmp13_1);
+    final tmp12 = _nativeFuture(
+        tmp13_1, _api.__clientAcceptVerificationRequestWithMethodsFuturePoll);
+    return tmp12;
+  }
+
+  /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+  Future<bool> startSasVerification(
     String sender,
     String txnId,
   ) {
@@ -7312,7 +7644,7 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientAcceptVerificationStart(
+    final tmp9 = _api._clientStartSasVerification(
       tmp0,
       tmp2,
       tmp3,
@@ -7324,11 +7656,75 @@ class Client {
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
     final tmp11_1 =
-        _Box(_api, tmp11_0, "__Client_accept_verification_start_future_drop");
+        _Box(_api, tmp11_0, "__Client_start_sas_verification_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 =
-        _nativeFuture(tmp11_1, _api.__clientAcceptVerificationStartFuturePoll);
+        _nativeFuture(tmp11_1, _api.__clientStartSasVerificationFuturePoll);
     return tmp10;
+  }
+
+  /// Accept the AnyToDeviceEvent::KeyVerificationStart
+  Future<bool> acceptSasVerification(
+    String sender,
+    String txnId,
+  ) {
+    final tmp1 = sender;
+    final tmp5 = txnId;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._clientAcceptSasVerification(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_accept_sas_verification_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__clientAcceptSasVerificationFuturePoll);
+    return tmp10;
+  }
+
+  Future<bool> sendVerificationKey() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientSendVerificationKey(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Client_send_verification_key_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__clientSendVerificationKeyFuturePoll);
+    return tmp2;
   }
 
   Future<FfiListEmojiUnit> getVerificationEmoji(
@@ -8642,7 +9038,53 @@ class _ClientAcceptVerificationRequestFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientAcceptVerificationStartFuturePollReturn extends ffi.Struct {
+class _ClientAcceptVerificationRequestWithMethodsFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientStartSasVerificationFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientAcceptSasVerificationFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientSendVerificationKeyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -8918,6 +9360,66 @@ class FfiListFaq extends Iterable<Faq> implements CustomIterable<Faq> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Faq element) {
     _api._ffiListFaqInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListFfiString extends Iterable<FfiString>
+    implements CustomIterable<FfiString> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListFfiString._(this._api, this._box);
+
+  @override
+  Iterator<FfiString> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListFfiStringLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  FfiString elementAt(int index) {
+    final address = _api._ffiListFfiStringElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return FfiString._(_api, reference);
+  }
+
+  FfiString operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  FfiString remove(int index) {
+    final address = _api._ffiListFfiStringRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_FfiString");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return FfiString._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(FfiString element) {
+    _api._ffiListFfiStringAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, FfiString element) {
+    _api._ffiListFfiStringInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

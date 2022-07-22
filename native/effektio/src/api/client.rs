@@ -394,9 +394,10 @@ impl Client {
         &self,
         sender: String,
         txn_id: String,
-        methods: Vec<String>,
+        methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
+        let _methods: Vec<VerificationMethod> = (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
@@ -405,7 +406,6 @@ impl Client {
                     .get_verification_request(&sender, txn_id.as_str())
                     .await
                     .expect("Request object wasn't created");
-                let _methods: Vec<VerificationMethod> = methods.iter().map(|e| e.as_str().into()).collect();
                 request
                     .accept_with_methods(_methods)
                     .await
@@ -438,7 +438,7 @@ impl Client {
             .await?
     }
 
-    pub async fn accept_verification_start(
+    pub async fn accept_sas_verification(
         &self,
         sender: String,
         txn_id: String,
@@ -457,6 +457,16 @@ impl Client {
                 } else {
                     Ok(false)
                 }
+            })
+            .await?
+    }
+
+    pub async fn send_verification_key(&self) -> Result<bool> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                client.sync_once(SyncSettings::default()).await?;
+                Ok(true)
             })
             .await?
     }
@@ -493,7 +503,7 @@ impl Client {
             .await?
     }
 
-    pub async fn confirm_verification_key(&self, sender: String, txn_id: String) -> Result<bool> {
+    pub async fn confirm_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -512,7 +522,7 @@ impl Client {
             .await?
     }
 
-    pub async fn mismatch_verification_key(
+    pub async fn mismatch_sas_verification(
         &self,
         sender: String,
         txn_id: String,
