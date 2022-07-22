@@ -174,7 +174,8 @@ impl Client {
         let state = self.state.clone();
         let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
 
-        let (emoji_verification_event_tx, emoji_verification_event_rx) = channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
+        let (emoji_verification_event_tx, emoji_verification_event_rx) =
+            channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
         let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
         let initial_sync = Arc::new(AtomicBool::from(true));
@@ -197,7 +198,8 @@ impl Client {
                         let client = client.clone();
                         let state = state.clone();
                         let initial = initial_sync.clone();
-                        let mut emoji_verification_event_tx = (*emoji_verification_event_arc).clone();
+                        let mut emoji_verification_event_tx =
+                            (*emoji_verification_event_arc).clone();
 
                         let user_id = client.user_id().unwrap();
                         let device_id = client.device_id().unwrap();
@@ -214,7 +216,12 @@ impl Client {
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
-                            handle_emoji_to_device_event(&event, &client, &mut emoji_verification_event_tx).await;
+                            handle_emoji_to_device_event(
+                                &event,
+                                &client,
+                                &mut emoji_verification_event_tx,
+                            )
+                            .await;
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -397,7 +404,8 @@ impl Client {
         methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let _methods: Vec<VerificationMethod> = (*methods).iter().map(|e| e.as_str().into()).collect();
+        let _methods: Vec<VerificationMethod> =
+            (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
                 let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
@@ -415,11 +423,7 @@ impl Client {
             .await?
     }
 
-    pub async fn start_sas_verification(
-        &self,
-        sender: String,
-        txn_id: String,
-    ) -> Result<bool> {
+    pub async fn start_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -438,11 +442,7 @@ impl Client {
             .await?
     }
 
-    pub async fn accept_sas_verification(
-        &self,
-        sender: String,
-        txn_id: String,
-    ) -> Result<bool> {
+    pub async fn accept_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -522,11 +522,7 @@ impl Client {
             .await?
     }
 
-    pub async fn mismatch_sas_verification(
-        &self,
-        sender: String,
-        txn_id: String,
-    ) -> Result<bool> {
+    pub async fn mismatch_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
         let client = self.client.clone();
         RUNTIME
             .spawn(async move {

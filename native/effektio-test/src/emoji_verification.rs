@@ -92,7 +92,12 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let _txn_id = txn_id.unwrap();
 
     // Bob accepts the request, sending a Ready request
-    bob.accept_verification_request_with_methods(_sender.clone(), _txn_id.clone(), &mut vec!["m.sas.v1".to_owned()]).await?;
+    bob.accept_verification_request_with_methods(
+        _sender.clone(),
+        _txn_id.clone(),
+        &mut vec!["m.sas.v1".to_owned()],
+    )
+    .await?;
     // And also immediately sends a start request
     let started = bob.start_sas_verification(_sender, _txn_id).await?;
     assert!(started, "bob failed to start sas");
@@ -116,7 +121,9 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     assert!(txn_id.is_some());
 
     // Alice immediately sends a start request
-    let started = alice.start_sas_verification(sender.unwrap(), txn_id.unwrap()).await?;
+    let started = alice
+        .start_sas_verification(sender.unwrap(), txn_id.unwrap())
+        .await?;
     assert!(started, "alice failed to start sas verification");
 
     // Now Alice receives the start event from Bob
@@ -148,7 +155,9 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     assert!(txn_id.is_some());
 
     // Bob accepts it
-    let accepted = bob.accept_sas_verification(sender.unwrap(), txn_id.unwrap()).await?;
+    let accepted = bob
+        .accept_sas_verification(sender.unwrap(), txn_id.unwrap())
+        .await?;
     assert!(accepted, "bob failed to accept sas verification");
 
     // ----------------------------------------------------------------------------
@@ -185,7 +194,9 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     assert!(txn_id.is_some());
 
     // Bob gets the verification key from event
-    let emoji_from_alice = bob.get_verification_emoji(sender.unwrap(), txn_id.unwrap()).await?;
+    let emoji_from_alice = bob
+        .get_verification_emoji(sender.unwrap(), txn_id.unwrap())
+        .await?;
     println!("emoji from alice: {:?}", emoji_from_alice);
 
     // Bob sends a key
@@ -212,22 +223,23 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let _txn_id = txn_id.unwrap();
 
     // Alice gets the verification key from event
-    let emoji_from_bob = alice.get_verification_emoji(_sender.clone(), _txn_id.clone()).await?;
+    let emoji_from_bob = alice
+        .get_verification_emoji(_sender.clone(), _txn_id.clone())
+        .await?;
     println!("emoji from bob: {:?}", emoji_from_bob);
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob first confirms that the emojis match and sends the mac event...
-    bob.confirm_sas_verification(_sender.clone(), _txn_id.clone()).await?;
-    // bob.send_verification_key().await?;
+    bob.confirm_sas_verification(_sender.clone(), _txn_id.clone())
+        .await?;
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice first confirms that the emojis match and sends the mac event...
     alice.confirm_sas_verification(_sender, _txn_id).await?;
-    // alice.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
