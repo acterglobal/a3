@@ -122,7 +122,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     onButtonPressed: (
                       ButtonType type,
                       bool? status,
-                      Function()? updateStatus,
+                      Function? updateStatus,
                     ) {
                       return true;
                     },

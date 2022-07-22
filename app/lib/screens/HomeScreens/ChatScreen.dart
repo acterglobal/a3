@@ -8,6 +8,7 @@ import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
+import 'package:effektio/common/widget/custom_chat_input.dart';
 import 'package:effektio/common/widget/emptyMessagesPlaceholder.dart';
 import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
@@ -297,6 +298,9 @@ class _ChatScreenState extends State<ChatScreen> {
         return Stack(
           children: [
             Chat(
+              customBottomWidget: CustomChatInput(
+                context: context,
+              ),
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
                 attachmentButtonAccessibilityLabel: '',
@@ -308,7 +312,7 @@ class _ChatScreenState extends State<ChatScreen> {
               sendButtonVisibilityMode: roomState
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
-              onSendPressed: chatController.handleSendPressed,
+              onSendPressed: (_) {},
               user: _user,
               disableImageGallery: roomState ? true : false,
               //custom avatar builder
@@ -319,7 +323,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 await controller.room.typingNotice(true);
               },
               showUserAvatars: true,
-              onAttachmentPressed: () => _handleAttachmentPressed(context),
+              onAttachmentPressed: () => _handleAttachmentPressed(context), 
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached: roomState ? null : controller.handleEndReached,
