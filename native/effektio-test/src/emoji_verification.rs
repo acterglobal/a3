@@ -2,7 +2,6 @@ use anyhow::Result;
 use effektio::api::{device_id, login_new_client, VerificationMethod};
 use futures::stream::StreamExt;
 use tempfile::TempDir;
-use tokio::time::{sleep, Duration};
 
 #[tokio::test]
 async fn interactive_verification_started_from_request() -> Result<()> {
