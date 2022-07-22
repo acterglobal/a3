@@ -220,12 +220,62 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob first confirms that the emojis match and sends the mac event...
     bob.confirm_sas_verification(_sender.clone(), _txn_id.clone()).await?;
+    // bob.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice first confirms that the emojis match and sends the mac event...
     alice.confirm_sas_verification(_sender, _txn_id).await?;
+    // alice.send_verification_key().await?;
+
+    // ----------------------------------------------------------------------------
+    // On Bob's device:
+
+    // Bob receives the mac event from Alice
+    loop {
+        if let Ok(Some(event)) = bob_rx.try_next() {
+            if event.get_event_name().as_str() == "m.key.verification.mac" {
+                break;
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // On Alice's device:
+
+    // Alice receives the mac event from Bob
+    loop {
+        if let Ok(Some(event)) = alice_rx.try_next() {
+            if event.get_event_name().as_str() == "m.key.verification.mac" {
+                break;
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // On Bob's device:
+
+    // Bob receives the done event from Alice
+    loop {
+        if let Ok(Some(event)) = bob_rx.try_next() {
+            if event.get_event_name().as_str() == "m.key.verification.done" {
+                break;
+            }
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // On Alice's device:
+
+    // Alice receives the done event from Bob
+    loop {
+        if let Ok(Some(event)) = alice_rx.try_next() {
+            if event.get_event_name().as_str() == "m.key.verification.done" {
+                break;
+            }
+        }
+    }
 
     Ok(())
 }

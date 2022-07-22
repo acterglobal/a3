@@ -2951,7 +2951,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __clientConfirmVerificationKeyFuturePoll(
+  bool? __clientConfirmSasVerificationFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2965,7 +2965,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientConfirmVerificationKeyFuturePoll(
+    final tmp6 = _clientConfirmSasVerificationFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2993,7 +2993,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __clientMismatchVerificationKeyFuturePoll(
+  bool? __clientMismatchSasVerificationFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3007,7 +3007,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientMismatchVerificationKeyFuturePoll(
+    final tmp6 = _clientMismatchSasVerificationFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4346,7 +4346,7 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConfirmVerificationKeyPtr = _lookup<
+  late final _clientConfirmSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -4356,10 +4356,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Client_confirm_verification_key");
+  )>>("__Client_confirm_sas_verification");
 
-  late final _clientConfirmVerificationKey =
-      _clientConfirmVerificationKeyPtr.asFunction<
+  late final _clientConfirmSasVerification =
+      _clientConfirmSasVerificationPtr.asFunction<
           int Function(
     int,
     int,
@@ -4369,7 +4369,7 @@ class Api {
     int,
     int,
   )>();
-  late final _clientMismatchVerificationKeyPtr = _lookup<
+  late final _clientMismatchSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -4379,10 +4379,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Client_mismatch_verification_key");
+  )>>("__Client_mismatch_sas_verification");
 
-  late final _clientMismatchVerificationKey =
-      _clientMismatchVerificationKeyPtr.asFunction<
+  late final _clientMismatchSasVerification =
+      _clientMismatchSasVerificationPtr.asFunction<
           int Function(
     int,
     int,
@@ -5172,32 +5172,32 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConfirmVerificationKeyFuturePollPtr = _lookup<
+  late final _clientConfirmSasVerificationFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientConfirmVerificationKeyFuturePollReturn Function(
+          _ClientConfirmSasVerificationFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_confirm_verification_key_future_poll");
+  )>>("__Client_confirm_sas_verification_future_poll");
 
-  late final _clientConfirmVerificationKeyFuturePoll =
-      _clientConfirmVerificationKeyFuturePollPtr.asFunction<
-          _ClientConfirmVerificationKeyFuturePollReturn Function(
+  late final _clientConfirmSasVerificationFuturePoll =
+      _clientConfirmSasVerificationFuturePollPtr.asFunction<
+          _ClientConfirmSasVerificationFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _clientMismatchVerificationKeyFuturePollPtr = _lookup<
+  late final _clientMismatchSasVerificationFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientMismatchVerificationKeyFuturePollReturn Function(
+          _ClientMismatchSasVerificationFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_mismatch_verification_key_future_poll");
+  )>>("__Client_mismatch_sas_verification_future_poll");
 
-  late final _clientMismatchVerificationKeyFuturePoll =
-      _clientMismatchVerificationKeyFuturePollPtr.asFunction<
-          _ClientMismatchVerificationKeyFuturePollReturn Function(
+  late final _clientMismatchSasVerificationFuturePoll =
+      _clientMismatchSasVerificationFuturePollPtr.asFunction<
+          _ClientMismatchSasVerificationFuturePollReturn Function(
     int,
     int,
     int,
@@ -7514,7 +7514,7 @@ class Client {
     return tmp2;
   }
 
-  /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+  /// Bob accepts the verification request from Alice
   Future<bool> acceptVerificationRequest(
     String sender,
     String txnId,
@@ -7562,7 +7562,7 @@ class Client {
     return tmp10;
   }
 
-  /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+  /// Bob accepts the verification request from Alice with specified methods
   Future<bool> acceptVerificationRequestWithMethods(
     String sender,
     String txnId,
@@ -7615,7 +7615,7 @@ class Client {
     return tmp12;
   }
 
-  /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+  /// Alice starts the SAS verification
   Future<bool> startSasVerification(
     String sender,
     String txnId,
@@ -7663,7 +7663,7 @@ class Client {
     return tmp10;
   }
 
-  /// Accept the AnyToDeviceEvent::KeyVerificationStart
+  /// Bob accepts the SAS verification
   Future<bool> acceptSasVerification(
     String sender,
     String txnId,
@@ -7711,6 +7711,7 @@ class Client {
     return tmp10;
   }
 
+  /// Alice and Bob sends the verification key
   Future<bool> sendVerificationKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -7727,6 +7728,7 @@ class Client {
     return tmp2;
   }
 
+  /// Alice and Bob gets the verification emoji
   Future<FfiListEmojiUnit> getVerificationEmoji(
     String sender,
     String txnId,
@@ -7774,8 +7776,8 @@ class Client {
     return tmp10;
   }
 
-  /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
-  Future<bool> confirmVerificationKey(
+  /// Alice and Bob confirms the SAS verification matches
+  Future<bool> confirmSasVerification(
     String sender,
     String txnId,
   ) {
@@ -7803,7 +7805,7 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientConfirmVerificationKey(
+    final tmp9 = _api._clientConfirmSasVerification(
       tmp0,
       tmp2,
       tmp3,
@@ -7815,15 +7817,15 @@ class Client {
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
     final tmp11_1 =
-        _Box(_api, tmp11_0, "__Client_confirm_verification_key_future_drop");
+        _Box(_api, tmp11_0, "__Client_confirm_sas_verification_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 =
-        _nativeFuture(tmp11_1, _api.__clientConfirmVerificationKeyFuturePoll);
+        _nativeFuture(tmp11_1, _api.__clientConfirmSasVerificationFuturePoll);
     return tmp10;
   }
 
   /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-  Future<bool> mismatchVerificationKey(
+  Future<bool> mismatchSasVerification(
     String sender,
     String txnId,
   ) {
@@ -7851,7 +7853,7 @@ class Client {
     tmp6_1.setAll(0, tmp5_0);
     tmp6 = tmp6_0.address;
     tmp8 = tmp7;
-    final tmp9 = _api._clientMismatchVerificationKey(
+    final tmp9 = _api._clientMismatchSasVerification(
       tmp0,
       tmp2,
       tmp3,
@@ -7863,10 +7865,10 @@ class Client {
     final tmp11 = tmp9;
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
     final tmp11_1 =
-        _Box(_api, tmp11_0, "__Client_mismatch_verification_key_future_drop");
+        _Box(_api, tmp11_0, "__Client_mismatch_sas_verification_future_drop");
     tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
     final tmp10 =
-        _nativeFuture(tmp11_1, _api.__clientMismatchVerificationKeyFuturePoll);
+        _nativeFuture(tmp11_1, _api.__clientMismatchSasVerificationFuturePoll);
     return tmp10;
   }
 
@@ -9114,7 +9116,7 @@ class _ClientGetVerificationEmojiFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientConfirmVerificationKeyFuturePollReturn extends ffi.Struct {
+class _ClientConfirmSasVerificationFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -9129,7 +9131,7 @@ class _ClientConfirmVerificationKeyFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientMismatchVerificationKeyFuturePollReturn extends ffi.Struct {
+class _ClientMismatchSasVerificationFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
