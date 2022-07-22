@@ -268,7 +268,7 @@ class CrossSigning {
                 Center(
                   child: TextButton(
                     onPressed: () async {
-                      await client.acceptVerificationStart(sender, txnId);
+                      await client.acceptSasVerification(sender, txnId);
                       Get.back();
                       c.complete();
                     },
@@ -408,7 +408,7 @@ class CrossSigning {
                                   .emojiVerificationText4,
                               CrossSigningSheetTheme.redButtonColor,
                               () async {
-                                await client.mismatchVerificationKey(
+                                await client.mismatchSasVerification(
                                   sender,
                                   txnId,
                                 );
@@ -435,7 +435,7 @@ class CrossSigning {
                                   txnId,
                                   client,
                                 );
-                                client.confirmVerificationKey(sender, txnId);
+                                client.confirmSasVerification(sender, txnId);
                                 Get.back();
                                 c.complete();
                               },
