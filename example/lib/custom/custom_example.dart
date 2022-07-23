@@ -13,6 +13,7 @@ class CustomExample extends StatelessWidget {
       body: RiverPagedBuilder<String, User>(
         firstPageKey: '',
         provider: customExampleProvider,
+        pullToRefresh: true,
         itemBuilder: (context, item, index) => ListTile(
           leading: Image.network(item.profilePicture),
           title: Text(item.name),
