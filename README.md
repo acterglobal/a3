@@ -80,7 +80,7 @@ Here is our model `Post`:
     }
 ```
 
-And the `StateNotifier` . Source code: [easy_example_provider.dart](https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/easy/easy_example_provider.dart)
+And the `StateNotifier`. Source code: [easy_example_provider.dart](https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/easy/easy_example_provider.dart)
 
 ```dart
     class EasyExampleNotifier extends PagedNotifier<int, Post> {
@@ -138,7 +138,7 @@ void  add(Post  post) {
 ## A more custom example
 
 If you need to keep track of a more complex state than a simple list of `records` **Riverpod Infinite Scroll** also provides a more customizable approach.
-Let's suppose we need to fetch from a paginated API that return a list of users: Source code: (custom_example.dart)[https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/custom/custom_example.dart]
+Let's suppose we need to fetch from a paginated API that return a list of users. Source code: (custom_example.dart)[https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/custom/custom_example.dart]
 
 ```dart
     class CustomExample extends StatelessWidget {
