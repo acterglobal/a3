@@ -51,8 +51,10 @@ class CustomChatInput extends StatelessWidget {
               progressIndicatorColor: AppCommonTheme.primaryColor,
               showRecentsTab: true,
               recentsLimit: 28,
-              noRecentsText: AppLocalizations.of(context)!.noRecents,
-              noRecentsStyle: ChatTheme01.chatBodyStyle,
+              noRecents: Text(
+                AppLocalizations.of(context)!.noRecents,
+                style: ChatTheme01.chatBodyStyle,
+              ),
               tabIndicatorAnimDuration: kTabScrollDuration,
               categoryIcons: const CategoryIcons(),
               buttonMode: ButtonMode.MATERIAL,
