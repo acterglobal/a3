@@ -36,6 +36,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let syncer = alice.start_sync();
     let mut first_synced = syncer.get_first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to ha
+    let mut alice_devices_changed_rx = syncer.get_devices_changed_event_rx().unwrap();
     let mut alice_rx = syncer.get_emoji_verification_event_rx().unwrap();
 
     let syncer = bob.start_sync();
@@ -62,6 +63,23 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // according to bob alice is not verfied:
     assert!(!alice_device.verified());
+
+    // ----------------------------------------------------------------------------
+    // On Alice's device:
+
+    // Alice gets notified that new device (Bob) was logged in
+    loop {
+        if let Ok(Some(event)) = alice_devices_changed_rx.try_next() {
+            if let Ok(devices) = event.get_unverified_devices().await {
+                for device in devices {
+                    if !device.was_verified() {
+                        println!("found device id: {}", device.get_device_id());
+                    }
+                }
+                break;
+            }
+        }
+    }
 
     // ----------------------------------------------------------------------------
 

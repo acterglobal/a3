@@ -1,13 +1,9 @@
 use futures::channel::mpsc::Sender;
-use matrix_sdk::{
-    ruma::{
-        events::{
-            room::message::MessageType, AnySyncMessageLikeEvent, AnyToDeviceEvent,
-            SyncMessageLikeEvent,
-        },
-        OwnedRoomId,
+use matrix_sdk::ruma::{
+    events::{
+        room::message::MessageType, AnySyncMessageLikeEvent, AnyToDeviceEvent, SyncMessageLikeEvent,
     },
-    Client,
+    OwnedRoomId,
 };
 
 #[derive(Clone, Debug)]
@@ -40,10 +36,9 @@ impl EmojiVerificationEvent {
 }
 
 // thread callback must be global function, not member function
-pub async fn handle_emoji_sync_msg_event(
+pub fn handle_emoji_sync_msg_event(
     room_id: &OwnedRoomId,
     event: &AnySyncMessageLikeEvent,
-    client: &Client,
     tx: &mut Sender<EmojiVerificationEvent>,
 ) {
     match event {
@@ -150,9 +145,8 @@ pub async fn handle_emoji_sync_msg_event(
 }
 
 // thread callback must be global function, not member function
-pub async fn handle_emoji_to_device_event(
+pub fn handle_emoji_to_device_event(
     event: &AnyToDeviceEvent,
-    client: &Client,
     tx: &mut Sender<EmojiVerificationEvent>,
 ) {
     match event {

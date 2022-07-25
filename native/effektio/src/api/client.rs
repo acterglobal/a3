@@ -33,7 +33,10 @@ use std::sync::{
 
 use super::{
     api::FfiBuffer,
-    events::{handle_emoji_sync_msg_event, handle_emoji_to_device_event, DeviceChangesEvent, EmojiVerificationEvent},
+    events::{
+        handle_devices_changed_event, handle_emoji_sync_msg_event, handle_emoji_to_device_event,
+        DevicesChangedEvent, EmojiVerificationEvent,
+    },
     Account, Conversation, Group, Room, RUNTIME,
 };
 
@@ -135,23 +138,23 @@ pub(crate) async fn devide_groups_from_common(
 #[derive(Clone)]
 pub struct SyncState {
     emoji_verification_event_rx: Arc<Mutex<Option<Receiver<EmojiVerificationEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    device_changes_event_rx: Arc<Mutex<Option<Receiver<DeviceChangesEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    devices_changed_event_rx: Arc<Mutex<Option<Receiver<DevicesChangedEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
 impl SyncState {
     pub fn new(
         emoji_verification_event_rx: Receiver<EmojiVerificationEvent>,
-        device_changes_event_rx: Receiver<DeviceChangesEvent>,
+        devices_changed_event_rx: Receiver<DevicesChangedEvent>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
         let emoji_verification_event_rx = Arc::new(Mutex::new(Some(emoji_verification_event_rx)));
-        let device_changes_event_rx = Arc::new(Mutex::new(Some(device_changes_event_rx)));
+        let devices_changed_event_rx = Arc::new(Mutex::new(Some(devices_changed_event_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
             emoji_verification_event_rx,
-            device_changes_event_rx,
+            devices_changed_event_rx,
             first_synced_rx,
         }
     }
@@ -160,8 +163,8 @@ impl SyncState {
         self.emoji_verification_event_rx.lock().take()
     }
 
-    pub fn get_device_changes_event_rx(&self) -> Option<Receiver<DeviceChangesEvent>> {
-        self.device_changes_event_rx.lock().take()
+    pub fn get_devices_changed_event_rx(&self) -> Option<Receiver<DevicesChangedEvent>> {
+        self.devices_changed_event_rx.lock().take()
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
@@ -184,13 +187,17 @@ impl Client {
 
         let (emoji_verification_event_tx, emoji_verification_event_rx) =
             channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
-        let (device_changes_event_tx, device_changes_event_rx) =
-            channel::<DeviceChangesEvent>(10); // dropping after more than 10 items queued
+        let (devices_changed_event_tx, devices_changed_event_rx) =
+            channel::<DevicesChangedEvent>(10); // dropping after more than 10 items queued
         let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
-        let device_changes_event_arc = Arc::new(device_changes_event_tx);
+        let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
         let initial_sync = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(emoji_verification_event_rx, device_changes_event_rx, first_synced_rx);
+        let sync_state = SyncState::new(
+            emoji_verification_event_rx,
+            devices_changed_event_rx,
+            first_synced_rx,
+        );
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -202,7 +209,7 @@ impl Client {
                     let client = client.clone();
                     let state = state.clone();
                     let emoji_verification_event_arc = emoji_verification_event_arc.clone();
-                    let device_changes_event_arc = device_changes_event_arc.clone();
+                    let devices_changed_event_arc = devices_changed_event_arc.clone();
                     let initial_sync = initial_sync.clone();
                     let first_synced_arc = first_synced_arc.clone();
 
@@ -212,11 +219,17 @@ impl Client {
                         let initial = initial_sync.clone();
                         let mut emoji_verification_event_tx =
                             (*emoji_verification_event_arc).clone();
-                        let mut device_changes_event_tx =
-                            (*device_changes_event_arc).clone();
+                        let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
 
+                        let my_id = client.user_id().expect("guest user cannot synchronize");
                         for user_id in response.device_lists.changed {
                             println!("changed user_id: {}", user_id);
+                            if user_id == my_id.to_string() {
+                                handle_devices_changed_event(
+                                    &client,
+                                    &mut devices_changed_event_tx,
+                                );
+                            }
                         }
 
                         for user_id in response.device_lists.left {
@@ -229,12 +242,7 @@ impl Client {
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
-                            handle_emoji_to_device_event(
-                                &event,
-                                &client,
-                                &mut emoji_verification_event_tx,
-                            )
-                            .await;
+                            handle_emoji_to_device_event(&event, &mut emoji_verification_event_tx);
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -249,10 +257,8 @@ impl Client {
                                         handle_emoji_sync_msg_event(
                                             &room_id,
                                             &evt,
-                                            &client,
                                             &mut emoji_verification_event_tx,
-                                        )
-                                        .await;
+                                        );
                                     }
                                 }
                             }
