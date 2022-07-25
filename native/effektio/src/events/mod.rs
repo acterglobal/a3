@@ -6,8 +6,8 @@ lazy_static! {
         runtime::Runtime::new().expect("Can't start Tokio runtime");
 }
 
-mod devices_changed;
+mod device;
 mod emoji_verification;
 
-pub use devices_changed::*;
+pub use device::*;
 pub use emoji_verification::*;

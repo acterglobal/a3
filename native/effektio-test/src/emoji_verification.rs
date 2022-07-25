@@ -1,6 +1,7 @@
 use anyhow::Result;
 use effektio::api::{device_id, login_new_client, VerificationMethod};
 use futures::stream::StreamExt;
+use log::{debug, error, info, trace, warn};
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -73,7 +74,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
             if let Ok(devices) = event.get_unverified_devices().await {
                 for device in devices {
                     if !device.was_verified() {
-                        println!("found device id: {}", device.get_device_id());
+                        info!("found device id: {}", device.get_device_id());
                     }
                 }
                 break;
@@ -214,7 +215,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let emoji_from_alice = bob
         .get_verification_emoji(sender.unwrap(), txn_id.unwrap())
         .await?;
-    println!("emoji from alice: {:?}", emoji_from_alice);
+    info!("emoji from alice: {:?}", emoji_from_alice);
 
     // Bob sends a key
     bob.send_verification_key().await?;
@@ -243,7 +244,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let emoji_from_bob = alice
         .get_verification_emoji(_sender.clone(), _txn_id.clone())
         .await?;
-    println!("emoji from bob: {:?}", emoji_from_bob);
+    info!("emoji from bob: {:?}", emoji_from_bob);
 
     // ----------------------------------------------------------------------------
     // On Bob's device:

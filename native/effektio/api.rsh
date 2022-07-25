@@ -240,6 +240,9 @@ object SyncState {
 
     /// Get event handler of emoji verification
     fn get_emoji_verification_event_rx() -> Option<Stream<EmojiVerificationEvent>>;
+
+    /// Get event handler of devices changed
+    fn get_devices_changed_event_rx() -> Option<Stream<DevicesChangedEvent>>;
 }
 
 /// Main entry point for `effektio`.
@@ -348,4 +351,25 @@ object EmojiUnit {
 
     /// text description of emoji unicode
     fn get_description() -> string;
+}
+
+/// Deliver devices changed event from rust to flutter
+object DevicesChangedEvent {
+    /// Get the device list, excluding verified ones
+    fn get_unverified_devices() -> Future<Result<Vec<Device>>>;
+}
+
+/// Provide various device infos
+object Device {
+    /// whether this device was verified
+    fn was_verified() -> bool;
+
+    /// get the id of this device user
+    fn get_user_id() -> string;
+
+    /// get the id of this device
+    fn get_device_id() -> string;
+
+    /// get the display name of this device
+    fn get_display_name() -> Option<string>;
 }

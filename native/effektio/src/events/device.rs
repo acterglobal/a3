@@ -1,6 +1,9 @@
 use anyhow::Result;
 use futures::channel::mpsc::Sender;
-use matrix_sdk::{encryption::identities::Device as MatrixDevice, Client};
+use log::{debug, error, info, trace, warn};
+use matrix_sdk::{
+    encryption::identities::Device as MatrixDevice, ruma::OwnedUserId, Client,
+};
 
 use super::RUNTIME;
 
@@ -22,7 +25,7 @@ impl DevicesChangedEvent {
             .spawn(async move {
                 let user_id = c
                     .user_id()
-                    .expect("guest user cannot get unverified devices");
+                    .expect("guest user cannot get the unverified devices");
                 let mut devices: Vec<Device> = vec![];
                 for dev in c.encryption().get_user_devices(user_id).await?.devices() {
                     if !dev.clone().verified() {
@@ -61,9 +64,16 @@ impl Device {
     }
 }
 
-pub fn handle_devices_changed_event(client: &Client, tx: &mut Sender<DevicesChangedEvent>) {
-    let evt = DevicesChangedEvent::new(client);
-    if let Err(e) = tx.try_send(evt) {
-        log::warn!("Dropping devices changed event: {}", e);
+pub fn handle_devices_changed_event(
+    user_id: OwnedUserId,
+    client: &Client,
+    tx: &mut Sender<DevicesChangedEvent>,
+) {
+    info!("device-changed user_id: {}", user_id);
+    if user_id.to_string() == client.user_id().expect("guest user cannot synchronize").to_string() {
+        let evt = DevicesChangedEvent::new(client);
+        if let Err(e) = tx.try_send(evt) {
+            warn!("Dropping devices changed event: {}", e);
+        }
     }
 }

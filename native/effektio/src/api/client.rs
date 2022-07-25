@@ -221,15 +221,12 @@ impl Client {
                             (*emoji_verification_event_arc).clone();
                         let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
 
-                        let my_id = client.user_id().expect("guest user cannot synchronize");
                         for user_id in response.device_lists.changed {
-                            println!("changed user_id: {}", user_id);
-                            if user_id == my_id.to_string() {
-                                handle_devices_changed_event(
-                                    &client,
-                                    &mut devices_changed_event_tx,
-                                );
-                            }
+                            handle_devices_changed_event(
+                                user_id,
+                                &client,
+                                &mut devices_changed_event_tx,
+                            );
                         }
 
                         for user_id in response.device_lists.left {
