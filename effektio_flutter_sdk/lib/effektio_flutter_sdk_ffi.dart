@@ -3165,6 +3165,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListDevice? __devicesLeftEventGetDeletedDevicesFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _devicesLeftEventGetDeletedDevicesFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListDevice");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListDevice._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   bool? __syncStateGetFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
@@ -3267,6 +3313,42 @@ class Api {
     final tmp11_1 = _Box(this, tmp11_0, "drop_box_DevicesChangedEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
     final tmp9 = DevicesChangedEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
+  DevicesLeftEvent? __syncStateGetDevicesLeftEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _syncStateGetDevicesLeftEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_DevicesLeftEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = DevicesLeftEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -4145,6 +4227,17 @@ class Api {
           _SyncStateGetDevicesChangedEventRxReturn Function(
     int,
   )>();
+  late final _syncStateGetDevicesLeftEventRxPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetDevicesLeftEventRxReturn Function(
+    ffi.Int64,
+  )>>("__SyncState_get_devices_left_event_rx");
+
+  late final _syncStateGetDevicesLeftEventRx =
+      _syncStateGetDevicesLeftEventRxPtr.asFunction<
+          _SyncStateGetDevicesLeftEventRxReturn Function(
+    int,
+  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4595,6 +4688,17 @@ class Api {
           int Function(
     int,
   )>();
+  late final _devicesLeftEventGetDeletedDevicesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__DevicesLeftEvent_get_deleted_devices");
+
+  late final _devicesLeftEventGetDeletedDevices =
+      _devicesLeftEventGetDeletedDevicesPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _deviceWasVerifiedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -4602,6 +4706,16 @@ class Api {
   )>>("__Device_was_verified");
 
   late final _deviceWasVerified = _deviceWasVerifiedPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _deviceWasDeletedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__Device_was_deleted");
+
+  late final _deviceWasDeleted = _deviceWasDeletedPtr.asFunction<
       int Function(
     int,
   )>();
@@ -5391,6 +5505,21 @@ class Api {
     int,
     int,
   )>();
+  late final _devicesLeftEventGetDeletedDevicesFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _DevicesLeftEventGetDeletedDevicesFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__DevicesLeftEvent_get_deleted_devices_future_poll");
+
+  late final _devicesLeftEventGetDeletedDevicesFuturePoll =
+      _devicesLeftEventGetDeletedDevicesFuturePollPtr.asFunction<
+          _DevicesLeftEventGetDeletedDevicesFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _syncStateGetFirstSyncedRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _SyncStateGetFirstSyncedRxStreamPollReturn Function(
@@ -5437,6 +5566,23 @@ class Api {
   late final _syncStateGetDevicesChangedEventRxStreamPoll =
       _syncStateGetDevicesChangedEventRxStreamPollPtr.asFunction<
           _SyncStateGetDevicesChangedEventRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _syncStateGetDevicesLeftEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetDevicesLeftEventRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__SyncState_get_devices_left_event_rx_stream_poll");
+
+  late final _syncStateGetDevicesLeftEventRxStreamPoll =
+      _syncStateGetDevicesLeftEventRxStreamPollPtr.asFunction<
+          _SyncStateGetDevicesLeftEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -7500,6 +7646,27 @@ class SyncState {
     return tmp2;
   }
 
+  /// Get event handler of devices left
+  Stream<DevicesLeftEvent>? getDevicesLeftEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateGetDevicesLeftEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "__SyncState_get_devices_left_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 =
+        _nativeStream(tmp4_1, _api.__syncStateGetDevicesLeftEventRxStreamPoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -8368,6 +8535,36 @@ class DevicesChangedEvent {
   }
 }
 
+/// Deliver devices left event from rust to flutter
+class DevicesLeftEvent {
+  final Api _api;
+  final _Box _box;
+
+  DevicesLeftEvent._(this._api, this._box);
+
+  /// Get the device list, including deleted ones
+  Future<FfiListDevice> getDeletedDevices() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._devicesLeftEventGetDeletedDevices(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__DevicesLeftEvent_get_deleted_devices_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__devicesLeftEventGetDeletedDevicesFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Provide various device infos
 class Device {
   final Api _api;
@@ -8380,6 +8577,18 @@ class Device {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._deviceWasVerified(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// whether this device was deleted
+  bool wasDeleted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._deviceWasDeleted(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -8711,6 +8920,13 @@ class _SyncStateGetEmojiVerificationEventRxReturn extends ffi.Struct {
 }
 
 class _SyncStateGetDevicesChangedEventRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _SyncStateGetDevicesLeftEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -9593,6 +9809,21 @@ class _DevicesChangedEventGetUnverifiedDevicesFuturePollReturn
   external int arg5;
 }
 
+class _DevicesLeftEventGetDeletedDevicesFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -9608,6 +9839,13 @@ class _SyncStateGetEmojiVerificationEventRxStreamPollReturn extends ffi.Struct {
 }
 
 class _SyncStateGetDevicesChangedEventRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _SyncStateGetDevicesLeftEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

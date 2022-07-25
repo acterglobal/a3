@@ -243,6 +243,9 @@ object SyncState {
 
     /// Get event handler of devices changed
     fn get_devices_changed_event_rx() -> Option<Stream<DevicesChangedEvent>>;
+
+    /// Get event handler of devices left
+    fn get_devices_left_event_rx() -> Option<Stream<DevicesLeftEvent>>;
 }
 
 /// Main entry point for `effektio`.
@@ -359,10 +362,19 @@ object DevicesChangedEvent {
     fn get_unverified_devices() -> Future<Result<Vec<Device>>>;
 }
 
+/// Deliver devices left event from rust to flutter
+object DevicesLeftEvent {
+    /// Get the device list, including deleted ones
+    fn get_deleted_devices() -> Future<Result<Vec<Device>>>;
+}
+
 /// Provide various device infos
 object Device {
     /// whether this device was verified
     fn was_verified() -> bool;
+
+    /// whether this device was deleted
+    fn was_deleted() -> bool;
 
     /// get the id of this device user
     fn get_user_id() -> string;

@@ -34,8 +34,8 @@ use std::sync::{
 use super::{
     api::FfiBuffer,
     events::{
-        handle_devices_changed_event, handle_emoji_sync_msg_event, handle_emoji_to_device_event,
-        DevicesChangedEvent, EmojiVerificationEvent,
+        handle_devices_changed_event, handle_devices_left_event, handle_emoji_sync_msg_event,
+        handle_emoji_to_device_event, DevicesChangedEvent, DevicesLeftEvent, EmojiVerificationEvent,
     },
     Account, Conversation, Group, Room, RUNTIME,
 };
@@ -139,6 +139,7 @@ pub(crate) async fn devide_groups_from_common(
 pub struct SyncState {
     emoji_verification_event_rx: Arc<Mutex<Option<Receiver<EmojiVerificationEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     devices_changed_event_rx: Arc<Mutex<Option<Receiver<DevicesChangedEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    devices_left_event_rx: Arc<Mutex<Option<Receiver<DevicesLeftEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
@@ -146,15 +147,18 @@ impl SyncState {
     pub fn new(
         emoji_verification_event_rx: Receiver<EmojiVerificationEvent>,
         devices_changed_event_rx: Receiver<DevicesChangedEvent>,
+        devices_left_event_rx: Receiver<DevicesLeftEvent>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
         let emoji_verification_event_rx = Arc::new(Mutex::new(Some(emoji_verification_event_rx)));
         let devices_changed_event_rx = Arc::new(Mutex::new(Some(devices_changed_event_rx)));
+        let devices_left_event_rx = Arc::new(Mutex::new(Some(devices_left_event_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
             emoji_verification_event_rx,
             devices_changed_event_rx,
+            devices_left_event_rx,
             first_synced_rx,
         }
     }
@@ -165,6 +169,10 @@ impl SyncState {
 
     pub fn get_devices_changed_event_rx(&self) -> Option<Receiver<DevicesChangedEvent>> {
         self.devices_changed_event_rx.lock().take()
+    }
+
+    pub fn get_devices_left_event_rx(&self) -> Option<Receiver<DevicesLeftEvent>> {
+        self.devices_left_event_rx.lock().take()
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
@@ -189,13 +197,17 @@ impl Client {
             channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
         let (devices_changed_event_tx, devices_changed_event_rx) =
             channel::<DevicesChangedEvent>(10); // dropping after more than 10 items queued
+        let (devices_left_event_tx, devices_left_event_rx) =
+            channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
         let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
+        let devices_left_event_arc = Arc::new(devices_left_event_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
         let initial_sync = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(
             emoji_verification_event_rx,
             devices_changed_event_rx,
+            devices_left_event_rx,
             first_synced_rx,
         );
 
@@ -210,6 +222,7 @@ impl Client {
                     let state = state.clone();
                     let emoji_verification_event_arc = emoji_verification_event_arc.clone();
                     let devices_changed_event_arc = devices_changed_event_arc.clone();
+                    let devices_left_event_arc = devices_left_event_arc.clone();
                     let initial_sync = initial_sync.clone();
                     let first_synced_arc = first_synced_arc.clone();
 
@@ -220,6 +233,7 @@ impl Client {
                         let mut emoji_verification_event_tx =
                             (*emoji_verification_event_arc).clone();
                         let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
+                        let mut devices_left_event_tx = (*devices_left_event_arc).clone();
 
                         for user_id in response.device_lists.changed {
                             handle_devices_changed_event(
@@ -230,7 +244,11 @@ impl Client {
                         }
 
                         for user_id in response.device_lists.left {
-                            println!("left user_id: {}", user_id);
+                            handle_devices_left_event(
+                                user_id,
+                                &client,
+                                &mut devices_left_event_tx,
+                            );
                         }
 
                         for event in response

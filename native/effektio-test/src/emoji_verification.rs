@@ -1,7 +1,7 @@
 use anyhow::Result;
 use effektio::api::{device_id, login_new_client, VerificationMethod};
 use futures::stream::StreamExt;
-use log::{debug, error, info, trace, warn};
+use log::info;
 use tempfile::TempDir;
 
 #[tokio::test]

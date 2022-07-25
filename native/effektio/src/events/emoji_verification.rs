@@ -1,5 +1,5 @@
 use futures::channel::mpsc::Sender;
-use log::{debug, error, info, trace, warn};
+use log::{info, warn};
 use matrix_sdk::ruma::{
     events::{
         room::message::MessageType, AnySyncMessageLikeEvent, AnyToDeviceEvent, SyncMessageLikeEvent,

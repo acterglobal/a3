@@ -28,7 +28,7 @@ pub use auth::{
 pub use client::{Client, ClientStateBuilder, EmojiUnit, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
-pub use events::{Device, DevicesChangedEvent, EmojiVerificationEvent};
+pub use events::{Device, DevicesChangedEvent, DevicesLeftEvent, EmojiVerificationEvent};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use matrix_sdk::ruma::{device_id, events::key::verification::VerificationMethod}; // for integration test
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
