@@ -151,7 +151,7 @@ pub fn handle_devices_changed_event(
     let current_user_id = client
         .user_id()
         .expect("guest user cannot handle the device changed event");
-    if user_id.to_string() == *current_user_id {
+    if user_id == *current_user_id {
         let evt = DevicesChangedEvent::new(client);
         if let Err(e) = tx.try_send(evt) {
             warn!("Dropping devices changed event: {}", e);
@@ -168,7 +168,7 @@ pub fn handle_devices_left_event(
     let current_user_id = client
         .user_id()
         .expect("guest user cannot handle the device left event");
-    if user_id.to_string() == *current_user_id {
+    if user_id == *current_user_id {
         let evt = DevicesLeftEvent::new(client);
         if let Err(e) = tx.try_send(evt) {
             warn!("Dropping devices left event: {}", e);
