@@ -16,10 +16,7 @@ class CrossSigning {
   bool isLoading = false;
   late StreamSubscription<EmojiVerificationEvent> _subscription;
 
-  void startCrossSigning(
-    Stream<EmojiVerificationEvent> receiver,
-    Client client,
-  ) async {
+  void startCrossSigning(Stream<EmojiVerificationEvent> receiver) async {
     _subscription = receiver.listen((event) async {
       String eventName = event.getEventName();
       waitForMatch = false;
