@@ -7,7 +7,7 @@ use tokio::runtime;
 use crate::{events, platform};
 
 lazy_static! {
-    static ref RUNTIME: runtime::Runtime =
+    pub static ref RUNTIME: runtime::Runtime =
         runtime::Runtime::new().expect("Can't start Tokio runtime");
 }
 

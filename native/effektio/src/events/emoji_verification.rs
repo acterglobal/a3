@@ -14,7 +14,7 @@ use matrix_sdk::{
     Client,
 };
 
-use super::RUNTIME;
+use crate::RUNTIME;
 
 #[derive(Clone, Debug)]
 pub struct EmojiVerificationEvent {
