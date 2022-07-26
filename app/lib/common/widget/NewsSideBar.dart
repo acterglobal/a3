@@ -158,19 +158,22 @@ class _NewsSideBarState extends State<NewsSideBar> {
           showBottomSheet();
         }
       }),
-      child: Column(
-        children: <Widget>[
-          SvgPicture.asset(
-            'assets/images/$iconName.svg',
-            color: color,
-            width: 35,
-            height: 35,
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(label, style: style),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15),
+        child: Column(
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/images/$iconName.svg',
+              color: color,
+              width: 35,
+              height: 35,
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(label, style: style),
+          ],
+        ),
       ),
     );
   }
