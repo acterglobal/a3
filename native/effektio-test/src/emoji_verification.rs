@@ -1,8 +1,21 @@
 use anyhow::Result;
-use effektio::api::{device_id, login_new_client, VerificationMethod};
-use futures::stream::StreamExt;
+use effektio::api::{login_new_client, EmojiVerificationEvent};
+use futures::{channel::mpsc::Receiver, stream::StreamExt};
 use log::info;
 use tempfile::TempDir;
+
+fn wait_for_emoji_verification_event(
+    rx: &mut Receiver<EmojiVerificationEvent>,
+    name: &str,
+) -> EmojiVerificationEvent {
+    loop {
+        if let Ok(Some(event)) = rx.try_next() {
+            if event.get_event_name().as_str() == name {
+                return event;
+            }
+        }
+    }
+}
 
 #[tokio::test]
 async fn interactive_verification_started_from_request() -> Result<()> {
@@ -16,9 +29,8 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     )
     .await?;
 
-    let alice_user_id = alice.user_id().await.expect("alice should get user id");
     let alice_device_id = alice.device_id().await.expect("alice should get device id");
-    let alice_enc = alice.encryption();
+    info!("alice device id: {}", alice_device_id);
 
     let bob_dir = TempDir::new()?;
     let bob = login_new_client(
@@ -28,9 +40,8 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     )
     .await?;
 
-    let bob_user_id = bob.user_id().await.expect("bob should get user id");
     let bob_device_id = bob.device_id().await.expect("bob should get device id");
-    let bob_enc = bob.encryption();
+    info!("bob device id: {}", bob_device_id);
     // we have two devices logged in
 
     // sync both up to ensure they've seen the other device
@@ -45,25 +56,11 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let mut bob_rx = syncer.get_emoji_verification_event_rx().unwrap();
 
-    // alice tries to find bob's device.
-    let bob_device = alice_enc
-        .get_device(&alice_user_id, &device_id!(bob_device_id.as_str()))
-        .await
-        .expect("alice should get device")
-        .unwrap();
-
     // according to alice bob is not verfied:
-    assert!(!bob_device.verified());
-
-    // bob tries to find alice's device.
-    let alice_device = bob_enc
-        .get_device(&bob_user_id, &device_id!(alice_device_id.as_str()))
-        .await
-        .expect("bob should get device")
-        .unwrap();
+    assert!(!alice.verified_device(bob_device_id.clone()).await?);
 
     // according to bob alice is not verfied:
-    assert!(!alice_device.verified());
+    assert!(!bob.verified_device(alice_device_id).await?);
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
@@ -77,235 +74,123 @@ async fn interactive_verification_started_from_request() -> Result<()> {
                         info!("found device id: {}", device.get_device_id());
                     }
                 }
+                // Alice sends a verification request with her desired methods to Bob
+                event
+                    .request_verification_with_methods(
+                        bob_device_id,
+                        &mut vec!["m.sas.v1".to_owned()],
+                    )
+                    .await?;
                 break;
             }
         }
     }
-
-    // ----------------------------------------------------------------------------
-
-    // Alice sends a verification request with her desired methods to Bob
-    let alice_verif_req = bob_device
-        .request_verification_with_methods(vec![VerificationMethod::SasV1])
-        .await?;
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the request event from Alice
-    let mut sender: Option<String> = None;
-    let mut txn_id: Option<String> = None;
-    loop {
-        if let Ok(Some(event)) = bob_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.request" {
-                sender = Some(event.get_sender());
-                txn_id = Some(event.get_txn_id());
-                break;
-            }
-        }
-    }
-    assert!(sender.is_some());
-    assert!(txn_id.is_some());
-    let _sender = sender.unwrap();
-    let _txn_id = txn_id.unwrap();
+    let event = wait_for_emoji_verification_event(&mut bob_rx, "m.key.verification.request");
 
     // Bob accepts the request, sending a Ready request
-    bob.accept_verification_request_with_methods(
-        _sender.clone(),
-        _txn_id.clone(),
-        &mut vec!["m.sas.v1".to_owned()],
-    )
-    .await?;
+    event
+        .accept_verification_request_with_methods(&mut vec!["m.sas.v1".to_owned()])
+        .await?;
     // And also immediately sends a start request
-    let started = bob.start_sas_verification(_sender, _txn_id).await?;
+    let started = event.start_sas_verification().await?;
     assert!(started, "bob failed to start sas");
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the ready event from Bob
-    let mut sender = None;
-    let mut txn_id = None;
-    loop {
-        if let Ok(Some(event)) = alice_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.ready" {
-                sender = Some(event.get_sender());
-                txn_id = Some(event.get_txn_id());
-                break;
-            }
-        }
-    }
-    assert!(sender.is_some());
-    assert!(txn_id.is_some());
+    let event = wait_for_emoji_verification_event(&mut alice_rx, "m.key.verification.ready");
 
     // Alice immediately sends a start request
-    let started = alice
-        .start_sas_verification(sender.unwrap(), txn_id.unwrap())
-        .await?;
+    let started = event.start_sas_verification().await?;
     assert!(started, "alice failed to start sas verification");
 
     // Now Alice receives the start event from Bob
     // Without this loop, sometimes the cancel event follows the start event
-    loop {
-        if let Ok(Some(event)) = alice_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.start" {
-                break;
-            }
-        }
-    }
+    wait_for_emoji_verification_event(&mut alice_rx, "m.key.verification.start");
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the start event from Alice
-    let mut sender = None;
-    let mut txn_id = None;
-    loop {
-        if let Ok(Some(event)) = bob_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.start" {
-                sender = Some(event.get_sender());
-                txn_id = Some(event.get_txn_id());
-                break;
-            }
-        }
-    }
-    assert!(sender.is_some());
-    assert!(txn_id.is_some());
+    let event = wait_for_emoji_verification_event(&mut bob_rx, "m.key.verification.start");
 
     // Bob accepts it
-    let accepted = bob
-        .accept_sas_verification(sender.unwrap(), txn_id.unwrap())
-        .await?;
+    let accepted = event.accept_sas_verification().await?;
     assert!(accepted, "bob failed to accept sas verification");
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the accept event from Bob
-    loop {
-        if let Ok(Some(event)) = alice_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.accept" {
-                break;
-            }
-        }
-    }
+    let event = wait_for_emoji_verification_event(&mut alice_rx, "m.key.verification.accept");
 
     // Alice sends a key
-    alice.send_verification_key().await?;
+    event.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the key event from Alice
-    let mut sender = None;
-    let mut txn_id = None;
-    loop {
-        if let Ok(Some(event)) = bob_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.key" {
-                sender = Some(event.get_sender());
-                txn_id = Some(event.get_txn_id());
-                break;
-            }
-        }
-    }
-    assert!(sender.is_some());
-    assert!(txn_id.is_some());
+    let bob_event = wait_for_emoji_verification_event(&mut bob_rx, "m.key.verification.key");
 
     // Bob gets the verification key from event
-    let emoji_from_alice = bob
-        .get_verification_emoji(sender.unwrap(), txn_id.unwrap())
-        .await?;
+    let emoji_from_alice = bob_event.get_verification_emoji().await?;
     info!("emoji from alice: {:?}", emoji_from_alice);
 
     // Bob sends a key
-    bob.send_verification_key().await?;
+    bob_event.send_verification_key().await?;
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the key event from Bob
-    let mut sender = None;
-    let mut txn_id = None;
-    loop {
-        if let Ok(Some(event)) = alice_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.key" {
-                sender = Some(event.get_sender());
-                txn_id = Some(event.get_txn_id());
-                break;
-            }
-        }
-    }
-    assert!(sender.is_some());
-    assert!(txn_id.is_some());
-    let _sender = sender.unwrap();
-    let _txn_id = txn_id.unwrap();
+    let alice_event = wait_for_emoji_verification_event(&mut alice_rx, "m.key.verification.key");
 
     // Alice gets the verification key from event
-    let emoji_from_bob = alice
-        .get_verification_emoji(_sender.clone(), _txn_id.clone())
-        .await?;
+    let emoji_from_bob = alice_event.get_verification_emoji().await?;
     info!("emoji from bob: {:?}", emoji_from_bob);
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob first confirms that the emojis match and sends the mac event...
-    bob.confirm_sas_verification(_sender.clone(), _txn_id.clone())
-        .await?;
+    bob_event.confirm_sas_verification().await?;
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice first confirms that the emojis match and sends the mac event...
-    alice.confirm_sas_verification(_sender, _txn_id).await?;
+    alice_event.confirm_sas_verification().await?;
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the mac event from Alice
-    loop {
-        if let Ok(Some(event)) = bob_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.mac" {
-                break;
-            }
-        }
-    }
+    wait_for_emoji_verification_event(&mut bob_rx, "m.key.verification.mac");
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the mac event from Bob
-    loop {
-        if let Ok(Some(event)) = alice_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.mac" {
-                break;
-            }
-        }
-    }
+    wait_for_emoji_verification_event(&mut alice_rx, "m.key.verification.mac");
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the done event from Alice
-    loop {
-        if let Ok(Some(event)) = bob_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.done" {
-                break;
-            }
-        }
-    }
+    wait_for_emoji_verification_event(&mut bob_rx, "m.key.verification.done");
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the done event from Bob
-    loop {
-        if let Ok(Some(event)) = alice_rx.try_next() {
-            if event.get_event_name().as_str() == "m.key.verification.done" {
-                break;
-            }
-        }
-    }
+    wait_for_emoji_verification_event(&mut alice_rx, "m.key.verification.done");
 
     Ok(())
 }

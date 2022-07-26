@@ -17,12 +17,8 @@ use futures_signals::signal::{
 };
 use matrix_sdk::{
     config::SyncSettings,
-    encryption::verification::{SasVerification, Verification},
     media::{MediaFormat, MediaRequest},
-    ruma::{
-        events::{key::verification::VerificationMethod, AnySyncRoomEvent},
-        OwnedUserId, RoomId, UserId,
-    },
+    ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId},
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
@@ -35,7 +31,8 @@ use super::{
     api::FfiBuffer,
     events::{
         handle_devices_changed_event, handle_devices_left_event, handle_emoji_sync_msg_event,
-        handle_emoji_to_device_event, DevicesChangedEvent, DevicesLeftEvent, EmojiVerificationEvent,
+        handle_emoji_to_device_event, DevicesChangedEvent, DevicesLeftEvent,
+        EmojiVerificationEvent,
     },
     Account, Conversation, Group, Room, RUNTIME,
 };
@@ -197,8 +194,7 @@ impl Client {
             channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
         let (devices_changed_event_tx, devices_changed_event_rx) =
             channel::<DevicesChangedEvent>(10); // dropping after more than 10 items queued
-        let (devices_left_event_tx, devices_left_event_rx) =
-            channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
+        let (devices_left_event_tx, devices_left_event_rx) = channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
         let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
         let devices_left_event_arc = Arc::new(devices_left_event_tx);
@@ -244,11 +240,7 @@ impl Client {
                         }
 
                         for user_id in response.device_lists.left {
-                            handle_devices_left_event(
-                                user_id,
-                                &client,
-                                &mut devices_left_event_tx,
-                            );
+                            handle_devices_left_event(user_id, &client, &mut devices_left_event_tx);
                         }
 
                         for event in response
@@ -257,7 +249,11 @@ impl Client {
                             .iter()
                             .filter_map(|e| e.deserialize().ok())
                         {
-                            handle_emoji_to_device_event(&event, &mut emoji_verification_event_tx);
+                            handle_emoji_to_device_event(
+                                &client,
+                                &event,
+                                &mut emoji_verification_event_tx,
+                            );
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -270,6 +266,7 @@ impl Client {
                                 {
                                     if let AnySyncRoomEvent::MessageLike(evt) = event {
                                         handle_emoji_sync_msg_event(
+                                            &client,
                                             &room_id,
                                             &evt,
                                             &mut emoji_verification_event_tx,
@@ -408,206 +405,18 @@ impl Client {
         self.account().await?.avatar().await
     }
 
-    pub async fn accept_verification_request(
-        &self,
-        sender: String,
-        txn_id: String,
-    ) -> Result<bool> {
-        let client = self.client.clone();
+    pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
+        let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                let request = client
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let dev = c
                     .encryption()
-                    .get_verification_request(&sender, txn_id.as_str())
+                    .get_device(&user_id, &device_id!(dev_id.as_str()))
                     .await
-                    .expect("Request object wasn't created");
-                request
-                    .accept()
-                    .await
-                    .expect("Can't accept verification request");
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn accept_verification_request_with_methods(
-        &self,
-        sender: String,
-        txn_id: String,
-        methods: &mut Vec<String>,
-    ) -> Result<bool> {
-        let client = self.client.clone();
-        let _methods: Vec<VerificationMethod> =
-            (*methods).iter().map(|e| e.as_str().into()).collect();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                let request = client
-                    .encryption()
-                    .get_verification_request(&sender, txn_id.as_str())
-                    .await
-                    .expect("Request object wasn't created");
-                request
-                    .accept_with_methods(_methods)
-                    .await
-                    .expect("Can't accept verification request");
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn start_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                let request = client
-                    .encryption()
-                    .get_verification_request(&sender, txn_id.as_str())
-                    .await
-                    .expect("Request object wasn't created");
-                let sas_verification = request
-                    .start_sas()
-                    .await
-                    .expect("Can't accept verification request");
-                Ok(sas_verification.is_some())
-            })
-            .await?
-    }
-
-    pub async fn accept_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    sas.accept().await.unwrap();
-                    Ok(true)
-                } else {
-                    Ok(false)
-                }
-            })
-            .await?
-    }
-
-    pub async fn send_verification_key(&self) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                client.sync_once(SyncSettings::default()).await?;
-                Ok(true)
-            })
-            .await?
-    }
-
-    pub async fn get_verification_emoji(
-        &self,
-        sender: String,
-        txn_id: String,
-    ) -> Result<Vec<EmojiUnit>> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    if let Some(items) = sas.emoji() {
-                        let sequence = items
-                            .iter()
-                            .map(|e| {
-                                EmojiUnit::new(
-                                    e.symbol.chars().collect::<Vec<_>>()[0] as u32,
-                                    e.description.to_string(),
-                                )
-                            })
-                            .collect::<Vec<_>>();
-                        return Ok(sequence);
-                    }
-                }
-                Ok(vec![])
-            })
-            .await?
-    }
-
-    pub async fn confirm_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    sas.confirm().await.unwrap();
-                    Ok(sas.is_done())
-                } else {
-                    Ok(false)
-                }
-            })
-            .await?
-    }
-
-    pub async fn mismatch_sas_verification(&self, sender: String, txn_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    sas.mismatch().await.unwrap();
-                    Ok(true)
-                } else {
-                    Ok(false)
-                }
-            })
-            .await?
-    }
-
-    pub async fn cancel_verification_key(&self, sender: String, txn_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    sas.cancel().await.unwrap();
-                    Ok(true)
-                } else {
-                    Ok(false)
-                }
-            })
-            .await?
-    }
-
-    pub async fn review_verification_mac(&self, sender: String, txn_id: String) -> Result<bool> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let sender = UserId::parse(sender).expect("Couldn't parse the MXID");
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    Ok(sas.is_done())
-                } else {
-                    Ok(false)
-                }
+                    .expect("alice should get device")
+                    .unwrap();
+                Ok(dev.verified())
             })
             .await?
     }

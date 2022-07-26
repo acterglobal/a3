@@ -1,7 +1,11 @@
 use anyhow::Result;
 use futures::channel::mpsc::Sender;
 use log::{info, warn};
-use matrix_sdk::{encryption::identities::Device as MatrixDevice, ruma::OwnedUserId, Client};
+use matrix_sdk::{
+    encryption::identities::Device as MatrixDevice,
+    ruma::{device_id, events::key::verification::VerificationMethod, OwnedUserId},
+    Client,
+};
 
 use super::RUNTIME;
 
@@ -31,6 +35,47 @@ impl DevicesChangedEvent {
                     }
                 }
                 Ok(devices)
+            })
+            .await?
+    }
+
+    pub async fn request_verification(&self, dev_id: String) -> Result<bool> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let dev = c
+                    .encryption()
+                    .get_device(&user_id, &device_id!(dev_id.as_str()))
+                    .await
+                    .expect("alice should get device")
+                    .unwrap();
+                dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification_with_methods(
+        &self,
+        dev_id: String,
+        methods: &mut Vec<String>,
+    ) -> Result<bool> {
+        let c = self.client.clone();
+        let _methods: Vec<VerificationMethod> =
+            (*methods).iter().map(|e| e.as_str().into()).collect();
+        RUNTIME
+            .spawn(async move {
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let dev = c
+                    .encryption()
+                    .get_device(&user_id, &device_id!(dev_id.as_str()))
+                    .await
+                    .expect("alice should get device")
+                    .unwrap();
+                dev.request_verification_with_methods(_methods).await?;
+                Ok(true)
             })
             .await?
     }

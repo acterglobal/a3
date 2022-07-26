@@ -22,26 +22,24 @@ class CrossSigning {
   ) async {
     _subscription = receiver.listen((event) async {
       String eventName = event.getEventName();
-      String txnId = event.getTxnId();
-      String sender = event.getSender();
       waitForMatch = false;
       debugPrint(eventName);
       if (eventName == 'm.key.verification.request') {
-        await _onKeyVerificationRequest(sender, txnId, client);
+        await _onKeyVerificationRequest(event);
       } else if (eventName == 'm.key.verification.ready') {
-        await _onKeyVerificationReady(sender, txnId, client);
+        await _onKeyVerificationReady(event);
       } else if (eventName == 'm.key.verification.start') {
-        await _onKeyVerificationStart(sender, txnId, client);
+        await _onKeyVerificationStart(event);
       } else if (eventName == 'm.key.verification.cancel') {
-        await _onKeyVerificationCancel(sender, txnId);
+        await _onKeyVerificationCancel(event);
       } else if (eventName == 'm.key.verification.accept') {
-        await _onKeyVerificationAccept(sender, txnId);
+        await _onKeyVerificationAccept(event);
       } else if (eventName == 'm.key.verification.key') {
-        await _onKeyVerificationKey(sender, txnId, client);
+        await _onKeyVerificationKey(event);
       } else if (eventName == 'm.key.verification.mac') {
-        await _onKeyVerificationMac(sender, txnId, client);
+        await _onKeyVerificationMac(event);
       } else if (eventName == 'm.key.verification.done') {
-        await _onKeyVerificationDone(sender, txnId);
+        await _onKeyVerificationDone(event);
         // clean up event listener
         Future.delayed(const Duration(seconds: 1), () {
           _subscription.cancel();
@@ -50,11 +48,7 @@ class CrossSigning {
     });
   }
 
-  Future<void> _onKeyVerificationRequest(
-    String sender,
-    String txnId,
-    Client client,
-  ) async {
+  Future<void> _onKeyVerificationRequest(EmojiVerificationEvent event) async {
     Completer<void> c = Completer();
     isLoading = false;
     Get.bottomSheet(
@@ -85,8 +79,10 @@ class CrossSigning {
                       padding: const EdgeInsets.only(right: 10.0),
                       child: IconButton(
                         icon: const Icon(Icons.close),
-                        onPressed: () {
+                        onPressed: () async {
+                          await event.cancelVerificationRequest();
                           Get.back();
+                          c.completeError('User cancelled');
                         },
                         color: Colors.white,
                       ),
@@ -101,7 +97,7 @@ class CrossSigning {
                     style: CrossSigningSheetTheme.secondaryTextStyle,
                     children: <TextSpan>[
                       TextSpan(
-                        text: sender,
+                        text: event.getSender(),
                         style:
                             CrossSigningSheetTheme.secondaryTextStyle.copyWith(
                           color: CrossSigningSheetTheme.redButtonColor,
@@ -126,12 +122,10 @@ class CrossSigning {
                     : elevatedButton(
                         AppLocalizations.of(context)!.startVerifying,
                         AppCommonTheme.greenButtonColor,
-                        () => {
-                          setState(() {
-                            isLoading = true;
-                          }),
-                          _onKeyVerificationReady(sender, txnId, client),
-                          c.complete()
+                        () {
+                          setState(() => isLoading = true);
+                          _onKeyVerificationReady(event);
+                          c.complete();
                         },
                         CrossSigningSheetTheme.buttonTextStyle,
                       ),
@@ -145,19 +139,11 @@ class CrossSigning {
     return c.future;
   }
 
-  Future<void> _onKeyVerificationReady(
-    String sender,
-    String txnId,
-    Client _client,
-  ) async {
-    await _client.acceptVerificationRequest(sender, txnId);
+  Future<void> _onKeyVerificationReady(EmojiVerificationEvent event) async {
+    await event.acceptVerificationRequest();
   }
 
-  Future<void> _onKeyVerificationStart(
-    String sender,
-    String txnId,
-    Client client,
-  ) async {
+  Future<void> _onKeyVerificationStart(EmojiVerificationEvent event) async {
     isLoading = false;
     Get.back();
     Completer<void> c = Completer();
@@ -190,8 +176,10 @@ class CrossSigning {
                       padding: const EdgeInsets.only(right: 10.0),
                       child: IconButton(
                         icon: Icon(Icons.close),
-                        onPressed: () {
+                        onPressed: () async {
+                          await event.cancelSasVerification();
                           Get.back();
+                          c.completeError('User cancelled');
                         },
                         color: Colors.white,
                       ),
@@ -268,7 +256,7 @@ class CrossSigning {
                 Center(
                   child: TextButton(
                     onPressed: () async {
-                      await client.acceptSasVerification(sender, txnId);
+                      await event.acceptSasVerification();
                       Get.back();
                       c.complete();
                     },
@@ -291,17 +279,13 @@ class CrossSigning {
     return c.future;
   }
 
-  Future<void> _onKeyVerificationCancel(String sender, String txnId) async {}
+  Future<void> _onKeyVerificationCancel(EmojiVerificationEvent event) async {}
 
-  Future<void> _onKeyVerificationAccept(String sender, String txnId) async {}
+  Future<void> _onKeyVerificationAccept(EmojiVerificationEvent event) async {}
 
-  Future<void> _onKeyVerificationKey(
-    String sender,
-    String txnId,
-    Client client,
-  ) async {
+  Future<void> _onKeyVerificationKey(EmojiVerificationEvent event) async {
     Completer<void> c = Completer();
-    FfiListEmojiUnit emoji = await client.getVerificationEmoji(sender, txnId);
+    FfiListEmojiUnit emoji = await event.getVerificationEmoji();
     List<int> emojiCodes = emoji.map((e) => e.getSymbol()).toList();
     List<String> emojiDescriptions =
         emoji.map((e) => e.getDescription()).toList();
@@ -334,8 +318,10 @@ class CrossSigning {
                       padding: const EdgeInsets.only(right: 10.0),
                       child: IconButton(
                         icon: Icon(Icons.close),
-                        onPressed: () {
+                        onPressed: () async {
+                          await event.cancelVerificationKey();
                           Get.back();
+                          c.completeError('User cancelled');
                         },
                         color: Colors.white,
                       ),
@@ -408,10 +394,7 @@ class CrossSigning {
                                   .emojiVerificationText4,
                               CrossSigningSheetTheme.redButtonColor,
                               () async {
-                                await client.mismatchSasVerification(
-                                  sender,
-                                  txnId,
-                                );
+                                await event.mismatchSasVerification();
                                 Get.back();
                                 c.complete();
                               },
@@ -430,12 +413,8 @@ class CrossSigning {
                                 setState(() {
                                   waitForMatch = true;
                                 });
-                                await _onKeyVerificationMac(
-                                  sender,
-                                  txnId,
-                                  client,
-                                );
-                                client.confirmSasVerification(sender, txnId);
+                                await _onKeyVerificationMac(event);
+                                event.confirmSasVerification();
                                 Get.back();
                                 c.complete();
                               },
@@ -467,15 +446,11 @@ class CrossSigning {
     return c.future;
   }
 
-  Future<void> _onKeyVerificationMac(
-    String sender,
-    String txnId,
-    Client client,
-  ) async {
-    await client.reviewVerificationMac(sender, txnId);
+  Future<void> _onKeyVerificationMac(EmojiVerificationEvent event) async {
+    await event.reviewVerificationMac();
   }
 
-  Future<void> _onKeyVerificationDone(String sender, String txnId) async {
+  Future<void> _onKeyVerificationDone(EmojiVerificationEvent event) async {
     Get.back();
     Get.bottomSheet(
       StatefulBuilder(
