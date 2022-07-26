@@ -49,29 +49,6 @@ pub struct ClientState {
     pub should_stop_syncing: bool,
 }
 
-#[derive(Clone, Debug)]
-pub struct EmojiUnit {
-    symbol: u32,
-    description: String,
-}
-
-impl EmojiUnit {
-    pub(crate) fn new(symbol: u32, description: String) -> Self {
-        EmojiUnit {
-            symbol,
-            description,
-        }
-    }
-
-    pub fn get_symbol(&self) -> u32 {
-        self.symbol
-    }
-
-    pub fn get_description(&self) -> String {
-        self.description.clone()
-    }
-}
-
 #[derive(Clone)]
 pub struct Client {
     pub(crate) client: MatrixClient,
