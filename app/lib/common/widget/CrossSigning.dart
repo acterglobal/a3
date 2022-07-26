@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, EmojiVerificationEvent, FfiListEmojiUnit;
+    show EmojiVerificationEvent, FfiListEmojiUnit;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

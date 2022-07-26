@@ -412,7 +412,7 @@ impl Client {
                 let user_id = c.user_id().expect("guest user cannot request verification");
                 let dev = c
                     .encryption()
-                    .get_device(&user_id, &device_id!(dev_id.as_str()))
+                    .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
                     .expect("alice should get device")
                     .unwrap();

@@ -46,7 +46,7 @@ impl DevicesChangedEvent {
                 let user_id = c.user_id().expect("guest user cannot request verification");
                 let dev = c
                     .encryption()
-                    .get_device(&user_id, &device_id!(dev_id.as_str()))
+                    .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
                     .expect("alice should get device")
                     .unwrap();
@@ -70,7 +70,7 @@ impl DevicesChangedEvent {
                 let user_id = c.user_id().expect("guest user cannot request verification");
                 let dev = c
                     .encryption()
-                    .get_device(&user_id, &device_id!(dev_id.as_str()))
+                    .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
                     .expect("alice should get device")
                     .unwrap();
@@ -151,7 +151,7 @@ pub fn handle_devices_changed_event(
     let current_user_id = client
         .user_id()
         .expect("guest user cannot handle the device changed event");
-    if user_id.to_string() == current_user_id.to_string() {
+    if user_id.to_string() == *current_user_id {
         let evt = DevicesChangedEvent::new(client);
         if let Err(e) = tx.try_send(evt) {
             warn!("Dropping devices changed event: {}", e);
@@ -168,7 +168,7 @@ pub fn handle_devices_left_event(
     let current_user_id = client
         .user_id()
         .expect("guest user cannot handle the device left event");
-    if user_id.to_string() == current_user_id.to_string() {
+    if user_id.to_string() == *current_user_id {
         let evt = DevicesLeftEvent::new(client);
         if let Err(e) = tx.try_send(evt) {
             warn!("Dropping devices left event: {}", e);
