@@ -416,10 +416,12 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           enableSkinTones: true,
                           showRecentsTab: true,
                           recentsLimit: 28,
-                          noRecentsText: 'No Recents',
-                          noRecentsStyle: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black26,
+                          noRecents: Text(
+                            'No recents',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black26,
+                            ),
                           ),
                           tabIndicatorAnimDuration: kTabScrollDuration,
                           categoryIcons: const CategoryIcons(),

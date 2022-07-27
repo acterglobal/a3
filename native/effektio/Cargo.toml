@@ -42,7 +42,6 @@ url = "2.2.2"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
-zenv = "0.8.0"
 
 [dependencies.effektio-core]
 path = "../core"
@@ -54,7 +53,7 @@ features = [
     "anyhow",
     "e2e-encryption",
     "experimental-timeline",
-#    "qrcode",
+#   "qrcode",
     "rustls-tls",
     "sled",
 ]
