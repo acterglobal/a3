@@ -140,10 +140,9 @@ impl EmojiVerificationEvent {
             .client
             .device_id()
             .expect("guest user cannot get device id");
-        match self.launched_device.clone() {
-            Some(dev_id) => Some(dev_id != device_id.to_string()),
-            None => None,
-        }
+        self.launched_device
+            .clone()
+            .map(|dev_id| dev_id != device_id.to_string())
     }
 
     pub async fn accept_sas_verification(&self) -> Result<bool> {
