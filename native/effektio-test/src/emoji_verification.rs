@@ -70,9 +70,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
         if let Ok(Some(event)) = alice_devices_changed_rx.try_next() {
             if let Ok(devices) = event.get_unverified_devices().await {
                 for device in devices {
-                    if !device.was_verified() {
-                        info!("found device id: {}", device.get_device_id());
-                    }
+                    info!("found device id: {}", device.get_device_id());
                 }
                 // Alice sends a verification request with her desired methods to Bob
                 event

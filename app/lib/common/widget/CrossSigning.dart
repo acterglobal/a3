@@ -79,7 +79,7 @@ class CrossSigning {
                         onPressed: () async {
                           await event.cancelVerificationRequest();
                           Get.back();
-                          c.completeError('User cancelled');
+                          c.complete();
                         },
                         color: Colors.white,
                       ),
@@ -119,9 +119,11 @@ class CrossSigning {
                     : elevatedButton(
                         AppLocalizations.of(context)!.startVerifying,
                         AppCommonTheme.greenButtonColor,
-                        () {
+                        () async {
                           setState(() => isLoading = true);
-                          _onKeyVerificationReady(event);
+                          await event.acceptVerificationRequest();
+                          await event.startSasVerification();
+                          Get.back();
                           c.complete();
                         },
                         CrossSigningSheetTheme.buttonTextStyle,
@@ -137,11 +139,13 @@ class CrossSigning {
   }
 
   Future<void> _onKeyVerificationReady(EmojiVerificationEvent event) async {
-    await event.acceptVerificationRequest();
+    await event.startSasVerification();
   }
 
   Future<void> _onKeyVerificationStart(EmojiVerificationEvent event) async {
-    isLoading = false;
+    if (event.wasTriggeredFromPeer() != true) {
+      return;
+    }
     Get.back();
     Completer<void> c = Completer();
     Get.bottomSheet(
@@ -176,7 +180,7 @@ class CrossSigning {
                         onPressed: () async {
                           await event.cancelSasVerification();
                           Get.back();
-                          c.completeError('User cancelled');
+                          c.complete();
                         },
                         color: Colors.white,
                       ),
@@ -318,7 +322,7 @@ class CrossSigning {
                         onPressed: () async {
                           await event.cancelVerificationKey();
                           Get.back();
-                          c.completeError('User cancelled');
+                          c.complete();
                         },
                         color: Colors.white,
                       ),
@@ -411,7 +415,7 @@ class CrossSigning {
                                   waitForMatch = true;
                                 });
                                 await _onKeyVerificationMac(event);
-                                event.confirmSasVerification();
+                                await event.confirmSasVerification();
                                 Get.back();
                                 c.complete();
                               },

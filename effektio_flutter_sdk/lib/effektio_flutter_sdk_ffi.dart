@@ -3032,6 +3032,48 @@ class Api {
     return tmp7;
   }
 
+  bool? __emojiVerificationEventCancelVerificationKeyFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _emojiVerificationEventCancelVerificationKeyFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   FfiListEmojiUnit? __emojiVerificationEventGetVerificationEmojiFuturePoll(
     int boxed,
     int postCobject,
@@ -3135,48 +3177,6 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _emojiVerificationEventMismatchSasVerificationFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final tmp7 = tmp13 > 0;
-    return tmp7;
-  }
-
-  bool? __emojiVerificationEventCancelVerificationKeyFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _emojiVerificationEventCancelVerificationKeyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4700,6 +4700,17 @@ class Api {
           int Function(
     int,
   )>();
+  late final _emojiVerificationEventWasTriggeredFromPeerPtr = _lookup<
+      ffi.NativeFunction<
+          _EmojiVerificationEventWasTriggeredFromPeerReturn Function(
+    ffi.Int64,
+  )>>("__EmojiVerificationEvent_was_triggered_from_peer");
+
+  late final _emojiVerificationEventWasTriggeredFromPeer =
+      _emojiVerificationEventWasTriggeredFromPeerPtr.asFunction<
+          _EmojiVerificationEventWasTriggeredFromPeerReturn Function(
+    int,
+  )>();
   late final _emojiVerificationEventAcceptSasVerificationPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4733,6 +4744,17 @@ class Api {
           int Function(
     int,
   )>();
+  late final _emojiVerificationEventCancelVerificationKeyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__EmojiVerificationEvent_cancel_verification_key");
+
+  late final _emojiVerificationEventCancelVerificationKey =
+      _emojiVerificationEventCancelVerificationKeyPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _emojiVerificationEventGetVerificationEmojiPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4763,17 +4785,6 @@ class Api {
 
   late final _emojiVerificationEventMismatchSasVerification =
       _emojiVerificationEventMismatchSasVerificationPtr.asFunction<
-          int Function(
-    int,
-  )>();
-  late final _emojiVerificationEventCancelVerificationKeyPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__EmojiVerificationEvent_cancel_verification_key");
-
-  late final _emojiVerificationEventCancelVerificationKey =
-      _emojiVerificationEventCancelVerificationKeyPtr.asFunction<
           int Function(
     int,
   )>();
@@ -5641,6 +5652,23 @@ class Api {
     int,
     int,
   )>();
+  late final _emojiVerificationEventCancelVerificationKeyFuturePollPtr =
+      _lookup<
+          ffi.NativeFunction<
+              _EmojiVerificationEventCancelVerificationKeyFuturePollReturn
+                  Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__EmojiVerificationEvent_cancel_verification_key_future_poll");
+
+  late final _emojiVerificationEventCancelVerificationKeyFuturePoll =
+      _emojiVerificationEventCancelVerificationKeyFuturePollPtr.asFunction<
+          _EmojiVerificationEventCancelVerificationKeyFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _emojiVerificationEventGetVerificationEmojiFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _EmojiVerificationEventGetVerificationEmojiFuturePollReturn Function(
@@ -5688,23 +5716,6 @@ class Api {
       _emojiVerificationEventMismatchSasVerificationFuturePollPtr.asFunction<
           _EmojiVerificationEventMismatchSasVerificationFuturePollReturn
               Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _emojiVerificationEventCancelVerificationKeyFuturePollPtr =
-      _lookup<
-          ffi.NativeFunction<
-              _EmojiVerificationEventCancelVerificationKeyFuturePollReturn
-                  Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__EmojiVerificationEvent_cancel_verification_key_future_poll");
-
-  late final _emojiVerificationEventCancelVerificationKeyFuturePoll =
-      _emojiVerificationEventCancelVerificationKeyFuturePollPtr.asFunction<
-          _EmojiVerificationEventCancelVerificationKeyFuturePollReturn Function(
     int,
     int,
     int,
@@ -8356,6 +8367,22 @@ class EmojiVerificationEvent {
     return tmp2;
   }
 
+  /// Whether verification request was launched from peer, not this device
+  bool? wasTriggeredFromPeer() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventWasTriggeredFromPeer(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4 > 0;
+    return tmp2;
+  }
+
   /// Bob accepts the SAS verification
   Future<bool> acceptSasVerification() {
     var tmp0 = 0;
@@ -8390,7 +8417,7 @@ class EmojiVerificationEvent {
     return tmp2;
   }
 
-  /// Alice and Bob sends the verification key
+  /// Alice sends the verification key to Bob and vice versa
   Future<bool> sendVerificationKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -8407,58 +8434,7 @@ class EmojiVerificationEvent {
     return tmp2;
   }
 
-  /// Alice and Bob gets the verification emoji
-  Future<FfiListEmojiUnit> getVerificationEmoji() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._emojiVerificationEventGetVerificationEmoji(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__EmojiVerificationEvent_get_verification_emoji_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__emojiVerificationEventGetVerificationEmojiFuturePoll);
-    return tmp2;
-  }
-
-  /// Alice and Bob confirms the SAS verification matches
-  Future<bool> confirmSasVerification() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._emojiVerificationEventConfirmSasVerification(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__EmojiVerificationEvent_confirm_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__emojiVerificationEventConfirmSasVerificationFuturePoll);
-    return tmp2;
-  }
-
-  /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-  Future<bool> mismatchSasVerification() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._emojiVerificationEventMismatchSasVerification(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__EmojiVerificationEvent_mismatch_sas_verification_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__emojiVerificationEventMismatchSasVerificationFuturePoll);
-    return tmp2;
-  }
-
-  /// Cancel the AnyToDeviceEvent::KeyVerificationKey
+  /// Alice cancels the verification key from Bob and vice versa
   Future<bool> cancelVerificationKey() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -8475,7 +8451,58 @@ class EmojiVerificationEvent {
     return tmp2;
   }
 
-  /// Review the AnyToDeviceEvent::KeyVerificationMac
+  /// Alice gets the verification emoji from Bob and vice versa
+  Future<FfiListEmojiUnit> getVerificationEmoji() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventGetVerificationEmoji(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0,
+        "__EmojiVerificationEvent_get_verification_emoji_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__emojiVerificationEventGetVerificationEmojiFuturePoll);
+    return tmp2;
+  }
+
+  /// Alice says to Bob that SAS verification matches and vice versa
+  Future<bool> confirmSasVerification() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventConfirmSasVerification(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0,
+        "__EmojiVerificationEvent_confirm_sas_verification_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__emojiVerificationEventConfirmSasVerificationFuturePoll);
+    return tmp2;
+  }
+
+  /// Alice says to Bob that SAS verification doesn't match and vice versa
+  Future<bool> mismatchSasVerification() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventMismatchSasVerification(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0,
+        "__EmojiVerificationEvent_mismatch_sas_verification_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__emojiVerificationEventMismatchSasVerificationFuturePoll);
+    return tmp2;
+  }
+
+  /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
   Future<bool> reviewVerificationMac() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -9058,6 +9085,13 @@ class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _EmojiVerificationEventWasTriggeredFromPeerReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
 }
 
 class _EmojiUnitGetDescriptionReturn extends ffi.Struct {
@@ -9869,6 +9903,22 @@ class _EmojiVerificationEventSendVerificationKeyFuturePollReturn
   external int arg5;
 }
 
+class _EmojiVerificationEventCancelVerificationKeyFuturePollReturn
+    extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _EmojiVerificationEventGetVerificationEmojiFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -9902,22 +9952,6 @@ class _EmojiVerificationEventConfirmSasVerificationFuturePollReturn
 }
 
 class _EmojiVerificationEventMismatchSasVerificationFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Uint8()
-  external int arg5;
-}
-
-class _EmojiVerificationEventCancelVerificationKeyFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;

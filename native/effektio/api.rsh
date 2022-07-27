@@ -328,28 +328,31 @@ object EmojiVerificationEvent {
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
 
+    /// Whether verification request was launched from peer, not this device
+    fn was_triggered_from_peer() -> Option<bool>;
+
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
 
     /// Bob cancels the SAS verification
     fn cancel_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice and Bob sends the verification key
+    /// Alice sends the verification key to Bob and vice versa
     fn send_verification_key() -> Future<Result<bool>>;
 
-    /// Alice and Bob gets the verification emoji
-    fn get_verification_emoji() -> Future<Result<Vec<EmojiUnit>>>;
-
-    /// Alice and Bob confirms the SAS verification matches
-    fn confirm_sas_verification() -> Future<Result<bool>>;
-
-    /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-    fn mismatch_sas_verification() -> Future<Result<bool>>;
-
-    /// Cancel the AnyToDeviceEvent::KeyVerificationKey
+    /// Alice cancels the verification key from Bob and vice versa
     fn cancel_verification_key() -> Future<Result<bool>>;
 
-    /// Review the AnyToDeviceEvent::KeyVerificationMac
+    /// Alice gets the verification emoji from Bob and vice versa
+    fn get_verification_emoji() -> Future<Result<Vec<EmojiUnit>>>;
+
+    /// Alice says to Bob that SAS verification matches and vice versa
+    fn confirm_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    fn mismatch_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
     fn review_verification_mac() -> Future<Result<bool>>;
 }
 

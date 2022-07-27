@@ -118,6 +118,12 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState syncer = client.startSync();
     //Start listening for cross signing events
     crossSigning.startCrossSigning(syncer.getEmojiVerificationEventRx()!);
+    syncer.getDevicesChangedEventRx()!.listen((event) async {
+      var devices = await event.getUnverifiedDevices();
+      for (var device in devices) {
+        debugPrint('found device id: ' + device.getDeviceId());
+      }
+    });
     return client;
   }
 
