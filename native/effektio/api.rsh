@@ -370,11 +370,17 @@ object DevicesChangedEvent {
     /// Get the device list, excluding verified ones
     fn get_unverified_devices() -> Future<Result<Vec<Device>>>;
 
-    /// Request verification
-    fn request_verification(dev_id: string) -> Future<Result<bool>>;
+    /// Request verification to any devices of user
+    fn request_verification_to_user() -> Future<Result<bool>>;
 
-    /// Request verification with methods
-    fn request_verification_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
+    /// Request verification to specific device
+    fn request_verification_to_device(dev_id: string) -> Future<Result<bool>>;
+
+    /// Request verification to any devices of user with methods
+    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+
+    /// Request verification to specific device with methods
+    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
 }
 
 /// Deliver devices left event from rust to flutter

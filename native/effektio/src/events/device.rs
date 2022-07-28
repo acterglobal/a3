@@ -39,7 +39,23 @@ impl DevicesChangedEvent {
             .await?
     }
 
-    pub async fn request_verification(&self, dev_id: String) -> Result<bool> {
+    pub async fn request_verification_to_user(&self) -> Result<bool> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let user = c
+                    .encryption()
+                    .get_user_identity(user_id)
+                    .await?
+                    .expect("alice should get user identity");
+                user.request_verification().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification_to_device(&self, dev_id: String) -> Result<bool> {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -57,7 +73,28 @@ impl DevicesChangedEvent {
             .await?
     }
 
-    pub async fn request_verification_with_methods(
+    pub async fn request_verification_to_user_with_methods(
+        &self,
+        methods: &mut Vec<String>,
+    ) -> Result<bool> {
+        let c = self.client.clone();
+        let _methods: Vec<VerificationMethod> =
+            (*methods).iter().map(|e| e.as_str().into()).collect();
+        RUNTIME
+            .spawn(async move {
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let user = c
+                    .encryption()
+                    .get_user_identity(user_id)
+                    .await?
+                    .expect("alice should get user identity");
+                user.request_verification_with_methods(_methods).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn request_verification_to_device_with_methods(
         &self,
         dev_id: String,
         methods: &mut Vec<String>,
@@ -143,7 +180,7 @@ impl Device {
 }
 
 pub fn handle_devices_changed_event(
-    user_id: OwnedUserId,
+    user_id: &OwnedUserId,
     client: &Client,
     tx: &mut Sender<DevicesChangedEvent>,
 ) {
@@ -151,7 +188,7 @@ pub fn handle_devices_changed_event(
     let current_user_id = client
         .user_id()
         .expect("guest user cannot handle the device changed event");
-    if user_id == *current_user_id {
+    if *user_id == *current_user_id {
         let evt = DevicesChangedEvent::new(client);
         if let Err(e) = tx.try_send(evt) {
             warn!("Dropping devices changed event: {}", e);
@@ -160,7 +197,7 @@ pub fn handle_devices_changed_event(
 }
 
 pub fn handle_devices_left_event(
-    user_id: OwnedUserId,
+    user_id: &OwnedUserId,
     client: &Client,
     tx: &mut Sender<DevicesLeftEvent>,
 ) {
@@ -168,7 +205,7 @@ pub fn handle_devices_left_event(
     let current_user_id = client
         .user_id()
         .expect("guest user cannot handle the device left event");
-    if user_id == *current_user_id {
+    if *user_id == *current_user_id {
         let evt = DevicesLeftEvent::new(client);
         if let Err(e) = tx.try_send(evt) {
             warn!("Dropping devices left event: {}", e);

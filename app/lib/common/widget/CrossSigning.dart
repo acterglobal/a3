@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show EmojiVerificationEvent, FfiListEmojiUnit;
+    show DevicesChangedEvent, EmojiVerificationEvent, FfiListEmojiUnit;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -14,10 +14,51 @@ import 'package:get/get.dart';
 class CrossSigning {
   bool waitForMatch = false;
   bool isLoading = false;
-  late StreamSubscription<EmojiVerificationEvent> _subscription;
+  late StreamSubscription<DevicesChangedEvent> _devicesChangedEventSubscription;
+  late StreamSubscription<EmojiVerificationEvent>
+      _emojiVerificationEventSubscription;
 
-  void startCrossSigning(Stream<EmojiVerificationEvent> receiver) async {
-    _subscription = receiver.listen((event) async {
+  void listenToDevicesChangedEvent(Stream<DevicesChangedEvent> receiver) async {
+    debugPrint('listenToDevicesChangedEvent');
+    _devicesChangedEventSubscription = receiver.listen((event) async {
+      debugPrint('listenToDevicesChangedEvent');
+      var devices = await event.getUnverifiedDevices();
+      for (var device in devices) {
+        debugPrint('found device id: ' + device.getDeviceId());
+      }
+      Get.generalDialog(
+        pageBuilder: (context, anim1, anim2) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                color: Colors.white,
+                child: Card(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      ListTile(
+                        title: Text('New device detected'),
+                        onTap: () async {
+                          await event.requestVerificationToUser();
+                          Get.back();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    });
+  }
+
+  void listenToEmojiVerificationEvent(
+      Stream<EmojiVerificationEvent> receiver) async {
+    _emojiVerificationEventSubscription = receiver.listen((event) async {
       String eventName = event.getEventName();
       waitForMatch = false;
       debugPrint(eventName);
@@ -39,7 +80,7 @@ class CrossSigning {
         await _onKeyVerificationDone(event);
         // clean up event listener
         Future.delayed(const Duration(seconds: 1), () {
-          _subscription.cancel();
+          _emojiVerificationEventSubscription.cancel();
         });
       }
     });
@@ -280,7 +321,9 @@ class CrossSigning {
     return c.future;
   }
 
-  Future<void> _onKeyVerificationCancel(EmojiVerificationEvent event) async {}
+  Future<void> _onKeyVerificationCancel(EmojiVerificationEvent event) async {
+    Get.back();
+  }
 
   Future<void> _onKeyVerificationAccept(EmojiVerificationEvent event) async {}
 

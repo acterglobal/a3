@@ -210,14 +210,14 @@ impl Client {
 
                         for user_id in response.device_lists.changed {
                             handle_devices_changed_event(
-                                user_id,
+                                &user_id,
                                 &client,
                                 &mut devices_changed_event_tx,
                             );
                         }
 
                         for user_id in response.device_lists.left {
-                            handle_devices_left_event(user_id, &client, &mut devices_left_event_tx);
+                            handle_devices_left_event(&user_id, &client, &mut devices_left_event_tx);
                         }
 
                         for event in response

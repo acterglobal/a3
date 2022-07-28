@@ -74,7 +74,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
                 }
                 // Alice sends a verification request with her desired methods to Bob
                 event
-                    .request_verification_with_methods(
+                    .request_verification_to_device_with_methods(
                         bob_device_id,
                         &mut vec!["m.sas.v1".to_owned()],
                     )
