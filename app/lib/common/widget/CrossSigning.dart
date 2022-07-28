@@ -364,6 +364,7 @@ class CrossSigning {
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: GridView.count(
+                        physics: BouncingScrollPhysics(),
                         crossAxisCount: 4,
                         crossAxisSpacing: 10.0,
                         mainAxisSpacing: 10.0,
@@ -379,7 +380,9 @@ class CrossSigning {
                               style: CrossSigningSheetTheme.secondaryTextStyle
                                   .copyWith(
                                 color: CrossSigningSheetTheme.primaryTextColor,
+                                overflow: TextOverflow.ellipsis,
                               ),
+                              maxLines: 1,
                               textAlign: TextAlign.center,
                             ),
                           );
