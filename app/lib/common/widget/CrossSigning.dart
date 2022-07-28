@@ -1,14 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
-
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show DevicesChangedEvent, EmojiVerificationEvent, FfiListEmojiUnit;
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class CrossSigning {
@@ -17,6 +16,11 @@ class CrossSigning {
   late StreamSubscription<DevicesChangedEvent> _devicesChangedEventSubscription;
   late StreamSubscription<EmojiVerificationEvent>
       _emojiVerificationEventSubscription;
+
+  void dispose() {
+    _devicesChangedEventSubscription.cancel();
+    _emojiVerificationEventSubscription.cancel();
+  }
 
   void listenToDevicesChangedEvent(Stream<DevicesChangedEvent> receiver) async {
     debugPrint('listenToDevicesChangedEvent');
@@ -78,10 +82,6 @@ class CrossSigning {
         await _onKeyVerificationMac(event);
       } else if (eventName == 'm.key.verification.done') {
         await _onKeyVerificationDone(event);
-        // clean up event listener
-        Future.delayed(const Duration(seconds: 1), () {
-          _emojiVerificationEventSubscription.cancel();
-        });
       }
     });
   }

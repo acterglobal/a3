@@ -100,6 +100,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late TabController _tabController;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
+
   @override
   void initState() {
     _client = makeClient();
@@ -110,6 +111,12 @@ class _EffektioHomeState extends State<EffektioHome>
       });
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    crossSigning.dispose();
+    super.dispose();
   }
 
   Future<Client> makeClient() async {

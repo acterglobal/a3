@@ -8746,7 +8746,7 @@ class DevicesChangedEvent {
     return tmp2;
   }
 
-  /// Request verification
+  /// Request verification to any devices of user
   Future<bool> requestVerificationToUser() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -8763,7 +8763,7 @@ class DevicesChangedEvent {
     return tmp2;
   }
 
-  /// Request verification
+  /// Request verification to specific device
   Future<bool> requestVerificationToDevice(
     String devId,
   ) {
@@ -8796,7 +8796,7 @@ class DevicesChangedEvent {
     return tmp6;
   }
 
-  /// Request verification with methods
+  /// Request verification to any devices of user with methods
   Future<bool> requestVerificationToUserWithMethods(
     FfiListFfiString methods,
   ) {
@@ -8819,7 +8819,7 @@ class DevicesChangedEvent {
     return tmp4;
   }
 
-  /// Request verification with methods
+  /// Request verification to specific device with methods
   Future<bool> requestVerificationToDeviceWithMethods(
     String devId,
     FfiListFfiString methods,
