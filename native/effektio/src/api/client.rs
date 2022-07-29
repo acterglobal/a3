@@ -227,7 +227,7 @@ impl Client {
                         }
 
                         for event in response.to_device.events {
-                            if let Some(evt) = event.deserialize().ok() {
+                            if let Ok(evt) = event.deserialize() {
                                 let json = serde_json::from_str::<Value>(event.json().get())
                                     .expect("Invalid JSON in to_device event");
                                 info!("to_device event type: {}", json["type"]);
