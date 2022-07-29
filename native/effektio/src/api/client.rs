@@ -15,6 +15,7 @@ use futures::{
 use futures_signals::signal::{
     channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
+use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     media::{MediaFormat, MediaRequest},
@@ -22,6 +23,7 @@ use matrix_sdk::{
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
+use serde_json::Value;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
@@ -224,17 +226,17 @@ impl Client {
                             );
                         }
 
-                        for event in response
-                            .to_device
-                            .events
-                            .iter()
-                            .filter_map(|e| e.deserialize().ok())
-                        {
-                            handle_emoji_to_device_event(
-                                &client,
-                                &event,
-                                &mut emoji_verification_event_tx,
-                            );
+                        for event in response.to_device.events {
+                            if let Some(evt) = event.deserialize().ok() {
+                                let json = serde_json::from_str::<Value>(event.json().get())
+                                    .expect("Invalid JSON in to_device event");
+                                info!("to_device event type: {}", json["type"]);
+                                handle_emoji_to_device_event(
+                                    &client,
+                                    &evt,
+                                    &mut emoji_verification_event_tx,
+                                );
+                            }
                         }
 
                         if !initial.load(Ordering::SeqCst) {

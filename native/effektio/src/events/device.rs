@@ -3,9 +3,13 @@ use futures::channel::mpsc::Sender;
 use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device as MatrixDevice,
-    ruma::{device_id, events::key::verification::VerificationMethod, OwnedUserId},
+    ruma::{
+        device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
+        OwnedUserId,
+    },
     Client,
 };
+use serde_json::{json, Value};
 
 use crate::RUNTIME;
 
@@ -21,19 +25,67 @@ impl DevicesChangedEvent {
         }
     }
 
-    pub async fn get_unverified_devices(&self) -> Result<Vec<Device>> {
+    pub async fn get_devices(&self, verified: bool) -> Result<Vec<Device>> {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c
-                    .user_id()
-                    .expect("guest user cannot get the unverified devices");
+                let current_user_id = c.user_id().expect("guest user cannot get devices");
+                let current_device_id = c.device_id().expect("device id always works");
+                let key = "my_devices";
+                let old_entries = match c.store().get_custom_value(key.as_bytes()).await? {
+                    Some(value) => serde_json::from_slice::<Vec<Value>>(&value)?,
+                    None => vec![],
+                };
+                info!("old entries: {:?}", old_entries);
+                let mut new_entries: Vec<Value> = vec![];
                 let mut devices: Vec<Device> = vec![];
-                for dev in c.encryption().get_user_devices(user_id).await?.devices() {
-                    if !dev.clone().verified() {
-                        devices.push(Device::new(dev));
+                let response = c.devices().await?;
+                for device in c
+                    .encryption()
+                    .get_user_devices(current_user_id)
+                    .await?
+                    .devices()
+                {
+                    let dev_id = device.device_id();
+                    if *dev_id == *current_device_id {
+                        continue;
+                    }
+                    let dev_verified = device.verified();
+                    let mut not_changed = false;
+                    if let Some(old_entry) = old_entries
+                        .iter()
+                        .find(|e| e.get("id").unwrap().as_str().unwrap() == dev_id.as_str())
+                    {
+                        if old_entry.get("verified").unwrap() == dev_verified {
+                            not_changed = true;
+                        }
+                    }
+                    if not_changed {
+                        continue;
+                    }
+                    new_entries.push(json!({ "id": *dev_id, "verified": dev_verified }));
+                    if let Some(dev) = response
+                        .devices
+                        .iter()
+                        .find(|e| e.device_id == device.device_id())
+                    {
+                        devices.push(Device::new(
+                            &device,
+                            dev.last_seen_ip.clone(),
+                            dev.last_seen_ts,
+                        ));
+                    } else {
+                        devices.push(Device::new(&device, None, None));
                     }
                 }
+                info!("new entries: {:?}", new_entries);
+                let s = serde_json::to_string(&new_entries).unwrap();
+                info!("new entries text: {}", s);
+                let res = c
+                    .store()
+                    .set_custom_value(key.as_bytes(), s.into_bytes())
+                    .await?;
+                info!("set_custom_value: {}", res.is_some());
                 Ok(devices)
             })
             .await?
@@ -130,7 +182,7 @@ impl DevicesLeftEvent {
         }
     }
 
-    pub async fn get_deleted_devices(&self) -> Result<Vec<Device>> {
+    pub async fn get_devices(&self, deleted: bool) -> Result<Vec<Device>> {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
@@ -138,9 +190,22 @@ impl DevicesLeftEvent {
                     .user_id()
                     .expect("guest user cannot get the deleted devices");
                 let mut devices: Vec<Device> = vec![];
-                for dev in c.encryption().get_user_devices(user_id).await?.devices() {
-                    if !dev.clone().deleted() {
-                        devices.push(Device::new(dev));
+                let response = c.devices().await?;
+                for device in c.encryption().get_user_devices(user_id).await?.devices() {
+                    if device.deleted() == deleted {
+                        if let Some(dev) = response
+                            .devices
+                            .iter()
+                            .find(|e| e.device_id == device.device_id())
+                        {
+                            devices.push(Device::new(
+                                &device,
+                                dev.last_seen_ip.clone(),
+                                dev.last_seen_ts,
+                            ));
+                        } else {
+                            devices.push(Device::new(&device, None, None));
+                        }
                     }
                 }
                 Ok(devices)
@@ -149,13 +214,24 @@ impl DevicesLeftEvent {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Device {
     inner: MatrixDevice,
+    last_seen_ip: Option<String>,
+    last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
 impl Device {
-    pub(crate) fn new(inner: MatrixDevice) -> Self {
-        Self { inner }
+    pub(crate) fn new(
+        inner: &MatrixDevice,
+        last_seen_ip: Option<String>,
+        last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
+    ) -> Self {
+        Self {
+            inner: inner.clone(),
+            last_seen_ip,
+            last_seen_ts,
+        }
     }
 
     pub fn was_verified(&self) -> bool {
@@ -177,6 +253,14 @@ impl Device {
     pub fn get_display_name(&self) -> Option<String> {
         self.inner.display_name().map(|s| s.to_owned())
     }
+
+    pub fn get_last_seen_ip(&self) -> Option<String> {
+        self.last_seen_ip.clone()
+    }
+
+    pub fn get_last_seen_ts(&self) -> Option<MilliSecondsSinceUnixEpoch> {
+        self.last_seen_ts
+    }
 }
 
 pub fn handle_devices_changed_event(
@@ -185,9 +269,8 @@ pub fn handle_devices_changed_event(
     tx: &mut Sender<DevicesChangedEvent>,
 ) {
     info!("device-changed user_id: {}", user_id);
-    let current_user_id = client
-        .user_id()
-        .expect("guest user cannot handle the device changed event");
+    let current_user_id = client.user_id().expect("guest user cannot get user id");
+    let current_device_id = client.device_id().expect("guest user cannot get device id");
     if *user_id == *current_user_id {
         let evt = DevicesChangedEvent::new(client);
         if let Err(e) = tx.try_send(evt) {

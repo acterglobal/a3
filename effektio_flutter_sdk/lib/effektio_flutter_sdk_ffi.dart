@@ -3246,7 +3246,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDevice? __devicesChangedEventGetUnverifiedDevicesFuturePoll(
+  FfiListDevice? __devicesChangedEventGetDevicesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3260,7 +3260,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _devicesChangedEventGetUnverifiedDevicesFuturePoll(
+    final tmp6 = _devicesChangedEventGetDevicesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3462,7 +3462,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListDevice? __devicesLeftEventGetDeletedDevicesFuturePoll(
+  FfiListDevice? __devicesLeftEventGetDevicesFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3476,7 +3476,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _devicesLeftEventGetDeletedDevicesFuturePoll(
+    final tmp6 = _devicesLeftEventGetDevicesFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4905,15 +4905,17 @@ class Api {
       _EmojiUnitGetDescriptionReturn Function(
     int,
   )>();
-  late final _devicesChangedEventGetUnverifiedDevicesPtr = _lookup<
+  late final _devicesChangedEventGetDevicesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__DevicesChangedEvent_get_unverified_devices");
+    ffi.Uint8,
+  )>>("__DevicesChangedEvent_get_devices");
 
-  late final _devicesChangedEventGetUnverifiedDevices =
-      _devicesChangedEventGetUnverifiedDevicesPtr.asFunction<
+  late final _devicesChangedEventGetDevices =
+      _devicesChangedEventGetDevicesPtr.asFunction<
           int Function(
+    int,
     int,
   )>();
   late final _devicesChangedEventRequestVerificationToUserPtr = _lookup<
@@ -4978,15 +4980,17 @@ class Api {
     int,
     int,
   )>();
-  late final _devicesLeftEventGetDeletedDevicesPtr = _lookup<
+  late final _devicesLeftEventGetDevicesPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__DevicesLeftEvent_get_deleted_devices");
+    ffi.Uint8,
+  )>>("__DevicesLeftEvent_get_devices");
 
-  late final _devicesLeftEventGetDeletedDevices =
-      _devicesLeftEventGetDeletedDevicesPtr.asFunction<
+  late final _devicesLeftEventGetDevices =
+      _devicesLeftEventGetDevicesPtr.asFunction<
           int Function(
+    int,
     int,
   )>();
   late final _deviceWasVerifiedPtr = _lookup<
@@ -5849,17 +5853,17 @@ class Api {
     int,
     int,
   )>();
-  late final _devicesChangedEventGetUnverifiedDevicesFuturePollPtr = _lookup<
+  late final _devicesChangedEventGetDevicesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _DevicesChangedEventGetUnverifiedDevicesFuturePollReturn Function(
+          _DevicesChangedEventGetDevicesFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__DevicesChangedEvent_get_unverified_devices_future_poll");
+  )>>("__DevicesChangedEvent_get_devices_future_poll");
 
-  late final _devicesChangedEventGetUnverifiedDevicesFuturePoll =
-      _devicesChangedEventGetUnverifiedDevicesFuturePollPtr.asFunction<
-          _DevicesChangedEventGetUnverifiedDevicesFuturePollReturn Function(
+  late final _devicesChangedEventGetDevicesFuturePoll =
+      _devicesChangedEventGetDevicesFuturePollPtr.asFunction<
+          _DevicesChangedEventGetDevicesFuturePollReturn Function(
     int,
     int,
     int,
@@ -5938,17 +5942,17 @@ class Api {
     int,
     int,
   )>();
-  late final _devicesLeftEventGetDeletedDevicesFuturePollPtr = _lookup<
+  late final _devicesLeftEventGetDevicesFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _DevicesLeftEventGetDeletedDevicesFuturePollReturn Function(
+          _DevicesLeftEventGetDevicesFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__DevicesLeftEvent_get_deleted_devices_future_poll");
+  )>>("__DevicesLeftEvent_get_devices_future_poll");
 
-  late final _devicesLeftEventGetDeletedDevicesFuturePoll =
-      _devicesLeftEventGetDeletedDevicesFuturePollPtr.asFunction<
-          _DevicesLeftEventGetDeletedDevicesFuturePollReturn Function(
+  late final _devicesLeftEventGetDevicesFuturePoll =
+      _devicesLeftEventGetDevicesFuturePollPtr.asFunction<
+          _DevicesLeftEventGetDevicesFuturePollReturn Function(
     int,
     int,
     int,
@@ -8730,20 +8734,26 @@ class DevicesChangedEvent {
   DevicesChangedEvent._(this._api, this._box);
 
   /// Get the device list, excluding verified ones
-  Future<FfiListDevice> getUnverifiedDevices() {
+  Future<FfiListDevice> getDevices(
+    bool verified,
+  ) {
+    final tmp1 = verified;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._devicesChangedEventGetUnverifiedDevices(
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._devicesChangedEventGetDevices(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__DevicesChangedEvent_get_unverified_devices_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__devicesChangedEventGetUnverifiedDevicesFuturePoll);
-    return tmp2;
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__DevicesChangedEvent_get_devices_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__devicesChangedEventGetDevicesFuturePoll);
+    return tmp4;
   }
 
   /// Request verification to any devices of user
@@ -8872,20 +8882,26 @@ class DevicesLeftEvent {
   DevicesLeftEvent._(this._api, this._box);
 
   /// Get the device list, including deleted ones
-  Future<FfiListDevice> getDeletedDevices() {
+  Future<FfiListDevice> getDevices(
+    bool deleted,
+  ) {
+    final tmp1 = deleted;
     var tmp0 = 0;
+    var tmp2 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._devicesLeftEventGetDeletedDevices(
+    tmp2 = tmp1 ? 1 : 0;
+    final tmp3 = _api._devicesLeftEventGetDevices(
       tmp0,
+      tmp2,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(
-        _api, tmp3_0, "__DevicesLeftEvent_get_deleted_devices_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__devicesLeftEventGetDeletedDevicesFuturePoll);
-    return tmp2;
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__DevicesLeftEvent_get_devices_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__devicesLeftEventGetDevicesFuturePoll);
+    return tmp4;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -10176,8 +10192,7 @@ class _EmojiVerificationEventReviewVerificationMacFuturePollReturn
   external int arg5;
 }
 
-class _DevicesChangedEventGetUnverifiedDevicesFuturePollReturn
-    extends ffi.Struct {
+class _DevicesChangedEventGetDevicesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -10256,7 +10271,7 @@ class _DevicesChangedEventRequestVerificationToDeviceWithMethodsFuturePollReturn
   external int arg5;
 }
 
-class _DevicesLeftEventGetDeletedDevicesFuturePollReturn extends ffi.Struct {
+class _DevicesLeftEventGetDevicesFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -368,7 +368,7 @@ object EmojiUnit {
 /// Deliver devices changed event from rust to flutter
 object DevicesChangedEvent {
     /// Get the device list, excluding verified ones
-    fn get_unverified_devices() -> Future<Result<Vec<Device>>>;
+    fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
 
     /// Request verification to any devices of user
     fn request_verification_to_user() -> Future<Result<bool>>;
@@ -386,7 +386,7 @@ object DevicesChangedEvent {
 /// Deliver devices left event from rust to flutter
 object DevicesLeftEvent {
     /// Get the device list, including deleted ones
-    fn get_deleted_devices() -> Future<Result<Vec<Device>>>;
+    fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
 }
 
 /// Provide various device infos

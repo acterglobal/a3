@@ -26,7 +26,7 @@ class CrossSigning {
     debugPrint('listenToDevicesChangedEvent');
     _devicesChangedEventSubscription = receiver.listen((event) async {
       debugPrint('listenToDevicesChangedEvent');
-      var devices = await event.getUnverifiedDevices();
+      var devices = await event.getDevices(false);
       for (var device in devices) {
         debugPrint('found device id: ' + device.getDeviceId());
       }
@@ -61,7 +61,8 @@ class CrossSigning {
   }
 
   void listenToEmojiVerificationEvent(
-      Stream<EmojiVerificationEvent> receiver) async {
+    Stream<EmojiVerificationEvent> receiver,
+  ) async {
     _emojiVerificationEventSubscription = receiver.listen((event) async {
       String eventName = event.getEventName();
       waitForMatch = false;
