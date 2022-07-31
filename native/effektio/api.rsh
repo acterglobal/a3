@@ -328,8 +328,8 @@ object EmojiVerificationEvent {
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
 
-    /// Whether verification request was launched from peer, not this device
-    fn was_triggered_from_peer() -> Option<bool>;
+    /// Whether verification request was launched from this device
+    fn was_triggered_from_this_device() -> Option<bool>;
 
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;

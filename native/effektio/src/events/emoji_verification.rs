@@ -22,7 +22,7 @@ pub struct EmojiVerificationEvent {
     event_name: String,
     txn_id: String,
     sender: String,
-    launched_device: Option<String>,
+    launcher: Option<String>,
 }
 
 impl EmojiVerificationEvent {
@@ -31,14 +31,14 @@ impl EmojiVerificationEvent {
         event_name: String,
         txn_id: String,
         sender: String,
-        launched_device: Option<String>,
+        launcher: Option<String>,
     ) -> Self {
         Self {
             client: client.clone(),
             event_name,
             txn_id,
             sender,
-            launched_device,
+            launcher,
         }
     }
 
@@ -135,14 +135,12 @@ impl EmojiVerificationEvent {
             .await?
     }
 
-    pub fn was_triggered_from_peer(&self) -> Option<bool> {
+    pub fn was_triggered_from_this_device(&self) -> Option<bool> {
         let device_id = self
             .client
             .device_id()
             .expect("guest user cannot get device id");
-        self.launched_device
-            .clone()
-            .map(|dev_id| dev_id != *device_id)
+        self.launcher.clone().map(|dev_id| dev_id == *device_id)
     }
 
     pub async fn accept_sas_verification(&self) -> Result<bool> {
@@ -481,20 +479,28 @@ pub fn handle_emoji_to_device_event(
 ) {
     match event {
         AnyToDeviceEvent::KeyVerificationRequest(ev) => {
-            let dev_id = client.device_id().expect("guest user cannot get device id");
-            info!("{} got m.key.verification.request", dev_id.to_string());
+            let dev_id = client
+                .device_id()
+                .expect("guest user cannot get device id")
+                .to_string();
+            info!("{} got m.key.verification.request", dev_id);
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
             let from_device = ev.content.from_device.to_string();
-            let evt = EmojiVerificationEvent::new(
-                client,
-                "m.key.verification.request".to_owned(),
-                txn_id.clone(),
-                sender,
-                Some(from_device),
-            );
-            if let Err(e) = tx.try_send(evt) {
-                warn!("Dropping transaction for {}: {}", txn_id, e);
+            if from_device == dev_id {
+                info!("this device cannot verify itself");
+                // TODO: will send reject response?
+            } else {
+                let evt = EmojiVerificationEvent::new(
+                    client,
+                    "m.key.verification.request".to_owned(),
+                    txn_id.clone(),
+                    sender,
+                    Some(from_device),
+                );
+                if let Err(e) = tx.try_send(evt) {
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                }
             }
         }
         AnyToDeviceEvent::KeyVerificationReady(ev) => {

@@ -4786,15 +4786,15 @@ class Api {
           int Function(
     int,
   )>();
-  late final _emojiVerificationEventWasTriggeredFromPeerPtr = _lookup<
+  late final _emojiVerificationEventWasTriggeredFromThisDevicePtr = _lookup<
       ffi.NativeFunction<
-          _EmojiVerificationEventWasTriggeredFromPeerReturn Function(
+          _EmojiVerificationEventWasTriggeredFromThisDeviceReturn Function(
     ffi.Int64,
-  )>>("__EmojiVerificationEvent_was_triggered_from_peer");
+  )>>("__EmojiVerificationEvent_was_triggered_from_this_device");
 
-  late final _emojiVerificationEventWasTriggeredFromPeer =
-      _emojiVerificationEventWasTriggeredFromPeerPtr.asFunction<
-          _EmojiVerificationEventWasTriggeredFromPeerReturn Function(
+  late final _emojiVerificationEventWasTriggeredFromThisDevice =
+      _emojiVerificationEventWasTriggeredFromThisDevicePtr.asFunction<
+          _EmojiVerificationEventWasTriggeredFromThisDeviceReturn Function(
     int,
   )>();
   late final _emojiVerificationEventAcceptSasVerificationPtr = _lookup<
@@ -8523,11 +8523,11 @@ class EmojiVerificationEvent {
     return tmp2;
   }
 
-  /// Whether verification request was launched from peer, not this device
-  bool? wasTriggeredFromPeer() {
+  /// Whether verification request was launched from this device
+  bool? wasTriggeredFromThisDevice() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._emojiVerificationEventWasTriggeredFromPeer(
+    final tmp1 = _api._emojiVerificationEventWasTriggeredFromThisDevice(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9296,7 +9296,8 @@ class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _EmojiVerificationEventWasTriggeredFromPeerReturn extends ffi.Struct {
+class _EmojiVerificationEventWasTriggeredFromThisDeviceReturn
+    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

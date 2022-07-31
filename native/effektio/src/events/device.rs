@@ -29,63 +29,28 @@ impl DevicesChangedEvent {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let current_user_id = c.user_id().expect("guest user cannot get devices");
-                let current_device_id = c.device_id().expect("device id always works");
-                let key = "my_devices";
-                let old_entries = match c.store().get_custom_value(key.as_bytes()).await? {
-                    Some(value) => serde_json::from_slice::<Vec<Value>>(&value)?,
-                    None => vec![],
-                };
-                info!("old entries: {:?}", old_entries);
-                let mut new_entries: Vec<Value> = vec![];
+                let user_id = c
+                    .user_id()
+                    .expect("guest user cannot get the verified devices");
                 let mut devices: Vec<Device> = vec![];
                 let response = c.devices().await?;
-                for device in c
-                    .encryption()
-                    .get_user_devices(current_user_id)
-                    .await?
-                    .devices()
-                {
-                    let dev_id = device.device_id();
-                    if *dev_id == *current_device_id {
-                        continue;
-                    }
-                    let dev_verified = device.verified();
-                    let mut not_changed = false;
-                    if let Some(old_entry) = old_entries
-                        .iter()
-                        .find(|e| e.get("id").unwrap().as_str().unwrap() == dev_id.as_str())
-                    {
-                        if old_entry.get("verified").unwrap() == dev_verified {
-                            not_changed = true;
+                for device in c.encryption().get_user_devices(user_id).await?.devices() {
+                    if device.verified() == verified {
+                        if let Some(dev) = response
+                            .devices
+                            .iter()
+                            .find(|e| e.device_id == device.device_id())
+                        {
+                            devices.push(Device::new(
+                                &device,
+                                dev.last_seen_ip.clone(),
+                                dev.last_seen_ts,
+                            ));
+                        } else {
+                            devices.push(Device::new(&device, None, None));
                         }
                     }
-                    if not_changed {
-                        continue;
-                    }
-                    new_entries.push(json!({ "id": *dev_id, "verified": dev_verified }));
-                    if let Some(dev) = response
-                        .devices
-                        .iter()
-                        .find(|e| e.device_id == device.device_id())
-                    {
-                        devices.push(Device::new(
-                            &device,
-                            dev.last_seen_ip.clone(),
-                            dev.last_seen_ts,
-                        ));
-                    } else {
-                        devices.push(Device::new(&device, None, None));
-                    }
                 }
-                info!("new entries: {:?}", new_entries);
-                let s = serde_json::to_string(&new_entries).unwrap();
-                info!("new entries text: {}", s);
-                let res = c
-                    .store()
-                    .set_custom_value(key.as_bytes(), s.into_bytes())
-                    .await?;
-                info!("set_custom_value: {}", res.is_some());
                 Ok(devices)
             })
             .await?

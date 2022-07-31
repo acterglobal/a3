@@ -4,7 +4,11 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show DevicesChangedEvent, EmojiVerificationEvent, FfiListEmojiUnit;
+    show
+        DevicesChangedEvent,
+        EmojiVerificationEvent,
+        FfiListDevice,
+        FfiListEmojiUnit;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -185,7 +189,7 @@ class CrossSigning {
   }
 
   Future<void> _onKeyVerificationStart(EmojiVerificationEvent event) async {
-    if (event.wasTriggeredFromPeer() != true) {
+    if (event.wasTriggeredFromThisDevice() == true) {
       return;
     }
     Get.back();
