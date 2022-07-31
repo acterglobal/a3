@@ -34,14 +34,18 @@ jobs:
       - uses: Swatinem/rust-cache@v1
 
       - uses: nttld/setup-ndk@v1
+        id: setup-ndk
         with:
           ndk-version: r23c
+          add-to-path: false
 
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
 
       - name: Rust Android Setup
         run: cargo make setup-android
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
@@ -50,6 +54,8 @@ jobs:
 
       - name: Build Android FFI
         run: cargo make --profile release android-arm
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
