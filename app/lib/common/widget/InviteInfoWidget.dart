@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables,
 
+import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:flutter/material.dart';
 
 import 'package:effektio/common/store/separatedThemes.dart';
@@ -61,19 +62,12 @@ class InviteInfoWidget extends StatelessWidget {
               Container(
                 width: MediaQuery.of(context).size.width * 0.48,
                 padding: const EdgeInsets.only(left: 15),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    primary: AppCommonTheme.greenButtonColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.accept,
-                    style: AppCommonTheme.appBartitleStyle
-                        .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
+                child: elevatedButton(
+                  AppLocalizations.of(context)!.accept,
+                  AppCommonTheme.greenButtonColor,
+                  () => {},
+                  AppCommonTheme.appBartitleStyle
+                      .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
               SizedBox(
@@ -82,19 +76,12 @@ class InviteInfoWidget extends StatelessWidget {
               Container(
                 width: MediaQuery.of(context).size.width * 0.48,
                 padding: const EdgeInsets.only(right: 15),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    primary: AppCommonTheme.primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.decline,
-                    style: AppCommonTheme.appBartitleStyle
-                        .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
+                child: elevatedButton(
+                  AppLocalizations.of(context)!.decline,
+                  AppCommonTheme.primaryColor,
+                  () => {},
+                  AppCommonTheme.appBartitleStyle
+                      .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
             ],

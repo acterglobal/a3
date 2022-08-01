@@ -1,31 +1,37 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'dart:async';
+import 'package:effektio/common/widget/CrossSigning.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/store/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
+import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
-import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:flutter/foundation.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk, Client;
+    show Client, EffektioSdk;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:effektio/l10n/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:async';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:themed/themed.dart';
 
 void main() async {
+  await startApp();
+}
+
+Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
@@ -53,7 +59,7 @@ class _EffektioState extends State<Effektio> {
   @override
   Widget build(BuildContext context) {
     return Themed(
-      child: MaterialApp(
+      child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         title: 'Effektio',
@@ -90,7 +96,8 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
-
+  CrossSigning crossSigning = CrossSigning();
+  bool isLoading = false;
   @override
   void initState() {
     _client = makeClient();
@@ -106,6 +113,8 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    //Start listening for cross signing events
+    crossSigning.startCrossSigning(client);
     return client;
   }
 
@@ -121,6 +130,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
     return DefaultTabController(
       length: 5,
+      key: const Key('bottom-bar'),
       child: SafeArea(
         child: Scaffold(
           appBar: tabIndex <= 3

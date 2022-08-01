@@ -158,19 +158,22 @@ class _NewsSideBarState extends State<NewsSideBar> {
           showBottomSheet();
         }
       }),
-      child: Column(
-        children: <Widget>[
-          SvgPicture.asset(
-            'assets/images/$iconName.svg',
-            color: color,
-            width: 35,
-            height: 35,
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(label, style: style),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15),
+        child: Column(
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/images/$iconName.svg',
+              color: color,
+              width: 35,
+              height: 35,
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(label, style: style),
+          ],
+        ),
       ),
     );
   }
@@ -325,10 +328,12 @@ class _NewsSideBarState extends State<NewsSideBar> {
                               enableSkinTones: true,
                               showRecentsTab: true,
                               recentsLimit: 28,
-                              noRecentsText: 'No Recents',
-                              noRecentsStyle: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.black26,
+                              noRecents: Text(
+                                'No Recents',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black26,
+                                ),
                               ),
                               tabIndicatorAnimDuration: kTabScrollDuration,
                               categoryIcons: const CategoryIcons(),

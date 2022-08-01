@@ -9,9 +9,10 @@ repository = "https://github.com/effektio/effektio"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = [ "with-mocks" ]
+default = [ "with-mocks", "dart" ]
 with-mocks = [ "effektio-core/with-mocks" ]
 cbindgen = [ ]
+dart = [ "with-mocks" ]
 
 [build-dependencies]
 ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
@@ -20,9 +21,10 @@ cbindgen = "0.20.0"
 [dependencies]
 anyhow = "1.0.51"
 assign = "1.1.1"
-derive_builder = "0.10.2"
+derive_builder = { version = "0.10.2" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
+futures-signals = "0.3.28"
 lazy_static = "1.4"
 log = "0.4"
 log-panics = "2.0.0"
@@ -38,6 +40,10 @@ tracing-log = "0.1.2"
 tracing-subscriber = { version = "0.3.3", default-features = false, features = ["env-filter", "fmt"] }
 url = "2.2.2"
 
+[dev-dependencies]
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+zenv = "0.8.0"
+
 [dependencies.effektio-core]
 path = "../core"
 
@@ -50,6 +56,7 @@ features = [
 #    "qrcode",
     "sled",
     "anyhow",
+    "experimental-timeline",
 ]
 
 #   ----   WASM
@@ -65,4 +72,4 @@ tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 
 [lib]
 name = "effektio"
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib", "staticlib", "lib"]

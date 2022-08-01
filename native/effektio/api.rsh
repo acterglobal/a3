@@ -11,12 +11,11 @@ fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Cl
 /// Create a new client anonymous client connecting to the homeserver
 fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
 
-/// generate news mock items
-fn gen_mock_news() -> Vec<News>;
-
 /// Create a new client from the restore token
 fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
 
+/// generate news mock items
+fn gen_mock_news() -> Vec<News>;
 
 /// Representing a color
 object Color {
@@ -78,8 +77,6 @@ object UserId {
     // only the user name itself
     //fn localpart() -> string;
 }
-
-object EventId {}
 
 /// A room Message metadata and content
 object RoomMessage {
@@ -237,11 +234,20 @@ object Account {
     fn set_avatar(c_type: string, data: Vec<u8>) -> Future<Result<bool>>;
 }
 
+object SyncState {
+    /// Get event handler of AnyToDeviceEvent
+    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
 
+    /// Get event handler of AnySyncMessageLikeEvent
+    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
+}
 
 /// Main entry point for `effektio`.
 object Client {
     // Special
+
+    /// start the sync
+    fn start_sync() -> SyncState;
 
     /// Get the restore token for this session
     fn restore_token() -> Future<Result<string>>;
@@ -256,7 +262,7 @@ object Client {
     fn is_syncing() -> bool;
 
     /// Whether the client is logged in
-    fn logged_in() -> Future<bool>;
+    fn logged_in() -> bool;
 
     /// return the account of the logged in user, if given
     fn account() -> Future<Result<Account>>;
@@ -282,9 +288,54 @@ object Client {
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;
 
+    /// Get the following group the user is part of by
+    /// roomId or room alias;
+    fn get_group(id_or_alias: string) -> Future<Result<Group>>;
+
     /// Get the latest News for the client
     fn latest_news() -> Future<Result<Vec<News>>>;
 
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
+
+    /// Accept the AnyToDeviceEvent::KeyVerificationRequest
+    fn accept_verification_request(sender: string, event_id: string) -> Future<Result<bool>>;
+
+    /// Accept the AnyToDeviceEvent::KeyVerificationStart
+    fn accept_verification_start(sender: string, event_id: string) -> Future<Result<bool>>;
+
+    fn get_verification_emoji(sender: string, event_id: string) -> Future<Result<Vec<EmojiUnit>>>;
+
+    /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
+    fn confirm_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+
+    /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
+    fn mismatch_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+
+    /// Cancel the AnyToDeviceEvent::KeyVerificationKey
+    fn cancel_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+
+    /// Review the AnyToDeviceEvent::KeyVerificationMac
+    fn review_verification_mac(sender: string, event_id: string) -> Future<Result<bool>>;
+}
+
+/// Deliver emoji verification event from rust to flutter
+object CrossSigningEvent {
+    /// Get event name
+    fn get_event_name() -> string;
+
+    /// Get transaction id or flow id
+    fn get_event_id() -> string;
+
+    /// Get user id of event sender
+    fn get_sender() -> string;
+}
+
+/// Extend the return value of getVerificationEmoji function
+object EmojiUnit {
+    /// binary representation of emoji unicode
+    fn get_symbol() -> u32;
+
+    /// text description of emoji unicode
+    fn get_description() -> string;
 }

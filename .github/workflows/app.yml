@@ -34,14 +34,18 @@ jobs:
       - uses: Swatinem/rust-cache@v1
 
       - uses: nttld/setup-ndk@v1
+        id: setup-ndk
         with:
           ndk-version: r23c
+          add-to-path: false
 
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
 
       - name: Rust Android Setup
         run: cargo make setup-android
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
@@ -50,6 +54,8 @@ jobs:
 
       - name: Build Android FFI
         run: cargo make --profile release android-arm
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
@@ -76,73 +82,9 @@ jobs:
         with:
           channel: 'stable'
       - name: Build iOS FFI
-        run: cargo make --profile release  ios
+        run: cargo make --profile release ios
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-      - run: flutter build ios --release --no-codesign
-        working-directory: ./app
-
-  integration-test:
-    runs-on: ubuntu-latest
-    name: Integration Tests
-    continue-on-error: true
-    services:
-      synapse:
-        image: "lightyear/effekio-synapse-ci:latest"
-        volumes:
-          - synapse-data:/data
-        ports: 
-          - 8008:8008
-          - 8009:8009
-          - 8448:8448
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install supported toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-
-      - uses: Swatinem/rust-cache@v1
-
-      - uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r23c
-
-      - name: Install cargo-make
-        uses: davidB/rust-cargo-make@v1
-
-      - name: Rust Android Setup
-        run: cargo make setup-android
-
-      - uses: subosito/flutter-action@v2
-        name: "Set up flutter"
-        with:
-          channel: 'stable'
-
-      - name: Build Native
-        run: cargo make --profile release android
-
-      - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
-
-      - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
-
-      - name: Start Android emulator
-        uses: malinskiy/action-android/emulator-run-cmd@release/0.1.1
-        with:
-          cmd: flutter doctor -v
-          api: 28
-          tag: default
-          abi: x86
-
-      - name: Versions
-        run: |
-          sdkmanager platform-tools
-          adb devices
-          echo $ANDROID_HOME
-
-      - run: flutter test -d android integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:${{ job.services.synapse.ports['8008'] }}
-        name: "running tests"
+      - name: Build ios package
+        run: flutter build ios --no-codesign
         working-directory: ./app

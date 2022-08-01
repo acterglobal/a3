@@ -57,13 +57,13 @@ class EffektioSdk {
     for (var token in sessions) {
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
       clients.add(client);
-      loggedIn = await client.loggedIn();
+      loggedIn = client.loggedIn();
     }
 
     if (_clients.isEmpty) {
       ffi.Client client = await _api.guestClient(appDocPath, defaultServer);
       clients.add(client);
-      loggedIn = await client.loggedIn();
+      loggedIn = client.loggedIn();
       await _persistSessions();
     }
     debugPrint('Restored $_clients: $loggedIn');

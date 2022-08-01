@@ -1,6 +1,6 @@
 
 [toolchain]
-channel = "nightly"
+channel = "nightly-2022-07-14"
 components = ["rustfmt", "clippy", "rls", "rust-src"]
 targets = [
     "wasm32-unknown-unknown",
@@ -10,4 +10,5 @@ targets = [
     "i686-linux-android",
     "aarch64-apple-ios",
     "x86_64-apple-ios",
+    "aarch64-apple-ios-sim",
 ]

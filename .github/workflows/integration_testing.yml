@@ -1,0 +1,127 @@
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+name: Integration Tests
+
+env:
+  RELEASE: true
+
+jobs:
+
+  cancel-others:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+  rust:
+    runs-on: ubuntu-latest
+    name: Rust Integration Tests
+    continue-on-error: true
+    services:
+      synapse:
+        image: "lightyear/effektio-synapse-ci:latest"
+        volumes:
+          - synapse-data:/data
+        ports:
+          - 8008:8008
+          - 8009:8009
+          - 8448:8448
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Create matrix admin user
+        uses: addnab/docker-run-action@v3
+        with:
+          image: "lightyear/effektio-synapse-ci:latest"
+          options: -v synapse-data:/data --link synapse
+          shell: bash
+          run: 'register_new_matrix_user -u admin -p admin -a -c /data/homeserver.yaml http://synapse:8008'
+
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+
+      - uses: rui314/setup-mold@v1
+        name: "Setup mold linker"
+
+      - uses: Swatinem/rust-cache@v1
+
+      - name: Initialize e2ee mock data
+        run: cargo run -p effektio-cli -- mock http://localhost:${{ job.services.synapse.ports['8008'] }}
+
+      - name: run cargo integration tests
+        env:
+          HOMESERVER: "http://localhost:${{ job.services.synapse.ports['8008'] }}"
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
+        run: cargo test -p effektio-test -- --nocapture
+
+  flutter:
+    runs-on: macos-latest
+    name: Flutter Integration Tests
+    continue-on-error: true
+    # services:
+    #   synapse:
+    #     image: "lightyear/effektio-synapse-ci:latest"
+    #     volumes:
+    #       - synapse-data:/data
+    #     ports:
+    #       - 8008:8008
+    #       - 8009:8009
+    #       - 8448:8448
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: docker-practice/actions-setup-docker@master
+      - name: Starting synapse
+        run: |
+          set -x
+          docker version
+          docker-compose up -d
+
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - uses: Swatinem/rust-cache@v1
+
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Android Setup
+        run: cargo make setup-ios
+
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+
+      - name: Build Native
+        run: cargo make --profile release ios
+
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+
+      - name: Initialize e2ee mock data
+        run: cargo run -p effektio-cli -- mock http://localhost:8118/
+
+      - uses: futureware-tech/simulator-action@v1
+        with:
+          model: 'iPhone 12'
+
+      - name: Run flutter integration tests
+        working-directory: app
+        run: flutter drive --driver=test_driver/integration_test.dart integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://127.0.0.1:8118/
