@@ -59,7 +59,7 @@ class InviteInfoWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.46,
                 child: elevatedButton(
                   AppLocalizations.of(context)!.accept,
@@ -69,7 +69,7 @@ class InviteInfoWidget extends StatelessWidget {
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width * 0.46,
                 child: elevatedButton(
                   AppLocalizations.of(context)!.decline,
