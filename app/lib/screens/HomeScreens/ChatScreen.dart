@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'dart:math';
+import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
@@ -135,6 +136,27 @@ class _ChatScreenState extends State<ChatScreen> {
       },
     );
   }
+
+  Widget _bubbleBuilder(
+    Widget child, {
+    required message,
+    required nextMessageInGroup,
+  }) =>
+      Bubble(
+        child: child,
+        color: _user.id != message.author.id ||
+                message.type == types.MessageType.image
+            ? const Color(0xfff5f5f7)
+            : const Color(0xff6f61e8),
+        margin: nextMessageInGroup
+            ? const BubbleEdges.symmetric(horizontal: 6)
+            : null,
+        nip: nextMessageInGroup
+            ? BubbleNip.no
+            : _user.id != message.author.id
+                ? BubbleNip.leftBottom
+                : BubbleNip.rightBottom,
+      );
 
   Widget _imageMessageBuilder(
     types.ImageMessage imageMessage, {
@@ -318,6 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onTextChanged: (text) async {
                 await controller.room.typingNotice(true);
               },
+              bubbleBuilder: _bubbleBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
