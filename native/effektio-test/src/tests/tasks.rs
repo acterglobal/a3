@@ -3,7 +3,7 @@ use effektio::api::login_new_client;
 use tempfile::TempDir;
 
 #[tokio::test]
-async fn creating_task_list() -> Result<()> {
+async fn tasks_smoketest() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
     let client = login_new_client(
@@ -25,23 +25,39 @@ async fn creating_task_list() -> Result<()> {
         .task_list_draft()
         .expect("we are in and admin, we can create news drafts");
     task_list_draft.name("Daily Standup".to_owned());
-    let event_id = task_list_draft.send().await?;
+    let task_list_id = task_list_draft.send().await?;
     client
         .sync_once(Default::default())
         .await
         .expect("sync works");
     // we should have
-    let latest_tasks = client
-        .latest_news()
-        .await?
+    let task_list = client
+        .task_lists()
+        .await
         .into_iter()
         .next()
-        .expect("we should have a news item");
-    // assert_eq!(
-    //     latest_news_item.event_id(),
-    //     event_id,
-    //     "Latest news isn't the item, we just sent",
-    // );
+        .expect("we should have a task list");
+    assert_eq!(
+        task_list.event_id(),
+        task_list_id,
+        "Latest task list isn't the item, we just sent",
+    );
 
+    assert_eq!(
+        task_list.tasks().len(),
+        0,
+        "There are already tasks in the new list"
+    );
+
+    let mut task_draft = task_list.task_builder();
+    task_draft.title("Check in with station security".to_owned());
+    let task_id = task_draft.send().await?;
+
+    client
+        .sync_once(Default::default())
+        .await
+        .expect("sync works");
+
+    assert_eq!(task_list.tasks().len(), 1, "Task is on our list");
     Ok(())
 }
