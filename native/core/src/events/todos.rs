@@ -1,4 +1,5 @@
 use super::TextMessageEventContent;
+use derive_builder::Builder;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -41,17 +42,25 @@ impl Default for Priority {
 /// The TaskList Event
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
+#[builder(name = "TaskListBuilder")]
 pub struct TaskListDevContent {
-    pub role: Option<SpecialTaskListRole>,
     pub name: String,
+    #[builder(setter(into, strip_option), default)]
+    pub role: Option<SpecialTaskListRole>,
+    #[builder(setter(into, strip_option), default)]
     pub description: Option<TextMessageEventContent>,
+    #[builder(setter(into, strip_option), default)]
     pub color: Option<Color>,
+    #[builder(default)]
     pub sort_order: u32,
+    #[builder(setter(into, strip_option), default)]
     pub time_zone: Option<TimeZone>,
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
+    #[builder(setter(into, strip_option), default)]
     pub keywords: Option<Vec<String>>,
+    #[builder(setter(into, strip_option), default)]
     pub categories: Option<Vec<String>>,
 }
 
@@ -60,8 +69,9 @@ pub struct TaskListDevContent {
 /// modeled after [JMAP Task](https://jmap.io/spec-tasks.html#tasks)
 /// see also the [IETF Task](https://www.rfc-editor.org/rfc/rfc8984.html#name-task)
 /// but all timezones have been dumbed down to UTC-only.
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
+#[builder(name = "TaskBuilder")]
 pub struct TaskDevContent {
     #[serde(rename = "m.relates_to")]
     pub task_list_id: BelongsTo,
@@ -84,10 +94,22 @@ pub enum Task {
     Dev(TaskDevContent),
 }
 
+impl From<TaskDevContent> for Task {
+    fn from(other: TaskDevContent) -> Task {
+        Task::Dev(other)
+    }
+}
+
 /// The content that is specific to each news type variant.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
 #[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
 pub enum TaskList {
     Dev(TaskListDevContent),
+}
+
+impl From<TaskListDevContent> for TaskList {
+    fn from(other: TaskListDevContent) -> TaskList {
+        TaskList::Dev(other)
+    }
 }
