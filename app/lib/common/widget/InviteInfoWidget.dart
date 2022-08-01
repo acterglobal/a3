@@ -57,10 +57,10 @@ class InviteInfoWidget extends StatelessWidget {
             indent: 15,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Container(
-                width: MediaQuery.of(context).size.width * 0.48,
+                width: MediaQuery.of(context).size.width * 0.46,
                 padding: const EdgeInsets.only(left: 15),
                 child: elevatedButton(
                   AppLocalizations.of(context)!.accept,
@@ -74,7 +74,7 @@ class InviteInfoWidget extends StatelessWidget {
                 width: 15,
               ),
               Container(
-                width: MediaQuery.of(context).size.width * 0.48,
+                width: MediaQuery.of(context).size.width * 0.46,
                 padding: const EdgeInsets.only(right: 15),
                 child: elevatedButton(
                   AppLocalizations.of(context)!.decline,
