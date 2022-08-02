@@ -9,6 +9,7 @@
     "emptyPlaceholderText":"Looks Empty here",
     "message":"Message",
     "newMessage":"New message",
+    "messageTo":"Message to",
     "settings":"Settings",
     "camera":"Camera",
     "location":"Location",

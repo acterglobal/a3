@@ -9,6 +9,7 @@
     "emptyPlaceholderText": "Hier sieht es leer aus",
     "message": "Nachricht",
     "newMessage":"neue Nachricht",
+    "messageTo":"Nachricht an",
     "settings":"Einstellungen",
     "camera":"Kamera",
     "location":"Lage",

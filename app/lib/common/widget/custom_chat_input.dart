@@ -7,10 +7,20 @@ import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+// ignore: must_be_immutable
 class CustomChatInput extends StatelessWidget {
-  CustomChatInput({Key? key, required this.context}) : super(key: key);
+  CustomChatInput({
+    Key? key,
+    required this.context,
+    required this.isChatScreen,
+    required this.onButtonPressed,
+    required this.roomName,
+  }) : super(key: key);
   final BuildContext context;
+  final Function()? onButtonPressed;
   final controller = Get.put(ChatController());
+  bool isChatScreen = true;
+  final String roomName;
   static const List<List<String>> attachmentNameList = [
     ['camera', 'Camera'],
     ['gif', 'GIF'],
@@ -116,7 +126,10 @@ class CustomChatInput extends StatelessWidget {
                           onTap: () {
                             switch (item[0]) {
                               case 'camera':
-                                controller.handleImageSelection(context);
+                                controller.handleMultipleImageSelection(
+                                  context,
+                                  roomName,
+                                );
                                 break;
                               case 'gif':
                                 //gif handle
@@ -182,33 +195,36 @@ class CustomChatInput extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Obx(
-                        () => InkWell(
-                          onTap: () {
-                            controller.isEmojiVisible.value = false;
-                            controller.isattachmentVisible.value =
-                                !controller.isattachmentVisible.value;
-                            controller.focusNode.unfocus();
-                            controller.focusNode.canRequestFocus = true;
-                          },
-                          child: controller.isattachmentVisible.value
-                              ? Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: AppCommonTheme.backgroundColor,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: SvgPicture.asset(
-                                    'assets/images/add_rotate.svg',
-                                    fit: BoxFit.none,
-                                  ),
-                                )
-                              : SvgPicture.asset(
-                                  'assets/images/add.svg',
-                                  fit: BoxFit.none,
-                                ),
-                        ),
-                      ),
+                      isChatScreen
+                          ? Obx(
+                              () => InkWell(
+                                onTap: () {
+                                  controller.isEmojiVisible.value = false;
+                                  controller.isattachmentVisible.value =
+                                      !controller.isattachmentVisible.value;
+                                  controller.focusNode.unfocus();
+                                  controller.focusNode.canRequestFocus = true;
+                                },
+                                child: controller.isattachmentVisible.value
+                                    ? Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: AppCommonTheme.backgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/images/add_rotate.svg',
+                                          fit: BoxFit.none,
+                                        ),
+                                      )
+                                    : SvgPicture.asset(
+                                        'assets/images/add.svg',
+                                        fit: BoxFit.none,
+                                      ),
+                              ),
+                            )
+                          : const SizedBox(),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -247,29 +263,27 @@ class CustomChatInput extends StatelessWidget {
                               ),
                               filled: true,
                               fillColor: AppCommonTheme.backgroundColor,
-                              hintText:
-                                  AppLocalizations.of(context)!.newMessage,
+                              hintText: isChatScreen
+                                  ? AppLocalizations.of(context)!.newMessage
+                                  : '${AppLocalizations.of(context)!.messageTo} $roomName',
                               contentPadding: const EdgeInsets.all(15),
                               hintStyle: ChatTheme01.chatInputPlaceHolderStyle,
                             ),
                           ),
                         ),
                       ),
-                      if (controller.isSendButtonVisible)
+                      if (controller.isSendButtonVisible || !isChatScreen)
                         InkWell(
-                          onTap: () async {
-                            await controller.handleSendPressed(
-                              controller.textEditingController.text,
-                            );
-                            controller.textEditingController.clear();
-                            controller.sendButtonUpdate();
-                          },
+                          onTap: onButtonPressed,
                           child: SvgPicture.asset('assets/images/sendIcon.svg'),
                         ),
-                      if (!controller.isSendButtonVisible)
+                      if (!controller.isSendButtonVisible && isChatScreen)
                         InkWell(
                           onTap: () {
-                            controller.handleImageSelection(context);
+                            controller.handleMultipleImageSelection(
+                              context,
+                              roomName,
+                            );
                           },
                           child: SvgPicture.asset(
                             'assets/images/camera.svg',
@@ -277,7 +291,7 @@ class CustomChatInput extends StatelessWidget {
                           ),
                         ),
                       const SizedBox(width: 10),
-                      if (!controller.isSendButtonVisible)
+                      if (!controller.isSendButtonVisible && isChatScreen)
                         SvgPicture.asset(
                           'assets/images/microphone-2.svg',
                           fit: BoxFit.none,
