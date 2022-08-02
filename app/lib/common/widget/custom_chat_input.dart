@@ -126,6 +126,7 @@ class CustomChatInput extends StatelessWidget {
                           onTap: () {
                             switch (item[0]) {
                               case 'camera':
+                                controller.isattachmentVisible.value = false;
                                 controller.handleMultipleImageSelection(
                                   context,
                                   roomName,

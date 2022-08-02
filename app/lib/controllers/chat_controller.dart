@@ -118,13 +118,15 @@ class ChatController extends GetxController {
   }
 
   Future<void> handleMultipleImageSelection(
-      BuildContext context, String roomName,) async {
+    BuildContext context,
+    String roomName,
+  ) async {
     _imageFileList!.clear();
     final result = await ImagePicker().pickMultiImage(
       imageQuality: 70,
       maxWidth: 1440,
     );
-    if (result!.isNotEmpty) {
+    if (result != null) {
       _imageFileList!.addAll(result);
       Navigator.push(
         context,
