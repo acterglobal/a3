@@ -311,7 +311,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_parsed_text:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_parsed_text
       url: "https://pub.dartlang.org"
