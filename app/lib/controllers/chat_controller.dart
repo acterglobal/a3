@@ -41,7 +41,7 @@ class ChatController extends GetxController {
   FocusNode focusNode = FocusNode();
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
-  final List<XFile>? _imageFileList = [];
+  final List<XFile> _imageFileList = [];
 
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
@@ -121,13 +121,13 @@ class ChatController extends GetxController {
     BuildContext context,
     String roomName,
   ) async {
-    _imageFileList!.clear();
+    _imageFileList.clear();
     final result = await ImagePicker().pickMultiImage(
       imageQuality: 70,
       maxWidth: 1440,
     );
     if (result != null) {
-      _imageFileList!.addAll(result);
+      _imageFileList.addAll(result);
       Navigator.push(
         context,
         MaterialPageRoute(

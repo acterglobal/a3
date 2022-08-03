@@ -13,7 +13,7 @@ class CustomChatInput extends StatelessWidget {
     Key? key,
     required this.context,
     required this.isChatScreen,
-    required this.onButtonPressed,
+    this.onButtonPressed,
     required this.roomName,
   }) : super(key: key);
   final BuildContext context;

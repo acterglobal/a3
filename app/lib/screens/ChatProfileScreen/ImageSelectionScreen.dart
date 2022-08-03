@@ -15,7 +15,7 @@ class ImageSelection extends StatefulWidget {
     required this.imageList,
     required this.roomName,
   }) : super(key: key);
-  final List? imageList;
+  final List imageList;
   final String roomName;
   @override
   State<ImageSelection> createState() => _ImageSelectionState();
@@ -33,13 +33,13 @@ class _ImageSelectionState extends State<ImageSelection> {
         children: [
           Expanded(
             child: PhotoViewGallery.builder(
-              itemCount: widget.imageList!.length,
+              itemCount: widget.imageList.length,
               scrollPhysics: const BouncingScrollPhysics(),
               builder: ((context, index) {
                 return PhotoViewGalleryPageOptions(
                   imageProvider: FileImage(
                     File(
-                      widget.imageList![index].path,
+                      widget.imageList[index].path,
                     ),
                   ),
                   initialScale: PhotoViewComputedScale.contained * 0.8,
@@ -65,7 +65,7 @@ class _ImageSelectionState extends State<ImageSelection> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      for (var item in widget.imageList!)
+                      for (var item in widget.imageList)
                         Padding(
                           padding: const EdgeInsets.only(
                             top: 10,
@@ -75,7 +75,7 @@ class _ImageSelectionState extends State<ImageSelection> {
                           child: InkWell(
                             onTap: () {
                               setState(() {
-                                selectedIndex = widget.imageList!.indexOf(item);
+                                selectedIndex = widget.imageList.indexOf(item);
                                 _pageController.jumpToPage(selectedIndex);
                               });
                             },
@@ -96,7 +96,7 @@ class _ImageSelectionState extends State<ImageSelection> {
                                     ),
                                     color: AppCommonTheme.backgroundColor,
                                     border: selectedIndex ==
-                                            widget.imageList!.indexOf(item)
+                                            widget.imageList.indexOf(item)
                                         ? Border.all(
                                             color: ChatTheme01.chatSelectedImageBorderColor,
                                             width: 2,
@@ -110,11 +110,11 @@ class _ImageSelectionState extends State<ImageSelection> {
                                   child: InkWell(
                                     onTap: () {
                                       setState(() {
-                                        widget.imageList!.removeAt(
-                                          widget.imageList!.indexOf(item),
+                                        widget.imageList.removeAt(
+                                          widget.imageList.indexOf(item),
                                         );
                                       });
-                                      if (widget.imageList!.isEmpty) {
+                                      if (widget.imageList.isEmpty) {
                                         Navigator.of(context).pop();
                                       }
                                     },
@@ -149,7 +149,7 @@ class _ImageSelectionState extends State<ImageSelection> {
             roomName: widget.roomName,
             onButtonPressed: () async {
               Navigator.of(context).pop();
-              for (var image in widget.imageList!) {
+              for (var image in widget.imageList) {
                 await controller.sendImage(image);
               }
             },
