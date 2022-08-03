@@ -63,6 +63,7 @@ dependencies:
   expandable_text: ^2.3.0
   get: ^4.6.5
   characters: ^1.2.0
+  sprintf: ^6.0.0
 
 
 dev_dependencies:

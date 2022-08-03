@@ -397,7 +397,7 @@ impl Client {
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
-                    .expect("alice should get device")
+                    .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
             })

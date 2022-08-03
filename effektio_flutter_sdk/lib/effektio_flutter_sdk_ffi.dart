@@ -4728,6 +4728,17 @@ class Api {
           _EmojiVerificationEventGetEventNameReturn Function(
     int,
   )>();
+  late final _emojiVerificationEventGetTxnIdPtr = _lookup<
+      ffi.NativeFunction<
+          _EmojiVerificationEventGetTxnIdReturn Function(
+    ffi.Int64,
+  )>>("__EmojiVerificationEvent_get_txn_id");
+
+  late final _emojiVerificationEventGetTxnId =
+      _emojiVerificationEventGetTxnIdPtr.asFunction<
+          _EmojiVerificationEventGetTxnIdReturn Function(
+    int,
+  )>();
   late final _emojiVerificationEventGetSenderPtr = _lookup<
       ffi.NativeFunction<
           _EmojiVerificationEventGetSenderReturn Function(
@@ -4737,6 +4748,28 @@ class Api {
   late final _emojiVerificationEventGetSender =
       _emojiVerificationEventGetSenderPtr.asFunction<
           _EmojiVerificationEventGetSenderReturn Function(
+    int,
+  )>();
+  late final _emojiVerificationEventGetCancelCodePtr = _lookup<
+      ffi.NativeFunction<
+          _EmojiVerificationEventGetCancelCodeReturn Function(
+    ffi.Int64,
+  )>>("__EmojiVerificationEvent_get_cancel_code");
+
+  late final _emojiVerificationEventGetCancelCode =
+      _emojiVerificationEventGetCancelCodePtr.asFunction<
+          _EmojiVerificationEventGetCancelCodeReturn Function(
+    int,
+  )>();
+  late final _emojiVerificationEventGetReasonPtr = _lookup<
+      ffi.NativeFunction<
+          _EmojiVerificationEventGetReasonReturn Function(
+    ffi.Int64,
+  )>>("__EmojiVerificationEvent_get_reason");
+
+  late final _emojiVerificationEventGetReason =
+      _emojiVerificationEventGetReasonPtr.asFunction<
+          _EmojiVerificationEventGetReasonReturn Function(
     int,
   )>();
   late final _emojiVerificationEventAcceptVerificationRequestPtr = _lookup<
@@ -8428,6 +8461,26 @@ class EmojiVerificationEvent {
     return tmp2;
   }
 
+  /// Get transaction id
+  String getTxnId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventGetTxnId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// Get user id of event sender
   String getSender() {
     var tmp0 = 0;
@@ -8444,6 +8497,54 @@ class EmojiVerificationEvent {
       final ffi.Pointer<ffi.Void> tmp3_0;
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// An error code for why the process/request was cancelled by the user.
+  String? getCancelCode() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventGetCancelCode(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// A description for why the process/request was cancelled by the user.
+  String? getReason() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._emojiVerificationEventGetReason(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
     return tmp2;
   }
@@ -9287,6 +9388,15 @@ class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _EmojiVerificationEventGetTxnIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -9294,6 +9404,28 @@ class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _EmojiVerificationEventGetCancelCodeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _EmojiVerificationEventGetReasonReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _EmojiVerificationEventWasTriggeredFromThisDeviceReturn

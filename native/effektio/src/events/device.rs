@@ -234,8 +234,9 @@ pub fn handle_devices_changed_event(
     tx: &mut Sender<DevicesChangedEvent>,
 ) {
     info!("device-changed user_id: {}", user_id);
-    let current_user_id = client.user_id().expect("guest user cannot get user id");
-    let current_device_id = client.device_id().expect("guest user cannot get device id");
+    let current_user_id = client
+        .user_id()
+        .expect("guest user cannot handle the device changed event");
     if *user_id == *current_user_id {
         let evt = DevicesChangedEvent::new(client);
         if let Err(e) = tx.try_send(evt) {

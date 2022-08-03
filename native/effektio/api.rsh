@@ -313,8 +313,17 @@ object EmojiVerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 
+    /// Get transaction id
+    fn get_txn_id() -> string;
+
     /// Get user id of event sender
     fn get_sender() -> string;
+
+    /// An error code for why the process/request was cancelled by the user.
+    fn get_cancel_code() -> Option<string>;
+
+    /// A description for why the process/request was cancelled by the user.
+    fn get_reason() -> Option<string>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
