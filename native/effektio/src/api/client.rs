@@ -414,11 +414,14 @@ impl SyncState {
 }
 
 impl Client {
-    pub fn new(client: MatrixClient, state: ClientState) -> Self {
-        Client {
+    pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
+        let cl = Client {
             client,
             state: Arc::new(RwLock::new(state)),
-        }
+        };
+
+        cl.init_tasks().await;
+        Ok(cl)
     }
 
     pub fn start_sync(&self) -> SyncState {

@@ -1,15 +1,33 @@
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::{
-    events,
+    events::{self, TaskEvent, TaskListEvent},
     models,
     // models::,
-    ruma::{OwnedEventId, OwnedRoomId},
+    ruma::{
+        events::{
+            room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
+            SyncMessageLikeEvent,
+        },
+        OwnedEventId, OwnedRoomId,
+    },
 };
 use futures_signals::signal::Mutable;
-use matrix_sdk::{room::Joined, Client as MatrixClient};
+use matrix_sdk::{room::Joined, room::Room, Client as MatrixClient};
 
 impl Client {
+    pub(crate) async fn init_tasks(&self) {
+        self.client
+            .register_event_handler(
+                |ev: TaskListEvent, room: Room, client: MatrixClient| async move {
+                    println!("received the task list event: {:?}", ev);
+                    // Common usage: Room event plus room and client.
+                    // if let ruma::events::SyncMessageLikeEvent::Original() ev {}
+                },
+            )
+            .await;
+    }
+
     pub async fn task_lists(&self) -> Vec<TaskList> {
         Default::default()
     }

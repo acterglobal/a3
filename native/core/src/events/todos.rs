@@ -1,6 +1,9 @@
 use super::TextMessageEventContent;
 use derive_builder::Builder;
-use matrix_sdk::ruma::{events::macros::EventContent, OwnedUserId};
+use matrix_sdk::ruma::{
+    events::{macros::EventContent, SyncMessageLikeEvent},
+    OwnedUserId,
+};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
@@ -109,3 +112,6 @@ pub struct TaskContent {
     #[builder(setter(into, strip_option), default)]
     pub categories: Option<Vec<String>>,
 }
+
+pub type TaskListEvent = SyncMessageLikeEvent<TaskListContent>;
+pub type TaskEvent = SyncMessageLikeEvent<TaskContent>;

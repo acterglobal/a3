@@ -30,7 +30,8 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                     .is_guest(true)
                     .build()
                     .unwrap(),
-            );
+            )
+            .await?;
             Ok(c)
         })
         .await?
@@ -55,7 +56,8 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
                     .is_guest(is_guest)
                     .build()
                     .unwrap(),
-            );
+            )
+            .await?;
             Ok(c)
         })
         .await?
@@ -93,7 +95,8 @@ pub async fn login_new_client(
                     .is_guest(false)
                     .build()
                     .unwrap(),
-            );
+            )
+            .await?;
             Ok(c)
         })
         .await?
@@ -135,7 +138,8 @@ pub async fn register_with_registration_token(
                     .is_guest(false)
                     .build()
                     .unwrap(),
-            );
+            )
+            .await?;
             Ok(c)
         })
         .await?
