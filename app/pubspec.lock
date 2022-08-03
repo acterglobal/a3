@@ -304,7 +304,7 @@ packages:
     source: sdk
     version: "0.0.0"
   flutter_parsed_text:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_parsed_text
       url: "https://pub.dartlang.org"
@@ -674,7 +674,7 @@ packages:
     source: hosted
     version: "4.4.0"
   photo_view:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: photo_view
       url: "https://pub.dartlang.org"
