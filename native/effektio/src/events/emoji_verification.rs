@@ -6,7 +6,7 @@ use matrix_sdk::{
     encryption::verification::{SasVerification, Verification},
     ruma::{
         events::{
-            key::verification::VerificationMethod, key::verification::cancel::CancelCode,
+            key::verification::cancel::CancelCode, key::verification::VerificationMethod,
             room::message::MessageType, AnySyncMessageLikeEvent, AnyToDeviceEvent,
             SyncMessageLikeEvent,
         },
