@@ -88,6 +88,7 @@
     "verificationSasDoNotMatch":"Sie stimmen nicht überein",
     "verificationEmojiNotice":"Vergleiche die einzigartigen Emoji und stell sicher, dass sie in derselben Reihenfolge angezeigt werden.",
     "verificationCodeNotice":"Vergleiche den Code mit dem Code auf dem Bildschirm deines Gegenübers.",
+    "verificationConclusionOkTitle":"Verifiziert",
     "verificationConclusionOkNotice":"Nachrichten mit diesem Gegenüber sind Ende-zu-Ende-verschlüsselt und können nicht von Dritten gelesen werden.",
     "verificationConclusionOkSelfNotice":"Deine neue Sitzung ist jetzt verifiziert. Sie hat Zugriff auf deine verschlüsselten Nachrichten, und andere Benutzer sehen sie als vertrauenswürdig an.",
     "verificationConclusionOkDone":"Sie haben %s erfolgreich bestätigt!",
