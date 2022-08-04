@@ -73,7 +73,7 @@
     "verificationScanSelfNotice":"Scan the code with your other device or switch and scan with this device",
     "verificationScanTheirCode":"Scan their code",
     "verificationScanWithThisDevice":"Scan with this device",
-    "verificationScanEmojiTitle":"Can’t scan?",
+    "verificationScanEmojiTitle":"Can’t scan",
     "verificationScanEmojiSubtitle":"If you’re not in person, compare emoji instead",
     "verificationScanSelfEmojiSubtitle":"Verify by comparing emoji instead",
     "verificationNoScanEmojiTitle":"Verify by comparing emojis",
