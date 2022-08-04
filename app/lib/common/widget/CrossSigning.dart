@@ -809,18 +809,6 @@ class CrossSigning {
                               .verificationConclusionOkTitle,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child: IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          Get.back();
-                          _eventMap.remove(txnId);
-                        },
-                        color: Colors.white,
-                      ),
-                    ),
                   ],
                 ),
                 Padding(
