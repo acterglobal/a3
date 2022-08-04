@@ -1,15 +1,15 @@
-use crate::events;
+use crate::events::tasks::{TaskEventContent, TaskListEventContent};
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskList {
-    inner: OriginalMessageLikeEvent<events::TaskListContent>,
+    inner: OriginalMessageLikeEvent<TaskListEventContent>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
-    inner: OriginalMessageLikeEvent<events::TaskContent>,
+    inner: OriginalMessageLikeEvent<TaskEventContent>,
     tasks: Vec<TaskList>,
 }
 

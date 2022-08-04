@@ -1,7 +1,10 @@
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::{
-    events::{self, TaskEvent, TaskListEvent},
+    events::{
+        self,
+        tasks::{SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
+    },
     models,
     // models::,
     ruma::{
@@ -19,7 +22,7 @@ impl Client {
     pub(crate) async fn init_tasks(&self) {
         self.client
             .register_event_handler(
-                |ev: TaskListEvent, room: Room, client: MatrixClient| async move {
+                |ev: SyncTaskListEvent, room: Room, client: MatrixClient| async move {
                     println!("received the task list event: {:?}", ev);
                     // Common usage: Room event plus room and client.
                     // if let ruma::events::SyncMessageLikeEvent::Original() ev {}
@@ -37,7 +40,7 @@ impl Client {
 pub struct TaskListDraft {
     client: MatrixClient,
     room: Joined,
-    content: events::TaskListBuilder,
+    content: TaskListBuilder,
 }
 
 impl std::ops::DerefMut for TaskListDraft {
@@ -47,7 +50,7 @@ impl std::ops::DerefMut for TaskListDraft {
 }
 
 impl std::ops::Deref for TaskListDraft {
-    type Target = events::TaskListBuilder;
+    type Target = TaskListBuilder;
     fn deref(&self) -> &Self::Target {
         &self.content
     }
@@ -81,7 +84,7 @@ impl std::ops::Deref for TaskList {
 
 impl TaskList {
     pub fn task_builder(&self) -> TaskDraft {
-        let mut content = events::TaskBuilder::default();
+        let mut content = TaskBuilder::default();
         content.task_list_id(self.event_id());
         TaskDraft {
             client: self.client.clone(),
@@ -112,7 +115,7 @@ impl std::ops::Deref for Task {
 pub struct TaskDraft {
     client: MatrixClient,
     room: Joined,
-    content: events::TaskBuilder,
+    content: TaskBuilder,
 }
 
 impl std::ops::DerefMut for TaskDraft {
@@ -122,7 +125,7 @@ impl std::ops::DerefMut for TaskDraft {
 }
 
 impl std::ops::Deref for TaskDraft {
-    type Target = events::TaskBuilder;
+    type Target = TaskBuilder;
     fn deref(&self) -> &Self::Target {
         &self.content
     }

@@ -1,9 +1,6 @@
 use super::TextMessageEventContent;
 use derive_builder::Builder;
-use matrix_sdk::ruma::{
-    events::{macros::EventContent, SyncMessageLikeEvent},
-    OwnedUserId,
-};
+use matrix_sdk::ruma::{events::macros::EventContent, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
@@ -48,7 +45,7 @@ impl Default for Priority {
 #[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
 #[builder(name = "TaskListBuilder")]
-pub struct TaskListContent {
+pub struct TaskListEventContent {
     pub name: String,
     #[builder(setter(into, strip_option), default)]
     pub role: Option<SpecialTaskListRole>,
@@ -75,7 +72,7 @@ pub struct TaskListContent {
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
 #[builder(name = "TaskBuilder")]
-pub struct TaskContent {
+pub struct TaskEventContent {
     /// The title of the Task
     pub title: String,
     /// Every tasks belongs to a tasklist
@@ -112,6 +109,3 @@ pub struct TaskContent {
     #[builder(setter(into, strip_option), default)]
     pub categories: Option<Vec<String>>,
 }
-
-pub type TaskListEvent = SyncMessageLikeEvent<TaskListContent>;
-pub type TaskEvent = SyncMessageLikeEvent<TaskContent>;
