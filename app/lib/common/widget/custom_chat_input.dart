@@ -187,7 +187,7 @@ class CustomChatInput extends StatelessWidget {
           builder: (control) {
             return Container(
               width: double.infinity,
-              height: _size.height * 0.11,
+              padding: const EdgeInsets.symmetric(vertical: 15),
               color: AppCommonTheme.backgroundColorLight,
               child: Center(
                 child: Padding(
@@ -234,9 +234,13 @@ class CustomChatInput extends StatelessWidget {
                               controller.sendButtonUpdate();
                               await controller.room.typingNotice(true);
                             }),
+                            maxLines: MediaQuery.of(context).orientation ==
+                                    Orientation.portrait
+                                ? 6
+                                : 2,
+                            minLines: 1,
                             controller: controller.textEditingController,
                             focusNode: controller.focusNode,
-                            maxLines: null,
                             style: const TextStyleRef(
                               TextStyle(color: ChatTheme01.chatInputTextColor),
                             ),
