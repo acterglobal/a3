@@ -183,6 +183,7 @@ impl Client {
         let (devices_left_event_tx, devices_left_event_rx) = channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
         let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
+
         let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
         let devices_left_event_arc = Arc::new(devices_left_event_tx);

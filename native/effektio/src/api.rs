@@ -29,7 +29,8 @@ pub use client::{Client, ClientStateBuilder, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use events::{
-    Device, DevicesChangedEvent, DevicesLeftEvent, EmojiUnit, EmojiVerificationEvent, TypingNotification,
+    Device, DevicesChangedEvent, DevicesLeftEvent, EmojiUnit, EmojiVerificationEvent,
+    TypingNotification,
 };
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};

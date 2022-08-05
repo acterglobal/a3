@@ -4,7 +4,8 @@ import 'package:themed/themed.dart';
 class AppCommonTheme {
   static const primaryColor = ColorRef(Color(0xffEC2758));
   static const backgroundColor = ColorRef(Color.fromRGBO(36, 38, 50, 1));
-  static const backgroundColorLight = ColorRef(Color(0xff333540), id: 'CIBC');
+   static const backgroundColorLight =
+      ColorRef(Color(0xff333540), id: 'CIBC');
   static const svgIconColor = ColorRef(Colors.white, id: 'NavBar');
   static const textFieldColor = ColorRef(Color(0xff171717));
   static const darkShade = ColorRef(Color(0xff333540));
@@ -113,7 +114,7 @@ class ChatTheme01 {
   static const leaveBtnBg = ColorRef(Color(0xff594848));
   static const redText = ColorRef(Color(0xffFF4B4B));
   static const chatInputTextColor = ColorRef(Colors.white, id: 'CITXC');
-    static const chatSelectedImageBorderColor = ColorRef(Color(0xff23AFC2));
+  static const chatSelectedImageBorderColor = ColorRef(Color(0xff23AFC2));
 
   static const chatTitleStyle = TextStyleRef(
     TextStyle(
@@ -131,7 +132,6 @@ class ChatTheme01 {
       ),
     ),
   );
-
   static const chatProfileTitleStyle = TextStyleRef(
     TextStyle(
       fontSize: 22,
