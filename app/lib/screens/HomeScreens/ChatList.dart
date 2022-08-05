@@ -89,7 +89,7 @@ class _ChatListState extends State<ChatList> {
                     ),
                     child: Text(
                       AppLocalizations.of(context)!.chat,
-                      style: AppCommonTheme.appBartitleStyle,
+                      style: AppCommonTheme.appBarTitleStyle,
                     ),
                   ),
                   SizedBox(height: 10),
@@ -101,7 +101,7 @@ class _ChatListState extends State<ChatList> {
                         padding: const EdgeInsets.only(left: 18),
                         child: Text(
                           AppLocalizations.of(context)!.invites,
-                          style: AppCommonTheme.appBartitleStyle
+                          style: AppCommonTheme.appBarTitleStyle
                               .copyWith(fontSize: 16),
                         ),
                       ),

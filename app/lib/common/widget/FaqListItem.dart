@@ -89,7 +89,7 @@ class FaqListItemState extends State<FaqListItem> {
                             padding: EdgeInsets.only(left: 8.0, right: 8.0),
                             child: Text(
                               'Support',
-                              style: FAQTheme.teameNameStyle,
+                              style: FAQTheme.teamNameStyle,
                             ),
                           )
                         ],

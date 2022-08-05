@@ -272,7 +272,7 @@ class CustomChatInput extends StatelessWidget {
                                   ? AppLocalizations.of(context)!.newMessage
                                   : '${AppLocalizations.of(context)!.messageTo} $roomName',
                               contentPadding: const EdgeInsets.all(15),
-                              hintStyle: ChatTheme01.chatInputPlaceHolderStyle,
+                              hintStyle: ChatTheme01.chatInputPlaceholderStyle,
                               hintMaxLines: 1,
                             ),
                           ),
