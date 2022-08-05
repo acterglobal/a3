@@ -33,6 +33,7 @@ class EffektioFlutterSdkPlugin: FlutterPlugin, MethodCallHandler {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else if (call.method == "getNativeLibraryDirectory") {
+      // This method is used to get correct library path in android 6.0
       var info: ApplicationInfo = context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
       if (info != null) {
         result.success(info.nativeLibraryDir)
