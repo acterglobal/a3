@@ -19,7 +19,7 @@ use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     media::{MediaFormat, MediaRequest},
-    ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId, UserId},
+    ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId},
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
