@@ -272,7 +272,7 @@ impl Client {
                                     }
                                 }
                                 for event in room_info.ephemeral.events {
-                                    if let Some(ev) = event.deserialize().ok() {
+                                    if let Ok(ev) = event.deserialize() {
                                         handle_typing_notification(
                                             &room_id,
                                             &ev,
