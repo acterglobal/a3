@@ -225,7 +225,9 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      AppLocalizations.of(context)!.verifyThisSession,
+                      _eventMap[txnId]!.verifyingThisDev
+                          ? AppLocalizations.of(context)!.verifyThisSession
+                          : AppLocalizations.of(context)!.verifySession,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                     const Spacer(),
@@ -244,7 +246,8 @@ class CrossSigning {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(15.0, 8.0, 15, 8.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 15.0, vertical: 8.0),
                   child: Text(
                     AppLocalizations.of(context)!.verificationScanSelfNotice,
                     style: CrossSigningSheetTheme.secondaryTextStyle,
@@ -803,10 +806,8 @@ class CrossSigning {
                     const SizedBox(width: 5.0),
                     Text(
                       _eventMap[txnId]!.verifyingThisDev
-                          ? AppLocalizations.of(context)!
-                              .verificationConclusionOkTitle
-                          : AppLocalizations.of(context)!
-                              .verificationConclusionOkTitle,
+                          ? AppLocalizations.of(context)!.sasVerified
+                          : AppLocalizations.of(context)!.sasVerified,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                   ],
