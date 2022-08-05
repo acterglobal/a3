@@ -68,15 +68,10 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // Alice gets notified that new device (Bob) was logged in
     loop {
         if let Ok(Some(event)) = alice_devices_changed_rx.try_next() {
-            if let Ok(devices) = event.get_unverified_devices().await {
-                for device in devices {
-                    if !device.was_verified() {
-                        info!("found device id: {}", device.get_device_id());
-                    }
-                }
+            if let Ok(devices) = event.get_devices(false).await {
                 // Alice sends a verification request with her desired methods to Bob
                 event
-                    .request_verification_with_methods(
+                    .request_verification_to_device_with_methods(
                         bob_device_id,
                         &mut vec!["m.sas.v1".to_owned()],
                     )

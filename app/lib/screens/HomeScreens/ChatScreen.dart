@@ -300,6 +300,15 @@ class _ChatScreenState extends State<ChatScreen> {
             Chat(
               customBottomWidget: CustomChatInput(
                 context: context,
+                isChatScreen: true,
+                roomName: roomName,
+                onButtonPressed: () async {
+                  await controller.handleSendPressed(
+                    controller.textEditingController.text,
+                  );
+                  controller.textEditingController.clear();
+                  controller.sendButtonUpdate();
+                },
               ),
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
@@ -323,7 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 await controller.room.typingNotice(true);
               },
               showUserAvatars: true,
-              onAttachmentPressed: () => _handleAttachmentPressed(context), 
+              onAttachmentPressed: () => _handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached: roomState ? null : controller.handleEndReached,

@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/screens/ChatProfileScreen/ImageSelectionScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Conversation,
@@ -40,6 +41,7 @@ class ChatController extends GetxController {
   FocusNode focusNode = FocusNode();
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
+  final List<XFile> _imageFileList = [];
 
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
@@ -113,6 +115,58 @@ class ChatController extends GetxController {
     );
     messages.insert(0, textMessage);
     update(['Chat']);
+  }
+
+  Future<void> handleMultipleImageSelection(
+    BuildContext context,
+    String roomName,
+  ) async {
+    _imageFileList.clear();
+    final result = await ImagePicker().pickMultiImage(
+      imageQuality: 70,
+      maxWidth: 1440,
+    );
+    if (result != null) {
+      _imageFileList.addAll(result);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageSelection(
+            imageList: _imageFileList,
+            roomName: roomName,
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> sendImage(XFile? result) async {
+    if (result != null) {
+      final bytes = await result.readAsBytes();
+      final image = await decodeImageFromList(bytes);
+      final mimeType = lookupMimeType(result.path);
+      var eventId = await room.sendImageMessage(
+        result.path,
+        result.name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+      );
+
+      final message = types.ImageMessage(
+        author: user,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        height: image.height.toDouble(),
+        id: eventId,
+        name: result.name,
+        size: bytes.length,
+        uri: result.path,
+        width: image.width.toDouble(),
+      );
+      messages.insert(0, message);
+      update(['Chat']);
+    }
   }
 
   //image selection

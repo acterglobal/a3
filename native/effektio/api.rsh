@@ -313,8 +313,17 @@ object EmojiVerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 
+    /// Get transaction id
+    fn get_txn_id() -> string;
+
     /// Get user id of event sender
     fn get_sender() -> string;
+
+    /// An error code for why the process/request was cancelled by the user.
+    fn get_cancel_code() -> Option<string>;
+
+    /// A description for why the process/request was cancelled by the user.
+    fn get_reason() -> Option<string>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
@@ -328,28 +337,31 @@ object EmojiVerificationEvent {
     /// Alice starts the SAS verification
     fn start_sas_verification() -> Future<Result<bool>>;
 
+    /// Whether verification request was launched from this device
+    fn was_triggered_from_this_device() -> Option<bool>;
+
     /// Bob accepts the SAS verification
     fn accept_sas_verification() -> Future<Result<bool>>;
 
     /// Bob cancels the SAS verification
     fn cancel_sas_verification() -> Future<Result<bool>>;
 
-    /// Alice and Bob sends the verification key
+    /// Alice sends the verification key to Bob and vice versa
     fn send_verification_key() -> Future<Result<bool>>;
 
-    /// Alice and Bob gets the verification emoji
-    fn get_verification_emoji() -> Future<Result<Vec<EmojiUnit>>>;
-
-    /// Alice and Bob confirms the SAS verification matches
-    fn confirm_sas_verification() -> Future<Result<bool>>;
-
-    /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-    fn mismatch_sas_verification() -> Future<Result<bool>>;
-
-    /// Cancel the AnyToDeviceEvent::KeyVerificationKey
+    /// Alice cancels the verification key from Bob and vice versa
     fn cancel_verification_key() -> Future<Result<bool>>;
 
-    /// Review the AnyToDeviceEvent::KeyVerificationMac
+    /// Alice gets the verification emoji from Bob and vice versa
+    fn get_verification_emoji() -> Future<Result<Vec<EmojiUnit>>>;
+
+    /// Alice says to Bob that SAS verification matches and vice versa
+    fn confirm_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    fn mismatch_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
     fn review_verification_mac() -> Future<Result<bool>>;
 }
 
@@ -371,19 +383,25 @@ object EmojiUnit {
 /// Deliver devices changed event from rust to flutter
 object DevicesChangedEvent {
     /// Get the device list, excluding verified ones
-    fn get_unverified_devices() -> Future<Result<Vec<Device>>>;
+    fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
 
-    /// Request verification
-    fn request_verification(dev_id: string) -> Future<Result<bool>>;
+    /// Request verification to any devices of user
+    fn request_verification_to_user() -> Future<Result<bool>>;
 
-    /// Request verification with methods
-    fn request_verification_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
+    /// Request verification to specific device
+    fn request_verification_to_device(dev_id: string) -> Future<Result<bool>>;
+
+    /// Request verification to any devices of user with methods
+    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+
+    /// Request verification to specific device with methods
+    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
 }
 
 /// Deliver devices left event from rust to flutter
 object DevicesLeftEvent {
     /// Get the device list, including deleted ones
-    fn get_deleted_devices() -> Future<Result<Vec<Device>>>;
+    fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
 }
 
 /// Provide various device infos

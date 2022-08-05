@@ -15,6 +15,7 @@ use futures::{
 use futures_signals::signal::{
     channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
+use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     media::{MediaFormat, MediaRequest},
@@ -22,6 +23,7 @@ use matrix_sdk::{
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
+use serde_json::Value;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
@@ -224,27 +226,31 @@ impl Client {
 
                         for user_id in response.device_lists.changed {
                             handle_devices_changed_event(
-                                user_id,
+                                &user_id,
                                 &client,
                                 &mut devices_changed_event_tx,
                             );
                         }
 
                         for user_id in response.device_lists.left {
-                            handle_devices_left_event(user_id, &client, &mut devices_left_event_tx);
+                            handle_devices_left_event(
+                                &user_id,
+                                &client,
+                                &mut devices_left_event_tx,
+                            );
                         }
 
-                        for event in response
-                            .to_device
-                            .events
-                            .iter()
-                            .filter_map(|e| e.deserialize().ok())
-                        {
-                            handle_emoji_to_device_event(
-                                &client,
-                                &event,
-                                &mut emoji_verification_event_tx,
-                            );
+                        for event in response.to_device.events {
+                            if let Ok(evt) = event.deserialize() {
+                                let json = serde_json::from_str::<Value>(event.json().get())
+                                    .expect("Invalid JSON in to_device event");
+                                info!("to_device event type: {}", json["type"]);
+                                handle_emoji_to_device_event(
+                                    &client,
+                                    &evt,
+                                    &mut emoji_verification_event_tx,
+                                );
+                            }
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -416,7 +422,7 @@ impl Client {
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
-                    .expect("alice should get device")
+                    .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
             })

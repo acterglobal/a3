@@ -6,8 +6,9 @@ use matrix_sdk::{
     encryption::verification::{SasVerification, Verification},
     ruma::{
         events::{
-            key::verification::VerificationMethod, room::message::MessageType,
-            AnySyncMessageLikeEvent, AnyToDeviceEvent, SyncMessageLikeEvent,
+            key::verification::cancel::CancelCode, key::verification::VerificationMethod,
+            room::message::MessageType, AnySyncMessageLikeEvent, AnyToDeviceEvent,
+            SyncMessageLikeEvent,
         },
         OwnedRoomId, UserId,
     },
@@ -22,15 +23,32 @@ pub struct EmojiVerificationEvent {
     event_name: String,
     txn_id: String,
     sender: String,
+    /// for request/ready/start events
+    launcher: Option<String>,
+    /// for cancel event
+    cancel_code: Option<CancelCode>,
+    /// for cancel event
+    reason: Option<String>,
 }
 
 impl EmojiVerificationEvent {
-    pub(crate) fn new(client: &Client, event_name: String, txn_id: String, sender: String) -> Self {
+    pub(crate) fn new(
+        client: &Client,
+        event_name: String,
+        txn_id: String,
+        sender: String,
+        launcher: Option<String>,
+        cancel_code: Option<CancelCode>,
+        reason: Option<String>,
+    ) -> Self {
         Self {
             client: client.clone(),
             event_name,
             txn_id,
             sender,
+            launcher,
+            cancel_code,
+            reason,
         }
     }
 
@@ -38,8 +56,20 @@ impl EmojiVerificationEvent {
         self.event_name.clone()
     }
 
+    pub fn get_txn_id(&self) -> String {
+        self.txn_id.clone()
+    }
+
     pub fn get_sender(&self) -> String {
         self.sender.clone()
+    }
+
+    pub fn get_cancel_code(&self) -> Option<String> {
+        self.cancel_code.clone().map(|e| e.as_str().to_owned())
+    }
+
+    pub fn get_reason(&self) -> Option<String> {
+        self.reason.clone()
     }
 
     pub async fn accept_verification_request(&self) -> Result<bool> {
@@ -127,6 +157,14 @@ impl EmojiVerificationEvent {
             .await?
     }
 
+    pub fn was_triggered_from_this_device(&self) -> Option<bool> {
+        let device_id = self
+            .client
+            .device_id()
+            .expect("guest user cannot get device id");
+        self.launcher.clone().map(|dev_id| dev_id == *device_id)
+    }
+
     pub async fn accept_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
         let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
@@ -173,8 +211,28 @@ impl EmojiVerificationEvent {
         let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                client.sync_once(SyncSettings::default()).await?;
+                client.sync_once(SyncSettings::default()).await?; // send_outgoing_requests is called there
                 Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn cancel_verification_key(&self) -> Result<bool> {
+        let client = self.client.clone();
+        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
+        let txn_id = self.txn_id.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(Verification::SasV1(sas)) = client
+                    .encryption()
+                    .get_verification(&sender, txn_id.as_str())
+                    .await
+                {
+                    sas.cancel().await.unwrap();
+                    Ok(true)
+                } else {
+                    Ok(false)
+                }
             })
             .await?
     }
@@ -248,26 +306,6 @@ impl EmojiVerificationEvent {
             .await?
     }
 
-    pub async fn cancel_verification_key(&self) -> Result<bool> {
-        let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let txn_id = self.txn_id.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, txn_id.as_str())
-                    .await
-                {
-                    sas.cancel().await.unwrap();
-                    Ok(true)
-                } else {
-                    Ok(false)
-                }
-            })
-            .await?
-    }
-
     pub async fn review_verification_mac(&self) -> Result<bool> {
         let client = self.client.clone();
         let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
@@ -330,6 +368,9 @@ pub fn handle_emoji_sync_msg_event(
                     "m.room.message".to_owned(),
                     txn_id.clone(),
                     sender,
+                    None,
+                    None,
+                    None,
                 );
                 if let Err(e) = tx.try_send(evt) {
                     warn!("Dropping event for {}: {}", txn_id, e);
@@ -341,11 +382,15 @@ pub fn handle_emoji_sync_msg_event(
             info!("{} got m.key.verification.ready", dev_id.to_string());
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+            let from_device = ev.content.from_device.to_string();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.ready".to_owned(),
                 txn_id.clone(),
                 sender,
+                Some(from_device),
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -356,11 +401,15 @@ pub fn handle_emoji_sync_msg_event(
             info!("{} got m.key.verification.start", dev_id.to_string());
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+            let from_device = ev.content.from_device.to_string();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.start".to_owned(),
                 txn_id.clone(),
                 sender,
+                Some(from_device),
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -371,11 +420,16 @@ pub fn handle_emoji_sync_msg_event(
             info!("{} got m.key.verification.cancel", dev_id.to_string());
             let sender = ev.sender.to_string();
             let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+            let cancel_code = ev.content.code.clone();
+            let reason = ev.content.reason.clone();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.cancel".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                Some(cancel_code),
+                Some(reason),
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -391,6 +445,9 @@ pub fn handle_emoji_sync_msg_event(
                 "m.key.verification.accept".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -406,6 +463,9 @@ pub fn handle_emoji_sync_msg_event(
                 "m.key.verification.key".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -421,6 +481,9 @@ pub fn handle_emoji_sync_msg_event(
                 "m.key.verification.mac".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -436,6 +499,9 @@ pub fn handle_emoji_sync_msg_event(
                 "m.key.verification.done".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping event for {}: {}", txn_id, e);
@@ -453,15 +519,22 @@ pub fn handle_emoji_to_device_event(
 ) {
     match event {
         AnyToDeviceEvent::KeyVerificationRequest(ev) => {
-            let dev_id = client.device_id().expect("guest user cannot get device id");
-            info!("{} got m.key.verification.request", dev_id.to_string());
+            let dev_id = client
+                .device_id()
+                .expect("guest user cannot get device id")
+                .to_string();
+            info!("{} got m.key.verification.request", dev_id);
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            let from_device = ev.content.from_device.to_string();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.request".to_owned(),
                 txn_id.clone(),
                 sender,
+                Some(from_device),
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -472,11 +545,15 @@ pub fn handle_emoji_to_device_event(
             info!("{} got m.key.verification.ready", dev_id.to_string());
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            let from_device = ev.content.from_device.to_string();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.ready".to_owned(),
                 txn_id.clone(),
                 sender,
+                Some(from_device),
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -487,11 +564,15 @@ pub fn handle_emoji_to_device_event(
             info!("{} got m.key.verification.start", dev_id.to_string());
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            let from_device = ev.content.from_device.to_string();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.start".to_owned(),
                 txn_id.clone(),
                 sender,
+                Some(from_device),
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -502,11 +583,16 @@ pub fn handle_emoji_to_device_event(
             info!("{} got m.key.verification.cancel", dev_id.to_string());
             let sender = ev.sender.to_string();
             let txn_id = ev.content.transaction_id.to_string();
+            let cancel_code = ev.content.code.clone();
+            let reason = ev.content.reason.clone();
             let evt = EmojiVerificationEvent::new(
                 client,
                 "m.key.verification.cancel".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                Some(cancel_code),
+                Some(reason),
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -522,6 +608,9 @@ pub fn handle_emoji_to_device_event(
                 "m.key.verification.accept".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -537,6 +626,9 @@ pub fn handle_emoji_to_device_event(
                 "m.key.verification.key".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -552,6 +644,9 @@ pub fn handle_emoji_to_device_event(
                 "m.key.verification.mac".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
@@ -567,6 +662,9 @@ pub fn handle_emoji_to_device_event(
                 "m.key.verification.done".to_owned(),
                 txn_id.clone(),
                 sender,
+                None,
+                None,
+                None,
             );
             if let Err(e) = tx.try_send(evt) {
                 warn!("Dropping transaction for {}: {}", txn_id, e);
