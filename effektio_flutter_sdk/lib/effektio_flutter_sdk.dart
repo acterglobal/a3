@@ -81,7 +81,7 @@ class EffektioSdk {
     String libDir;
     try {
       libDir = await platform.invokeMethod('getNativeLibraryDirectory');
-    } on PlatformException catch (e) {
+    } on PlatformException {
       libDir = '';
     }
     return libDir;
