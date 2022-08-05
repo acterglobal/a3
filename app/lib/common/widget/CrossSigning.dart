@@ -247,7 +247,9 @@ class CrossSigning {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 15.0, vertical: 8.0),
+                    horizontal: 15.0,
+                    vertical: 8.0,
+                  ),
                   child: Text(
                     AppLocalizations.of(context)!.verificationScanSelfNotice,
                     style: CrossSigningSheetTheme.secondaryTextStyle,
