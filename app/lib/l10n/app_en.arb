@@ -88,7 +88,6 @@
     "verificationSasDoNotMatch":"They don’t match",
     "verificationEmojiNotice":"Compare the unique emoji, ensuring they appear in the same order.",
     "verificationCodeNotice":"Compare the code with the one displayed on the other user’s screen.",
-    "verificationConclusionOkTitle":"Verified",
     "verificationConclusionOkNotice":"Messages with this user are end-to-end encrypted and can’t be read by third parties.",
     "verificationConclusionOkSelfNotice":"Your new session is now verified. It has access to your encrypted messages, and other users will see it as trusted.",
     "verificationConclusionOkDone":"You’ve successfully verified %s!",
