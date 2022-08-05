@@ -240,6 +240,9 @@ object SyncState {
 
     /// Get event handler of typing notification
     fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
+
+    /// Get event handler of read notification
+    fn get_read_notification_rx() -> Option<Stream<ReadNotification>>;
 }
 
 /// Main entry point for `effektio`.
@@ -335,6 +338,27 @@ object EmojiVerificationEvent {
 object TypingNotification {
     /// Get transaction id or flow id
     fn get_room_id() -> string;
+}
+
+/// Deliver read notification from rust to flutter
+object ReadNotification {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
+
+    /// Get records
+    fn get_read_records() -> Vec<ReadRecord>;
+}
+
+/// Deliver typing notification from rust to flutter
+object ReadRecord {
+    /// Get id of event that this user read message from peer
+    fn get_event_id() -> string;
+
+    /// Get id of user that read message from peer
+    fn get_user_id() -> string;
+
+    /// Get time that this user read message from peer
+    fn get_timestamp() -> u32;
 }
 
 /// Extend the return value of getVerificationEmoji function

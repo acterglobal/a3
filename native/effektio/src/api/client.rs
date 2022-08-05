@@ -31,8 +31,8 @@ use std::sync::{
 use super::{
     api::FfiBuffer,
     events::{
-        handle_emoji_sync_msg_event, handle_emoji_to_device_event, handle_typing_notification,
-        EmojiVerificationEvent, TypingNotification,
+        handle_emoji_sync_msg_event, handle_emoji_to_device_event, handle_read_notification,
+        handle_typing_notification, EmojiVerificationEvent, ReadNotification, TypingNotification,
     },
     Account, Conversation, Group, Room, RUNTIME,
 };
@@ -136,6 +136,7 @@ pub(crate) async fn devide_groups_from_common(
 pub struct SyncState {
     emoji_verification_event_rx: Arc<Mutex<Option<Receiver<EmojiVerificationEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     typing_notification_rx: Arc<Mutex<Option<Receiver<TypingNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    read_notification_rx: Arc<Mutex<Option<Receiver<ReadNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
@@ -143,11 +144,13 @@ impl SyncState {
     pub fn new(
         emoji_verification_event_rx: Receiver<EmojiVerificationEvent>,
         typing_notification_rx: Receiver<TypingNotification>,
+        read_notification_rx: Receiver<ReadNotification>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
         Self {
             emoji_verification_event_rx: Arc::new(Mutex::new(Some(emoji_verification_event_rx))),
             typing_notification_rx: Arc::new(Mutex::new(Some(typing_notification_rx))),
+            read_notification_rx: Arc::new(Mutex::new(Some(read_notification_rx))),
             first_synced_rx: Arc::new(Mutex::new(Some(first_synced_rx))),
         }
     }
@@ -158,6 +161,10 @@ impl SyncState {
 
     pub fn get_typing_notification_rx(&self) -> Option<Receiver<TypingNotification>> {
         self.typing_notification_rx.lock().take()
+    }
+
+    pub fn get_read_notification_rx(&self) -> Option<Receiver<ReadNotification>> {
+        self.read_notification_rx.lock().take()
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
@@ -184,12 +191,16 @@ impl Client {
         let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
         let typing_notification_arc = Arc::new(typing_notification_tx);
 
+        let (read_notification_tx, read_notification_rx) = channel::<ReadNotification>(10); // dropping after more than 10 items queued
+        let read_notification_arc = Arc::new(read_notification_tx);
+
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let sync_state = SyncState::new(
             emoji_verification_event_rx,
             typing_notification_rx,
+            read_notification_rx,
             first_synced_rx,
         );
         let initial_sync = Arc::new(AtomicBool::from(true));
@@ -205,6 +216,7 @@ impl Client {
                     let state = state.clone();
                     let emoji_verification_event_arc = emoji_verification_event_arc.clone();
                     let typing_notification_arc = typing_notification_arc.clone();
+                    let read_notification_arc = read_notification_arc.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_sync = initial_sync.clone();
 
@@ -215,6 +227,7 @@ impl Client {
                         let mut emoji_verification_event_tx =
                             (*emoji_verification_event_arc).clone();
                         let mut typing_notification_tx = (*typing_notification_arc).clone();
+                        let mut read_notification_tx = (*read_notification_arc).clone();
 
                         let user_id = client.user_id().unwrap();
                         let device_id = client.device_id().unwrap();
@@ -257,19 +270,23 @@ impl Client {
                                         .await;
                                     }
                                 }
-                                for event in room_info
-                                    .ephemeral
-                                    .events
-                                    .iter()
-                                    .filter_map(|ev| ev.deserialize().ok())
-                                {
-                                    handle_typing_notification(
-                                        &room_id,
-                                        &event,
-                                        &client,
-                                        &mut typing_notification_tx,
-                                    )
-                                    .await;
+                                for event in room_info.ephemeral.events {
+                                    if let Some(ev) = event.deserialize().ok() {
+                                        handle_typing_notification(
+                                            &room_id,
+                                            &ev,
+                                            &client,
+                                            &mut typing_notification_tx,
+                                        )
+                                        .await;
+                                        handle_read_notification(
+                                            &room_id,
+                                            &event,
+                                            &client,
+                                            &mut read_notification_tx,
+                                        )
+                                        .await;
+                                    }
                                 }
                             }
                         }

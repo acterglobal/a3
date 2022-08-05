@@ -28,7 +28,7 @@ pub use auth::{
 pub use client::{Client, ClientStateBuilder, EmojiUnit, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
-pub use events::{EmojiVerificationEvent, TypingNotification};
+pub use events::{EmojiVerificationEvent, ReadNotification, ReadRecord, TypingNotification};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};

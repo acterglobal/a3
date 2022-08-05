@@ -18,7 +18,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState;
+    show SyncState, UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,6 +123,18 @@ class _EffektioHomeState extends State<EffektioHome>
     );
     syncer.getTypingNotificationRx()!.listen((event) {
       debugPrint('typing notification for ' + event.getRoomId());
+    });
+    UserId myId = await client.userId();
+    syncer.getReadNotificationRx()!.listen((event) {
+      for (var record in event.getReadRecords()) {
+        String userId = record.getUserId();
+        if (userId != myId.toString()) {
+          debugPrint('read notification for ' + event.getRoomId());
+          debugPrint('event id: ' + record.getEventId());
+          debugPrint('user id: ' + userId);
+          debugPrint('timestamp: ' + record.getTimestamp().toString());
+        }
+      }
     });
     return client;
   }

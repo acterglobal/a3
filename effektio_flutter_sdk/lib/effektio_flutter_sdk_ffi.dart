@@ -3086,6 +3086,42 @@ class Api {
     return tmp9;
   }
 
+  ReadNotification? __syncStateGetReadNotificationRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _syncStateGetReadNotificationRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReadNotification");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = ReadNotification._(this, tmp11_1);
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -3957,6 +3993,17 @@ class Api {
           _SyncStateGetTypingNotificationRxReturn Function(
     int,
   )>();
+  late final _syncStateGetReadNotificationRxPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetReadNotificationRxReturn Function(
+    ffi.Int64,
+  )>>("__SyncState_get_read_notification_rx");
+
+  late final _syncStateGetReadNotificationRx =
+      _syncStateGetReadNotificationRxPtr.asFunction<
+          _SyncStateGetReadNotificationRxReturn Function(
+    int,
+  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4326,6 +4373,58 @@ class Api {
   late final _typingNotificationGetRoomId =
       _typingNotificationGetRoomIdPtr.asFunction<
           _TypingNotificationGetRoomIdReturn Function(
+    int,
+  )>();
+  late final _readNotificationGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadNotificationGetRoomIdReturn Function(
+    ffi.Int64,
+  )>>("__ReadNotification_get_room_id");
+
+  late final _readNotificationGetRoomId =
+      _readNotificationGetRoomIdPtr.asFunction<
+          _ReadNotificationGetRoomIdReturn Function(
+    int,
+  )>();
+  late final _readNotificationGetReadRecordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ReadNotification_get_read_records");
+
+  late final _readNotificationGetReadRecords =
+      _readNotificationGetReadRecordsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _readRecordGetEventIdPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadRecordGetEventIdReturn Function(
+    ffi.Int64,
+  )>>("__ReadRecord_get_event_id");
+
+  late final _readRecordGetEventId = _readRecordGetEventIdPtr.asFunction<
+      _ReadRecordGetEventIdReturn Function(
+    int,
+  )>();
+  late final _readRecordGetUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadRecordGetUserIdReturn Function(
+    ffi.Int64,
+  )>>("__ReadRecord_get_user_id");
+
+  late final _readRecordGetUserId = _readRecordGetUserIdPtr.asFunction<
+      _ReadRecordGetUserIdReturn Function(
+    int,
+  )>();
+  late final _readRecordGetTimestampPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__ReadRecord_get_timestamp");
+
+  late final _readRecordGetTimestamp = _readRecordGetTimestampPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _emojiUnitGetSymbolPtr = _lookup<
@@ -5095,6 +5194,23 @@ class Api {
     int,
     int,
   )>();
+  late final _syncStateGetReadNotificationRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetReadNotificationRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__SyncState_get_read_notification_rx_stream_poll");
+
+  late final _syncStateGetReadNotificationRxStreamPoll =
+      _syncStateGetReadNotificationRxStreamPollPtr.asFunction<
+          _SyncStateGetReadNotificationRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   FfiListConversation createFfiListConversation() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListConversationCreate());
@@ -5386,6 +5502,55 @@ class Api {
 
   late final _ffiListNewsInsert =
       _ffiListNewsInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListReadRecord createFfiListReadRecord() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListReadRecordCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListReadRecord");
+    return FfiListReadRecord._(this, list_box);
+  }
+
+  late final _ffiListReadRecordCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListReadRecordCreate");
+
+  late final _ffiListReadRecordCreate =
+      _ffiListReadRecordCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListReadRecordLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListReadRecordLen");
+
+  late final _ffiListReadRecordLen =
+      _ffiListReadRecordLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListReadRecordElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListReadRecordElementAt");
+
+  late final _ffiListReadRecordElementAt =
+      _ffiListReadRecordElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListReadRecordRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListReadRecordRemove");
+
+  late final _ffiListReadRecordRemove =
+      _ffiListReadRecordRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListReadRecordAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListReadRecordAdd");
+
+  late final _ffiListReadRecordAdd =
+      _ffiListReadRecordAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListReadRecordInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListReadRecordInsert");
+
+  late final _ffiListReadRecordInsert =
+      _ffiListReadRecordInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListRoomMessage createFfiListRoomMessage() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListRoomMessageCreate());
@@ -7055,6 +7220,27 @@ class SyncState {
     return tmp2;
   }
 
+  /// Get event handler of read notification
+  Stream<ReadNotification>? getReadNotificationRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateGetReadNotificationRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "__SyncState_get_read_notification_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 =
+        _nativeStream(tmp4_1, _api.__syncStateGetReadNotificationRxStreamPoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -7762,6 +7948,120 @@ class TypingNotification {
   }
 }
 
+/// Deliver read notification from rust to flutter
+class ReadNotification {
+  final Api _api;
+  final _Box _box;
+
+  ReadNotification._(this._api, this._box);
+
+  /// Get transaction id or flow id
+  String getRoomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readNotificationGetRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Get records
+  FfiListReadRecord getReadRecords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readNotificationGetReadRecords(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListReadRecord");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListReadRecord._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Deliver typing notification from rust to flutter
+class ReadRecord {
+  final Api _api;
+  final _Box _box;
+
+  ReadRecord._(this._api, this._box);
+
+  /// Get id of event that this user read message from peer
+  String getEventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readRecordGetEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Get id of user that read message from peer
+  String getUserId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readRecordGetUserId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Get time that this user read message from peer
+  int getTimestamp() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readRecordGetTimestamp(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Extend the return value of getVerificationEmoji function
 class EmojiUnit {
   final Api _api;
@@ -8067,6 +8367,13 @@ class _SyncStateGetTypingNotificationRxReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _SyncStateGetReadNotificationRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -8095,6 +8402,33 @@ class _EmojiVerificationEventGetSenderReturn extends ffi.Struct {
 }
 
 class _TypingNotificationGetRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ReadNotificationGetRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ReadRecordGetEventIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ReadRecordGetUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -8882,6 +9216,13 @@ class _SyncStateGetTypingNotificationRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _SyncStateGetReadNotificationRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class FfiListConversation extends Iterable<Conversation>
     implements CustomIterable<Conversation> {
   final Api _api;
@@ -9231,6 +9572,66 @@ class FfiListNews extends Iterable<News> implements CustomIterable<News> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, News element) {
     _api._ffiListNewsInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListReadRecord extends Iterable<ReadRecord>
+    implements CustomIterable<ReadRecord> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListReadRecord._(this._api, this._box);
+
+  @override
+  Iterator<ReadRecord> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListReadRecordLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  ReadRecord elementAt(int index) {
+    final address = _api._ffiListReadRecordElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return ReadRecord._(_api, reference);
+  }
+
+  ReadRecord operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  ReadRecord remove(int index) {
+    final address = _api._ffiListReadRecordRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReadRecord");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return ReadRecord._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(ReadRecord element) {
+    _api._ffiListReadRecordAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, ReadRecord element) {
+    _api._ffiListReadRecordInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
