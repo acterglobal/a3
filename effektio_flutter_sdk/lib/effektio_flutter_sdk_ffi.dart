@@ -792,6 +792,18 @@ class Api {
     return tmp17;
   }
 
+  /// generate news mock items
+  FfiListNews genMockNews() {
+    final tmp0 = _genMockNews();
+    final tmp2 = tmp0;
+    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
+    final tmp2_1 = _Box(this, tmp2_0, "drop_box_FfiListNews");
+    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
+    final tmp3 = FfiListNews._(this, tmp2_1);
+    final tmp1 = tmp3;
+    return tmp1;
+  }
+
   late final _allocatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Uint8> Function(ffi.IntPtr, ffi.IntPtr)>>("allocate");
@@ -3788,6 +3800,10 @@ class Api {
     int,
     int,
   )>();
+  late final _genMockNewsPtr =
+      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>("__gen_mock_news");
+
+  late final _genMockNews = _genMockNewsPtr.asFunction<int Function()>();
   late final _colorRgbaU8Ptr = _lookup<
       ffi.NativeFunction<
           _ColorRgbaU8Return Function(
