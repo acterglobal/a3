@@ -807,9 +807,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5.0),
                     Text(
-                      _eventMap[txnId]!.verifyingThisDev
-                          ? AppLocalizations.of(context)!.sasVerified
-                          : AppLocalizations.of(context)!.sasVerified,
+                      AppLocalizations.of(context)!.sasVerified,
                       style: CrossSigningSheetTheme.primaryTextStyle,
                     ),
                   ],
