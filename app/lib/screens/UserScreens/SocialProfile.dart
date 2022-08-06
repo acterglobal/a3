@@ -129,19 +129,19 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                       Tab(
                         child: Text(
                           'News',
-                          style: SideMenuAndProfileTheme.profileMenueStyle,
+                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'Feed',
-                          style: SideMenuAndProfileTheme.profileMenueStyle,
+                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'More details',
-                          style: SideMenuAndProfileTheme.profileMenueStyle,
+                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                     ],

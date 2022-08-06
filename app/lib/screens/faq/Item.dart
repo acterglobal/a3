@@ -173,7 +173,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                               ),
                               child: Text(
                                 'Support',
-                                style: FAQTheme.teameNameStyle,
+                                style: FAQTheme.teamNameStyle,
                               ),
                             )
                           ],

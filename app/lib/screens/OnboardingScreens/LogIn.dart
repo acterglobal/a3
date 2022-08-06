@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Text(
                         AppLocalizations.of(context)!.signInContinue,
-                        style: AuthTheme.authbodyStyle,
+                        style: AuthTheme.authBodyStyle,
                       ),
                       SizedBox(
                         height: 35,
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {},
                           child: Text(
                             AppLocalizations.of(context)!.forgotPassword,
-                            style: AuthTheme.authbodyStyle +
+                            style: AuthTheme.authBodyStyle +
                                 AuthTheme.forgotPasswordColor,
                           ),
                         ),
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             AppLocalizations.of(context)!.noAccount,
-                            style: AuthTheme.authbodyStyle,
+                            style: AuthTheme.authBodyStyle,
                           ),
                           InkWell(
                             onTap: () {
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text(
                               AppLocalizations.of(context)!.signUp,
-                              style: AuthTheme.authbodyStyle +
+                              style: AuthTheme.authBodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),
                           )
