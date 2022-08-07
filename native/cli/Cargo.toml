@@ -21,7 +21,6 @@ term-table = "1.3.2"
 
 [dependencies.effektio-core]
 path = "../core"
-default-features = false
 features = ["with-mocks"]
 
 [dependencies.effektio]
