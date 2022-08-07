@@ -98,7 +98,8 @@ class _ImageSelectionState extends State<ImageSelection> {
                                     border: selectedIndex ==
                                             widget.imageList.indexOf(item)
                                         ? Border.all(
-                                            color: ChatTheme01.chatSelectedImageBorderColor,
+                                            color: ChatTheme01
+                                                .chatSelectedImageBorderColor,
                                             width: 2,
                                           )
                                         : null,
@@ -120,7 +121,8 @@ class _ImageSelectionState extends State<ImageSelection> {
                                     },
                                     child: CircleAvatar(
                                       radius: 8,
-                                      backgroundColor: AppCommonTheme.transparentColor,
+                                      backgroundColor:
+                                          AppCommonTheme.transparentColor,
                                       child: SvgPicture.asset(
                                         'assets/images/remove_selected_item.svg',
                                       ),
