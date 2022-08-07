@@ -33,8 +33,8 @@ use super::{
     api::FfiBuffer,
     events::{
         handle_devices_changed_event, handle_devices_left_event, handle_emoji_sync_msg_event,
-        handle_emoji_to_device_event, DevicesChangedEvent, DevicesLeftEvent,
-        EmojiVerificationEvent,
+        handle_emoji_to_device_event, handle_typing_notification, DevicesChangedEvent,
+        DevicesLeftEvent, EmojiVerificationEvent, TypingNotification,
     },
     Account, Conversation, Group, Room, RUNTIME,
 };
@@ -116,6 +116,7 @@ pub struct SyncState {
     emoji_verification_event_rx: Arc<Mutex<Option<Receiver<EmojiVerificationEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     devices_changed_event_rx: Arc<Mutex<Option<Receiver<DevicesChangedEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     devices_left_event_rx: Arc<Mutex<Option<Receiver<DevicesLeftEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
+    typing_notification_rx: Arc<Mutex<Option<Receiver<TypingNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
@@ -124,17 +125,20 @@ impl SyncState {
         emoji_verification_event_rx: Receiver<EmojiVerificationEvent>,
         devices_changed_event_rx: Receiver<DevicesChangedEvent>,
         devices_left_event_rx: Receiver<DevicesLeftEvent>,
+        typing_notification_rx: Receiver<TypingNotification>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
         let emoji_verification_event_rx = Arc::new(Mutex::new(Some(emoji_verification_event_rx)));
         let devices_changed_event_rx = Arc::new(Mutex::new(Some(devices_changed_event_rx)));
         let devices_left_event_rx = Arc::new(Mutex::new(Some(devices_left_event_rx)));
+        let typing_notification_rx = Arc::new(Mutex::new(Some(typing_notification_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
             emoji_verification_event_rx,
             devices_changed_event_rx,
             devices_left_event_rx,
+            typing_notification_rx,
             first_synced_rx,
         }
     }
@@ -149,6 +153,10 @@ impl SyncState {
 
     pub fn get_devices_left_event_rx(&self) -> Option<Receiver<DevicesLeftEvent>> {
         self.devices_left_event_rx.lock().take()
+    }
+
+    pub fn get_typing_notification_rx(&self) -> Option<Receiver<TypingNotification>> {
+        self.typing_notification_rx.lock().take()
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
@@ -167,22 +175,27 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        let (first_synced_tx, first_synced_rx) = futures_signals::signal::channel(false);
 
         let (emoji_verification_event_tx, emoji_verification_event_rx) =
             channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
         let (devices_changed_event_tx, devices_changed_event_rx) =
             channel::<DevicesChangedEvent>(10); // dropping after more than 10 items queued
         let (devices_left_event_tx, devices_left_event_rx) = channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
+        let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
+        let (first_synced_tx, first_synced_rx) = signal_channel(false);
+
         let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
         let devices_left_event_arc = Arc::new(devices_left_event_tx);
+        let typing_notification_arc = Arc::new(typing_notification_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
-        let initial_sync = Arc::new(AtomicBool::from(true));
+
+        let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(
             emoji_verification_event_rx,
             devices_changed_event_rx,
             devices_left_event_rx,
+            typing_notification_rx,
             first_synced_rx,
         );
 
@@ -198,17 +211,19 @@ impl Client {
                     let emoji_verification_event_arc = emoji_verification_event_arc.clone();
                     let devices_changed_event_arc = devices_changed_event_arc.clone();
                     let devices_left_event_arc = devices_left_event_arc.clone();
-                    let initial_sync = initial_sync.clone();
+                    let typing_notification_arc = typing_notification_arc.clone();
                     let first_synced_arc = first_synced_arc.clone();
+                    let initial_arc = initial_arc.clone();
 
                     async move {
                         let client = client.clone();
                         let state = state.clone();
-                        let initial = initial_sync.clone();
+                        let initial = initial_arc.clone();
                         let mut emoji_verification_event_tx =
                             (*emoji_verification_event_arc).clone();
                         let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
                         let mut devices_left_event_tx = (*devices_left_event_arc).clone();
+                        let mut typing_notification_tx = (*typing_notification_arc).clone();
 
                         for user_id in response.device_lists.changed {
                             handle_devices_changed_event(
@@ -254,6 +269,17 @@ impl Client {
                                             &evt,
                                             &mut emoji_verification_event_tx,
                                         );
+                                    }
+                                }
+                                for event in room_info.ephemeral.events {
+                                    if let Ok(ev) = event.deserialize() {
+                                        handle_typing_notification(
+                                            &room_id,
+                                            &ev,
+                                            &client,
+                                            &mut typing_notification_tx,
+                                        )
+                                        .await;
                                     }
                                 }
                             }
