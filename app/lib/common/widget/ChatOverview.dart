@@ -8,10 +8,10 @@ import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
