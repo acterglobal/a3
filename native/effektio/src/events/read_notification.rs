@@ -64,7 +64,7 @@ pub async fn handle_read_notification(
     client: &Client,
     tx: &mut Sender<ReadNotification>,
 ) {
-    if let Some(AnySyncEphemeralRoomEvent::Receipt(ev)) = event.deserialize().ok() {
+    if let Ok(AnySyncEphemeralRoomEvent::Receipt(ev)) = event.deserialize() {
         let mut evt = ReadNotification::new(room_id.to_string());
         let v: Value = serde_json::from_str(event.json().get()).unwrap();
         for (event_id, event_info) in v["content"].as_object().unwrap().iter() {
