@@ -100,6 +100,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late TabController _tabController;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
+
   @override
   void initState() {
     _client = makeClient();
@@ -112,15 +113,21 @@ class _EffektioHomeState extends State<EffektioHome>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    crossSigning.dispose();
+    super.dispose();
+  }
+
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
     SyncState syncer = client.startSync();
     //Start listening for cross signing events
-    crossSigning.startCrossSigning(
-      syncer.getEmojiVerificationEventRx()!,
-      client,
-    );
+    crossSigning
+        .listenToDevicesChangedEvent(syncer.getDevicesChangedEventRx()!);
+    crossSigning
+        .listenToEmojiVerificationEvent(syncer.getEmojiVerificationEventRx()!);
     syncer.getTypingNotificationRx()!.listen((event) {
       debugPrint('typing notification for ' + event.getRoomId());
     });

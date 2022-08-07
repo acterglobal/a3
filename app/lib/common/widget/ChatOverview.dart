@@ -1,13 +1,17 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
+import 'dart:io';
+
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
+import 'package:flutter_parsed_text/flutter_parsed_text.dart';
+import 'package:intl/intl.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
@@ -89,10 +93,72 @@ class ChatListItem extends StatelessWidget {
           if (snapshot.hasData) {
             return Container(
               margin: const EdgeInsets.only(top: 10, bottom: 10),
-              child: Text(
-                '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
+              child: ParsedText(
+                text:
+                    '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
                 style: ChatTheme01.latestChatStyle,
+                regexOptions: const RegexOptions(multiLine: true, dotAll: true),
                 maxLines: 2,
+                parse: [
+                  MatchText(
+                    pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
+                    style: ChatTheme01.latestChatStyle
+                        .copyWith(fontWeight: FontWeight.bold),
+                    renderText: ({
+                      required String str,
+                      required String pattern,
+                    }) {
+                      return {
+                        'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')
+                      };
+                    },
+                  ),
+                  MatchText(
+                    pattern: '_(.*?)_',
+                    style: ChatTheme01.latestChatStyle
+                        .copyWith(fontStyle: FontStyle.italic),
+                    renderText: ({
+                      required String str,
+                      required String pattern,
+                    }) {
+                      return {'display': str.replaceAll('_', '')};
+                    },
+                  ),
+                  MatchText(
+                    pattern: '~(.*?)~',
+                    style: ChatTheme01.latestChatStyle.copyWith(
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                    renderText: ({
+                      required String str,
+                      required String pattern,
+                    }) {
+                      return {'display': str.replaceAll('~', '')};
+                    },
+                  ),
+                  MatchText(
+                    pattern: '`(.*?)`',
+                    style: ChatTheme01.latestChatStyle.copyWith(
+                      fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
+                    ),
+                    renderText: ({
+                      required String str,
+                      required String pattern,
+                    }) {
+                      return {'display': str.replaceAll('`', '')};
+                    },
+                  ),
+                  MatchText(
+                    pattern: regexEmail,
+                    style: ChatTheme01.latestChatStyle
+                        .copyWith(decoration: TextDecoration.underline),
+                  ),
+                  MatchText(
+                    pattern: regexLink,
+                    style: ChatTheme01.latestChatStyle
+                        .copyWith(decoration: TextDecoration.underline),
+                  ),
+                ],
               ),
             );
           } else {
