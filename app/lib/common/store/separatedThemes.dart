@@ -13,7 +13,7 @@ class AppCommonTheme {
   static const transparentColor = ColorRef(Colors.transparent);
   static const appBarTitleColor = ColorRef(Colors.white, id: 'ABT');
 
-  static const appBartitleStyle = TextStyleRef(
+  static const appBarTitleStyle = TextStyleRef(
     TextStyleRef(
       TextStyle(
         fontSize: 20,
@@ -48,7 +48,7 @@ class SideMenuAndProfileTheme {
     ),
   );
 
-  static const profileMenueStyle = TextStyleRef(
+  static const profileMenuStyle = TextStyleRef(
     TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.w500,
@@ -97,7 +97,7 @@ class AuthTheme {
     ),
   );
 
-  static const authbodyStyle = TextStyleRef(
+  static const authBodyStyle = TextStyleRef(
     TextStyle(
       fontSize: 16,
       fontWeight: FontWeight.w400,
@@ -123,7 +123,7 @@ class ChatTheme01 {
     ),
   );
 
-  static const chatInputPlaceHolderStyle = TextStyleRef(
+  static const chatInputPlaceholderStyle = TextStyleRef(
     TextStyle(
       fontSize: 18,
       color: ColorRef(
@@ -131,6 +131,7 @@ class ChatTheme01 {
       ),
     ),
   );
+
   static const chatProfileTitleStyle = TextStyleRef(
     TextStyle(
       fontSize: 22,
@@ -192,13 +193,14 @@ class FAQTheme {
     ),
   );
 
-  static const teameNameStyle = TextStyleRef(
+  static const teamNameStyle = TextStyleRef(
     TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w500,
       color: faqTeamColor,
     ),
   );
+
   static const likeAndCommentStyle = TextStyleRef(
     TextStyle(
       fontSize: 13,
@@ -252,6 +254,7 @@ class CrossSigningSheetTheme {
       color: primaryTextColor,
     ),
   );
+
   static const secondaryTextStyle = TextStyleRef(
     TextStyle(
       fontSize: 14,
@@ -259,6 +262,7 @@ class CrossSigningSheetTheme {
       color: secondaryTextColor,
     ),
   );
+
   static const buttonTextStyle = TextStyleRef(
     TextStyle(
       fontSize: 14,

@@ -259,15 +259,6 @@ impl Client {
                             );
                         }
 
-                        let user_id = client.user_id().unwrap();
-                        let device_id = client.device_id().unwrap();
-                        let device = client
-                            .encryption()
-                            .get_device(user_id, device_id)
-                            .await
-                            .unwrap()
-                            .unwrap();
-
                         for event in response.to_device.events {
                             if let Ok(evt) = event.deserialize() {
                                 let json = serde_json::from_str::<Value>(event.json().get())
@@ -295,8 +286,7 @@ impl Client {
                                             &room_id,
                                             &evt,
                                             &mut emoji_verification_event_tx,
-                                        )
-                                        .await;
+                                        );
                                     }
                                 }
                                 for event in room_info.ephemeral.events {
