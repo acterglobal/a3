@@ -348,18 +348,25 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             roomState
-                ? Container(
-                    alignment: Alignment.topLeft,
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 20, left: 10),
-                    color: AppCommonTheme.backgroundColor,
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      AppLocalizations.of(context)!.invitationText1,
-                      style: AppCommonTheme.appBarTitleStyle
-                          .copyWith(fontSize: 14),
-                    ),
+                ? LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Container(
+                        alignment: Alignment.topLeft,
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          bottom: 20,
+                          left: 10,
+                        ),
+                        color: AppCommonTheme.backgroundColor,
+                        height: constraints.maxHeight * 0.25,
+                        width: double.infinity,
+                        child: Text(
+                          AppLocalizations.of(context)!.invitationText1,
+                          style: AppCommonTheme.appBarTitleStyle
+                              .copyWith(fontSize: 14),
+                        ),
+                      );
+                    },
                   )
                 : Container(),
             roomState
