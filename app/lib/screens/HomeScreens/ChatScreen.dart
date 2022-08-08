@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/custom_chat_input.dart';
