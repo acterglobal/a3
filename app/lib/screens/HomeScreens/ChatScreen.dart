@@ -172,111 +172,118 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppCommonTheme.backgroundColor,
-        elevation: 1,
-        centerTitle: true,
-        toolbarHeight: 70,
-        leading: Row(
-          children: <Widget>[
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/back_button.svg',
-                color: AppCommonTheme.svgIconColor,
-              ),
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        return Scaffold(
+          resizeToAvoidBottomInset: orientation == Orientation.portrait,
+          appBar: AppBar(
+            backgroundColor: AppCommonTheme.backgroundColor,
+            elevation: 1,
+            centerTitle: true,
+            toolbarHeight: 70,
+            leading: Row(
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/images/back_button.svg',
+                    color: AppCommonTheme.svgIconColor,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        title: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FutureBuilder<String>(
-              future:
-                  widget.room.displayName().then((value) => roomName = value),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    snapshot.requireData,
-                    overflow: TextOverflow.clip,
-                    style: ChatTheme01.chatTitleStyle,
-                  );
-                } else {
-                  return Text(AppLocalizations.of(context)!.loadingName);
-                }
-              },
+            title: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FutureBuilder<String>(
+                  future: widget.room
+                      .displayName()
+                      .then((value) => roomName = value),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.requireData,
+                        overflow: TextOverflow.clip,
+                        style: ChatTheme01.chatTitleStyle,
+                      );
+                    } else {
+                      return Text(AppLocalizations.of(context)!.loadingName);
+                    }
+                  },
+                ),
+                SizedBox(height: 5),
+                FutureBuilder<FfiListMember>(
+                  future: widget.room.activeMembers(),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<FfiListMember> snapshot,
+                  ) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
+                        style: ChatTheme01.chatBodyStyle +
+                            AppCommonTheme.primaryColor,
+                      );
+                    } else {
+                      return Container(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
-            SizedBox(height: 5),
-            FutureBuilder<FfiListMember>(
-              future: widget.room.activeMembers(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<FfiListMember> snapshot,
-              ) {
-                if (snapshot.hasData) {
-                  return Text(
-                    '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
-                    style:
-                        ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
-                  );
-                } else {
-                  return Container(
-                    height: 15,
-                    width: 15,
-                    child: CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatProfileScreen(
+                        room: widget.room,
+                        user: widget.user,
+                        isGroup: true,
+                        isAdmin: true,
+                      ),
                     ),
                   );
-                }
-              },
-            ),
-          ],
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatProfileScreen(
-                    room: widget.room,
-                    user: widget.user,
-                    isGroup: true,
-                    isAdmin: true,
-                  ),
-                ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Container(
-                height: 45,
-                width: 45,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: CustomAvatar(
-                    avatar: widget.room.avatar(),
-                    displayName: widget.room.displayName(),
-                    radius: 20,
-                    isGroup: true,
-                    stringName: '',
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Container(
+                    height: 45,
+                    width: 45,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: CustomAvatar(
+                        avatar: widget.room.avatar(),
+                        displayName: widget.room.displayName(),
+                        radius: 20,
+                        isGroup: true,
+                        stringName: '',
+                      ),
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+          body: Obx(
+            () => SafeArea(
+              bottom: false,
+              child: _buildBody(context),
             ),
           ),
-        ],
-      ),
-      body: Obx(
-        () => SafeArea(
-          bottom: false,
-          child: _buildBody(context),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -348,18 +355,25 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             roomState
-                ? Container(
-                    alignment: Alignment.topLeft,
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 20, left: 10),
-                    color: AppCommonTheme.backgroundColor,
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      AppLocalizations.of(context)!.invitationText1,
-                      style: AppCommonTheme.appBarTitleStyle
-                          .copyWith(fontSize: 14),
-                    ),
+                ? LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Container(
+                        alignment: Alignment.topLeft,
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          bottom: 20,
+                          left: 10,
+                        ),
+                        color: AppCommonTheme.backgroundColor,
+                        height: constraints.maxHeight * 0.25,
+                        width: double.infinity,
+                        child: Text(
+                          AppLocalizations.of(context)!.invitationText1,
+                          style: AppCommonTheme.appBarTitleStyle
+                              .copyWith(fontSize: 14),
+                        ),
+                      );
+                    },
                   )
                 : Container(),
             roomState
