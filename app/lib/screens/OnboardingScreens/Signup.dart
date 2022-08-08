@@ -93,7 +93,7 @@ class _SignupScreentate extends State<SignupScreen> {
                       ),
                       Text(
                         AppLocalizations.of(context)!.createAccountText,
-                        style: AuthTheme.authbodyStyle,
+                        style: AuthTheme.authBodyStyle,
                       ),
                       SizedBox(
                         height: 20,
@@ -132,7 +132,7 @@ class _SignupScreentate extends State<SignupScreen> {
                           text: TextSpan(
                             // Note: Styles for TextSpans must be explicitly defined.
                             // Child text spans will inherit styles from parent
-                            style: AuthTheme.authbodyStyle,
+                            style: AuthTheme.authBodyStyle,
                             children: <TextSpan>[
                               TextSpan(
                                 text:
@@ -144,7 +144,7 @@ class _SignupScreentate extends State<SignupScreen> {
                                     debugPrint('Terms of Service"');
                                   },
                                 text: AppLocalizations.of(context)!.termsText2,
-                                style: AuthTheme.authbodyStyle +
+                                style: AuthTheme.authBodyStyle +
                                     AppCommonTheme.primaryColor,
                               ),
                               TextSpan(
@@ -157,7 +157,7 @@ class _SignupScreentate extends State<SignupScreen> {
                                     debugPrint('policy"');
                                   },
                                 text: AppLocalizations.of(context)!.termsText4,
-                                style: AuthTheme.authbodyStyle +
+                                style: AuthTheme.authBodyStyle +
                                     AppCommonTheme.primaryColor,
                               ),
                             ],
@@ -197,7 +197,7 @@ class _SignupScreentate extends State<SignupScreen> {
                         children: [
                           Text(
                             '${AppLocalizations.of(context)!.haveAccount}  ',
-                            style: AuthTheme.authbodyStyle,
+                            style: AuthTheme.authBodyStyle,
                           ),
                           InkWell(
                             onTap: () {
@@ -211,7 +211,7 @@ class _SignupScreentate extends State<SignupScreen> {
                             },
                             child: Text(
                               AppLocalizations.of(context)!.login,
-                              style: AuthTheme.authbodyStyle +
+                              style: AuthTheme.authBodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),
                           )

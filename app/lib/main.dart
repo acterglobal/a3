@@ -128,6 +128,9 @@ class _EffektioHomeState extends State<EffektioHome>
         .listenToDevicesChangedEvent(syncer.getDevicesChangedEventRx()!);
     crossSigning
         .listenToEmojiVerificationEvent(syncer.getEmojiVerificationEventRx()!);
+    syncer.getTypingNotificationRx()!.listen((event) {
+      debugPrint('typing notification for ' + event.getRoomId());
+    });
     return client;
   }
 

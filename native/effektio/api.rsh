@@ -246,6 +246,9 @@ object SyncState {
 
     /// Get event handler of devices left
     fn get_devices_left_event_rx() -> Option<Stream<DevicesLeftEvent>>;
+
+    /// Get event handler of typing notification
+    fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
 }
 
 /// Main entry point for `effektio`.
@@ -363,6 +366,12 @@ object EmojiVerificationEvent {
 
     /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
     fn review_verification_mac() -> Future<Result<bool>>;
+}
+
+/// Deliver typing notification from rust to flutter
+object TypingNotification {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
 }
 
 /// Extend the return value of getVerificationEmoji function

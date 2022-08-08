@@ -3649,6 +3649,42 @@ class Api {
     return tmp9;
   }
 
+  TypingNotification? __syncStateGetTypingNotificationRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _syncStateGetTypingNotificationRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TypingNotification");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = TypingNotification._(this, tmp11_1);
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -4535,6 +4571,17 @@ class Api {
           _SyncStateGetDevicesLeftEventRxReturn Function(
     int,
   )>();
+  late final _syncStateGetTypingNotificationRxPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetTypingNotificationRxReturn Function(
+    ffi.Int64,
+  )>>("__SyncState_get_typing_notification_rx");
+
+  late final _syncStateGetTypingNotificationRx =
+      _syncStateGetTypingNotificationRxPtr.asFunction<
+          _SyncStateGetTypingNotificationRxReturn Function(
+    int,
+  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4916,6 +4963,17 @@ class Api {
   late final _emojiVerificationEventReviewVerificationMac =
       _emojiVerificationEventReviewVerificationMacPtr.asFunction<
           int Function(
+    int,
+  )>();
+  late final _typingNotificationGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          _TypingNotificationGetRoomIdReturn Function(
+    ffi.Int64,
+  )>>("__TypingNotification_get_room_id");
+
+  late final _typingNotificationGetRoomId =
+      _typingNotificationGetRoomIdPtr.asFunction<
+          _TypingNotificationGetRoomIdReturn Function(
     int,
   )>();
   late final _emojiUnitGetSymbolPtr = _lookup<
@@ -6053,6 +6111,23 @@ class Api {
   late final _syncStateGetDevicesLeftEventRxStreamPoll =
       _syncStateGetDevicesLeftEventRxStreamPollPtr.asFunction<
           _SyncStateGetDevicesLeftEventRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _syncStateGetTypingNotificationRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _SyncStateGetTypingNotificationRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__SyncState_get_typing_notification_rx_stream_poll");
+
+  late final _syncStateGetTypingNotificationRxStreamPoll =
+      _syncStateGetTypingNotificationRxStreamPollPtr.asFunction<
+          _SyncStateGetTypingNotificationRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8137,6 +8212,27 @@ class SyncState {
     return tmp2;
   }
 
+  /// Get event handler of typing notification
+  Stream<TypingNotification>? getTypingNotificationRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._syncStateGetTypingNotificationRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(
+        _api, tmp4_0, "__SyncState_get_typing_notification_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__syncStateGetTypingNotificationRxStreamPoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -8782,6 +8878,39 @@ class EmojiVerificationEvent {
   }
 }
 
+/// Deliver typing notification from rust to flutter
+class TypingNotification {
+  final Api _api;
+  final _Box _box;
+
+  TypingNotification._(this._api, this._box);
+
+  /// Get transaction id or flow id
+  String getRoomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._typingNotificationGetRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Extend the return value of getVerificationEmoji function
 class EmojiUnit {
   final Api _api;
@@ -9379,6 +9508,13 @@ class _SyncStateGetDevicesLeftEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _SyncStateGetTypingNotificationRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -9434,6 +9570,15 @@ class _EmojiVerificationEventWasTriggeredFromThisDeviceReturn
   external int arg0;
   @ffi.Uint8()
   external int arg1;
+}
+
+class _TypingNotificationGetRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _EmojiUnitGetDescriptionReturn extends ffi.Struct {
@@ -10441,6 +10586,13 @@ class _SyncStateGetDevicesChangedEventRxStreamPollReturn extends ffi.Struct {
 }
 
 class _SyncStateGetDevicesLeftEventRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _SyncStateGetTypingNotificationRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

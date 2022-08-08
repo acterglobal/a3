@@ -357,7 +357,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     width: MediaQuery.of(context).size.width,
                     child: Text(
                       AppLocalizations.of(context)!.invitationText1,
-                      style: AppCommonTheme.appBartitleStyle
+                      style: AppCommonTheme.appBarTitleStyle
                           .copyWith(fontSize: 14),
                     ),
                   )
