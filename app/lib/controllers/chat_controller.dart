@@ -323,7 +323,10 @@ class ChatController extends GetxController {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
         types.ImageMessage m = types.ImageMessage(
-          author: types.User(id: message.sender()),
+          author: types.User(
+            id: message.sender(),
+            firstName: getNameFromId(message.sender()),
+          ),
           createdAt: message.originServerTs() * 1000,
           height: description.height()?.toDouble(),
           id: eventId,
