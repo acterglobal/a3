@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/chatTheme.dart';
 import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/custom_chat_input.dart';
@@ -113,24 +112,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ],
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _avatarBuilder(String userId) {
-    return GetBuilder<ChatController>(
-      id: 'Avatar',
-      builder: (ChatController controller) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: CustomAvatar(
-            avatar: widget.room.avatar(),
-            displayName: null,
-            radius: 15,
-            isGroup: false,
-            stringName: getNameFromId(userId),
           ),
         );
       },
@@ -331,8 +312,6 @@ class _ChatScreenState extends State<ChatScreen> {
               onSendPressed: (_) {},
               user: _user,
               disableImageGallery: roomState ? true : false,
-              //custom avatar builder
-              avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
               //Whenever users starts typing on keyboard, this will trigger the function
               onTextChanged: (text) async {
