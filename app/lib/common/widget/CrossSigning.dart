@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:effektio/common/store/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show DevicesChangedEvent, EmojiVerificationEvent;
+    show DeviceChangedEvent, SessionVerificationEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,19 +22,19 @@ class VerifEvent {
 }
 
 class CrossSigning {
-  late StreamSubscription<DevicesChangedEvent> _devicesChangedEventSubscription;
-  late StreamSubscription<EmojiVerificationEvent>
-      _emojiVerificationEventSubscription;
+  late StreamSubscription<DeviceChangedEvent> _devicesChangedEventSubscription;
+  late StreamSubscription<SessionVerificationEvent>
+      _sessionVerificationEventSubscription;
   final Map<String, VerifEvent> _eventMap = {};
   bool acceptingRequest = false;
   bool waitForMatch = false;
 
   void dispose() {
     _devicesChangedEventSubscription.cancel();
-    _emojiVerificationEventSubscription.cancel();
+    _sessionVerificationEventSubscription.cancel();
   }
 
-  void listenToDevicesChangedEvent(Stream<DevicesChangedEvent> receiver) async {
+  void installDeviceChangedEvent(Stream<DeviceChangedEvent> receiver) async {
     debugPrint('listenToDevicesChangedEvent');
     _devicesChangedEventSubscription = receiver.listen((event) async {
       debugPrint('listenToDevicesChangedEvent');
@@ -72,10 +72,10 @@ class CrossSigning {
     });
   }
 
-  void listenToEmojiVerificationEvent(
-    Stream<EmojiVerificationEvent> receiver,
+  void installSessionVerificationEvent(
+    Stream<SessionVerificationEvent> receiver,
   ) async {
-    _emojiVerificationEventSubscription = receiver.listen((event) async {
+    _sessionVerificationEventSubscription = receiver.listen((event) async {
       String eventName = event.getEventName();
       debugPrint(eventName);
       if (eventName == 'm.key.verification.request') {
@@ -98,7 +98,7 @@ class CrossSigning {
     });
   }
 
-  void _onKeyVerificationRequest(EmojiVerificationEvent event) {
+  void _onKeyVerificationRequest(SessionVerificationEvent event) {
     String txnId = event.getTxnId();
     if (_eventMap.containsKey(txnId)) {
       return;
@@ -194,7 +194,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationReady(EmojiVerificationEvent event, bool manual) {
+  void _onKeyVerificationReady(SessionVerificationEvent event, bool manual) {
     String txnId = event.getTxnId();
     if (manual) {
       _eventMap[txnId]!.stage = 'm.key.verification.ready';
@@ -273,7 +273,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationStart(EmojiVerificationEvent event) {
+  void _onKeyVerificationStart(SessionVerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -343,7 +343,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationCancel(EmojiVerificationEvent event, bool manual) {
+  void _onKeyVerificationCancel(SessionVerificationEvent event, bool manual) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -433,7 +433,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationAccept(EmojiVerificationEvent event) {
+  void _onKeyVerificationAccept(SessionVerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -471,16 +471,16 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationKey(EmojiVerificationEvent event) {
+  void _onKeyVerificationKey(SessionVerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
     String txnId = event.getTxnId();
     _eventMap[txnId]?.stage = 'm.key.verification.key';
     event.getVerificationEmoji().then((emoji) {
-      List<int> emojiCodes = emoji.map((e) => e.getSymbol()).toList();
+      List<int> emojiCodes = emoji.map((e) => e.symbol()).toList();
       List<String> emojiDescriptions =
-          emoji.map((e) => e.getDescription()).toList();
+          emoji.map((e) => e.description()).toList();
       Get.bottomSheet(
         StatefulBuilder(
           builder: (context, setState) {
@@ -650,14 +650,14 @@ class CrossSigning {
     });
   }
 
-  void _onKeyVerificationMac(EmojiVerificationEvent event) {
+  void _onKeyVerificationMac(SessionVerificationEvent event) {
     _eventMap[event.getTxnId()]?.stage = 'm.key.verification.mac';
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
     });
   }
 
-  void _onKeyVerificationDone(EmojiVerificationEvent event) {
+  void _onKeyVerificationDone(SessionVerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }

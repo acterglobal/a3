@@ -238,12 +238,6 @@ object SyncState {
     /// Get event handler of first synchronization on every launch
     fn get_first_synced_rx() -> Option<Stream<bool>>;
 
-    /// Get event handler of devices changed
-    fn get_devices_changed_event_rx() -> Option<Stream<DevicesChangedEvent>>;
-
-    /// Get event handler of devices left
-    fn get_devices_left_event_rx() -> Option<Stream<DevicesLeftEvent>>;
-
     /// Get event handler of typing notification
     fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
 }
@@ -309,6 +303,9 @@ object Client {
 
     /// Return the session verification controller. If not exists, create it.
     fn get_session_verification_controller() -> Future<Result<SessionVerificationController>>;
+
+    /// Return the device lists controller. If not exists, create it.
+    fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
 }
 
 object SessionVerificationController {
@@ -379,14 +376,16 @@ object SessionVerificationEmoji {
     fn description() -> string;
 }
 
-/// Deliver typing notification from rust to flutter
-object TypingNotification {
-    /// Get transaction id or flow id
-    fn get_room_id() -> string;
+object DeviceListsController {
+    /// Get event handler of devices changed
+    fn get_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+
+    /// Get event handler of devices left
+    fn get_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
 }
 
 /// Deliver devices changed event from rust to flutter
-object DevicesChangedEvent {
+object DeviceChangedEvent {
     /// Get the device list, excluding verified ones
     fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
 
@@ -404,7 +403,7 @@ object DevicesChangedEvent {
 }
 
 /// Deliver devices left event from rust to flutter
-object DevicesLeftEvent {
+object DeviceLeftEvent {
     /// Get the device list, including deleted ones
     fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
 }
@@ -425,4 +424,10 @@ object Device {
 
     /// get the display name of this device
     fn get_display_name() -> Option<string>;
+}
+
+/// Deliver typing notification from rust to flutter
+object TypingNotification {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
 }

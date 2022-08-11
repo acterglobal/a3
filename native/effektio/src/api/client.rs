@@ -32,11 +32,8 @@ use std::sync::{
 
 use super::{
     api::FfiBuffer,
-    events::{
-        handle_devices_changed_event, handle_devices_left_event, handle_typing_notification,
-        DevicesChangedEvent, DevicesLeftEvent, TypingNotification,
-    },
-    Account, Conversation, Group, Room, SessionVerificationController, RUNTIME,
+    events::{handle_typing_notification, TypingNotification},
+    Account, Conversation, DeviceListsController, Group, Room, SessionVerificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -57,6 +54,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
+    pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -115,38 +113,22 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    devices_changed_event_rx: Arc<Mutex<Option<Receiver<DevicesChangedEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    devices_left_event_rx: Arc<Mutex<Option<Receiver<DevicesLeftEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     typing_notification_rx: Arc<Mutex<Option<Receiver<TypingNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
 impl SyncState {
     pub fn new(
-        devices_changed_event_rx: Receiver<DevicesChangedEvent>,
-        devices_left_event_rx: Receiver<DevicesLeftEvent>,
         typing_notification_rx: Receiver<TypingNotification>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
-        let devices_changed_event_rx = Arc::new(Mutex::new(Some(devices_changed_event_rx)));
-        let devices_left_event_rx = Arc::new(Mutex::new(Some(devices_left_event_rx)));
         let typing_notification_rx = Arc::new(Mutex::new(Some(typing_notification_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
-            devices_changed_event_rx,
-            devices_left_event_rx,
             typing_notification_rx,
             first_synced_rx,
         }
-    }
-
-    pub fn get_devices_changed_event_rx(&self) -> Option<Receiver<DevicesChangedEvent>> {
-        self.devices_changed_event_rx.lock().take()
-    }
-
-    pub fn get_devices_left_event_rx(&self) -> Option<Receiver<DevicesLeftEvent>> {
-        self.devices_left_event_rx.lock().take()
     }
 
     pub fn get_typing_notification_rx(&self) -> Option<Receiver<TypingNotification>> {
@@ -164,6 +146,7 @@ impl Client {
             client,
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: Arc::new(MatrixRwLock::new(None)),
+            device_lists_controller: Arc::new(MatrixRwLock::new(None)),
         }
     }
 
@@ -171,22 +154,16 @@ impl Client {
         let client = self.client.clone();
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
+        let device_lists_controller = self.device_lists_controller.clone();
 
-        let (devices_changed_event_tx, devices_changed_event_rx) =
-            channel::<DevicesChangedEvent>(10); // dropping after more than 10 items queued
-        let (devices_left_event_tx, devices_left_event_rx) = channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
         let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
 
-        let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
-        let devices_left_event_arc = Arc::new(devices_left_event_tx);
         let typing_notification_arc = Arc::new(typing_notification_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(
-            devices_changed_event_rx,
-            devices_left_event_rx,
             typing_notification_rx,
             first_synced_rx,
         );
@@ -195,6 +172,7 @@ impl Client {
             let client = client.clone();
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
+            let device_lists_controller = device_lists_controller.clone();
 
             client
                 .clone()
@@ -202,8 +180,7 @@ impl Client {
                     let client = client.clone();
                     let state = state.clone();
                     let session_verification_controller = session_verification_controller.clone();
-                    let devices_changed_event_arc = devices_changed_event_arc.clone();
-                    let devices_left_event_arc = devices_left_event_arc.clone();
+                    let device_lists_controller = device_lists_controller.clone();
                     let typing_notification_arc = typing_notification_arc.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
@@ -211,24 +188,10 @@ impl Client {
                     async move {
                         let state = state.clone();
                         let initial = initial_arc.clone();
-                        let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
-                        let mut devices_left_event_tx = (*devices_left_event_arc).clone();
                         let mut typing_notification_tx = (*typing_notification_arc).clone();
 
-                        for user_id in response.device_lists.changed {
-                            handle_devices_changed_event(
-                                &user_id,
-                                &client,
-                                &mut devices_changed_event_tx,
-                            );
-                        }
-
-                        for user_id in response.device_lists.left {
-                            handle_devices_left_event(
-                                &user_id,
-                                &client,
-                                &mut devices_left_event_tx,
-                            );
+                        if let Some(dlc) = &*device_lists_controller.read().await {
+                            dlc.process_events(&client, response.device_lists);
                         }
 
                         if !initial.load(Ordering::SeqCst) {
@@ -414,6 +377,25 @@ impl Client {
                 let svc = SessionVerificationController::new();
                 *session_verification_controller.write().await = Some(svc.clone());
                 Ok(svc)
+            })
+            .await?
+    }
+
+    pub async fn get_device_lists_controller(
+        &self,
+    ) -> Result<DeviceListsController> {
+        // if not exists, create new controller and return it.
+        // thus Result is necessary but Option is not necessary.
+        let c = self.client.clone();
+        let device_lists_controller = self.device_lists_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(dlc) = &*device_lists_controller.read().await {
+                    return Ok(dlc.clone());
+                }
+                let dlc = DeviceListsController::new();
+                *device_lists_controller.write().await = Some(dlc.clone());
+                Ok(dlc)
             })
             .await?
     }
