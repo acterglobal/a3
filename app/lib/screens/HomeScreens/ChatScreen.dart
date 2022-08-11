@@ -135,7 +135,7 @@ class _ChatScreenState extends State<ChatScreen> {
             displayName: null,
             radius: 15,
             isGroup: false,
-            stringName: getNameFromId(userId),
+            stringName: getNameFromId(userId) ?? '',
           ),
         );
       },
