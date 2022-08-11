@@ -18,6 +18,7 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
+    locks::RwLock as MatrixRwLock,
     media::{MediaFormat, MediaRequest},
     ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId},
     Client as MatrixClient, LoopCtrl,
@@ -32,11 +33,10 @@ use std::sync::{
 use super::{
     api::FfiBuffer,
     events::{
-        handle_devices_changed_event, handle_devices_left_event, handle_emoji_sync_msg_event,
-        handle_emoji_to_device_event, handle_typing_notification, DevicesChangedEvent,
-        DevicesLeftEvent, EmojiVerificationEvent, TypingNotification,
+        handle_devices_changed_event, handle_devices_left_event, handle_typing_notification,
+        DevicesChangedEvent, DevicesLeftEvent, TypingNotification,
     },
-    Account, Conversation, Group, Room, RUNTIME,
+    Account, Conversation, Group, Room, SessionVerificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -55,6 +55,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
+    pub(crate) session_verification_controller: Arc<MatrixRwLock<Option<SessionVerificationController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -113,7 +114,6 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    emoji_verification_event_rx: Arc<Mutex<Option<Receiver<EmojiVerificationEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     devices_changed_event_rx: Arc<Mutex<Option<Receiver<DevicesChangedEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     devices_left_event_rx: Arc<Mutex<Option<Receiver<DevicesLeftEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     typing_notification_rx: Arc<Mutex<Option<Receiver<TypingNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
@@ -122,29 +122,22 @@ pub struct SyncState {
 
 impl SyncState {
     pub fn new(
-        emoji_verification_event_rx: Receiver<EmojiVerificationEvent>,
         devices_changed_event_rx: Receiver<DevicesChangedEvent>,
         devices_left_event_rx: Receiver<DevicesLeftEvent>,
         typing_notification_rx: Receiver<TypingNotification>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
-        let emoji_verification_event_rx = Arc::new(Mutex::new(Some(emoji_verification_event_rx)));
         let devices_changed_event_rx = Arc::new(Mutex::new(Some(devices_changed_event_rx)));
         let devices_left_event_rx = Arc::new(Mutex::new(Some(devices_left_event_rx)));
         let typing_notification_rx = Arc::new(Mutex::new(Some(typing_notification_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
-            emoji_verification_event_rx,
             devices_changed_event_rx,
             devices_left_event_rx,
             typing_notification_rx,
             first_synced_rx,
         }
-    }
-
-    pub fn get_emoji_verification_event_rx(&self) -> Option<Receiver<EmojiVerificationEvent>> {
-        self.emoji_verification_event_rx.lock().take()
     }
 
     pub fn get_devices_changed_event_rx(&self) -> Option<Receiver<DevicesChangedEvent>> {
@@ -169,22 +162,21 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
+            session_verification_controller: Arc::new(MatrixRwLock::new(None)),
         }
     }
 
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
+        let session_verification_controller = self.session_verification_controller.clone();
 
-        let (emoji_verification_event_tx, emoji_verification_event_rx) =
-            channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
         let (devices_changed_event_tx, devices_changed_event_rx) =
             channel::<DevicesChangedEvent>(10); // dropping after more than 10 items queued
         let (devices_left_event_tx, devices_left_event_rx) = channel::<DevicesLeftEvent>(10); // dropping after more than 10 items queued
         let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
 
-        let emoji_verification_event_arc = Arc::new(emoji_verification_event_tx);
         let devices_changed_event_arc = Arc::new(devices_changed_event_tx);
         let devices_left_event_arc = Arc::new(devices_left_event_tx);
         let typing_notification_arc = Arc::new(typing_notification_tx);
@@ -192,7 +184,6 @@ impl Client {
 
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(
-            emoji_verification_event_rx,
             devices_changed_event_rx,
             devices_left_event_rx,
             typing_notification_rx,
@@ -202,13 +193,14 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
+            let session_verification_controller = session_verification_controller.clone();
 
             client
                 .clone()
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
                     let state = state.clone();
-                    let emoji_verification_event_arc = emoji_verification_event_arc.clone();
+                    let session_verification_controller = session_verification_controller.clone();
                     let devices_changed_event_arc = devices_changed_event_arc.clone();
                     let devices_left_event_arc = devices_left_event_arc.clone();
                     let typing_notification_arc = typing_notification_arc.clone();
@@ -216,11 +208,8 @@ impl Client {
                     let initial_arc = initial_arc.clone();
 
                     async move {
-                        let client = client.clone();
                         let state = state.clone();
                         let initial = initial_arc.clone();
-                        let mut emoji_verification_event_tx =
-                            (*emoji_verification_event_arc).clone();
                         let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
                         let mut devices_left_event_tx = (*devices_left_event_arc).clone();
                         let mut typing_notification_tx = (*typing_notification_arc).clone();
@@ -241,36 +230,11 @@ impl Client {
                             );
                         }
 
-                        for event in response.to_device.events {
-                            if let Ok(evt) = event.deserialize() {
-                                let json = serde_json::from_str::<Value>(event.json().get())
-                                    .expect("Invalid JSON in to_device event");
-                                info!("to_device event type: {}", json["type"]);
-                                handle_emoji_to_device_event(
-                                    &client,
-                                    &evt,
-                                    &mut emoji_verification_event_tx,
-                                );
-                            }
-                        }
-
                         if !initial.load(Ordering::SeqCst) {
+                            if let Some(session_verification_controller) = &*session_verification_controller.read().await {
+                                session_verification_controller.process_sync_messages(&client, &response.rooms);
+                            }
                             for (room_id, room_info) in response.rooms.join {
-                                for event in room_info
-                                    .timeline
-                                    .events
-                                    .iter()
-                                    .filter_map(|ev| ev.event.deserialize().ok())
-                                {
-                                    if let AnySyncRoomEvent::MessageLike(evt) = event {
-                                        handle_emoji_sync_msg_event(
-                                            &client,
-                                            &room_id,
-                                            &evt,
-                                            &mut emoji_verification_event_tx,
-                                        );
-                                    }
-                                }
                                 for event in room_info.ephemeral.events {
                                     if let Ok(ev) = event.deserialize() {
                                         handle_typing_notification(
@@ -297,6 +261,10 @@ impl Client {
                             return LoopCtrl::Break;
                         } else if !(*state).read().is_syncing {
                             (*state).write().is_syncing = true;
+                        }
+
+                        if let Some(session_verification_controller) = &*session_verification_controller.read().await {
+                            session_verification_controller.process_to_device_messages(&client, response.to_device);
                         }
                         // the lock is unlocked here when `s` goes out of scope.
                         LoopCtrl::Continue
@@ -426,6 +394,25 @@ impl Client {
                     .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
+            })
+            .await?
+    }
+
+    pub async fn get_session_verification_controller(
+        &self,
+    ) -> Result<SessionVerificationController> {
+        // if not exists, create new controller and return it.
+        // thus Result is necessary but Option is not necessary.
+        let c = self.client.clone();
+        let session_verification_controller = self.session_verification_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(svc) = &*session_verification_controller.read().await {
+                    return Ok(svc.clone());
+                }
+                let res = SessionVerificationController::new();
+                *session_verification_controller.write().await = Some(res.clone());
+                Ok(res)
             })
             .await?
     }

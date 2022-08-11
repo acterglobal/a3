@@ -19,6 +19,7 @@ mod group;
 mod messages;
 mod news;
 mod room;
+mod session_verification;
 mod stream;
 
 pub use account::Account;
@@ -29,12 +30,12 @@ pub use client::{Client, ClientStateBuilder, SyncState};
 pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use events::{
-    Device, DevicesChangedEvent, DevicesLeftEvent, EmojiUnit, EmojiVerificationEvent,
-    TypingNotification,
+    Device, DevicesChangedEvent, DevicesLeftEvent, TypingNotification,
 };
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use room::{Member, Room};
+pub use session_verification::{SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent};
 pub use stream::TimelineStream;
 
 #[cfg(feature = "with-mocks")]
