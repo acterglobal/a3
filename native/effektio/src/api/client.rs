@@ -33,7 +33,8 @@ use std::sync::{
 use super::{
     api::FfiBuffer,
     events::{handle_typing_notification, TypingNotification},
-    Account, Conversation, DeviceListsController, Group, Room, SessionVerificationController, RUNTIME,
+    Account, Conversation, DeviceListsController, Group, Room, SessionVerificationController,
+    RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -163,10 +164,7 @@ impl Client {
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(
-            typing_notification_rx,
-            first_synced_rx,
-        );
+        let sync_state = SyncState::new(typing_notification_rx, first_synced_rx);
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -381,9 +379,7 @@ impl Client {
             .await?
     }
 
-    pub async fn get_device_lists_controller(
-        &self,
-    ) -> Result<DeviceListsController> {
+    pub async fn get_device_lists_controller(&self) -> Result<DeviceListsController> {
         // if not exists, create new controller and return it.
         // thus Result is necessary but Option is not necessary.
         let c = self.client.clone();

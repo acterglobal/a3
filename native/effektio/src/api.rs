@@ -29,9 +29,7 @@ pub use auth::{
 };
 pub use client::{Client, ClientStateBuilder, SyncState};
 pub use conversation::Conversation;
-pub use device_lists::{
-    Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController,
-};
+pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use events::TypingNotification;
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};

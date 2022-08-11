@@ -7,10 +7,8 @@ use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device as MatrixDevice,
     ruma::{
-        api::client::sync::sync_events::v3::DeviceLists,
-        device_id,
-        events::key::verification::VerificationMethod,
-        MilliSecondsSinceUnixEpoch, OwnedUserId,
+        api::client::sync::sync_events::v3::DeviceLists, device_id,
+        events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch, OwnedUserId,
     },
     Client,
 };
