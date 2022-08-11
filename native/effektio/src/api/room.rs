@@ -10,7 +10,7 @@ use matrix_sdk::{
             room::message::{MessageType, RoomMessageEventContent},
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, MessageLikeEvent,
         },
-        EventId, UserId, UInt,
+        EventId, UInt, UserId,
     },
     Client as MatrixClient,
 };
