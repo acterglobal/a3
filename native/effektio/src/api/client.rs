@@ -55,7 +55,8 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) session_verification_controller: Arc<MatrixRwLock<Option<SessionVerificationController>>>,
+    pub(crate) session_verification_controller:
+        Arc<MatrixRwLock<Option<SessionVerificationController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -231,8 +232,8 @@ impl Client {
                         }
 
                         if !initial.load(Ordering::SeqCst) {
-                            if let Some(session_verification_controller) = &*session_verification_controller.read().await {
-                                session_verification_controller.process_sync_messages(&client, &response.rooms);
+                            if let Some(svc) = &*session_verification_controller.read().await {
+                                svc.process_sync_messages(&client, &response.rooms);
                             }
                             for (room_id, room_info) in response.rooms.join {
                                 for event in room_info.ephemeral.events {
@@ -263,8 +264,8 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        if let Some(session_verification_controller) = &*session_verification_controller.read().await {
-                            session_verification_controller.process_to_device_messages(&client, response.to_device);
+                        if let Some(svc) = &*session_verification_controller.read().await {
+                            svc.process_to_device_messages(&client, response.to_device);
                         }
                         // the lock is unlocked here when `s` goes out of scope.
                         LoopCtrl::Continue
@@ -410,9 +411,9 @@ impl Client {
                 if let Some(svc) = &*session_verification_controller.read().await {
                     return Ok(svc.clone());
                 }
-                let res = SessionVerificationController::new();
-                *session_verification_controller.write().await = Some(res.clone());
-                Ok(res)
+                let svc = SessionVerificationController::new();
+                *session_verification_controller.write().await = Some(svc.clone());
+                Ok(svc)
             })
             .await?
     }
