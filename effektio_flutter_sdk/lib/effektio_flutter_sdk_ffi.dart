@@ -4207,10 +4207,14 @@ class Api {
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__Conversation_get_member");
 
   late final _conversationGetMember = _conversationGetMemberPtr.asFunction<
       int Function(
+    int,
+    int,
     int,
     int,
   )>();
@@ -4432,10 +4436,14 @@ class Api {
           ffi.Int64 Function(
     ffi.Int64,
     ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__Group_get_member");
 
   late final _groupGetMember = _groupGetMemberPtr.asFunction<
       int Function(
+    int,
+    int,
     int,
     int,
   )>();
@@ -4461,12 +4469,12 @@ class Api {
   )>();
   late final _memberUserIdPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _MemberUserIdReturn Function(
     ffi.Int64,
   )>>("__Member_user_id");
 
   late final _memberUserId = _memberUserIdPtr.asFunction<
-      int Function(
+      _MemberUserIdReturn Function(
     int,
   )>();
   late final _accountDisplayNamePtr = _lookup<
@@ -7443,23 +7451,33 @@ class Conversation {
   }
 
   Future<Member> getMember(
-    UserId userId,
+    String userId,
   ) {
     final tmp1 = userId;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3 = _api._conversationGetMember(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._conversationGetMember(
       tmp0,
       tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__Conversation_get_member_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__conversationGetMemberFuturePoll);
-    return tmp4;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Conversation_get_member_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__conversationGetMemberFuturePoll);
+    return tmp6;
   }
 
   /// The last message sent to the room
@@ -7912,23 +7930,33 @@ class Group {
   }
 
   Future<Member> getMember(
-    UserId user,
+    String user,
   ) {
     final tmp1 = user;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    final tmp3 = _api._groupGetMember(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._groupGetMember(
       tmp0,
       tmp2,
+      tmp3,
+      tmp4,
     );
-    final tmp5 = tmp3;
-    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
-    final tmp5_1 = _Box(_api, tmp5_0, "__Group_get_member_future_drop");
-    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
-    final tmp4 = _nativeFuture(tmp5_1, _api.__groupGetMemberFuturePoll);
-    return tmp4;
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Group_get_member_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(tmp7_1, _api.__groupGetMemberFuturePoll);
+    return tmp6;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -7983,17 +8011,22 @@ class Member {
   }
 
   /// Full user_id
-  UserId userId() {
+  String userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._memberUserId(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = UserId._(_api, tmp3_1);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -9478,6 +9511,15 @@ class _MemberDisplayNameReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _MemberUserIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _SyncStateGetFirstSyncedRxReturn extends ffi.Struct {

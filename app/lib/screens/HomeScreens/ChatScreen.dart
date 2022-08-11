@@ -14,7 +14,7 @@ import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiListMember;
+    show Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -119,6 +119,11 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Future<FfiBufferUint8> _userAvatar(String userId) async {
+    final member = await widget.room.getMember(userId);
+    return member.avatar();
+  }
+
   Widget _avatarBuilder(String userId) {
     return GetBuilder<ChatController>(
       id: 'Avatar',
@@ -126,7 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: CustomAvatar(
-            avatar: widget.room.avatar(),
+            avatar: _userAvatar(userId),
             displayName: null,
             radius: 15,
             isGroup: false,

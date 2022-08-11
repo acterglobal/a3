@@ -156,7 +156,7 @@ object Conversation {
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    fn get_member(user_id: UserId) -> Future<Result<Member>>;
+    fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
     fn latest_message() -> Future<Result<RoomMessage>>;
@@ -203,7 +203,7 @@ object Group {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    fn get_member(user: UserId) -> Future<Result<Member>>;
+    fn get_member(user: string) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -215,7 +215,7 @@ object Member {
     fn display_name() -> Option<string>;
 
     /// Full user_id
-    fn user_id() -> UserId;
+    fn user_id() -> string;
 
 }
 
