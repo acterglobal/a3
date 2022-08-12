@@ -5,14 +5,9 @@ import 'package:effektio/common/widget/PendingReqListView.dart';
 import 'package:effektio/common/widget/ReqListView.dart';
 import 'package:flutter/material.dart';
 
-class RequestScreen extends StatefulWidget {
+class RequestScreen extends StatelessWidget {
   const RequestScreen({Key? key}) : super(key: key);
 
-  @override
-  _RequestScreenState createState() => _RequestScreenState();
-}
-
-class _RequestScreenState extends State<RequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +30,7 @@ class _RequestScreenState extends State<RequestScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TabBar(
               labelColor: Colors.white, //<-- selected text color
               unselectedLabelColor: Colors.white,
@@ -65,9 +60,9 @@ class _RequestScreenState extends State<RequestScreen> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.only(
-                              left: 8.0,
-                              right: 8.0,
-                              top: 8.0,
+                              left: 8,
+                              right: 8,
+                              top: 8,
                             ),
                             child: PendingReqListView(name: 'Ben'),
                           );
@@ -94,17 +89,17 @@ class _RequestScreenState extends State<RequestScreen> {
                               'No Invite Yet',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18.0,
+                                fontSize: 18,
                               ),
                             ),
                             const Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(8),
                               child: Text(
                                 'People on this list are attempting to join via the group link.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16.0,
+                                  fontSize: 16,
                                 ),
                               ),
                             ),
@@ -124,9 +119,9 @@ class _RequestScreenState extends State<RequestScreen> {
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: EdgeInsets.only(
-                              left: 8.0,
-                              right: 8.0,
-                              top: 8.0,
+                              left: 8,
+                              right: 8,
+                              top: 8,
                             ),
                             child: ReqListView(name: 'Ben'),
                           );
@@ -153,17 +148,17 @@ class _RequestScreenState extends State<RequestScreen> {
                               'No Requests Yet',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18.0,
+                                fontSize: 18,
                               ),
                             ),
                             const Padding(
-                              padding: EdgeInsets.all(8.0),
+                              padding: EdgeInsets.all(8),
                               child: Text(
                                 'People on this list are attempting to join via the group link.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16.0,
+                                  fontSize: 16,
                                 ),
                               ),
                             ),

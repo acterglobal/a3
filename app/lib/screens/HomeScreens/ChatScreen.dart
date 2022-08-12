@@ -74,12 +74,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Row(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/camera.svg'),
                       ),
                       SizedBox(width: 10),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.photo,
                           style: TextStyle(color: Colors.white),
@@ -94,12 +94,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Row(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/document.svg'),
                       ),
                       SizedBox(width: 10),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.file,
                           style: TextStyle(
@@ -196,7 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     }
                   },
                 ),
-                SizedBox(height: 5),
+                const SizedBox(height: 5),
                 FutureBuilder<FfiListMember>(
                   future: widget.room.activeMembers(),
                   builder: (
@@ -354,7 +354,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     },
                   )
-                : Container(),
+                : const SizedBox(),
             roomState
                 ? Padding(
                     padding: const EdgeInsets.only(top: 40),
@@ -364,7 +364,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       groupName: roomName,
                     ),
                   )
-                : Container(),
+                : const SizedBox(),
           ],
         );
       },

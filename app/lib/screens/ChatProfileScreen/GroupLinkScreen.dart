@@ -23,7 +23,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8),
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -35,10 +35,10 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Padding(
-                        padding: EdgeInsets.fromLTRB(16.0, 8.0, 8.0, 8.0),
+                        padding: EdgeInsets.fromLTRB(16, 8, 8, 8),
                         child: Text(
                           'Group Link',
-                          style: TextStyle(color: Colors.white, fontSize: 16.0),
+                          style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                       ),
                       Switch(
@@ -56,8 +56,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(8.0, 0.0, 8.0, 8.0),
+                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6.33),
                             child: Container(
@@ -66,7 +65,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
@@ -74,11 +73,10 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                           ),
                         ),
                         const Padding(
-                          padding: EdgeInsets.all(16.0),
+                          padding: EdgeInsets.all(16),
                           child: Text(
                             'https://effektio/chat/group/#erifdjknsdjhndlsnGdhsuSsyUJKHSiojsjSHNIjsjfds{LIJHNmdjsoifkdsodjms',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 16.0),
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         )
                       ],
@@ -91,7 +89,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
           Visibility(
             visible: showLink,
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -101,8 +99,8 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                        horizontal: 16.0,
+                        vertical: 12,
+                        horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -112,12 +110,12 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             color: Colors.white,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 8.0),
+                            padding: EdgeInsets.only(left: 8),
                             child: Text(
                               'Share',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16.0,
+                                fontSize: 16,
                               ),
                             ),
                           )
@@ -125,7 +123,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(50.0, 0.0, 8.0, 0.0),
+                      padding: const EdgeInsets.only(left: 50, right: 8),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(6.33),
                         child: Container(
@@ -134,7 +132,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             border: Border(
                               bottom: BorderSide(
                                 color: AppCommonTheme.dividerColor,
-                                width: 1.0,
+                                width: 1,
                               ),
                             ),
                           ),
@@ -143,8 +141,8 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                        horizontal: 16.0,
+                        vertical: 12,
+                        horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -154,12 +152,12 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             color: Colors.white,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 8.0),
+                            padding: EdgeInsets.only(left: 8),
                             child: Text(
                               'Scan QR Code',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16.0,
+                                fontSize: 16,
                               ),
                             ),
                           )
@@ -167,7 +165,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(50.0, 0.0, 8.0, 0.0),
+                      padding: const EdgeInsets.only(left: 50, right: 8),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(6.33),
                         child: Container(
@@ -176,7 +174,7 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             border: Border(
                               bottom: BorderSide(
                                 color: AppCommonTheme.dividerColor,
-                                width: 1.0,
+                                width: 1,
                               ),
                             ),
                           ),
@@ -185,8 +183,8 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                        horizontal: 16.0,
+                        vertical: 12,
+                        horizontal: 16,
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -196,12 +194,12 @@ class _GroupLinkScreenState extends State<GroupLinkScreen> {
                             color: Colors.white,
                           ),
                           Padding(
-                            padding: EdgeInsets.only(left: 8.0),
+                            padding: EdgeInsets.only(left: 8),
                             child: Text(
                               'Reset Link',
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 16.0,
+                                fontSize: 16,
                               ),
                             ),
                           )

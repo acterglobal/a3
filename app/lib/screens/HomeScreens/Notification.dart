@@ -2,14 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 
-class NotificationScreen extends StatefulWidget {
+class NotificationScreen extends StatelessWidget {
   const NotificationScreen({Key? key}) : super(key: key);
 
-  @override
-  _NotificationScreenState createState() => _NotificationScreenState();
-}
-
-class _NotificationScreenState extends State<NotificationScreen> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -39,7 +34,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 10,
                   ),
                   Column(
@@ -50,15 +45,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       Container(
                         width: MediaQuery.of(context).size.width - 150,
                         margin: EdgeInsets.only(right: 10),
-                        child: Text(
+                        child: const Text(
                           'Lorem Ipsum is simply dummy text of the printing',
                           style: NotificationTheme.titleStyle,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
-                      Text(
+                      const Text(
                         '35 members',
                         style: NotificationTheme.subTitleStyle,
                       )

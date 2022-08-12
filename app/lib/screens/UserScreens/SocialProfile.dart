@@ -102,11 +102,11 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                             radius: 60,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'Harjeet kAUR',
                           style: SideMenuAndProfileTheme.profileNameStyle,
                         ),
-                        Text(
+                        const Text(
                           'Harjeet@gmail.com',
                           style: SideMenuAndProfileTheme.profileUserIdStyle,
                         )

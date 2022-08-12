@@ -70,7 +70,6 @@ class _ImageSelectionState extends State<ImageSelection> {
                           padding: const EdgeInsets.only(
                             top: 10,
                             left: 8,
-                            bottom: 0.0,
                           ),
                           child: InkWell(
                             onTap: () {

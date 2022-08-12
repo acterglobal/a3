@@ -73,7 +73,7 @@ class _SignupScreentate extends State<SignupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 80,
                       ),
                       SizedBox(
@@ -81,21 +81,21 @@ class _SignupScreentate extends State<SignupScreen> {
                         width: 50,
                         child: SvgPicture.asset('assets/images/logo.svg'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       Text(
                         AppLocalizations.of(context)!.onboardText,
                         style: AuthTheme.authTitleStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
                         AppLocalizations.of(context)!.createAccountText,
                         style: AuthTheme.authBodyStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       signUpOnboardingTextField(
@@ -122,11 +122,11 @@ class _SignupScreentate extends State<SignupScreen> {
                         AppLocalizations.of(context)!.emptyToken,
                         SignUpOnboardingTextFieldEnum.token,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         child: RichText(
                           textAlign: TextAlign.start,
                           text: TextSpan(
@@ -164,7 +164,7 @@ class _SignupScreentate extends State<SignupScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       controller.isSubmitting
@@ -189,7 +189,7 @@ class _SignupScreentate extends State<SignupScreen> {
                               },
                               title: AppLocalizations.of(context)!.signUp,
                             ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Row(

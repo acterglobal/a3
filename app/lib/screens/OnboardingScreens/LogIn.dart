@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 100,
                       ),
                       SizedBox(
@@ -78,21 +78,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 50,
                         child: SvgPicture.asset('assets/images/logo.svg'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       Text(
                         AppLocalizations.of(context)!.welcomeBack,
                         style: AuthTheme.authTitleStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
                         AppLocalizations.of(context)!.signInContinue,
                         style: AuthTheme.authBodyStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 35,
                       ),
                       signInOnboardingTextField(
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppLocalizations.of(context)!.emptyUsername,
                         SignInOnboardingTextFieldEnum.userName,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       signInOnboardingTextField(
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SignInOnboardingTextFieldEnum.password,
                       ),
                       Container(
-                        margin: EdgeInsets.only(right: 20),
+                        margin: const EdgeInsets.only(right: 20),
                         width: double.infinity,
                         alignment: Alignment.bottomRight,
                         child: TextButton(
@@ -123,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 100,
                       ),
                       controller.isSubmitting
@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               title: AppLocalizations.of(context)!.login,
                             ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Row(

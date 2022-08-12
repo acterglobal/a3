@@ -17,7 +17,8 @@ class NewsScreen extends StatefulWidget {
   _NewsScreenState createState() => _NewsScreenState();
 }
 
-class _NewsScreenState extends State<NewsScreen> with TickerProviderStateMixin {
+class _NewsScreenState extends State<NewsScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController controller;
   @override
   void initState() {

@@ -6,19 +6,14 @@ import 'package:effektio/screens/EditorScreen/Editor.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
-class FaqOverviewScreen extends StatefulWidget {
+class FaqOverviewScreen extends StatelessWidget {
   const FaqOverviewScreen({Key? key, required this.client}) : super(key: key);
   final Client client;
 
   @override
-  _FaOverviewqScreenState createState() => _FaOverviewqScreenState();
-}
-
-class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
-  @override
   Widget build(BuildContext context) {
     return FutureBuilder<FfiListFaq>(
-      future: widget.client.faqs(),
+      future: client.faqs(),
       builder: (BuildContext context, AsyncSnapshot<FfiListFaq> snapshot) {
         if (!snapshot.hasData) {
           return Container(
@@ -76,7 +71,7 @@ class _FaOverviewqScreenState extends State<FaqOverviewScreen> {
                 itemCount: snapshot.requireData.length,
                 itemBuilder: (BuildContext context, int index) {
                   return FaqListItem(
-                    client: widget.client,
+                    client: client,
                     faq: snapshot.requireData[index],
                   );
                 },
