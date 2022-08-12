@@ -1,4 +1,4 @@
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/controllers/chat_controller.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -27,156 +27,6 @@ class CustomChatInput extends StatelessWidget {
     ['document', 'File'],
     ['location', 'Location'],
   ];
-
-  Widget _emojiPicker(Size size) {
-    return Obx(
-      () => Offstage(
-        offstage: !controller.isEmojiVisible.value,
-        child: SizedBox(
-          height: size.height * 0.3,
-          child: EmojiPicker(
-            onEmojiSelected: (category, emoji) {
-              controller.textEditingController.text += emoji.emoji;
-              controller.sendButtonUpdate();
-            },
-            onBackspacePressed: () {
-              controller.textEditingController.text = controller
-                  .textEditingController.text.characters
-                  .skipLast(1)
-                  .string;
-              if (controller.textEditingController.text.isEmpty) {
-                controller.sendButtonUpdate();
-              }
-            },
-            config: Config(
-              columns: 7,
-              verticalSpacing: 0,
-              backspaceColor: AppCommonTheme.primaryColor,
-              horizontalSpacing: 0,
-              initCategory: Category.SMILEYS,
-              bgColor: AppCommonTheme.backgroundColor,
-              indicatorColor: AppCommonTheme.primaryColor,
-              iconColor: AppCommonTheme.dividerColor,
-              iconColorSelected: AppCommonTheme.primaryColor,
-              progressIndicatorColor: AppCommonTheme.primaryColor,
-              showRecentsTab: true,
-              recentsLimit: 28,
-              noRecents: Text(
-                AppLocalizations.of(context)!.noRecents,
-                style: ChatTheme01.chatBodyStyle,
-              ),
-              tabIndicatorAnimDuration: kTabScrollDuration,
-              categoryIcons: const CategoryIcons(),
-              buttonMode: ButtonMode.MATERIAL,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget attachmentWidget(Size size) {
-    return Obx(
-      () => Offstage(
-        offstage: !controller.isattachmentVisible.value,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
-          width: double.infinity,
-          height: size.height * 0.3,
-          color: AppCommonTheme.backgroundColorLight,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                height: size.height * 0.172,
-                decoration: BoxDecoration(
-                  color: AppCommonTheme.backgroundColor,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        AppLocalizations.of(context)!.grantAccessText,
-                        style: ChatTheme01.chatTitleStyle + FontWeight.w400,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(AppLocalizations.of(context)!.settings),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          AppCommonTheme.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      for (List<String> item in attachmentNameList)
-                        InkWell(
-                          onTap: () {
-                            switch (item[0]) {
-                              case 'camera':
-                                controller.isattachmentVisible.value = false;
-                                controller.handleMultipleImageSelection(
-                                  context,
-                                  roomName,
-                                );
-                                break;
-                              case 'gif':
-                                //gif handle
-                                break;
-                              case 'document':
-                                controller.handleFileSelection(context);
-                                break;
-                              case 'location':
-                                //location handle
-                                break;
-                            }
-                          },
-                          child: Container(
-                            width: 85,
-                            decoration: BoxDecoration(
-                              color: AppCommonTheme.backgroundColor,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/images/${item[0]}.svg',
-                                  fit: BoxFit.none,
-                                ),
-                                const SizedBox(
-                                  height: 6,
-                                ),
-                                Text(
-                                  item[1],
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -309,9 +159,201 @@ class CustomChatInput extends StatelessWidget {
             );
           },
         ),
-        _emojiPicker(_size),
-        attachmentWidget(_size),
+        EmojiPickerWidget(
+          controller: controller,
+          context: context,
+          size: _size,
+        ),
+        AttachmentWidget(
+          controller: controller,
+          context: context,
+          attachmentNameList: attachmentNameList,
+          roomName: roomName,
+          size: _size,
+        ),
       ],
+    );
+  }
+}
+
+class AttachmentWidget extends StatelessWidget {
+  const AttachmentWidget({
+    Key? key,
+    required this.controller,
+    required this.context,
+    required this.attachmentNameList,
+    required this.roomName,
+    required this.size,
+  }) : super(key: key);
+
+  final ChatController controller;
+  final BuildContext context;
+  final List<List<String>> attachmentNameList;
+  final String roomName;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Offstage(
+        offstage: !controller.isattachmentVisible.value,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          width: double.infinity,
+          height: size.height * 0.3,
+          color: AppCommonTheme.backgroundColorLight,
+          child: Column(
+            children: [
+              Container(
+                width: double.infinity,
+                height: size.height * 0.172,
+                decoration: BoxDecoration(
+                  color: AppCommonTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        AppLocalizations.of(context)!.grantAccessText,
+                        style: ChatTheme01.chatTitleStyle + FontWeight.w400,
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: Text(AppLocalizations.of(context)!.settings),
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all(
+                          AppCommonTheme.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      for (List<String> item in attachmentNameList)
+                        InkWell(
+                          onTap: () {
+                            switch (item[0]) {
+                              case 'camera':
+                                controller.isattachmentVisible.value = false;
+                                controller.handleMultipleImageSelection(
+                                  context,
+                                  roomName,
+                                );
+                                break;
+                              case 'gif':
+                                //gif handle
+                                break;
+                              case 'document':
+                                controller.handleFileSelection(context);
+                                break;
+                              case 'location':
+                                //location handle
+                                break;
+                            }
+                          },
+                          child: Container(
+                            width: 85,
+                            decoration: BoxDecoration(
+                              color: AppCommonTheme.backgroundColor,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/images/${item[0]}.svg',
+                                  fit: BoxFit.none,
+                                ),
+                                const SizedBox(
+                                  height: 6,
+                                ),
+                                Text(
+                                  item[1],
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class EmojiPickerWidget extends StatelessWidget {
+  const EmojiPickerWidget({
+    Key? key,
+    required this.controller,
+    required this.context,
+    required this.size,
+  }) : super(key: key);
+
+  final ChatController controller;
+  final BuildContext context;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => Offstage(
+        offstage: !controller.isEmojiVisible.value,
+        child: SizedBox(
+          height: size.height * 0.3,
+          child: EmojiPicker(
+            onEmojiSelected: (category, emoji) {
+              controller.textEditingController.text += emoji.emoji;
+              controller.sendButtonUpdate();
+            },
+            onBackspacePressed: () {
+              controller.textEditingController.text = controller
+                  .textEditingController.text.characters
+                  .skipLast(1)
+                  .string;
+              if (controller.textEditingController.text.isEmpty) {
+                controller.sendButtonUpdate();
+              }
+            },
+            config: Config(
+              columns: 7,
+              verticalSpacing: 0,
+              backspaceColor: AppCommonTheme.primaryColor,
+              horizontalSpacing: 0,
+              initCategory: Category.SMILEYS,
+              bgColor: AppCommonTheme.backgroundColor,
+              indicatorColor: AppCommonTheme.primaryColor,
+              iconColor: AppCommonTheme.dividerColor,
+              iconColorSelected: AppCommonTheme.primaryColor,
+              progressIndicatorColor: AppCommonTheme.primaryColor,
+              showRecentsTab: true,
+              recentsLimit: 28,
+              noRecents: Text(
+                AppLocalizations.of(context)!.noRecents,
+                style: ChatTheme01.chatBodyStyle,
+              ),
+              tabIndicatorAnimDuration: kTabScrollDuration,
+              categoryIcons: const CategoryIcons(),
+              buttonMode: ButtonMode.MATERIAL,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

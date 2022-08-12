@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/PendingReqListView.dart';
 import 'package:effektio/common/widget/ReqListView.dart';
 import 'package:flutter/material.dart';

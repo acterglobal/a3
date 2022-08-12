@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -10,26 +10,15 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:themed/themed.dart';
 
-class SideDrawer extends StatefulWidget {
+class SideDrawer extends StatelessWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
   final Future<Client> client;
-  @override
-  State<SideDrawer> createState() => _SideDrawerState();
-}
-
-class _SideDrawerState extends State<SideDrawer> {
-  late Future<String> name;
-  late Future<String> username;
-  bool switchValue = false;
-  bool isGuest = false;
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
+    late Future<String> name;
+    late Future<String> username;
     return Drawer(
       backgroundColor: AppCommonTheme.backgroundColor,
       child: ScrollConfiguration(
@@ -37,11 +26,11 @@ class _SideDrawerState extends State<SideDrawer> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               FutureBuilder<Client>(
-                future: widget.client,
+                future: client,
                 builder:
                     (BuildContext context, AsyncSnapshot<Client> snapshot) {
                   if (snapshot.hasData) {
@@ -50,7 +39,7 @@ class _SideDrawerState extends State<SideDrawer> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            margin: EdgeInsets.only(right: 20),
+                            margin: const EdgeInsets.only(right: 20),
                             alignment: Alignment.bottomCenter,
                             child: ElevatedButton(
                               style: ButtonStyle(
@@ -109,7 +98,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                 stringName: '',
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Column(
@@ -131,7 +120,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                             .sideMenuProfileStyle,
                                       );
                                     } else {
-                                      return SizedBox(
+                                      return const SizedBox(
                                         height: 20,
                                         width: 20,
                                         child: CircularProgressIndicator(
@@ -156,7 +145,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                             FontSize(14),
                                       );
                                     } else {
-                                      return SizedBox(
+                                      return const SizedBox(
                                         height: 50,
                                         width: 50,
                                         child: CircularProgressIndicator(
@@ -173,7 +162,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       );
                     }
                   } else {
-                    return Container();
+                    return const SizedBox();
                   }
                 },
               ),
@@ -293,11 +282,11 @@ class _SideDrawerState extends State<SideDrawer> {
                 ),
                 onTap: () {},
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5,
               ),
               FutureBuilder<Client>(
-                future: widget.client,
+                future: client,
                 builder:
                     (BuildContext context, AsyncSnapshot<Client> snapshot) {
                   if (snapshot.hasData) {
@@ -332,10 +321,10 @@ class _SideDrawerState extends State<SideDrawer> {
                         ),
                       );
                     } else {
-                      return Container();
+                      return const SizedBox();
                     }
                   } else {
-                    return Container();
+                    return const SizedBox();
                   }
                 },
               ),

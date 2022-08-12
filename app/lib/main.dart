@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:async';
 import 'package:effektio/common/widget/CrossSigning.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/store/appTheme.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/common/store/themes/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';

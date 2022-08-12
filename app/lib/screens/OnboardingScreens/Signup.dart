@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:effektio/controllers/signup_controller.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';

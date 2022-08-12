@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 // CLASS BUTTON
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -69,7 +69,7 @@ Widget signUpOnboardingTextField(
       obscureText: type == SignUpOnboardingTextFieldEnum.password,
       controller: controller,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
+        contentPadding: EdgeInsets.only(left: 10, top: 12, right: 10),
         border: InputBorder.none,
 
         hintText: hintText, // pass the hint text parameter here

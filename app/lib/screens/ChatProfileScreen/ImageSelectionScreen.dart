@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/custom_chat_input.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio/controllers/chat_controller.dart';

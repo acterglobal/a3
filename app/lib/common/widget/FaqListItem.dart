@@ -1,4 +1,4 @@
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Faq;
@@ -6,17 +6,12 @@ import 'package:effektio/screens/faq/Item.dart';
 
 import 'package:effektio/common/widget/TagItem.dart';
 
-class FaqListItem extends StatefulWidget {
+class FaqListItem extends StatelessWidget {
   const FaqListItem({Key? key, required this.client, required this.faq})
       : super(key: key);
   final Client client;
   final Faq faq;
 
-  @override
-  FaqListItemState createState() => FaqListItemState();
-}
-
-class FaqListItemState extends State<FaqListItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -25,23 +20,24 @@ class FaqListItemState extends State<FaqListItem> {
           context,
           MaterialPageRoute(
             builder: (context) {
-              return FaqItemScreen(client: widget.client, faq: widget.faq);
+              return FaqItemScreen(client: client, faq: faq);
             },
           ),
         );
       },
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 child: Row(
                   children: [
                     Flexible(
                       child: Text(
-                        widget.faq.title(),
+                        faq.title(),
                         style: FAQTheme.titleStyle,
                       ),
                     ),
@@ -64,15 +60,15 @@ class FaqListItemState extends State<FaqListItem> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                padding: const EdgeInsets.only(top: 12, bottom: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 40.0,
-                      padding: const EdgeInsets.all(8.0),
-                      margin: const EdgeInsets.only(left: 12.0),
+                      height: 40,
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(left: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
@@ -86,7 +82,7 @@ class FaqListItemState extends State<FaqListItem> {
                             'assets/images/asakerImage.png',
                           ),
                           const Padding(
-                            padding: EdgeInsets.only(left: 8.0, right: 8.0),
+                            padding: EdgeInsets.only(left: 8, right: 8),
                             child: Text(
                               'Support',
                               style: FAQTheme.teamNameStyle,
@@ -99,7 +95,7 @@ class FaqListItemState extends State<FaqListItem> {
                     SizedBox(
                       height: 40,
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
+                        padding: const EdgeInsets.only(right: 8),
                         child: Row(
                           children: [
                             GestureDetector(
@@ -112,15 +108,15 @@ class FaqListItemState extends State<FaqListItem> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
-                                left: 8.0,
+                                left: 8,
                               ),
                               child: Text(
-                                widget.faq.likesCount().toString(),
+                                faq.likesCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
+                              padding: const EdgeInsets.only(left: 8),
                               child: GestureDetector(
                                 // ignore: avoid_print
                                 onTap: () => {print('Comment icon tapped')},
@@ -130,9 +126,9 @@ class FaqListItemState extends State<FaqListItem> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
+                              padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                widget.faq.commentsCount().toString(),
+                                faq.commentsCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -144,14 +140,14 @@ class FaqListItemState extends State<FaqListItem> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                padding: const EdgeInsets.only(left: 8, right: 8),
                 child: SizedBox(
                   height: 40,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: widget.faq.tags().length,
+                    itemCount: faq.tags().length,
                     itemBuilder: (context, index) {
-                      var color = widget.faq.tags().elementAt(index).color();
+                      var color = faq.tags().elementAt(index).color();
                       var colorToShow = 0;
                       if (color != null) {
                         var colorList = color.rgbaU8();
@@ -164,7 +160,7 @@ class FaqListItemState extends State<FaqListItem> {
                       }
 
                       return TagListItem(
-                        tagTitle: widget.faq.tags().elementAt(index).title(),
+                        tagTitle: faq.tags().elementAt(index).title(),
                         tagColor:
                             colorToShow > 0 ? Color(colorToShow) : Colors.white,
                       );
@@ -185,19 +181,4 @@ class FaqListItemState extends State<FaqListItem> {
       ),
     );
   }
-}
-
-int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
-  r = (r < 0) ? -r : r;
-  g = (g < 0) ? -g : g;
-  b = (b < 0) ? -b : b;
-  opacity = (opacity < 0) ? -opacity : opacity;
-  opacity = (opacity > 1) ? 255 : opacity * 255;
-  r = (r > 255) ? 255 : r;
-  g = (g > 255) ? 255 : g;
-  b = (b > 255) ? 255 : b;
-  int a = opacity.toInt();
-  return int.parse(
-    '0x${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
-  );
 }

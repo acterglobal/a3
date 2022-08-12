@@ -2,12 +2,12 @@ import 'dart:typed_data';
 import 'package:effektio/common/widget/NewsSideBar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:expandable_text/expandable_text.dart';
 
-class NewsItem extends StatefulWidget {
+class NewsItem extends StatelessWidget {
   const NewsItem({
     Key? key,
     required this.client,
@@ -19,17 +19,10 @@ class NewsItem extends StatefulWidget {
   final int index;
 
   @override
-  _NewsItemState createState() => _NewsItemState();
-}
-
-class _NewsItemState extends State<NewsItem> {
-  @override
   Widget build(BuildContext context) {
-    var image = widget.news.image();
-    var bgColor =
-        convertColor(widget.news.bgColor(), AppCommonTheme.backgroundColor);
-    var fgColor =
-        convertColor(widget.news.fgColor(), AppCommonTheme.primaryColor);
+    var image = news.image();
+    var bgColor = convertColor(news.bgColor(), AppCommonTheme.backgroundColor);
+    var fgColor = convertColor(news.fgColor(), AppCommonTheme.primaryColor);
 
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -52,7 +45,7 @@ class _NewsItemState extends State<NewsItem> {
               child: Container(
                 height: MediaQuery.of(context).size.height / 4,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Column(
                     children: <Widget>[
                       const Spacer(),
@@ -72,10 +65,10 @@ class _NewsItemState extends State<NewsItem> {
                         ),
                       ),
                       // ignore: prefer_const_constructors
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       // ignore: prefer_const_constructors
                       ExpandableText(
-                        widget.news.text() ?? '',
+                        news.text() ?? '',
                         maxLines: 2,
                         expandText: '',
                         expandOnTextTap: true,
@@ -108,9 +101,9 @@ class _NewsItemState extends State<NewsItem> {
                 height: MediaQuery.of(context).size.height / 2.5,
                 child: InkWell(
                   child: NewsSideBar(
-                    client: widget.client,
-                    news: widget.news,
-                    index: widget.index,
+                    client: client,
+                    news: news,
+                    index: index,
                   ),
                 ),
               ),

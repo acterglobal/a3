@@ -23,7 +23,7 @@ class ReplyViewState extends State<ReplyView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 50.0, top: 12.0),
+      padding: const EdgeInsets.only(left: 50, top: 12),
       child: Flex(
         direction: Axis.horizontal,
         children: [
@@ -33,7 +33,7 @@ class ReplyViewState extends State<ReplyView> {
           Flexible(
             fit: FlexFit.loose,
             child: Padding(
-              padding: const EdgeInsets.only(left: 12.0),
+              padding: const EdgeInsets.only(left: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -52,7 +52,7 @@ class ReplyViewState extends State<ReplyView> {
                         style: TextStyle(color: Colors.white, fontSize: 14),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
+                        padding: const EdgeInsets.only(left: 8),
                         child: Text(
                           likeCount.toString() + ' likes',
                           style: const TextStyle(

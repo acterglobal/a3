@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, require_trailing_commas
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/InviteListView.dart';
 import 'package:effektio/common/widget/MembersList.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
