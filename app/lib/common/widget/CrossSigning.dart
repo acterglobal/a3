@@ -215,30 +215,86 @@ class CrossSigning {
             ),
             child: Column(
               children: [
-                Text(
-                  _eventMap[txnId]!.verifyingThisDev
-                      ? AppLocalizations.of(context)!.verifyThisSession
-                      : AppLocalizations.of(context)!.verifySession,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(
+                        'assets/images/baseline-devices.svg',
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      _eventMap[txnId]!.verifyingThisDev
+                          ? AppLocalizations.of(context)!.verifyThisSession
+                          : AppLocalizations.of(context)!.verifySession,
+                      style: CrossSigningSheetTheme.primaryTextStyle,
+                    ),
+                    const Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () async {
+                          await event.cancelVerificationRequest();
+                          Get.back();
+                          _eventMap.remove(txnId);
+                        },
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  AppLocalizations.of(context)!.verificationScanSelfNotice,
-                  style: CrossSigningSheetTheme.secondaryTextStyle,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15.0,
+                    vertical: 8.0,
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.verificationScanSelfNotice,
+                    style: CrossSigningSheetTheme.secondaryTextStyle,
+                  ),
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: CircularProgressIndicator(
+                        color: CrossSigningSheetTheme.loadingIndicatorColor,
+                      ),
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset(
+                          'assets/images/camera.svg',
+                          color: AppCommonTheme.primaryColor,
+                          height: 14,
+                          width: 14,
+                        ),
+                      ),
+                      Text(
+                        AppLocalizations.of(context)!
+                            .verificationScanWithThisDevice,
+                        style:
+                            CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                          color: AppCommonTheme.primaryColor,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Wrap(
                   children: [
-                    ListTile(
-                      title: Text(
-                        AppLocalizations.of(context)!
-                            .verificationScanWithThisDevice,
-                        style: CrossSigningSheetTheme.primaryTextStyle,
-                      ),
-                      trailing: Icon(
-                        Icons.camera_alt_outlined,
-                        color: CrossSigningSheetTheme.primaryTextColor,
-                      ),
-                      onTap: () {},
-                    ),
                     ListTile(
                       title: Text(
                         AppLocalizations.of(context)!
@@ -329,6 +385,18 @@ class CrossSigning {
                   ],
                 ),
                 Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: CircularProgressIndicator(
+                        color: CrossSigningSheetTheme.loadingIndicatorColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
                   child: Text(
                     AppLocalizations.of(context)!.pleaseWait,
                     style: CrossSigningSheetTheme.secondaryTextStyle,
@@ -360,70 +428,101 @@ class CrossSigning {
             child: Column(
               children: manual == true
                   ? [
-                      Text(
-                        _eventMap[txnId]?.verifyingThisDev == true
-                            ? AppLocalizations.of(context)!.verifyThisSession
-                            : AppLocalizations.of(context)!.verifySession,
-                        style: CrossSigningSheetTheme.primaryTextStyle,
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SvgPicture.asset(
+                              'assets/images/baseline-devices.svg',
+                            ),
+                          ),
+                          const SizedBox(width: 5.0),
+                          Text(
+                            _eventMap[txnId]?.verifyingThisDev == true
+                                ? AppLocalizations.of(context)!
+                                    .verifyThisSession
+                                : AppLocalizations.of(context)!.verifySession,
+                            style: CrossSigningSheetTheme.primaryTextStyle,
+                          ),
+                          const Spacer(),
+                        ],
                       ),
-                      Text(
-                        AppLocalizations.of(context)!
-                            .verificationConclusionNotSecure,
-                        style: CrossSigningSheetTheme.secondaryTextStyle,
+                      Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(50.0, 50.0, 50.0, 20.0),
+                        child: SvgPicture.asset(
+                          'assets/images/lock.svg',
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          color: CrossSigningSheetTheme.secondaryTextColor,
+                        ),
                       ),
-                      Icon(Icons.privacy_tip),
                       Text(
                         AppLocalizations.of(context)!
                             .verificationConclusionCompromised,
                         style: CrossSigningSheetTheme.secondaryTextStyle,
                       ),
-                      Wrap(
-                        children: [
-                          ListTile(
-                            title: Text(
-                              AppLocalizations.of(context)!.sasGotIt,
-                              style: CrossSigningSheetTheme.buttonTextStyle,
-                            ),
-                            trailing: Icon(
-                              Icons.keyboard_arrow_right_outlined,
-                              color: CrossSigningSheetTheme.secondaryTextColor,
-                            ),
-                            onTap: () {
-                              Get.back();
-                              _eventMap.remove(txnId);
-                            },
-                          ),
-                        ],
+                      const SizedBox(height: 10.0),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.40,
+                        child: elevatedButton(
+                          AppLocalizations.of(context)!.sasGotIt,
+                          AppCommonTheme.greenButtonColor,
+                          () {
+                            Get.back();
+                            _eventMap.remove(txnId);
+                          },
+                          CrossSigningSheetTheme.buttonTextStyle,
+                        ),
                       ),
                     ]
                   : [
-                      Text(
-                        _eventMap[txnId]?.verifyingThisDev == true
-                            ? AppLocalizations.of(context)!.verifyThisSession
-                            : AppLocalizations.of(context)!.verifySession,
-                        style: CrossSigningSheetTheme.primaryTextStyle,
-                      ),
-                      Text(
-                        event.getReason()!,
-                        style: CrossSigningSheetTheme.secondaryTextStyle,
-                      ),
-                      Wrap(
+                      Row(
                         children: [
-                          ListTile(
-                            title: Text(
-                              AppLocalizations.of(context)!.sasGotIt,
-                              style: CrossSigningSheetTheme.buttonTextStyle,
+                          Container(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SvgPicture.asset(
+                              'assets/images/baseline-devices.svg',
                             ),
-                            trailing: Icon(
-                              Icons.keyboard_arrow_right_outlined,
-                              color: CrossSigningSheetTheme.secondaryTextColor,
-                            ),
-                            onTap: () {
-                              Get.back();
-                              _eventMap.remove(txnId);
-                            },
                           ),
+                          const SizedBox(width: 5.0),
+                          Text(
+                            _eventMap[txnId]?.verifyingThisDev == true
+                                ? AppLocalizations.of(context)!
+                                    .verifyThisSession
+                                : AppLocalizations.of(context)!.verifySession,
+                            style: CrossSigningSheetTheme.primaryTextStyle,
+                          ),
+                          const Spacer(),
                         ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: SvgPicture.asset(
+                          'assets/images/lock.svg',
+                          width: MediaQuery.of(context).size.width * 0.15,
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          color: CrossSigningSheetTheme.secondaryTextColor,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          event.getReason()!,
+                          style: CrossSigningSheetTheme.secondaryTextStyle,
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.40,
+                        child: elevatedButton(
+                          AppLocalizations.of(context)!.sasGotIt,
+                          AppCommonTheme.greenButtonColor,
+                          () {
+                            Get.back();
+                            _eventMap.remove(txnId);
+                          },
+                          CrossSigningSheetTheme.buttonTextStyle,
+                        ),
                       ),
                     ],
             ),
@@ -453,11 +552,35 @@ class CrossSigning {
             ),
             child: Column(
               children: [
-                Text(
-                  _eventMap[txnId]?.verifyingThisDev == true
-                      ? AppLocalizations.of(context)!.verifyThisSession
-                      : AppLocalizations.of(context)!.verifySession,
-                  style: CrossSigningSheetTheme.primaryTextStyle,
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10.0),
+                      child: SvgPicture.asset(
+                        'assets/images/baseline-devices.svg',
+                      ),
+                    ),
+                    const SizedBox(width: 5.0),
+                    Text(
+                      _eventMap[txnId]?.verifyingThisDev == true
+                          ? AppLocalizations.of(context)!.verifyThisSession
+                          : AppLocalizations.of(context)!.verifySession,
+                      style: CrossSigningSheetTheme.primaryTextStyle,
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(50.0),
+                    child: SizedBox(
+                      height: 100,
+                      width: 100,
+                      child: CircularProgressIndicator(
+                        color: CrossSigningSheetTheme.loadingIndicatorColor,
+                      ),
+                    ),
+                  ),
                 ),
                 Text(
                   waitingFor,
@@ -684,22 +807,8 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5.0),
                     Text(
-                      _eventMap[txnId]!.verifyingThisDev
-                          ? AppLocalizations.of(context)!.verifyThisSession
-                          : AppLocalizations.of(context)!.verifySession,
+                      AppLocalizations.of(context)!.sasVerified,
                       style: CrossSigningSheetTheme.primaryTextStyle,
-                    ),
-                    const Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10.0),
-                      child: IconButton(
-                        icon: Icon(Icons.close),
-                        onPressed: () {
-                          Get.back();
-                          _eventMap.remove(txnId);
-                        },
-                        color: Colors.white,
-                      ),
                     ),
                   ],
                 ),
@@ -727,11 +836,9 @@ class CrossSigning {
                   ),
                 ),
                 const SizedBox(height: 25.0),
-                Icon(Icons.verified_user, size: 25.0),
-                const SizedBox(height: 25.0),
                 Center(
                   child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.25,
+                    width: MediaQuery.of(context).size.width * 0.40,
                     child: elevatedButton(
                       AppLocalizations.of(context)!.sasGotIt,
                       CrossSigningSheetTheme.greenButtonColor,

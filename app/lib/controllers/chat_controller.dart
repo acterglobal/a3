@@ -303,7 +303,10 @@ class ChatController extends GetxController {
       FileDescription? description = message.fileDescription();
       if (description != null) {
         types.FileMessage m = types.FileMessage(
-          author: types.User(id: message.sender()),
+          author: types.User(
+            id: message.sender(),
+            firstName: getNameFromId(message.sender()),
+          ),
           createdAt: message.originServerTs() * 1000,
           id: message.eventId(),
           name: description.name(),
@@ -320,7 +323,10 @@ class ChatController extends GetxController {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
         types.ImageMessage m = types.ImageMessage(
-          author: types.User(id: message.sender()),
+          author: types.User(
+            id: message.sender(),
+            firstName: getNameFromId(message.sender()),
+          ),
           createdAt: message.originServerTs() * 1000,
           height: description.height()?.toDouble(),
           id: eventId,
@@ -354,7 +360,10 @@ class ChatController extends GetxController {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
       types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
+        author: types.User(
+          id: message.sender(),
+          firstName: getNameFromId(message.sender()),
+        ),
         createdAt: message.originServerTs() * 1000,
         id: message.eventId(),
         text: message.body(),
