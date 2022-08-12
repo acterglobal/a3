@@ -438,7 +438,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           ],
                         ),
                         const Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
                             height: 2,
                             color: AppCommonTheme.dividerColor,
