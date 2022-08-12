@@ -45,18 +45,8 @@ Future<void> startApp() async {
   );
 }
 
-class Effektio extends StatefulWidget {
+class Effektio extends StatelessWidget {
   const Effektio({Key? key}) : super(key: key);
-
-  @override
-  State<Effektio> createState() => _EffektioState();
-}
-
-class _EffektioState extends State<Effektio> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +84,7 @@ class EffektioHome extends StatefulWidget {
 }
 
 class _EffektioHomeState extends State<EffektioHome>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
