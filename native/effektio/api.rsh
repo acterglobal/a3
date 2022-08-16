@@ -238,15 +238,6 @@ object SyncState {
     /// Get event handler of first synchronization on every launch
     fn get_first_synced_rx() -> Option<Stream<bool>>;
 
-    /// Get event handler of emoji verification
-    fn get_emoji_verification_event_rx() -> Option<Stream<EmojiVerificationEvent>>;
-
-    /// Get event handler of devices changed
-    fn get_devices_changed_event_rx() -> Option<Stream<DevicesChangedEvent>>;
-
-    /// Get event handler of devices left
-    fn get_devices_left_event_rx() -> Option<Stream<DevicesLeftEvent>>;
-
     /// Get event handler of typing notification
     fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
 }
@@ -309,10 +300,19 @@ object Client {
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
+
+    /// Return the session verification controller. If not exists, create it.
+    fn get_session_verification_controller() -> Future<Result<SessionVerificationController>>;
+
+    /// Return the device lists controller. If not exists, create it.
+    fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
 }
 
-/// Deliver emoji verification event from rust to flutter
-object EmojiVerificationEvent {
+object SessionVerificationController {
+    fn get_event_rx() -> Option<Stream<SessionVerificationEvent>>;
+}
+
+object SessionVerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 
@@ -356,7 +356,7 @@ object EmojiVerificationEvent {
     fn cancel_verification_key() -> Future<Result<bool>>;
 
     /// Alice gets the verification emoji from Bob and vice versa
-    fn get_verification_emoji() -> Future<Result<Vec<EmojiUnit>>>;
+    fn get_verification_emoji() -> Future<Result<Vec<SessionVerificationEmoji>>>;
 
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
@@ -368,23 +368,24 @@ object EmojiVerificationEvent {
     fn review_verification_mac() -> Future<Result<bool>>;
 }
 
-/// Deliver typing notification from rust to flutter
-object TypingNotification {
-    /// Get transaction id or flow id
-    fn get_room_id() -> string;
-}
-
-/// Extend the return value of getVerificationEmoji function
-object EmojiUnit {
+object SessionVerificationEmoji {
     /// binary representation of emoji unicode
-    fn get_symbol() -> u32;
+    fn symbol() -> u32;
 
     /// text description of emoji unicode
-    fn get_description() -> string;
+    fn description() -> string;
+}
+
+object DeviceListsController {
+    /// Get event handler of devices changed
+    fn get_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+
+    /// Get event handler of devices left
+    fn get_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
 }
 
 /// Deliver devices changed event from rust to flutter
-object DevicesChangedEvent {
+object DeviceChangedEvent {
     /// Get the device list, excluding verified ones
     fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
 
@@ -402,7 +403,7 @@ object DevicesChangedEvent {
 }
 
 /// Deliver devices left event from rust to flutter
-object DevicesLeftEvent {
+object DeviceLeftEvent {
     /// Get the device list, including deleted ones
     fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
 }
@@ -423,4 +424,10 @@ object Device {
 
     /// get the display name of this device
     fn get_display_name() -> Option<string>;
+}
+
+/// Deliver typing notification from rust to flutter
+object TypingNotification {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
 }

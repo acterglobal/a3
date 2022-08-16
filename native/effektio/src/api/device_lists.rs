@@ -1,26 +1,31 @@
 use anyhow::Result;
-use futures::channel::mpsc::Sender;
+use futures::{
+    channel::mpsc::{channel, Receiver, Sender},
+    StreamExt,
+};
 use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device as MatrixDevice,
     ruma::{
-        device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
-        OwnedUserId,
+        api::client::sync::sync_events::v3::DeviceLists, device_id,
+        events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch, OwnedUserId,
     },
     Client,
 };
+use parking_lot::Mutex;
 use serde_json::{json, Value};
+use std::sync::Arc;
 
 use crate::RUNTIME;
 
 #[derive(Clone, Debug)]
-pub struct DevicesChangedEvent {
+pub struct DeviceChangedEvent {
     client: Client,
 }
 
-impl DevicesChangedEvent {
+impl DeviceChangedEvent {
     pub(crate) fn new(client: &Client) -> Self {
-        Self {
+        DeviceChangedEvent {
             client: client.clone(),
         }
     }
@@ -136,13 +141,13 @@ impl DevicesChangedEvent {
 }
 
 #[derive(Clone, Debug)]
-pub struct DevicesLeftEvent {
+pub struct DeviceLeftEvent {
     client: Client,
 }
 
-impl DevicesLeftEvent {
+impl DeviceLeftEvent {
     pub(crate) fn new(client: &Client) -> Self {
-        Self {
+        DeviceLeftEvent {
             client: client.clone(),
         }
     }
@@ -192,7 +197,7 @@ impl Device {
         last_seen_ip: Option<String>,
         last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
-        Self {
+        Device {
             inner: inner.clone(),
             last_seen_ip,
             last_seen_ts,
@@ -228,36 +233,61 @@ impl Device {
     }
 }
 
-pub fn handle_devices_changed_event(
-    user_id: &OwnedUserId,
-    client: &Client,
-    tx: &mut Sender<DevicesChangedEvent>,
-) {
-    info!("device-changed user_id: {}", user_id);
-    let current_user_id = client
-        .user_id()
-        .expect("guest user cannot handle the device changed event");
-    if *user_id == *current_user_id {
-        let evt = DevicesChangedEvent::new(client);
-        if let Err(e) = tx.try_send(evt) {
-            warn!("Dropping devices changed event: {}", e);
-        }
-    }
+#[derive(Clone)]
+pub struct DeviceListsController {
+    changed_event_tx: Sender<DeviceChangedEvent>,
+    changed_event_rx: Arc<Mutex<Option<Receiver<DeviceChangedEvent>>>>,
+    left_event_tx: Sender<DeviceLeftEvent>,
+    left_event_rx: Arc<Mutex<Option<Receiver<DeviceLeftEvent>>>>,
 }
 
-pub fn handle_devices_left_event(
-    user_id: &OwnedUserId,
-    client: &Client,
-    tx: &mut Sender<DevicesLeftEvent>,
-) {
-    info!("device-left user_id: {}", user_id);
-    let current_user_id = client
-        .user_id()
-        .expect("guest user cannot handle the device left event");
-    if *user_id == *current_user_id {
-        let evt = DevicesLeftEvent::new(client);
-        if let Err(e) = tx.try_send(evt) {
-            warn!("Dropping devices left event: {}", e);
+impl DeviceListsController {
+    pub(crate) fn new() -> Self {
+        let (changed_event_tx, changed_event_rx) = channel::<DeviceChangedEvent>(10); // dropping after more than 10 items queued
+        let (left_event_tx, left_event_rx) = channel::<DeviceLeftEvent>(10); // dropping after more than 10 items queued
+        DeviceListsController {
+            changed_event_tx,
+            changed_event_rx: Arc::new(Mutex::new(Some(changed_event_rx))),
+            left_event_tx,
+            left_event_rx: Arc::new(Mutex::new(Some(left_event_rx))),
+        }
+    }
+
+    pub fn get_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
+        self.changed_event_rx.lock().take()
+    }
+
+    pub fn get_left_event_rx(&self) -> Option<Receiver<DeviceLeftEvent>> {
+        self.left_event_rx.lock().take()
+    }
+
+    pub(crate) fn process_events(&self, client: &Client, device_lists: DeviceLists) {
+        let mut changed_event_tx = self.changed_event_tx.clone();
+        for user_id in device_lists.changed.into_iter() {
+            info!("device-changed user_id: {}", user_id);
+            let current_user_id = client
+                .user_id()
+                .expect("guest user cannot handle the device changed event");
+            if *user_id == *current_user_id {
+                let evt = DeviceChangedEvent::new(client);
+                if let Err(e) = changed_event_tx.try_send(evt) {
+                    warn!("Dropping devices changed event: {}", e);
+                }
+            }
+        }
+
+        let mut left_event_tx = self.left_event_tx.clone();
+        for user_id in device_lists.left.into_iter() {
+            info!("device-left user_id: {}", user_id);
+            let current_user_id = client
+                .user_id()
+                .expect("guest user cannot handle the device left event");
+            if *user_id == *current_user_id {
+                let evt = DeviceLeftEvent::new(client);
+                if let Err(e) = left_event_tx.try_send(evt) {
+                    warn!("Dropping devices left event: {}", e);
+                }
+            }
         }
     }
 }
