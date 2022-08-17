@@ -237,9 +237,6 @@ object Account {
 object SyncState {
     /// Get event handler of first synchronization on every launch
     fn get_first_synced_rx() -> Option<Stream<bool>>;
-
-    /// Get event handler of typing notification
-    fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
 }
 
 /// Main entry point for `effektio`.
@@ -306,6 +303,9 @@ object Client {
 
     /// Return the device lists controller. If not exists, create it.
     fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
+
+    /// Return the typing notification controller. If not exists, create it.
+    fn get_typing_notification_controller() -> Future<Result<TypingNotificationController>>;
 }
 
 object SessionVerificationController {
@@ -426,8 +426,12 @@ object Device {
     fn get_display_name() -> Option<string>;
 }
 
+object TypingNotificationController {
+    fn get_event_rx() -> Option<Stream<TypingNotificationEvent>>;
+}
+
 /// Deliver typing notification from rust to flutter
-object TypingNotification {
+object TypingNotificationEvent {
     /// Get transaction id or flow id
     fn get_room_id() -> string;
 }
