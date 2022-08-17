@@ -116,6 +116,14 @@ rc_login:
     burst_count: 1000
 ```
 
+Update firewall. But it may not be necessary.
+
+```shell
+sudo ufw allow 8008
+```
+
+Start synapse service.
+
 ```shell
 sudo systemctl enable matrix-synapse
 sudo systemctl start matrix-synapse
@@ -123,7 +131,6 @@ sudo systemctl status matrix-synapse
 ```
 
 You needn't to add `admin` user with `register_new_matrix_user`.
-You needn't to change firewall.
 
 #### Ubuntu VM Guide under postgresql
 
