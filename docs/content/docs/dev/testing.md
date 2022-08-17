@@ -63,6 +63,13 @@ rc_login:
     burst_count: 1000
 ```
 
+At the end of `sudo apt install matrix-synapse-py3`, you will get the following dialog.
+
+![Ubuntu ServerName](../../../static/images/ubuntu-servername.png)
+
+You have to enter `ds9.effektio.org` in this dialog, that is domain applied to all users in `effektio-test`.
+`server_name` in `homeserver.yaml` seems to not affect synapse config and the setting of this dialog affects synapse config clearly.
+
 and an `admin` account with the username `admin` and passwort `admin` (which you can create with `register_new_matrix_user -u admin -p admin -a -c $HOMESERVER_CONFIG_PATH $HOMESERVER_URL`). To avoid the change of server URL under VMWare, you can use NAT mode not Bridged mode as network.
 
 Please change `bind_addresses` of `listeners` from `['::1', '127.0.0.1']` to `['0.0.0.0']` (in the `homeserver.yaml`), that means any address and allows remote connection (non-localhost).
