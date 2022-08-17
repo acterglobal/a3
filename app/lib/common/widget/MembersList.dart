@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-class MembersList extends StatefulWidget {
+class MembersList extends StatelessWidget {
   const MembersList({
     Key? key,
     required this.name,
@@ -12,11 +12,6 @@ class MembersList extends StatefulWidget {
   final String name;
   final bool isAdmin;
 
-  @override
-  MembersListState createState() => MembersListState();
-}
-
-class MembersListState extends State<MembersList> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -36,8 +31,8 @@ class MembersListState extends State<MembersList> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.name,
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      name,
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ],
                 ),
@@ -46,8 +41,8 @@ class MembersListState extends State<MembersList> {
             Column(
               children: [
                 Visibility(
-                  visible: widget.isAdmin,
-                  child: Text(
+                  visible: isAdmin,
+                  child: const Text(
                     'Admin',
                     style: TextStyle(color: Colors.white),
                   ),

@@ -3,7 +3,7 @@
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:flutter/material.dart';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InviteInfoWidget extends StatelessWidget {
@@ -52,7 +52,7 @@ class InviteInfoWidget extends StatelessWidget {
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: AppCommonTheme.dividerColor,
             indent: 15,
           ),
@@ -70,7 +70,7 @@ class InviteInfoWidget extends StatelessWidget {
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 15,
               ),
               Container(

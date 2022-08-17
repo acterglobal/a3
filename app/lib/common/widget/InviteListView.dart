@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, require_trailing_commas
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter/material.dart';
 
-class InviteListView extends StatefulWidget {
+class InviteListView extends StatelessWidget {
   const InviteListView({
     Key? key,
     required this.name,
@@ -13,11 +13,6 @@ class InviteListView extends StatefulWidget {
   final String name;
   final bool isAdded;
 
-  @override
-  InviteListViewState createState() => InviteListViewState();
-}
-
-class InviteListViewState extends State<InviteListView> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +32,7 @@ class InviteListViewState extends State<InviteListView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.name,
+                      name,
                       style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ],
@@ -47,7 +42,7 @@ class InviteListViewState extends State<InviteListView> {
             Column(
               children: [
                 Visibility(
-                  visible: !widget.isAdded,
+                  visible: !isAdded,
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
@@ -60,7 +55,7 @@ class InviteListViewState extends State<InviteListView> {
                   ),
                 ),
                 Visibility(
-                  visible: widget.isAdded,
+                  visible: isAdded,
                   child: ElevatedButton(
                     onPressed: null,
                     style: ElevatedButton.styleFrom(

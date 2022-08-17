@@ -2,7 +2,7 @@
 
 import 'dart:io';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
@@ -36,7 +36,7 @@ class ChatOverview extends StatelessWidget {
               room: rooms[index],
               user: user,
             ),
-            Divider(
+            const Divider(
               height: 1,
             ),
           ],
@@ -162,7 +162,7 @@ class ChatListItem extends StatelessWidget {
               ),
             );
           } else {
-            return Container();
+            return const SizedBox();
           }
         },
       ),
