@@ -20,8 +20,8 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         DeviceListsController,
-        SessionVerificationController,
         ReadNotificationController,
+        SessionVerificationController,
         SyncState,
         UserId;
 import 'package:flutter/foundation.dart';
