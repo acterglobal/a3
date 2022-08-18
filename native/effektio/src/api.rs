@@ -19,8 +19,8 @@ mod device_lists;
 mod group;
 mod messages;
 mod news;
-mod room;
 mod read_notification;
+mod room;
 mod session_verification;
 mod stream;
 

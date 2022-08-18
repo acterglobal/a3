@@ -33,8 +33,8 @@ use std::sync::{
 use super::{
     api::FfiBuffer,
     events::{handle_typing_notification, TypingNotification},
-    Account, Conversation, DeviceListsController, Group, ReadNotificationController, Room, SessionVerificationController,
-    RUNTIME,
+    Account, Conversation, DeviceListsController, Group, ReadNotificationController, Room,
+    SessionVerificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -56,8 +56,7 @@ pub struct Client {
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
-    pub(crate) read_notification_controller:
-        Arc<MatrixRwLock<Option<ReadNotificationController>>>,
+    pub(crate) read_notification_controller: Arc<MatrixRwLock<Option<ReadNotificationController>>>,
 }
 
 impl std::ops::Deref for Client {

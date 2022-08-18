@@ -90,9 +90,14 @@ impl ReadNotificationController {
                     let mut evt = ReadNotificationEvent::new(room_id.to_string());
                     let v: Value = serde_json::from_str(event.json().get()).unwrap();
                     for (event_id, event_info) in v["content"].as_object().unwrap().iter() {
-                        for (user_id, user_info) in event_info["m.read"].as_object().unwrap().iter() {
+                        for (user_id, user_info) in event_info["m.read"].as_object().unwrap().iter()
+                        {
                             let timestamp = user_info["ts"].as_u64().unwrap();
-                            evt.add_read_record(event_id.to_string(), user_id.to_string(), timestamp);
+                            evt.add_read_record(
+                                event_id.to_string(),
+                                user_id.to_string(),
+                                timestamp,
+                            );
                         }
                     }
                     if let Err(e) = event_tx.try_send(evt) {
@@ -103,25 +108,3 @@ impl ReadNotificationController {
         }
     }
 }
-
-// // thread callback must be global function, not member function
-// pub async fn handle_read_notification(
-//     room_id: &OwnedRoomId,
-//     event: &Raw<AnySyncEphemeralRoomEvent>,
-//     client: &Client,
-//     tx: &mut Sender<ReadNotification>,
-// ) {
-//     if let Ok(AnySyncEphemeralRoomEvent::Receipt(ev)) = event.deserialize() {
-//         let mut evt = ReadNotification::new(room_id.to_string());
-//         let v: Value = serde_json::from_str(event.json().get()).unwrap();
-//         for (event_id, event_info) in v["content"].as_object().unwrap().iter() {
-//             for (user_id, user_info) in event_info["m.read"].as_object().unwrap().iter() {
-//                 let timestamp = user_info["ts"].as_u64().unwrap();
-//                 evt.add_read_record(event_id.to_string(), user_id.to_string(), timestamp);
-//             }
-//         }
-//         if let Err(e) = tx.try_send(evt) {
-//             log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
-//         }
-//     }
-// }
