@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors, require_trailing_commas
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter/material.dart';
 
-class PendingReqListView extends StatefulWidget {
+class PendingReqListView extends StatelessWidget {
   const PendingReqListView({
     Key? key,
     required this.name,
@@ -12,14 +12,9 @@ class PendingReqListView extends StatefulWidget {
   final String name;
 
   @override
-  PendingReqListViewState createState() => PendingReqListViewState();
-}
-
-class PendingReqListViewState extends State<PendingReqListView> {
-  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -29,10 +24,10 @@ class PendingReqListViewState extends State<PendingReqListView> {
                 backgroundColor: Colors.white,
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 16.0),
+                padding: const EdgeInsets.only(left: 16),
                 child: Text(
-                  widget.name,
-                  style: TextStyle(color: Colors.white, fontSize: 18.0),
+                  name,
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
             ],
@@ -44,7 +39,7 @@ class PendingReqListViewState extends State<PendingReqListView> {
                   Text(
                     'Withdraw',
                     style: TextStyle(
-                        color: AppCommonTheme.primaryColor, fontSize: 16.0),
+                        color: AppCommonTheme.primaryColor, fontSize: 16),
                   ),
                 ],
               ),

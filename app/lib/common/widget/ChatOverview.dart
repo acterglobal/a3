@@ -2,16 +2,16 @@
 
 import 'dart:io';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
@@ -36,7 +36,7 @@ class ChatOverview extends StatelessWidget {
               room: rooms[index],
               user: user,
             ),
-            Divider(
+            const Divider(
               height: 1,
             ),
           ],
@@ -162,7 +162,7 @@ class ChatListItem extends StatelessWidget {
               ),
             );
           } else {
-            return Container();
+            return const SizedBox();
           }
         },
       ),

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/custom_chat_input.dart';
 import 'package:flutter/material.dart';
 import 'package:effektio/controllers/chat_controller.dart';
@@ -70,7 +70,6 @@ class _ImageSelectionState extends State<ImageSelection> {
                           padding: const EdgeInsets.only(
                             top: 10,
                             left: 8,
-                            bottom: 0.0,
                           ),
                           child: InkWell(
                             onTap: () {
@@ -98,7 +97,8 @@ class _ImageSelectionState extends State<ImageSelection> {
                                     border: selectedIndex ==
                                             widget.imageList.indexOf(item)
                                         ? Border.all(
-                                            color: ChatTheme01.chatSelectedImageBorderColor,
+                                            color: ChatTheme01
+                                                .chatSelectedImageBorderColor,
                                             width: 2,
                                           )
                                         : null,
@@ -120,7 +120,8 @@ class _ImageSelectionState extends State<ImageSelection> {
                                     },
                                     child: CircleAvatar(
                                       radius: 8,
-                                      backgroundColor: AppCommonTheme.transparentColor,
+                                      backgroundColor:
+                                          AppCommonTheme.transparentColor,
                                       child: SvgPicture.asset(
                                         'assets/images/remove_selected_item.svg',
                                       ),
