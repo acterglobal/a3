@@ -19,6 +19,7 @@ mod group;
 mod messages;
 mod news;
 mod room;
+mod read_notification;
 mod stream;
 
 pub use account::Account;
@@ -30,10 +31,11 @@ pub use conversation::Conversation;
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use events::{
     Device, DevicesChangedEvent, DevicesLeftEvent, EmojiUnit, EmojiVerificationEvent,
-    ReadNotification, ReadRecord, TypingNotification,
+    TypingNotification,
 };
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
+pub use read_notification::{ReadNotificationController, ReadNotificationEvent, ReadRecord};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 

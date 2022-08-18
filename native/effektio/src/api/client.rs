@@ -18,6 +18,7 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
+    locks::RwLock as MatrixRwLock,
     media::{MediaFormat, MediaRequest},
     ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId},
     Client as MatrixClient, LoopCtrl,
@@ -33,11 +34,11 @@ use super::{
     api::FfiBuffer,
     events::{
         handle_devices_changed_event, handle_devices_left_event, handle_emoji_sync_msg_event,
-        handle_emoji_to_device_event, handle_read_notification, handle_typing_notification,
-        DevicesChangedEvent, DevicesLeftEvent, EmojiVerificationEvent, ReadNotification,
+        handle_emoji_to_device_event, handle_typing_notification,
+        DevicesChangedEvent, DevicesLeftEvent, EmojiVerificationEvent,
         TypingNotification,
     },
-    Account, Conversation, Group, Room, RUNTIME,
+    Account, Conversation, Group, ReadNotificationController, Room, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -56,6 +57,8 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
+    pub(crate) read_notification_controller:
+        Arc<MatrixRwLock<Option<ReadNotificationController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -118,7 +121,6 @@ pub struct SyncState {
     devices_changed_event_rx: Arc<Mutex<Option<Receiver<DevicesChangedEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     devices_left_event_rx: Arc<Mutex<Option<Receiver<DevicesLeftEvent>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     typing_notification_rx: Arc<Mutex<Option<Receiver<TypingNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
-    read_notification_rx: Arc<Mutex<Option<Receiver<ReadNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
@@ -128,14 +130,12 @@ impl SyncState {
         devices_changed_event_rx: Receiver<DevicesChangedEvent>,
         devices_left_event_rx: Receiver<DevicesLeftEvent>,
         typing_notification_rx: Receiver<TypingNotification>,
-        read_notification_rx: Receiver<ReadNotification>,
         first_synced_rx: SignalReceiver<bool>,
     ) -> Self {
         let emoji_verification_event_rx = Arc::new(Mutex::new(Some(emoji_verification_event_rx)));
         let devices_changed_event_rx = Arc::new(Mutex::new(Some(devices_changed_event_rx)));
         let devices_left_event_rx = Arc::new(Mutex::new(Some(devices_left_event_rx)));
         let typing_notification_rx = Arc::new(Mutex::new(Some(typing_notification_rx)));
-        let read_notification_rx = Arc::new(Mutex::new(Some(read_notification_rx)));
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
 
         Self {
@@ -143,7 +143,6 @@ impl SyncState {
             devices_changed_event_rx,
             devices_left_event_rx,
             typing_notification_rx,
-            read_notification_rx,
             first_synced_rx,
         }
     }
@@ -164,10 +163,6 @@ impl SyncState {
         self.typing_notification_rx.lock().take()
     }
 
-    pub fn get_read_notification_rx(&self) -> Option<Receiver<ReadNotification>> {
-        self.read_notification_rx.lock().take()
-    }
-
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
@@ -178,12 +173,14 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
+            read_notification_controller: Arc::new(MatrixRwLock::new(None)),
         }
     }
 
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
+        let read_notification_controller = self.read_notification_controller.clone();
 
         let (emoji_verification_event_tx, emoji_verification_event_rx) =
             channel::<EmojiVerificationEvent>(10); // dropping after more than 10 items queued
@@ -199,9 +196,6 @@ impl Client {
         let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
         let typing_notification_arc = Arc::new(typing_notification_tx);
 
-        let (read_notification_tx, read_notification_rx) = channel::<ReadNotification>(10); // dropping after more than 10 items queued
-        let read_notification_arc = Arc::new(read_notification_tx);
-
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
@@ -210,7 +204,6 @@ impl Client {
             devices_changed_event_rx,
             devices_left_event_rx,
             typing_notification_rx,
-            read_notification_rx,
             first_synced_rx,
         );
         let initial_arc = Arc::new(AtomicBool::from(true));
@@ -218,6 +211,7 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
+            let read_notification_controller = read_notification_controller.clone();
 
             client
                 .clone()
@@ -228,7 +222,7 @@ impl Client {
                     let devices_changed_event_arc = devices_changed_event_arc.clone();
                     let devices_left_event_arc = devices_left_event_arc.clone();
                     let typing_notification_arc = typing_notification_arc.clone();
-                    let read_notification_arc = read_notification_arc.clone();
+                    let read_notification_controller = read_notification_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -241,7 +235,6 @@ impl Client {
                         let mut devices_changed_event_tx = (*devices_changed_event_arc).clone();
                         let mut devices_left_event_tx = (*devices_left_event_arc).clone();
                         let mut typing_notification_tx = (*typing_notification_arc).clone();
-                        let mut read_notification_tx = (*read_notification_arc).clone();
 
                         for user_id in response.device_lists.changed {
                             handle_devices_changed_event(
@@ -273,7 +266,7 @@ impl Client {
                         }
 
                         if !initial.load(Ordering::SeqCst) {
-                            for (room_id, room_info) in response.rooms.join {
+                            for (room_id, room_info) in &response.rooms.join {
                                 for event in room_info
                                     .timeline
                                     .events
@@ -289,7 +282,7 @@ impl Client {
                                         );
                                     }
                                 }
-                                for event in room_info.ephemeral.events {
+                                for event in &room_info.ephemeral.events {
                                     if let Ok(ev) = event.deserialize() {
                                         handle_typing_notification(
                                             &room_id,
@@ -298,15 +291,18 @@ impl Client {
                                             &mut typing_notification_tx,
                                         )
                                         .await;
-                                        handle_read_notification(
-                                            &room_id,
-                                            &event,
-                                            &client,
-                                            &mut read_notification_tx,
-                                        )
-                                        .await;
+                                        // handle_read_notification(
+                                        //     &room_id,
+                                        //     &event,
+                                        //     &client,
+                                        //     &mut read_notification_tx,
+                                        // )
+                                        // .await;
                                     }
                                 }
+                            }
+                            if let Some(rnc) = &*read_notification_controller.read().await {
+                                rnc.process_ephemeral_events(&client, &response.rooms);
                             }
                         }
 
@@ -451,6 +447,23 @@ impl Client {
                     .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
+            })
+            .await?
+    }
+
+    pub async fn get_read_notification_controller(&self) -> Result<ReadNotificationController> {
+        // if not exists, create new controller and return it.
+        // thus Result is necessary but Option is not necessary.
+        let c = self.client.clone();
+        let read_notification_controller = self.read_notification_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(rnc) = &*read_notification_controller.read().await {
+                    return Ok(rnc.clone());
+                }
+                let rnc = ReadNotificationController::new();
+                *read_notification_controller.write().await = Some(rnc.clone());
+                Ok(rnc)
             })
             .await?
     }

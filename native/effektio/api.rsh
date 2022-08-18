@@ -249,9 +249,6 @@ object SyncState {
 
     /// Get event handler of typing notification
     fn get_typing_notification_rx() -> Option<Stream<TypingNotification>>;
-
-    /// Get event handler of read notification
-    fn get_read_notification_rx() -> Option<Stream<ReadNotification>>;
 }
 
 /// Main entry point for `effektio`.
@@ -312,6 +309,9 @@ object Client {
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
+
+    /// Return the read notification controller. If not exists, create it.
+    fn get_read_notification_controller() -> Future<Result<ReadNotificationController>>;
 }
 
 /// Deliver emoji verification event from rust to flutter
@@ -377,8 +377,12 @@ object TypingNotification {
     fn get_room_id() -> string;
 }
 
+object ReadNotificationController {
+    fn get_event_rx() -> Option<Stream<ReadNotificationEvent>>;
+}
+
 /// Deliver read notification from rust to flutter
-object ReadNotification {
+object ReadNotificationEvent {
     /// Get transaction id or flow id
     fn get_room_id() -> string;
 

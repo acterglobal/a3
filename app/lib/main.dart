@@ -18,7 +18,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState, UserId;
+    show ReadNotificationController, SyncState, UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -98,6 +98,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
+  late ReadNotificationController rnc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
 
@@ -122,6 +123,7 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    rnc = await client.getReadNotificationController();
     SyncState syncer = client.startSync();
     //Start listening for cross signing events
     crossSigning
@@ -132,7 +134,7 @@ class _EffektioHomeState extends State<EffektioHome>
       debugPrint('typing notification for ' + event.getRoomId());
     });
     UserId myId = await client.userId();
-    syncer.getReadNotificationRx()!.listen((event) {
+    rnc.getEventRx()!.listen((event) {
       for (var record in event.getReadRecords()) {
         String userId = record.getUserId();
         if (userId != myId.toString()) {

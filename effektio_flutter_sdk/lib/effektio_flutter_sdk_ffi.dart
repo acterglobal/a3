@@ -2737,6 +2737,51 @@ class Api {
     return tmp7;
   }
 
+  ReadNotificationController? __clientGetReadNotificationControllerFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientGetReadNotificationControllerFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReadNotificationController");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ReadNotificationController._(this, tmp13_1);
+    return tmp7;
+  }
+
   bool? __emojiVerificationEventAcceptVerificationRequestFuturePoll(
     int boxed,
     int postCobject,
@@ -3685,7 +3730,7 @@ class Api {
     return tmp9;
   }
 
-  ReadNotification? __syncStateGetReadNotificationRxStreamPoll(
+  ReadNotificationEvent? __readNotificationControllerGetEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3703,7 +3748,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetReadNotificationRxStreamPoll(
+    final tmp8 = _readNotificationControllerGetEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3715,9 +3760,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReadNotification");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReadNotificationEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = ReadNotification._(this, tmp11_1);
+    final tmp9 = ReadNotificationEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -4618,17 +4663,6 @@ class Api {
           _SyncStateGetTypingNotificationRxReturn Function(
     int,
   )>();
-  late final _syncStateGetReadNotificationRxPtr = _lookup<
-      ffi.NativeFunction<
-          _SyncStateGetReadNotificationRxReturn Function(
-    ffi.Int64,
-  )>>("__SyncState_get_read_notification_rx");
-
-  late final _syncStateGetReadNotificationRx =
-      _syncStateGetReadNotificationRxPtr.asFunction<
-          _SyncStateGetReadNotificationRxReturn Function(
-    int,
-  )>();
   late final _clientStartSyncPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4809,6 +4843,17 @@ class Api {
     int,
     int,
     int,
+    int,
+  )>();
+  late final _clientGetReadNotificationControllerPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_get_read_notification_controller");
+
+  late final _clientGetReadNotificationController =
+      _clientGetReadNotificationControllerPtr.asFunction<
+          int Function(
     int,
   )>();
   late final _emojiVerificationEventGetEventNamePtr = _lookup<
@@ -5023,25 +5068,36 @@ class Api {
           _TypingNotificationGetRoomIdReturn Function(
     int,
   )>();
-  late final _readNotificationGetRoomIdPtr = _lookup<
+  late final _readNotificationControllerGetEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ReadNotificationGetRoomIdReturn Function(
+          _ReadNotificationControllerGetEventRxReturn Function(
     ffi.Int64,
-  )>>("__ReadNotification_get_room_id");
+  )>>("__ReadNotificationController_get_event_rx");
 
-  late final _readNotificationGetRoomId =
-      _readNotificationGetRoomIdPtr.asFunction<
-          _ReadNotificationGetRoomIdReturn Function(
+  late final _readNotificationControllerGetEventRx =
+      _readNotificationControllerGetEventRxPtr.asFunction<
+          _ReadNotificationControllerGetEventRxReturn Function(
     int,
   )>();
-  late final _readNotificationGetReadRecordsPtr = _lookup<
+  late final _readNotificationEventGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          _ReadNotificationEventGetRoomIdReturn Function(
+    ffi.Int64,
+  )>>("__ReadNotificationEvent_get_room_id");
+
+  late final _readNotificationEventGetRoomId =
+      _readNotificationEventGetRoomIdPtr.asFunction<
+          _ReadNotificationEventGetRoomIdReturn Function(
+    int,
+  )>();
+  late final _readNotificationEventGetReadRecordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__ReadNotification_get_read_records");
+  )>>("__ReadNotificationEvent_get_read_records");
 
-  late final _readNotificationGetReadRecords =
-      _readNotificationGetReadRecordsPtr.asFunction<
+  late final _readNotificationEventGetReadRecords =
+      _readNotificationEventGetReadRecordsPtr.asFunction<
           int Function(
     int,
   )>();
@@ -5839,6 +5895,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientGetReadNotificationControllerFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientGetReadNotificationControllerFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_get_read_notification_controller_future_poll");
+
+  late final _clientGetReadNotificationControllerFuturePoll =
+      _clientGetReadNotificationControllerFuturePollPtr.asFunction<
+          _ClientGetReadNotificationControllerFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _emojiVerificationEventAcceptVerificationRequestFuturePollPtr =
       _lookup<
           ffi.NativeFunction<
@@ -6232,18 +6303,18 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetReadNotificationRxStreamPollPtr = _lookup<
+  late final _readNotificationControllerGetEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetReadNotificationRxStreamPollReturn Function(
+          _ReadNotificationControllerGetEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_read_notification_rx_stream_poll");
+  )>>("__ReadNotificationController_get_event_rx_stream_poll");
 
-  late final _syncStateGetReadNotificationRxStreamPoll =
-      _syncStateGetReadNotificationRxStreamPollPtr.asFunction<
-          _SyncStateGetReadNotificationRxStreamPollReturn Function(
+  late final _readNotificationControllerGetEventRxStreamPoll =
+      _readNotificationControllerGetEventRxStreamPollPtr.asFunction<
+          _ReadNotificationControllerGetEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8398,27 +8469,6 @@ class SyncState {
     return tmp2;
   }
 
-  /// Get event handler of read notification
-  Stream<ReadNotification>? getReadNotificationRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetReadNotificationRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_read_notification_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__syncStateGetReadNotificationRxStreamPoll);
-    return tmp2;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -8708,6 +8758,23 @@ class Client {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__clientVerifiedDeviceFuturePoll);
     return tmp6;
+  }
+
+  /// Return the read notification controller. If not exists, create it.
+  Future<ReadNotificationController> getReadNotificationController() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientGetReadNotificationController(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(
+        _api, tmp3_0, "__Client_get_read_notification_controller_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(
+        tmp3_1, _api.__clientGetReadNotificationControllerFuturePoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -9097,18 +9164,50 @@ class TypingNotification {
   }
 }
 
-/// Deliver read notification from rust to flutter
-class ReadNotification {
+class ReadNotificationController {
   final Api _api;
   final _Box _box;
 
-  ReadNotification._(this._api, this._box);
+  ReadNotificationController._(this._api, this._box);
+
+  Stream<ReadNotificationEvent>? getEventRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._readNotificationControllerGetEventRx(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(
+        _api, tmp4_0, "__ReadNotificationController_get_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__readNotificationControllerGetEventRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Deliver read notification from rust to flutter
+class ReadNotificationEvent {
+  final Api _api;
+  final _Box _box;
+
+  ReadNotificationEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
   String getRoomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readNotificationGetRoomId(
+    final tmp1 = _api._readNotificationEventGetRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9128,7 +9227,7 @@ class ReadNotification {
   FfiListReadRecord getReadRecords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readNotificationGetReadRecords(
+    final tmp1 = _api._readNotificationEventGetReadRecords(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -9815,13 +9914,6 @@ class _SyncStateGetTypingNotificationRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SyncStateGetReadNotificationRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _EmojiVerificationEventGetEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -9888,7 +9980,14 @@ class _TypingNotificationGetRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReadNotificationGetRoomIdReturn extends ffi.Struct {
+class _ReadNotificationControllerGetEventRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ReadNotificationEventGetRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10612,6 +10711,21 @@ class _ClientVerifiedDeviceFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientGetReadNotificationControllerFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _EmojiVerificationEventAcceptVerificationRequestFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -10933,7 +11047,7 @@ class _SyncStateGetTypingNotificationRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SyncStateGetReadNotificationRxStreamPollReturn extends ffi.Struct {
+class _ReadNotificationControllerGetEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
