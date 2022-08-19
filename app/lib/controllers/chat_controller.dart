@@ -1,5 +1,6 @@
 // ignore_for_file: always_declare_return_types
 
+import 'dart:async';
 import 'dart:io';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/screens/ChatProfileScreen/ImageSelectionScreen.dart';
@@ -35,7 +36,6 @@ class ChatController extends GetxController {
   late final Conversation room;
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
-
   RxBool isEmojiVisible = false.obs;
   RxBool isattachmentVisible = false.obs;
   FocusNode focusNode = FocusNode();
@@ -72,16 +72,22 @@ class ChatController extends GetxController {
       }
     }
     mtx.release();
+    //waits for new event
+    newEvent();
   }
 
-  //waits for new event
   Future<void> newEvent() async {
-    await _stream!.next();
-    var message = await room.latestMessage();
-    if (message.sender() != user.id) {
-      _loadMessage(message, messages);
-      update(['Chat']);
-    }
+    Stream<RoomMessage> newRoomMessage() =>
+        Stream.periodic(const Duration(seconds: 2))
+            .asyncMap((_) => _stream!.next());
+    newRoomMessage().listen((event) {
+      if (event.sender() != user.id) {
+        _loadMessage(event, messages);
+        update(['Chat']);
+      } else {
+        update(['Chat']);
+      }
+    });
   }
 
   //preview message link

@@ -42,6 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
+    super.initState();
     _user = types.User(
       id: widget.user!,
     );
@@ -49,7 +50,6 @@ class _ChatScreenState extends State<ChatScreen> {
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
     chatController.init(widget.room, _user);
-    super.initState();
   }
 
   @override
