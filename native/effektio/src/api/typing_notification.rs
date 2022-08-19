@@ -4,12 +4,8 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
-    deserialized_responses::Rooms,
     room::Room,
-    ruma::{
-        events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
-        OwnedRoomId,
-    },
+    ruma::events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
     Client,
 };
 use parking_lot::Mutex;
@@ -60,14 +56,14 @@ impl TypingNotificationController {
         room: &Room,
     ) {
         info!("typing: {:?}", ev.content.user_ids);
-        let mut event_tx = self.event_tx.clone();
         let room_id = room.room_id();
         let mut user_ids = vec![];
         for user_id in ev.content.user_ids {
             user_ids.push(user_id.to_string());
         }
-        let evt = TypingNotificationEvent::new(room_id.to_string(), user_ids);
-        if let Err(e) = event_tx.try_send(evt) {
+        let msg = TypingNotificationEvent::new(room_id.to_string(), user_ids);
+        let mut event_tx = self.event_tx.clone();
+        if let Err(e) = event_tx.try_send(msg) {
             warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
     }

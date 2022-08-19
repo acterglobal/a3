@@ -8,10 +8,7 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    stream, StreamExt,
-};
+use futures::{stream, StreamExt};
 use futures_signals::signal::{
     channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
