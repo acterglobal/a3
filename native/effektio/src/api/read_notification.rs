@@ -98,11 +98,7 @@ impl ReadNotificationController {
             for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
                 info!("user receipt: {:?}", receipt);
                 let timestamp = u64::try_from(receipt.ts.unwrap().get()).unwrap();
-                msg.add_read_record(
-                    event_id.to_string(),
-                    user_id.to_string(),
-                    timestamp,
-                );
+                msg.add_read_record(event_id.to_string(), user_id.to_string(), timestamp);
             }
         }
         let mut event_tx = self.event_tx.clone();

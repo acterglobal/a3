@@ -22,7 +22,11 @@ use matrix_sdk::{
     locks::RwLock as MatrixRwLock,
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
-    ruma::{device_id, events::{receipt::ReceiptEventContent, AnySyncRoomEvent, SyncEphemeralRoomEvent}, OwnedUserId, RoomId},
+    ruma::{
+        device_id,
+        events::{receipt::ReceiptEventContent, SyncEphemeralRoomEvent},
+        OwnedUserId, RoomId,
+    },
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
@@ -413,7 +417,9 @@ impl Client {
                 client
                     .register_event_handler_context(rnc.clone())
                     .register_event_handler(
-                        |ev: SyncEphemeralRoomEvent<ReceiptEventContent>, room: MatrixRoom, Ctx(rnc): Ctx<ReadNotificationController>| async move {
+                        |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
+                         room: MatrixRoom,
+                         Ctx(rnc): Ctx<ReadNotificationController>| async move {
                             rnc.process_ephemeral_event(ev, &room);
                         },
                     )
