@@ -121,7 +121,7 @@ class _EffektioHomeState extends State<EffektioHome>
     Client client = await sdk.currentClient;
     dlc = await client.getDeviceListsController();
     svc = await client.getSessionVerificationController();
-    SyncState syncer = client.startSync();
+    SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
