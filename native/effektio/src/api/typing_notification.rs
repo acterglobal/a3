@@ -7,7 +7,7 @@ use matrix_sdk::{
     deserialized_responses::Rooms,
     room::Room,
     ruma::{
-        events::{SyncEphemeralRoomEvent, typing::TypingEventContent},
+        events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
         OwnedRoomId,
     },
     Client,
@@ -54,7 +54,11 @@ impl TypingNotificationController {
         self.event_rx.lock().take()
     }
 
-    pub(crate) fn process_ephemeral_event(&self, ev: SyncEphemeralRoomEvent<TypingEventContent>, room: &Room) {
+    pub(crate) fn process_ephemeral_event(
+        &self,
+        ev: SyncEphemeralRoomEvent<TypingEventContent>,
+        room: &Room,
+    ) {
         info!("typing: {:?}", ev.content.user_ids);
         let mut event_tx = self.event_tx.clone();
         let room_id = room.room_id();

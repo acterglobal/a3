@@ -23,7 +23,8 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
-        device_id, events::{SyncEphemeralRoomEvent, typing::TypingEventContent},
+        device_id,
+        events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
         OwnedUserId, RoomId,
     },
     Client as MatrixClient, LoopCtrl,
@@ -383,9 +384,13 @@ impl Client {
                 let tnc = TypingNotificationController::new();
                 client
                     .register_event_handler_context(tnc.clone())
-                    .register_event_handler(|ev: SyncEphemeralRoomEvent<TypingEventContent>, room: MatrixRoom, Ctx(tnc): Ctx<TypingNotificationController>| async move {
-                        tnc.process_ephemeral_event(ev, &room);
-                    })
+                    .register_event_handler(
+                        |ev: SyncEphemeralRoomEvent<TypingEventContent>,
+                         room: MatrixRoom,
+                         Ctx(tnc): Ctx<TypingNotificationController>| async move {
+                            tnc.process_ephemeral_event(ev, &room);
+                        },
+                    )
                     .await;
                 *typing_notification_controller.write().await = Some(tnc.clone());
                 Ok(tnc)
