@@ -2,13 +2,16 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
 };
+use log::{info, warn};
 use matrix_sdk::{
-    deserialized_responses::Rooms,
-    ruma::{events::AnySyncEphemeralRoomEvent, serde::Raw, OwnedRoomId},
+    room::Room,
+    ruma::{
+        events::{receipt::ReceiptEventContent, SyncEphemeralRoomEvent},
+        receipt::ReceiptType,
+    },
     Client,
 };
 use parking_lot::Mutex;
-use serde_json::Value;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
@@ -82,29 +85,29 @@ impl ReadNotificationController {
         self.event_rx.lock().take()
     }
 
-    pub(crate) fn process_ephemeral_events(&self, client: &Client, rooms: &Rooms) {
-        let mut event_tx = self.event_tx.clone();
-        for (room_id, room_info) in rooms.join.iter() {
-            for event in &room_info.ephemeral.events {
-                if let Ok(AnySyncEphemeralRoomEvent::Receipt(ev)) = event.deserialize() {
-                    let mut evt = ReadNotificationEvent::new(room_id.to_string());
-                    let v: Value = serde_json::from_str(event.json().get()).unwrap();
-                    for (event_id, event_info) in v["content"].as_object().unwrap().iter() {
-                        for (user_id, user_info) in event_info["m.read"].as_object().unwrap().iter()
-                        {
-                            let timestamp = user_info["ts"].as_u64().unwrap();
-                            evt.add_read_record(
-                                event_id.to_string(),
-                                user_id.to_string(),
-                                timestamp,
-                            );
-                        }
-                    }
-                    if let Err(e) = event_tx.try_send(evt) {
-                        log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
-                    }
-                }
+    pub(crate) fn process_ephemeral_event(
+        &self,
+        ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
+        room: &Room,
+    ) {
+        info!("receipt: {:?}", ev.content);
+        let room_id = room.room_id();
+        let mut msg = ReadNotificationEvent::new(room_id.to_string());
+        for (event_id, event_info) in ev.content.iter() {
+            info!("receipt iter: {:?}", event_id);
+            for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
+                info!("user receipt: {:?}", receipt);
+                let timestamp = u64::try_from(receipt.ts.unwrap().get()).unwrap();
+                msg.add_read_record(
+                    event_id.to_string(),
+                    user_id.to_string(),
+                    timestamp,
+                );
             }
+        }
+        let mut event_tx = self.event_tx.clone();
+        if let Err(e) = event_tx.try_send(msg) {
+            log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
     }
 }
