@@ -46,12 +46,26 @@ class ChatOverview extends StatelessWidget {
   }
 }
 
-class ChatListItem extends StatelessWidget {
+class ChatListItem extends StatefulWidget {
   final Conversation room;
   final String? user;
   const ChatListItem({Key? key, required this.room, required this.user})
       : super(key: key);
 
+  @override
+  State<ChatListItem> createState() => _ChatListItemState();
+}
+
+class _ChatListItemState extends State<ChatListItem> {
+  @override
+  void initState() {
+    super.initState();
+    _getLatestMessage();
+  }
+
+  Stream<RoomMessage> _getLatestMessage() =>
+      Stream.periodic(const Duration(seconds: 2))
+          .asyncMap((_) => widget.room.latestMessage());
   @override
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
@@ -61,21 +75,21 @@ class ChatListItem extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => ChatScreen(
-              room: room,
-              user: user,
+              room: widget.room,
+              user: widget.user,
             ),
           ),
         );
       },
       leading: CustomAvatar(
-        avatar: room.avatar(),
-        displayName: room.displayName(),
+        avatar: widget.room.avatar(),
+        displayName: widget.room.displayName(),
         radius: 25,
         isGroup: true,
         stringName: '',
       ),
       title: FutureBuilder<String>(
-        future: room.displayName(),
+        future: widget.room.displayName(),
         builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
           if (snapshot.hasData) {
             return Text(
@@ -87,8 +101,8 @@ class ChatListItem extends StatelessWidget {
           }
         },
       ),
-      subtitle: FutureBuilder<RoomMessage>(
-        future: room.latestMessage(),
+      subtitle: StreamBuilder<RoomMessage>(
+        stream: _getLatestMessage(),
         builder: (BuildContext context, snapshot) {
           if (snapshot.hasData) {
             return Container(
@@ -166,8 +180,8 @@ class ChatListItem extends StatelessWidget {
           }
         },
       ),
-      trailing: FutureBuilder<RoomMessage>(
-        future: room.latestMessage(),
+      trailing: StreamBuilder<RoomMessage>(
+        stream: _getLatestMessage(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Text(
