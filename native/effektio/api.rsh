@@ -434,4 +434,7 @@ object TypingNotificationController {
 object TypingNotificationEvent {
     /// Get transaction id or flow id
     fn get_room_id() -> string;
+
+    /// Get list of user id
+    fn get_user_ids() -> Vec<string>;
 }

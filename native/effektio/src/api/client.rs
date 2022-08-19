@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    models::{Faq, News},
+    models::Faq,
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
 };
@@ -10,7 +10,7 @@ use effektio_core::{
 use effektio_core::mocks::gen_mock_faqs;
 use futures::{
     channel::mpsc::{channel, Receiver},
-    stream, Stream, StreamExt,
+    stream, StreamExt,
 };
 use futures_signals::signal::{
     channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
@@ -18,13 +18,17 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
+    event_handler::Ctx,
     locks::RwLock as MatrixRwLock,
     media::{MediaFormat, MediaRequest},
-    ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId},
+    room::Room as MatrixRoom,
+    ruma::{
+        device_id, events::{SyncEphemeralRoomEvent, typing::TypingEventContent},
+        OwnedUserId, RoomId,
+    },
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
-use serde_json::Value;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
@@ -144,7 +148,6 @@ impl Client {
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
-        let typing_notification_controller = self.typing_notification_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
@@ -157,7 +160,6 @@ impl Client {
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
-            let typing_notification_controller = typing_notification_controller.clone();
 
             client
                 .clone()
@@ -166,7 +168,6 @@ impl Client {
                     let state = state.clone();
                     let session_verification_controller = session_verification_controller.clone();
                     let device_lists_controller = device_lists_controller.clone();
-                    let typing_notification_controller = typing_notification_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -181,9 +182,6 @@ impl Client {
                         if !initial.load(Ordering::SeqCst) {
                             if let Some(svc) = &*session_verification_controller.read().await {
                                 svc.process_sync_messages(&client, &response.rooms);
-                            }
-                            if let Some(tnc) = &*typing_notification_controller.read().await {
-                                tnc.process_ephemeral_events(&client, &response.rooms);
                             }
                         }
 
@@ -375,7 +373,7 @@ impl Client {
     pub async fn get_typing_notification_controller(&self) -> Result<TypingNotificationController> {
         // if not exists, create new controller and return it.
         // thus Result is necessary but Option is not necessary.
-        let c = self.client.clone();
+        let client = self.client.clone();
         let typing_notification_controller = self.typing_notification_controller.clone();
         RUNTIME
             .spawn(async move {
@@ -383,6 +381,12 @@ impl Client {
                     return Ok(tnc.clone());
                 }
                 let tnc = TypingNotificationController::new();
+                client
+                    .register_event_handler_context(tnc.clone())
+                    .register_event_handler(|ev: SyncEphemeralRoomEvent<TypingEventContent>, room: MatrixRoom, Ctx(tnc): Ctx<TypingNotificationController>| async move {
+                        tnc.process_ephemeral_event(ev, &room);
+                    })
+                    .await;
                 *typing_notification_controller.write().await = Some(tnc.clone());
                 Ok(tnc)
             })

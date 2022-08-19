@@ -2,9 +2,14 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
 };
+use log::{info, warn};
 use matrix_sdk::{
     deserialized_responses::Rooms,
-    ruma::{events::AnySyncEphemeralRoomEvent, OwnedRoomId},
+    room::Room,
+    ruma::{
+        events::{SyncEphemeralRoomEvent, typing::TypingEventContent},
+        OwnedRoomId,
+    },
     Client,
 };
 use parking_lot::Mutex;
@@ -13,15 +18,20 @@ use std::sync::Arc;
 #[derive(Clone, Debug)]
 pub struct TypingNotificationEvent {
     room_id: String,
+    user_ids: Vec<String>,
 }
 
 impl TypingNotificationEvent {
-    pub(crate) fn new(room_id: String) -> Self {
-        Self { room_id }
+    pub(crate) fn new(room_id: String, user_ids: Vec<String>) -> Self {
+        Self { room_id, user_ids }
     }
 
     pub fn get_room_id(&self) -> String {
         self.room_id.clone()
+    }
+
+    pub fn get_user_ids(&self) -> Vec<String> {
+        self.user_ids.clone()
     }
 }
 
@@ -44,22 +54,17 @@ impl TypingNotificationController {
         self.event_rx.lock().take()
     }
 
-    pub(crate) fn process_ephemeral_events(&self, client: &Client, rooms: &Rooms) {
+    pub(crate) fn process_ephemeral_event(&self, ev: SyncEphemeralRoomEvent<TypingEventContent>, room: &Room) {
+        info!("typing: {:?}", ev.content.user_ids);
         let mut event_tx = self.event_tx.clone();
-        for (room_id, room_info) in rooms.join.iter() {
-            for event in room_info
-                .ephemeral
-                .events
-                .iter()
-                .filter_map(|ev| ev.deserialize().ok())
-            {
-                if let AnySyncEphemeralRoomEvent::Typing(ev) = event {
-                    let evt = TypingNotificationEvent::new(room_id.to_string());
-                    if let Err(e) = event_tx.try_send(evt) {
-                        log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
-                    }
-                }
-            }
+        let room_id = room.room_id();
+        let mut user_ids = vec![];
+        for user_id in ev.content.user_ids {
+            user_ids.push(user_id.to_string());
+        }
+        let evt = TypingNotificationEvent::new(room_id.to_string(), user_ids);
+        if let Err(e) = event_tx.try_send(evt) {
+            warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
     }
 }
