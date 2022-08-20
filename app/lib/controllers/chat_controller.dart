@@ -78,7 +78,7 @@ class ChatController extends GetxController {
 
   Future<void> newEvent() async {
     Stream<RoomMessage> newRoomMessage() =>
-        Stream.periodic(const Duration(seconds: 2))
+        Stream.periodic(const Duration(milliseconds: 800))
             .asyncMap((_) => _stream!.next());
     newRoomMessage().listen((event) {
       if (event.sender() != user.id) {

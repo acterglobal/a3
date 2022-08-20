@@ -24,24 +24,20 @@ class ChatOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       padding: const EdgeInsets.only(top: 10),
       itemCount: rooms.length,
       itemBuilder: (BuildContext context, int index) {
-        return Column(
-          children: <Widget>[
-            ChatListItem(
-              room: rooms[index],
-              user: user,
-            ),
-            const Divider(
-              height: 1,
-            ),
-          ],
+        return ChatListItem(
+          room: rooms[index],
+          user: user,
         );
       },
+      separatorBuilder: (context, int index) => const Divider(
+        height: 1,
+      ),
     );
   }
 }
@@ -64,7 +60,7 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Stream<RoomMessage> _getLatestMessage() =>
-      Stream.periodic(const Duration(seconds: 2))
+      Stream.periodic(const Duration(milliseconds: 800))
           .asyncMap((_) => widget.room.latestMessage());
   @override
   Widget build(BuildContext context) {
