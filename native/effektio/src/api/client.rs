@@ -38,7 +38,7 @@ use std::sync::{
 use super::{
     api::FfiBuffer,
     events::{handle_typing_notification, TypingNotification},
-    Account, Conversation, DeviceListsController, Group, ReadNotificationController, Room,
+    Account, Conversation, DeviceListsController, Group, ReceiptNotificationController, Room,
     SessionVerificationController, RUNTIME,
 };
 
@@ -61,7 +61,7 @@ pub struct Client {
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
-    pub(crate) read_notification_controller: Arc<MatrixRwLock<Option<ReadNotificationController>>>,
+    pub(crate) receipt_notification_controller: Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -154,7 +154,7 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: Arc::new(MatrixRwLock::new(None)),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
-            read_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
         }
     }
 
@@ -403,28 +403,28 @@ impl Client {
             .await?
     }
 
-    pub async fn get_read_notification_controller(&self) -> Result<ReadNotificationController> {
+    pub async fn get_receipt_notification_controller(&self) -> Result<ReceiptNotificationController> {
         // if not exists, create new controller and return it.
         // thus Result is necessary but Option is not necessary.
         let client = self.client.clone();
-        let read_notification_controller = self.read_notification_controller.clone();
+        let receipt_notification_controller = self.receipt_notification_controller.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(rnc) = &*read_notification_controller.read().await {
+                if let Some(rnc) = &*receipt_notification_controller.read().await {
                     return Ok(rnc.clone());
                 }
-                let rnc = ReadNotificationController::new();
+                let rnc = ReceiptNotificationController::new();
                 client
                     .register_event_handler_context(rnc.clone())
                     .register_event_handler(
                         |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
                          room: MatrixRoom,
-                         Ctx(rnc): Ctx<ReadNotificationController>| async move {
+                         Ctx(rnc): Ctx<ReceiptNotificationController>| async move {
                             rnc.process_ephemeral_event(ev, &room);
                         },
                     )
                     .await;
-                *read_notification_controller.write().await = Some(rnc.clone());
+                *receipt_notification_controller.write().await = Some(rnc.clone());
                 Ok(rnc)
             })
             .await?

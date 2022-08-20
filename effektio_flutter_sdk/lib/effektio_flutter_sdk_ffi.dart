@@ -2829,7 +2829,8 @@ class Api {
     return tmp7;
   }
 
-  ReadNotificationController? __clientGetReadNotificationControllerFuturePoll(
+  ReceiptNotificationController?
+      __clientGetReceiptNotificationControllerFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2843,7 +2844,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientGetReadNotificationControllerFuturePoll(
+    final tmp6 = _clientGetReceiptNotificationControllerFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2868,9 +2869,10 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ReadNotificationController");
+    final tmp13_1 =
+        _Box(this, tmp13_0, "drop_box_ReceiptNotificationController");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = ReadNotificationController._(this, tmp13_1);
+    final tmp7 = ReceiptNotificationController._(this, tmp13_1);
     return tmp7;
   }
 
@@ -3753,7 +3755,7 @@ class Api {
     return tmp9;
   }
 
-  ReadNotificationEvent? __readNotificationControllerGetEventRxStreamPoll(
+  ReceiptNotificationEvent? __receiptNotificationControllerGetEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3771,7 +3773,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _readNotificationControllerGetEventRxStreamPoll(
+    final tmp8 = _receiptNotificationControllerGetEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3783,9 +3785,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReadNotificationEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptNotificationEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = ReadNotificationEvent._(this, tmp11_1);
+    final tmp9 = ReceiptNotificationEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -4929,14 +4931,14 @@ class Api {
           int Function(
     int,
   )>();
-  late final _clientGetReadNotificationControllerPtr = _lookup<
+  late final _clientGetReceiptNotificationControllerPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_get_read_notification_controller");
+  )>>("__Client_get_receipt_notification_controller");
 
-  late final _clientGetReadNotificationController =
-      _clientGetReadNotificationControllerPtr.asFunction<
+  late final _clientGetReceiptNotificationController =
+      _clientGetReceiptNotificationControllerPtr.asFunction<
           int Function(
     int,
   )>();
@@ -5175,67 +5177,68 @@ class Api {
           _SessionVerificationEmojiDescriptionReturn Function(
     int,
   )>();
-  late final _readNotificationControllerGetEventRxPtr = _lookup<
+  late final _receiptNotificationControllerGetEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ReadNotificationControllerGetEventRxReturn Function(
+          _ReceiptNotificationControllerGetEventRxReturn Function(
     ffi.Int64,
-  )>>("__ReadNotificationController_get_event_rx");
+  )>>("__ReceiptNotificationController_get_event_rx");
 
-  late final _readNotificationControllerGetEventRx =
-      _readNotificationControllerGetEventRxPtr.asFunction<
-          _ReadNotificationControllerGetEventRxReturn Function(
+  late final _receiptNotificationControllerGetEventRx =
+      _receiptNotificationControllerGetEventRxPtr.asFunction<
+          _ReceiptNotificationControllerGetEventRxReturn Function(
     int,
   )>();
-  late final _readNotificationEventGetRoomIdPtr = _lookup<
+  late final _receiptNotificationEventGetRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReadNotificationEventGetRoomIdReturn Function(
+          _ReceiptNotificationEventGetRoomIdReturn Function(
     ffi.Int64,
-  )>>("__ReadNotificationEvent_get_room_id");
+  )>>("__ReceiptNotificationEvent_get_room_id");
 
-  late final _readNotificationEventGetRoomId =
-      _readNotificationEventGetRoomIdPtr.asFunction<
-          _ReadNotificationEventGetRoomIdReturn Function(
+  late final _receiptNotificationEventGetRoomId =
+      _receiptNotificationEventGetRoomIdPtr.asFunction<
+          _ReceiptNotificationEventGetRoomIdReturn Function(
     int,
   )>();
-  late final _readNotificationEventGetReadRecordsPtr = _lookup<
+  late final _receiptNotificationEventGetReceiptRecordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__ReadNotificationEvent_get_read_records");
+  )>>("__ReceiptNotificationEvent_get_receipt_records");
 
-  late final _readNotificationEventGetReadRecords =
-      _readNotificationEventGetReadRecordsPtr.asFunction<
+  late final _receiptNotificationEventGetReceiptRecords =
+      _receiptNotificationEventGetReceiptRecordsPtr.asFunction<
           int Function(
     int,
   )>();
-  late final _readRecordGetEventIdPtr = _lookup<
+  late final _receiptRecordGetEventIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReadRecordGetEventIdReturn Function(
+          _ReceiptRecordGetEventIdReturn Function(
     ffi.Int64,
-  )>>("__ReadRecord_get_event_id");
+  )>>("__ReceiptRecord_get_event_id");
 
-  late final _readRecordGetEventId = _readRecordGetEventIdPtr.asFunction<
-      _ReadRecordGetEventIdReturn Function(
+  late final _receiptRecordGetEventId = _receiptRecordGetEventIdPtr.asFunction<
+      _ReceiptRecordGetEventIdReturn Function(
     int,
   )>();
-  late final _readRecordGetUserIdPtr = _lookup<
+  late final _receiptRecordGetUserIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReadRecordGetUserIdReturn Function(
+          _ReceiptRecordGetUserIdReturn Function(
     ffi.Int64,
-  )>>("__ReadRecord_get_user_id");
+  )>>("__ReceiptRecord_get_user_id");
 
-  late final _readRecordGetUserId = _readRecordGetUserIdPtr.asFunction<
-      _ReadRecordGetUserIdReturn Function(
+  late final _receiptRecordGetUserId = _receiptRecordGetUserIdPtr.asFunction<
+      _ReceiptRecordGetUserIdReturn Function(
     int,
   )>();
-  late final _readRecordGetTimestampPtr = _lookup<
+  late final _receiptRecordGetTimestampPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint32 Function(
     ffi.Int64,
-  )>>("__ReadRecord_get_timestamp");
+  )>>("__ReceiptRecord_get_timestamp");
 
-  late final _readRecordGetTimestamp = _readRecordGetTimestampPtr.asFunction<
-      int Function(
+  late final _receiptRecordGetTimestamp =
+      _receiptRecordGetTimestampPtr.asFunction<
+          int Function(
     int,
   )>();
   late final _deviceListsControllerGetChangedEventRxPtr = _lookup<
@@ -6045,17 +6048,17 @@ class Api {
     int,
     int,
   )>();
-  late final _clientGetReadNotificationControllerFuturePollPtr = _lookup<
+  late final _clientGetReceiptNotificationControllerFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientGetReadNotificationControllerFuturePollReturn Function(
+          _ClientGetReceiptNotificationControllerFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_get_read_notification_controller_future_poll");
+  )>>("__Client_get_receipt_notification_controller_future_poll");
 
-  late final _clientGetReadNotificationControllerFuturePoll =
-      _clientGetReadNotificationControllerFuturePollPtr.asFunction<
-          _ClientGetReadNotificationControllerFuturePollReturn Function(
+  late final _clientGetReceiptNotificationControllerFuturePoll =
+      _clientGetReceiptNotificationControllerFuturePollPtr.asFunction<
+          _ClientGetReceiptNotificationControllerFuturePollReturn Function(
     int,
     int,
     int,
@@ -6432,18 +6435,18 @@ class Api {
     int,
     int,
   )>();
-  late final _readNotificationControllerGetEventRxStreamPollPtr = _lookup<
+  late final _receiptNotificationControllerGetEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ReadNotificationControllerGetEventRxStreamPollReturn Function(
+          _ReceiptNotificationControllerGetEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__ReadNotificationController_get_event_rx_stream_poll");
+  )>>("__ReceiptNotificationController_get_event_rx_stream_poll");
 
-  late final _readNotificationControllerGetEventRxStreamPoll =
-      _readNotificationControllerGetEventRxStreamPollPtr.asFunction<
-          _ReadNotificationControllerGetEventRxStreamPollReturn Function(
+  late final _receiptNotificationControllerGetEventRxStreamPoll =
+      _receiptNotificationControllerGetEventRxStreamPollPtr.asFunction<
+          _ReceiptNotificationControllerGetEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -6823,55 +6826,55 @@ class Api {
 
   late final _ffiListNewsInsert =
       _ffiListNewsInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListReadRecord createFfiListReadRecord() {
+  FfiListReceiptRecord createFfiListReceiptRecord() {
     final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListReadRecordCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListReadRecord");
-    return FfiListReadRecord._(this, list_box);
+        ffi.Pointer.fromAddress(_ffiListReceiptRecordCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListReceiptRecord");
+    return FfiListReceiptRecord._(this, list_box);
   }
 
-  late final _ffiListReadRecordCreatePtr =
+  late final _ffiListReceiptRecordCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListReadRecordCreate");
+          "__FfiListReceiptRecordCreate");
 
-  late final _ffiListReadRecordCreate =
-      _ffiListReadRecordCreatePtr.asFunction<int Function()>();
+  late final _ffiListReceiptRecordCreate =
+      _ffiListReceiptRecordCreatePtr.asFunction<int Function()>();
 
-  late final _ffiListReadRecordLenPtr =
+  late final _ffiListReceiptRecordLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListReadRecordLen");
+          "__FfiListReceiptRecordLen");
 
-  late final _ffiListReadRecordLen =
-      _ffiListReadRecordLenPtr.asFunction<int Function(int)>();
+  late final _ffiListReceiptRecordLen =
+      _ffiListReceiptRecordLenPtr.asFunction<int Function(int)>();
 
-  late final _ffiListReadRecordElementAtPtr =
+  late final _ffiListReceiptRecordElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListReadRecordElementAt");
+          "__FfiListReceiptRecordElementAt");
 
-  late final _ffiListReadRecordElementAt =
-      _ffiListReadRecordElementAtPtr.asFunction<int Function(int, int)>();
+  late final _ffiListReceiptRecordElementAt =
+      _ffiListReceiptRecordElementAtPtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListReadRecordRemovePtr =
+  late final _ffiListReceiptRecordRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListReadRecordRemove");
+          "__FfiListReceiptRecordRemove");
 
-  late final _ffiListReadRecordRemove =
-      _ffiListReadRecordRemovePtr.asFunction<int Function(int, int)>();
+  late final _ffiListReceiptRecordRemove =
+      _ffiListReceiptRecordRemovePtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListReadRecordAddPtr =
+  late final _ffiListReceiptRecordAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListReadRecordAdd");
+          "__FfiListReceiptRecordAdd");
 
-  late final _ffiListReadRecordAdd =
-      _ffiListReadRecordAddPtr.asFunction<void Function(int, int)>();
+  late final _ffiListReceiptRecordAdd =
+      _ffiListReceiptRecordAddPtr.asFunction<void Function(int, int)>();
 
-  late final _ffiListReadRecordInsertPtr = _lookup<
+  late final _ffiListReceiptRecordInsertPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListReadRecordInsert");
+              ffi.IntPtr)>>("__FfiListReceiptRecordInsert");
 
-  late final _ffiListReadRecordInsert =
-      _ffiListReadRecordInsertPtr.asFunction<void Function(int, int, int)>();
+  late final _ffiListReceiptRecordInsert =
+      _ffiListReceiptRecordInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListRoomMessage createFfiListRoomMessage() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListRoomMessageCreate());
@@ -8900,19 +8903,19 @@ class Client {
   }
 
   /// Return the read notification controller. If not exists, create it.
-  Future<ReadNotificationController> getReadNotificationController() {
+  Future<ReceiptNotificationController> getReceiptNotificationController() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientGetReadNotificationController(
+    final tmp1 = _api._clientGetReceiptNotificationController(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(
-        _api, tmp3_0, "__Client_get_read_notification_controller_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0,
+        "__Client_get_receipt_notification_controller_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(
-        tmp3_1, _api.__clientGetReadNotificationControllerFuturePoll);
+        tmp3_1, _api.__clientGetReceiptNotificationControllerFuturePoll);
     return tmp2;
   }
 
@@ -9345,16 +9348,16 @@ class SessionVerificationEmoji {
   }
 }
 
-class ReadNotificationController {
+class ReceiptNotificationController {
   final Api _api;
   final _Box _box;
 
-  ReadNotificationController._(this._api, this._box);
+  ReceiptNotificationController._(this._api, this._box);
 
-  Stream<ReadNotificationEvent>? getEventRx() {
+  Stream<ReceiptNotificationEvent>? getEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readNotificationControllerGetEventRx(
+    final tmp1 = _api._receiptNotificationControllerGetEventRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9363,11 +9366,11 @@ class ReadNotificationController {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(
-        _api, tmp4_0, "__ReadNotificationController_get_event_rx_stream_drop");
+    final tmp4_1 = _Box(_api, tmp4_0,
+        "__ReceiptNotificationController_get_event_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = _nativeStream(
-        tmp4_1, _api.__readNotificationControllerGetEventRxStreamPoll);
+        tmp4_1, _api.__receiptNotificationControllerGetEventRxStreamPoll);
     return tmp2;
   }
 
@@ -9378,17 +9381,17 @@ class ReadNotificationController {
 }
 
 /// Deliver read notification from rust to flutter
-class ReadNotificationEvent {
+class ReceiptNotificationEvent {
   final Api _api;
   final _Box _box;
 
-  ReadNotificationEvent._(this._api, this._box);
+  ReceiptNotificationEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
   String getRoomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readNotificationEventGetRoomId(
+    final tmp1 = _api._receiptNotificationEventGetRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9405,17 +9408,17 @@ class ReadNotificationEvent {
   }
 
   /// Get records
-  FfiListReadRecord getReadRecords() {
+  FfiListReceiptRecord getReceiptRecords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readNotificationEventGetReadRecords(
+    final tmp1 = _api._receiptNotificationEventGetReceiptRecords(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListReadRecord");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListReceiptRecord");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListReadRecord._(_api, tmp3_1);
+    final tmp4 = FfiListReceiptRecord._(_api, tmp3_1);
     final tmp2 = tmp4;
     return tmp2;
   }
@@ -9427,17 +9430,17 @@ class ReadNotificationEvent {
 }
 
 /// Deliver typing notification from rust to flutter
-class ReadRecord {
+class ReceiptRecord {
   final Api _api;
   final _Box _box;
 
-  ReadRecord._(this._api, this._box);
+  ReceiptRecord._(this._api, this._box);
 
   /// Get id of event that this user read message from peer
   String getEventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readRecordGetEventId(
+    final tmp1 = _api._receiptRecordGetEventId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9457,7 +9460,7 @@ class ReadRecord {
   String getUserId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readRecordGetUserId(
+    final tmp1 = _api._receiptRecordGetUserId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9477,7 +9480,7 @@ class ReadRecord {
   int getTimestamp() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._readRecordGetTimestamp(
+    final tmp1 = _api._receiptRecordGetTimestamp(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -10188,14 +10191,14 @@ class _SessionVerificationEmojiDescriptionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReadNotificationControllerGetEventRxReturn extends ffi.Struct {
+class _ReceiptNotificationControllerGetEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ReadNotificationEventGetRoomIdReturn extends ffi.Struct {
+class _ReceiptNotificationEventGetRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10204,7 +10207,7 @@ class _ReadNotificationEventGetRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReadRecordGetEventIdReturn extends ffi.Struct {
+class _ReceiptRecordGetEventIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10213,7 +10216,7 @@ class _ReadRecordGetEventIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReadRecordGetUserIdReturn extends ffi.Struct {
+class _ReceiptRecordGetUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10964,7 +10967,8 @@ class _ClientGetDeviceListsControllerFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientGetReadNotificationControllerFuturePollReturn extends ffi.Struct {
+class _ClientGetReceiptNotificationControllerFuturePollReturn
+    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -11287,7 +11291,8 @@ class _SessionVerificationControllerGetEventRxStreamPollReturn
   external int arg1;
 }
 
-class _ReadNotificationControllerGetEventRxStreamPollReturn extends ffi.Struct {
+class _ReceiptNotificationControllerGetEventRxStreamPollReturn
+    extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -11725,58 +11730,59 @@ class FfiListNews extends Iterable<News> implements CustomIterable<News> {
   }
 }
 
-class FfiListReadRecord extends Iterable<ReadRecord>
-    implements CustomIterable<ReadRecord> {
+class FfiListReceiptRecord extends Iterable<ReceiptRecord>
+    implements CustomIterable<ReceiptRecord> {
   final Api _api;
   final _Box _box;
 
-  FfiListReadRecord._(this._api, this._box);
+  FfiListReceiptRecord._(this._api, this._box);
 
   @override
-  Iterator<ReadRecord> get iterator => CustomIterator(this);
+  Iterator<ReceiptRecord> get iterator => CustomIterator(this);
 
   @override
   int get length {
-    return _api._ffiListReadRecordLen(_box.borrow());
+    return _api._ffiListReceiptRecordLen(_box.borrow());
   }
 
   ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
-  ReadRecord elementAt(int index) {
-    final address = _api._ffiListReadRecordElementAt(_box.borrow(), index);
+  ReceiptRecord elementAt(int index) {
+    final address = _api._ffiListReceiptRecordElementAt(_box.borrow(), index);
     final reference = _Box(
       _api,
       ffi.Pointer.fromAddress(address),
       "drop_box_Leak",
       context: this,
     );
-    return ReadRecord._(_api, reference);
+    return ReceiptRecord._(_api, reference);
   }
 
-  ReadRecord operator [](int index) {
+  ReceiptRecord operator [](int index) {
     return elementAt(index);
   }
 
   /// Moves the element out of this list and returns it
-  ReadRecord remove(int index) {
-    final address = _api._ffiListReadRecordRemove(_box.borrow(), index);
+  ReceiptRecord remove(int index) {
+    final address = _api._ffiListReceiptRecordRemove(_box.borrow(), index);
     final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReadRecord");
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReceiptRecord");
     reference._finalizer = _api._registerFinalizer(reference);
-    return ReadRecord._(_api, reference);
+    return ReceiptRecord._(_api, reference);
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(ReadRecord element) {
-    _api._ffiListReadRecordAdd(_box.borrow(), element._box.borrow());
+  void add(ReceiptRecord element) {
+    _api._ffiListReceiptRecordAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, ReadRecord element) {
-    _api._ffiListReadRecordInsert(_box.borrow(), index, element._box.borrow());
+  void insert(int index, ReceiptRecord element) {
+    _api._ffiListReceiptRecordInsert(
+        _box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

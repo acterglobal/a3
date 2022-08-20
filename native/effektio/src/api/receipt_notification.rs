@@ -15,13 +15,13 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
-pub struct ReadRecord {
+pub struct ReceiptRecord {
     event_id: String,
     user_id: String,
     timestamp: u64,
 }
 
-impl ReadRecord {
+impl ReceiptRecord {
     pub fn get_event_id(&self) -> String {
         self.event_id.clone()
     }
@@ -36,16 +36,16 @@ impl ReadRecord {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReadNotificationEvent {
+pub struct ReceiptNotificationEvent {
     room_id: String,
-    read_records: Vec<ReadRecord>,
+    receipt_records: Vec<ReceiptRecord>,
 }
 
-impl ReadNotificationEvent {
+impl ReceiptNotificationEvent {
     pub(crate) fn new(room_id: String) -> Self {
         Self {
             room_id,
-            read_records: vec![],
+            receipt_records: vec![],
         }
     }
 
@@ -53,35 +53,35 @@ impl ReadNotificationEvent {
         self.room_id.clone()
     }
 
-    pub(crate) fn add_read_record(&mut self, event_id: String, user_id: String, timestamp: u64) {
-        self.read_records.push(ReadRecord {
+    pub(crate) fn add_receipt_record(&mut self, event_id: String, user_id: String, timestamp: u64) {
+        self.receipt_records.push(ReceiptRecord {
             event_id,
             user_id,
             timestamp,
         });
     }
 
-    pub fn get_read_records(&self) -> Vec<ReadRecord> {
-        self.read_records.clone()
+    pub fn get_receipt_records(&self) -> Vec<ReceiptRecord> {
+        self.receipt_records.clone()
     }
 }
 
 #[derive(Clone)]
-pub struct ReadNotificationController {
-    event_tx: Sender<ReadNotificationEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<ReadNotificationEvent>>>>,
+pub struct ReceiptNotificationController {
+    event_tx: Sender<ReceiptNotificationEvent>,
+    event_rx: Arc<Mutex<Option<Receiver<ReceiptNotificationEvent>>>>,
 }
 
-impl ReadNotificationController {
+impl ReceiptNotificationController {
     pub(crate) fn new() -> Self {
-        let (tx, rx) = channel::<ReadNotificationEvent>(10); // dropping after more than 10 items queued
-        ReadNotificationController {
+        let (tx, rx) = channel::<ReceiptNotificationEvent>(10); // dropping after more than 10 items queued
+        ReceiptNotificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
         }
     }
 
-    pub fn get_event_rx(&self) -> Option<Receiver<ReadNotificationEvent>> {
+    pub fn get_event_rx(&self) -> Option<Receiver<ReceiptNotificationEvent>> {
         self.event_rx.lock().take()
     }
 
@@ -92,13 +92,13 @@ impl ReadNotificationController {
     ) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
-        let mut msg = ReadNotificationEvent::new(room_id.to_string());
+        let mut msg = ReceiptNotificationEvent::new(room_id.to_string());
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
             for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
                 info!("user receipt: {:?}", receipt);
                 let timestamp = u64::try_from(receipt.ts.unwrap().get()).unwrap();
-                msg.add_read_record(event_id.to_string(), user_id.to_string(), timestamp);
+                msg.add_receipt_record(event_id.to_string(), user_id.to_string(), timestamp);
             }
         }
         let mut event_tx = self.event_tx.clone();

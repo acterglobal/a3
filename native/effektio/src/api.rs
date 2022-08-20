@@ -19,7 +19,7 @@ mod device_lists;
 mod group;
 mod messages;
 mod news;
-mod read_notification;
+mod receipt_notification;
 mod room;
 mod session_verification;
 mod stream;
@@ -35,7 +35,7 @@ pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use events::TypingNotification;
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
-pub use read_notification::{ReadNotificationController, ReadNotificationEvent, ReadRecord};
+pub use receipt_notification::{ReceiptNotificationController, ReceiptNotificationEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
