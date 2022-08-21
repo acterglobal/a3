@@ -89,9 +89,5 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
 }
 
 final customExampleProvider =
-    StateNotifierProvider<CustomExampleNotifier, CustomExampleState>((ref) {
-  ref.onDispose(() {
-    print("CustomExampleNotifier disposed");
-  });
-  return CustomExampleNotifier();
-});
+    StateNotifierProvider<CustomExampleNotifier, CustomExampleState>(
+        (_) => CustomExampleNotifier());

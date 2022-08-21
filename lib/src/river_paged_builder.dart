@@ -37,6 +37,9 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
   /// Default [true]
   final bool enableInfiniteScroll;
 
+  /// The number of remaining invisible items that should trigger a new fetch.
+  final int? invisibleItemsThreshold;
+
   final ItemWidgetBuilder<ItemType> itemBuilder;
   final PagedBuilder<PageKeyType, ItemType> pagedBuilder;
 
@@ -67,6 +70,7 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
       this.newPageErrorIndicatorBuilder,
       this.newPageProgressIndicatorBuilder,
       this.noMoreItemsIndicatorBuilder,
+      this.invisibleItemsThreshold,
       Key? key})
       : _provider = provider,
         _autoDisposeProvider = null,
@@ -87,13 +91,14 @@ class RiverPagedBuilder<PageKeyType, ItemType> extends ConsumerStatefulWidget {
       this.newPageErrorIndicatorBuilder,
       this.newPageProgressIndicatorBuilder,
       this.noMoreItemsIndicatorBuilder,
+      this.invisibleItemsThreshold,
       Key? key})
       : _provider = null,
         _autoDisposeProvider = provider,
         super(key: key);
 
   @override
-  _RiverPagedBuilderState createState() =>
+  ConsumerState<RiverPagedBuilder<PageKeyType, ItemType>> createState() =>
       _RiverPagedBuilderState<PageKeyType, ItemType>();
 }
 
@@ -107,7 +112,8 @@ class _RiverPagedBuilderState<PageKeyType, ItemType>
   void initState() {
     // Instantiate the [PagingController]
     _pagingController = PagingController<PageKeyType, ItemType>(
-        firstPageKey: widget.firstPageKey);
+        firstPageKey: widget.firstPageKey,
+        invisibleItemsThreshold: widget.invisibleItemsThreshold);
 
     // Redirect every page request to the [StateNotifier]
     _pagingController.addPageRequestListener(_loadFromProvider);

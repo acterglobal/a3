@@ -32,3 +32,4 @@
 ## 1.0.7
 
 - Upgraded dependencies
+- Added invisibleItemsThreshold property to RiverPagedBuilder
