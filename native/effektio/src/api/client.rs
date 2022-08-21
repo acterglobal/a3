@@ -24,7 +24,9 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         device_id,
-        events::{receipt::ReceiptEventContent, typing::TypingEventContent, SyncEphemeralRoomEvent},
+        events::{
+            receipt::ReceiptEventContent, typing::TypingEventContent, SyncEphemeralRoomEvent,
+        },
         OwnedUserId, RoomId,
     },
     Client as MatrixClient, LoopCtrl,
@@ -36,8 +38,9 @@ use std::sync::{
 };
 
 use super::{
-    api::FfiBuffer, Account, Conversation, DeviceListsController, Group, ReceiptNotificationController, Room,
-    SessionVerificationController, TypingNotificationController, RUNTIME,
+    api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
+    ReceiptNotificationController, Room, SessionVerificationController,
+    TypingNotificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
