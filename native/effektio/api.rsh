@@ -306,6 +306,9 @@ object Client {
 
     /// Return the typing notification controller. If not exists, create it.
     fn get_typing_notification_controller() -> Future<Result<TypingNotificationController>>;
+
+    /// Return the read notification controller. If not exists, create it.
+    fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;
 }
 
 object SessionVerificationController {
@@ -374,6 +377,31 @@ object SessionVerificationEmoji {
 
     /// text description of emoji unicode
     fn description() -> string;
+}
+
+object ReceiptNotificationController {
+    fn get_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
+}
+
+/// Deliver read notification from rust to flutter
+object ReceiptNotificationEvent {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
+
+    /// Get records
+    fn get_receipt_records() -> Vec<ReceiptRecord>;
+}
+
+/// Deliver typing notification from rust to flutter
+object ReceiptRecord {
+    /// Get id of event that this user read message from peer
+    fn get_event_id() -> string;
+
+    /// Get id of user that read message from peer
+    fn get_user_id() -> string;
+
+    /// Get time that this user read message from peer
+    fn get_timestamp() -> u32;
 }
 
 object DeviceListsController {

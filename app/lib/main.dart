@@ -20,9 +20,11 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         DeviceListsController,
+        ReceiptNotificationController,
         SessionVerificationController,
         SyncState,
-        TypingNotificationController;
+        TypingNotificationController,
+        UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -95,6 +97,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late DeviceListsController dlc;
   late SessionVerificationController svc;
   late TypingNotificationController tnc;
+  late ReceiptNotificationController rnc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
 
@@ -121,6 +124,7 @@ class _EffektioHomeState extends State<EffektioHome>
     Client client = await sdk.currentClient;
     dlc = await client.getDeviceListsController();
     svc = await client.getSessionVerificationController();
+    rnc = await client.getReceiptNotificationController();
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
@@ -133,6 +137,18 @@ class _EffektioHomeState extends State<EffektioHome>
         userIds.add(userId.toDartString());
       }
       debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
+    });
+    UserId myId = await client.userId();
+    rnc.getEventRx()!.listen((event) {
+      for (var record in event.getReceiptRecords()) {
+        String userId = record.getUserId();
+        if (userId != myId.toString()) {
+          debugPrint('receipt notification for ' + event.getRoomId());
+          debugPrint('event id: ' + record.getEventId());
+          debugPrint('user id: ' + userId);
+          debugPrint('timestamp: ' + record.getTimestamp().toString());
+        }
+      }
     });
     return client;
   }
