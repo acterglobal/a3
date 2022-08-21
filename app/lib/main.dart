@@ -23,6 +23,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         ReceiptNotificationController,
         SessionVerificationController,
         SyncState,
+        TypingNotificationController,
         UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -95,6 +96,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late TabController _tabController;
   late DeviceListsController dlc;
   late SessionVerificationController svc;
+  late TypingNotificationController tnc;
   late ReceiptNotificationController rnc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
@@ -123,12 +125,18 @@ class _EffektioHomeState extends State<EffektioHome>
     dlc = await client.getDeviceListsController();
     svc = await client.getSessionVerificationController();
     rnc = await client.getReceiptNotificationController();
-    SyncState syncer = client.startSync();
+    SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
-    syncer.getTypingNotificationRx()!.listen((event) {
-      debugPrint('typing notification for ' + event.getRoomId());
+    tnc = await client.getTypingNotificationController();
+    tnc.getEventRx()!.listen((event) {
+      String roomId = event.getRoomId();
+      List<String> userIds = [];
+      for (final userId in event.getUserIds()) {
+        userIds.add(userId.toDartString());
+      }
+      debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
     });
     UserId myId = await client.userId();
     rnc.getEventRx()!.listen((event) {

@@ -4,7 +4,7 @@ use lazy_static::lazy_static;
 pub use ruma;
 use tokio::runtime;
 
-use crate::{events, platform};
+use crate::platform;
 
 lazy_static! {
     pub static ref RUNTIME: runtime::Runtime =
@@ -23,6 +23,7 @@ mod receipt_notification;
 mod room;
 mod session_verification;
 mod stream;
+mod typing_notification;
 
 pub use account::Account;
 pub use auth::{
@@ -32,7 +33,6 @@ pub use client::{Client, ClientStateBuilder, SyncState};
 pub use conversation::Conversation;
 pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
 pub use effektio_core::models::{Color, Faq, News, Tag};
-pub use events::TypingNotification;
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
 pub use receipt_notification::{
@@ -43,6 +43,7 @@ pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
 };
 pub use stream::TimelineStream;
+pub use typing_notification::{TypingNotificationController, TypingNotificationEvent};
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
