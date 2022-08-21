@@ -61,7 +61,8 @@ pub struct Client {
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
-    pub(crate) receipt_notification_controller: Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
+    pub(crate) receipt_notification_controller:
+        Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -403,7 +404,9 @@ impl Client {
             .await?
     }
 
-    pub async fn get_receipt_notification_controller(&self) -> Result<ReceiptNotificationController> {
+    pub async fn get_receipt_notification_controller(
+        &self,
+    ) -> Result<ReceiptNotificationController> {
         // if not exists, create new controller and return it.
         // thus Result is necessary but Option is not necessary.
         let client = self.client.clone();
