@@ -1,40 +1,40 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    models::{Faq, News},
+    models::Faq,
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
 };
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    stream, Stream, StreamExt,
-};
+use futures::{stream, StreamExt};
 use futures_signals::signal::{
     channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
+    event_handler::Ctx,
     locks::RwLock as MatrixRwLock,
     media::{MediaFormat, MediaRequest},
-    ruma::{device_id, events::AnySyncRoomEvent, OwnedUserId, RoomId},
+    room::Room as MatrixRoom,
+    ruma::{
+        device_id,
+        events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
+        OwnedUserId, RoomId,
+    },
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
-use serde_json::Value;
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
 
 use super::{
-    api::FfiBuffer,
-    events::{handle_typing_notification, TypingNotification},
-    Account, Conversation, DeviceListsController, Group, Room, SessionVerificationController,
-    RUNTIME,
+    api::FfiBuffer, Account, Conversation, DeviceListsController, Group, Room,
+    SessionVerificationController, TypingNotificationController, RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -56,6 +56,8 @@ pub struct Client {
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
+    pub(crate) typing_notification_controller:
+        Arc<MatrixRwLock<Option<TypingNotificationController>>>,
 }
 
 impl std::ops::Deref for Client {
@@ -114,26 +116,13 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    typing_notification_rx: Arc<Mutex<Option<Receiver<TypingNotification>>>>, // mutex for sync, arc for clone. once called, it will become None, not Some
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
 }
 
 impl SyncState {
-    pub fn new(
-        typing_notification_rx: Receiver<TypingNotification>,
-        first_synced_rx: SignalReceiver<bool>,
-    ) -> Self {
-        let typing_notification_rx = Arc::new(Mutex::new(Some(typing_notification_rx)));
+    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
-
-        Self {
-            typing_notification_rx,
-            first_synced_rx,
-        }
-    }
-
-    pub fn get_typing_notification_rx(&self) -> Option<Receiver<TypingNotification>> {
-        self.typing_notification_rx.lock().take()
+        Self { first_synced_rx }
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
@@ -148,6 +137,7 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: Arc::new(MatrixRwLock::new(None)),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
+            typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
         }
     }
 
@@ -157,14 +147,11 @@ impl Client {
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
 
-        let (typing_notification_tx, typing_notification_rx) = channel::<TypingNotification>(10); // dropping after more than 10 items queued
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
-
-        let typing_notification_arc = Arc::new(typing_notification_tx);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(typing_notification_rx, first_synced_rx);
+        let sync_state = SyncState::new(first_synced_rx);
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -179,14 +166,12 @@ impl Client {
                     let state = state.clone();
                     let session_verification_controller = session_verification_controller.clone();
                     let device_lists_controller = device_lists_controller.clone();
-                    let typing_notification_arc = typing_notification_arc.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
                     async move {
                         let state = state.clone();
                         let initial = initial_arc.clone();
-                        let mut typing_notification_tx = (*typing_notification_arc).clone();
 
                         if let Some(dlc) = &*device_lists_controller.read().await {
                             dlc.process_events(&client, response.device_lists);
@@ -195,19 +180,6 @@ impl Client {
                         if !initial.load(Ordering::SeqCst) {
                             if let Some(svc) = &*session_verification_controller.read().await {
                                 svc.process_sync_messages(&client, &response.rooms);
-                            }
-                            for (room_id, room_info) in response.rooms.join {
-                                for event in room_info.ephemeral.events {
-                                    if let Ok(ev) = event.deserialize() {
-                                        handle_typing_notification(
-                                            &room_id,
-                                            &ev,
-                                            &client,
-                                            &mut typing_notification_tx,
-                                        )
-                                        .await;
-                                    }
-                                }
                             }
                         }
 
@@ -392,6 +364,33 @@ impl Client {
                 let dlc = DeviceListsController::new();
                 *device_lists_controller.write().await = Some(dlc.clone());
                 Ok(dlc)
+            })
+            .await?
+    }
+
+    pub async fn get_typing_notification_controller(&self) -> Result<TypingNotificationController> {
+        // if not exists, create new controller and return it.
+        // thus Result is necessary but Option is not necessary.
+        let client = self.client.clone();
+        let typing_notification_controller = self.typing_notification_controller.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(tnc) = &*typing_notification_controller.read().await {
+                    return Ok(tnc.clone());
+                }
+                let tnc = TypingNotificationController::new();
+                client
+                    .register_event_handler_context(tnc.clone())
+                    .register_event_handler(
+                        |ev: SyncEphemeralRoomEvent<TypingEventContent>,
+                         room: MatrixRoom,
+                         Ctx(tnc): Ctx<TypingNotificationController>| async move {
+                            tnc.process_ephemeral_event(ev, &room);
+                        },
+                    )
+                    .await;
+                *typing_notification_controller.write().await = Some(tnc.clone());
+                Ok(tnc)
             })
             .await?
     }
