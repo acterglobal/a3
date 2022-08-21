@@ -46,7 +46,7 @@ class MyHomePage extends StatelessWidget {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const CustomExample()));
                 },
-                child: const Text('Custome example')),
+                child: const Text('Custom example')),
           ],
         ));
   }
