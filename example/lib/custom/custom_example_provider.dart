@@ -50,7 +50,15 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
   @override
   Future<List<User>?> load(String page, int limit) async {
     try {
-      var users = await Future.delayed(const Duration(seconds: 3), () {
+      //as build can be called many times, ensure
+      //we only hit our page API once per page
+      if (state.previousPageKeys.contains(page)) {
+        await Future.delayed(const Duration(seconds: 0), () {
+          state = state.copyWith();
+        });
+        return state.records;
+      }
+      var users = await Future.delayed(const Duration(seconds: 1), () {
         // This simulates a network call to an api that returns paginated users
         return List.generate(
             20,
@@ -60,10 +68,10 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
                 profilePicture: "https://via.placeholder.com/150/92c952"));
       });
       // we then update state accordingly
-      state = state.copyWith(records: [
-        ...(state.records ?? []),
-        ...users
-      ], nextPageKey: users.length < limit ? null : users[users.length - 1].id);
+      state = state.copyWith(
+          records: [...(state.records ?? []), ...users],
+          nextPageKey: users.length < limit ? null : users[users.length - 1].id,
+          previousPageKeys: {...state.previousPageKeys, page}.toList());
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -81,5 +89,9 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
 }
 
 final customExampleProvider =
-    StateNotifierProvider<CustomExampleNotifier, CustomExampleState>(
-        (_) => CustomExampleNotifier());
+    StateNotifierProvider<CustomExampleNotifier, CustomExampleState>((ref) {
+  ref.onDispose(() {
+    print("CustomExampleNotifier disposed");
+  });
+  return CustomExampleNotifier();
+});

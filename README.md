@@ -2,11 +2,10 @@
 
 Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
-| [Easy](#example---simple-version) | [Custom](#a-more-custom-example) |
-| ---- | ------ |
-| ![easy](readme_assets/easy.gif) | ![custom](readme_assets/custom.gif) |
+| [Easy](#example---simple-version) | [Custom](#a-more-custom-example)    |
+| --------------------------------- | ----------------------------------- |
+| ![easy](readme_assets/easy.gif)   | ![custom](readme_assets/custom.gif) |
 
- 
 # Getting started:
 
 ```bash
@@ -19,25 +18,23 @@ import 'package:riverpod_infinite_scroll/riverpod_infinite_scroll.dart';
 
 # How it works
 
-This package exports a widget, the `RiverPagedBuilder` that will build your infinite, scrollable list.
+This package exports a widget, `RiverPagedBuilder` which builds your infinite, scrollable list.
 
-The `RiverPagedBuilder` expects a Riverpod [StateNotifierProvider](https://riverpod.dev/docs/providers/state_notifier_provider)
+`RiverPagedBuilder` expects a Riverpod [StateNotifierProvider](https://riverpod.dev/docs/providers/state_notifier_provider)
 
-This `StateNotifierProvider` must implement two methods to ensure everything works correctly, it must have a `load method`, and a `nextPageKeyBuilder` method, these will be explained below.
-
-`riverpod_infinite_scroll` helps us to ensure that our `StateNotifier` will respect these constraints with the choice of two classes:
+`riverpod_infinite_scroll` ensures our `StateNotifier` will respect these constraints with the choice of two classes:
 
 You can either use the simple:
 
-- `PagedNotifier` - You can create a class that extends `PagedNotifier` a notifier that has already all the properties that `riverpod_infinite_scroll` needs and is intended for simple states only containing a list of `records`
+- `PagedNotifier` - You can create a class that extends `PagedNotifier` a notifier that has all the properties that `riverpod_infinite_scroll` needs and is intended for simple states only containing a list of `records`
 
-- Or if you need more flexbility to handle a more complex state object you can use a StateNotifier that use `PagedState` (or a state that extends PagedState) - in such case a mixin that ensure your `StateNotifier` will implement the `load` method with the correct types is provided from `PagedNotifierMixin`
+- Or if you need more flexbility to handle a more complex state object you can use a `StateNotifier` that uses `PagedState` (or a state that extends PagedState) - in such case a mixin that ensures your `StateNotifier` will implement the `load` method with the correct types is provided with `PagedNotifierMixin`
 
 ## Example - Simple version
 
 Let's see an example now! We have an API that returns a list of `Post` objects, this API is paginated and we need to show a feed displaying those Posts.
 
-The widget we will use for displaying such a feed is `RiverPagedBuilder!`
+The widget we will use for displaying such a feed is `RiverPagedBuilder!`. Refer to source code: [easy_example.dart](https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/easy/easy_example.dart)
 
 ```dart
     class EasyExample extends StatelessWidget {
@@ -63,14 +60,14 @@ The widget we will use for displaying such a feed is `RiverPagedBuilder!`
     }
 ```
 
-As we can see `RiverPagedBuilder` is really small and easy to implement with the following properties:
+As we can see `RiverPagedBuilder` is small and easy to implement with the following properties:
 
-1.  `firstPageKey` - the first page we will ask to our paginated api
+1.  `firstPageKey` - the first page we sent to our paginated API
 2.  `provider` - The `StateNotifierProvider` that holds the logic and the list of Posts
-3.  `itemBuilder` - a function that build a single Post
-4.  `pagedBuilder` - The type of list we want to render. This can be any of the `infinite_scroll_pagination` widgets, and this package already give us the `PaginationController` and the `BuilderDelegate`
+3.  `itemBuilder` - a function that builds a single Post
+4.  `pagedBuilder` - The type of list we want to render. This can be any of the `infinite_scroll_pagination` widgets, and this package already gives us the `PaginationController` and the `BuilderDelegate`
 
-Let's see now how the `StateNotifier` we are using works.
+Let's see how our `StateNotifier` works.
 
 Here is our model `Post`:
 
@@ -83,7 +80,7 @@ Here is our model `Post`:
     }
 ```
 
-And the `StateNotifier`
+And the `StateNotifier`. Source code: [easy_example_provider.dart](https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/easy/easy_example_provider.dart)
 
 ```dart
     class EasyExampleNotifier extends PagedNotifier<int, Post> {
@@ -117,12 +114,11 @@ And the `StateNotifier`
     final  easyExampleProvider = StateNotifierProvider<EasyExampleNotifier, PagedState<int, Post>>((_) => EasyExampleNotifier());
 ```
 
-We can extend `PagedNotifier` instead of `StateNotifier` and everything will be done for us.
+We can extend `PagedNotifier` which is a child of `StateNotifier` and everything will be done for us.
 
-The `PagedNotifier` only asks for a load function, and a function `nextPageKeyBuilder` that returns the next page to ask. And that's all.
+`PagedNotifier` only asks for a load function, and a `nextPageKeyBuilder` function that returns the next page. and that's it!
 
-In the example above we used `NextPageKeyBuilderDefault.mysqlPagination`
-a default function that the package give us to reduce the boilerplate.
+In the example above we used `NextPageKeyBuilderDefault.mysqlPagination` , a default function to reduce boilerplate.
 
 ```dart
  NextPageKeyBuilder<int, dynamic> mysqlPagination =
@@ -142,7 +138,7 @@ void  add(Post  post) {
 ## A more custom example
 
 If you need to keep track of a more complex state than a simple list of `records` **Riverpod Infinite Scroll** also provides a more customizable approach.
-Let's suppose we need to fetch from a paginated API that return a list of users:
+Let's suppose we need to fetch from a paginated API that return a list of users. Source code: (custom_example.dart)[https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/custom/custom_example.dart]
 
 ```dart
     class CustomExample extends StatelessWidget {
@@ -153,7 +149,7 @@ Let's suppose we need to fetch from a paginated API that return a list of users:
         return  Scaffold(
           appBar: AppBar(),
           body: RiverPagedBuilder<String, User>(
-            firstPageKey: 'CustomArgString',
+            firstPageKey: 'FirstPage',
             provider: customExampleProvider,
             itemBuilder: (context, item, index) => ListTile(
               leading: Image.network(item.profilePicture),
@@ -172,9 +168,9 @@ Let's suppose we need to fetch from a paginated API that return a list of users:
     }
 ```
 
-> We have used a `PagedGridView` here instead of a `PagedListView` only to make things more fun and to see that this package works with any of the `infinite_scroll_pagination` widgets.
+> We have used a `PagedGridView` here instead of a `PagedListView` only to make things more fun. This package works with any of the `infinite_scroll_pagination` widgets.
 
-Now let's have a look of how we can create a more custom `StateNotifier`, we have a simple class to represent a User:
+Now let's have a look of how we can create a more custom `StateNotifier`, first a simple class to represent a User:
 
 ```dart
     class  User {
@@ -185,7 +181,7 @@ Now let's have a look of how we can create a more custom `StateNotifier`, we hav
     }
 ```
 
-And we have the `StateNotifier` that manages those users
+And we have the `StateNotifier` that manages those users. Source code: (custom_example_provider.dart)[https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/lib/custom/custom_example_provider.dart]
 
 ```dart
 class CustomExampleNotifier extends StateNotifier<CustomExampleState>
@@ -195,6 +191,14 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
   @override
   Future<List<User>?> load(String page, int limit) async {
     try {
+      //as build can be called many times, ensure 
+      //we only hit our page API once per page
+      if (state.previousPageKeys.contains(page)) {
+        await Future.delayed(const Duration(seconds: 0), () {
+          state = state.copyWith();
+        });
+        return state.records;
+      }
       var users = await Future.delayed(const Duration(seconds: 3), () {
         // This simulates a network call to an api that returns paginated users
         return [
@@ -217,7 +221,8 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
       state = state.copyWith(records: [
         ...(state.records ?? []),
         ...users
-      ], nextPageKey: users.length < limit ? null : users[users.length - 1].id);
+      ], nextPageKey: users.length < limit ? null : users[users.length - 1].id,
+         previousPageKeys: {...state.previousPageKeys, page}.toList());
     } catch (e) {
       // in case of error we should notifiy the listeners
       state = state.copyWith(error: e.toString());
@@ -240,7 +245,7 @@ final customExampleProvider =
 
 ```
 
-As we see in this case we didn't use `PagedNotifier`, instead we used a normal Riverpod `StateNotifier` with the `PagedNotifierMixin` which ensures the notifier has a correct `load` method.
+We didn't use `PagedNotifier`, instead we used a normal Riverpod `StateNotifier` with the `PagedNotifierMixin` which ensures the notifier has a correctly typed `load` method.
 
 Let's take a closer look at :
 
@@ -252,7 +257,16 @@ Where does this `String page` get set? Well some of you may have noticed this `f
 
 ```dart
  body: RiverPagedBuilder<String, User>(
-            firstPageKey: 'CustomArgString',
+            firstPageKey: 'FirstPage',
+```
+
+It is also important to note that you are responsible for maintaining the `records` list: 
+```dart
+state = state.copyWith(records: [
+        ...(state.records ?? []),
+        ...users
+      ], nextPageKey: users.length < limit ? null : users[users.length - 1].id,
+         previousPageKeys: {...state.previousPageKeys, page}.toList());
 ```
 
 Also, in this example, we have used a custom state that extends `PagedState`, because we need another custom parameter `filterByCity`:
