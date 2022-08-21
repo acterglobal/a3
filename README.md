@@ -22,6 +22,8 @@ This package exports a widget, `RiverPagedBuilder` which builds your infinite, s
 
 `RiverPagedBuilder` expects a Riverpod [StateNotifierProvider](https://riverpod.dev/docs/providers/state_notifier_provider)
 
+This `StateNotifierProvider` must implement two methods to ensure everything works correctly, it must have a `load method`, and a `nextPageKeyBuilder` method, these will be explained below.
+
 `riverpod_infinite_scroll` ensures our `StateNotifier` will respect these constraints with the choice of two classes:
 
 You can either use the simple:
@@ -191,7 +193,7 @@ class CustomExampleNotifier extends StateNotifier<CustomExampleState>
   @override
   Future<List<User>?> load(String page, int limit) async {
     try {
-      //as build can be called many times, ensure 
+      //as build can be called many times, ensure
       //we only hit our page API once per page
       if (state.previousPageKeys.contains(page)) {
         await Future.delayed(const Duration(seconds: 0), () {
@@ -260,7 +262,8 @@ Where does this `String page` get set? Well some of you may have noticed this `f
             firstPageKey: 'FirstPage',
 ```
 
-It is also important to note that you are responsible for maintaining the `records` list: 
+It is also important to note that you are responsible for maintaining the `records` list:
+
 ```dart
 state = state.copyWith(records: [
         ...(state.records ?? []),
