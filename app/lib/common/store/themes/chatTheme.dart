@@ -7,7 +7,7 @@ class EffektioChatTheme extends ChatTheme {
   const EffektioChatTheme({
     Widget? attachmentButtonIcon,
     EdgeInsets? attachmentButtonMargin,
-    Color backgroundColor = const Color.fromRGBO(36, 38, 50, 0),
+    Color backgroundColor = const Color(0x00242632),
     EdgeInsets dateDividerMargin = const EdgeInsets.only(
       bottom: 32,
       top: 16,
@@ -28,13 +28,14 @@ class EffektioChatTheme extends ChatTheme {
     ),
     Color errorColor = error,
     Widget? errorIcon,
-    Color inputBackgroundColor = const Color.fromRGBO(51, 53, 64, 0.4),
+    Color inputBackgroundColor = const Color(0x66333540),
     BorderRadius inputBorderRadius = const BorderRadius.vertical(
       top: Radius.circular(0),
     ),
     Decoration? inputContainerDecoration,
     EdgeInsets inputMargin = EdgeInsets.zero,
-    EdgeInsets inputPadding = const EdgeInsets.fromLTRB(14, 5, 14, 5),
+    EdgeInsets inputPadding =
+        const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
     Color inputTextColor = neutral7,
     Color? inputTextCursorColor,
     InputDecoration inputTextDecoration = const InputDecoration(
@@ -49,7 +50,7 @@ class EffektioChatTheme extends ChatTheme {
     double messageBorderRadius = 20,
     double messageInsetsHorizontal = 20,
     double messageInsetsVertical = 16,
-    Color primaryColor = const Color.fromRGBO(236, 39, 88, 1),
+    Color primaryColor = const Color(0xFFEC2758),
     TextStyle receivedEmojiMessageTextStyle = const TextStyle(fontSize: 40),
     TextStyle? receivedMessageBodyBoldTextStyle,
     TextStyle? receivedMessageBodyCodeTextStyle,
@@ -79,7 +80,7 @@ class EffektioChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.375,
     ),
-    Color secondaryColor = const Color.fromRGBO(51, 53, 64, 1),
+    Color secondaryColor = const Color(0xFF333540),
     Widget? seenIcon,
     Widget? sendButtonIcon,
     EdgeInsets? sendButtonMargin,
@@ -126,6 +127,28 @@ class EffektioChatTheme extends ChatTheme {
       fontSize: 12,
       fontWeight: FontWeight.w800,
       height: 1.333,
+    ),
+    UnreadHeaderTheme unreadHeaderTheme = const UnreadHeaderTheme(
+      color: secondary,
+      textStyle: TextStyle(
+        color: neutral2,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        height: 1.333,
+      ),
+    ),
+    TypingIndicatorTheme typingIndicatorTheme = const TypingIndicatorTheme(
+      animatedCirclesColor: Color(0xFFFFFFFF),
+      animatedCircleSize: 8.0,
+      bubbleColor: Color(0xFF333540),
+      countAvatarColor: Color(0xFFDA88A1),
+      countTextColor: Color(0xFFFFFFFF),
+      bubbleBorder: BorderRadius.all(Radius.circular(27.0)),
+      multipleUserTextStyle: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: neutral2,
+      ),
     ),
   }) : super(
           attachmentButtonIcon: attachmentButtonIcon,
@@ -181,5 +204,7 @@ class EffektioChatTheme extends ChatTheme {
           userAvatarNameColors: userAvatarNameColors,
           userAvatarTextStyle: userAvatarTextStyle,
           userNameTextStyle: userNameTextStyle,
+          unreadHeaderTheme: unreadHeaderTheme,
+          typingIndicatorTheme: typingIndicatorTheme,
         );
 }
