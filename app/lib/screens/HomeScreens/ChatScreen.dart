@@ -330,9 +330,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonAccessibilityLabel: '',
               ),
               messages: chatController.messages,
-              sendButtonVisibilityMode: roomState
-                  ? SendButtonVisibilityMode.hidden
-                  : SendButtonVisibilityMode.editing,
               onSendPressed: (_) {},
               user: _user,
               disableImageGallery: roomState ? true : false,
@@ -340,9 +337,14 @@ class _ChatScreenState extends State<ChatScreen> {
               avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
               //Whenever users starts typing on keyboard, this will trigger the function
-              onTextChanged: (text) async {
-                await controller.room.typingNotice(true);
-              },
+              inputOptions: InputOptions(
+                sendButtonVisibilityMode: roomState
+                    ? SendButtonVisibilityMode.hidden
+                    : SendButtonVisibilityMode.editing,
+                onTextChanged: (value) async {
+                  await controller.room.typingNotice(true);
+                },
+              ),
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
@@ -350,6 +352,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached: roomState ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               emptyState: EmptyPlaceholder(),
+
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
                 attachmentButtonIcon:
