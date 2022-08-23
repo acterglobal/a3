@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:themed/themed.dart';
 
 class AppCommonTheme {
@@ -269,5 +270,73 @@ class CrossSigningSheetTheme {
       fontWeight: FontWeight.w400,
       color: primaryTextColor,
     ),
+  );
+}
+
+class ToDoTheme {
+  // Color Scheme.
+  static const activeCheckColor = ColorRef(Color(0xFF1CF18F));
+  static const assignedIconColor = ColorRef(Color(0xFFFF9292));
+  static const backgroundColor = ColorRef(Color(0xFF242632));
+  static const calendarColor = ColorRef(Color(0xFFC4C4C4));
+  static const floatingABColor = ColorRef(Color(0xFF23AFC2));
+  static const inactiveCheckColor = ColorRef(Color(0xFF50555C));
+  static const primaryColor = ColorRef(Color(0xFFEC2758));
+  static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
+  static const plannedIconColor = ColorRef(Color(0xFFDBFFDE));
+  static const secondaryColor = ColorRef(Color(0xFF333540));
+  static const secondaryTextColor = ColorRef(Color(0xFFEC2758));
+  static const subscribedIconColor = ColorRef(Color(0xFFFCE5E5));
+  static const taskIconColor = ColorRef(Color(0xFFEAD0FF));
+  static const todayCalendarColor = ColorRef(Color(0xFF23AFC2));
+  static const unAssignedIconColor = ColorRef(Color(0xFFFFE9C9));
+
+  // Text Scheme.
+  static const titleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 25,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const subtitleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const taskTitleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const taskSubtitleTextStyle = TextStyle(
+    color: secondaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const calendarTextStyle = TextStyle(
+    color: calendarColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const todayCalendarTextStyle = TextStyle(
+    color: todayCalendarColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const taskListTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const addTaskTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
   );
 }
