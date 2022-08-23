@@ -16,17 +16,12 @@ class ToDoScreen extends StatefulWidget {
 class _ToDoScreenState extends State<ToDoScreen> {
   int _selectedValueIndex = 0;
   List<String> buttonText = ['Mine', 'Subscribed', 'Unassigned'];
-  late List<ImageProvider<Object>> _avatars;
-  late int countPeople;
   late int countTasks;
-  int id = 0;
   Random random = Random();
   @override
   void initState() {
     super.initState();
-    countPeople = random.nextInt(4) + 1;
     countTasks = random.nextInt(10) + 3;
-    _avatars = _getMockAvatars(countPeople);
   }
 
   @override
@@ -36,7 +31,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       floatingActionButton: FloatingActionButton(
         backgroundColor: ToDoTheme.floatingABColor,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/addTodo');
+        },
         child: const Icon(Icons.add_outlined, size: 25),
       ),
       body: Container(
@@ -95,7 +92,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
                       title: titleTasks[random.nextInt(titleTasks.length)],
                       subtitle:
                           subtitleTasks[random.nextInt(subtitleTasks.length)],
-                      people: _avatars,
                       dateTime: taskDue[random.nextInt(taskDue.length)],
                     );
                   },
@@ -118,7 +114,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
       },
       child: Container(
         height: 35,
-        width: 63,
+        width: 75,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: index == _selectedValueIndex
@@ -141,14 +137,4 @@ class _ToDoScreenState extends State<ToDoScreen> {
       ),
     );
   }
-
-  List<ImageProvider<Object>> _getMockAvatars(int count) => List.generate(
-        count,
-        (index) {
-          id = random.nextInt(70);
-          return NetworkImage(
-            'https://i.pravatar.cc/100?img = ${id.toString()}',
-          );
-        },
-      );
 }

@@ -280,6 +280,7 @@ class ToDoTheme {
   static const backgroundGradientColor = ColorRef(Color(0xFF242632));
   static const backgroundGradient2Color = ColorRef(Color(0xFF2C5156));
   static const calendarColor = ColorRef(Color(0xFFC4C4C4));
+  static const dividerColor = ColorRef(Color(0xFF343A43));
   static const floatingABColor = ColorRef(Color(0xFF23AFC2));
   static const inactiveCheckColor = ColorRef(Color(0xFF50555C));
   static const inactiveTextColor = ColorRef(Color(0xFFC4C4C4));

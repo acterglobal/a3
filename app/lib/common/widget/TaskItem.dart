@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
@@ -11,13 +13,11 @@ class TaskItem extends StatefulWidget {
     required this.subtitle,
     this.isChecked = false,
     required this.dateTime,
-    required this.people,
   }) : super(key: key);
   final String title;
   final String subtitle;
   final bool isChecked;
   final String dateTime;
-  final List<ImageProvider<Object>> people;
   @override
   State<TaskItem> createState() => _TaskItemState();
 }
@@ -25,6 +25,10 @@ class TaskItem extends StatefulWidget {
 class _TaskItemState extends State<TaskItem> {
   bool checkStatus = false;
   bool isAllDay = false;
+  late List<ImageProvider<Object>> _avatars;
+  Random random = Random();
+  late int countPeople;
+  int id = 0;
   final settings = RestrictedAmountPositions(
     maxAmountItems: 4,
     maxCoverage: 0.7,
@@ -34,6 +38,8 @@ class _TaskItemState extends State<TaskItem> {
   @override
   void initState() {
     super.initState();
+    countPeople = random.nextInt(4) + 1;
+    _avatars = _getMockAvatars(countPeople);
     checkStatus = widget.isChecked;
     if (widget.dateTime.contains('All Day')) {
       setState(() {
@@ -134,7 +140,7 @@ class _TaskItemState extends State<TaskItem> {
                     padding: const EdgeInsets.all(15),
                     child: AvatarStack(
                       settings: settings,
-                      avatars: widget.people,
+                      avatars: _avatars,
                       width: 28,
                       height: 28,
                     ),
@@ -147,4 +153,14 @@ class _TaskItemState extends State<TaskItem> {
       ),
     );
   }
+
+  List<ImageProvider<Object>> _getMockAvatars(int count) => List.generate(
+        count,
+        (index) {
+          id = random.nextInt(70);
+          return NetworkImage(
+            'https://i.pravatar.cc/100?img = ${id.toString()}',
+          );
+        },
+      );
 }
