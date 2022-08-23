@@ -180,7 +180,9 @@ class SideDrawer extends StatelessWidget {
                   AppLocalizations.of(context)!.toDoList,
                   style: SideMenuAndProfileTheme.sideMenuStyle,
                 ),
-                onTap: () => {},
+                onTap: () => {
+                  Navigator.pushNamed(context, '/todo'),
+                },
               ),
               ListTile(
                 leading: SvgPicture.asset(

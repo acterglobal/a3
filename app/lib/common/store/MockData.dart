@@ -49,3 +49,29 @@ final List<String> images = [
   'https://cdn.mos.cms.futurecdn.net/eVyt9jnUrLBSvSwW6pScj9.jpg',
   'https://assets3.thrillist.com/v1/image/3055763/414x310/crop;webp=auto;jpeg_quality=60;progressive.jpg',
 ];
+
+const String loremPara =
+    'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint ';
+
+final List<String> titleTasks = [
+  'Web Application Design',
+  'Update Marvel Prototype',
+  'Design System Guidelines - Match between system and the real world. Recognition rather than recall.Web Applicatiopon Design',
+  'Lora Cook',
+  'Morgan (101 - 123)',
+  'Refactor Trix Toolbar Integration',
+];
+
+final List<String> subtitleTasks = [
+  'Trips Project',
+  'Red Squad',
+  'Effektio Council',
+  'Ben\'s Team',
+  'Dave\'s Team',
+];
+
+final List<String> taskDue = [
+  '19.03.2022, 12.12PM',
+  'Today, All Day',
+  'Today, 17:23PM',
+];

@@ -277,10 +277,12 @@ class ToDoTheme {
   // Color Scheme.
   static const activeCheckColor = ColorRef(Color(0xFF1CF18F));
   static const assignedIconColor = ColorRef(Color(0xFFFF9292));
-  static const backgroundColor = ColorRef(Color(0xFF242632));
+  static const backgroundGradientColor = ColorRef(Color(0xFF242632));
+  static const backgroundGradient2Color = ColorRef(Color(0xFF2C5156));
   static const calendarColor = ColorRef(Color(0xFFC4C4C4));
   static const floatingABColor = ColorRef(Color(0xFF23AFC2));
   static const inactiveCheckColor = ColorRef(Color(0xFF50555C));
+  static const inactiveTextColor = ColorRef(Color(0xFFC4C4C4));
   static const primaryColor = ColorRef(Color(0xFFEC2758));
   static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
   static const plannedIconColor = ColorRef(Color(0xFFDBFFDE));
@@ -322,6 +324,11 @@ class ToDoTheme {
     fontWeight: FontWeight.w500,
   );
 
+  static const buttonTextStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
   static const todayCalendarTextStyle = TextStyle(
     color: todayCalendarColor,
     fontSize: 12,
@@ -338,5 +345,17 @@ class ToDoTheme {
     color: primaryTextColor,
     fontSize: 13,
     fontWeight: FontWeight.w500,
+  );
+
+  // Background Scheme.
+  static const toDoDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: FractionalOffset(0.5, 0.3),
+      end: Alignment.topCenter,
+      colors: [
+        ToDoTheme.backgroundGradientColor,
+        ToDoTheme.backgroundGradient2Color
+      ],
+    ),
   );
 }
