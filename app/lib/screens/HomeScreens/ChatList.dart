@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
+import 'dart:async';
 import 'dart:math';
-
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
@@ -15,8 +15,9 @@ import 'package:themed/themed.dart';
 import 'package:effektio/common/store/MockData.dart';
 
 class ChatList extends StatefulWidget {
-  const ChatList({Key? key, required this.client}) : super(key: key);
   final Future<Client> client;
+
+  const ChatList({Key? key, required this.client}) : super(key: key);
 
   @override
   State<ChatList> createState() => _ChatListState();
@@ -26,6 +27,7 @@ class _ChatListState extends State<ChatList> {
   String? user;
   late final countInvites;
   Random random = Random();
+
   @override
   void initState() {
     //setting random invites
@@ -140,8 +142,9 @@ class _ChatListState extends State<ChatList> {
                             );
                           }
                           if (snapshot.hasData) {
+                            Client client = snapshot.requireData;
                             return FutureBuilder<FfiListConversation>(
-                              future: snapshot.requireData
+                              future: client
                                   .conversations(), // a previously-obtained Future<String> or null
                               builder: (
                                 BuildContext context,
@@ -150,6 +153,7 @@ class _ChatListState extends State<ChatList> {
                                 if (snapshot.hasData) {
                                   return Flexible(
                                     child: ChatOverview(
+                                      client: client,
                                       user: user,
                                       rooms: snapshot.requireData.toList(),
                                     ),

@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
+import 'dart:async';
 import 'dart:io';
-
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -14,10 +14,13 @@ import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 
 class ChatOverview extends StatelessWidget {
+  final Client client;
   final List<Conversation> rooms;
   final String? user;
+
   const ChatOverview({
     Key? key,
+    required this.client,
     required this.rooms,
     required this.user,
   }) : super(key: key);
@@ -31,6 +34,7 @@ class ChatOverview extends StatelessWidget {
       itemCount: rooms.length,
       itemBuilder: (BuildContext context, int index) {
         return ChatListItem(
+          client: client,
           room: rooms[index],
           user: user,
         );
@@ -43,10 +47,16 @@ class ChatOverview extends StatelessWidget {
 }
 
 class ChatListItem extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final String? user;
-  const ChatListItem({Key? key, required this.room, required this.user})
-      : super(key: key);
+
+  const ChatListItem({
+    Key? key,
+    required this.client,
+    required this.room,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<ChatListItem> createState() => _ChatListItemState();
@@ -71,6 +81,7 @@ class _ChatListItemState extends State<ChatListItem> {
           context,
           MaterialPageRoute(
             builder: (context) => ChatScreen(
+              client: widget.client,
               room: widget.room,
               user: widget.user,
             ),

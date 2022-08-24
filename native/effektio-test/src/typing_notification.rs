@@ -1,4 +1,5 @@
 use anyhow::Result;
+use async_broadcast::TryRecvError;
 use effektio::api::login_new_client;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
@@ -33,18 +34,24 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     .await?;
     let kyra_syncer = kyra.start_sync();
     let kyra_tnc = kyra.get_typing_notification_controller().await?;
-    let mut event_rx = kyra_tnc.get_event_rx().unwrap();
+    let mut event_rx0 = kyra_tnc.get_event_rx().unwrap();
+    let mut event_rx1 = kyra_tnc.get_event_rx().unwrap();
 
     loop {
-        match event_rx.try_next() {
-            Ok(Some(event)) => {
+        match event_rx1.try_recv() {
+            Ok(event) => {
                 println!("received: {:?}", event);
                 break;
             }
-            Ok(None) => {
-                println!("received: none");
+            Err(TryRecvError::Closed) => {
+                println!("receiver closed");
             }
-            Err(e) => {}
+            Err(TryRecvError::Empty) => {
+                // println!("receiver empty");
+            }
+            Err(TryRecvError::Overflowed(n)) => {
+                println!("receiver overflowed: {:?}", n);
+            }
         }
     }
 

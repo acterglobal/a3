@@ -1,7 +1,5 @@
-use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
-};
+use async_broadcast::{broadcast, Receiver, Sender};
+use futures::StreamExt;
 use log::{info, warn};
 use matrix_sdk::{
     room::Room,
@@ -39,7 +37,7 @@ pub struct TypingNotificationController {
 
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
-        let (tx, rx) = channel::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
+        let (tx, rx) = broadcast::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
         TypingNotificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
@@ -47,7 +45,7 @@ impl TypingNotificationController {
     }
 
     pub fn get_event_rx(&self) -> Option<Receiver<TypingNotificationEvent>> {
-        self.event_rx.lock().take()
+        self.event_rx.clone().lock().clone()
     }
 
     pub(crate) fn process_ephemeral_event(
@@ -63,7 +61,7 @@ impl TypingNotificationController {
         }
         let msg = TypingNotificationEvent::new(room_id.to_string(), user_ids);
         let mut event_tx = self.event_tx.clone();
-        if let Err(e) = event_tx.try_send(msg) {
+        if let Err(e) = event_tx.try_broadcast(msg) {
             warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
     }

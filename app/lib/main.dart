@@ -96,7 +96,6 @@ class _EffektioHomeState extends State<EffektioHome>
   late TabController _tabController;
   late DeviceListsController dlc;
   late SessionVerificationController svc;
-  late TypingNotificationController tnc;
   late ReceiptNotificationController rnc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
@@ -129,14 +128,16 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
-    tnc = await client.getTypingNotificationController();
-    tnc.getEventRx()!.listen((event) {
+    TypingNotificationController tnc =
+        await client.getTypingNotificationController();
+    tnc.getEventRx()?.listen((event) {
       String roomId = event.getRoomId();
       List<String> userIds = [];
       for (final userId in event.getUserIds()) {
         userIds.add(userId.toDartString());
       }
-      debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
+      String text = 'main - typing at ' + roomId + ': ' + userIds.join(', ');
+      debugPrint(text);
     });
     UserId myId = await client.userId();
     rnc.getEventRx()!.listen((event) {
@@ -203,13 +204,9 @@ class _EffektioHomeState extends State<EffektioHome>
           body: TabBarView(
             controller: _tabController,
             children: [
-              NewsScreen(
-                client: client,
-              ),
+              NewsScreen(client: client),
               FaqOverviewScreen(client: client),
-              NewsScreen(
-                client: client,
-              ),
+              NewsScreen(client: client),
               ChatList(client: _client),
               NotificationScreen(),
             ],

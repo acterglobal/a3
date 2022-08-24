@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
@@ -14,7 +15,12 @@ import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember;
+    show
+        Client,
+        Conversation,
+        FfiBufferUint8,
+        FfiListMember,
+        TypingNotificationEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -25,10 +31,15 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final String? user;
-  const ChatScreen({Key? key, required this.room, required this.user})
-      : super(key: key);
+  const ChatScreen({
+    Key? key,
+    required this.client,
+    required this.room,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -40,6 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool roomState = false;
   final Random random = Random();
   ChatController chatController = ChatController.instance;
+  late StreamSubscription<TypingNotificationEvent> typingSubscription;
 
   @override
   void initState() {
@@ -51,10 +63,23 @@ class _ChatScreenState extends State<ChatScreen> {
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
     chatController.init(widget.room, _user);
+    widget.client.getTypingNotificationController().then((tnc) {
+      typingSubscription = tnc.getEventRx()!.listen((event) {
+        String roomId = event.getRoomId();
+        List<String> userIds = [];
+        for (final userId in event.getUserIds()) {
+          userIds.add(userId.toDartString());
+        }
+        String text =
+            'chat screen - typing at ' + roomId + ': ' + userIds.join(', ');
+        debugPrint(text);
+      });
+    });
   }
 
   @override
   void dispose() {
+    typingSubscription.cancel();
     Get.delete<ChatController>();
     super.dispose();
   }
