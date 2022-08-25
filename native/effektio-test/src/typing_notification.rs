@@ -1,5 +1,4 @@
 use anyhow::Result;
-use async_broadcast::TryRecvError;
 use effektio::api::login_new_client;
 use futures::stream::StreamExt;
 use tempfile::TempDir;
@@ -22,8 +21,6 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         .get_group("#ops:ds9.effektio.org".to_owned())
         .await
         .expect("sisko should belong to ops");
-    let sent = group.typing_notice(true).await?;
-    println!("sent: {:?}", sent);
 
     let tmp_dir = TempDir::new()?;
     let kyra = login_new_client(
@@ -37,20 +34,33 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     let mut event_rx0 = kyra_tnc.get_event_rx().unwrap();
     let mut event_rx1 = kyra_tnc.get_event_rx().unwrap();
 
+    // get initial value
     loop {
-        match event_rx1.try_recv() {
-            Ok(event) => {
+        match event_rx1.next().await {
+            Some(event) => {
                 println!("received: {:?}", event);
                 break;
             }
-            Err(TryRecvError::Closed) => {
-                println!("receiver closed");
-            }
-            Err(TryRecvError::Empty) => {
+            None => {
                 // println!("receiver empty");
             }
-            Err(TryRecvError::Overflowed(n)) => {
-                println!("receiver overflowed: {:?}", n);
+        }
+    }
+
+    for n in 0..100 {
+        println!("index: {}", n);
+        let sent = group.typing_notice(true).await?;
+        println!("sent: {:?}", sent);
+
+        loop {
+            match event_rx1.next().await {
+                Some(event) => {
+                    println!("received: {:?}", event);
+                    break;
+                }
+                None => {
+                    // println!("receiver empty");
+                }
             }
         }
     }

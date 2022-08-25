@@ -8,13 +8,8 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    stream, StreamExt,
-};
-use futures_signals::signal::{
-    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
-};
+use futures::{stream, StreamExt};
+use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
@@ -124,16 +119,16 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
+    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
         Self { first_synced_rx }
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
+    pub fn get_first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 }
@@ -156,7 +151,7 @@ impl Client {
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = signal_channel(false);
+        let (first_synced_tx, first_synced_rx) = channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));

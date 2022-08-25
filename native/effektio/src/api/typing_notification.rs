@@ -1,12 +1,10 @@
-use async_broadcast::{broadcast, Receiver, Sender};
-use futures::StreamExt;
+use futures_signals::signal::{channel, Broadcaster, BroadcasterSignalCloned, Receiver, Sender, SignalExt, SignalStream};
 use log::{info, warn};
 use matrix_sdk::{
     room::Room,
     ruma::events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
     Client,
 };
-use parking_lot::Mutex;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
@@ -32,20 +30,26 @@ impl TypingNotificationEvent {
 #[derive(Clone)]
 pub struct TypingNotificationController {
     event_tx: Sender<TypingNotificationEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<TypingNotificationEvent>>>>,
+    event_rx: Arc<Option<Broadcaster<Receiver<TypingNotificationEvent>>>>,
 }
 
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
-        let (tx, rx) = broadcast::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
+        let initial_value = TypingNotificationEvent::new("".to_owned(), vec![]);
+        let (tx, rx) = channel::<TypingNotificationEvent>(initial_value); // dropping after more than 10 items queued
         TypingNotificationController {
             event_tx: tx,
-            event_rx: Arc::new(Mutex::new(Some(rx))),
+            event_rx: Arc::new(Some(rx.broadcast())),
         }
     }
 
-    pub fn get_event_rx(&self) -> Option<Receiver<TypingNotificationEvent>> {
-        self.event_rx.clone().lock().clone()
+    pub fn get_event_rx(
+        &self,
+    ) -> Option<SignalStream<BroadcasterSignalCloned<Receiver<TypingNotificationEvent>>>> {
+        self.event_rx
+            .as_ref()
+            .as_ref()
+            .map(|e| e.signal_cloned().to_stream())
     }
 
     pub(crate) fn process_ephemeral_event(
@@ -61,8 +65,8 @@ impl TypingNotificationController {
         }
         let msg = TypingNotificationEvent::new(room_id.to_string(), user_ids);
         let mut event_tx = self.event_tx.clone();
-        if let Err(e) = event_tx.try_broadcast(msg) {
-            warn!("Dropping ephemeral event for {}: {}", room_id, e);
+        if let Err(e) = event_tx.send(msg) {
+            warn!("Dropping ephemeral event for {}: {:?}", room_id, e);
         }
     }
 }
