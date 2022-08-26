@@ -279,10 +279,13 @@ class ToDoTheme {
   static const assignedIconColor = ColorRef(Color(0xFFFF9292));
   static const backgroundGradientColor = ColorRef(Color(0xFF242632));
   static const backgroundGradient2Color = ColorRef(Color(0xFF2C5156));
+  static const secondaryCardColor = ColorRef(Color(0xFF3F404B));
+  static const btnBorderColor = ColorRef(Color(0xFF484C4F));
   static const calendarColor = ColorRef(Color(0xFFC4C4C4));
   static const dividerColor = ColorRef(Color(0xFF343A43));
   static const floatingABColor = ColorRef(Color(0xFF23AFC2));
   static const inactiveCheckColor = ColorRef(Color(0xFF50555C));
+  static const infoAvatarColor = ColorRef(Color(0xFF50555C));
   static const inactiveTextColor = ColorRef(Color(0xFFC4C4C4));
   static const primaryColor = ColorRef(Color(0xFFEC2758));
   static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
@@ -305,6 +308,18 @@ class ToDoTheme {
     color: primaryTextColor,
     fontSize: 14,
     fontWeight: FontWeight.w500,
+  );
+
+  static const listTitleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const listSubtitleTextStyle = TextStyle(
+    color: secondaryTextColor,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
   );
 
   static const taskTitleTextStyle = TextStyle(
@@ -345,6 +360,12 @@ class ToDoTheme {
   static const addTaskTextStyle = TextStyle(
     color: primaryTextColor,
     fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const infoAvatarTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 9,
     fontWeight: FontWeight.w500,
   );
 

@@ -6,23 +6,23 @@ import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class TaskItem extends StatefulWidget {
-  const TaskItem({
+class ToDoTaskItem extends StatefulWidget {
+  const ToDoTaskItem({
     Key? key,
     required this.title,
-    required this.subtitle,
-    this.isChecked = false,
+    this.isCompleted = false,
+    this.hasMessage = false,
     required this.dateTime,
   }) : super(key: key);
   final String title;
-  final String subtitle;
-  final bool isChecked;
+  final bool hasMessage;
+  final bool isCompleted;
   final String dateTime;
   @override
-  State<TaskItem> createState() => _TaskItemState();
+  State<ToDoTaskItem> createState() => _ToDoTaskItemState();
 }
 
-class _TaskItemState extends State<TaskItem> {
+class _ToDoTaskItemState extends State<ToDoTaskItem> {
   bool checkStatus = false;
   bool isAllDay = false;
   late List<ImageProvider<Object>> _avatars;
@@ -30,7 +30,7 @@ class _TaskItemState extends State<TaskItem> {
   late int countPeople;
   int id = 0;
   final settings = RestrictedAmountPositions(
-    maxAmountItems: 4,
+    maxAmountItems: 5,
     maxCoverage: 0.7,
     minCoverage: 0.1,
     align: StackAlign.right,
@@ -38,9 +38,9 @@ class _TaskItemState extends State<TaskItem> {
   @override
   void initState() {
     super.initState();
-    countPeople = random.nextInt(4) + 1;
+    countPeople = random.nextInt(10);
     _avatars = _getMockAvatars(countPeople);
-    checkStatus = widget.isChecked;
+    checkStatus = widget.isCompleted;
     if (widget.dateTime.contains('All Day')) {
       setState(() {
         isAllDay = true;
@@ -58,8 +58,8 @@ class _TaskItemState extends State<TaskItem> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      color: ToDoTheme.secondaryColor,
-      margin: const EdgeInsets.all(8.0),
+      color: ToDoTheme.secondaryCardColor,
+      margin: const EdgeInsets.fromLTRB(22, 5, 48, 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -67,44 +67,40 @@ class _TaskItemState extends State<TaskItem> {
             padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
             child: Row(
               children: <Widget>[
-                Expanded(
-                  flex: 8,
-                  child: Text(
-                    widget.title,
-                    style: ToDoTheme.taskTitleTextStyle,
+                GestureDetector(
+                  onTap: () => _toggleCheck(),
+                  child: Container(
+                    height: 18,
+                    width: 18,
+                    decoration: BoxDecoration(
+                      color: checkStatus
+                          ? ToDoTheme.activeCheckColor
+                          : ToDoTheme.inactiveCheckColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: checkStatus
+                        ? const Icon(
+                            Icons.done_outlined,
+                            color: ToDoTheme.inactiveCheckColor,
+                            size: 10,
+                          )
+                        : const SizedBox(),
                   ),
                 ),
                 Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    onTap: () => _toggleCheck(),
-                    child: Container(
-                      height: 18,
-                      width: 18,
-                      decoration: BoxDecoration(
-                        color: checkStatus
-                            ? ToDoTheme.activeCheckColor
-                            : ToDoTheme.inactiveCheckColor,
-                        shape: BoxShape.circle,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8, top: 3),
+                    child: Text(
+                      widget.title,
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        decoration:
+                            checkStatus ? TextDecoration.lineThrough : null,
                       ),
-                      child: checkStatus
-                          ? const Icon(
-                              Icons.done_outlined,
-                              color: ToDoTheme.inactiveCheckColor,
-                              size: 10,
-                            )
-                          : const SizedBox(),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, top: 3),
-            child: Text(
-              widget.subtitle,
-              style: ToDoTheme.taskSubtitleTextStyle,
             ),
           ),
           Padding(
@@ -113,7 +109,7 @@ class _TaskItemState extends State<TaskItem> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 1,
+                  flex: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: SvgPicture.asset(
@@ -125,7 +121,7 @@ class _TaskItemState extends State<TaskItem> {
                   ),
                 ),
                 Expanded(
-                  flex: 4,
+                  flex: 7,
                   child: Text(
                     widget.dateTime,
                     style: isAllDay
@@ -133,14 +129,38 @@ class _TaskItemState extends State<TaskItem> {
                         : ToDoTheme.calendarTextStyle,
                   ),
                 ),
-                const Spacer(flex: 2),
+                widget.hasMessage
+                    ? Expanded(
+                        flex: 2,
+                        child: Row(
+                          children: [
+                            SvgPicture.asset(
+                              'assets/images/message.svg',
+                              height: 12,
+                              width: 12,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 5),
+                              child: Text(
+                                '${random.nextInt(20) + 1}',
+                                style: ToDoTheme.buttonTextStyle.copyWith(
+                                  color: ToDoTheme.primaryTextColor,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const Spacer(flex: 2),
                 Expanded(
-                  flex: 6,
+                  flex: 7,
                   child: Padding(
                     padding: const EdgeInsets.all(15),
                     child: AvatarStack(
+                      borderWidth: 0,
                       settings: settings,
                       avatars: _avatars,
+                      infoWidgetBuilder: _infoAvatar,
                       width: 28,
                       height: 28,
                     ),
@@ -153,6 +173,12 @@ class _TaskItemState extends State<TaskItem> {
       ),
     );
   }
+
+  Widget _infoAvatar(int count) => CircleAvatar(
+        radius: 28,
+        backgroundColor: ToDoTheme.infoAvatarColor,
+        child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
+      );
 
   List<ImageProvider<Object>> _getMockAvatars(int count) => List.generate(
         count,

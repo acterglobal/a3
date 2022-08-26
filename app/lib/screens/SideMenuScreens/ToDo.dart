@@ -2,7 +2,8 @@ import 'dart:math';
 
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/TaskItem.dart';
+import 'package:effektio/common/widget/ToDoListView.dart';
+import 'package:effektio/common/widget/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -15,13 +16,35 @@ class ToDoScreen extends StatefulWidget {
 
 class _ToDoScreenState extends State<ToDoScreen> {
   int _selectedValueIndex = 0;
-  List<String> buttonText = ['Mine', 'Subscribed', 'Unassigned'];
-  late int countTasks;
+  List<ToDoListView>? todoList;
+  List<ToDoTaskItem>? tasksList;
+  List<String> buttonText = ['Mine', 'All Teams', 'Unassigned'];
+  late int listCount;
+  late int taskCount;
   Random random = Random();
+
   @override
   void initState() {
     super.initState();
-    countTasks = random.nextInt(10) + 3;
+    taskCount = random.nextInt(5) + 1;
+    listCount = random.nextInt(10) + 3;
+    tasksList = List.generate(
+      taskCount,
+      (index) => ToDoTaskItem(
+        title: titleTasks[random.nextInt(titleTasks.length)],
+        isCompleted: random.nextBool(),
+        hasMessage: random.nextBool(),
+        dateTime: taskDue[random.nextInt(taskDue.length)],
+      ),
+    );
+    todoList = List.generate(
+      listCount,
+      (index) => ToDoListView(
+        title: titleTasks[random.nextInt(titleTasks.length)],
+        subtitle: loremPara2,
+        inProgress: tasksList!,
+      ),
+    );
   }
 
   @override
@@ -67,7 +90,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 12, top: 10),
-                  child: Text(loremPara, style: ToDoTheme.subtitleTextStyle),
+                  child: Text(loremPara1, style: ToDoTheme.subtitleTextStyle),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 12, top: 15),
@@ -86,15 +109,8 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: countTasks,
-                  itemBuilder: (context, index) {
-                    return TaskItem(
-                      title: titleTasks[random.nextInt(titleTasks.length)],
-                      subtitle:
-                          subtitleTasks[random.nextInt(subtitleTasks.length)],
-                      dateTime: taskDue[random.nextInt(taskDue.length)],
-                    );
-                  },
+                  itemCount: todoList!.length,
+                  itemBuilder: (context, index) => todoList![index],
                 ),
               ],
             ),
@@ -108,9 +124,30 @@ class _ToDoScreenState extends State<ToDoScreen> {
     return InkWell(
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
-        setState(() {
-          _selectedValueIndex = index;
-        });
+        if (_selectedValueIndex != index) {
+          setState(() {
+            _selectedValueIndex = index;
+            taskCount = random.nextInt(5) + 1;
+            tasksList = List.generate(
+              taskCount,
+              (index) => ToDoTaskItem(
+                title: titleTasks[random.nextInt(titleTasks.length)],
+                hasMessage: random.nextBool(),
+                dateTime: taskDue[random.nextInt(taskDue.length)],
+                isCompleted: random.nextBool(),
+              ),
+            );
+            listCount = random.nextInt(10) + 3;
+            todoList = List.generate(
+              listCount,
+              (index) => ToDoListView(
+                title: titleTasks[random.nextInt(titleTasks.length)],
+                subtitle: loremPara2,
+                inProgress: tasksList!,
+              ),
+            );
+          });
+        }
       },
       child: Container(
         height: 35,
@@ -120,6 +157,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
           color: index == _selectedValueIndex
               ? ToDoTheme.primaryColor
               : ToDoTheme.secondaryColor,
+          border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
         ),
         child: Center(
           child: Text(

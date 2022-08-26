@@ -50,7 +50,7 @@ final List<String> images = [
   'https://assets3.thrillist.com/v1/image/3055763/414x310/crop;webp=auto;jpeg_quality=60;progressive.jpg',
 ];
 
-const String loremPara =
+const String loremPara1 =
     'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint ';
 
 final List<String> titleTasks = [
@@ -62,13 +62,8 @@ final List<String> titleTasks = [
   'Refactor Trix Toolbar Integration',
 ];
 
-final List<String> subtitleTasks = [
-  'Trips Project',
-  'Red Squad',
-  'Effektio Council',
-  'Ben\'s Team',
-  'Dave\'s Team',
-];
+const String loremPara2 =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.';
 
 final List<String> taskDue = [
   '19.03.2022, 12.12PM',
