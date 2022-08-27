@@ -1,4 +1,3 @@
-use futures_signals::signal::{channel, Broadcaster, BroadcasterSignalCloned, Receiver, Sender, SignalExt, SignalStream};
 use log::{info, warn};
 use matrix_sdk::{
     room::Room,
@@ -6,6 +5,8 @@ use matrix_sdk::{
     Client,
 };
 use std::sync::Arc;
+use tokio::sync::broadcast::{channel, Sender};
+use tokio_stream::wrappers::BroadcastStream;
 
 #[derive(Clone, Debug)]
 pub struct TypingNotificationEvent {
@@ -30,26 +31,21 @@ impl TypingNotificationEvent {
 #[derive(Clone)]
 pub struct TypingNotificationController {
     event_tx: Sender<TypingNotificationEvent>,
-    event_rx: Arc<Option<Broadcaster<Receiver<TypingNotificationEvent>>>>,
 }
 
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
-        let initial_value = TypingNotificationEvent::new("".to_owned(), vec![]);
-        let (tx, rx) = channel::<TypingNotificationEvent>(initial_value); // dropping after more than 10 items queued
+        let (tx, rx) = channel::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
         TypingNotificationController {
             event_tx: tx,
-            event_rx: Arc::new(Some(rx.broadcast())),
         }
     }
 
     pub fn get_event_rx(
         &self,
-    ) -> Option<SignalStream<BroadcasterSignalCloned<Receiver<TypingNotificationEvent>>>> {
-        self.event_rx
-            .as_ref()
-            .as_ref()
-            .map(|e| e.signal_cloned().to_stream())
+    ) -> Option<BroadcastStream<TypingNotificationEvent>> {
+        let mut rx = self.event_tx.subscribe();
+        Some(BroadcastStream::new(rx))
     }
 
     pub(crate) fn process_ephemeral_event(

@@ -455,7 +455,7 @@ object Device {
 }
 
 object TypingNotificationController {
-    fn get_event_rx() -> Option<Stream<TypingNotificationEvent>>;
+    fn get_event_rx() -> Option<Stream<Result<TypingNotificationEvent>>>;
 }
 
 /// Deliver typing notification from rust to flutter

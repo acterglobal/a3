@@ -3900,13 +3900,27 @@ class Api {
     );
     final tmp10 = tmp8.arg0;
     final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    final tmp14 = tmp8.arg4;
+    final tmp15 = tmp8.arg5;
     if (tmp10 == 0) {
       return null;
     }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TypingNotificationEvent");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = TypingNotificationEvent._(this, tmp11_1);
+    if (tmp11 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        this.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp15_0 = ffi.Pointer.fromAddress(tmp15);
+    final tmp15_1 = _Box(this, tmp15_0, "drop_box_TypingNotificationEvent");
+    tmp15_1._finalizer = this._registerFinalizer(tmp15_1);
+    final tmp9 = TypingNotificationEvent._(this, tmp15_1);
     return tmp9;
   }
 
@@ -11497,8 +11511,16 @@ class _TypingNotificationControllerGetEventRxStreamPollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Int64()
+  @ffi.Uint8()
   external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
 }
 
 class FfiListConversation extends Iterable<Conversation>

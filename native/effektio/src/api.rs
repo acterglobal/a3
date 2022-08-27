@@ -1,5 +1,5 @@
 use anyhow::Result;
-use futures::Stream;
+use futures::{Stream, TryStreamExt};
 use lazy_static::lazy_static;
 pub use ruma;
 use tokio::runtime;
