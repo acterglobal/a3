@@ -36,14 +36,10 @@ pub struct TypingNotificationController {
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
         let (tx, rx) = channel::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
-        TypingNotificationController {
-            event_tx: tx,
-        }
+        TypingNotificationController { event_tx: tx }
     }
 
-    pub fn get_event_rx(
-        &self,
-    ) -> Option<BroadcastStream<TypingNotificationEvent>> {
+    pub fn get_event_rx(&self) -> Option<BroadcastStream<TypingNotificationEvent>> {
         let mut rx = self.event_tx.subscribe();
         Some(BroadcastStream::new(rx))
     }
