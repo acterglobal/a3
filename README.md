@@ -2,9 +2,9 @@
 
 Hi! This package is a plugin for [infinite_scroll_pagination](https://pub.dev/packages/infinite_scroll_pagination) that is designed to work with [Riverpod](https://riverpod.dev).
 
-| [Easy](#example---simple-version) | [Custom](#a-more-custom-example)    |
-| --------------------------------- | ----------------------------------- |
-| ![easy](readme_assets/easy.gif)   | ![custom](readme_assets/custom.gif) |
+| [Easy](#example---simple-version)                                                               | [Custom](#a-more-custom-example)                                                                    |
+| ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| ![easy](https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/readme_assets/easy.gif) | ![custom](https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/readme_assets/custom.gif) |
 
 # Getting started:
 

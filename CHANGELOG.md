@@ -33,3 +33,7 @@
 
 - Upgraded dependencies
 - Added invisibleItemsThreshold property to RiverPagedBuilder
+
+## 1.0.8
+
+- Fix readme video urls
