@@ -1,12 +1,18 @@
+use super::Client;
+use anyhow::Result;
+use async_stream::stream;
+use futures::{pin_mut, stream::Stream, StreamExt};
+use futures_signals::signal::{
+    channel, Broadcaster, BroadcasterSignalCloned, Receiver, Sender, SignalExt, SignalStream,
+};
 use log::{info, warn};
 use matrix_sdk::{
+    event_handler::Ctx,
     room::Room,
     ruma::events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
-    Client,
+    Client as MatrixClient,
 };
 use std::sync::Arc;
-use tokio::sync::broadcast::{channel, Sender};
-use tokio_stream::wrappers::BroadcastStream;
 
 #[derive(Clone, Debug)]
 pub struct TypingNotificationEvent {
@@ -28,37 +34,79 @@ impl TypingNotificationEvent {
     }
 }
 
+impl std::ops::Drop for TypingNotificationEvent {
+    fn drop(&mut self) {
+        println!("Dropping evt {:?}@{:?}", self, &self as *const _);
+    }
+}
+
 #[derive(Clone)]
 pub struct TypingNotificationController {
     event_tx: Sender<TypingNotificationEvent>,
+    event_rx: Broadcaster<Receiver<TypingNotificationEvent>>,
 }
 
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
-        let (tx, rx) = channel::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
-        TypingNotificationController { event_tx: tx }
+        let initial_value = TypingNotificationEvent::new("".to_owned(), vec![]);
+        let (tx, rx) = channel(initial_value); // dropping after more than 10 items queued
+        TypingNotificationController {
+            event_tx: tx,
+            event_rx: rx.broadcast(),
+        }
     }
 
-    pub fn get_event_rx(&self) -> Option<BroadcastStream<TypingNotificationEvent>> {
-        let mut rx = self.event_tx.subscribe();
-        Some(BroadcastStream::new(rx))
+    pub async fn setup(&self, client: &MatrixClient) -> Result<()> {
+        let me = self.clone();
+        client
+            .register_event_handler_context(me)
+            .register_event_handler(
+                |ev: SyncEphemeralRoomEvent<TypingEventContent>,
+                 room: Room,
+                 Ctx(me): Ctx<TypingNotificationController>| async move {
+                    me.clone().process_ephemeral_event(ev, room);
+                },
+            )
+            .await;
+        Ok(())
     }
 
-    pub(crate) fn process_ephemeral_event(
+    pub(crate) fn get_event_rx(
         &self,
-        ev: SyncEphemeralRoomEvent<TypingEventContent>,
-        room: &Room,
-    ) {
-        info!("typing: {:?}", ev.content.user_ids);
+    ) -> SignalStream<BroadcasterSignalCloned<Receiver<TypingNotificationEvent>>> {
+        self.event_rx.signal_cloned().to_stream()
+    }
+
+    fn process_ephemeral_event(&self, ev: SyncEphemeralRoomEvent<TypingEventContent>, room: Room) {
+        println!("typing: {:?}", ev.content.user_ids);
         let room_id = room.room_id();
         let mut user_ids = vec![];
         for user_id in ev.content.user_ids {
-            user_ids.push(user_id.to_string());
+            user_ids.push(user_id.to_owned().to_string());
         }
-        let msg = TypingNotificationEvent::new(room_id.to_string(), user_ids);
+        let msg = TypingNotificationEvent::new(room_id.to_owned().to_string(), user_ids);
         let mut event_tx = self.event_tx.clone();
         if let Err(e) = event_tx.send(msg) {
-            warn!("Dropping ephemeral event for {}: {:?}", room_id, e);
+            println!("Dropping ephemeral event for {}: {:?}", room_id, e);
         }
+    }
+}
+
+impl Client {
+    pub fn get_typing_notifications(
+        &self,
+    ) -> Result<impl Stream<Item = TypingNotificationEvent>> {
+        // if not exists, create new controller and return it.
+        // thus Result is necessary but Option is not necessary.
+        let receiver = self.typing_notification_controller.get_event_rx();
+        Ok(stream! {
+            pin_mut!(receiver);
+            for x in receiver.next().await {
+                // FIXME: FFI gen doesn't properly deal with singular events coming from different streams
+                //        which causes memory corruption. clone the event here again before returning it
+                //        prevents that problem.
+                yield x.clone()
+            }
+        })
     }
 }

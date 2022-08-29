@@ -1,6 +1,6 @@
 use anyhow::Result;
 use effektio::api::login_new_client;
-use futures::{StreamExt, TryStreamExt};
+use futures::{pin_mut, StreamExt};
 use tempfile::TempDir;
 
 #[tokio::test]
@@ -30,9 +30,10 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let kyra_tnc = kyra.get_typing_notification_controller().await?;
-    let mut event_rx0 = kyra_tnc.get_event_rx().unwrap();
-    let mut event_rx1 = kyra_tnc.get_event_rx().unwrap();
+    let event_rx0 = kyra.get_typing_notifications()?;
+    pin_mut!(event_rx0);
+    let event_rx1 = kyra.get_typing_notifications()?;
+    pin_mut!(event_rx1);
 
     for n in 0..100 {
         println!("index: {}", n);
@@ -40,15 +41,12 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         println!("sent: {:?}", sent);
 
         loop {
-            match event_rx1.try_next().await {
-                Ok(Some(event)) => {
+            match event_rx1.next().await {
+                Some(event) => {
                     println!("received: {:?}", event);
                     break;
                 }
-                Ok(None) => {
-                    // println!("receiver empty");
-                }
-                Err(e) => {
+                None => {
                     // println!("receiver empty");
                 }
             }

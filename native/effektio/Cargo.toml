@@ -21,6 +21,7 @@ cbindgen = "0.20.0"
 [dependencies]
 anyhow = "1.0.51"
 assign = "1.1.1"
+async-stream = "0.3.3"
 derive_builder = { version = "0.10.2" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
@@ -35,7 +36,6 @@ sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 tokio = "1"
-tokio-stream = { version = "0.1", features = ["sync"] }
 tracing = { version = "0.1.29", default-features = false }
 tracing-log = "0.1.2"
 tracing-subscriber = { version = "0.3.3", default-features = false, features = ["env-filter", "fmt"] }

@@ -23,7 +23,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         ReceiptNotificationController,
         SessionVerificationController,
         SyncState,
-        TypingNotificationController,
+        TypingNotificationEvent,
         UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +97,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late DeviceListsController dlc;
   late SessionVerificationController svc;
   late ReceiptNotificationController rnc;
+  late StreamSubscription<TypingNotificationEvent> typingSubscription;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
 
@@ -128,9 +129,9 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
-    TypingNotificationController tnc =
-        await client.getTypingNotificationController();
-    tnc.getEventRx()?.listen((event) {
+    typingSubscription = client.getTypingNotifications().listen((event) {
+      String text1 = 'main screen recv';
+      debugPrint(text1);
       String roomId = event.getRoomId();
       List<String> userIds = [];
       for (final userId in event.getUserIds()) {
