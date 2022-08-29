@@ -41,16 +41,7 @@ class _ToDoListViewState extends State<ToDoListView> {
           ExpansionTile(
             title: Padding(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
-              child: initialExpand
-                  ? Text(widget.title, style: ToDoTheme.listTitleTextStyle)
-                  : SizedBox(
-                      height: 40,
-                      child: Text(
-                        widget.title,
-                        style: ToDoTheme.listTitleTextStyle,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+              child: Text(widget.title, style: ToDoTheme.listTitleTextStyle),
             ),
             subtitle: Padding(
               padding: const EdgeInsets.only(left: 8, top: 5),
