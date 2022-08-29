@@ -63,17 +63,17 @@ class _ChatScreenState extends State<ChatScreen> {
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
     chatController.init(widget.room, _user);
-    widget.client.getTypingNotificationController().then((tnc) {
-      typingSubscription = tnc.getEventRx()!.listen((event) {
-        String roomId = event.getRoomId();
-        List<String> userIds = [];
-        for (final userId in event.getUserIds()) {
-          userIds.add(userId.toDartString());
-        }
-        String text =
-            'chat screen - typing at ' + roomId + ': ' + userIds.join(', ');
-        debugPrint(text);
-      });
+    typingSubscription = widget.client.getTypingNotifications().listen((event) {
+      String text1 = 'chat screen recv';
+      debugPrint(text1);
+      String roomId = event.getRoomId();
+      List<String> userIds = [];
+      for (final userId in event.getUserIds()) {
+        userIds.add(userId.toDartString());
+      }
+      String text =
+          'chat screen - typing at ' + roomId + ': ' + userIds.join(', ');
+      debugPrint(text);
     });
   }
 

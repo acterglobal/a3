@@ -813,6 +813,7 @@ dependencies = [
  "android_logger",
  "anyhow",
  "assign",
+ "async-stream",
  "cbindgen",
  "derive_builder",
  "effektio-core",
