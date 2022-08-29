@@ -26,9 +26,9 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   bool checkStatus = false;
   bool isAllDay = false;
   late List<ImageProvider<Object>> _avatars;
-  Random random = Random();
-  late int countPeople;
-  int id = 0;
+  final int countPeople = Random().nextInt(10);
+  final int messageCount = Random().nextInt(100);
+  int id = Random().nextInt(70);
   final settings = RestrictedAmountPositions(
     maxAmountItems: 5,
     maxCoverage: 0.7,
@@ -38,7 +38,6 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   @override
   void initState() {
     super.initState();
-    countPeople = random.nextInt(10);
     _avatars = _getMockAvatars(countPeople);
     checkStatus = widget.isCompleted;
     if (widget.dateTime.contains('All Day')) {
@@ -59,7 +58,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
     return Card(
       elevation: 0,
       color: ToDoTheme.secondaryCardColor,
-      margin: const EdgeInsets.fromLTRB(22, 5, 48, 5),
+      margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -142,7 +141,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                             Padding(
                               padding: const EdgeInsets.only(left: 5),
                               child: Text(
-                                '${random.nextInt(20) + 1}',
+                                '$messageCount',
                                 style: ToDoTheme.buttonTextStyle.copyWith(
                                   color: ToDoTheme.primaryTextColor,
                                 ),
@@ -183,7 +182,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   List<ImageProvider<Object>> _getMockAvatars(int count) => List.generate(
         count,
         (index) {
-          id = random.nextInt(70);
+          int id = Random().nextInt(70);
           return NetworkImage(
             'https://i.pravatar.cc/100?img = ${id.toString()}',
           );

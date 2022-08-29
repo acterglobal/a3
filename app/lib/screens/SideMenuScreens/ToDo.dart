@@ -26,7 +26,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
   @override
   void initState() {
     super.initState();
-    taskCount = random.nextInt(5) + 1;
+    taskCount = random.nextInt(8) + 1;
     listCount = random.nextInt(10) + 3;
     tasksList = List.generate(
       taskCount,
@@ -42,7 +42,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
       (index) => ToDoListView(
         title: titleTasks[random.nextInt(titleTasks.length)],
         subtitle: loremPara2,
-        inProgress: tasksList!,
+        tasks: tasksList!,
       ),
     );
   }
@@ -143,7 +143,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
               (index) => ToDoListView(
                 title: titleTasks[random.nextInt(titleTasks.length)],
                 subtitle: loremPara2,
-                inProgress: tasksList!,
+                tasks: tasksList!,
               ),
             );
           });

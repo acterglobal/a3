@@ -287,6 +287,7 @@ class ToDoTheme {
   static const inactiveCheckColor = ColorRef(Color(0xFF50555C));
   static const infoAvatarColor = ColorRef(Color(0xFF50555C));
   static const inactiveTextColor = ColorRef(Color(0xFFC4C4C4));
+  static const listDividerColor = ColorRef(Color(0xFF4A4A4A));
   static const primaryColor = ColorRef(Color(0xFFEC2758));
   static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
   static const plannedIconColor = ColorRef(Color(0xFFDBFFDE));
@@ -367,6 +368,12 @@ class ToDoTheme {
     color: primaryTextColor,
     fontSize: 9,
     fontWeight: FontWeight.w500,
+  );
+
+  static const activeTasksTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
   );
 
   // Background Scheme.
