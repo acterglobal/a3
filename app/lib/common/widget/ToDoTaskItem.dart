@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class ToDoTaskItem extends StatefulWidget {
   const ToDoTaskItem({
@@ -23,7 +25,7 @@ class ToDoTaskItem extends StatefulWidget {
 }
 
 class _ToDoTaskItemState extends State<ToDoTaskItem> {
-  bool checkStatus = false;
+  final ToDoController todoController = ToDoController.instance;
   bool isAllDay = false;
   late List<ImageProvider<Object>> _avatars;
   final int countPeople = Random().nextInt(10);
@@ -39,18 +41,11 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   void initState() {
     super.initState();
     _avatars = _getMockAvatars(countPeople);
-    checkStatus = widget.isCompleted;
     if (widget.dateTime.contains('All Day')) {
       setState(() {
         isAllDay = true;
       });
     }
-  }
-
-  void _toggleCheck() {
-    setState(() {
-      checkStatus = !checkStatus;
-    });
   }
 
   @override
@@ -67,17 +62,17 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
             child: Row(
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => _toggleCheck(),
+                  onTap: () => todoController.toggleCheck(widget),
                   child: Container(
                     height: 18,
                     width: 18,
                     decoration: BoxDecoration(
-                      color: checkStatus
+                      color: widget.isCompleted
                           ? ToDoTheme.activeCheckColor
                           : ToDoTheme.inactiveCheckColor,
                       shape: BoxShape.circle,
                     ),
-                    child: checkStatus
+                    child: widget.isCompleted
                         ? const Icon(
                             Icons.done_outlined,
                             color: ToDoTheme.inactiveCheckColor,
@@ -92,8 +87,9 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                     child: Text(
                       widget.title,
                       style: ToDoTheme.taskTitleTextStyle.copyWith(
-                        decoration:
-                            checkStatus ? TextDecoration.lineThrough : null,
+                        decoration: widget.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),

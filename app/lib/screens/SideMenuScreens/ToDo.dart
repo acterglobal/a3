@@ -1,11 +1,9 @@
-import 'dart:math';
-
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/ToDoListView.dart';
-import 'package:effektio/common/widget/ToDoTaskItem.dart';
+import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
   const ToDoScreen({Key? key}) : super(key: key);
@@ -15,36 +13,21 @@ class ToDoScreen extends StatefulWidget {
 }
 
 class _ToDoScreenState extends State<ToDoScreen> {
-  int _selectedValueIndex = 0;
-  List<ToDoListView>? todoList;
-  List<ToDoTaskItem>? tasksList;
+  // ignore: prefer_final_fields
+
+  final ToDoController todoController = ToDoController.instance;
   List<String> buttonText = ['Mine', 'All Teams', 'Unassigned'];
-  late int listCount;
-  late int taskCount;
-  Random random = Random();
 
   @override
   void initState() {
     super.initState();
-    taskCount = random.nextInt(8) + 1;
-    listCount = random.nextInt(10) + 3;
-    tasksList = List.generate(
-      taskCount,
-      (index) => ToDoTaskItem(
-        title: titleTasks[random.nextInt(titleTasks.length)],
-        isCompleted: random.nextBool(),
-        hasMessage: random.nextBool(),
-        dateTime: taskDue[random.nextInt(taskDue.length)],
-      ),
-    );
-    todoList = List.generate(
-      listCount,
-      (index) => ToDoListView(
-        title: titleTasks[random.nextInt(titleTasks.length)],
-        subtitle: loremPara2,
-        tasks: tasksList!,
-      ),
-    );
+    todoController.init();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Get.delete<ToDoController>();
   }
 
   @override
@@ -109,8 +92,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: todoList!.length,
-                  itemBuilder: (context, index) => todoList![index],
+                  itemCount: todoController.todoList!.length,
+                  itemBuilder: (context, index) =>
+                      todoController.todoList![index],
                 ),
               ],
             ),
@@ -124,54 +108,36 @@ class _ToDoScreenState extends State<ToDoScreen> {
     return InkWell(
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
-        if (_selectedValueIndex != index) {
-          setState(() {
-            _selectedValueIndex = index;
-            taskCount = random.nextInt(5) + 1;
-            tasksList = List.generate(
-              taskCount,
-              (index) => ToDoTaskItem(
-                title: titleTasks[random.nextInt(titleTasks.length)],
-                hasMessage: random.nextBool(),
-                dateTime: taskDue[random.nextInt(taskDue.length)],
-                isCompleted: random.nextBool(),
-              ),
-            );
-            listCount = random.nextInt(10) + 3;
-            todoList = List.generate(
-              listCount,
-              (index) => ToDoListView(
-                title: titleTasks[random.nextInt(titleTasks.length)],
-                subtitle: loremPara2,
-                tasks: tasksList!,
-              ),
-            );
-          });
-        }
+        todoController.updateIndex(index);
       },
-      child: Container(
-        height: 35,
-        width: 75,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: index == _selectedValueIndex
-              ? ToDoTheme.primaryColor
-              : ToDoTheme.secondaryColor,
-          border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              color: index == _selectedValueIndex
-                  ? ToDoTheme.primaryTextColor
-                  : ToDoTheme.inactiveTextColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+      child: GetBuilder<ToDoController>(
+        id: 'radiobtn',
+        builder: (ToDoController controller) {
+          return Container(
+            height: 35,
+            width: 75,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: index == controller.selectedValueIndex
+                  ? ToDoTheme.primaryColor
+                  : ToDoTheme.secondaryColor,
+              border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
             ),
-            textScaleFactor: 0.8,
-          ),
-        ),
+            child: Center(
+              child: Text(
+                text,
+                style: TextStyle(
+                  color: index == controller.selectedValueIndex
+                      ? ToDoTheme.primaryTextColor
+                      : ToDoTheme.inactiveTextColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                textScaleFactor: 0.8,
+              ),
+            ),
+          );
+        },
       ),
     );
   }
