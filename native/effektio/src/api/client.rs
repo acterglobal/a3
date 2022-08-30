@@ -286,8 +286,8 @@ impl Client {
             .await?
     }
 
-    pub async fn room(&self, room_name: String) -> Result<Room> {
-        let room_id = RoomId::parse(room_name)?;
+    pub async fn room(&self, name: String) -> Result<Room> {
+        let room_id = RoomId::parse(name)?;
         let l = self.clone();
         RUNTIME
             .spawn(async move {
@@ -296,6 +296,27 @@ impl Client {
                         room,
                         client: l.client.clone(),
                     });
+                }
+                bail!("Room not found")
+            })
+            .await?
+    }
+
+    pub async fn conversation(&self, name: String) -> Result<Conversation> {
+        let room_id = RoomId::parse(name)?;
+        let l = self.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(room) = l.get_room(&room_id) {
+                    // this doesn't check that this really is a conversation,
+                    // we assume you know what you are asking for
+                    return Ok(Conversation::new(
+                        Room {
+                            room,
+                            client: l.client.clone(),
+                        },
+                        &l,
+                    ));
                 }
                 bail!("Room not found")
             })
