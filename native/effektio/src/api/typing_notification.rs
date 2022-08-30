@@ -85,17 +85,14 @@ impl TypingNotificationController {
             user_ids.push(user_id.to_owned().to_string());
         }
         let msg = TypingNotificationEvent::new(room_id.to_owned().to_string(), user_ids);
-        let mut event_tx = self.event_tx.clone();
-        if let Err(e) = event_tx.send(msg) {
+        if let Err(e) = self.event_tx.send(msg) {
             println!("Dropping ephemeral event for {}: {:?}", room_id, e);
         }
     }
 }
 
 impl Client {
-    pub fn get_typing_notifications(
-        &self,
-    ) -> Result<impl Stream<Item = TypingNotificationEvent>> {
+    pub fn get_typing_notifications(&self) -> Result<impl Stream<Item = TypingNotificationEvent>> {
         // if not exists, create new controller and return it.
         // thus Result is necessary but Option is not necessary.
         let receiver = self.typing_notification_controller.get_event_rx();
