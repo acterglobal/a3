@@ -30,6 +30,7 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
+use tokio::task::JoinHandle;
 use tracing::info;
 
 use super::{
@@ -121,16 +122,31 @@ pub(crate) async fn devide_groups_from_common(client: Client) -> (Vec<Group>, Ve
 #[derive(Clone)]
 pub struct SyncState {
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    handle: Arc<Mutex<JoinHandle<()>>>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>, handle: JoinHandle<()>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
-        Self { first_synced_rx }
+        Self {
+            first_synced_rx,
+            handle: Arc::new(Mutex::new(handle)),
+        }
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
+    }
+
+    pub fn is_done(&self) -> bool {
+        self.handle.lock().is_finished()
+    }
+
+    pub fn abort(&self) {
+        let mut handle = self.handle.lock();
+        if !handle.is_finished() {
+            handle.abort();
+        }
     }
 }
 
@@ -147,33 +163,26 @@ impl Client {
     }
 
     pub fn start_sync(&self) -> SyncState {
-        let client = self.client.clone();
-        let state = self.state.clone();
-        let typing_notification_controller = self.typing_notification_controller.clone();
-        let session_verification_controller = self.session_verification_controller.clone();
-        let device_lists_controller = self.device_lists_controller.clone();
-
+        let me = self.clone();
         let (first_synced_tx, first_synced_rx) = channel(false);
-        let first_synced_arc = Arc::new(first_synced_tx);
 
-        let initial_arc = Arc::new(AtomicBool::from(true));
-        let sync_state = SyncState::new(first_synced_rx);
+        let handle = RUNTIME.spawn(async move {
+            let me = me.clone();
+            let state = me.state.clone();
+            let client = me.client.clone();
+            let initial_arc = Arc::new(AtomicBool::from(true));
+            let first_synced_arc = Arc::new(first_synced_tx);
 
-        RUNTIME.spawn(async move {
-            let client = client.clone();
-            typing_notification_controller.setup(&client).await;
-
-            let state = state.clone();
-            let session_verification_controller = session_verification_controller.clone();
-            let device_lists_controller = device_lists_controller.clone();
+            me.typing_notification_controller.setup(&client).await;
 
             client
                 .clone()
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
-                    let state = state.clone();
-                    let session_verification_controller = session_verification_controller.clone();
-                    let device_lists_controller = device_lists_controller.clone();
+                    let state = me.state.clone();
+                    let session_verification_controller =
+                        me.session_verification_controller.clone();
+                    let device_lists_controller = me.device_lists_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -214,7 +223,8 @@ impl Client {
                 })
                 .await;
         });
-        sync_state
+
+        SyncState::new(first_synced_rx, handle)
     }
 
     /// Indication whether we've received a first sync response since
