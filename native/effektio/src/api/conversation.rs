@@ -1,3 +1,5 @@
+use crate::RUNTIME;
+
 use super::room::Room;
 use super::Client;
 use futures::{pin_mut, StreamExt};
@@ -34,12 +36,10 @@ impl Conversation {
             });
         let typing = Mutable::new(Vec::new());
         let typing_signal = typing.clone();
-        let typing_handle = tokio::spawn(async move {
+        let typing_handle = RUNTIME.spawn(async move {
             pin_mut!(typing_listener);
             loop {
-                if let Some(n) = typing_listener.next().await {
-                    typing_signal.set(n);
-                }
+                typing_signal.set(typing_listener.select_next_some().await);
             }
         });
 

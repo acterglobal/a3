@@ -93,7 +93,7 @@ impl Client {
                 Some(room) => Ok(Group {
                     inner: Room {
                         room,
-                        client: self.clone(),
+                        client: self.client.clone(),
                     },
                 }),
                 None => bail!("Room not found"),

@@ -10,7 +10,6 @@ use effektio_core::{
 use effektio_core::mocks::gen_mock_faqs;
 use futures::{stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
-use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::Ctx,
@@ -31,6 +30,7 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
+use tracing::info;
 
 use super::{
     api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
@@ -70,6 +70,7 @@ impl std::ops::Deref for Client {
 }
 
 pub(crate) async fn devide_groups_from_common(client: Client) -> (Vec<Group>, Vec<Conversation>) {
+    info!("collecting");
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
@@ -95,23 +96,25 @@ pub(crate) async fn devide_groups_from_common(client: Client) -> (Vec<Group>, Ve
                     groups.push(Group {
                         inner: Room {
                             room,
-                            client: client.clone(),
+                            client: client.client.clone(),
                         },
                     });
                 } else {
                     conversations.push(Conversation::new(
                         Room {
                             room,
-                            client: client.clone(),
+                            client: client.client.clone(),
                         },
                         &client,
                     ));
                 }
+                info!("iteration: {:}, {:}", groups.len(), conversations.len());
 
                 (groups, conversations, client)
             },
         )
         .await;
+    info!("done collecting: {:}, {:}", groups.len(), convos.len());
     (groups, convos)
 }
 
@@ -281,7 +284,7 @@ impl Client {
                 if let Some(room) = l.get_room(&room_id) {
                     return Ok(Room {
                         room,
-                        client: l.clone(),
+                        client: l.client.clone(),
                     });
                 }
                 bail!("Room not found")

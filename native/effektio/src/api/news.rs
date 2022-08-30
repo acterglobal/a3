@@ -124,7 +124,7 @@ impl Group {
     pub fn news_draft(&self) -> Result<NewsDraft> {
         if let matrix_sdk::room::Room::Joined(joined) = &self.inner.room {
             Ok(NewsDraft {
-                client: self.client.client.clone(),
+                client: self.client.clone(),
                 room: joined.clone(),
                 content: Default::default(),
             })
