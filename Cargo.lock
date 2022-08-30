@@ -825,7 +825,6 @@ dependencies = [
  "anyhow",
  "assign",
  "async-broadcast",
- "async-stream",
  "cbindgen",
  "derive_builder",
  "effektio-core",

@@ -21,7 +21,7 @@ use matrix_sdk::{
         events::{
             receipt::ReceiptEventContent, typing::TypingEventContent, SyncEphemeralRoomEvent,
         },
-        OwnedUserId, RoomId,
+        OwnedRoomAliasId, OwnedRoomId, OwnedUserId, RoomId,
     },
     Client as MatrixClient, LoopCtrl,
 };
@@ -302,25 +302,30 @@ impl Client {
             .await?
     }
 
-    pub async fn conversation(&self, name: String) -> Result<Conversation> {
-        let room_id = RoomId::parse(name)?;
-        let l = self.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(room) = l.get_room(&room_id) {
-                    // this doesn't check that this really is a conversation,
-                    // we assume you know what you are asking for
-                    return Ok(Conversation::new(
-                        Room {
-                            room,
-                            client: l.client.clone(),
-                        },
-                        &l,
-                    ));
+    pub async fn conversation(&self, alias_or_id: String) -> Result<Conversation> {
+        if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
+            match self.get_room(&room_id) {
+                Some(room) => Ok(Conversation::new(
+                    Room {
+                        room,
+                        client: self.client.clone(),
+                    },
+                    &self,
+                )),
+                None => bail!("Room not found"),
+            }
+        } else if let Ok(alias_id) = OwnedRoomAliasId::try_from(alias_or_id) {
+            for conv in self.conversations().await?.into_iter() {
+                if let Some(conv_alias) = conv.inner.room.canonical_alias() {
+                    if conv_alias == alias_id {
+                        return Ok(conv);
+                    }
                 }
-                bail!("Room not found")
-            })
-            .await?
+            }
+            bail!("Conversation with alias not found")
+        } else {
+            bail!("Neither roomId nor alias provided")
+        }
     }
 
     pub async fn account(&self) -> Result<Account> {

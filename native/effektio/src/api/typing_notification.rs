@@ -1,7 +1,6 @@
 use super::Client;
 use anyhow::Result;
 use async_broadcast::{broadcast, Receiver, Sender};
-use async_stream::stream;
 use futures::{pin_mut, stream::Stream, StreamExt};
 use futures_signals::signal::{
     channel, Broadcaster, BroadcasterSignalCloned, SignalExt, SignalStream,
@@ -27,7 +26,7 @@ pub struct TypingNotificationController {
 
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
-        let (mut sender, _) = broadcast(10); // dropping after more than 10 items queued
+        let (mut sender, _) = broadcast::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
         sender.set_overflow(true); // if more than 10 items, remove the oldest
         TypingNotificationController { sender }
     }
