@@ -129,17 +129,6 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
-    typingSubscription = client.getTypingNotifications().listen((event) {
-      String text1 = 'main screen recv';
-      debugPrint(text1);
-      String roomId = event.getRoomId();
-      List<String> userIds = [];
-      for (final userId in event.getUserIds()) {
-        userIds.add(userId.toDartString());
-      }
-      String text = 'main - typing at ' + roomId + ': ' + userIds.join(', ');
-      debugPrint(text);
-    });
     UserId myId = await client.userId();
     rnc.getEventRx()!.listen((event) {
       for (var record in event.getReceiptRecords()) {

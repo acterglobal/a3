@@ -69,9 +69,7 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn devide_groups_from_common(
-    client: MatrixClient,
-) -> (Vec<Group>, Vec<Conversation>) {
+pub(crate) async fn devide_groups_from_common(client: Client) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
@@ -101,12 +99,13 @@ pub(crate) async fn devide_groups_from_common(
                         },
                     });
                 } else {
-                    conversations.push(Conversation {
-                        inner: Room {
+                    conversations.push(Conversation::new(
+                        Room {
                             room,
                             client: client.clone(),
                         },
-                    });
+                        &client,
+                    ));
                 }
 
                 (groups, conversations, client)
@@ -242,7 +241,7 @@ impl Client {
     }
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
-        let c = self.client.clone();
+        let c = self.clone();
         RUNTIME
             .spawn(async move {
                 let (_, conversations) = devide_groups_from_common(c).await;
@@ -276,7 +275,7 @@ impl Client {
 
     pub async fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.client.clone();
+        let l = self.clone();
         RUNTIME
             .spawn(async move {
                 if let Some(room) = l.get_room(&room_id) {

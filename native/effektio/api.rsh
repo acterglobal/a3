@@ -190,6 +190,9 @@ object Conversation {
 
     /// get the path that file was saved
     fn file_path(event_id: string) -> Future<Result<string>>;
+
+    /// Updates who is typing
+    fn typing_updates() -> Stream<Vec<string>>;
 }
 
 object Group {
@@ -303,9 +306,6 @@ object Client {
 
     /// Return the device lists controller. If not exists, create it.
     fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
-
-    /// Return the typing notification controller. If not exists, create it.
-    fn get_typing_notifications() -> Result<Stream<TypingNotificationEvent>>;
 
     /// Return the read notification controller. If not exists, create it.
     fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;

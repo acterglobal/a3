@@ -78,7 +78,7 @@ impl Client {
     }
 
     pub async fn groups(&self) -> Result<Vec<Group>> {
-        let c = self.client.clone();
+        let c = self.clone();
         RUNTIME
             .spawn(async move {
                 let (groups, _) = devide_groups_from_common(c).await;
@@ -93,7 +93,7 @@ impl Client {
                 Some(room) => Ok(Group {
                     inner: Room {
                         room,
-                        client: self.client.clone(),
+                        client: self.clone(),
                     },
                 }),
                 None => bail!("Room not found"),

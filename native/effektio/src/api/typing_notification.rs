@@ -16,8 +16,8 @@ use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 pub struct TypingNotificationEvent {
-    room_id: String,
-    user_ids: Vec<String>,
+    pub(crate) room_id: String,
+    pub(crate) user_ids: Vec<String>,
 }
 
 impl TypingNotificationEvent {
@@ -43,7 +43,7 @@ impl std::ops::Drop for TypingNotificationEvent {
 #[derive(Clone)]
 pub struct TypingNotificationController {
     event_tx: Sender<TypingNotificationEvent>,
-    event_rx: Broadcaster<Receiver<TypingNotificationEvent>>,
+    pub(crate) event_rx: Broadcaster<Receiver<TypingNotificationEvent>>,
 }
 
 impl TypingNotificationController {

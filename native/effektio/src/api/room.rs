@@ -17,7 +17,7 @@ use matrix_sdk::{
 use std::{fs::File, io::Write, path::PathBuf};
 
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, RUNTIME};
+use super::{api, Client, TimelineStream, RUNTIME};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -51,7 +51,7 @@ impl Member {
 }
 
 pub struct Room {
-    pub(crate) client: MatrixClient,
+    pub(crate) client: Client,
     pub(crate) room: MatrixRoom,
 }
 
@@ -115,7 +115,7 @@ impl Room {
 
     pub async fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
-        let client = self.client.clone();
+        let client = self.client.client.clone();
         RUNTIME
             .spawn(async move {
                 let (forward, backward) = room
