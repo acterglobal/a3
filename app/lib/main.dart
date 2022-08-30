@@ -97,7 +97,6 @@ class _EffektioHomeState extends State<EffektioHome>
   late DeviceListsController dlc;
   late SessionVerificationController svc;
   late ReceiptNotificationController rnc;
-  late StreamSubscription<TypingNotificationEvent> typingSubscription;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
 

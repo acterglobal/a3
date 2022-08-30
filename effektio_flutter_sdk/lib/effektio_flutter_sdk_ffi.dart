@@ -5410,28 +5410,6 @@ class Api {
       _DeviceGetDisplayNameReturn Function(
     int,
   )>();
-  late final _typingNotificationEventGetRoomIdPtr = _lookup<
-      ffi.NativeFunction<
-          _TypingNotificationEventGetRoomIdReturn Function(
-    ffi.Int64,
-  )>>("__TypingNotificationEvent_get_room_id");
-
-  late final _typingNotificationEventGetRoomId =
-      _typingNotificationEventGetRoomIdPtr.asFunction<
-          _TypingNotificationEventGetRoomIdReturn Function(
-    int,
-  )>();
-  late final _typingNotificationEventGetUserIdsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__TypingNotificationEvent_get_user_ids");
-
-  late final _typingNotificationEventGetUserIds =
-      _typingNotificationEventGetUserIdsPtr.asFunction<
-          int Function(
-    int,
-  )>();
   late final _loginNewClientFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _LoginNewClientFuturePollReturn Function(
@@ -9873,55 +9851,6 @@ class Device {
   }
 }
 
-/// Deliver typing notification from rust to flutter
-class TypingNotificationEvent {
-  final Api _api;
-  final _Box _box;
-
-  TypingNotificationEvent._(this._api, this._box);
-
-  /// Get transaction id or flow id
-  String getRoomId() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._typingNotificationEventGetRoomId(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// Get list of user id
-  FfiListFfiString getUserIds() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._typingNotificationEventGetUserIds(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListFfiString._(_api, tmp3_1);
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class _InitLoggingReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -10325,15 +10254,6 @@ class _DeviceGetDisplayNameReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-}
-
-class _TypingNotificationEventGetRoomIdReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {

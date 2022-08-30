@@ -22,6 +22,7 @@ cbindgen = "0.20.0"
 anyhow = "1.0.51"
 assign = "1.1.1"
 async-stream = "0.3.3"
+async-broadcast = "0.4.1"
 derive_builder = { version = "0.10.2" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"

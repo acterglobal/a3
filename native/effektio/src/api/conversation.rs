@@ -13,25 +13,31 @@ pub struct Conversation {
 
 impl Conversation {
     pub fn new(inner: Room, client: &Client) -> Self {
-        let room_id = inner.room_id().to_string();
+        let outer_room_id = inner.room_id().to_owned();
         let typing_listener = client
             .typing_notification_controller
-            .event_rx
-            .signal_cloned()
-            .filter_map(move |n| {
-                if n.room_id == room_id {
-                    Some(n.get_user_ids())
-                } else {
-                    None
+            .new_receiver()
+            .filter_map(move |(room_id, user_ids)| {
+                let outer_room_id = outer_room_id.clone();
+                async move {
+                    if room_id == outer_room_id {
+                        Some(
+                            user_ids
+                                .into_iter()
+                                .map(|u| u.to_string())
+                                .collect::<Vec<_>>(),
+                        )
+                    } else {
+                        None
+                    }
                 }
-            })
-            .to_stream();
+            });
         let typing = Mutable::new(Vec::new());
         let typing_signal = typing.clone();
         let typing_handle = tokio::spawn(async move {
             pin_mut!(typing_listener);
             loop {
-                if let Some(Some(n)) = typing_listener.next().await {
+                if let Some(n) = typing_listener.next().await {
                     typing_signal.set(n);
                 }
             }

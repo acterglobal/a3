@@ -453,12 +453,3 @@ object Device {
     /// get the display name of this device
     fn get_display_name() -> Option<string>;
 }
-
-/// Deliver typing notification from rust to flutter
-object TypingNotificationEvent {
-    /// Get transaction id or flow id
-    fn get_room_id() -> string;
-
-    /// Get list of user id
-    fn get_user_ids() -> Vec<string>;
-}
