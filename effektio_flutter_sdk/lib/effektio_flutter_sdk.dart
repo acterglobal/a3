@@ -115,7 +115,7 @@ class EffektioSdk {
       final api = Platform.isAndroid
           ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
           : ffi.Api.load();
-      api.initLogging('warn');
+      api.initLogging('warn,effektio=debug');
       _instance = EffektioSdk._(api);
       await _instance!._restore();
     }
