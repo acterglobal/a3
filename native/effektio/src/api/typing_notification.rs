@@ -1,6 +1,6 @@
 use super::Client;
 use anyhow::Result;
-use async_broadcast::{broadcast, Receiver, Sender};
+use async_broadcast::{broadcast, InactiveReceiver, Receiver, Sender, TrySendError};
 use futures::{pin_mut, stream::Stream, StreamExt};
 use futures_signals::signal::{
     channel, Broadcaster, BroadcasterSignalCloned, SignalExt, SignalStream,
@@ -22,13 +22,19 @@ pub type TypingNotificationEvent = (OwnedRoomId, Vec<OwnedUserId>);
 #[derive(Clone)]
 pub struct TypingNotificationController {
     sender: Sender<TypingNotificationEvent>,
+    // we keep an inactive receiver around to avoid closing the sender just
+    // because we don't have active listeners
+    receiver: InactiveReceiver<TypingNotificationEvent>,
 }
 
 impl TypingNotificationController {
     pub(crate) fn new() -> Self {
-        let (mut sender, _) = broadcast::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
+        let (mut sender, receiver) = broadcast::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
         sender.set_overflow(true); // if more than 10 items, remove the oldest
-        TypingNotificationController { sender }
+        TypingNotificationController {
+            sender,
+            receiver: receiver.deactivate(),
+        }
     }
 
     pub async fn setup(&self, client: &MatrixClient) -> Result<()> {
@@ -51,7 +57,7 @@ impl TypingNotificationController {
     }
 
     fn process_ephemeral_event(&self, ev: SyncEphemeralRoomEvent<TypingEventContent>, room: Room) {
-        println!("typing: {:?}", ev.content.user_ids);
+        info!("typing: {:?}", ev.content.user_ids);
         let room_id = room.room_id();
         let msg = (
             room_id.to_owned(),
@@ -62,6 +68,9 @@ impl TypingNotificationController {
                 .collect(),
         );
         match self.sender.try_broadcast(msg) {
+            (Err(TrySendError::Inactive(_))) => {
+                // ignoring if there are no active receivers
+            }
             Ok(Some(_)) => warn!("Oldest event had to be dropped to queue typing event"),
             Err(e) => warn!("Dropping ephemeral event for {}: {:?}", room_id, e),
             _ => {

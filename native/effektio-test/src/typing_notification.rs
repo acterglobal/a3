@@ -30,43 +30,31 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    println!("kyra started sync");
-    let kyra_conv = kyra.conversation("#ops:ds9.effektio.org".to_owned()).await?;
-    println!("kyra conversation was got");
+    let mut first_synced = kyra_syncer.get_first_synced_rx().expect("not yet read");
+    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
+    let kyra_conv = kyra.conversation(sisko_group.room_id().to_string()).await?;
     let event_rx0 = kyra_conv.typing_updates();
     pin_mut!(event_rx0);
     let event_rx1 = kyra_conv.typing_updates();
     pin_mut!(event_rx1);
 
-    loop {
-        match event_rx1.next().await {
-            Some(event) => {
-                println!("received: {:?}", event);
-                break;
-            }
-            None => {
-                // println!("receiver empty");
-            }
-        }
-    }
+    let empty = Some(vec![]);
+    let sisko_found = Some(vec!["@sisko:ds9.effektio.org".to_owned()]);
 
-    for n in 0..100 {
-        println!("index: {}", n);
-        let sent = sisko_group.typing_notice(true).await?;
-        println!("sent: {:?}", sent);
+    // we are empty before typing
+    assert_eq!(event_rx0.next().await, empty);
+    assert_eq!(event_rx1.next().await, empty);
 
-        loop {
-            match event_rx1.next().await {
-                Some(event) => {
-                    println!("received: {:?}", event);
-                    break;
-                }
-                None => {
-                    // println!("receiver empty");
-                }
-            }
-        }
-    }
+    // sisko starts typing
+    sisko_group.typing_notice(true).await?;
+
+    // we see the change
+    assert_eq!(event_rx0.next().await, sisko_found);
+    assert_eq!(event_rx1.next().await, sisko_found);
+
+    // and because typing stopped, so is the value reset
+    assert_eq!(event_rx0.next().await, empty);
+    assert_eq!(event_rx1.next().await, empty);
 
     Ok(())
 }
