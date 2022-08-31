@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
@@ -47,21 +47,21 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Link Settings'),
+        title: const Text('Link Settings'),
         centerTitle: true,
         elevation: 0.0,
         backgroundColor: AppCommonTheme.backgroundColor,
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: EdgeInsets.only(top: 16.0, bottom: 10.0),
-              child: Text(
+              margin: EdgeInsets.only(top: 16, bottom: 10),
+              child: const Text(
                 'Room',
-                style: TextStyle(color: Colors.white, fontSize: 18.0),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
             FutureBuilder<String>(
@@ -73,7 +73,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                     overflow: TextOverflow.clip,
                     style: TextStyle(
                       color: AppCommonTheme.primaryColor,
-                      fontSize: 16.0,
+                      fontSize: 16,
                     ),
                   );
                 } else {
@@ -82,10 +82,10 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
               },
             ),
             Container(
-              margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
-              child: Text(
+              margin: EdgeInsets.only(top: 20, bottom: 10),
+              child: const Text(
                 'Expires After',
-                style: TextStyle(color: Colors.white, fontSize: 18.0),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
             Flexible(
@@ -129,10 +129,10 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
-              child: Text(
+              margin: EdgeInsets.only(top: 20, bottom: 10),
+              child: const Text(
                 'Max Uses',
-                style: TextStyle(color: Colors.white, fontSize: 18.0),
+                style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
             GridView.builder(

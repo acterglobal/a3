@@ -11,23 +11,47 @@ sed -i 's/^#enable_registration:.*$/enable_registration: true/g' /data/homeserve
 echo """
 
 rc_message:
- per_second: 1000
- burst_count: 1000
+  per_second: 1000
+  burst_count: 1000
 
 rc_registration:
- per_second: 1000
- burst_count: 1000
+  per_second: 1000
+  burst_count: 1000
 
 rc_login:
- address:
-   per_second: 1000
-   burst_count: 1000
-#  account:
-#    per_second: 0.17
-#    burst_count: 3
-#  failed_attempts:
-#    per_second: 0.17
-#    burst_count: 3
+  address:
+    per_second: 1000
+    burst_count: 1000
+  account:
+    per_second: 1000
+    burst_count: 1000
+  failed_attempts:
+    per_second: 1000
+    burst_count: 1000
+
+rc_admin_redaction:
+  per_second: 1000
+  burst_count: 1000
+
+rc_joins:
+  local:
+    per_second: 1000
+    burst_count: 1000
+  remote:
+    per_second: 1000
+    burst_count: 1000
+
+rc_3pid_validation:
+  per_second: 1000
+  burst_count: 1000
+
+rc_invites:
+  per_room:
+    per_second: 1000
+    burst_count: 1000
+  per_user:
+    per_second: 1000
+    burst_count: 1000
 
 """ >>  /data/homeserver.yaml
 

@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:effektio/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 100,
                       ),
                       SizedBox(
@@ -78,21 +78,21 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 50,
                         child: SvgPicture.asset('assets/images/logo.svg'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       Text(
                         AppLocalizations.of(context)!.welcomeBack,
                         style: AuthTheme.authTitleStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
                         AppLocalizations.of(context)!.signInContinue,
-                        style: AuthTheme.authbodyStyle,
+                        style: AuthTheme.authBodyStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 35,
                       ),
                       signInOnboardingTextField(
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         AppLocalizations.of(context)!.emptyUsername,
                         SignInOnboardingTextFieldEnum.userName,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       signInOnboardingTextField(
@@ -111,19 +111,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         SignInOnboardingTextFieldEnum.password,
                       ),
                       Container(
-                        margin: EdgeInsets.only(right: 20),
+                        margin: const EdgeInsets.only(right: 20),
                         width: double.infinity,
                         alignment: Alignment.bottomRight,
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
                             AppLocalizations.of(context)!.forgotPassword,
-                            style: AuthTheme.authbodyStyle +
+                            style: AuthTheme.authBodyStyle +
                                 AuthTheme.forgotPasswordColor,
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 100,
                       ),
                       controller.isSubmitting
@@ -149,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               title: AppLocalizations.of(context)!.login,
                             ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Row(
@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           Text(
                             AppLocalizations.of(context)!.noAccount,
-                            style: AuthTheme.authbodyStyle,
+                            style: AuthTheme.authBodyStyle,
                           ),
                           InkWell(
                             onTap: () {
@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text(
                               AppLocalizations.of(context)!.signUp,
-                              style: AuthTheme.authbodyStyle +
+                              style: AuthTheme.authBodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),
                           )

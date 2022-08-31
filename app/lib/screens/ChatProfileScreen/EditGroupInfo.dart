@@ -1,4 +1,4 @@
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -24,7 +24,7 @@ class EditGroupInfoScreen extends StatefulWidget {
 class _EditGroupInfoState extends State<EditGroupInfoScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController descController = TextEditingController();
-  ChatController chatController = Get.find<ChatController>();
+  ChatController chatController = ChatController.instance;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
         backgroundColor: AppCommonTheme.backgroundColor,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,7 +51,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
               },
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 38.0, bottom: 12.0),
+                  padding: const EdgeInsets.only(top: 38, bottom: 12),
                   child: SizedBox(
                     height: 100,
                     width: 100,
@@ -70,10 +70,10 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+              margin: const EdgeInsets.only(top: 20, bottom: 10),
               child: const Text(
                 'Group Name',
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
             SingleChildScrollView(
@@ -89,10 +89,10 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+              margin: const EdgeInsets.only(top: 20, bottom: 10),
               child: const Text(
                 'Group Description',
-                style: TextStyle(color: Colors.white, fontSize: 16.0),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
             Flexible(

@@ -1,8 +1,11 @@
 import 'dart:core';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:ui';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 export './effektio_flutter_sdk_ffi.dart' show Client;
@@ -35,6 +38,7 @@ class EffektioSdk {
   late final ffi.Api _api;
   final int _index = 0;
   final List<ffi.Client> _clients = [];
+  static const platform = MethodChannel('effektio_flutter_sdk');
 
   EffektioSdk._(this._api);
 
@@ -73,9 +77,44 @@ class EffektioSdk {
     return _clients[_index];
   }
 
+  static Future<String> _getNativeLibraryDirectory() async {
+    String libDir;
+    try {
+      libDir = await platform.invokeMethod('getNativeLibraryDirectory');
+    } on PlatformException {
+      libDir = '';
+    }
+    return libDir;
+  }
+
+  static Future<DynamicLibrary> _getAndroidDynamicLibrary(
+    String libName,
+  ) async {
+    try {
+      // android api 30 is working here
+      return DynamicLibrary.open(libName);
+    } catch (_) {
+      try {
+        // android api 23 is working here
+        final String? nativeLibDir = await _getNativeLibraryDirectory();
+        return DynamicLibrary.open('$nativeLibDir/$libName');
+      } catch (_) {
+        try {
+          final PackageInfo pkgInfo = await PackageInfo.fromPlatform();
+          final String pkgName = pkgInfo.packageName;
+          return DynamicLibrary.open('/data/data/$pkgName/$libName');
+        } catch (_) {
+          rethrow;
+        }
+      }
+    }
+  }
+
   static Future<EffektioSdk> get instance async {
     if (_instance == null) {
-      final api = ffi.Api.load();
+      final api = Platform.isAndroid
+          ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
+          : ffi.Api.load();
       api.initLogging('warn');
       _instance = EffektioSdk._(api);
       await _instance!._restore();

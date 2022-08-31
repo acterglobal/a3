@@ -7,7 +7,7 @@ import 'package:effektio/common/widget/CommentView.dart';
 import 'package:effektio/common/widget/like_button.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,7 +48,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       );
   }
 
-  static List<String> listPlayers = <String>[
+  static const List<String> listPlayers = <String>[
     'Cristiano Ronaldo',
     'Lionel Messi',
     'Neymar Jr.',
@@ -63,7 +63,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
     'Bruno Fernandes'
   ];
 
-  static List<MaterialColor> listColors = <MaterialColor>[
+  static const List<MaterialColor> listColors = <MaterialColor>[
     Colors.blue,
     Colors.orange,
     Colors.brown,
@@ -158,19 +158,22 @@ class _NewsSideBarState extends State<NewsSideBar> {
           showBottomSheet();
         }
       }),
-      child: Column(
-        children: <Widget>[
-          SvgPicture.asset(
-            'assets/images/$iconName.svg',
-            color: color,
-            width: 35,
-            height: 35,
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          Text(label, style: style),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.only(right: 15),
+        child: Column(
+          children: <Widget>[
+            SvgPicture.asset(
+              'assets/images/$iconName.svg',
+              color: color,
+              width: 35,
+              height: 35,
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(label, style: style),
+          ],
+        ),
       ),
     );
   }
@@ -182,7 +185,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30.0),
+          top: Radius.circular(30),
         ),
       ),
       builder: (context) {
@@ -193,15 +196,15 @@ class _NewsSideBarState extends State<NewsSideBar> {
               builder:
                   (BuildContext context, ScrollController scrollController) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Column(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
+                        padding: const EdgeInsets.only(top: 12),
                         child: SizedBox(
                           height: 40,
                           child: Center(
-                            child: Text(
+                            child: const Text(
                               '101 Comments',
                               style: TextStyle(
                                 color: Colors.white,
@@ -214,11 +217,12 @@ class _NewsSideBarState extends State<NewsSideBar> {
                       ),
                       Expanded(
                         child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
                           controller: scrollController,
                           itemCount: 10,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(12),
                               child: CommentView(
                                 name: listPlayers[index],
                                 titleColor: listColors[index],
@@ -230,14 +234,14 @@ class _NewsSideBarState extends State<NewsSideBar> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(
-                          left: 8.0,
-                          top: 8.0,
+                          left: 8,
+                          top: 8,
                           bottom: MediaQuery.of(context).viewInsets.bottom,
                         ),
                         child: Row(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(right: 8.0),
+                              padding: EdgeInsets.only(right: 8),
                               child: _profileImageButton(Colors.black),
                             ),
                             Expanded(
@@ -251,7 +255,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                                   alignment: Alignment.centerRight,
                                   children: <Widget>[
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
+                                      padding: const EdgeInsets.only(left: 8),
                                       child: TextField(
                                         style: const TextStyle(
                                           color: Colors.white,
@@ -325,10 +329,12 @@ class _NewsSideBarState extends State<NewsSideBar> {
                               enableSkinTones: true,
                               showRecentsTab: true,
                               recentsLimit: 28,
-                              noRecentsText: 'No Recents',
-                              noRecentsStyle: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.black26,
+                              noRecents: Text(
+                                'No Recents',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black26,
+                                ),
                               ),
                               tabIndicatorAnimDuration: kTabScrollDuration,
                               categoryIcons: const CategoryIcons(),

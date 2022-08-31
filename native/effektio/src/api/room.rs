@@ -1,8 +1,8 @@
 use anyhow::{bail, Context, Result};
 use effektio_core::RestoreToken;
 use futures::{
-    pin_mut, stream, Stream, StreamExt,
-    channel::mpsc::{channel, Sender, Receiver},
+    channel::mpsc::{channel, Receiver},
+    pin_mut, stream, StreamExt,
 };
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
@@ -11,17 +11,14 @@ use matrix_sdk::{
     ruma::{
         events::{
             room::{
-                member::{RoomMemberEvent, StrippedRoomMemberEvent},
-                message::{
-                    MessageType, OriginalSyncRoomMessageEvent,
-                    RoomMessageEventContent, TextMessageEventContent,
-                },
+                member::StrippedRoomMemberEvent,
+                message::{MessageType, RoomMessageEventContent},
             },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
             AnySyncMessageLikeEvent, AnySyncRoomEvent, MessageLikeEvent,
-            StateEventType, SyncMessageLikeEvent,
+            SyncMessageLikeEvent,
         },
-        EventId, OwnedUserId, UInt, UserId,
+        EventId, UInt, UserId,
     },
     Client as MatrixClient, RoomType,
 };
@@ -30,7 +27,7 @@ use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 use tokio::time::{sleep, Duration};
 
 use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, Account, TimelineStream, RUNTIME};
+use super::{api::FfiBuffer, Account, TimelineStream, RUNTIME};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -44,11 +41,11 @@ impl std::ops::Deref for Member {
 }
 
 impl Member {
-    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         let r = self.member.clone();
         RUNTIME
             .spawn(async move {
-                Ok(api::FfiBuffer::new(
+                Ok(FfiBuffer::new(
                     r.avatar(MediaFormat::File).await?.context("No avatar")?,
                 ))
             })
@@ -58,8 +55,8 @@ impl Member {
         self.member.display_name().map(|s| s.to_owned())
     }
 
-    pub fn user_id(&self) -> OwnedUserId {
-        self.member.user_id().to_owned()
+    pub fn user_id(&self) -> String {
+        self.member.user_id().to_string()
     }
 }
 
@@ -76,11 +73,11 @@ impl Room {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let binary = api::FfiBuffer::new(
+                let binary = FfiBuffer::new(
                     r.avatar(MediaFormat::File).await?.context("No avatar")?,
                 );
                 Ok(binary)
@@ -118,11 +115,12 @@ impl Room {
             .await?
     }
 
-    pub async fn get_member(&self, user_id: Box<OwnedUserId>) -> Result<Member> {
+    pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let r = self.room.clone();
+        let uid = UserId::parse(user_id)?;
         RUNTIME
             .spawn(async move {
-                let member = r.get_member(&user_id).await?.context("User not found")?;
+                let member = r.get_member(&uid).await?.context("User not found")?;
                 Ok(Member { member })
             })
             .await?
@@ -423,7 +421,7 @@ impl Room {
             .await?
     }
 
-    pub async fn image_binary(&self, event_id: String) -> Result<api::FfiBuffer<u8>> {
+    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -450,7 +448,7 @@ impl Room {
                                 false,
                             )
                             .await?;
-                        Ok(api::FfiBuffer::new(data))
+                        Ok(FfiBuffer::new(data))
                     } else {
                         bail!("Invalid file format")
                     }

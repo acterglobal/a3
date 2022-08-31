@@ -2,7 +2,8 @@
 
 import 'dart:io';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/common/widget/AppCommon.dart';
 
 import 'package:effektio/common/widget/TagItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -70,7 +71,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
+            padding: const EdgeInsets.all(8),
             child: Column(
               children: [
                 Visibility(
@@ -79,7 +80,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
                         child: TextField(
                           controller: faqController,
                           style: mColors.TextStyle(color: Colors.white),
@@ -96,7 +97,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
+                        padding: const EdgeInsets.only(right: 8),
                         child: ElevatedButton(
                           onPressed: () {
                             setState(() {
@@ -115,7 +116,8 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(12.0, 4.0, 12.0, 4.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   child: Visibility(
                     visible: editFaqTitle ? false : true,
                     child: Row(
@@ -146,15 +148,15 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 12.0, bottom: 12.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        height: 40.0,
-                        padding: const EdgeInsets.all(8.0),
-                        margin: const EdgeInsets.only(left: 12.0),
+                        height: 40,
+                        padding: const EdgeInsets.all(8),
+                        margin: const EdgeInsets.only(left: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
@@ -169,11 +171,11 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                             ),
                             Padding(
                               padding: const EdgeInsets.only(
-                                left: 8.0,
+                                left: 8,
                               ),
-                              child: Text(
+                              child: const Text(
                                 'Support',
-                                style: FAQTheme.teameNameStyle,
+                                style: FAQTheme.teamNameStyle,
                               ),
                             )
                           ],
@@ -183,7 +185,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                       SizedBox(
                         height: 40,
                         child: Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
+                          padding: const EdgeInsets.only(right: 8),
                           child: Row(
                             children: [
                               GestureDetector(
@@ -194,7 +196,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(
-                                  left: 8.0,
+                                  left: 8,
                                 ),
                                 child: Text(
                                   widget.faq.likesCount().toString(),
@@ -211,13 +213,13 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                                 child: Row(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
+                                      padding: const EdgeInsets.only(left: 8),
                                       child: Image.asset(
                                         'assets/images/comment.png',
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
+                                      padding: const EdgeInsets.only(left: 8),
                                       child: Text(
                                         widget.faq.commentsCount().toString(),
                                         style: FAQTheme.likeAndCommentStyle,
@@ -241,7 +243,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   color: Colors.grey,
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: SizedBox(
                     height: 40,
                     child: ListView.builder(
@@ -277,7 +279,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   endIndent: 20,
                   color: Colors.grey,
                 ),
-                Container(),
+                const SizedBox(),
               ],
             ),
           ),
@@ -303,7 +305,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                               alignment: Alignment.centerRight,
                               children: <Widget>[
                                 Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
+                                  padding: const EdgeInsets.only(left: 8),
                                   child: TextField(
                                     style: const TextStyle(color: Colors.white),
                                     cursorColor: Colors.grey,
@@ -416,10 +418,12 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           enableSkinTones: true,
                           showRecentsTab: true,
                           recentsLimit: 28,
-                          noRecentsText: 'No Recents',
-                          noRecentsStyle: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black26,
+                          noRecents: Text(
+                            'No recents',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black26,
+                            ),
                           ),
                           tabIndicatorAnimDuration: kTabScrollDuration,
                           categoryIcons: const CategoryIcons(),
@@ -445,19 +449,4 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
       ),
     );
   }
-}
-
-int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
-  r = (r < 0) ? -r : r;
-  g = (g < 0) ? -g : g;
-  b = (b < 0) ? -b : b;
-  opacity = (opacity < 0) ? -opacity : opacity;
-  opacity = (opacity > 1) ? 255 : opacity * 255;
-  r = (r > 255) ? 255 : r;
-  g = (g > 255) ? 255 : g;
-  b = (b > 255) ? 255 : b;
-  int a = opacity.toInt();
-  return int.parse(
-    '0x${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
-  );
 }

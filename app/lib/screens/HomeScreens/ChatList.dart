@@ -1,5 +1,5 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -80,7 +80,7 @@ class _ChatListState extends State<ChatList> {
               ),
               child: Text(
                 AppLocalizations.of(context)!.chat,
-                style: AppCommonTheme.appBartitleStyle,
+                style: AppCommonTheme.appBarTitleStyle,
               ),
             ),
             SizedBox(height: 10),
@@ -126,7 +126,7 @@ class _ChatListState extends State<ChatList> {
               padding: const EdgeInsets.only(left: 18),
               child: Text(
                 AppLocalizations.of(context)!.invitedRooms,
-                style: AppCommonTheme.appBartitleStyle.copyWith(fontSize: 16),
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
               ),
             ),
             SizedBox(height: 10),
