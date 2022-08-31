@@ -105,7 +105,6 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   void initState() {
     _client = makeClient();
-    Get.put(ChatController());
     _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(() {
       setState(() {

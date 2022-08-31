@@ -97,6 +97,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
+    pub(crate) invitations: Arc<RwLock<Vec<Invitation>>>,
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
@@ -104,7 +105,6 @@ pub struct Client {
         Arc<MatrixRwLock<Option<TypingNotificationController>>>,
     pub(crate) receipt_notification_controller:
         Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
-    invitations: Arc<RwLock<Vec<Invitation>>>,
 }
 
 impl std::ops::Deref for Client {
