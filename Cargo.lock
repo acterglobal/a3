@@ -969,7 +969,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/effektio/ffi-gen#23f833c076bed9aee597516f35669113d87f1b98"
+source = "git+https://github.com/effektio/ffi-gen?branch=ben-string-dealloc-fix#d3e65c7fb6bc0a91134799f9f2bc8e4ff860fb07"
 dependencies = [
  "anyhow",
  "genco",
@@ -981,7 +981,7 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/effektio/ffi-gen#23f833c076bed9aee597516f35669113d87f1b98"
+source = "git+https://github.com/effektio/ffi-gen?branch=ben-string-dealloc-fix#d3e65c7fb6bc0a91134799f9f2bc8e4ff860fb07"
 dependencies = [
  "ffi-gen",
  "proc-macro2",

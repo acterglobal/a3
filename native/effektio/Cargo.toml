@@ -15,7 +15,7 @@ cbindgen = [ ]
 dart = [ "with-mocks" ]
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
+ffi-gen = { git = "https://github.com/effektio/ffi-gen", branch = "ben-string-dealloc-fix" }
 cbindgen = "0.20.0"
 
 [dependencies]
@@ -23,7 +23,7 @@ anyhow = "1.0.51"
 assign = "1.1.1"
 async-broadcast = "0.4.1"
 derive_builder = { version = "0.10.2" }
-ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
+ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen", branch = "ben-string-dealloc-fix" }
 futures = "0.3.17"
 futures-signals = "0.3.28"
 lazy_static = "1.4"
