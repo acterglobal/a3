@@ -4,6 +4,7 @@ use futures::{
     channel::mpsc::{channel, Receiver},
     pin_mut, stream, StreamExt,
 };
+use log::{error, info, warn};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -14,9 +15,8 @@ use matrix_sdk::{
                 member::StrippedRoomMemberEvent,
                 message::{MessageType, RoomMessageEventContent},
             },
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent,
-            AnySyncMessageLikeEvent, AnySyncRoomEvent, MessageLikeEvent,
-            SyncMessageLikeEvent,
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, AnySyncMessageLikeEvent,
+            AnySyncRoomEvent, MessageLikeEvent, SyncMessageLikeEvent,
         },
         EventId, UInt, UserId,
     },
@@ -77,9 +77,8 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let binary = FfiBuffer::new(
-                    r.avatar(MediaFormat::File).await?.context("No avatar")?,
-                );
+                let binary =
+                    FfiBuffer::new(r.avatar(MediaFormat::File).await?.context("No avatar")?);
                 Ok(binary)
             })
             .await?
@@ -89,7 +88,8 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let members = r.active_members()
+                let members = r
+                    .active_members()
                     .await
                     .context("No members")?
                     .into_iter()
@@ -104,7 +104,8 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let members = r.active_members_no_sync()
+                let members = r
+                    .active_members_no_sync()
                     .await
                     .context("No members")?
                     .into_iter()
@@ -135,12 +136,8 @@ impl Room {
                     .timeline()
                     .await
                     .context("Failed acquiring timeline streams")?;
-                let stream = TimelineStream::new(
-                    Box::pin(forward),
-                    Box::pin(backward),
-                    client,
-                    room,
-                );
+                let stream =
+                    TimelineStream::new(Box::pin(forward), Box::pin(backward), client, room);
                 Ok(stream)
             })
             .await?
@@ -231,19 +228,21 @@ impl Room {
         let sender_arc = Arc::new(Mutex::new(tx));
         RUNTIME.block_on(async move {
             client
-                .register_event_handler(move |ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| {
-                    let sender_arc = sender_arc.clone();
-                    let room_id = room_id.clone();
-                    async move {
-                        let s = sender_arc.lock();
-                        if room.room_id() == room_id {
-                            if let Err(e) = s.clone().try_send(ev.sender.to_string()) {
-                                log::warn!("Dropping member event for {}: {}", room_id, e);
+                .register_event_handler(
+                    move |ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| {
+                        let sender_arc = sender_arc.clone();
+                        let room_id = room_id.clone();
+                        async move {
+                            let s = sender_arc.lock();
+                            if room.room_id() == room_id {
+                                if let Err(e) = s.clone().try_send(ev.sender.to_string()) {
+                                    log::warn!("Dropping member event for {}: {}", room_id, e);
+                                }
                             }
+                            // the lock is unlocked here when `s` goes out of scope.
                         }
-                        // the lock is unlocked here when `s` goes out of scope.
-                    }
-                })
+                    },
+                )
                 .await;
         });
         Ok(rx)
@@ -320,17 +319,22 @@ impl Room {
                     // retry autojoin due to synapse sending invites, before the
                     // invited user can join for more information see
                     // https://github.com/matrix-org/synapse/issues/4345
-                    eprintln!("Failed to accept room {} ({:?}), retrying in {}s", room.room_id(), err, delay);
+                    error!(
+                        "Failed to accept room {} ({:?}), retrying in {}s",
+                        room.room_id(),
+                        err,
+                        delay,
+                    );
 
                     sleep(Duration::from_secs(delay)).await;
                     delay *= 2;
 
                     if delay > 3600 {
-                        eprintln!("Can't accept room {} ({:?})", room.room_id(), err);
+                        error!("Can't accept room {} ({:?})", room.room_id(), err);
                         break;
                     }
                 }
-                println!("Successfully accepted room {}", room.room_id());
+                info!("Successfully accepted room {}", room.room_id());
                 Ok(delay <= 3600)
             })
             .await?
@@ -350,17 +354,22 @@ impl Room {
                     // retry autojoin due to synapse sending invites, before the
                     // invited user can join for more information see
                     // https://github.com/matrix-org/synapse/issues/4345
-                    eprintln!("Failed to reject room {} ({:?}), retrying in {}s", room.room_id(), err, delay);
+                    error!(
+                        "Failed to reject room {} ({:?}), retrying in {}s",
+                        room.room_id(),
+                        err,
+                        delay,
+                    );
 
                     sleep(Duration::from_secs(delay)).await;
                     delay *= 2;
 
                     if delay > 3600 {
-                        eprintln!("Can't reject room {} ({:?})", room.room_id(), err);
+                        error!("Can't reject room {} ({:?})", room.room_id(), err);
                         break;
                     }
                 }
-                println!("Successfully rejected room {}", room.room_id());
+                info!("Successfully rejected room {}", room.room_id());
                 Ok(delay <= 3600)
             })
             .await?
@@ -413,8 +422,15 @@ impl Room {
                     .unwrap();
                 let mut accounts: Vec<Account> = vec![];
                 for user_id in invited.iter() {
-                    let other_client = MatrixClient::builder().user_id(&user_id).build().await.unwrap();
-                    accounts.push(Account::new(other_client.account(), user_id.as_str().to_owned()));
+                    let other_client = MatrixClient::builder()
+                        .user_id(&user_id)
+                        .build()
+                        .await
+                        .unwrap();
+                    accounts.push(Account::new(
+                        other_client.account(),
+                        user_id.as_str().to_owned(),
+                    ));
                 }
                 Ok(accounts)
             })
@@ -588,7 +604,8 @@ impl std::ops::Deref for Room {
 fn event_content(ev: AnySyncRoomEvent) -> Option<String> {
     if let AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
         SyncMessageLikeEvent::Original(event),
-    )) = ev {
+    )) = ev
+    {
         Some(event.content.msgtype.body().to_owned())
     } else {
         None

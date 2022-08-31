@@ -27,7 +27,8 @@ use matrix_sdk::{
         events::{
             receipt::ReceiptEventContent,
             room::message::{MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent},
-            typing::TypingEventContent, AnyStrippedStateEvent, SyncEphemeralRoomEvent,
+            typing::TypingEventContent,
+            AnyStrippedStateEvent, SyncEphemeralRoomEvent,
         },
         serde::Raw,
         OwnedUserId, RoomId, UserId,
@@ -295,7 +296,13 @@ impl Client {
                                 let r = client.get_room(&room_id).unwrap();
                                 let room_name = r.display_name().await.unwrap();
                                 for event in room.invite_state.events {
-                                    handle_stripped_state_event(&event, &user_id, &room_id, room_name.to_string(), &invitations);
+                                    handle_stripped_state_event(
+                                        &event,
+                                        &user_id,
+                                        &room_id,
+                                        room_name.to_string(),
+                                        &invitations,
+                                    );
                                 }
                             }
                         }
@@ -395,7 +402,10 @@ impl Client {
 
     pub async fn account(&self) -> Result<Account> {
         let user_id = self.client.user_id().unwrap();
-        Ok(Account::new(self.client.account(), user_id.as_str().to_owned()))
+        Ok(Account::new(
+            self.client.account(),
+            user_id.as_str().to_owned(),
+        ))
     }
 
     pub async fn display_name(&self) -> Result<String> {
