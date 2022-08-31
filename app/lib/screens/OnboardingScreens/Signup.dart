@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/OnboardingWidget.dart';
 import 'package:effektio/controllers/signup_controller.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
@@ -73,7 +73,7 @@ class _SignupScreentate extends State<SignupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 80,
                       ),
                       SizedBox(
@@ -81,21 +81,21 @@ class _SignupScreentate extends State<SignupScreen> {
                         width: 50,
                         child: SvgPicture.asset('assets/images/logo.svg'),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       Text(
                         AppLocalizations.of(context)!.onboardText,
                         style: AuthTheme.authTitleStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Text(
                         AppLocalizations.of(context)!.createAccountText,
-                        style: AuthTheme.authbodyStyle,
+                        style: AuthTheme.authBodyStyle,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       signUpOnboardingTextField(
@@ -122,17 +122,17 @@ class _SignupScreentate extends State<SignupScreen> {
                         AppLocalizations.of(context)!.emptyToken,
                         SignUpOnboardingTextFieldEnum.token,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 20, right: 20),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         child: RichText(
                           textAlign: TextAlign.start,
                           text: TextSpan(
                             // Note: Styles for TextSpans must be explicitly defined.
                             // Child text spans will inherit styles from parent
-                            style: AuthTheme.authbodyStyle,
+                            style: AuthTheme.authBodyStyle,
                             children: <TextSpan>[
                               TextSpan(
                                 text:
@@ -144,7 +144,7 @@ class _SignupScreentate extends State<SignupScreen> {
                                     debugPrint('Terms of Service"');
                                   },
                                 text: AppLocalizations.of(context)!.termsText2,
-                                style: AuthTheme.authbodyStyle +
+                                style: AuthTheme.authBodyStyle +
                                     AppCommonTheme.primaryColor,
                               ),
                               TextSpan(
@@ -157,14 +157,14 @@ class _SignupScreentate extends State<SignupScreen> {
                                     debugPrint('policy"');
                                   },
                                 text: AppLocalizations.of(context)!.termsText4,
-                                style: AuthTheme.authbodyStyle +
+                                style: AuthTheme.authBodyStyle +
                                     AppCommonTheme.primaryColor,
                               ),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 40,
                       ),
                       controller.isSubmitting
@@ -189,7 +189,7 @@ class _SignupScreentate extends State<SignupScreen> {
                               },
                               title: AppLocalizations.of(context)!.signUp,
                             ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Row(
@@ -197,7 +197,7 @@ class _SignupScreentate extends State<SignupScreen> {
                         children: [
                           Text(
                             '${AppLocalizations.of(context)!.haveAccount}  ',
-                            style: AuthTheme.authbodyStyle,
+                            style: AuthTheme.authBodyStyle,
                           ),
                           InkWell(
                             onTap: () {
@@ -211,7 +211,7 @@ class _SignupScreentate extends State<SignupScreen> {
                             },
                             child: Text(
                               AppLocalizations.of(context)!.login,
-                              style: AuthTheme.authbodyStyle +
+                              style: AuthTheme.authBodyStyle +
                                   AppCommonTheme.primaryColor,
                             ),
                           )

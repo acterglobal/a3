@@ -3,8 +3,8 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/common/store/chatTheme.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/chatTheme.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -14,7 +14,7 @@ import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiListMember;
+    show Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -43,6 +43,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
+    super.initState();
     _user = types.User(
       id: widget.user!,
     );
@@ -51,7 +52,6 @@ class _ChatScreenState extends State<ChatScreen> {
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
     chatController.init(widget.room, _user);
-    super.initState();
   }
 
   @override
@@ -76,12 +76,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Row(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/camera.svg'),
                       ),
                       SizedBox(width: 10),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.photo,
                           style: TextStyle(color: Colors.white),
@@ -96,12 +96,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Row(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/document.svg'),
                       ),
                       SizedBox(width: 10),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.file,
                           style: TextStyle(
@@ -120,6 +120,11 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Future<FfiBufferUint8> _userAvatar(String userId) async {
+    final member = await widget.room.getMember(userId);
+    return member.avatar();
+  }
+
   Widget _avatarBuilder(String userId) {
     return GetBuilder<ChatController>(
       id: 'Avatar',
@@ -127,11 +132,11 @@ class _ChatScreenState extends State<ChatScreen> {
         return Padding(
           padding: const EdgeInsets.only(right: 10),
           child: CustomAvatar(
-            avatar: widget.room.avatar(),
+            avatar: _userAvatar(userId),
             displayName: null,
             radius: 15,
             isGroup: false,
-            stringName: getNameFromId(userId),
+            stringName: getNameFromId(userId) ?? '',
           ),
         );
       },
@@ -173,111 +178,118 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppCommonTheme.backgroundColor,
-        elevation: 1,
-        centerTitle: true,
-        toolbarHeight: 70,
-        leading: Row(
-          children: <Widget>[
-            IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: SvgPicture.asset(
-                'assets/images/back_button.svg',
-                color: AppCommonTheme.svgIconColor,
-              ),
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        return Scaffold(
+          resizeToAvoidBottomInset: orientation == Orientation.portrait,
+          appBar: AppBar(
+            backgroundColor: AppCommonTheme.backgroundColor,
+            elevation: 1,
+            centerTitle: true,
+            toolbarHeight: 70,
+            leading: Row(
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: SvgPicture.asset(
+                    'assets/images/back_button.svg',
+                    color: AppCommonTheme.svgIconColor,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        title: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            FutureBuilder<String>(
-              future:
-                  widget.room.displayName().then((value) => roomName = value),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    snapshot.requireData,
-                    overflow: TextOverflow.clip,
-                    style: ChatTheme01.chatTitleStyle,
-                  );
-                } else {
-                  return Text(AppLocalizations.of(context)!.loadingName);
-                }
-              },
+            title: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FutureBuilder<String>(
+                  future: widget.room
+                      .displayName()
+                      .then((value) => roomName = value),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        snapshot.requireData,
+                        overflow: TextOverflow.clip,
+                        style: ChatTheme01.chatTitleStyle,
+                      );
+                    } else {
+                      return Text(AppLocalizations.of(context)!.loadingName);
+                    }
+                  },
+                ),
+                const SizedBox(height: 5),
+                FutureBuilder<FfiListMember>(
+                  future: widget.room.activeMembers(),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<FfiListMember> snapshot,
+                  ) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
+                        style: ChatTheme01.chatBodyStyle +
+                            AppCommonTheme.primaryColor,
+                      );
+                    } else {
+                      return Container(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
-            SizedBox(height: 5),
-            FutureBuilder<FfiListMember>(
-              future: widget.room.activeMembers(),
-              builder: (
-                BuildContext context,
-                AsyncSnapshot<FfiListMember> snapshot,
-              ) {
-                if (snapshot.hasData) {
-                  return Text(
-                    '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
-                    style:
-                        ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
-                  );
-                } else {
-                  return Container(
-                    height: 15,
-                    width: 15,
-                    child: CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatProfileScreen(
+                        room: widget.room,
+                        user: widget.user,
+                        isGroup: true,
+                        isAdmin: true,
+                      ),
                     ),
                   );
-                }
-              },
-            ),
-          ],
-        ),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatProfileScreen(
-                    room: widget.room,
-                    user: widget.user,
-                    isGroup: true,
-                    isAdmin: true,
-                  ),
-                ),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: Container(
-                height: 45,
-                width: 45,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: CustomAvatar(
-                    avatar: widget.room.avatar(),
-                    displayName: widget.room.displayName(),
-                    radius: 20,
-                    isGroup: true,
-                    stringName: '',
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Container(
+                    height: 45,
+                    width: 45,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: CustomAvatar(
+                        avatar: widget.room.avatar(),
+                        displayName: widget.room.displayName(),
+                        radius: 20,
+                        isGroup: true,
+                        stringName: '',
+                      ),
+                    ),
                   ),
                 ),
               ),
+            ],
+          ),
+          body: Obx(
+            () => SafeArea(
+              bottom: false,
+              child: _buildBody(context),
             ),
           ),
-        ],
-      ),
-      body: Obx(
-        () => SafeArea(
-          bottom: false,
-          child: _buildBody(context),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -301,6 +313,15 @@ class _ChatScreenState extends State<ChatScreen> {
             Chat(
               customBottomWidget: CustomChatInput(
                 context: context,
+                isChatScreen: true,
+                roomName: roomName,
+                onButtonPressed: () async {
+                  await controller.handleSendPressed(
+                    controller.textEditingController.text,
+                  );
+                  controller.textEditingController.clear();
+                  controller.sendButtonUpdate();
+                },
               ),
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
@@ -340,20 +361,27 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             roomState
-                ? Container(
-                    alignment: Alignment.topLeft,
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 20, left: 10),
-                    color: AppCommonTheme.backgroundColor,
-                    height: MediaQuery.of(context).size.height * 0.25,
-                    width: MediaQuery.of(context).size.width,
-                    child: Text(
-                      AppLocalizations.of(context)!.invitationText1,
-                      style: AppCommonTheme.appBartitleStyle
-                          .copyWith(fontSize: 14),
-                    ),
+                ? LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Container(
+                        alignment: Alignment.topLeft,
+                        padding: const EdgeInsets.only(
+                          top: 10,
+                          bottom: 20,
+                          left: 10,
+                        ),
+                        color: AppCommonTheme.backgroundColor,
+                        height: constraints.maxHeight * 0.25,
+                        width: double.infinity,
+                        child: Text(
+                          AppLocalizations.of(context)!.invitationText1,
+                          style: AppCommonTheme.appBarTitleStyle
+                              .copyWith(fontSize: 14),
+                        ),
+                      );
+                    },
                   )
-                : Container(),
+                : const SizedBox(),
             roomState
                 ? Padding(
                     padding: const EdgeInsets.only(top: 40),
@@ -363,7 +391,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       groupName: roomName,
                     ),
                   )
-                : Container(),
+                : const SizedBox(),
           ],
         );
       },

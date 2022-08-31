@@ -1,7 +1,9 @@
 // ignore_for_file: always_declare_return_types
 
+import 'dart:async';
 import 'dart:io';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/screens/ChatProfileScreen/ImageSelectionScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Conversation,
@@ -34,12 +36,12 @@ class ChatController extends GetxController {
   late final Conversation room;
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
-
   RxBool isEmojiVisible = false.obs;
   RxBool isattachmentVisible = false.obs;
   FocusNode focusNode = FocusNode();
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
+  final List<XFile> _imageFileList = [];
 
   //get the timeline of room
   init(Conversation convoRoom, types.User convoUser) async {
@@ -70,16 +72,22 @@ class ChatController extends GetxController {
       }
     }
     mtx.release();
+    //waits for new event
+    newEvent();
   }
 
-  //waits for new event
   Future<void> newEvent() async {
-    await _stream!.next();
-    var message = await room.latestMessage();
-    if (message.sender() != user.id) {
-      _loadMessage(message, messages);
-      update(['Chat']);
-    }
+    Stream<RoomMessage> newRoomMessage() =>
+        Stream.periodic(const Duration(milliseconds: 800))
+            .asyncMap((_) => _stream!.next());
+    newRoomMessage().listen((event) {
+      if (event.sender() != user.id) {
+        _loadMessage(event, messages);
+        update(['Chat']);
+      } else {
+        update(['Chat']);
+      }
+    });
   }
 
   //preview message link
@@ -113,6 +121,58 @@ class ChatController extends GetxController {
     );
     messages.insert(0, textMessage);
     update(['Chat']);
+  }
+
+  Future<void> handleMultipleImageSelection(
+    BuildContext context,
+    String roomName,
+  ) async {
+    _imageFileList.clear();
+    final result = await ImagePicker().pickMultiImage(
+      imageQuality: 70,
+      maxWidth: 1440,
+    );
+    if (result != null) {
+      _imageFileList.addAll(result);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ImageSelection(
+            imageList: _imageFileList,
+            roomName: roomName,
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> sendImage(XFile? result) async {
+    if (result != null) {
+      final bytes = await result.readAsBytes();
+      final image = await decodeImageFromList(bytes);
+      final mimeType = lookupMimeType(result.path);
+      var eventId = await room.sendImageMessage(
+        result.path,
+        result.name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+      );
+
+      final message = types.ImageMessage(
+        author: user,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        height: image.height.toDouble(),
+        id: eventId,
+        name: result.name,
+        size: bytes.length,
+        uri: result.path,
+        width: image.width.toDouble(),
+      );
+      messages.insert(0, message);
+      update(['Chat']);
+    }
   }
 
   //image selection
@@ -249,7 +309,10 @@ class ChatController extends GetxController {
       FileDescription? description = message.fileDescription();
       if (description != null) {
         types.FileMessage m = types.FileMessage(
-          author: types.User(id: message.sender()),
+          author: types.User(
+            id: message.sender(),
+            firstName: getNameFromId(message.sender()),
+          ),
           createdAt: message.originServerTs() * 1000,
           id: message.eventId(),
           name: description.name(),
@@ -266,7 +329,10 @@ class ChatController extends GetxController {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
         types.ImageMessage m = types.ImageMessage(
-          author: types.User(id: message.sender()),
+          author: types.User(
+            id: message.sender(),
+            firstName: getNameFromId(message.sender()),
+          ),
           createdAt: message.originServerTs() * 1000,
           height: description.height()?.toDouble(),
           id: eventId,
@@ -300,7 +366,10 @@ class ChatController extends GetxController {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
       types.TextMessage m = types.TextMessage(
-        author: types.User(id: message.sender()),
+        author: types.User(
+          id: message.sender(),
+          firstName: getNameFromId(message.sender()),
+        ),
         createdAt: message.originServerTs() * 1000,
         id: message.eventId(),
         text: message.body(),

@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, require_trailing_commas
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/InviteListView.dart';
 import 'package:effektio/common/widget/MembersList.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -58,12 +58,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                 );
               },
               child: Padding(
-                padding: const EdgeInsets.only(right: 8.0),
+                padding: const EdgeInsets.only(right: 8),
                 child: Center(
-                  child: Text(
+                  child: const Text(
                     'Edit',
                     style: TextStyle(
-                        color: AppCommonTheme.primaryColor, fontSize: 22.0),
+                        color: AppCommonTheme.primaryColor, fontSize: 22),
                   ),
                 ),
               ),
@@ -104,7 +104,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
           children: [
             Center(
               child: Padding(
-                padding: const EdgeInsets.only(top: 38.0, bottom: 12.0),
+                padding: const EdgeInsets.only(top: 38, bottom: 12),
                 child: SizedBox(
                   height: 100,
                   width: 100,
@@ -139,7 +139,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Visibility(
               visible: widget.isGroup,
               child: const Padding(
-                padding: EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 20.0),
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
                 child: Text(
                   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.',
                   style: TextStyle(color: Colors.white),
@@ -150,7 +150,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Visibility(
               visible: !widget.isGroup,
               child: const Padding(
-                padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 20.0),
+                padding: EdgeInsets.fromLTRB(16, 8, 16, 20),
                 child: Text(
                   'Online',
                   style: TextStyle(color: AppCommonTheme.primaryColor),
@@ -175,7 +175,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       child: Column(
                         children: const [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8),
                             child: Icon(
                               Icons.notifications,
                               color: Colors.white,
@@ -193,7 +193,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                 GestureDetector(
                   onTap: (() {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Search Clicked'),
                       ),
                     );
@@ -208,7 +208,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       child: Column(
                         children: const [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8),
                             child: Icon(
                               Icons.search,
                               color: Colors.white,
@@ -226,7 +226,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                 GestureDetector(
                   onTap: (() {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Gallery tapped'),
                       ),
                     );
@@ -241,7 +241,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       child: Column(
                         children: const [
                           Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: EdgeInsets.all(8),
                             child: Icon(
                               Icons.photo_library_rounded,
                               color: Colors.white,
@@ -261,7 +261,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Visibility(
               visible: widget.isGroup,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: Card(
                   color: AppCommonTheme.darkShade,
                   shape: RoundedRectangleBorder(
@@ -269,8 +269,8 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 12.0,
+                      horizontal: 8,
+                      vertical: 12,
                     ),
                     child: Column(
                       children: [
@@ -287,8 +287,8 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(
-                                  left: 16.0,
-                                  right: 16.0,
+                                  left: 16,
+                                  right: 16,
                                 ),
                                 child: Icon(
                                   Icons.person_add_alt_1_outlined,
@@ -315,10 +315,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
-                            height: 2.0,
+                            height: 2,
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
@@ -334,18 +334,18 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           child: Row(
                             children: [
                               Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Icon(
                                   Icons.link,
                                   color: Colors.white,
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'Group Link',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Row(
                                 children: const [
                                   Text(
@@ -361,10 +361,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
-                            height: 2.0,
+                            height: 2,
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
@@ -374,9 +374,8 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               onTap: () {
                                 showInviteBottomSheet();
                               },
-                              child: Padding(
-                                padding:
-                                    EdgeInsets.only(bottom: 12.0, left: 16.0),
+                              child: const Padding(
+                                padding: EdgeInsets.only(bottom: 12, left: 16),
                                 child: Text(
                                   'Create Room Invite',
                                   style: TextStyle(color: Colors.red),
@@ -394,7 +393,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Visibility(
               visible: !widget.isGroup,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: Card(
                   color: AppCommonTheme.darkShade,
                   shape: RoundedRectangleBorder(
@@ -402,28 +401,28 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 12.0,
+                      horizontal: 8,
+                      vertical: 12,
                     ),
                     child: Column(
                       children: [
                         Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 16.0,
-                                right: 16.0,
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                left: 16,
+                                right: 16,
                               ),
                               child: Icon(
                                 Icons.groups_outlined,
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
+                            const Text(
                               'Group in common',
                               style: TextStyle(color: Colors.white),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Row(
                               children: const [
                                 Text(
@@ -438,28 +437,27 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             )
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
-                            height: 2.0,
+                            height: 2,
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
                         Row(
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Icon(
                                 Icons.link,
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
+                            const Text(
                               'Share Username',
                               style: TextStyle(color: Colors.white),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Row(
                               children: const [
                                 Text(
@@ -485,14 +483,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Visibility(
               visible: !widget.isGroup,
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: Card(
                   color: AppCommonTheme.darkShade,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(12),
                     child: Row(
                       children: const [
                         Icon(
@@ -500,12 +498,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           color: AppCommonTheme.primaryColor,
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 8.0),
+                          padding: EdgeInsets.only(left: 8),
                           child: Text(
                             'Block this user',
                             style: TextStyle(
                               color: AppCommonTheme.primaryColor,
-                              fontSize: 16.0,
+                              fontSize: 16,
                             ),
                           ),
                         )
@@ -520,7 +518,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
               child: Row(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16),
                     child: FutureBuilder<FfiListMember>(
                       future: widget.room.activeMembers(),
                       builder: (
@@ -554,7 +552,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Visibility(
               visible: widget.isGroup,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 12.0),
+                padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
                 child: Card(
                   color: AppCommonTheme.darkShade,
                   shape: RoundedRectangleBorder(
@@ -566,7 +564,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.all(12.0),
+                        padding: const EdgeInsets.all(12),
                         child: MembersList(
                           name: 'Ronaldo',
                           isAdmin: true,
@@ -587,21 +585,21 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 12.0, right: 12.0, bottom: 16.0),
+                  padding:
+                      const EdgeInsets.only(left: 12, right: 12, bottom: 16),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
                       color: ChatTheme01.leaveBtnBg,
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8),
                       child: Center(
                         child: Text(
                           'Leave Group',
                           style: TextStyle(
                             color: ChatTheme01.redText,
-                            fontSize: 18.0,
+                            fontSize: 18,
                           ),
                         ),
                       ),
@@ -623,7 +621,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30.0),
+          top: Radius.circular(30),
         ),
       ),
       builder: (context) {
@@ -634,22 +632,22 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
               builder:
                   (BuildContext context, ScrollController scrollController) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(top: 12.0),
+                        padding: const EdgeInsets.only(top: 12),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 8.0,
+                            horizontal: 16,
+                            vertical: 8,
                           ),
                           child: Text(
                             'Invite a Friend to this room',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 18.0,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                             textAlign: TextAlign.start,
@@ -683,8 +681,8 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8.0,
+                          horizontal: 16,
+                          vertical: 8,
                         ),
                         child: Row(
                           children: [
@@ -692,7 +690,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               'Your invite link expires in 24 hours.',
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.5),
-                                fontSize: 14.0,
+                                fontSize: 14,
                               ),
                             ),
                             SizedBox(
@@ -714,7 +712,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 'Edit invite link',
                                 style: TextStyle(
                                   color: AppCommonTheme.primaryColor,
-                                  fontSize: 14.0,
+                                  fontSize: 14,
                                 ),
                               ),
                             ),
@@ -727,7 +725,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           itemCount: 10,
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: const EdgeInsets.all(12.0),
+                              padding: const EdgeInsets.all(12),
                               child: InviteListView(
                                 isAdded: false,
                                 name: 'Abhishek',
@@ -761,7 +759,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
         context: context,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(30.0),
+            top: Radius.circular(30),
           ),
         ),
         builder: (context) {
@@ -774,12 +772,11 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                 builder:
                     (BuildContext context, ScrollController scrollController) {
                   return Container(
-                    margin:
-                        EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+                    margin: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -809,7 +806,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -834,14 +831,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               border: Border(
                                 bottom: BorderSide(
                                   color: AppCommonTheme.dividerColor,
-                                  width: 1.0,
+                                  width: 1,
                                 ),
                               ),
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -864,14 +861,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               border: Border(
                                 bottom: BorderSide(
                                   color: AppCommonTheme.dividerColor,
-                                  width: 1.0,
+                                  width: 1,
                                 ),
                               ),
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -894,14 +891,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               border: Border(
                                 bottom: BorderSide(
                                   color: AppCommonTheme.dividerColor,
-                                  width: 1.0,
+                                  width: 1,
                                 ),
                               ),
                             ),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: const [
@@ -932,7 +929,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
         context: context,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(30.0),
+            top: Radius.circular(30),
           ),
         ),
         builder: (context) {
@@ -946,25 +943,25 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                     (BuildContext context, ScrollController scrollController) {
                   return SingleChildScrollView(
                     child: Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: 16.0, horizontal: 12.0),
+                      margin:
+                          EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                                  padding: EdgeInsets.symmetric(vertical: 12),
                                   child: Text(
                                     'Mute this chat for',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 18.0,
+                                      fontSize: 18,
                                     ),
                                   ),
                                 ),
@@ -979,19 +976,19 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     '1 Hour',
                                     style: TextStyle(
@@ -1010,19 +1007,19 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     '8 Hours',
                                     style: TextStyle(
@@ -1041,19 +1038,19 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     '1 Day',
                                     style: TextStyle(
@@ -1072,19 +1069,19 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: const [
                                 Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: EdgeInsets.symmetric(vertical: 8),
                                   child: Text(
                                     '1 Week',
                                     style: TextStyle(
@@ -1103,7 +1100,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
@@ -1114,13 +1111,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               Navigator.of(context).pop();
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
                                   Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 8.0),
+                                    padding: EdgeInsets.symmetric(vertical: 8),
                                     child: Text(
                                       'Always',
                                       style: TextStyle(
@@ -1140,7 +1136,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 border: Border(
                                   bottom: BorderSide(
                                     color: AppCommonTheme.dividerColor,
-                                    width: 1.0,
+                                    width: 1,
                                   ),
                                 ),
                               ),
@@ -1151,13 +1147,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                               Navigator.of(context).pop();
                             },
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(8),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
                                   Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(vertical: 8.0),
+                                    padding: EdgeInsets.symmetric(vertical: 8),
                                     child: Text(
                                       'Cancel',
                                       style: TextStyle(

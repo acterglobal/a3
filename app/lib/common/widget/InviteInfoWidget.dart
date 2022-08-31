@@ -3,7 +3,7 @@
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:flutter/material.dart';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InviteInfoWidget extends StatelessWidget {
@@ -31,13 +31,13 @@ class InviteInfoWidget extends StatelessWidget {
             ),
             title: Text(
               inviter,
-              style: AppCommonTheme.appBartitleStyle
+              style: AppCommonTheme.appBarTitleStyle
                   .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
             ),
             subtitle: RichText(
               text: TextSpan(
                 text: AppLocalizations.of(context)!.invitationText2,
-                style: AppCommonTheme.appBartitleStyle.copyWith(
+                style: AppCommonTheme.appBarTitleStyle.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   color: AppCommonTheme.dividerColor,
@@ -45,14 +45,14 @@ class InviteInfoWidget extends StatelessWidget {
                 children: <TextSpan>[
                   TextSpan(
                     text: groupName,
-                    style: AppCommonTheme.appBartitleStyle
+                    style: AppCommonTheme.appBarTitleStyle
                         .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: AppCommonTheme.dividerColor,
             indent: 15,
           ),
@@ -65,7 +65,7 @@ class InviteInfoWidget extends StatelessWidget {
                   AppLocalizations.of(context)!.accept,
                   AppCommonTheme.greenButtonColor,
                   () => {},
-                  AppCommonTheme.appBartitleStyle
+                  AppCommonTheme.appBarTitleStyle
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),
@@ -75,7 +75,7 @@ class InviteInfoWidget extends StatelessWidget {
                   AppLocalizations.of(context)!.decline,
                   AppCommonTheme.primaryColor,
                   () => {},
-                  AppCommonTheme.appBartitleStyle
+                  AppCommonTheme.appBarTitleStyle
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
               ),

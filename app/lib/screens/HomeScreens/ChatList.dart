@@ -2,7 +2,7 @@
 
 import 'dart:math';
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -89,10 +89,10 @@ class _ChatListState extends State<ChatList> {
                     ),
                     child: Text(
                       AppLocalizations.of(context)!.chat,
-                      style: AppCommonTheme.appBartitleStyle,
+                      style: AppCommonTheme.appBarTitleStyle,
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -101,11 +101,11 @@ class _ChatListState extends State<ChatList> {
                         padding: const EdgeInsets.only(left: 18),
                         child: Text(
                           AppLocalizations.of(context)!.invites,
-                          style: AppCommonTheme.appBartitleStyle
+                          style: AppCommonTheme.appBarTitleStyle
                               .copyWith(fontSize: 16),
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -186,7 +186,7 @@ class _ChatListState extends State<ChatList> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 20,
                                 ),
                                 Text(
@@ -194,7 +194,7 @@ class _ChatListState extends State<ChatList> {
                                       '...',
                                   style: ChatTheme01.emptyMsgTitle,
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   height: 5,
                                 ),
                                 Center(
@@ -203,7 +203,7 @@ class _ChatListState extends State<ChatList> {
                                         MediaQuery.of(context).size.height / 3,
                                     width:
                                         MediaQuery.of(context).size.width / 1.5,
-                                    child: Text(
+                                    child: const Text(
                                       'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                                       style: ChatTheme01.chatBodyStyle,
                                       overflow: TextOverflow.clip,

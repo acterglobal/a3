@@ -156,7 +156,7 @@ object Conversation {
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    fn get_member(user_id: UserId) -> Future<Result<Member>>;
+    fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
     fn latest_message() -> Future<Result<RoomMessage>>;
@@ -203,7 +203,7 @@ object Group {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    fn get_member(user: UserId) -> Future<Result<Member>>;
+    fn get_member(user: string) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -215,7 +215,7 @@ object Member {
     fn display_name() -> Option<string>;
 
     /// Full user_id
-    fn user_id() -> UserId;
+    fn user_id() -> string;
 
 }
 
@@ -235,11 +235,8 @@ object Account {
 }
 
 object SyncState {
-    /// Get event handler of AnyToDeviceEvent
-    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
-
-    /// Get event handler of AnySyncMessageLikeEvent
-    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
+    /// Get event handler of first synchronization on every launch
+    fn get_first_synced_rx() -> Option<Stream<bool>>;
 }
 
 /// Main entry point for `effektio`.
@@ -298,44 +295,174 @@ object Client {
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
-    /// Accept the AnyToDeviceEvent::KeyVerificationRequest
-    fn accept_verification_request(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Whether the user already verified the device
+    fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
-    /// Accept the AnyToDeviceEvent::KeyVerificationStart
-    fn accept_verification_start(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Return the session verification controller. If not exists, create it.
+    fn get_session_verification_controller() -> Future<Result<SessionVerificationController>>;
 
-    fn get_verification_emoji(sender: string, event_id: string) -> Future<Result<Vec<EmojiUnit>>>;
+    /// Return the device lists controller. If not exists, create it.
+    fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
 
-    /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
-    fn confirm_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Return the typing notification controller. If not exists, create it.
+    fn get_typing_notification_controller() -> Future<Result<TypingNotificationController>>;
 
-    /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-    fn mismatch_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
-
-    /// Cancel the AnyToDeviceEvent::KeyVerificationKey
-    fn cancel_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
-
-    /// Review the AnyToDeviceEvent::KeyVerificationMac
-    fn review_verification_mac(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Return the read notification controller. If not exists, create it.
+    fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;
 }
 
-/// Deliver emoji verification event from rust to flutter
-object CrossSigningEvent {
+object SessionVerificationController {
+    fn get_event_rx() -> Option<Stream<SessionVerificationEvent>>;
+}
+
+object SessionVerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 
-    /// Get transaction id or flow id
-    fn get_event_id() -> string;
+    /// Get transaction id
+    fn get_txn_id() -> string;
 
     /// Get user id of event sender
     fn get_sender() -> string;
+
+    /// An error code for why the process/request was cancelled by the user.
+    fn get_cancel_code() -> Option<string>;
+
+    /// A description for why the process/request was cancelled by the user.
+    fn get_reason() -> Option<string>;
+
+    /// Bob accepts the verification request from Alice
+    fn accept_verification_request() -> Future<Result<bool>>;
+
+    /// Bob cancels the verification request from Alice
+    fn cancel_verification_request() -> Future<Result<bool>>;
+
+    /// Bob accepts the verification request from Alice with specified methods
+    fn accept_verification_request_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+
+    /// Alice starts the SAS verification
+    fn start_sas_verification() -> Future<Result<bool>>;
+
+    /// Whether verification request was launched from this device
+    fn was_triggered_from_this_device() -> Option<bool>;
+
+    /// Bob accepts the SAS verification
+    fn accept_sas_verification() -> Future<Result<bool>>;
+
+    /// Bob cancels the SAS verification
+    fn cancel_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice sends the verification key to Bob and vice versa
+    fn send_verification_key() -> Future<Result<bool>>;
+
+    /// Alice cancels the verification key from Bob and vice versa
+    fn cancel_verification_key() -> Future<Result<bool>>;
+
+    /// Alice gets the verification emoji from Bob and vice versa
+    fn get_verification_emoji() -> Future<Result<Vec<SessionVerificationEmoji>>>;
+
+    /// Alice says to Bob that SAS verification matches and vice versa
+    fn confirm_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    fn mismatch_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
+    fn review_verification_mac() -> Future<Result<bool>>;
 }
 
-/// Extend the return value of getVerificationEmoji function
-object EmojiUnit {
+object SessionVerificationEmoji {
     /// binary representation of emoji unicode
-    fn get_symbol() -> u32;
+    fn symbol() -> u32;
 
     /// text description of emoji unicode
-    fn get_description() -> string;
+    fn description() -> string;
+}
+
+object ReceiptNotificationController {
+    fn get_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
+}
+
+/// Deliver read notification from rust to flutter
+object ReceiptNotificationEvent {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
+
+    /// Get records
+    fn get_receipt_records() -> Vec<ReceiptRecord>;
+}
+
+/// Deliver typing notification from rust to flutter
+object ReceiptRecord {
+    /// Get id of event that this user read message from peer
+    fn get_event_id() -> string;
+
+    /// Get id of user that read message from peer
+    fn get_user_id() -> string;
+
+    /// Get time that this user read message from peer
+    fn get_timestamp() -> u32;
+}
+
+object DeviceListsController {
+    /// Get event handler of devices changed
+    fn get_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+
+    /// Get event handler of devices left
+    fn get_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
+}
+
+/// Deliver devices changed event from rust to flutter
+object DeviceChangedEvent {
+    /// Get the device list, excluding verified ones
+    fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
+
+    /// Request verification to any devices of user
+    fn request_verification_to_user() -> Future<Result<bool>>;
+
+    /// Request verification to specific device
+    fn request_verification_to_device(dev_id: string) -> Future<Result<bool>>;
+
+    /// Request verification to any devices of user with methods
+    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+
+    /// Request verification to specific device with methods
+    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
+}
+
+/// Deliver devices left event from rust to flutter
+object DeviceLeftEvent {
+    /// Get the device list, including deleted ones
+    fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
+}
+
+/// Provide various device infos
+object Device {
+    /// whether this device was verified
+    fn was_verified() -> bool;
+
+    /// whether this device was deleted
+    fn was_deleted() -> bool;
+
+    /// get the id of this device user
+    fn get_user_id() -> string;
+
+    /// get the id of this device
+    fn get_device_id() -> string;
+
+    /// get the display name of this device
+    fn get_display_name() -> Option<string>;
+}
+
+object TypingNotificationController {
+    fn get_event_rx() -> Option<Stream<TypingNotificationEvent>>;
+}
+
+/// Deliver typing notification from rust to flutter
+object TypingNotificationEvent {
+    /// Get transaction id or flow id
+    fn get_room_id() -> string;
+
+    /// Get list of user id
+    fn get_user_ids() -> Vec<string>;
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class TagListItem extends StatefulWidget {
+class TagListItem extends StatelessWidget {
   const TagListItem({Key? key, required this.tagTitle, required this.tagColor})
       : super(key: key);
   // final Tag tag;
@@ -9,33 +9,23 @@ class TagListItem extends StatefulWidget {
   final Color tagColor;
 
   @override
-  TagListItemState createState() => TagListItemState();
-}
-
-class TagListItemState extends State<TagListItem> {
-  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8.0),
-      margin: const EdgeInsets.fromLTRB(
-        4.0,
-        0,
-        4.0,
-        0,
-      ),
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.symmetric(horizontal: 4),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color: widget.tagColor,
+          color: tagColor,
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            widget.tagTitle,
+            tagTitle,
             style: GoogleFonts.roboto(
-              color: widget.tagColor,
+              color: tagColor,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
