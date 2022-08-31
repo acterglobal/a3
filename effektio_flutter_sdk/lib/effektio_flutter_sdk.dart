@@ -1,7 +1,6 @@
 import 'dart:core';
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:ui';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
