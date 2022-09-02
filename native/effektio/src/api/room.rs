@@ -396,7 +396,7 @@ impl Room {
                 let mut accounts: Vec<Account> = vec![];
                 for user_id in invited.iter() {
                     let other_client = MatrixClient::builder()
-                        .user_id(&user_id)
+                        .user_id(user_id)
                         .build()
                         .await
                         .unwrap();
