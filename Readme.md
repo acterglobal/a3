@@ -3,8 +3,7 @@
 
 # effektio — get organized!
 
-Your social organizing app build on [matrix](https://matrix.org).
-Think WhatsApp, but with proper task lists, structured discussion, etc. 
+Your social organizing app build on [matrix](https://matrix.org): think WhatsApp, but with proper task lists, structured discussion, etc. 
 
 ![Native Build](https://img.shields.io/github/workflow/status/effektio/effektio/Native?label=Rust%20Build&style=for-the-badge) ![App Build](https://img.shields.io/github/workflow/status/effektio/effektio/App?label=App%20Build&style=for-the-badge)  ![Docs](https://img.shields.io/github/workflow/status/effektio/effektio/Docs?label=Docs&style=for-the-badge) [![Effektio Source License](https://img.shields.io/badge/License-Effektio%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
 
