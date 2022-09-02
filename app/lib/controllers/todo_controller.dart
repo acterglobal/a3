@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/widget/ToDoListView.dart';
 import 'package:effektio/common/widget/ToDoTaskItem.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
@@ -46,12 +47,14 @@ class ToDoController extends GetxController {
       ),
     );
     for (var t in tasksList!) {
-      if (t.isCompleted) {
+      if (t.isCompleted == true) {
         completedTasks.add(t);
-      } else {
+      } else if (t.isCompleted == false) {
         pendingTasks.add(t);
       }
     }
+    debugPrint('Completed: $completedTasks');
+    debugPrint('Pending: $pendingTasks');
   }
 
   void updateIndex(int index) {
@@ -68,24 +71,24 @@ class ToDoController extends GetxController {
   }
 
   void toggleCheck(ToDoTaskItem item) {
-    if (item.isCompleted) {
+    if (item.isCompleted == true) {
       ToDoTaskItem newItem = ToDoTaskItem(
         title: item.title,
         isCompleted: false,
         hasMessage: item.hasMessage,
         dateTime: item.dateTime,
       );
-      pendingTasks.remove(item);
-      completedTasks.add(newItem);
-    } else {
+      pendingTasks.add(newItem);
+      completedTasks.remove(item);
+    } else if (item.isCompleted == false) {
       ToDoTaskItem newItem = ToDoTaskItem(
         title: item.title,
         isCompleted: true,
         hasMessage: item.hasMessage,
         dateTime: item.dateTime,
       );
-      completedTasks.remove(item);
-      pendingTasks.add(newItem);
+      completedTasks.add(newItem);
+      pendingTasks.remove(item);
     }
   }
 }
