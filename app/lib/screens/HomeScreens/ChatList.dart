@@ -2,8 +2,9 @@
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/ChatOverview.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
+import 'package:effektio/controllers/invite_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, FfiListConversation, FfiListInvitation, Invitation;
+    show Client, FfiListConversation, MembershipEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -102,53 +103,39 @@ class _ChatListState extends State<ChatList> {
   }
 
   Widget buildInvitedRooms() {
-    return FutureBuilder<Client>(
-      future: widget.client,
-      builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
-        if (!snapshot.hasData) {
-          return SizedBox.shrink();
-        }
-        FfiListInvitation pendingInvitations =
-            snapshot.requireData.pendingInvitations();
-        if (pendingInvitations.isEmpty) {
-          return SizedBox.shrink();
-        }
-        // user may be invited from multiple people of same room
-        var seen = <String>{};
-        List<Invitation> distinct = pendingInvitations
-            .where((item) => seen.add(item.getRoomId()))
-            .toList();
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.only(left: 18),
-              child: Text(
-                AppLocalizations.of(context)!.invitedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+    List<MembershipEvent> eventList = InviteController.instance.eventList;
+    if (eventList.isEmpty) {
+      return SizedBox.shrink();
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.only(left: 18),
+          child: Text(
+            AppLocalizations.of(context)!.invitedRooms,
+            style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+          ),
+        ),
+        SizedBox(height: 10),
+        ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: eventList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: MediaQuery.of(context).size.height / 5,
+              width: MediaQuery.of(context).size.width,
+              child: InviteInfoWidget(
+                avatarColor: Colors.white,
+                inviter: eventList[index].getSender(),
+                groupName: eventList[index].getRoomName(),
               ),
-            ),
-            SizedBox(height: 10),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: distinct.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  height: MediaQuery.of(context).size.height / 5,
-                  width: MediaQuery.of(context).size.width,
-                  child: InviteInfoWidget(
-                    avatarColor: Colors.white,
-                    inviter: distinct[index].getSender() ?? 'Unknown',
-                    groupName: distinct[index].getRoomName(),
-                  ),
-                );
-              },
-            ),
-          ],
-        );
-      },
+            );
+          },
+        ),
+      ],
     );
   }
 

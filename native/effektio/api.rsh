@@ -1,20 +1,3 @@
-object Invitation {
-    /// get the event id of this invitation
-    fn get_event_id() -> Option<string>;
-
-    /// get the timestamp of this invitation
-    fn get_timestamp() -> Option<u64>;
-
-    /// get the room id of this invitation
-    fn get_room_id() -> string;
-
-    /// get the room name of this invitation
-    fn get_room_name() -> string;
-
-    /// get the user id of this invitation sender
-    fn get_sender() -> Option<string>;
-}
-
 /// Initialize logging
 fn init_logging(filter: Option<string>) -> Result<()>;
 
@@ -82,6 +65,18 @@ object Faq {
     fn likes_count() -> u32;
     /// the number of comments on this item
     fn comments_count() -> u32;
+}
+
+object DeviceId {
+    fn to_string() -> string;
+}
+
+object EventId {
+    fn to_string() -> string;
+}
+
+object RoomId {
+    fn to_string() -> string;
 }
 
 object UserId {
@@ -340,7 +335,10 @@ object Client {
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
     /// Get the invitation list
-    fn pending_invitations() -> Vec<Invitation>;
+    fn create_room() -> Future<Result<string>>;
+
+    /// Get the invitation list
+    fn membership_event_rx() -> Option<Stream<MembershipEvent>>;
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
@@ -356,6 +354,20 @@ object Client {
 
     /// Return the read notification controller. If not exists, create it.
     fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;
+}
+
+object MembershipEvent {
+    /// get the timestamp of this invitation
+    fn get_timestamp() -> Option<u64>;
+
+    /// get the room id of this invitation
+    fn get_room_id() -> string;
+
+    /// get the room name of this invitation
+    fn get_room_name() -> string;
+
+    /// get the user id of this invitation sender
+    fn get_sender() -> string;
 }
 
 object SessionVerificationController {

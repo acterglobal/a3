@@ -6,7 +6,7 @@ import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/CrossSigning.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
-import 'package:effektio/controllers/chat_controller.dart';
+import 'package:effektio/controllers/invite_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
@@ -128,6 +128,8 @@ class _EffektioHomeState extends State<EffektioHome>
     rnc = await client.getReceiptNotificationController();
     SyncState _ = client.startSync();
     //Start listening for cross signing events
+    final inviteController = InviteController.instance;
+    inviteController.init(client);
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
     tnc = await client.getTypingNotificationController();

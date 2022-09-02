@@ -8,79 +8,34 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    stream, StreamExt,
-};
-use futures_signals::signal::{
-    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
-};
-use log::info;
+
+use futures::{stream, StreamExt};
+use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use matrix_sdk::{
     config::SyncSettings,
     event_handler::Ctx,
     locks::RwLock as MatrixRwLock,
-    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
         device_id,
         events::{
-            receipt::ReceiptEventContent,
-            room::message::{MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent},
-            typing::TypingEventContent,
-            AnyStrippedStateEvent, SyncEphemeralRoomEvent,
+            receipt::ReceiptEventContent, typing::TypingEventContent, SyncEphemeralRoomEvent,
         },
-        serde::Raw,
-        OwnedUserId, RoomId, UserId,
+        OwnedUserId, RoomId,
     },
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
-use serde_json::Value;
-use std::{
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
-    time::Duration,
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
 };
 
 use super::{
-    api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
+    api::FfiBuffer, Account, Conversation, DeviceListsController, Group, MembershipController,
     ReceiptNotificationController, Room, SessionVerificationController,
     TypingNotificationController, RUNTIME,
 };
-
-#[derive(Default, Clone, Debug)]
-pub struct Invitation {
-    event_id: Option<String>,
-    timestamp: Option<u64>,
-    room_id: String,
-    room_name: String,
-    sender: Option<String>,
-}
-
-impl Invitation {
-    pub fn get_event_id(&self) -> Option<String> {
-        self.event_id.clone()
-    }
-
-    pub fn get_timestamp(&self) -> Option<u64> {
-        self.timestamp
-    }
-
-    pub fn get_room_id(&self) -> String {
-        self.room_id.clone()
-    }
-
-    pub fn get_room_name(&self) -> String {
-        self.room_name.clone()
-    }
-
-    pub fn get_sender(&self) -> Option<String> {
-        self.sender.clone()
-    }
-}
 
 #[derive(Default, Builder, Debug)]
 pub struct ClientState {
@@ -98,7 +53,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) invitations: Arc<RwLock<Vec<Invitation>>>,
+    pub(crate) membership_controller: MembershipController,
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
@@ -164,49 +119,17 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
+    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
         Self { first_synced_rx }
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
+    pub fn get_first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
-    }
-}
-
-// thread callback must be global function, not member function
-async fn handle_stripped_state_event(
-    event: &Raw<AnyStrippedStateEvent>,
-    user_id: &UserId,
-    room_id: &RoomId,
-    room_name: String,
-    invitations: &RwLock<Vec<Invitation>>,
-) {
-    match event.deserialize() {
-        Ok(AnyStrippedStateEvent::RoomMember(member)) => {
-            if member.state_key == user_id.as_str() {
-                println!("event: {:?}", event);
-                println!("member: {:?}", member);
-                let v: Value = serde_json::from_str(event.json().get()).unwrap();
-                println!("event id: {}", v["event_id"]);
-                println!("timestamp: {}", v["origin_server_ts"]);
-                println!("room id: {:?}", room_id);
-                println!("sender: {:?}", member.sender);
-                println!("state key: {:?}", member.state_key);
-                invitations.write().push(Invitation {
-                    event_id: Some(v["event_id"].as_str().unwrap().to_owned()),
-                    timestamp: v["origin_server_ts"].as_u64(),
-                    room_id: room_id.to_string(),
-                    room_name,
-                    sender: Some(member.sender.to_string()),
-                });
-            }
-        }
-        _ => {}
     }
 }
 
@@ -215,7 +138,7 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            invitations: Arc::new(RwLock::new(vec![])),
+            membership_controller: MembershipController::new(),
             session_verification_controller: Arc::new(MatrixRwLock::new(None)),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
@@ -226,11 +149,11 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        let invitations = self.invitations.clone();
+        let mut membership_controller = self.membership_controller.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = signal_channel(false);
+        let (first_synced_tx, first_synced_rx) = channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
@@ -239,26 +162,12 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
-            let invitations = invitations.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
             let user_id = client.user_id().expect("No User ID found");
 
-            // load cached events
-            for room in client.invited_rooms() {
-                let room_id = room.room_id();
-                println!("invited room id: {}", room_id.as_str());
-                let r = client.get_room(&room_id).unwrap();
-                let room_name = r.display_name().await.unwrap();
-                println!("invited room name: {}", room_name.to_string());
-                invitations.write().push(Invitation {
-                    event_id: None,
-                    timestamp: None,
-                    room_id: room_id.to_string(),
-                    room_name: room_name.to_string(),
-                    sender: None,
-                });
-            }
+            let mut membership_controller = membership_controller.clone();
+            membership_controller.setup(&client).await;
 
             // fetch the events that received when offline
             client
@@ -266,7 +175,6 @@ impl Client {
                 .sync_with_callback(SyncSettings::new(), |response| {
                     let client = client.clone();
                     let state = state.clone();
-                    let invitations = invitations.clone();
                     let session_verification_controller = session_verification_controller.clone();
                     let device_lists_controller = device_lists_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
@@ -274,7 +182,6 @@ impl Client {
 
                     async move {
                         let state = state.clone();
-                        let invitations = invitations.clone();
                         let initial = initial_arc.clone();
 
                         if let Some(dlc) = &*device_lists_controller.read().await {
@@ -292,19 +199,6 @@ impl Client {
                         let _ = first_synced_arc.send(true);
                         if !(*state).read().has_first_synced {
                             (*state).write().has_first_synced = true;
-                            for (room_id, room) in response.rooms.invite {
-                                let r = client.get_room(&room_id).unwrap();
-                                let room_name = r.display_name().await.unwrap();
-                                for event in room.invite_state.events {
-                                    handle_stripped_state_event(
-                                        &event,
-                                        &user_id,
-                                        &room_id,
-                                        room_name.to_string(),
-                                        &invitations,
-                                    );
-                                }
-                            }
                         }
                         if (*state).read().should_stop_syncing {
                             (*state).write().is_syncing = false;
@@ -434,10 +328,6 @@ impl Client {
 
     pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         self.account().await?.avatar().await
-    }
-
-    pub fn pending_invitations(&self) -> Vec<Invitation> {
-        self.invitations.read().clone()
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
