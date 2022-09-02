@@ -187,9 +187,6 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
-    /// a stream of incoming member events
-    fn listen_to_member_events() -> Result<Stream<string>>;
-
     /// invite the new user to this room
     fn invite_user(user_id: string) -> Future<Result<bool>>;
 

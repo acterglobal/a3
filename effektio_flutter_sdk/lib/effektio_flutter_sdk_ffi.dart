@@ -4003,47 +4003,6 @@ class Api {
     return tmp7;
   }
 
-  String? __conversationListenToMemberEventsStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _conversationListenToMemberEventsStreamPoll(
-      tmp1,
-      tmp3,
-      tmp5,
-      tmp7,
-    );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    final tmp12 = tmp8.arg2;
-    final tmp13 = tmp8.arg3;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp9 = utf8.decode(tmp11_0.asTypedList(tmp12));
-    if (tmp13 > 0) {
-      final ffi.Pointer<ffi.Void> tmp11_0;
-      tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-      this.__deallocate(tmp11_0, tmp13 * 1, 1);
-    }
-    return tmp9;
-  }
-
   bool? __syncStateGetFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
@@ -4911,17 +4870,6 @@ class Api {
     int,
     int,
     int,
-    int,
-  )>();
-  late final _conversationListenToMemberEventsPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationListenToMemberEventsReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_listen_to_member_events");
-
-  late final _conversationListenToMemberEvents =
-      _conversationListenToMemberEventsPtr.asFunction<
-          _ConversationListenToMemberEventsReturn Function(
     int,
   )>();
   late final _conversationInviteUserPtr = _lookup<
@@ -7157,23 +7105,6 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationListenToMemberEventsStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationListenToMemberEventsStreamPollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Conversation_listen_to_member_events_stream_poll");
-
-  late final _conversationListenToMemberEventsStreamPoll =
-      _conversationListenToMemberEventsStreamPollPtr.asFunction<
-          _ConversationListenToMemberEventsStreamPollReturn Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
   late final _syncStateGetFirstSyncedRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _SyncStateGetFirstSyncedRxStreamPollReturn Function(
@@ -8938,37 +8869,6 @@ class Conversation {
     final tmp6 =
         _nativeFuture(tmp7_1, _api.__conversationSendPlainMessageFuturePoll);
     return tmp6;
-  }
-
-  /// a stream of incoming member events
-  Stream<String> listenToMemberEvents() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationListenToMemberEvents(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(
-        _api, tmp7_0, "__Conversation_listen_to_member_events_stream_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = _nativeStream(
-        tmp7_1, _api.__conversationListenToMemberEventsStreamPoll);
-    return tmp2;
   }
 
   /// invite the new user to this room
@@ -11446,19 +11346,6 @@ class _FileDescriptionSizeReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ConversationListenToMemberEventsReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Int64()
-  external int arg4;
-}
-
 class _ConversationRoomTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -12826,17 +12713,6 @@ class _DeviceLeftEventGetDevicesFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
-}
-
-class _ConversationListenToMemberEventsStreamPollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {

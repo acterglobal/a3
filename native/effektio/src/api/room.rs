@@ -221,33 +221,6 @@ impl Room {
             .await?
     }
 
-    pub fn listen_to_member_events(&self) -> Result<Receiver<String>> {
-        let room_id = self.room.room_id().to_owned().clone();
-        let client = self.client.clone();
-        let (tx, rx) = channel::<String>(10); // dropping after more than 10 items queued
-        let sender_arc = Arc::new(Mutex::new(tx));
-        RUNTIME.block_on(async move {
-            client
-                .register_event_handler(
-                    move |ev: StrippedRoomMemberEvent, c: MatrixClient, room: MatrixRoom| {
-                        let sender_arc = sender_arc.clone();
-                        let room_id = room_id.clone();
-                        async move {
-                            let s = sender_arc.lock();
-                            if room.room_id() == room_id {
-                                if let Err(e) = s.clone().try_send(ev.sender.to_string()) {
-                                    log::warn!("Dropping member event for {}: {}", room_id, e);
-                                }
-                            }
-                            // the lock is unlocked here when `s` goes out of scope.
-                        }
-                    },
-                )
-                .await;
-        });
-        Ok(rx)
-    }
-
     pub async fn invite_user(&self, user_id: String) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
