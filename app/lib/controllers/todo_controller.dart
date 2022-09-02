@@ -6,6 +6,7 @@ import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/widget/ToDoListView.dart';
 import 'package:effektio/common/widget/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
@@ -37,6 +38,8 @@ class ToDoController extends GetxController {
         isCompleted: random.nextBool(),
         hasMessage: random.nextBool(),
         dateTime: taskDue[random.nextInt(taskDue.length)],
+        subtitle: lorem(paragraphs: 1, words: 20),
+        notes: null,
       ),
     );
     todoList = List.generate(
@@ -77,6 +80,8 @@ class ToDoController extends GetxController {
         isCompleted: false,
         hasMessage: item.hasMessage,
         dateTime: item.dateTime,
+        subtitle: item.subtitle,
+        notes: item.notes,
       );
       pendingTasks.add(newItem);
       completedTasks.remove(item);
@@ -86,8 +91,48 @@ class ToDoController extends GetxController {
         isCompleted: true,
         hasMessage: item.hasMessage,
         dateTime: item.dateTime,
+        subtitle: item.subtitle,
+        notes: item.notes,
       );
       completedTasks.add(newItem);
+      pendingTasks.remove(item);
+    }
+  }
+
+  void updateNotes(ToDoTaskItem item, TextEditingController textController) {
+    ToDoTaskItem newItem = ToDoTaskItem(
+      title: item.title,
+      isCompleted: item.isCompleted,
+      hasMessage: item.hasMessage,
+      dateTime: item.dateTime,
+      subtitle: item.subtitle,
+      notes: textController.text,
+    );
+    update(['notes']);
+    if (newItem.isCompleted) {
+      completedTasks.add(newItem);
+      completedTasks.remove(item);
+    } else {
+      pendingTasks.add(newItem);
+      pendingTasks.remove(item);
+    }
+  }
+
+  void updateSubtitle(ToDoTaskItem item, TextEditingController textController) {
+    ToDoTaskItem newItem = ToDoTaskItem(
+      title: item.title,
+      isCompleted: item.isCompleted,
+      hasMessage: item.hasMessage,
+      dateTime: item.dateTime,
+      subtitle: textController.text,
+      notes: item.notes,
+    );
+    update(['subtitle']);
+    if (newItem.isCompleted) {
+      completedTasks.add(newItem);
+      completedTasks.remove(item);
+    } else {
+      pendingTasks.add(newItem);
       pendingTasks.remove(item);
     }
   }

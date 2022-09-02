@@ -4,6 +4,7 @@ import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/screens/EditorScreen/ToDoTaskEditor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -14,11 +15,15 @@ class ToDoTaskItem extends StatefulWidget {
     this.isCompleted = false,
     this.hasMessage = false,
     required this.dateTime,
+    required this.subtitle,
+    required this.notes,
   }) : super(key: key);
   final String title;
   final bool hasMessage;
   final bool isCompleted;
   final String dateTime;
+  final String subtitle;
+  final String? notes;
   @override
   State<ToDoTaskItem> createState() => _ToDoTaskItemState();
 }
@@ -49,121 +54,134 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: ToDoTheme.secondaryCardColor,
-      margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
-            child: Row(
-              children: <Widget>[
-                GestureDetector(
-                  onTap: () => todoController.toggleCheck(widget),
-                  child: Container(
-                    height: 18,
-                    width: 18,
-                    decoration: BoxDecoration(
-                      color: widget.isCompleted
-                          ? ToDoTheme.activeCheckColor
-                          : ToDoTheme.inactiveCheckColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: widget.isCompleted
-                        ? const Icon(
-                            Icons.done_outlined,
-                            color: ToDoTheme.inactiveCheckColor,
-                            size: 10,
-                          )
-                        : const SizedBox(),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8, top: 3),
-                    child: Text(
-                      widget.title,
-                      style: ToDoTheme.taskTitleTextStyle.copyWith(
-                        decoration: widget.isCompleted
-                            ? TextDecoration.lineThrough
-                            : null,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onLongPress: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ToDoTaskEditor(
+              item: widget,
+              avatars: _avatars,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8, top: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SvgPicture.asset(
-                      'assets/images/calendar-2.svg',
-                      color: isAllDay
-                          ? ToDoTheme.todayCalendarColor
-                          : ToDoTheme.calendarColor,
+        );
+      },
+      child: Card(
+        elevation: 0,
+        color: ToDoTheme.secondaryCardColor,
+        margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
+              child: Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () => todoController.toggleCheck(widget),
+                    child: Container(
+                      height: 18,
+                      width: 18,
+                      decoration: BoxDecoration(
+                        color: widget.isCompleted
+                            ? ToDoTheme.activeCheckColor
+                            : ToDoTheme.inactiveCheckColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: widget.isCompleted
+                          ? const Icon(
+                              Icons.done_outlined,
+                              color: ToDoTheme.inactiveCheckColor,
+                              size: 10,
+                            )
+                          : const SizedBox(),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: Text(
-                    widget.dateTime,
-                    style: isAllDay
-                        ? ToDoTheme.todayCalendarTextStyle
-                        : ToDoTheme.calendarTextStyle,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 8, top: 3),
+                      child: Text(
+                        widget.title,
+                        style: ToDoTheme.taskTitleTextStyle.copyWith(
+                          decoration: widget.isCompleted
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ),
-                ),
-                widget.hasMessage
-                    ? Expanded(
-                        flex: 2,
-                        child: Row(
-                          children: [
-                            SvgPicture.asset(
-                              'assets/images/message.svg',
-                              height: 12,
-                              width: 12,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 5),
-                              child: Text(
-                                '$messageCount',
-                                style: ToDoTheme.buttonTextStyle.copyWith(
-                                  color: ToDoTheme.primaryTextColor,
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8, top: 3),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: SvgPicture.asset(
+                        'assets/images/calendar-2.svg',
+                        color: isAllDay
+                            ? ToDoTheme.todayCalendarColor
+                            : ToDoTheme.calendarColor,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 7,
+                    child: Text(
+                      widget.dateTime,
+                      style: isAllDay
+                          ? ToDoTheme.todayCalendarTextStyle
+                          : ToDoTheme.calendarTextStyle,
+                    ),
+                  ),
+                  widget.hasMessage
+                      ? Expanded(
+                          flex: 2,
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                'assets/images/message.svg',
+                                height: 12,
+                                width: 12,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 5),
+                                child: Text(
+                                  '$messageCount',
+                                  style: ToDoTheme.buttonTextStyle.copyWith(
+                                    color: ToDoTheme.primaryTextColor,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    : const Spacer(flex: 2),
-                Expanded(
-                  flex: 7,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: AvatarStack(
-                      borderWidth: 0,
-                      settings: settings,
-                      avatars: _avatars,
-                      infoWidgetBuilder: _infoAvatar,
-                      width: 28,
-                      height: 28,
+                            ],
+                          ),
+                        )
+                      : const Spacer(flex: 2),
+                  Expanded(
+                    flex: 7,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: AvatarStack(
+                        borderWidth: 0,
+                        settings: settings,
+                        avatars: _avatars,
+                        infoWidgetBuilder: _infoAvatar,
+                        width: 28,
+                        height: 28,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
