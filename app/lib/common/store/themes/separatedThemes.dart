@@ -278,6 +278,8 @@ class ToDoTheme {
   static const assignedIconColor = ColorRef(Color(0xFFFF9292));
   static const backgroundGradientColor = ColorRef(Color(0xFF242632));
   static const backgroundGradient2Color = ColorRef(Color(0xFF2C5156));
+  static const bottomSheetColor = ColorRef(Color(0xFF333540));
+  static const bottomSheetDividerColor = ColorRef(Color(0xFF4A4A4A));
   static const secondaryCardColor = ColorRef(Color(0xFF3F404B));
   static const btnBorderColor = ColorRef(Color(0xFF484C4F));
   static const calendarColor = ColorRef(Color(0xFFC4C4C4));
@@ -290,6 +292,7 @@ class ToDoTheme {
   static const primaryColor = ColorRef(Color(0xFFEC2758));
   static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
   static const plannedIconColor = ColorRef(Color(0xFFDBFFDE));
+  static const removeColor = ColorRef(Color(0xFFE04C4C));
   static const secondaryColor = ColorRef(Color(0xFF333540));
   static const secondaryTextColor = ColorRef(Color(0xFFEC2758));
   static const subscribedIconColor = ColorRef(Color(0xFFFCE5E5));

@@ -153,70 +153,79 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   endIndent: 10,
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      'assets/images/notification.svg',
-                      width: 18,
-                      height: 18,
-                      color: ToDoTheme.calendarColor,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Remind Me',
-                        style: ToDoTheme.calendarTextStyle
-                            .copyWith(color: ToDoTheme.calendarColor),
+              InkWell(
+                onTap: () => showBottomSheet('Remind Me'),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: <Widget>[
+                      SvgPicture.asset(
+                        'assets/images/notification.svg',
+                        width: 18,
+                        height: 18,
+                        color: ToDoTheme.calendarColor,
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Remind Me',
+                          style: ToDoTheme.calendarTextStyle
+                              .copyWith(color: ToDoTheme.calendarColor),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                child: Row(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      'assets/images/calendar-2.svg',
-                      width: 18,
-                      height: 18,
-                      color: ToDoTheme.calendarColor,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Add Due Date',
-                        style: ToDoTheme.calendarTextStyle
-                            .copyWith(color: ToDoTheme.calendarColor),
+              InkWell(
+                onTap: () => showBottomSheet('Add Due Date'),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  child: Row(
+                    children: <Widget>[
+                      SvgPicture.asset(
+                        'assets/images/calendar-2.svg',
+                        width: 18,
+                        height: 18,
+                        color: ToDoTheme.calendarColor,
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Add Due Date',
+                          style: ToDoTheme.calendarTextStyle
+                              .copyWith(color: ToDoTheme.calendarColor),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: Row(
-                  children: <Widget>[
-                    SvgPicture.asset(
-                      'assets/images/repeat.svg',
-                      width: 18,
-                      height: 18,
-                      color: ToDoTheme.calendarColor,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Repeat',
-                        style: ToDoTheme.calendarTextStyle
-                            .copyWith(color: ToDoTheme.calendarColor),
+              InkWell(
+                onTap: () {},
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    children: <Widget>[
+                      SvgPicture.asset(
+                        'assets/images/repeat.svg',
+                        width: 18,
+                        height: 18,
+                        color: ToDoTheme.calendarColor,
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          'Repeat',
+                          style: ToDoTheme.calendarTextStyle
+                              .copyWith(color: ToDoTheme.calendarColor),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const Padding(
@@ -301,6 +310,141 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
           ),
         ),
       ),
+    );
+  }
+
+  void showBottomSheet(String title) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: ToDoTheme.bottomSheetColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(15),
+        ),
+      ),
+      isDismissible: false,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'Remove',
+                        style: ToDoTheme.taskSubtitleTextStyle
+                            .copyWith(color: ToDoTheme.removeColor),
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 4,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(title, style: ToDoTheme.taskTitleTextStyle),
+                  ),
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Done',
+                        style: ToDoTheme.taskSubtitleTextStyle
+                            .copyWith(color: ToDoTheme.floatingABColor),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(
+              color: ToDoTheme.bottomSheetDividerColor,
+              height: 0,
+              thickness: 1,
+              indent: 20,
+              endIndent: 20,
+            ),
+            ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(10),
+              children: <Widget>[
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.access_time,
+                      color: ToDoTheme.primaryTextColor,
+                    ),
+                    title: Text(
+                      'Later Today',
+                      style: ToDoTheme.taskTitleTextStyle
+                          .copyWith(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: SvgPicture.asset(
+                      'assets/images/calendar-2.svg',
+                      color: ToDoTheme.primaryTextColor,
+                    ),
+                    title: Text(
+                      'Tomorrow',
+                      style: ToDoTheme.taskTitleTextStyle
+                          .copyWith(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: SvgPicture.asset(
+                      'assets/images/calendar.svg',
+                      color: ToDoTheme.primaryTextColor,
+                    ),
+                    title: Text(
+                      'Next Week',
+                      style: ToDoTheme.taskTitleTextStyle
+                          .copyWith(fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: SvgPicture.asset(
+                      'assets/images/calendar-tick.svg',
+                      color: ToDoTheme.floatingABColor,
+                    ),
+                    title: Text(
+                      'Pick a Date & Time',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: ToDoTheme.floatingABColor,
+                      ),
+                    ),
+                    trailing: const Icon(
+                      Icons.chevron_right,
+                      color: ToDoTheme.floatingABColor,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 
