@@ -1,4 +1,4 @@
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/controllers/chat_controller.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +7,20 @@ import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+// ignore: must_be_immutable
 class CustomChatInput extends StatelessWidget {
-  CustomChatInput({Key? key, required this.context}) : super(key: key);
+  CustomChatInput({
+    Key? key,
+    required this.context,
+    required this.isChatScreen,
+    this.onButtonPressed,
+    required this.roomName,
+  }) : super(key: key);
   final BuildContext context;
+  final Function()? onButtonPressed;
   final controller = Get.put(ChatController());
+  bool isChatScreen = true;
+  final String roomName;
   static const List<List<String>> attachmentNameList = [
     ['camera', 'Camera'],
     ['gif', 'GIF'],
@@ -18,59 +28,177 @@ class CustomChatInput extends StatelessWidget {
     ['location', 'Location'],
   ];
 
-  Widget _emojiPicker(Size size) {
-    return Obx(
-      () => Offstage(
-        offstage: !controller.isEmojiVisible.value,
-        child: SizedBox(
-          height: size.height * 0.3,
-          child: EmojiPicker(
-            onEmojiSelected: (category, emoji) {
-              controller.textEditingController.text += emoji.emoji;
-              controller.sendButtonUpdate();
-            },
-            onBackspacePressed: () {
-              controller.textEditingController.text = controller
-                  .textEditingController.text.characters
-                  .skipLast(1)
-                  .string;
-              if (controller.textEditingController.text.isEmpty) {
-                controller.sendButtonUpdate();
-              }
-            },
-            config: Config(
-              columns: 7,
-              verticalSpacing: 0,
-              backspaceColor: AppCommonTheme.primaryColor,
-              horizontalSpacing: 0,
-              initCategory: Category.SMILEYS,
-              bgColor: AppCommonTheme.backgroundColor,
-              indicatorColor: AppCommonTheme.primaryColor,
-              iconColor: AppCommonTheme.dividerColor,
-              iconColorSelected: AppCommonTheme.primaryColor,
-              progressIndicatorColor: AppCommonTheme.primaryColor,
-              showRecentsTab: true,
-              recentsLimit: 28,
-              noRecents: Text(
-                AppLocalizations.of(context)!.noRecents,
-                style: ChatTheme01.chatBodyStyle,
+  @override
+  Widget build(BuildContext context) {
+    final _size = MediaQuery.of(context).size;
+    return Column(
+      children: [
+        GetBuilder<ChatController>(
+          builder: (control) {
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              color: AppCommonTheme.backgroundColorLight,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      isChatScreen
+                          ? Obx(
+                              () => InkWell(
+                                onTap: () {
+                                  controller.isEmojiVisible.value = false;
+                                  controller.isattachmentVisible.value =
+                                      !controller.isattachmentVisible.value;
+                                  controller.focusNode.unfocus();
+                                  controller.focusNode.canRequestFocus = true;
+                                },
+                                child: controller.isattachmentVisible.value
+                                    ? Container(
+                                        padding: const EdgeInsets.all(12),
+                                        decoration: BoxDecoration(
+                                          color: AppCommonTheme.backgroundColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          'assets/images/add_rotate.svg',
+                                          fit: BoxFit.none,
+                                        ),
+                                      )
+                                    : SvgPicture.asset(
+                                        'assets/images/add.svg',
+                                        fit: BoxFit.none,
+                                      ),
+                              ),
+                            )
+                          : const SizedBox(),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: TextField(
+                            onChanged: ((value) async {
+                              controller.sendButtonUpdate();
+                              await controller.room.typingNotice(true);
+                            }),
+                            maxLines: MediaQuery.of(context).orientation ==
+                                    Orientation.portrait
+                                ? 6
+                                : 2,
+                            minLines: 1,
+                            controller: controller.textEditingController,
+                            focusNode: controller.focusNode,
+                            style: const TextStyleRef(
+                              TextStyle(color: ChatTheme01.chatInputTextColor),
+                            ),
+                            decoration: InputDecoration(
+                              isCollapsed: true,
+                              suffixIcon: InkWell(
+                                onTap: () {
+                                  controller.isattachmentVisible.value = false;
+                                  controller.isEmojiVisible.value =
+                                      !controller.isEmojiVisible.value;
+                                  controller.focusNode.unfocus();
+                                  controller.focusNode.canRequestFocus = true;
+                                },
+                                child: SvgPicture.asset(
+                                  'assets/images/emoji.svg',
+                                  fit: BoxFit.none,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: const BorderSide(
+                                  width: 0,
+                                  style: BorderStyle.none,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: AppCommonTheme.backgroundColor,
+                              hintText: isChatScreen
+                                  ? AppLocalizations.of(context)!.newMessage
+                                  : '${AppLocalizations.of(context)!.messageTo} $roomName',
+                              contentPadding: const EdgeInsets.all(15),
+                              hintStyle: ChatTheme01.chatInputPlaceholderStyle,
+                              hintMaxLines: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (controller.isSendButtonVisible || !isChatScreen)
+                        InkWell(
+                          onTap: onButtonPressed,
+                          child: SvgPicture.asset('assets/images/sendIcon.svg'),
+                        ),
+                      if (!controller.isSendButtonVisible && isChatScreen)
+                        InkWell(
+                          onTap: () {
+                            controller.handleMultipleImageSelection(
+                              context,
+                              roomName,
+                            );
+                          },
+                          child: SvgPicture.asset(
+                            'assets/images/camera.svg',
+                            fit: BoxFit.none,
+                          ),
+                        ),
+                      const SizedBox(width: 10),
+                      if (!controller.isSendButtonVisible && isChatScreen)
+                        SvgPicture.asset(
+                          'assets/images/microphone-2.svg',
+                          fit: BoxFit.none,
+                        ),
+                    ],
+                  ),
+                ),
               ),
-              tabIndicatorAnimDuration: kTabScrollDuration,
-              categoryIcons: const CategoryIcons(),
-              buttonMode: ButtonMode.MATERIAL,
-            ),
-          ),
+            );
+          },
         ),
-      ),
+        EmojiPickerWidget(
+          controller: controller,
+          context: context,
+          size: _size,
+        ),
+        AttachmentWidget(
+          controller: controller,
+          context: context,
+          attachmentNameList: attachmentNameList,
+          roomName: roomName,
+          size: _size,
+        ),
+      ],
     );
   }
+}
 
-  Widget attachmentWidget(Size size) {
+class AttachmentWidget extends StatelessWidget {
+  const AttachmentWidget({
+    Key? key,
+    required this.controller,
+    required this.context,
+    required this.attachmentNameList,
+    required this.roomName,
+    required this.size,
+  }) : super(key: key);
+
+  final ChatController controller;
+  final BuildContext context;
+  final List<List<String>> attachmentNameList;
+  final String roomName;
+  final Size size;
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
         offstage: !controller.isattachmentVisible.value,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
           width: double.infinity,
           height: size.height * 0.3,
           color: AppCommonTheme.backgroundColorLight,
@@ -116,7 +244,11 @@ class CustomChatInput extends StatelessWidget {
                           onTap: () {
                             switch (item[0]) {
                               case 'camera':
-                                controller.handleImageSelection(context);
+                                controller.isattachmentVisible.value = false;
+                                controller.handleMultipleImageSelection(
+                                  context,
+                                  roomName,
+                                );
                                 break;
                               case 'gif':
                                 //gif handle
@@ -163,135 +295,65 @@ class CustomChatInput extends StatelessWidget {
       ),
     );
   }
+}
+
+class EmojiPickerWidget extends StatelessWidget {
+  const EmojiPickerWidget({
+    Key? key,
+    required this.controller,
+    required this.context,
+    required this.size,
+  }) : super(key: key);
+
+  final ChatController controller;
+  final BuildContext context;
+  final Size size;
 
   @override
   Widget build(BuildContext context) {
-    final _size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        GetBuilder<ChatController>(
-          builder: (control) {
-            return Container(
-              width: double.infinity,
-              height: _size.height * 0.11,
-              color: AppCommonTheme.backgroundColorLight,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Obx(
-                        () => InkWell(
-                          onTap: () {
-                            controller.isEmojiVisible.value = false;
-                            controller.isattachmentVisible.value =
-                                !controller.isattachmentVisible.value;
-                            controller.focusNode.unfocus();
-                            controller.focusNode.canRequestFocus = true;
-                          },
-                          child: controller.isattachmentVisible.value
-                              ? Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: AppCommonTheme.backgroundColor,
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: SvgPicture.asset(
-                                    'assets/images/add_rotate.svg',
-                                    fit: BoxFit.none,
-                                  ),
-                                )
-                              : SvgPicture.asset(
-                                  'assets/images/add.svg',
-                                  fit: BoxFit.none,
-                                ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TextField(
-                            onChanged: ((value) async {
-                              controller.sendButtonUpdate();
-                              await controller.room.typingNotice(true);
-                            }),
-                            controller: controller.textEditingController,
-                            focusNode: controller.focusNode,
-                            maxLines: null,
-                            style: const TextStyleRef(
-                              TextStyle(color: ChatTheme01.chatInputTextColor),
-                            ),
-                            decoration: InputDecoration(
-                              isCollapsed: true,
-                              suffixIcon: InkWell(
-                                onTap: () {
-                                  controller.isattachmentVisible.value = false;
-                                  controller.isEmojiVisible.value =
-                                      !controller.isEmojiVisible.value;
-                                  controller.focusNode.unfocus();
-                                  controller.focusNode.canRequestFocus = true;
-                                },
-                                child: SvgPicture.asset(
-                                  'assets/images/emoji.svg',
-                                  fit: BoxFit.none,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: const BorderSide(
-                                  width: 0,
-                                  style: BorderStyle.none,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: AppCommonTheme.backgroundColor,
-                              hintText:
-                                  AppLocalizations.of(context)!.newMessage,
-                              contentPadding: const EdgeInsets.all(15),
-                              hintStyle: ChatTheme01.chatInputPlaceHolderStyle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (controller.isSendButtonVisible)
-                        InkWell(
-                          onTap: () async {
-                            await controller.handleSendPressed(
-                              controller.textEditingController.text,
-                            );
-                            controller.textEditingController.clear();
-                            controller.sendButtonUpdate();
-                          },
-                          child: SvgPicture.asset('assets/images/sendIcon.svg'),
-                        ),
-                      if (!controller.isSendButtonVisible)
-                        InkWell(
-                          onTap: () {
-                            controller.handleImageSelection(context);
-                          },
-                          child: SvgPicture.asset(
-                            'assets/images/camera.svg',
-                            fit: BoxFit.none,
-                          ),
-                        ),
-                      const SizedBox(width: 10),
-                      if (!controller.isSendButtonVisible)
-                        SvgPicture.asset(
-                          'assets/images/microphone-2.svg',
-                          fit: BoxFit.none,
-                        ),
-                    ],
-                  ),
-                ),
+    return Obx(
+      () => Offstage(
+        offstage: !controller.isEmojiVisible.value,
+        child: SizedBox(
+          height: size.height * 0.3,
+          child: EmojiPicker(
+            onEmojiSelected: (category, emoji) {
+              controller.textEditingController.text += emoji.emoji;
+              controller.sendButtonUpdate();
+            },
+            onBackspacePressed: () {
+              controller.textEditingController.text = controller
+                  .textEditingController.text.characters
+                  .skipLast(1)
+                  .string;
+              if (controller.textEditingController.text.isEmpty) {
+                controller.sendButtonUpdate();
+              }
+            },
+            config: Config(
+              columns: 7,
+              verticalSpacing: 0,
+              backspaceColor: AppCommonTheme.primaryColor,
+              horizontalSpacing: 0,
+              initCategory: Category.SMILEYS,
+              bgColor: AppCommonTheme.backgroundColor,
+              indicatorColor: AppCommonTheme.primaryColor,
+              iconColor: AppCommonTheme.dividerColor,
+              iconColorSelected: AppCommonTheme.primaryColor,
+              progressIndicatorColor: AppCommonTheme.primaryColor,
+              showRecentsTab: true,
+              recentsLimit: 28,
+              noRecents: Text(
+                AppLocalizations.of(context)!.noRecents,
+                style: ChatTheme01.chatBodyStyle,
               ),
-            );
-          },
+              tabIndicatorAnimDuration: kTabScrollDuration,
+              categoryIcons: const CategoryIcons(),
+              buttonMode: ButtonMode.MATERIAL,
+            ),
+          ),
         ),
-        _emojiPicker(_size),
-        attachmentWidget(_size),
-      ],
+      ),
     );
   }
 }

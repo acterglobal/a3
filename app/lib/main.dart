@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:async';
 import 'package:effektio/common/widget/CrossSigning.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/store/appTheme.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/common/store/themes/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
@@ -17,6 +17,14 @@ import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show
+        DeviceListsController,
+        ReceiptNotificationController,
+        SessionVerificationController,
+        SyncState,
+        TypingNotificationController,
+        UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,18 +51,8 @@ Future<void> startApp() async {
   );
 }
 
-class Effektio extends StatefulWidget {
+class Effektio extends StatelessWidget {
   const Effektio({Key? key}) : super(key: key);
-
-  @override
-  State<Effektio> createState() => _EffektioState();
-}
-
-class _EffektioState extends State<Effektio> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +90,17 @@ class EffektioHome extends StatefulWidget {
 }
 
 class _EffektioHomeState extends State<EffektioHome>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
+  late DeviceListsController dlc;
+  late SessionVerificationController svc;
+  late TypingNotificationController tnc;
+  late ReceiptNotificationController rnc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
+
   @override
   void initState() {
     _client = makeClient();
@@ -110,11 +113,43 @@ class _EffektioHomeState extends State<EffektioHome>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    crossSigning.dispose();
+    super.dispose();
+  }
+
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    dlc = await client.getDeviceListsController();
+    svc = await client.getSessionVerificationController();
+    rnc = await client.getReceiptNotificationController();
+    SyncState _ = client.startSync();
     //Start listening for cross signing events
-    crossSigning.startCrossSigning(client);
+    crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
+    crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
+    tnc = await client.getTypingNotificationController();
+    tnc.getEventRx()!.listen((event) {
+      String roomId = event.getRoomId();
+      List<String> userIds = [];
+      for (final userId in event.getUserIds()) {
+        userIds.add(userId.toDartString());
+      }
+      debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
+    });
+    UserId myId = await client.userId();
+    rnc.getEventRx()!.listen((event) {
+      for (var record in event.getReceiptRecords()) {
+        String userId = record.getUserId();
+        if (userId != myId.toString()) {
+          debugPrint('receipt notification for ' + event.getRoomId());
+          debugPrint('event id: ' + record.getEventId());
+          debugPrint('user id: ' + userId);
+          debugPrint('timestamp: ' + record.getTimestamp().toString());
+        }
+      }
+    });
     return client;
   }
 

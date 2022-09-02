@@ -10,7 +10,7 @@ use matrix_sdk::{
             room::message::{MessageType, RoomMessageEventContent},
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, MessageLikeEvent,
         },
-        EventId, OwnedUserId, UInt,
+        EventId, UInt, UserId,
     },
     Client as MatrixClient,
 };
@@ -45,8 +45,8 @@ impl Member {
         self.member.display_name().map(|s| s.to_owned())
     }
 
-    pub fn user_id(&self) -> OwnedUserId {
-        self.member.user_id().to_owned()
+    pub fn user_id(&self) -> String {
+        self.member.user_id().to_string()
     }
 }
 
@@ -102,11 +102,12 @@ impl Room {
             .await?
     }
 
-    pub async fn get_member(&self, user_id: Box<OwnedUserId>) -> Result<Member> {
+    pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let r = self.room.clone();
+        let uid = UserId::parse(user_id)?;
         RUNTIME
             .spawn(async move {
-                let member = r.get_member(&user_id).await?.context("User not found")?;
+                let member = r.get_member(&uid).await?.context("User not found")?;
                 Ok(Member { member })
             })
             .await?

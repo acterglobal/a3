@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
-import 'package:effektio/common/store/separatedThemes.dart';
+import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -84,10 +84,10 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
             elevation: 0,
             actions: [
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: AppCommonTheme.primaryColor,
+                    backgroundColor: AppCommonTheme.primaryColor,
                     shape: const StadiumBorder(),
                   ),
                   onPressed: () async {
@@ -185,9 +185,9 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
           ),
           floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
           floatingActionButton: SizedBox(
-            height: 120.0,
+            height: 120,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 65.0, left: 8.0),
+              padding: const EdgeInsets.only(bottom: 65, left: 8),
               child: Row(
                 children: [
                   FloatingActionButton.extended(
@@ -218,7 +218,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       ),
                     )
                   else
-                    Container()
+                    const SizedBox()
                 ],
               ),
             ),
@@ -243,7 +243,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
               body: Column(
                 children: [
                   const Padding(
-                    padding: EdgeInsets.all(12.0),
+                    padding: EdgeInsets.all(12),
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
@@ -277,7 +277,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     ),
                   ),
                   const Padding(
-                    padding: EdgeInsets.all(12.0),
+                    padding: EdgeInsets.all(12),
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
@@ -288,7 +288,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+                      padding: const EdgeInsets.only(left: 12, right: 12),
                       child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -338,7 +338,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0),
+                    padding: const EdgeInsets.only(bottom: 20),
                     child: ElevatedButton(
                       onPressed: () => {
                         setState(() {
@@ -359,12 +359,12 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                                 behavior: SnackBarBehavior.floating,
                                 margin: EdgeInsets.only(bottom: 420),
                                 backgroundColor: Colors.black87,
-                                duration: Duration(seconds: 2),
+                                duration: const Duration(seconds: 2),
                                 // ignore: sized_box_for_whitespace
                                 content: Container(
                                   height: 20,
                                   child: Center(
-                                    child: Text(
+                                    child: const Text(
                                       'Please fill the title of Tag',
                                       style: TextStyle(
                                         color: Colors.white,
@@ -379,11 +379,11 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                         })
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: AppCommonTheme.primaryColor,
+                        backgroundColor: AppCommonTheme.primaryColor,
                         shape: const StadiumBorder(),
                       ),
                       child: const Padding(
-                        padding: EdgeInsets.only(left: 80.0, right: 80.0),
+                        padding: EdgeInsets.symmetric(horizontal: 80),
                         child: Text('Submit'),
                       ),
                     ),
