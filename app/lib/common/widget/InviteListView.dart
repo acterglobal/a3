@@ -59,8 +59,9 @@ class InviteListView extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: null,
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: AppCommonTheme.darkShade,
-                        elevation: 0.0),
+                      backgroundColor: AppCommonTheme.darkShade,
+                      elevation: 0.0,
+                    ),
                     child: Text(
                       'Invited',
                       style: TextStyle(color: Colors.white),
