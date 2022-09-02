@@ -47,6 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _user = types.User(
       id: widget.user!,
     );
+
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();

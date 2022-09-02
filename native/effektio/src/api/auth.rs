@@ -17,7 +17,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             let register = client.register(guest_registration).await?;
             let session = Session {
                 access_token: register.access_token.context("no access token given")?,
-                user_id: register.user_id,
+                user_id: register.user_id.clone(),
                 device_id: register
                     .device_id
                     .clone()
@@ -31,6 +31,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                     .build()
                     .unwrap(),
             );
+            log::info!("Successfully created guest login: {:?}", register.user_id);
             Ok(c)
         })
         .await?
@@ -48,6 +49,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
+            let user_id = session.user_id.to_string().clone();
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
@@ -56,6 +58,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
                     .build()
                     .unwrap(),
             );
+            log::info!("Successfully logged in {:?} with token.", user_id);
             Ok(c)
         })
         .await?
@@ -94,6 +97,7 @@ pub async fn login_new_client(
                     .build()
                     .unwrap(),
             );
+            log::info!("Successfully logged in user: {:?}", user);
             Ok(c)
         })
         .await?
@@ -136,6 +140,7 @@ pub async fn register_with_registration_token(
                     .build()
                     .unwrap(),
             );
+            log::info!("Successfully registered user: {:?}", username);
             Ok(c)
         })
         .await?

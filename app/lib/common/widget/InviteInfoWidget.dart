@@ -55,7 +55,7 @@ class InviteInfoWidget extends StatelessWidget {
             indent: 15,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.46,
