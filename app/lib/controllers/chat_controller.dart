@@ -365,7 +365,6 @@ class ChatController extends GetxController {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
-      String sender = message.sender();
       types.TextMessage m = types.TextMessage(
         author: types.User(
           id: message.sender(),
