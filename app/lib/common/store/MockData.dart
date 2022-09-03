@@ -70,3 +70,9 @@ final List<String> taskDue = [
   'Today, All Day',
   'Today, 17:23PM',
 ];
+
+final List<String> taskRole = [
+  'UnAssign',
+  'Owner',
+  'Assign',
+];

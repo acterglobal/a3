@@ -289,10 +289,12 @@ class ToDoTheme {
   static const infoAvatarColor = ColorRef(Color(0xFF50555C));
   static const inactiveTextColor = ColorRef(Color(0xFFC4C4C4));
   static const listDividerColor = ColorRef(Color(0xFF4A4A4A));
+  static const lastUpdatedColor = ColorRef(Color(0xFFE5E5E5));
   static const primaryColor = ColorRef(Color(0xFFEC2758));
   static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
   static const plannedIconColor = ColorRef(Color(0xFFDBFFDE));
   static const removeColor = ColorRef(Color(0xFFE04C4C));
+  static const roleNameColor = ColorRef(Color(0xFFC4C4C4));
   static const secondaryColor = ColorRef(Color(0xFF333540));
   static const secondaryTextColor = ColorRef(Color(0xFFEC2758));
   static const subscribedIconColor = ColorRef(Color(0xFFFCE5E5));
@@ -376,6 +378,24 @@ class ToDoTheme {
     color: primaryTextColor,
     fontSize: 13,
     fontWeight: FontWeight.w400,
+  );
+
+  static const roleTextStyle = TextStyle(
+    color: floatingABColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const roleNameTextStyle = TextStyle(
+    color: roleNameColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const listMemberTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
   );
 
   // Background Scheme.

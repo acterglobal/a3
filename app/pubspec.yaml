@@ -68,6 +68,7 @@ dependencies:
   flutter_parsed_text: ^2.2.1
   avatar_stack: ^1.1.2
   flutter_lorem: ^2.0.0
+  get_time_ago: ^1.1.5
 
 dev_dependencies:
   flutter_test:

@@ -3,9 +3,11 @@ import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/ToDoTaskItem.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDoTaskAssign.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 
 class ToDoTaskEditor extends StatefulWidget {
   const ToDoTaskEditor({Key? key, required this.item, required this.avatars})
@@ -19,6 +21,7 @@ class ToDoTaskEditor extends StatefulWidget {
 class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
   final TextEditingController notesController = TextEditingController();
   final TextEditingController subtitleController = TextEditingController();
+  RxString? lastUpdated;
   final settings = RestrictedAmountPositions(
     maxAmountItems: 5,
     maxCoverage: 0.7,
@@ -29,6 +32,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
   @override
   void initState() {
     super.initState();
+    lastUpdated = GetTimeAgo.parse(widget.item.lastUpdated!).obs;
     notesController.text = widget.item.notes ?? 'Add Notes';
     subtitleController.text = widget.item.subtitle;
   }
@@ -136,7 +140,13 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   ),
                   const Spacer(flex: 2),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            ToDoTaskAssignScreen(avatars: widget.avatars),
+                      ),
+                    ),
                     child: const Text(
                       '+ Assign',
                       style: ToDoTheme.addTaskTextStyle,
@@ -195,31 +205,6 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           'Add Due Date',
-                          style: ToDoTheme.calendarTextStyle
-                              .copyWith(color: ToDoTheme.calendarColor),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {},
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: Row(
-                    children: <Widget>[
-                      SvgPicture.asset(
-                        'assets/images/repeat.svg',
-                        width: 18,
-                        height: 18,
-                        color: ToDoTheme.calendarColor,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          'Repeat',
                           style: ToDoTheme.calendarTextStyle
                               .copyWith(color: ToDoTheme.calendarColor),
                         ),
@@ -302,9 +287,16 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   endIndent: 10,
                 ),
               ),
-              const SizedBox(
-                height: 30,
-                width: double.infinity,
+              Obx(
+                () => SizedBox(
+                  height: 30,
+                  width: double.infinity,
+                  child: Text(
+                    'Last Update $lastUpdated',
+                    style: ToDoTheme.activeTasksTextStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
             ],
           ),

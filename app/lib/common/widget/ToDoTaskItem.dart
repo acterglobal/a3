@@ -4,7 +4,7 @@ import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
-import 'package:effektio/screens/EditorScreen/ToDoTaskEditor.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDoTaskEditor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -17,6 +17,7 @@ class ToDoTaskItem extends StatefulWidget {
     required this.dateTime,
     required this.subtitle,
     required this.notes,
+    this.lastUpdated,
   }) : super(key: key);
   final String title;
   final bool hasMessage;
@@ -24,6 +25,7 @@ class ToDoTaskItem extends StatefulWidget {
   final String dateTime;
   final String subtitle;
   final String? notes;
+  final DateTime? lastUpdated;
   @override
   State<ToDoTaskItem> createState() => _ToDoTaskItemState();
 }
