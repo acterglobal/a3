@@ -17,7 +17,7 @@ class ToDoTaskItem extends StatefulWidget {
     required this.dateTime,
     required this.subtitle,
     required this.notes,
-    this.lastUpdated,
+    required this.lastUpdated,
   }) : super(key: key);
   final String title;
   final bool hasMessage;

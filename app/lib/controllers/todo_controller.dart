@@ -83,6 +83,7 @@ class ToDoController extends GetxController {
         dateTime: item.dateTime,
         subtitle: item.subtitle,
         notes: item.notes,
+        lastUpdated: item.lastUpdated,
       );
       pendingTasks.add(newItem);
       completedTasks.remove(item);
@@ -94,6 +95,7 @@ class ToDoController extends GetxController {
         dateTime: item.dateTime,
         subtitle: item.subtitle,
         notes: item.notes,
+        lastUpdated: item.lastUpdated,
       );
       completedTasks.add(newItem);
       pendingTasks.remove(item);
