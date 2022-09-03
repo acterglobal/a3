@@ -186,9 +186,7 @@ class _ToDoListViewState extends State<ToDoListView> {
                             ToDoTheme.buttonTextStyle,
                           ),
                         ),
-                        onPressed: () {
-                          todoController.toggleExpandBtn();
-                        },
+                        onPressed: () {},
                         child: const Text(
                           '+ Add Task',
                         ),
