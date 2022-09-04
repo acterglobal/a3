@@ -186,7 +186,8 @@ impl Client {
                         }
 
                         if !initial.load(Ordering::SeqCst) {
-                            session_verification_controller.process_sync_messages(&client, &response.rooms);
+                            session_verification_controller
+                                .process_sync_messages(&client, &response.rooms);
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -203,7 +204,8 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        session_verification_controller.process_to_device_messages(&client, response.to_device);
+                        session_verification_controller
+                            .process_to_device_messages(&client, response.to_device);
                         LoopCtrl::Continue
                     }
                 })
