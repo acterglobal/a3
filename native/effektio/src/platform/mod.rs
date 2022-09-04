@@ -13,4 +13,6 @@ mod ios;
 pub use ios::*;
 
 #[cfg(not(any(target_os = "android", target_os = "ios")))]
-pub use native::*;
+mod desktop;
+#[cfg(not(any(target_os = "android", target_os = "ios")))]
+pub use desktop::*;
