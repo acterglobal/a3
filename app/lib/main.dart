@@ -7,6 +7,8 @@ import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
@@ -76,6 +78,8 @@ class Effektio extends StatelessWidget {
           '/profile': (BuildContext context) => const SocialProfileScreen(),
           '/signup': (BuildContext context) => const SignupScreen(),
           '/gallery': (BuildContext context) => const GalleryScreen(),
+          '/todo': (BuildContext context) => const ToDoScreen(),
+          '/addTodo': (BuildContext context) => const AddToDoScreen(),
         },
       ),
     );
