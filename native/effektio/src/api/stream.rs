@@ -4,7 +4,7 @@ use futures::{lock::Mutex, pin_mut, StreamExt};
 use matrix_sdk::{deserialized_responses::SyncRoomEvent, room::Room, Client};
 use std::sync::Arc;
 
-use super::messages::{sync_event_to_message, RoomMessage};
+use super::message::{sync_event_to_message, RoomMessage};
 use super::RUNTIME;
 
 type BackwardMsgStream =

@@ -16,7 +16,7 @@ use matrix_sdk::{
 };
 use std::{fs::File, io::Write, path::PathBuf};
 
-use super::messages::{sync_event_to_message, RoomMessage};
+use super::message::{sync_event_to_message, RoomMessage};
 use super::{api, TimelineStream, RUNTIME};
 
 pub struct Member {
