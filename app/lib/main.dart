@@ -95,7 +95,6 @@ class _EffektioHomeState extends State<EffektioHome>
   int tabIndex = 0;
   late TabController _tabController;
   late DeviceListsController dlc;
-  late SessionVerificationController svc;
   late TypingNotificationController tnc;
   late ReceiptNotificationController rnc;
   CrossSigning crossSigning = CrossSigning();
@@ -123,12 +122,11 @@ class _EffektioHomeState extends State<EffektioHome>
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
     dlc = await client.getDeviceListsController();
-    svc = await client.getSessionVerificationController();
     rnc = await client.getReceiptNotificationController();
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
-    crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
+    crossSigning.installSessionVerificationEvent(client.sessionVerificationEventRx()!);
     tnc = await client.getTypingNotificationController();
     tnc.getEventRx()!.listen((event) {
       String roomId = event.getRoomId();

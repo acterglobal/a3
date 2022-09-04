@@ -298,8 +298,8 @@ object Client {
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
-    /// Return the session verification controller. If not exists, create it.
-    fn get_session_verification_controller() -> Future<Result<SessionVerificationController>>;
+    /// Get the session verification event receiver
+    fn session_verification_event_rx() -> Option<Stream<SessionVerificationEvent>>;
 
     /// Return the device lists controller. If not exists, create it.
     fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
@@ -309,10 +309,6 @@ object Client {
 
     /// Return the read notification controller. If not exists, create it.
     fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;
-}
-
-object SessionVerificationController {
-    fn get_event_rx() -> Option<Stream<SessionVerificationEvent>>;
 }
 
 object SessionVerificationEvent {
