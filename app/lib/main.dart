@@ -23,7 +23,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         DeviceListsController,
         ReceiptNotificationController,
-        SessionVerificationController,
         SyncState,
         TypingNotificationController,
         UserId;
@@ -130,7 +129,8 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
-    crossSigning.installSessionVerificationEvent(client.sessionVerificationEventRx()!);
+    crossSigning
+        .installSessionVerificationEvent(client.sessionVerificationEventRx()!);
     tnc = await client.getTypingNotificationController();
     tnc.getEventRx()!.listen((event) {
       String roomId = event.getRoomId();
