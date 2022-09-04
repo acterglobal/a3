@@ -271,3 +271,142 @@ class CrossSigningSheetTheme {
     ),
   );
 }
+
+class ToDoTheme {
+  // Color Scheme.
+  static const activeCheckColor = ColorRef(Color(0xFF1CF18F));
+  static const assignedIconColor = ColorRef(Color(0xFFFF9292));
+  static const backgroundGradientColor = ColorRef(Color(0xFF242632));
+  static const backgroundGradient2Color = ColorRef(Color(0xFF2C5156));
+  static const bottomSheetColor = ColorRef(Color(0xFF333540));
+  static const bottomSheetDividerColor = ColorRef(Color(0xFF4A4A4A));
+  static const secondaryCardColor = ColorRef(Color(0xFF3F404B));
+  static const btnBorderColor = ColorRef(Color(0xFF484C4F));
+  static const calendarColor = ColorRef(Color(0xFFC4C4C4));
+  static const dividerColor = ColorRef(Color(0xFF343A43));
+  static const floatingABColor = ColorRef(Color(0xFF23AFC2));
+  static const inactiveCheckColor = ColorRef(Color(0xFF50555C));
+  static const infoAvatarColor = ColorRef(Color(0xFF50555C));
+  static const inactiveTextColor = ColorRef(Color(0xFFC4C4C4));
+  static const listDividerColor = ColorRef(Color(0xFF4A4A4A));
+  static const lastUpdatedColor = ColorRef(Color(0xFFE5E5E5));
+  static const primaryColor = ColorRef(Color(0xFFEC2758));
+  static const primaryTextColor = ColorRef(Color(0xFFFFFFFF));
+  static const plannedIconColor = ColorRef(Color(0xFFDBFFDE));
+  static const removeColor = ColorRef(Color(0xFFE04C4C));
+  static const roleNameColor = ColorRef(Color(0xFFC4C4C4));
+  static const secondaryColor = ColorRef(Color(0xFF333540));
+  static const secondaryTextColor = ColorRef(Color(0xFFEC2758));
+  static const subscribedIconColor = ColorRef(Color(0xFFFCE5E5));
+  static const taskIconColor = ColorRef(Color(0xFFEAD0FF));
+  static const todayCalendarColor = ColorRef(Color(0xFF23AFC2));
+  static const unAssignedIconColor = ColorRef(Color(0xFFFFE9C9));
+
+  // Text Scheme.
+  static const titleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 25,
+    fontWeight: FontWeight.w700,
+  );
+
+  static const subtitleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const listTitleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 18,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const listSubtitleTextStyle = TextStyle(
+    color: secondaryTextColor,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const taskTitleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 15,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const taskSubtitleTextStyle = TextStyle(
+    color: secondaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const calendarTextStyle = TextStyle(
+    color: calendarColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const buttonTextStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const todayCalendarTextStyle = TextStyle(
+    color: todayCalendarColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const taskListTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const addTaskTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const infoAvatarTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 9,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const activeTasksTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+  );
+
+  static const roleTextStyle = TextStyle(
+    color: floatingABColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const roleNameTextStyle = TextStyle(
+    color: roleNameColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const listMemberTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 15,
+    fontWeight: FontWeight.w500,
+  );
+
+  // Background Scheme.
+  static const toDoDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: FractionalOffset(0.5, 0.3),
+      end: Alignment.topCenter,
+      colors: [
+        ToDoTheme.backgroundGradientColor,
+        ToDoTheme.backgroundGradient2Color
+      ],
+    ),
+  );
+}

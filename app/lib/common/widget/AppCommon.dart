@@ -35,7 +35,7 @@ Widget elevatedButton(
   return ElevatedButton(
     onPressed: callback,
     style: ElevatedButton.styleFrom(
-      primary: color,
+      backgroundColor: color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
