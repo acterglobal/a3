@@ -150,6 +150,9 @@ class _EffektioHomeState extends State<EffektioHome>
         }
       }
     });
+    client.getConversationsRx()!.listen((event) {
+      debugPrint('real time conversations: ' + event.join(', '));
+    });
     return client;
   }
 

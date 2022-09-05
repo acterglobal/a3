@@ -1,5 +1,5 @@
 use anyhow::{bail, Context, Result};
-use futures::{pin_mut, stream, Stream, StreamExt};
+use futures::{pin_mut, StreamExt};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -50,6 +50,7 @@ impl Member {
     }
 }
 
+#[derive(Clone)]
 pub struct Room {
     pub(crate) client: MatrixClient,
     pub(crate) room: MatrixRoom,

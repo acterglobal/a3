@@ -38,9 +38,16 @@ use std::sync::{
 };
 
 use super::{
-    api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
-    ReceiptNotificationController, Room, SessionVerificationController,
-    TypingNotificationController, RUNTIME,
+    api::FfiBuffer,
+    account::Account,
+    conversation::{Conversation, ConversationController, LatestMessage},
+    device_lists::DeviceListsController,
+    group::Group,
+    receipt_notification::ReceiptNotificationController,
+    room::Room,
+    session_verification::SessionVerificationController,
+    typing_notification::TypingNotificationController,
+    RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -66,6 +73,7 @@ pub struct Client {
         Arc<MatrixRwLock<Option<TypingNotificationController>>>,
     pub(crate) receipt_notification_controller:
         Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
+    pub(crate) conversation_controller: ConversationController,
 }
 
 impl std::ops::Deref for Client {
@@ -112,6 +120,7 @@ pub(crate) async fn devide_groups_from_common(
                             room,
                             client: client.clone(),
                         },
+                        latest_msg: None,
                     });
                 }
 
@@ -147,6 +156,7 @@ impl Client {
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
             receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            conversation_controller: ConversationController::new(),
         }
     }
 
@@ -161,6 +171,8 @@ impl Client {
 
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
+
+        self.conversation_controller.clone().setup(&client);
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -196,7 +208,7 @@ impl Client {
 
                         let _ = first_synced_arc.send(true);
                         if !(*state).read().has_first_synced {
-                            (*state).write().has_first_synced = true
+                            (*state).write().has_first_synced = true;
                         }
                         if (*state).read().should_stop_syncing {
                             (*state).write().is_syncing = false;

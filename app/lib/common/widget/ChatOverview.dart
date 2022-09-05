@@ -62,6 +62,7 @@ class _ChatListItemState extends State<ChatListItem> {
   Stream<RoomMessage> _getLatestMessage() =>
       Stream.periodic(const Duration(milliseconds: 800))
           .asyncMap((_) => widget.room.latestMessage());
+
   @override
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
