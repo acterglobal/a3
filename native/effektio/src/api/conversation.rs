@@ -9,7 +9,7 @@ use log::{info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
-    ruma::events::room::message::{MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent},
+    ruma::events::room::message::{MessageType, OriginalSyncRoomMessageEvent, SyncRoomMessageEvent, TextMessageEventContent},
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
@@ -153,18 +153,23 @@ impl ConversationController {
     }
 
     pub(crate) fn setup(mut self, client: &MatrixClient) {
+        info!("conversation controller setup");
         let mut me = self.clone();
         let client = client.clone();
         RUNTIME.spawn(async move {
+            info!("conversation controller spawn");
             let mut me = me.clone();
             let conversations = ConversationController::devide_groups_from_common(client.clone()).await;
             me.conversations = conversations;
-            info!("conversation controller setup");
             client
                 .register_event_handler_context(me)
                 .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom, Ctx(me): Ctx<ConversationController>| async move {
                     info!("original sync room message event");
                     me.clone().process_room_message(ev, &room);
+                })
+                .await
+                .register_event_handler(|ev: SyncRoomMessageEvent| async move {
+                    info!("sync room message event");
                 })
                 .await;
         });
