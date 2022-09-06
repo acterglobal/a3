@@ -214,12 +214,12 @@ class _EffektioHomeState extends State<EffektioHome>
               NewsScreen(
                 client: client,
               ),
-              ChatList(client: _client),
+              ChatList(client: client),
               NotificationScreen(),
             ],
           ),
           drawer: SideDrawer(
-            client: _client,
+            client: client,
           ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,

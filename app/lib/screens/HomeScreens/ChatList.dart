@@ -16,7 +16,7 @@ import 'package:effektio/common/store/MockData.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({Key? key, required this.client}) : super(key: key);
-  final Future<Client> client;
+  final Client client;
 
   @override
   State<ChatList> createState() => _ChatListState();
@@ -39,10 +39,8 @@ class _ChatListState extends State<ChatList> {
     super.dispose();
   }
 
-  Future<void> _getUser() async {
-    var fetchClient = await widget.client;
-    user = await fetchClient.userId().then((u) => u.toString());
-  }
+  Future<void> _getUser() async =>
+      user = await widget.client.userId().then((u) => u.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -121,11 +119,11 @@ class _ChatListState extends State<ChatList> {
                           );
                         },
                       ),
-                      FutureBuilder<Client>(
-                        future: widget.client,
+                      FutureBuilder<FfiListConversation>(
+                        future: widget.client.conversations(),
                         builder: (
                           BuildContext context,
-                          AsyncSnapshot<Client> snapshot,
+                          AsyncSnapshot<FfiListConversation> snapshot,
                         ) {
                           if (snapshot.connectionState !=
                               ConnectionState.done) {
@@ -138,81 +136,58 @@ class _ChatListState extends State<ChatList> {
                                 ),
                               ),
                             );
-                          }
-                          if (snapshot.hasData) {
-                            return FutureBuilder<FfiListConversation>(
-                              future: snapshot.requireData
-                                  .conversations(), // a previously-obtained Future<String> or null
-                              builder: (
-                                BuildContext context,
-                                AsyncSnapshot<FfiListConversation> snapshot,
-                              ) {
-                                if (snapshot.hasData) {
-                                  return Flexible(
-                                    child: ChatOverview(
-                                      user: user,
-                                      rooms: snapshot.requireData.toList(),
-                                    ),
-                                  );
-                                } else {
-                                  return Center(
+                          } else {
+                            if (snapshot.hasData) {
+                              return Flexible(
+                                child: ChatOverview(
+                                  user: user,
+                                  rooms: snapshot.requireData.toList(),
+                                ),
+                              );
+                            } else {
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.height / 6,
+                                  ),
+                                  Center(
                                     child: Container(
-                                      height:
-                                          MediaQuery.of(context).size.height,
-                                      width: MediaQuery.of(context).size.width,
-                                      color: AppCommonTheme.backgroundColor,
-                                      child: Text(
-                                        AppLocalizations.of(context)!
-                                            .loadingConvo,
-                                        style: ChatTheme01.emptyMsgTitle,
+                                      child: SvgPicture.asset(
+                                        'assets/images/empty_messages.svg',
                                       ),
                                     ),
-                                  );
-                                }
-                              },
-                            );
-                          } else {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height / 6,
-                                ),
-                                Center(
-                                  child: Container(
-                                    child: SvgPicture.asset(
-                                      'assets/images/empty_messages.svg',
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.loadingConvo +
+                                        '...',
+                                    style: ChatTheme01.emptyMsgTitle,
+                                  ),
+                                  const SizedBox(
+                                    height: 5,
+                                  ),
+                                  Center(
+                                    child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height /
+                                              3,
+                                      width: MediaQuery.of(context).size.width /
+                                          1.5,
+                                      child: const Text(
+                                        'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+                                        style: ChatTheme01.chatBodyStyle,
+                                        overflow: TextOverflow.clip,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                  AppLocalizations.of(context)!.loadingConvo +
-                                      '...',
-                                  style: ChatTheme01.emptyMsgTitle,
-                                ),
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Center(
-                                  child: Container(
-                                    height:
-                                        MediaQuery.of(context).size.height / 3,
-                                    width:
-                                        MediaQuery.of(context).size.width / 1.5,
-                                    child: const Text(
-                                      'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                                      style: ChatTheme01.chatBodyStyle,
-                                      overflow: TextOverflow.clip,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
+                                ],
+                              );
+                            }
                           }
                         },
                       ),
