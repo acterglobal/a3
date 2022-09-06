@@ -7,7 +7,6 @@ import 'package:effektio/common/widget/SideMenu.dart';
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({Key? key, required this.client}) : super(key: key);
@@ -72,7 +71,7 @@ class _NewsScreenState extends State<NewsScreen>
               ),
             ),
             drawer: SideDrawer(
-              client: Future.value(widget.client),
+              client: widget.client,
             ),
             body: PageView.builder(
               itemCount: snapshot.requireData.length,
