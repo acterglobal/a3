@@ -17,8 +17,6 @@ class SideDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
-    late Future<String> name;
-    late Future<String> username;
     return Drawer(
       backgroundColor: AppCommonTheme.backgroundColor,
       child: ScrollConfiguration(
