@@ -53,33 +53,25 @@ impl Conversation {
         self.latest_msg.clone()
     }
 
-    pub(crate) async fn init(&self) -> Result<()> {
+    pub(crate) fn init(&self) {
         let room = self.room.clone();
         let mut latest_msg = self.latest_msg.clone();
-        RUNTIME
-            .spawn(async move {
-                let stream = room
-                    .timeline_backward()
-                    .await
-                    .context("Failed acquiring timeline streams")?;
-                pin_mut!(stream);
-                loop {
-                    match stream.next().await {
-                        None => break,
-                        Some(Ok(ev)) => {
-                            if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                                latest_msg = Some(LatestMessage::new(msg.body(), msg.sender(), msg.origin_server_ts()));
-                                return Ok(());
-                            }
-                        }
-                        _ => {
-                            // we ignore errors
-                        }
+        RUNTIME.spawn(async move {
+            let stream = room
+                .timeline_backward()
+                .await
+                .context("Failed acquiring timeline streams")
+                .unwrap();
+            pin_mut!(stream);
+            loop {
+                if let Some(Ok(ev)) = stream.next().await {
+                    info!("conversation timeline backward");
+                    if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+                        latest_msg = Some(LatestMessage::new(msg.body(), msg.sender(), msg.origin_server_ts()));
                     }
                 }
-                Ok(())
-            })
-            .await?
+            }
+        });
     }
 }
 
@@ -141,7 +133,8 @@ impl ConversationController {
                             },
                             latest_msg: None,
                         };
-                        item.init().await;
+                        item.init();
+                        info!("conversation initialized");
                         conversations.push(item);
                     }
 
@@ -152,27 +145,21 @@ impl ConversationController {
         return convos;
     }
 
-    pub(crate) fn setup(mut self, client: &MatrixClient) {
+    pub(crate) async fn setup(&self, client: &MatrixClient) {
         info!("conversation controller setup");
         let mut me = self.clone();
-        let client = client.clone();
-        RUNTIME.spawn(async move {
-            info!("conversation controller spawn");
-            let mut me = me.clone();
-            let conversations = ConversationController::devide_groups_from_common(client.clone()).await;
-            me.conversations = conversations;
-            client
-                .register_event_handler_context(me)
-                .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom, Ctx(me): Ctx<ConversationController>| async move {
-                    info!("original sync room message event");
-                    me.clone().process_room_message(ev, &room);
-                })
-                .await
-                .register_event_handler(|ev: SyncRoomMessageEvent| async move {
-                    info!("sync room message event");
-                })
-                .await;
-        });
+        me.conversations = ConversationController::devide_groups_from_common(client.clone()).await;
+        client
+            .register_event_handler_context(me)
+            .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom, Ctx(me): Ctx<ConversationController>| async move {
+                info!("original sync room message event");
+                me.clone().process_room_message(ev, &room);
+            })
+            .await
+            .register_event_handler(|ev: SyncRoomMessageEvent| async move {
+                info!("sync room message event");
+            })
+            .await;
     }
 
     fn process_room_message(mut self, ev: OriginalSyncRoomMessageEvent, room: &MatrixRoom) {
@@ -182,8 +169,8 @@ impl ConversationController {
                 MessageType::Text(TextMessageEventContent { body, .. }) => body,
                 _ => return,
             };
-            for (index, conv) in self.conversations.iter().enumerate() {
-                if conv.room_id() == room_id {
+            for (index, convo) in self.conversations.iter().enumerate() {
+                if convo.room_id() == room_id {
                     let latest_msg = Some(LatestMessage::new(msg_body, ev.sender.to_string(), ev.origin_server_ts.as_secs().into()));
                     self.conversations[index].latest_msg = latest_msg;
                     self.conversations.swap(0, index);

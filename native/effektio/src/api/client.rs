@@ -165,6 +165,7 @@ impl Client {
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
+        let conversation_controller = self.conversation_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = signal_channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
@@ -172,13 +173,12 @@ impl Client {
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
 
-        self.conversation_controller.clone().setup(&client);
-
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
+            conversation_controller.setup(&client).await;
 
             client
                 .clone()
