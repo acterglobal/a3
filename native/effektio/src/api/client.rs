@@ -38,8 +38,8 @@ use std::sync::{
 };
 
 use super::{
-    api::FfiBuffer,
     account::Account,
+    api::FfiBuffer,
     conversation::{Conversation, ConversationController, LatestMessage},
     device_lists::DeviceListsController,
     group::Group,

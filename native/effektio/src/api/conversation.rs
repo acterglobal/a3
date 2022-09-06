@@ -1,15 +1,16 @@
 use anyhow::{Context, Result};
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
 use futures::{
-    pin_mut,
     channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
+    pin_mut, StreamExt,
 };
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
-    ruma::events::room::message::{MessageType, OriginalSyncRoomMessageEvent, SyncRoomMessageEvent, TextMessageEventContent},
+    ruma::events::room::message::{
+        MessageType, OriginalSyncRoomMessageEvent, SyncRoomMessageEvent, TextMessageEventContent,
+    },
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
@@ -26,7 +27,11 @@ pub struct LatestMessage {
 
 impl LatestMessage {
     pub(crate) fn new(body: String, sender: String, origin_server_ts: u64) -> Self {
-        LatestMessage { body, sender, origin_server_ts }
+        LatestMessage {
+            body,
+            sender,
+            origin_server_ts,
+        }
     }
 
     pub fn get_body(&self) -> String {
@@ -67,7 +72,11 @@ impl Conversation {
                 if let Some(Ok(ev)) = stream.next().await {
                     info!("conversation timeline backward");
                     if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                        latest_msg = Some(LatestMessage::new(msg.body(), msg.sender(), msg.origin_server_ts()));
+                        latest_msg = Some(LatestMessage::new(
+                            msg.body(),
+                            msg.sender(),
+                            msg.origin_server_ts(),
+                        ));
                     }
                 }
             }
@@ -151,10 +160,14 @@ impl ConversationController {
         me.conversations = ConversationController::devide_groups_from_common(client.clone()).await;
         client
             .register_event_handler_context(me)
-            .register_event_handler(|ev: OriginalSyncRoomMessageEvent, room: MatrixRoom, Ctx(me): Ctx<ConversationController>| async move {
-                info!("original sync room message event");
-                me.clone().process_room_message(ev, &room);
-            })
+            .register_event_handler(
+                |ev: OriginalSyncRoomMessageEvent,
+                 room: MatrixRoom,
+                 Ctx(me): Ctx<ConversationController>| async move {
+                    info!("original sync room message event");
+                    me.clone().process_room_message(ev, &room);
+                },
+            )
             .await
             .register_event_handler(|ev: SyncRoomMessageEvent| async move {
                 info!("sync room message event");
@@ -171,7 +184,11 @@ impl ConversationController {
             };
             for (index, convo) in self.conversations.iter().enumerate() {
                 if convo.room_id() == room_id {
-                    let latest_msg = Some(LatestMessage::new(msg_body, ev.sender.to_string(), ev.origin_server_ts.as_secs().into()));
+                    let latest_msg = Some(LatestMessage::new(
+                        msg_body,
+                        ev.sender.to_string(),
+                        ev.origin_server_ts.as_secs().into(),
+                    ));
                     self.conversations[index].latest_msg = latest_msg;
                     self.conversations.swap(0, index);
                     let mut tx = self.event_tx.clone();
