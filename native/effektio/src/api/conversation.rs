@@ -151,7 +151,7 @@ impl ConversationController {
                 },
             )
             .await;
-        return convos;
+        convos
     }
 
     pub(crate) async fn setup(&self, client: &MatrixClient) {
