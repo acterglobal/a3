@@ -13,7 +13,7 @@ use futures::{
     stream, StreamExt,
 };
 use futures_signals::signal::{
-    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
+    channel as signal_channel, Mutable, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
 use log::info;
 use matrix_sdk::{
@@ -120,7 +120,7 @@ pub(crate) async fn devide_groups_from_common(
                             room,
                             client: client.clone(),
                         },
-                        latest_msg: None,
+                        latest_msg: Mutable::new(None),
                     });
                 }
 

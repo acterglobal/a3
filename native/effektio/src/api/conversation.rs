@@ -4,6 +4,7 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     pin_mut, StreamExt,
 };
+use futures_signals::signal::Mutable;
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
@@ -50,17 +51,17 @@ impl LatestMessage {
 #[derive(Clone)]
 pub struct Conversation {
     pub(crate) inner: Room,
-    pub(crate) latest_msg: Option<LatestMessage>,
+    pub(crate) latest_msg: Mutable<Option<LatestMessage>>,
 }
 
 impl Conversation {
     pub fn get_latest_msg(&self) -> Option<LatestMessage> {
-        self.latest_msg.clone()
+        self.latest_msg.lock_mut().take()
     }
 
     pub(crate) fn init(&self) {
         let room = self.room.clone();
-        let mut latest_msg = self.latest_msg.clone();
+        let me = self.clone();
         RUNTIME.spawn(async move {
             let stream = room
                 .timeline_backward()
@@ -72,11 +73,12 @@ impl Conversation {
                 if let Some(Ok(ev)) = stream.next().await {
                     info!("conversation timeline backward");
                     if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                        latest_msg = Some(LatestMessage::new(
+                        let latest_msg = LatestMessage::new(
                             msg.body(),
                             msg.sender(),
                             msg.origin_server_ts(),
-                        ));
+                        );
+                        me.latest_msg.set(Some(latest_msg));
                     }
                 }
             }
@@ -140,7 +142,7 @@ impl ConversationController {
                                 room,
                                 client: client.clone(),
                             },
-                            latest_msg: None,
+                            latest_msg: Mutable::new(None),
                         };
                         item.init();
                         info!("conversation initialized");
@@ -189,7 +191,7 @@ impl ConversationController {
                         ev.sender.to_string(),
                         ev.origin_server_ts.as_secs().into(),
                     ));
-                    self.conversations[index].latest_msg = latest_msg;
+                    self.conversations[index].latest_msg.set(latest_msg);
                     self.conversations.swap(0, index);
                     let mut tx = self.event_tx.clone();
                     if let Err(e) = tx.try_send(self.conversations.clone()) {
