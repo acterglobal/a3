@@ -95,7 +95,7 @@ impl std::ops::Deref for Conversation {
 
 #[derive(Clone)]
 pub struct ConversationController {
-    conversations: Vec<Conversation>,
+    conversations: Mutable<Vec<Conversation>>,
     event_tx: Sender<Vec<Conversation>>,
     event_rx: Arc<Mutex<Option<Receiver<Vec<Conversation>>>>>,
 }
@@ -104,7 +104,7 @@ impl ConversationController {
     pub(crate) fn new() -> Self {
         let (tx, rx) = channel::<Vec<Conversation>>(10); // dropping after more than 10 items queued
         ConversationController {
-            conversations: vec![],
+            conversations: Mutable::new(vec![]),
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
         }
@@ -158,8 +158,9 @@ impl ConversationController {
 
     pub(crate) async fn setup(&self, client: &MatrixClient) {
         info!("conversation controller setup");
+        let convos = ConversationController::devide_groups_from_common(client.clone()).await;
+        self.conversations.set(convos);
         let mut me = self.clone();
-        me.conversations = ConversationController::devide_groups_from_common(client.clone()).await;
         client
             .register_event_handler_context(me)
             .register_event_handler(
@@ -184,17 +185,18 @@ impl ConversationController {
                 MessageType::Text(TextMessageEventContent { body, .. }) => body,
                 _ => return,
             };
-            for (index, convo) in self.conversations.iter().enumerate() {
+            let mut convos = self.conversations.lock_mut();
+            for (index, convo) in convos.iter().enumerate() {
                 if convo.room_id() == room_id {
                     let latest_msg = Some(LatestMessage::new(
                         msg_body,
                         ev.sender.to_string(),
                         ev.origin_server_ts.as_secs().into(),
                     ));
-                    self.conversations[index].latest_msg.set(latest_msg);
-                    self.conversations.swap(0, index);
+                    convos[index].latest_msg.set(latest_msg);
+                    convos.swap(0, index);
                     let mut tx = self.event_tx.clone();
-                    if let Err(e) = tx.try_send(self.conversations.clone()) {
+                    if let Err(e) = tx.try_send(convos.to_vec()) {
                         log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
                     }
                     break;
