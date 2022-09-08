@@ -115,13 +115,10 @@ pub(crate) async fn devide_groups_from_common(
                         },
                     });
                 } else {
-                    conversations.push(Conversation {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                        latest_msg: Mutable::new(None),
-                    });
+                    conversations.push(Conversation::new(Room {
+                        room,
+                        client: client.clone(),
+                    }));
                 }
 
                 (groups, conversations, client)

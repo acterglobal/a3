@@ -59,30 +59,73 @@ impl Conversation {
         self.latest_msg.lock_mut().take()
     }
 
-    pub(crate) fn init(&self) {
-        let room = self.room.clone();
-        let me = self.clone();
+    pub fn new(inner: Room) -> Self {
+        let room = inner.room.clone();
+        let s = Conversation {
+            inner,
+            latest_msg: Default::default(),
+        };
+
+        let me = s.clone();
+        // FIXME: hold this handler!
         RUNTIME.spawn(async move {
-            let stream = room
-                .timeline_backward()
+            let (fwd, backward) = room
+                .timeline()
                 .await
                 .context("Failed acquiring timeline streams")
                 .unwrap();
-            pin_mut!(stream);
+            pin_mut!(backward);
+            // try to find the last message in the past.
             loop {
-                if let Some(Ok(ev)) = stream.next().await {
-                    info!("conversation timeline backward");
-                    if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                        let latest_msg = LatestMessage::new(
-                            msg.body(),
-                            msg.sender(),
-                            msg.origin_server_ts(),
-                        );
-                        me.latest_msg.set(Some(latest_msg));
+                match backward.next().await {
+                    Some(Ok(ev)) => {
+                        info!("conversation timeline backward");
+                        if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+                            let latest_msg = LatestMessage::new(
+                                msg.body(),
+                                msg.sender(),
+                                msg.origin_server_ts(),
+                            );
+                            me.latest_msg.set(Some(latest_msg));
+                            break;
+                        }
+                    }
+                    Some(Err(e)) => {
+                        println!("Error fetching messages {:}", e);
+                        break;
+                    }
+                    _ => {
+                        println!("No old messages found");
+                        break;
+                    }
+                }
+            }
+
+            pin_mut!(fwd);
+            // now continue to poll for incoming messages
+            loop {
+                match fwd.next().await {
+                    Some(ev) => {
+                        info!("conversation timeline backward");
+                        if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+                            let latest_msg = LatestMessage::new(
+                                msg.body(),
+                                msg.sender(),
+                                msg.origin_server_ts(),
+                            );
+                            me.latest_msg.set(Some(latest_msg));
+                            break;
+                        }
+                    }
+                    _ => {
+                        println!("Messages stream stopped");
+                        break;
                     }
                 }
             }
         });
+
+        s
     }
 }
 
@@ -114,51 +157,10 @@ impl ConversationController {
         self.event_rx.lock().take()
     }
 
-    async fn devide_groups_from_common(client: MatrixClient) -> Vec<Conversation> {
-        let (convos, _) = futures::stream::iter(client.clone().rooms().into_iter())
-            .fold(
-                (Vec::new(), client),
-                async move |(mut conversations, client), room| {
-                    let is_effektio_group = {
-                        #[allow(clippy::match_like_matches_macro)]
-                        if let Ok(Some(_)) = room
-                            .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
-                            .await
-                        {
-                            true
-                        } else if let Ok(Some(_)) = room
-                            .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                            .await
-                        {
-                            true
-                        } else {
-                            false
-                        }
-                    };
-
-                    if !is_effektio_group {
-                        let item = Conversation {
-                            inner: Room {
-                                room,
-                                client: client.clone(),
-                            },
-                            latest_msg: Mutable::new(None),
-                        };
-                        item.init();
-                        info!("conversation initialized");
-                        conversations.push(item);
-                    }
-
-                    (conversations, client)
-                },
-            )
-            .await;
-        convos
-    }
-
     pub(crate) async fn setup(&self, client: &MatrixClient) {
         info!("conversation controller setup");
-        let convos = ConversationController::devide_groups_from_common(client.clone()).await;
+        let (_, convos) = super::client::devide_groups_from_common(client.clone()).await;
+
         self.conversations.set(convos);
         let mut me = self.clone();
         client
