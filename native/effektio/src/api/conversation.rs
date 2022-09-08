@@ -182,12 +182,12 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             for (index, convo) in convos.iter_mut().enumerate() {
                 if convo.room_id() == room_id {
-                    convo.set_latest_msg(
+                    (*convo).set_latest_msg(
                         msg_body,
                         ev.sender.to_string(),
                         ev.origin_server_ts.as_secs().into(),
                     );
-                    convos.swap(0, index);
+                    (*convos).swap(0, index);
                     let mut tx = self.event_tx.clone();
                     if let Err(e) = tx.try_send(convos.to_vec()) {
                         warn!("Dropping sync event for {}: {}", room_id, e);
