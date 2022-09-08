@@ -180,13 +180,16 @@ impl ConversationController {
                 _ => return,
             };
             let mut convos = self.conversations.lock_mut();
-            for (index, convo) in convos.iter_mut().enumerate() {
+            for (index, convo) in convos.iter().enumerate() {
                 if convo.room_id() == room_id {
-                    convos[index].set_latest_msg(
+                    let c = convo.clone();
+                    c.set_latest_msg(
                         msg_body,
                         ev.sender.to_string(),
                         ev.origin_server_ts.as_secs().into(),
                     );
+                    convos.remove(index);
+                    convos.insert(index, c);
                     convos.swap(0, index);
                     let mut tx = self.event_tx.clone();
                     if let Err(e) = tx.try_send(convos.to_vec()) {
