@@ -180,7 +180,7 @@ impl ConversationController {
                 _ => return,
             };
             let mut convos = self.conversations.lock_mut();
-            for (index, convo) in convos.iter().enumerate() {
+            for (index, convo) in convos.iter_mut().enumerate() {
                 if convo.room_id() == room_id {
                     convos[index].set_latest_msg(
                         msg_body,
@@ -190,7 +190,7 @@ impl ConversationController {
                     convos.swap(0, index);
                     let mut tx = self.event_tx.clone();
                     if let Err(e) = tx.try_send(convos.to_vec()) {
-                        warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                        warn!("Dropping sync event for {}: {}", room_id, e);
                     }
                     break;
                 }
