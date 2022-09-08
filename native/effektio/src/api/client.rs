@@ -40,7 +40,7 @@ use std::sync::{
 use super::{
     account::Account,
     api::FfiBuffer,
-    conversation::{Conversation, ConversationController, LatestMessage},
+    conversation::{Conversation, ConversationController, ConversationMessage},
     device_lists::DeviceListsController,
     group::Group,
     receipt_notification::ReceiptNotificationController,

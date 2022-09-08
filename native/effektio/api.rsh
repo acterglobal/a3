@@ -142,6 +142,12 @@ object TimelineStream {
     fn paginate_backwards(count: u64) -> Future<Result<Vec<RoomMessage>>>;
 }
 
+object ConversationMessage {
+    fn body() -> string;
+    fn sender() -> string;
+    fn origin_server_ts() -> u64;
+}
+
 object Conversation {
     /// Calculate the display name
     fn display_name() -> Future<Result<string>>;
@@ -160,6 +166,9 @@ object Conversation {
 
     /// The last message sent to the room
     fn latest_message() -> Future<Result<RoomMessage>>;
+
+    /// The last message sent to the room
+    fn latest_msg() -> Option<ConversationMessage>;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -283,7 +292,7 @@ object Client {
     fn conversations() -> Future<Result<Vec<Conversation>>>;
 
     /// The update event of conversations the user is involved in
-    fn get_conversations_rx() -> Option<Stream<Vec<Conversation>>>;
+    fn conversations_rx() -> Option<Stream<Vec<Conversation>>>;
 
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;
