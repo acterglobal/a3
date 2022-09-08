@@ -182,7 +182,7 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             for (index, convo) in convos.iter_mut().enumerate() {
                 if convo.room_id() == room_id {
-                    (*convos)[index].set_latest_msg(
+                    convo.set_latest_msg(
                         msg_body,
                         ev.sender.to_string(),
                         ev.origin_server_ts.as_secs().into(),
