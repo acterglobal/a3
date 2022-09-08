@@ -180,7 +180,7 @@ impl ConversationController {
                 _ => return,
             };
             let mut convos = self.conversations.lock_mut();
-            for (index, convo) in convos.iter_mut().enumerate() {
+            for (index, convo) in (*convos).iter_mut().enumerate() {
                 if convo.room_id() == room_id {
                     (*convo).set_latest_msg(
                         msg_body,
