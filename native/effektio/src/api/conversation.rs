@@ -147,43 +147,44 @@ impl ConversationController {
     }
 
     pub(crate) async fn setup(&self, client: &MatrixClient) {
-        info!("conversation controller setup");
         let (_, convos) = devide_groups_from_common(client.clone()).await;
-
         self.conversations.lock_mut().replace_cloned(convos);
-        let mut me = self.clone();
+
+        let me = self.clone();
         client
             .register_event_handler_context(me)
+            .register_event_handler_context(client.clone())
             .register_event_handler(
                 |ev: OriginalSyncRoomMessageEvent,
                  room: MatrixRoom,
-                 Ctx(me): Ctx<ConversationController>| async move {
-                    info!("original sync room message event");
-                    me.clone().process_room_message(ev, &room);
+                 Ctx(me): Ctx<ConversationController>,
+                 Ctx(client): Ctx<MatrixClient>| async move {
+                    me.clone().process_room_message(ev, &room, &client);
                 },
             )
             .await;
     }
 
-    fn process_room_message(mut self, ev: OriginalSyncRoomMessageEvent, room: &MatrixRoom) {
-        let room_id = room.room_id();
-        if let MatrixRoom::Joined(room) = room {
+    fn process_room_message(mut self, ev: OriginalSyncRoomMessageEvent, room: &MatrixRoom, client: &MatrixClient) {
+        if let MatrixRoom::Joined(joined) = room {
             let msg_body = match ev.content.msgtype {
                 MessageType::Text(TextMessageEventContent { body, .. }) => body,
                 _ => return,
             };
             let mut convos = self.conversations.lock_mut();
-            for (idx, convo) in convos.iter().enumerate() {
-                if convo.room_id() == room_id {
-                    convo.set_latest_msg(
-                        msg_body,
-                        ev.sender.to_string(),
-                        ev.origin_server_ts.as_secs().into(),
-                    );
-                    convos.set_cloned(idx, convo.clone());
-                    convos.move_from_to(idx, 0);
-                    break;
-                }
+            let room_id = room.room_id();
+            if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                let convo = Conversation::new(Room {
+                    client: client.clone(),
+                    room: room.clone(),
+                });
+                convo.set_latest_msg(
+                    msg_body,
+                    ev.sender.to_string(),
+                    ev.origin_server_ts.as_secs().into(),
+                );
+                convos.set_cloned(idx, convo);
+                convos.move_from_to(idx, 0);
             }
         }
     }
