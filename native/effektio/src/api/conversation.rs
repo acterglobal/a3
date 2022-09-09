@@ -1,23 +1,18 @@
 use anyhow::Context;
-use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
-    pin_mut, StreamExt,
-};
+use futures::{pin_mut, StreamExt};
 use futures_signals::{
-    signal::{Mutable, Signal, SignalExt, SignalStream},
-    signal_vec::{Map, MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
+    signal::{Mutable, SignalExt, SignalStream},
+    signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
 };
 use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
     ruma::events::room::message::{
-        MessageType, OriginalSyncRoomMessageEvent, SyncRoomMessageEvent, TextMessageEventContent,
+        MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent,
     },
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
-use std::sync::Arc;
 
 use super::{
     client::{devide_groups_from_common, Client},
@@ -140,7 +135,7 @@ impl std::ops::Deref for Conversation {
 }
 
 #[derive(Clone)]
-pub struct ConversationController {
+pub(crate) struct ConversationController {
     conversations: MutableVec<Conversation>,
 }
 
@@ -178,8 +173,17 @@ impl ConversationController {
                 _ => return,
             };
             let mut convos = self.conversations.lock_mut();
-            if let Some(idx) = convos.iter().position(|c| c.room_id() == room_id) {
-                convos.move_from_to(idx, 0);
+            for (idx, convo) in convos.iter().enumerate() {
+                if convo.room_id() == room_id {
+                    convo.set_latest_msg(
+                        msg_body,
+                        ev.sender.to_string(),
+                        ev.origin_server_ts.as_secs().into(),
+                    );
+                    convos.set_cloned(idx, convo.clone());
+                    convos.move_from_to(idx, 0);
+                    break;
+                }
             }
         }
     }
@@ -189,6 +193,7 @@ impl Client {
     pub fn conversations_rx(&self) -> SignalStream<ToSignalCloned<MutableSignalVec<Conversation>>> {
         self.conversations_diff_rx().to_signal_cloned().to_stream()
     }
+
     pub fn conversations_diff_rx(&self) -> MutableSignalVec<Conversation> {
         self.conversation_controller
             .conversations
