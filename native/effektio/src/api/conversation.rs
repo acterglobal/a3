@@ -165,7 +165,12 @@ impl ConversationController {
             .await;
     }
 
-    fn process_room_message(mut self, ev: OriginalSyncRoomMessageEvent, room: &MatrixRoom, client: &MatrixClient) {
+    fn process_room_message(
+        &self,
+        ev: OriginalSyncRoomMessageEvent,
+        room: &MatrixRoom,
+        client: &MatrixClient,
+    ) {
         if let MatrixRoom::Joined(joined) = room {
             let msg_body = match ev.content.msgtype {
                 MessageType::Text(TextMessageEventContent { body, .. }) => body,
