@@ -292,7 +292,7 @@ object Client {
     fn conversations() -> Future<Result<Vec<Conversation>>>;
 
     /// The update event of conversations the user is involved in
-    fn conversations_rx() -> Option<Stream<Vec<Conversation>>>;
+    fn conversations_rx() -> Stream<Vec<Conversation>>;
 
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;

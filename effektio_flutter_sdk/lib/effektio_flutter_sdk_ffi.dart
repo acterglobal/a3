@@ -4972,12 +4972,12 @@ class Api {
   )>();
   late final _clientConversationsRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientConversationsRxReturn Function(
+          ffi.Int64 Function(
     ffi.Int64,
   )>>("__Client_conversations_rx");
 
   late final _clientConversationsRx = _clientConversationsRxPtr.asFunction<
-      _ClientConversationsRxReturn Function(
+      int Function(
     int,
   )>();
   late final _clientGroupsPtr = _lookup<
@@ -9043,21 +9043,17 @@ class Client {
   }
 
   /// The update event of conversations the user is involved in
-  Stream<FfiListConversation>? conversationsRx() {
+  Stream<FfiListConversation> conversationsRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientConversationsRx(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Client_conversations_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientConversationsRxStreamPoll);
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientConversationsRxStreamPoll);
     return tmp2;
   }
 
@@ -10505,13 +10501,6 @@ class _MemberUserIdReturn extends ffi.Struct {
 }
 
 class _SyncStateGetFirstSyncedRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _ClientConversationsRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

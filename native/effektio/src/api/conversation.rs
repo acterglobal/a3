@@ -3,7 +3,10 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     pin_mut, StreamExt,
 };
-use futures_signals::signal::Mutable;
+use futures_signals::{
+    signal::{Mutable, Signal, SignalExt, SignalStream},
+    signal_vec::{Map, MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
+};
 use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
@@ -138,18 +141,13 @@ impl std::ops::Deref for Conversation {
 
 #[derive(Clone)]
 pub struct ConversationController {
-    conversations: Mutable<Vec<Conversation>>,
-    event_tx: Sender<Vec<Conversation>>,
-    event_rx: Arc<Mutex<Option<Receiver<Vec<Conversation>>>>>,
+    conversations: MutableVec<Conversation>,
 }
 
 impl ConversationController {
     pub(crate) fn new() -> Self {
-        let (tx, rx) = channel::<Vec<Conversation>>(10); // dropping after more than 10 items queued
         ConversationController {
             conversations: Default::default(),
-            event_tx: tx,
-            event_rx: Arc::new(Mutex::new(Some(rx))),
         }
     }
 
@@ -157,7 +155,7 @@ impl ConversationController {
         info!("conversation controller setup");
         let (_, convos) = devide_groups_from_common(client.clone()).await;
 
-        self.conversations.set(convos);
+        self.conversations.lock_mut().replace_cloned(convos);
         let mut me = self.clone();
         client
             .register_event_handler_context(me)
@@ -180,27 +178,20 @@ impl ConversationController {
                 _ => return,
             };
             let mut convos = self.conversations.lock_mut();
-            for (index, convo) in (*convos).iter_mut().enumerate() {
-                if convo.room_id() == room_id {
-                    (*convo).set_latest_msg(
-                        msg_body,
-                        ev.sender.to_string(),
-                        ev.origin_server_ts.as_secs().into(),
-                    );
-                    (*convos).swap(0, index);
-                    let mut tx = self.event_tx.clone();
-                    if let Err(e) = tx.try_send(convos.to_vec()) {
-                        warn!("Dropping sync event for {}: {}", room_id, e);
-                    }
-                    break;
-                }
+            if let Some(idx) = convos.iter().position(|c| c.room_id() == room_id) {
+                convos.move_from_to(idx, 0);
             }
         }
     }
 }
 
 impl Client {
-    pub fn conversations_rx(&self) -> Option<Receiver<Vec<Conversation>>> {
-        self.conversation_controller.event_rx.lock().take()
+    pub fn conversations_rx(&self) -> SignalStream<ToSignalCloned<MutableSignalVec<Conversation>>> {
+        self.conversations_diff_rx().to_signal_cloned().to_stream()
+    }
+    pub fn conversations_diff_rx(&self) -> MutableSignalVec<Conversation> {
+        self.conversation_controller
+            .conversations
+            .signal_vec_cloned()
     }
 }
