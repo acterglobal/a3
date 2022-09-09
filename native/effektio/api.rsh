@@ -307,8 +307,8 @@ object Client {
     /// Return the typing notification controller. If not exists, create it.
     fn get_typing_notification_controller() -> Future<Result<TypingNotificationController>>;
 
-    /// Return the read notification controller. If not exists, create it.
-    fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;
+    /// Return the read notification event receiver
+    fn receipt_notification_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
 }
 
 object SessionVerificationController {
@@ -377,10 +377,6 @@ object SessionVerificationEmoji {
 
     /// text description of emoji unicode
     fn description() -> string;
-}
-
-object ReceiptNotificationController {
-    fn get_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
 }
 
 /// Deliver read notification from rust to flutter

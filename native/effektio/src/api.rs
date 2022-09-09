@@ -35,9 +35,7 @@ pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsC
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use messages::{FileDescription, ImageDescription, RoomMessage};
-pub use receipt_notification::{
-    ReceiptNotificationController, ReceiptNotificationEvent, ReceiptRecord,
-};
+pub use receipt_notification::{ReceiptNotificationEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,

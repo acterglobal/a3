@@ -2876,53 +2876,6 @@ class Api {
     return tmp7;
   }
 
-  ReceiptNotificationController?
-      __clientGetReceiptNotificationControllerFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientGetReceiptNotificationControllerFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 =
-        _Box(this, tmp13_0, "drop_box_ReceiptNotificationController");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = ReceiptNotificationController._(this, tmp13_1);
-    return tmp7;
-  }
-
   bool? __sessionVerificationEventAcceptVerificationRequestFuturePoll(
     int boxed,
     int postCobject,
@@ -3730,6 +3683,42 @@ class Api {
     return tmp9;
   }
 
+  ReceiptNotificationEvent? __clientReceiptNotificationEventRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientReceiptNotificationEventRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptNotificationEvent");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = ReceiptNotificationEvent._(this, tmp11_1);
+    return tmp9;
+  }
+
   SessionVerificationEvent? __sessionVerificationControllerGetEventRxStreamPoll(
     int boxed,
     int postCobject,
@@ -3763,42 +3752,6 @@ class Api {
     final tmp11_1 = _Box(this, tmp11_0, "drop_box_SessionVerificationEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
     final tmp9 = SessionVerificationEvent._(this, tmp11_1);
-    return tmp9;
-  }
-
-  ReceiptNotificationEvent? __receiptNotificationControllerGetEventRxStreamPoll(
-    int boxed,
-    int postCobject,
-    int port,
-    int done,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    final tmp6 = done;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp7 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    tmp7 = tmp6;
-    final tmp8 = _receiptNotificationControllerGetEventRxStreamPoll(
-      tmp1,
-      tmp3,
-      tmp5,
-      tmp7,
-    );
-    final tmp10 = tmp8.arg0;
-    final tmp11 = tmp8.arg1;
-    if (tmp10 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptNotificationEvent");
-    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = ReceiptNotificationEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -4978,15 +4931,15 @@ class Api {
           int Function(
     int,
   )>();
-  late final _clientGetReceiptNotificationControllerPtr = _lookup<
+  late final _clientReceiptNotificationEventRxPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ClientReceiptNotificationEventRxReturn Function(
     ffi.Int64,
-  )>>("__Client_get_receipt_notification_controller");
+  )>>("__Client_receipt_notification_event_rx");
 
-  late final _clientGetReceiptNotificationController =
-      _clientGetReceiptNotificationControllerPtr.asFunction<
-          int Function(
+  late final _clientReceiptNotificationEventRx =
+      _clientReceiptNotificationEventRxPtr.asFunction<
+          _ClientReceiptNotificationEventRxReturn Function(
     int,
   )>();
   late final _sessionVerificationControllerGetEventRxPtr = _lookup<
@@ -5222,17 +5175,6 @@ class Api {
   late final _sessionVerificationEmojiDescription =
       _sessionVerificationEmojiDescriptionPtr.asFunction<
           _SessionVerificationEmojiDescriptionReturn Function(
-    int,
-  )>();
-  late final _receiptNotificationControllerGetEventRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ReceiptNotificationControllerGetEventRxReturn Function(
-    ffi.Int64,
-  )>>("__ReceiptNotificationController_get_event_rx");
-
-  late final _receiptNotificationControllerGetEventRx =
-      _receiptNotificationControllerGetEventRxPtr.asFunction<
-          _ReceiptNotificationControllerGetEventRxReturn Function(
     int,
   )>();
   late final _receiptNotificationEventGetRoomIdPtr = _lookup<
@@ -6132,21 +6074,6 @@ class Api {
     int,
     int,
   )>();
-  late final _clientGetReceiptNotificationControllerFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientGetReceiptNotificationControllerFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_get_receipt_notification_controller_future_poll");
-
-  late final _clientGetReceiptNotificationControllerFuturePoll =
-      _clientGetReceiptNotificationControllerFuturePollPtr.asFunction<
-          _ClientGetReceiptNotificationControllerFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _sessionVerificationEventAcceptVerificationRequestFuturePollPtr =
       _lookup<
           ffi.NativeFunction<
@@ -6485,6 +6412,23 @@ class Api {
     int,
     int,
   )>();
+  late final _clientReceiptNotificationEventRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientReceiptNotificationEventRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_receipt_notification_event_rx_stream_poll");
+
+  late final _clientReceiptNotificationEventRxStreamPoll =
+      _clientReceiptNotificationEventRxStreamPollPtr.asFunction<
+          _ClientReceiptNotificationEventRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _sessionVerificationControllerGetEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _SessionVerificationControllerGetEventRxStreamPollReturn Function(
@@ -6497,23 +6441,6 @@ class Api {
   late final _sessionVerificationControllerGetEventRxStreamPoll =
       _sessionVerificationControllerGetEventRxStreamPollPtr.asFunction<
           _SessionVerificationControllerGetEventRxStreamPollReturn Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
-  late final _receiptNotificationControllerGetEventRxStreamPollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReceiptNotificationControllerGetEventRxStreamPollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__ReceiptNotificationController_get_event_rx_stream_poll");
-
-  late final _receiptNotificationControllerGetEventRxStreamPoll =
-      _receiptNotificationControllerGetEventRxStreamPollPtr.asFunction<
-          _ReceiptNotificationControllerGetEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8982,20 +8909,24 @@ class Client {
     return tmp2;
   }
 
-  /// Return the read notification controller. If not exists, create it.
-  Future<ReceiptNotificationController> getReceiptNotificationController() {
+  /// Return the read notification event receiver
+  Stream<ReceiptNotificationEvent>? receiptNotificationEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientGetReceiptNotificationController(
+    final tmp1 = _api._clientReceiptNotificationEventRx(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0,
-        "__Client_get_receipt_notification_controller_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(
-        tmp3_1, _api.__clientGetReceiptNotificationControllerFuturePoll);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(
+        _api, tmp4_0, "__Client_receipt_notification_event_rx_stream_drop");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = _nativeStream(
+        tmp4_1, _api.__clientReceiptNotificationEventRxStreamPoll);
     return tmp2;
   }
 
@@ -9419,38 +9350,6 @@ class SessionVerificationEmoji {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-class ReceiptNotificationController {
-  final Api _api;
-  final _Box _box;
-
-  ReceiptNotificationController._(this._api, this._box);
-
-  Stream<ReceiptNotificationEvent>? getEventRx() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._receiptNotificationControllerGetEventRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0,
-        "__ReceiptNotificationController_get_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(
-        tmp4_1, _api.__receiptNotificationControllerGetEventRxStreamPoll);
     return tmp2;
   }
 
@@ -10239,6 +10138,13 @@ class _SyncStateGetFirstSyncedRxReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ClientReceiptNotificationEventRxReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _SessionVerificationControllerGetEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -10310,13 +10216,6 @@ class _SessionVerificationEmojiDescriptionReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
-}
-
-class _ReceiptNotificationControllerGetEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
 }
 
 class _ReceiptNotificationEventGetRoomIdReturn extends ffi.Struct {
@@ -11111,22 +11010,6 @@ class _ClientGetTypingNotificationControllerFuturePollReturn
   external int arg5;
 }
 
-class _ClientGetReceiptNotificationControllerFuturePollReturn
-    extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _SessionVerificationEventAcceptVerificationRequestFuturePollReturn
     extends ffi.Struct {
   @ffi.Uint8()
@@ -11420,15 +11303,14 @@ class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _SessionVerificationControllerGetEventRxStreamPollReturn
-    extends ffi.Struct {
+class _ClientReceiptNotificationEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
   external int arg1;
 }
 
-class _ReceiptNotificationControllerGetEventRxStreamPollReturn
+class _SessionVerificationControllerGetEventRxStreamPollReturn
     extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;

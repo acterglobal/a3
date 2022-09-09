@@ -4,15 +4,18 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
-    room::Room,
+    event_handler::Ctx,
+    room::Room as MatrixRoom,
     ruma::{
         events::{receipt::ReceiptEventContent, SyncEphemeralRoomEvent},
         receipt::ReceiptType,
     },
-    Client,
+    Client as MatrixClient,
 };
 use parking_lot::Mutex;
 use std::sync::Arc;
+
+use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct ReceiptRecord {
@@ -81,14 +84,24 @@ impl ReceiptNotificationController {
         }
     }
 
-    pub fn get_event_rx(&self) -> Option<Receiver<ReceiptNotificationEvent>> {
-        self.event_rx.lock().take()
+    pub(crate) async fn setup(&self, client: &MatrixClient) {
+        let me = self.clone();
+        client
+            .register_event_handler_context(me)
+            .register_event_handler(
+                |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
+                 room: MatrixRoom,
+                 Ctx(me): Ctx<ReceiptNotificationController>| async move {
+                    me.clone().process_ephemeral_event(ev, &room);
+                },
+            )
+            .await;
     }
 
-    pub(crate) fn process_ephemeral_event(
+    fn process_ephemeral_event(
         &self,
         ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
-        room: &Room,
+        room: &MatrixRoom,
     ) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
@@ -105,5 +118,11 @@ impl ReceiptNotificationController {
         if let Err(e) = event_tx.try_send(msg) {
             log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
+    }
+}
+
+impl Client {
+    pub fn receipt_notification_event_rx(&self) -> Option<Receiver<ReceiptNotificationEvent>> {
+        self.receipt_notification_controller.event_rx.lock().take()
     }
 }
