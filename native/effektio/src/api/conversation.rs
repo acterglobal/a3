@@ -8,8 +8,9 @@ use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
-    ruma::events::room::message::{
-        MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent,
+    ruma::events::room::{
+        member::{MembershipState, OriginalSyncRoomMemberEvent},
+        message::{MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent},
     },
     Client as MatrixClient,
 };
@@ -152,7 +153,7 @@ impl ConversationController {
 
         let me = self.clone();
         client
-            .register_event_handler_context(me)
+            .register_event_handler_context(me.clone())
             .register_event_handler_context(client.clone())
             .register_event_handler(
                 |ev: OriginalSyncRoomMessageEvent,
@@ -160,6 +161,17 @@ impl ConversationController {
                  Ctx(me): Ctx<ConversationController>,
                  Ctx(client): Ctx<MatrixClient>| async move {
                     me.clone().process_room_message(ev, &room, &client);
+                },
+            )
+            .await
+            .register_event_handler_context(me)
+            .register_event_handler_context(client.clone())
+            .register_event_handler(
+                |ev: OriginalSyncRoomMemberEvent,
+                 room: MatrixRoom,
+                 Ctx(me): Ctx<ConversationController>,
+                 Ctx(client): Ctx<MatrixClient>| async move {
+                    me.clone().process_room_member(ev, &room, &client);
                 },
             )
             .await;
@@ -190,6 +202,36 @@ impl ConversationController {
                 );
                 convos.set_cloned(idx, convo);
                 convos.move_from_to(idx, 0);
+            }
+        }
+    }
+
+    fn process_room_member(
+        &self,
+        ev: OriginalSyncRoomMemberEvent,
+        room: &MatrixRoom,
+        client: &MatrixClient,
+    ) {
+        info!("original sync room member event: {:?}", ev);
+        let mut convos = self.conversations.lock_mut();
+        if let Some(prev_content) = ev.unsigned.prev_content {
+            match (prev_content.membership, ev.content.membership) {
+                (MembershipState::Invite, MembershipState::Join) => {
+                    // add new room
+                    let convo = Conversation::new(Room {
+                        client: client.clone(),
+                        room: room.clone(),
+                    });
+                    convos.push_cloned(convo);
+                }
+                (MembershipState::Join, MembershipState::Leave) => {
+                    // remove existing room
+                    let room_id = room.room_id();
+                    if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                        convos.remove(idx);
+                    }
+                }
+                _ => {}
             }
         }
     }
