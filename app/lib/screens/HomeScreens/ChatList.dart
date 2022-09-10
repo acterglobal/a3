@@ -33,13 +33,10 @@ class _ChatListState extends State<ChatList> {
     _getUser();
   }
 
-  void _getUser() {
-    widget.client.then((client) {
-      client.userId().then((userId) {
-        setState(() {
-          user = userId.toString();
-        });
-      });
+  Future<void> _getUser() async {
+    var userId = await widget.client.userId();
+    setState(() {
+      user = userId.toString();
     });
   }
 
@@ -107,10 +104,7 @@ class _ChatListState extends State<ChatList> {
                         itemCount: countInvites,
                         itemBuilder: buildInvited,
                       ),
-                      FutureBuilder<Client>(
-                        future: widget.client,
-                        builder: buildJoined,
-                      ),
+                      buildJoined(context),
                     ],
                   ),
                 ],
@@ -132,78 +126,34 @@ class _ChatListState extends State<ChatList> {
     );
   }
 
-  Widget buildJoined(BuildContext context, AsyncSnapshot<Client> snapshot) {
-    if (snapshot.connectionState != ConnectionState.done) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height / 1.5,
-        width: MediaQuery.of(context).size.width,
-        child: Center(
-          child: CircularProgressIndicator(
-            color: AppCommonTheme.primaryColor,
-          ),
-        ),
-      );
-    }
-    if (snapshot.hasData) {
-      Client client = snapshot.requireData;
-      return StreamBuilder<FfiListConversation>(
-        stream: client.conversationsRx(),
-        builder: (
-          BuildContext context,
-          AsyncSnapshot<FfiListConversation> snapshot,
-        ) {
-          if (snapshot.hasData) {
-            return Flexible(
-              child: ChatOverview(
-                rooms: snapshot.requireData.toList(),
-                user: user,
-              ),
-            );
-          } else {
-            return Center(
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-                color: AppCommonTheme.backgroundColor,
-                child: Text(
-                  AppLocalizations.of(context)!.loadingConvo,
-                  style: ChatTheme01.emptyMsgTitle,
-                ),
-              ),
-            );
-          }
-        },
-      );
-    } else {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(height: MediaQuery.of(context).size.height / 6),
-          Center(
-            child: Container(
-              child: SvgPicture.asset('assets/images/empty_messages.svg'),
+  Widget buildJoined(BuildContext context) {
+    return StreamBuilder<FfiListConversation>(
+      stream: widget.client.conversationsRx(),
+      builder: (
+        BuildContext context,
+        AsyncSnapshot<FfiListConversation> snapshot,
+      ) {
+        if (snapshot.hasData) {
+          return Flexible(
+            child: ChatOverview(
+              rooms: snapshot.requireData.toList(),
+              user: user,
             ),
-          ),
-          SizedBox(height: 20),
-          Text(
-            AppLocalizations.of(context)!.loadingConvo + '...',
-            style: ChatTheme01.emptyMsgTitle,
-          ),
-          SizedBox(height: 5),
-          Center(
+          );
+        } else {
+          return Center(
             child: Container(
-              height: MediaQuery.of(context).size.height / 3,
-              width: MediaQuery.of(context).size.width / 1.5,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: AppCommonTheme.backgroundColor,
               child: Text(
-                'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                style: ChatTheme01.chatBodyStyle,
-                overflow: TextOverflow.clip,
-                textAlign: TextAlign.center,
+                AppLocalizations.of(context)!.loadingConvo,
+                style: ChatTheme01.emptyMsgTitle,
               ),
             ),
-          ),
-        ],
-      );
-    }
+          );
+        }
+      },
+    );
   }
 }
