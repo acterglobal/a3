@@ -17,44 +17,15 @@ use matrix_sdk::{
 
 use super::{
     client::{devide_groups_from_common, Client},
-    message::sync_event_to_message,
+    message::{sync_event_to_message, RoomMessage},
     room::Room,
     RUNTIME,
 };
 
 #[derive(Clone)]
-pub struct ConversationMessage {
-    body: String,
-    sender: String,
-    origin_server_ts: u64,
-}
-
-impl ConversationMessage {
-    pub(crate) fn new(body: String, sender: String, origin_server_ts: u64) -> Self {
-        ConversationMessage {
-            body,
-            sender,
-            origin_server_ts,
-        }
-    }
-
-    pub fn body(&self) -> String {
-        self.body.clone()
-    }
-
-    pub fn sender(&self) -> String {
-        self.sender.clone()
-    }
-
-    pub fn origin_server_ts(&self) -> u64 {
-        self.origin_server_ts
-    }
-}
-
-#[derive(Clone)]
 pub struct Conversation {
     inner: Room,
-    latest_message: Mutable<Option<ConversationMessage>>,
+    latest_message: Mutable<Option<RoomMessage>>,
 }
 
 impl Conversation {
@@ -81,7 +52,7 @@ impl Conversation {
                     Some(Ok(ev)) => {
                         info!("conversation timeline backward");
                         if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                            me.set_latest_message(msg.body(), msg.sender(), msg.origin_server_ts());
+                            me.set_latest_message(msg);
                             break;
                         }
                     }
@@ -103,7 +74,7 @@ impl Conversation {
                     Some(ev) => {
                         info!("conversation timeline backward");
                         if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                            me.set_latest_message(msg.body(), msg.sender(), msg.origin_server_ts());
+                            me.set_latest_message(msg);
                             break;
                         }
                     }
@@ -118,12 +89,11 @@ impl Conversation {
         res
     }
 
-    pub(crate) fn set_latest_message(&self, body: String, sender: String, origin_server_ts: u64) {
-        let msg = ConversationMessage::new(body, sender, origin_server_ts);
+    pub(crate) fn set_latest_message(&self, msg: RoomMessage) {
         self.latest_message.set(Some(msg));
     }
 
-    pub fn latest_message(&self) -> Option<ConversationMessage> {
+    pub fn latest_message(&self) -> Option<RoomMessage> {
         self.latest_message.lock_mut().take()
     }
 }
@@ -185,10 +155,6 @@ impl ConversationController {
     ) {
         info!("original sync room message event: {:?}", ev);
         if let MatrixRoom::Joined(joined) = room {
-            let msg_body = match ev.content.msgtype {
-                MessageType::Text(TextMessageEventContent { body, .. }) => body,
-                _ => return,
-            };
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -196,11 +162,8 @@ impl ConversationController {
                     client: client.clone(),
                     room: room.clone(),
                 });
-                convo.set_latest_message(
-                    msg_body,
-                    ev.sender.to_string(),
-                    ev.origin_server_ts.as_secs().into(),
-                );
+                let msg = RoomMessage::new(ev.clone(), room.clone(), ev.content.body().to_string());
+                convo.set_latest_message(msg);
                 convos.set_cloned(idx, convo);
                 convos.move_from_to(idx, 0);
             }

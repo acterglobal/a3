@@ -4378,38 +4378,6 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationMessageBodyPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationMessageBodyReturn Function(
-    ffi.Int64,
-  )>>("__ConversationMessage_body");
-
-  late final _conversationMessageBody = _conversationMessageBodyPtr.asFunction<
-      _ConversationMessageBodyReturn Function(
-    int,
-  )>();
-  late final _conversationMessageSenderPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationMessageSenderReturn Function(
-    ffi.Int64,
-  )>>("__ConversationMessage_sender");
-
-  late final _conversationMessageSender =
-      _conversationMessageSenderPtr.asFunction<
-          _ConversationMessageSenderReturn Function(
-    int,
-  )>();
-  late final _conversationMessageOriginServerTsPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint64 Function(
-    ffi.Int64,
-  )>>("__ConversationMessage_origin_server_ts");
-
-  late final _conversationMessageOriginServerTs =
-      _conversationMessageOriginServerTsPtr.asFunction<
-          int Function(
-    int,
-  )>();
   late final _conversationDisplayNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -7907,67 +7875,6 @@ class TimelineStream {
   }
 }
 
-class ConversationMessage {
-  final Api _api;
-  final _Box _box;
-
-  ConversationMessage._(this._api, this._box);
-
-  String body() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationMessageBody(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  String sender() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationMessageSender(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  int originServerTs() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationMessageOriginServerTs(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
 class Conversation {
   final Api _api;
   final _Box _box;
@@ -8069,7 +7976,7 @@ class Conversation {
   }
 
   /// The last message sent to the room
-  ConversationMessage? latestMessage() {
+  RoomMessage? latestMessage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._conversationLatestMessage(
@@ -8081,9 +7988,9 @@ class Conversation {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ConversationMessage");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ConversationMessage._(_api, tmp4_1);
+    final tmp2 = RoomMessage._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -10366,24 +10273,6 @@ class _FileDescriptionSizeReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
-}
-
-class _ConversationMessageBodyReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _ConversationMessageSenderReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
 }
 
 class _ConversationLatestMessageReturn extends ffi.Struct {

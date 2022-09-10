@@ -30,7 +30,7 @@ pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
 pub use client::{Client, ClientStateBuilder, SyncState};
-pub use conversation::{Conversation, ConversationMessage};
+pub use conversation::Conversation;
 pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};

@@ -54,7 +54,7 @@ class ChatListItem extends StatefulWidget {
 
 class _ChatListItemState extends State<ChatListItem> {
   Widget buildSubtitle(BuildContext context) {
-    ConversationMessage? msg = widget.room.latestMessage();
+    RoomMessage? msg = widget.room.latestMessage();
     if (msg == null) {
       return SizedBox();
     } else {
@@ -129,7 +129,7 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildTrailing(BuildContext context) {
-    ConversationMessage? msg = widget.room.latestMessage();
+    RoomMessage? msg = widget.room.latestMessage();
     if (msg == null) {
       return SizedBox();
     } else {

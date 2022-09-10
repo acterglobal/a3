@@ -15,6 +15,14 @@ pub struct RoomMessage {
 }
 
 impl RoomMessage {
+    pub(crate) fn new(
+        inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
+        room: Room,
+        fallback: String,
+    ) -> Self {
+        RoomMessage { inner, room, fallback }
+    }
+
     pub fn event_id(&self) -> String {
         self.inner.event_id.to_string()
     }
@@ -116,16 +124,13 @@ impl FileDescription {
     }
 }
 
-pub fn sync_event_to_message(sync_event: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
+pub fn sync_event_to_message(ev: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
     if let Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
-        SyncMessageLikeEvent::Original(m),
-    ))) = sync_event.event.deserialize()
+        SyncMessageLikeEvent::Original(msg),
+    ))) = ev.event.deserialize()
     {
-        Some(RoomMessage {
-            fallback: m.content.body().to_string(),
-            room,
-            inner: m,
-        })
+        let res = RoomMessage::new(msg.clone(), room, msg.content.body().to_string());
+        Some(res)
     } else {
         None
     }
