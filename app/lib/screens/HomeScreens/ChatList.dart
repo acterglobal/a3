@@ -14,7 +14,7 @@ import 'package:themed/themed.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({Key? key, required this.client}) : super(key: key);
-  final Future<Client> client;
+  final Client client;
 
   @override
   State<ChatList> createState() => _ChatListState();
