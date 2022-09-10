@@ -183,6 +183,7 @@ impl ConversationController {
         room: &MatrixRoom,
         client: &MatrixClient,
     ) {
+        info!("original sync room message event: {:?}", ev);
         if let MatrixRoom::Joined(joined) = room {
             let msg_body = match ev.content.msgtype {
                 MessageType::Text(TextMessageEventContent { body, .. }) => body,

@@ -156,24 +156,6 @@ class _EffektioHomeState extends State<EffektioHome>
         }
       }
     });
-    client.conversationsRx().listen((event) {
-      debugPrint('real time conversations: ' + event.length.toString());
-      for (Conversation convo in event.toList()) {
-        ConversationMessage? msg = convo.latestMsg();
-        if (msg == null) {
-          debugPrint('real time conversation: null');
-        } else {
-          debugPrint(
-            'real time conversation: body: ' +
-                msg.body() +
-                ', sender: ' +
-                msg.sender() +
-                ', origin_server_ts: ' +
-                msg.originServerTs().toString(),
-          );
-        }
-      }
-    });
     return client;
   }
 
