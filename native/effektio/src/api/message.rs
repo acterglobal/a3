@@ -20,7 +20,11 @@ impl RoomMessage {
         room: Room,
         fallback: String,
     ) -> Self {
-        RoomMessage { inner, room, fallback }
+        RoomMessage {
+            inner,
+            room,
+            fallback,
+        }
     }
 
     pub fn event_id(&self) -> String {
