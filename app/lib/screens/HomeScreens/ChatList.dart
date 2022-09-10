@@ -30,12 +30,17 @@ class _ChatListState extends State<ChatList> {
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     super.initState();
-    _getUser().whenComplete(() => {setState(() {})});
+    _getUser();
   }
 
-  Future<void> _getUser() async {
-    var fetchClient = await widget.client;
-    user = await fetchClient.userId().then((u) => u.toString());
+  void _getUser() {
+    widget.client.then((client) {
+      client.userId().then((userId) {
+        setState(() {
+          user = userId.toString();
+        });
+      });
+    });
   }
 
   @override

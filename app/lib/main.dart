@@ -21,8 +21,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
-        Conversation,
-        ConversationMessage,
         DeviceListsController,
         ReceiptNotificationController,
         SessionVerificationController,
