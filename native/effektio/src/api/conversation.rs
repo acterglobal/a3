@@ -54,7 +54,7 @@ impl ConversationMessage {
 #[derive(Clone)]
 pub struct Conversation {
     inner: Room,
-    latest_msg: Mutable<Option<ConversationMessage>>,
+    latest_message: Mutable<Option<ConversationMessage>>,
 }
 
 impl Conversation {
@@ -62,7 +62,7 @@ impl Conversation {
         let room = inner.room.clone();
         let res = Conversation {
             inner,
-            latest_msg: Default::default(),
+            latest_message: Default::default(),
         };
 
         let me = res.clone();
@@ -81,7 +81,7 @@ impl Conversation {
                     Some(Ok(ev)) => {
                         info!("conversation timeline backward");
                         if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                            me.set_latest_msg(msg.body(), msg.sender(), msg.origin_server_ts());
+                            me.set_latest_message(msg.body(), msg.sender(), msg.origin_server_ts());
                             break;
                         }
                     }
@@ -103,7 +103,7 @@ impl Conversation {
                     Some(ev) => {
                         info!("conversation timeline backward");
                         if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                            me.set_latest_msg(msg.body(), msg.sender(), msg.origin_server_ts());
+                            me.set_latest_message(msg.body(), msg.sender(), msg.origin_server_ts());
                             break;
                         }
                     }
@@ -118,13 +118,13 @@ impl Conversation {
         res
     }
 
-    pub(crate) fn set_latest_msg(&self, body: String, sender: String, origin_server_ts: u64) {
+    pub(crate) fn set_latest_message(&self, body: String, sender: String, origin_server_ts: u64) {
         let msg = ConversationMessage::new(body, sender, origin_server_ts);
-        self.latest_msg.set(Some(msg));
+        self.latest_message.set(Some(msg));
     }
 
-    pub fn latest_msg(&self) -> Option<ConversationMessage> {
-        self.latest_msg.lock_mut().take()
+    pub fn latest_message(&self) -> Option<ConversationMessage> {
+        self.latest_message.lock_mut().take()
     }
 }
 
@@ -196,7 +196,7 @@ impl ConversationController {
                     client: client.clone(),
                     room: room.clone(),
                 });
-                convo.set_latest_msg(
+                convo.set_latest_message(
                     msg_body,
                     ev.sender.to_string(),
                     ev.origin_server_ts.as_secs().into(),

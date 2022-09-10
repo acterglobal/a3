@@ -133,34 +133,6 @@ impl Room {
             .await?
     }
 
-    pub async fn latest_message(&self) -> Result<RoomMessage> {
-        let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let stream = room
-                    .timeline_backward()
-                    .await
-                    .context("Failed acquiring timeline streams")?;
-                pin_mut!(stream);
-                loop {
-                    match stream.next().await {
-                        None => break,
-                        Some(Ok(e)) => {
-                            if let Some(a) = sync_event_to_message(e, room.clone()) {
-                                return Ok(a);
-                            }
-                        }
-                        _ => {
-                            // we ignore errors
-                        }
-                    }
-                }
-
-                bail!("No Message found")
-            })
-            .await?
-    }
-
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()

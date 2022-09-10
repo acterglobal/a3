@@ -42,8 +42,11 @@ class ChatListItem extends StatefulWidget {
   final Conversation room;
   final String? user;
 
-  const ChatListItem({Key? key, required this.room, required this.user})
-      : super(key: key);
+  const ChatListItem({
+    Key? key,
+    required this.room,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<ChatListItem> createState() => _ChatListItemState();
@@ -51,7 +54,7 @@ class ChatListItem extends StatefulWidget {
 
 class _ChatListItemState extends State<ChatListItem> {
   Widget buildSubtitle(BuildContext context) {
-    ConversationMessage? msg = widget.room.latestMsg();
+    ConversationMessage? msg = widget.room.latestMessage();
     if (msg == null) {
       return SizedBox();
     } else {
@@ -126,7 +129,7 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildTrailing(BuildContext context) {
-    ConversationMessage? msg = widget.room.latestMsg();
+    ConversationMessage? msg = widget.room.latestMessage();
     if (msg == null) {
       return SizedBox();
     } else {
