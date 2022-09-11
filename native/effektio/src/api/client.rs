@@ -85,35 +85,14 @@ pub(crate) async fn devide_groups_from_common(
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut groups, mut conversations, client), room| {
-                let is_effektio_group = {
-                    #[allow(clippy::match_like_matches_macro)]
-                    if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else {
-                        false
-                    }
+                let inner = Room {
+                    room,
+                    client: client.clone(),
                 };
-
-                if is_effektio_group {
-                    groups.push(Group {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                    });
+                if inner.is_effektio_group().await {
+                    groups.push(Group { inner });
                 } else {
-                    conversations.push(Conversation::new(Room {
-                        room,
-                        client: client.clone(),
-                    }));
+                    conversations.push(Conversation::new(inner));
                 }
 
                 (groups, conversations, client)
@@ -293,6 +272,20 @@ impl Client {
                     });
                 }
                 bail!("Room not found")
+            })
+            .await?
+    }
+
+    pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let room = me.room(name_or_id).await?;
+                if !room.is_effektio_group().await {
+                    Ok(Conversation::new(room))
+                } else {
+                    bail!("Not a regular conversation but an effektio group!")
+                }
             })
             .await?
     }

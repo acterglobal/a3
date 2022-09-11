@@ -1,4 +1,5 @@
 use anyhow::{bail, Context, Result};
+use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
 use futures::{pin_mut, StreamExt};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
@@ -57,6 +58,24 @@ pub struct Room {
 }
 
 impl Room {
+    pub async fn is_effektio_group(&self) -> bool {
+        #[allow(clippy::match_like_matches_macro)]
+        if let Ok(Some(_)) = self
+            .room
+            .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
+            .await
+        {
+            true
+        } else if let Ok(Some(_)) = self
+            .room
+            .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
+            .await
+        {
+            true
+        } else {
+            false
+        }
+    }
     pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
