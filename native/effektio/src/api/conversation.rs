@@ -1,7 +1,7 @@
 use anyhow::Context;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
-use effektio_core::statics::default_effektio_conversations_states;
+use effektio_core::statics::default_effektio_conversation_states;
 use futures::{pin_mut, StreamExt};
 use futures_signals::{
     signal::{Mutable, SignalExt, SignalStream},
@@ -13,7 +13,7 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         api::client::room::{
-            create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
+            create_room::v3::{CreationContent, Request as CreateRoomRequest},
             Visibility,
         },
         assign,
@@ -233,19 +233,19 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let initial_states = default_effektio_conversations_states();
-
-                Ok(c.create_room(assign!(CreateRoomRequest::new(), {
-                    creation_content: Some(Raw::new(&CreationContent::new())?),
-                    initial_state: &initial_states,
-                    is_direct: true,
-                    invite: &settings.invites,
-                    room_alias_name: settings.alias.as_deref(),
-                    name: settings.name.as_ref().map(|x| x.as_ref()),
-                    visibility: Visibility::Private,
-                }))
-                .await?
-                .room_id)
+                let initial_states = default_effektio_conversation_states();
+                let res = c
+                    .create_room(assign!(CreateRoomRequest::new(), {
+                        creation_content: Some(Raw::new(&CreationContent::new())?),
+                        initial_state: &initial_states,
+                        is_direct: true,
+                        invite: &settings.invites,
+                        room_alias_name: settings.alias.as_deref(),
+                        name: settings.name.as_ref().map(|x| x.as_ref()),
+                        visibility: Visibility::Private,
+                    }))
+                    .await?;
+                Ok(res.room_id)
             })
             .await?
     }
