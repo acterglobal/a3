@@ -143,6 +143,9 @@ object TimelineStream {
 }
 
 object Conversation {
+    /// Get room id
+    fn get_room_id() -> string;
+
     /// Calculate the display name
     fn display_name() -> Future<Result<string>>;
 

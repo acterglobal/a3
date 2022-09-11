@@ -29,10 +29,14 @@ class ChatOverview extends StatelessWidget {
       shrinkWrap: true,
       padding: EdgeInsets.only(top: 10),
       itemCount: rooms.length,
-      itemBuilder: (BuildContext context, int index) => ChatListItem(
-        room: rooms[index],
-        user: user,
-      ),
+      itemBuilder: (BuildContext context, int index) {
+        Conversation room = rooms[index];
+        debugPrint('room id: ' + room.getRoomId());
+        return ChatListItem(
+          room: room,
+          user: user,
+        );
+      },
       separatorBuilder: (context, int index) => Divider(height: 1),
     );
   }

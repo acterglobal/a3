@@ -58,7 +58,7 @@ pub struct Room {
 }
 
 impl Room {
-    pub async fn is_effektio_group(&self) -> bool {
+    pub(crate) async fn is_effektio_group(&self) -> bool {
         #[allow(clippy::match_like_matches_macro)]
         if let Ok(Some(_)) = self
             .room
@@ -76,6 +76,11 @@ impl Room {
             false
         }
     }
+
+    pub fn get_room_id(&self) -> String {
+        self.room_id().to_string()
+    }
+
     pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
