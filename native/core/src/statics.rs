@@ -44,6 +44,13 @@ pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
     v
 }
 
+pub fn default_effektio_conversations_states() -> Vec<Raw<AnyInitialStateEvent>> {
+    [HISTORY, ENCRYPTION]
+        .into_iter()
+        .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
+        .collect()
+}
+
 pub fn initial_state_for_alias(
     main_alias: &OwnedRoomAliasId,
     alt_aliases: &Vec<OwnedRoomAliasId>,

@@ -1,4 +1,7 @@
 use anyhow::Context;
+use anyhow::{bail, Result};
+use derive_builder::Builder;
+use effektio_core::statics::default_effektio_conversations_states;
 use futures::{pin_mut, StreamExt};
 use futures_signals::{
     signal::{Mutable, SignalExt, SignalStream},
@@ -8,9 +11,18 @@ use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
-    ruma::events::room::{
-        member::{MembershipState, OriginalSyncRoomMemberEvent},
-        message::{MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent},
+    ruma::{
+        api::client::room::{
+            create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
+            Visibility,
+        },
+        assign,
+        events::room::{
+            member::{MembershipState, OriginalSyncRoomMemberEvent},
+            message::{MessageType, OriginalSyncRoomMessageEvent, TextMessageEventContent},
+        },
+        serde::Raw,
+        OwnedRoomId, OwnedUserId,
     },
     Client as MatrixClient,
 };
@@ -201,7 +213,43 @@ impl ConversationController {
     }
 }
 
+#[derive(Builder, Default, Clone)]
+pub struct CreateConversationSettings {
+    #[builder(setter(strip_option))]
+    name: Option<String>,
+    // #[builder(default = "Visibility::Private")]
+    // visibility: Visibility,
+    #[builder(default = "Vec::new()")]
+    invites: Vec<OwnedUserId>,
+    #[builder(setter(strip_option))]
+    alias: Option<String>,
+}
+
 impl Client {
+    pub async fn create_conversation(
+        &self,
+        settings: CreateConversationSettings,
+    ) -> Result<OwnedRoomId> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let initial_states = default_effektio_conversations_states();
+
+                Ok(c.create_room(assign!(CreateRoomRequest::new(), {
+                    creation_content: Some(Raw::new(&CreationContent::new())?),
+                    initial_state: &initial_states,
+                    is_direct: true,
+                    invite: &settings.invites,
+                    room_alias_name: settings.alias.as_deref(),
+                    name: settings.name.as_ref().map(|x| x.as_ref()),
+                    visibility: Visibility::Private,
+                }))
+                .await?
+                .room_id)
+            })
+            .await?
+    }
+
     pub fn conversations_rx(&self) -> SignalStream<ToSignalCloned<MutableSignalVec<Conversation>>> {
         self.conversations_diff_rx().to_signal_cloned().to_stream()
     }
