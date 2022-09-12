@@ -84,7 +84,7 @@ impl Conversation {
             loop {
                 match forward.next().await {
                     Some(ev) => {
-                        info!("conversation timeline backward");
+                        info!("conversation timeline forward");
                         if let Some(msg) = sync_event_to_message(ev, room.clone()) {
                             me.set_latest_message(msg);
                             break;
