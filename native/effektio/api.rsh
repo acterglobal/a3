@@ -80,7 +80,6 @@ object UserId {
 
 /// A room Message metadata and content
 object RoomMessage {
-
     /// Unique ID of this event
     fn event_id() -> string;
 
@@ -89,6 +88,9 @@ object RoomMessage {
 
     /// the body of the massage - fallback string reprensentation
     fn body() -> string;
+
+    /// get html body
+    fn formatted_body() -> Option<string>;
 
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;

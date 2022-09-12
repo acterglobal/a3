@@ -2,7 +2,7 @@ use matrix_sdk::{
     deserialized_responses::SyncRoomEvent,
     room::Room,
     ruma::events::{
-        room::message::{MessageType, RoomMessageEventContent},
+        room::message::{MessageFormat, MessageType, RoomMessageEventContent},
         AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
@@ -21,6 +21,19 @@ impl RoomMessage {
 
     pub fn body(&self) -> String {
         self.fallback.clone()
+    }
+
+    pub fn formatted_body(&self) -> Option<String> {
+        let m = self.inner.clone();
+        if let MessageType::Text(content) = m.content.msgtype {
+            let mut html_body: Option<String> = None;
+            if let Some(formatted_body) = content.formatted {
+                if formatted_body.format == MessageFormat::Html {
+                    return Some(formatted_body.body);
+                }
+            }
+        }
+        None
     }
 
     pub fn sender(&self) -> String {

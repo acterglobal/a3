@@ -4239,6 +4239,17 @@ class Api {
       _RoomMessageBodyReturn Function(
     int,
   )>();
+  late final _roomMessageFormattedBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageFormattedBodyReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_formatted_body");
+
+  late final _roomMessageFormattedBody =
+      _roomMessageFormattedBodyPtr.asFunction<
+          _RoomMessageFormattedBodyReturn Function(
+    int,
+  )>();
   late final _roomMessageOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
@@ -7568,6 +7579,30 @@ class RoomMessage {
     return tmp2;
   }
 
+  /// get html body
+  String? formattedBody() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageFormattedBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the server receiving timestamp
   int originServerTs() {
     var tmp0 = 0;
@@ -10161,6 +10196,17 @@ class _RoomMessageBodyReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _RoomMessageFormattedBodyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _RoomMessageMsgtypeReturn extends ffi.Struct {
