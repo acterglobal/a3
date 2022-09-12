@@ -1041,6 +1041,7 @@ dependencies = [
  "anyhow",
  "app_dirs2",
  "clap 3.2.12",
+ "crossterm",
  "dialoguer",
  "effektio",
  "effektio-core",
@@ -1050,8 +1051,7 @@ dependencies = [
  "mime",
  "term-table",
  "tokio",
- "tui-realm-stdlib",
- "tuirealm",
+ "tui",
 ]
 
 [[package]]
@@ -1672,29 +1672,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "68421373957a1593a767013698dbf206e2b221eefe97a44d98d18672ff38423c"
 dependencies = [
  "serde",
-]
-
-[[package]]
-name = "lazy-regex"
-version = "2.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6b12f2eb6ed7d39405c5eb25a034b4c106a9ad87a6d9be3298de6c5f32fd57d"
-dependencies = [
- "lazy-regex-proc_macros",
- "once_cell",
- "regex",
-]
-
-[[package]]
-name = "lazy-regex-proc_macros"
-version = "2.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f2496e5264069bc726ccf37eb76b9cd89406ae110d836c3f76729f99c8a23293"
-dependencies = [
- "proc-macro2",
- "quote",
- "regex",
- "syn",
 ]
 
 [[package]]
@@ -2916,12 +2893,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2fd0db749597d91ff862fd1d55ea87f7855a744a8425a64695b6fca237d1dad1"
 
 [[package]]
-name = "smawk"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f67ad224767faa3c7d8b6d91985b78e70a1324408abcb1cfcc2be4c06bc06043"
-
-[[package]]
 name = "socket2"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3046,9 +3017,7 @@ version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1141d4d61095b28419e22cb0bbf02755f5e54e0526f97f1e3d1d160e60885fb"
 dependencies = [
- "smawk",
  "terminal_size",
- "unicode-linebreak",
  "unicode-width",
 ]
 
@@ -3287,42 +3256,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tui-realm-stdlib"
-version = "1.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e08728483414e0bcb385f6fa11df99b4b273813d11ee38aa30db12e6db30bc66"
-dependencies = [
- "textwrap 0.15.0",
- "tuirealm",
- "unicode-width",
-]
-
-[[package]]
-name = "tuirealm"
-version = "1.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "265411b5606f400459af94fbc5aae6a7bc0e98094d08cb5868390c932be88e26"
-dependencies = [
- "bitflags",
- "crossterm",
- "lazy-regex",
- "thiserror",
- "tui",
- "tuirealm_derive",
-]
-
-[[package]]
-name = "tuirealm_derive"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0adcdaf59881626555558eae08f8a53003c8a1961723b4d7a10c51599abbc81"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "typenum"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3354,15 +3287,6 @@ name = "unicode-ident"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "15c61ba63f9235225a22310255a29b806b907c9b8c964bcbd0a2c70f3f2deea7"
-
-[[package]]
-name = "unicode-linebreak"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a52dcaab0c48d931f7cc8ef826fa51690a08e1ea55117ef26f89864f532383f"
-dependencies = [
- "regex",
-]
 
 [[package]]
 name = "unicode-normalization"
