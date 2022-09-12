@@ -9,7 +9,7 @@ pub fn new_client_config(base_path: String, home: String) -> anyhow::Result<Clie
 
     Ok(Client::builder()
         .store_config(make_store_config(&data_path, None)?)
-        .user_agent("effektio-test-platform"))
+        .user_agent(format!("effektio-testing/{:}", env!("CARGO_PKG_VERSION"))))
 }
 
 pub fn init_logging(filter: Option<String>) -> anyhow::Result<()> {
