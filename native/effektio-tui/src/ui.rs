@@ -1,4 +1,6 @@
+#![allow(dead_code)]
 use anyhow::Result;
+use clap::crate_version;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent},
     execute,
@@ -8,13 +10,20 @@ use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
 use tui::{
     backend::{Backend, CrosstermBackend},
-    layout::{Constraint, Direction, Layout},
+    layout::{Alignment, Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Span, Spans},
     widgets::{Block, Borders, Tabs},
     Frame, Terminal,
 };
 use tui_logger::{TuiLoggerWidget, TuiWidgetEvent};
+
+const PRIMARY: Color = Color::Rgb(236, 39, 88);
+const SECONDARY: Color = Color::Rgb(35, 175, 194);
+const TERTIARY: Color = Color::Rgb(92, 42, 128);
+const BG_GRAY: Color = Color::Rgb(151, 151, 151);
+const BG_DARK: Color = Color::Rgb(51, 53, 64);
+const BG_DARKER: Color = Color::Rgb(47, 49, 62);
 
 pub enum AppUpdate {
     SetUsername(String), // set the username
@@ -181,7 +190,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     let size = f.size();
     let chunks = Layout::default()
         .direction(Direction::Vertical)
-        .margin(2)
+        .margin(1)
         .constraints(
             [
                 Constraint::Length(3),
@@ -193,64 +202,62 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         )
         .split(size);
 
-    let block = Block::default().style(Style::default().bg(Color::Black).fg(Color::LightGreen));
+    let block = Block::default()
+        .style(Style::default().bg(BG_DARKER).fg(SECONDARY))
+        .title_alignment(Alignment::Center)
+        .title(format!(" effektio {:}", crate_version!()));
     f.render_widget(block, size);
 
     let titles = app
         .tools
         .iter()
         .map(|t| {
-            let (first, rest) = t.split_at(1);
-            Spans::from(vec![
-                Span::styled(first, Style::default().fg(Color::Yellow)),
-                Span::styled(rest, Style::default().fg(Color::Green)),
-            ])
+            Spans::from(vec![Span::styled(
+                String::from(*t),
+                Style::default().fg(TERTIARY),
+            )])
         })
         .collect();
 
-    let mut block = Block::default().borders(Borders::ALL).title("Tool");
+    let mut block = Block::default().borders(Borders::ALL).title(" Tool ");
     if app.selected_widget == Widget::Tools {
-        block = block.border_style(Style::default().fg(Color::Magenta));
+        block = block.border_style(Style::default().fg(PRIMARY));
     }
     let tabs = Tabs::new(titles)
         .block(block)
         .select(app.index)
-        .highlight_style(
-            Style::default()
-                .add_modifier(Modifier::BOLD)
-                .bg(Color::Black),
-        );
+        .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY));
 
     f.render_widget(tabs, chunks[0]);
 
     let mut main = match app.index {
-        0 => Block::default().title("News").borders(Borders::ALL),
-        1 => Block::default().title("Tasks").borders(Borders::ALL),
-        2 => Block::default().title("Chat").borders(Borders::ALL),
-        3 => Block::default().title("Inner 3").borders(Borders::ALL),
+        0 => Block::default().title(" News ").borders(Borders::ALL),
+        1 => Block::default().title(" Tasks ").borders(Borders::ALL),
+        2 => Block::default().title(" Chat ").borders(Borders::ALL),
+        3 => Block::default().title(" Inner 3 ").borders(Borders::ALL),
         _ => unreachable!(),
     };
 
     if app.selected_widget == Widget::Main {
-        main = main.border_style(Style::default().fg(Color::Magenta));
+        main = main.border_style(Style::default().fg(PRIMARY));
     }
     f.render_widget(main, chunks[1]);
 
     let status = Tabs::new(vec![
         Spans::from(vec![Span::styled(
             app.username.clone().unwrap_or("".to_owned()),
-            Style::default().fg(Color::Yellow),
+            Style::default().fg(BG_GRAY),
         )]),
         //Span::styled(rest, Style::default().fg(Color::Green)),
     ])
-    .block(Block::default().borders(Borders::ALL).title("Status"))
-    .style(Style::default().fg(Color::Cyan));
+    .block(Block::default().borders(Borders::ALL).title(" Status "))
+    .style(Style::default().fg(BG_GRAY));
 
     f.render_widget(status, chunks[2]);
 
-    let mut block = Block::default().borders(Borders::ALL).title("Logs");
+    let mut block = Block::default().borders(Borders::ALL).title(" Logs ");
     if app.selected_widget == Widget::Logs {
-        block = block.border_style(Style::default().fg(Color::Magenta));
+        block = block.border_style(Style::default().fg(PRIMARY));
     }
 
     let mut logger = TuiLoggerWidget::default()
