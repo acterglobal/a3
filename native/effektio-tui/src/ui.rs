@@ -14,6 +14,7 @@ use tui::{
     widgets::{Block, Borders, Tabs},
     Frame, Terminal,
 };
+use tui_logger::TuiLoggerWidget;
 
 pub enum AppUpdate {
     SetUsername(String), // set the username
@@ -116,9 +117,9 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .constraints(
             [
                 Constraint::Length(3),
-                Constraint::Length(3),
                 Constraint::Min(0),
                 Constraint::Length(3),
+                Constraint::Length(6),
             ]
             .as_ref(),
         )
@@ -146,7 +147,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
                 .add_modifier(Modifier::BOLD)
                 .bg(Color::Black),
         );
-    f.render_widget(tabs, chunks[1]);
+    f.render_widget(tabs, chunks[0]);
     let inner = match app.index {
         0 => Block::default().title("News").borders(Borders::ALL),
         1 => Block::default().title("Tasks").borders(Borders::ALL),
@@ -154,7 +155,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         3 => Block::default().title("Inner 3").borders(Borders::ALL),
         _ => unreachable!(),
     };
-    f.render_widget(inner, chunks[2]);
+    f.render_widget(inner, chunks[1]);
 
     let status = Tabs::new(vec![
         Spans::from(vec![Span::styled(
@@ -165,5 +166,16 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     ])
     .block(Block::default().borders(Borders::ALL).title("Status"))
     .style(Style::default().fg(Color::Cyan));
-    f.render_widget(status, chunks[3]);
+    f.render_widget(status, chunks[2]);
+
+    let logger = TuiLoggerWidget::default()
+        .style_error(Style::default().fg(Color::Red))
+        .style_debug(Style::default().fg(Color::Green))
+        .style_warn(Style::default().fg(Color::Yellow))
+        .style_trace(Style::default().fg(Color::Gray))
+        .style_info(Style::default().fg(Color::Blue))
+        .block(Block::default().borders(Borders::ALL).title("Logs"))
+        .style(Style::default().fg(Color::White).bg(Color::Black));
+
+    f.render_widget(logger, chunks[3]);
 }

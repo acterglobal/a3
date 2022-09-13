@@ -7,23 +7,28 @@ mod config;
 mod ui;
 
 use config::EffektioTuiConfig;
-use flexi_logger::Logger;
 use futures::pin_mut;
 use futures::StreamExt;
 use std::sync::mpsc::channel;
+use tui_logger;
 use ui::AppUpdate;
 
 use app_dirs2::{app_root, AppDataType, AppInfo};
 
 const APP_INFO: AppInfo = AppInfo {
-    name: "Effektio TUI",
+    name: "effektio-tui",
     author: "Effektio Team",
 };
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = EffektioTuiConfig::parse();
-    Logger::try_with_str(cli.log)?.start()?;
+
+    // Set max_log_level to Trace
+    tui_logger::init_logger(log::LevelFilter::Trace).unwrap();
+
+    // Set default level for unknown targets to Trace
+    tui_logger::set_default_level(log::LevelFilter::Warn);
     let (sender, rx) = channel::<AppUpdate>();
     let app_dir = app_root(AppDataType::UserData, &APP_INFO)?;
 
