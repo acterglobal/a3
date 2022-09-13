@@ -1,11 +1,11 @@
 use anyhow::Result;
 use crossterm::{
-    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
+    event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEvent},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use std::io;
-use std::sync::mpsc::Receiver;
+use std::{io, time::Duration};
+use std::{sync::mpsc::Receiver, time::Instant};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -14,25 +14,50 @@ use tui::{
     widgets::{Block, Borders, Tabs},
     Frame, Terminal,
 };
-use tui_logger::TuiLoggerWidget;
+use tui_logger::{TuiLoggerWidget, TuiWidgetEvent};
 
 pub enum AppUpdate {
     SetUsername(String), // set the username
 }
 
+#[derive(PartialEq, Eq)]
+enum Widget {
+    Tools,
+    Main,
+    Logs,
+}
+
+impl Widget {
+    fn next(&self) -> Self {
+        match self {
+            Widget::Tools => Widget::Main,
+            Widget::Main => Widget::Logs,
+            Widget::Logs => Widget::Tools,
+        }
+    }
+}
+
 struct App<'a> {
     pub username: Option<String>,
-    pub titles: Vec<&'a str>,
+    pub selected_widget: Widget,
+    pub log_state: tui_logger::TuiWidgetState,
+    pub tools: Vec<&'a str>,
     pub index: usize,
 }
 
 impl<'a> App<'a> {
     fn new() -> App<'a> {
         App {
-            titles: vec!["News", "Tasks", "Chat"],
+            tools: vec!["News", "Tasks", "Chat"],
             index: 0,
+            selected_widget: Widget::Tools,
+            log_state: Default::default(),
             username: None,
         }
+    }
+
+    pub fn next_widget(&mut self) {
+        self.selected_widget = self.selected_widget.next()
     }
 
     pub fn apply(&mut self, update: AppUpdate) {
@@ -41,15 +66,49 @@ impl<'a> App<'a> {
         }
     }
 
-    pub fn next(&mut self) {
-        self.index = (self.index + 1) % self.titles.len();
+    fn handle_key(&mut self, key: KeyEvent) -> bool {
+        // true means exit
+        match key.code {
+            KeyCode::Esc => return true,
+            KeyCode::Tab => {
+                self.next_widget();
+                return false;
+            }
+            _ => {}
+        }
+
+        match self.selected_widget {
+            Widget::Tools => match key.code {
+                KeyCode::Right => self.next_tool(),
+                KeyCode::Left => self.previous_tool(),
+                _ => {}
+            },
+            Widget::Logs => match key.code {
+                KeyCode::Up => {
+                    self.log_state.transition(&TuiWidgetEvent::PrevPageKey);
+                }
+                KeyCode::Down => {
+                    self.log_state.transition(&TuiWidgetEvent::NextPageKey);
+                }
+                _ => {}
+            },
+            Widget::Main => {
+                //..
+            }
+        }
+
+        false
     }
 
-    pub fn previous(&mut self) {
+    pub fn next_tool(&mut self) {
+        self.index = (self.index + 1) % self.tools.len();
+    }
+
+    pub fn previous_tool(&mut self) {
         if self.index > 0 {
             self.index -= 1;
         } else {
-            self.index = self.titles.len() - 1;
+            self.index = self.tools.len() - 1;
         }
     }
 }
@@ -87,15 +146,20 @@ fn run_app<B: Backend>(
     mut app: App,
     rx: Receiver<AppUpdate>,
 ) -> io::Result<()> {
+    let tick_rate = Duration::from_millis(250);
+    let mut last_tick = Instant::now();
+
     loop {
         terminal.draw(|f| ui(f, &app))?;
 
-        if let Event::Key(key) = event::read()? {
-            match key.code {
-                KeyCode::Char('q') => return Ok(()),
-                KeyCode::Right => app.next(),
-                KeyCode::Left => app.previous(),
-                _ => {}
+        let timeout = tick_rate
+            .checked_sub(last_tick.elapsed())
+            .unwrap_or_else(|| Duration::from_secs(0));
+        if crossterm::event::poll(timeout)? {
+            if let Event::Key(key) = event::read()? {
+                if app.handle_key(key) {
+                    return Ok(());
+                }
             }
         }
         loop {
@@ -105,6 +169,10 @@ fn run_app<B: Backend>(
                 Err(std::sync::mpsc::TryRecvError::Empty) => break, // nothing else to process
                 Err(std::sync::mpsc::TryRecvError::Disconnected) => return Ok(()), // time to quit
             }
+        }
+        if last_tick.elapsed() >= tick_rate {
+            //app.on_tick();
+            last_tick = Instant::now();
         }
     }
 }
@@ -125,10 +193,11 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         )
         .split(size);
 
-    let block = Block::default().style(Style::default().bg(Color::Black).fg(Color::Magenta));
+    let block = Block::default().style(Style::default().bg(Color::Black).fg(Color::LightGreen));
     f.render_widget(block, size);
+
     let titles = app
-        .titles
+        .tools
         .iter()
         .map(|t| {
             let (first, rest) = t.split_at(1);
@@ -138,24 +207,34 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
             ])
         })
         .collect();
+
+    let mut block = Block::default().borders(Borders::ALL).title("Tool");
+    if app.selected_widget == Widget::Tools {
+        block = block.border_style(Style::default().fg(Color::Magenta));
+    }
     let tabs = Tabs::new(titles)
-        .block(Block::default().borders(Borders::ALL).title("Tool"))
+        .block(block)
         .select(app.index)
-        .style(Style::default().fg(Color::Cyan))
         .highlight_style(
             Style::default()
                 .add_modifier(Modifier::BOLD)
                 .bg(Color::Black),
         );
+
     f.render_widget(tabs, chunks[0]);
-    let inner = match app.index {
+
+    let mut main = match app.index {
         0 => Block::default().title("News").borders(Borders::ALL),
         1 => Block::default().title("Tasks").borders(Borders::ALL),
         2 => Block::default().title("Chat").borders(Borders::ALL),
         3 => Block::default().title("Inner 3").borders(Borders::ALL),
         _ => unreachable!(),
     };
-    f.render_widget(inner, chunks[1]);
+
+    if app.selected_widget == Widget::Main {
+        main = main.border_style(Style::default().fg(Color::Magenta));
+    }
+    f.render_widget(main, chunks[1]);
 
     let status = Tabs::new(vec![
         Spans::from(vec![Span::styled(
@@ -166,16 +245,23 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     ])
     .block(Block::default().borders(Borders::ALL).title("Status"))
     .style(Style::default().fg(Color::Cyan));
+
     f.render_widget(status, chunks[2]);
 
-    let logger = TuiLoggerWidget::default()
+    let mut block = Block::default().borders(Borders::ALL).title("Logs");
+    if app.selected_widget == Widget::Logs {
+        block = block.border_style(Style::default().fg(Color::Magenta));
+    }
+
+    let mut logger = TuiLoggerWidget::default()
         .style_error(Style::default().fg(Color::Red))
         .style_debug(Style::default().fg(Color::Green))
         .style_warn(Style::default().fg(Color::Yellow))
         .style_trace(Style::default().fg(Color::Gray))
         .style_info(Style::default().fg(Color::Blue))
-        .block(Block::default().borders(Borders::ALL).title("Logs"))
-        .style(Style::default().fg(Color::White).bg(Color::Black));
+        .block(block);
+
+    logger.state(&app.log_state);
 
     f.render_widget(logger, chunks[3]);
 }
