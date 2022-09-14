@@ -1,11 +1,12 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::default_effektio_conversation_states;
+use futures::{pin_mut, StreamExt};
 use futures_signals::{
     signal::{Mutable, SignalExt, SignalStream},
     signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
 };
-use log::info;
+use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
@@ -27,7 +28,7 @@ use matrix_sdk::{
 
 use super::{
     client::{devide_groups_from_common, Client},
-    message::RoomMessage,
+    message::{sync_event_to_message, RoomMessage},
     room::Room,
     RUNTIME,
 };
@@ -44,6 +45,60 @@ impl Conversation {
             inner,
             latest_message: Default::default(),
         }
+    }
+
+    pub(crate) fn load_latest_message(&self) {
+        let room = self.room.clone();
+        let me = self.clone();
+
+        // FIXME: hold this handler!
+        RUNTIME.spawn(async move {
+            let (forward, backward) = room
+                .timeline()
+                .await
+                .context("Failed acquiring timeline streams")
+                .unwrap();
+
+            pin_mut!(backward);
+            // try to find the last message in the past.
+            loop {
+                match backward.next().await {
+                    Some(Ok(ev)) => {
+                        info!("conversation timeline backward");
+                        if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+                            me.set_latest_message(msg);
+                            break;
+                        }
+                    }
+                    Some(Err(e)) => {
+                        error!("Error fetching messages {:}", e);
+                        break;
+                    }
+                    None => {
+                        warn!("No old messages found");
+                        break;
+                    }
+                }
+            }
+
+            pin_mut!(forward);
+            // now continue to poll for incoming messages
+            loop {
+                match forward.next().await {
+                    Some(ev) => {
+                        info!("conversation timeline forward");
+                        if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+                            me.set_latest_message(msg);
+                            break;
+                        }
+                    }
+                    None => {
+                        warn!("Messages stream stopped");
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     pub(crate) fn set_latest_message(&self, msg: RoomMessage) {
@@ -76,6 +131,9 @@ impl ConversationController {
 
     pub(crate) async fn setup(&self, client: &MatrixClient) {
         let (_, convos) = devide_groups_from_common(client.clone()).await;
+        for convo in convos.iter() {
+            convo.load_latest_message();
+        }
         self.conversations.lock_mut().replace_cloned(convos);
 
         let me = self.clone();
