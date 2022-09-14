@@ -3685,6 +3685,43 @@ class Api {
     return tmp9;
   }
 
+  FfiListConversation? __clientConversationsRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientConversationsRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListConversation");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp12 = FfiListConversation._(this, tmp11_1);
+    final tmp9 = tmp12;
+    return tmp9;
+  }
+
   SessionVerificationEvent? __sessionVerificationControllerGetEventRxStreamPoll(
     int boxed,
     int postCobject,
@@ -4854,6 +4891,16 @@ class Api {
   )>>("__Client_conversations");
 
   late final _clientConversations = _clientConversationsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientConversationsRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_conversations_rx");
+
+  late final _clientConversationsRx = _clientConversationsRxPtr.asFunction<
       int Function(
     int,
   )>();
@@ -6439,6 +6486,23 @@ class Api {
   late final _syncStateGetFirstSyncedRxStreamPoll =
       _syncStateGetFirstSyncedRxStreamPollPtr.asFunction<
           _SyncStateGetFirstSyncedRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientConversationsRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientConversationsRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_conversations_rx_stream_poll");
+
+  late final _clientConversationsRxStreamPoll =
+      _clientConversationsRxStreamPollPtr.asFunction<
+          _ClientConversationsRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8830,6 +8894,21 @@ class Client {
     final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientConversationsFuturePoll);
+    return tmp2;
+  }
+
+  /// The update event of conversations the user is involved in
+  Stream<FfiListConversation> conversationsRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientConversationsRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientConversationsRxStreamPoll);
     return tmp2;
   }
 
@@ -11439,6 +11518,13 @@ class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientConversationsRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
   external int arg1;
 }
 

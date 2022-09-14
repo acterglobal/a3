@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
 
 import 'dart:io';
-
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
@@ -16,6 +15,7 @@ import 'package:intl/intl.dart';
 class ChatOverview extends StatelessWidget {
   final List<Conversation> rooms;
   final String? user;
+
   const ChatOverview({
     Key? key,
     required this.rooms,
@@ -27,17 +27,13 @@ class ChatOverview extends StatelessWidget {
     return ListView.separated(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      padding: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: 10),
       itemCount: rooms.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ChatListItem(
-          room: rooms[index],
-          user: user,
-        );
-      },
-      separatorBuilder: (context, int index) => const Divider(
-        height: 1,
+      itemBuilder: (BuildContext context, int index) => ChatListItem(
+        room: rooms[index],
+        user: user,
       ),
+      separatorBuilder: (context, int index) => Divider(height: 1),
     );
   }
 }
@@ -45,23 +41,18 @@ class ChatOverview extends StatelessWidget {
 class ChatListItem extends StatefulWidget {
   final Conversation room;
   final String? user;
-  const ChatListItem({Key? key, required this.room, required this.user})
-      : super(key: key);
+
+  const ChatListItem({
+    Key? key,
+    required this.room,
+    required this.user,
+  }) : super(key: key);
 
   @override
   State<ChatListItem> createState() => _ChatListItemState();
 }
 
 class _ChatListItemState extends State<ChatListItem> {
-  @override
-  void initState() {
-    super.initState();
-    _getLatestMessage();
-  }
-
-  Stream<RoomMessage> _getLatestMessage() =>
-      Stream.periodic(const Duration(milliseconds: 800))
-          .asyncMap((_) => widget.room.latestMessage());
   @override
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
@@ -97,103 +88,98 @@ class _ChatListItemState extends State<ChatListItem> {
           }
         },
       ),
-      subtitle: StreamBuilder<RoomMessage>(
-        stream: _getLatestMessage(),
-        builder: (BuildContext context, snapshot) {
-          if (snapshot.hasData) {
-            return Container(
-              margin: const EdgeInsets.only(top: 10, bottom: 10),
-              child: ParsedText(
-                text:
-                    '${getNameFromId(snapshot.requireData.sender())}: ${snapshot.requireData.body()}',
-                style: ChatTheme01.latestChatStyle,
-                regexOptions: const RegexOptions(multiLine: true, dotAll: true),
-                maxLines: 2,
-                parse: [
-                  MatchText(
-                    pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
-                    style: ChatTheme01.latestChatStyle
-                        .copyWith(fontWeight: FontWeight.bold),
-                    renderText: ({
-                      required String str,
-                      required String pattern,
-                    }) {
-                      return {
-                        'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')
-                      };
-                    },
-                  ),
-                  MatchText(
-                    pattern: '_(.*?)_',
-                    style: ChatTheme01.latestChatStyle
-                        .copyWith(fontStyle: FontStyle.italic),
-                    renderText: ({
-                      required String str,
-                      required String pattern,
-                    }) {
-                      return {'display': str.replaceAll('_', '')};
-                    },
-                  ),
-                  MatchText(
-                    pattern: '~(.*?)~',
-                    style: ChatTheme01.latestChatStyle.copyWith(
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                    renderText: ({
-                      required String str,
-                      required String pattern,
-                    }) {
-                      return {'display': str.replaceAll('~', '')};
-                    },
-                  ),
-                  MatchText(
-                    pattern: '`(.*?)`',
-                    style: ChatTheme01.latestChatStyle.copyWith(
-                      fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
-                    ),
-                    renderText: ({
-                      required String str,
-                      required String pattern,
-                    }) {
-                      return {'display': str.replaceAll('`', '')};
-                    },
-                  ),
-                  MatchText(
-                    pattern: regexEmail,
-                    style: ChatTheme01.latestChatStyle
-                        .copyWith(decoration: TextDecoration.underline),
-                  ),
-                  MatchText(
-                    pattern: regexLink,
-                    style: ChatTheme01.latestChatStyle
-                        .copyWith(decoration: TextDecoration.underline),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return const SizedBox();
-          }
-        },
+      subtitle: buildSubtitle(context),
+      trailing: buildTraining(context),
+    );
+  }
+
+  Widget buildSubtitle(BuildContext context) {
+    RoomMessage? msg = widget.room.latestMessage();
+    if (msg == null) {
+      return SizedBox();
+    }
+    return Container(
+      margin: const EdgeInsets.only(top: 10, bottom: 10),
+      child: ParsedText(
+        text: '${getNameFromId(msg.sender())}: ${msg.body()}',
+        style: ChatTheme01.latestChatStyle,
+        regexOptions: const RegexOptions(multiLine: true, dotAll: true),
+        maxLines: 2,
+        parse: [
+          MatchText(
+            pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
+            style: ChatTheme01.latestChatStyle
+                .copyWith(fontWeight: FontWeight.bold),
+            renderText: ({
+              required String str,
+              required String pattern,
+            }) {
+              return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
+            },
+          ),
+          MatchText(
+            pattern: '_(.*?)_',
+            style: ChatTheme01.latestChatStyle
+                .copyWith(fontStyle: FontStyle.italic),
+            renderText: ({
+              required String str,
+              required String pattern,
+            }) {
+              return {'display': str.replaceAll('_', '')};
+            },
+          ),
+          MatchText(
+            pattern: '~(.*?)~',
+            style: ChatTheme01.latestChatStyle.copyWith(
+              decoration: TextDecoration.lineThrough,
+            ),
+            renderText: ({
+              required String str,
+              required String pattern,
+            }) {
+              return {'display': str.replaceAll('~', '')};
+            },
+          ),
+          MatchText(
+            pattern: '`(.*?)`',
+            style: ChatTheme01.latestChatStyle.copyWith(
+              fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
+            ),
+            renderText: ({
+              required String str,
+              required String pattern,
+            }) {
+              return {'display': str.replaceAll('`', '')};
+            },
+          ),
+          MatchText(
+            pattern: regexEmail,
+            style: ChatTheme01.latestChatStyle
+                .copyWith(decoration: TextDecoration.underline),
+          ),
+          MatchText(
+            pattern: regexLink,
+            style: ChatTheme01.latestChatStyle
+                .copyWith(decoration: TextDecoration.underline),
+          ),
+        ],
       ),
-      trailing: StreamBuilder<RoomMessage>(
-        stream: _getLatestMessage(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Text(
-              DateFormat.Hm().format(
-                DateTime.fromMillisecondsSinceEpoch(
-                  snapshot.requireData.originServerTs() * 1000,
-                  isUtc: true,
-                ),
-              ),
-              style: ChatTheme01.latestChatDateStyle,
-            );
-          } else {
-            return const SizedBox();
-          }
-        },
+    );
+  }
+
+  Widget buildTraining(BuildContext context) {
+    RoomMessage? msg = widget.room.latestMessage();
+    if (msg == null) {
+      return SizedBox();
+    }
+    return Text(
+      DateFormat.Hm().format(
+        DateTime.fromMillisecondsSinceEpoch(
+          msg.originServerTs() * 1000,
+          isUtc: true,
+        ),
       ),
+      style: ChatTheme01.latestChatDateStyle,
     );
   }
 }
