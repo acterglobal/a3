@@ -161,7 +161,7 @@ object Conversation {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
-    fn latest_message() -> Future<Result<RoomMessage>>;
+    fn latest_message() -> Option<RoomMessage>;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any

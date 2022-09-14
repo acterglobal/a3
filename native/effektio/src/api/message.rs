@@ -8,6 +8,7 @@ use matrix_sdk::{
     },
 };
 
+#[derive(Debug)]
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
     room: Room,
@@ -15,6 +16,18 @@ pub struct RoomMessage {
 }
 
 impl RoomMessage {
+    pub(crate) fn new(
+        inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
+        room: Room,
+        fallback: String,
+    ) -> Self {
+        RoomMessage {
+            inner,
+            room,
+            fallback,
+        }
+    }
+
     pub fn event_id(&self) -> String {
         self.inner.event_id.to_string()
     }
@@ -52,11 +65,11 @@ impl RoomMessage {
         if let MessageType::Image(content) = &self.inner.content.msgtype {
             let info = content.info.as_ref().unwrap();
             let description = ImageDescription {
-                img_name: content.body.clone(),
-                img_mimetype: info.mimetype.clone(),
-                img_size: info.size.map(u64::from),
-                img_width: info.width.map(u64::from),
-                img_height: info.height.map(u64::from),
+                name: content.body.clone(),
+                mimetype: info.mimetype.clone(),
+                size: info.size.map(u64::from),
+                width: info.width.map(u64::from),
+                height: info.height.map(u64::from),
             };
             Some(description)
         } else {
@@ -68,9 +81,9 @@ impl RoomMessage {
         if let MessageType::File(content) = &self.inner.content.msgtype {
             let info = content.info.as_ref().unwrap();
             let description = FileDescription {
-                f_name: content.body.clone(),
-                f_mimetype: info.mimetype.clone(),
-                f_size: info.size.map(u64::from),
+                name: content.body.clone(),
+                mimetype: info.mimetype.clone(),
+                size: info.size.map(u64::from),
             };
             Some(description)
         } else {
@@ -80,59 +93,59 @@ impl RoomMessage {
 }
 
 pub struct ImageDescription {
-    img_name: String,
-    img_mimetype: Option<String>,
-    img_size: Option<u64>,
-    img_width: Option<u64>,
-    img_height: Option<u64>,
+    name: String,
+    mimetype: Option<String>,
+    size: Option<u64>,
+    width: Option<u64>,
+    height: Option<u64>,
 }
 
 impl ImageDescription {
     pub fn name(&self) -> String {
-        self.img_name.clone()
+        self.name.clone()
     }
 
     pub fn mimetype(&self) -> Option<String> {
-        self.img_mimetype.clone()
+        self.mimetype.clone()
     }
 
     pub fn size(&self) -> Option<u64> {
-        self.img_size
+        self.size
     }
 
     pub fn width(&self) -> Option<u64> {
-        self.img_width
+        self.width
     }
 
     pub fn height(&self) -> Option<u64> {
-        self.img_height
+        self.height
     }
 }
 
 pub struct FileDescription {
-    f_name: String,
-    f_mimetype: Option<String>,
-    f_size: Option<u64>,
+    name: String,
+    mimetype: Option<String>,
+    size: Option<u64>,
 }
 
 impl FileDescription {
     pub fn name(&self) -> String {
-        self.f_name.clone()
+        self.name.clone()
     }
 
     pub fn mimetype(&self) -> Option<String> {
-        self.f_mimetype.clone()
+        self.mimetype.clone()
     }
 
     pub fn size(&self) -> Option<u64> {
-        self.f_size
+        self.size
     }
 }
 
-pub fn sync_event_to_message(sync_event: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
+pub(crate) fn sync_event_to_message(ev: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
     if let Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
         SyncMessageLikeEvent::Original(m),
-    ))) = sync_event.event.deserialize()
+    ))) = ev.event.deserialize()
     {
         Some(RoomMessage {
             fallback: m.content.body().to_string(),

@@ -1,5 +1,6 @@
 use anyhow::{bail, Context, Result};
-use futures::{pin_mut, stream, Stream, StreamExt};
+use derive_builder::Builder;
+use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
 use log::debug;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
@@ -17,13 +18,14 @@ use matrix_sdk::{
 };
 use pulldown_cmark::{
     html,
-    Event::{Code, End, FootnoteReference, HardBreak, Html, Rule, SoftBreak, Start, TaskListMarker, Text},
+    Event::{
+        Code, End, FootnoteReference, HardBreak, Html, Rule, SoftBreak, Start, TaskListMarker, Text,
+    },
     Options, Parser, Tag,
 };
 use std::{fs::File, io::Write, path::PathBuf};
 
-use super::messages::{sync_event_to_message, RoomMessage};
-use super::{api, TimelineStream, RUNTIME};
+use super::{api::FfiBuffer, message::RoomMessage, stream::TimelineStream, RUNTIME};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::RoomMember,
@@ -37,11 +39,11 @@ impl std::ops::Deref for Member {
 }
 
 impl Member {
-    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         let r = self.member.clone();
         RUNTIME
             .spawn(async move {
-                Ok(api::FfiBuffer::new(
+                Ok(FfiBuffer::new(
                     r.avatar(MediaFormat::File).await?.context("No avatar")?,
                 ))
             })
@@ -56,12 +58,31 @@ impl Member {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Room {
     pub(crate) client: MatrixClient,
     pub(crate) room: MatrixRoom,
 }
 
 impl Room {
+    pub(crate) async fn is_effektio_group(&self) -> bool {
+        if let Ok(Some(_)) = self
+            .room
+            .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
+            .await
+        {
+            true
+        } else if let Ok(Some(_)) = self
+            .room
+            .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
+            .await
+        {
+            true
+        } else {
+            false
+        }
+    }
+
     pub async fn display_name(&self) -> Result<String> {
         let r = self.room.clone();
         RUNTIME
@@ -69,11 +90,11 @@ impl Room {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(api::FfiBuffer::new(
+                Ok(FfiBuffer::new(
                     r.avatar(MediaFormat::File).await?.context("No avatar")?,
                 ))
             })
@@ -138,34 +159,6 @@ impl Room {
             .await?
     }
 
-    pub async fn latest_message(&self) -> Result<RoomMessage> {
-        let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let stream = room
-                    .timeline_backward()
-                    .await
-                    .context("Failed acquiring timeline streams")?;
-                pin_mut!(stream);
-                loop {
-                    match stream.next().await {
-                        None => break,
-                        Some(Ok(e)) => {
-                            if let Some(a) = sync_event_to_message(e, room.clone()) {
-                                return Ok(a);
-                            }
-                        }
-                        _ => {
-                            // we ignore errors
-                        }
-                    }
-                }
-
-                bail!("No Message found")
-            })
-            .await?
-    }
-
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
@@ -222,8 +215,8 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
-        let body = convert_markdown_to_plain(&markdown);
-        let html_body = convert_markdown_to_html(&markdown);
+        let body = markdown_to_plain(&markdown);
+        let html_body = markdown_to_html(&markdown);
         RUNTIME
             .spawn(async move {
                 let r = room
@@ -272,7 +265,7 @@ impl Room {
             .await?
     }
 
-    pub async fn image_binary(&self, event_id: String) -> Result<api::FfiBuffer<u8>> {
+    pub async fn image_binary(&self, event_id: String) -> Result<FfiBuffer<u8>> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -299,7 +292,7 @@ impl Room {
                                 false,
                             )
                             .await?;
-                        Ok(api::FfiBuffer::new(data))
+                        Ok(FfiBuffer::new(data))
                     } else {
                         bail!("Invalid file format")
                     }
@@ -436,7 +429,7 @@ impl std::ops::Deref for Room {
     }
 }
 
-fn convert_markdown_to_html(markdown: &String) -> String {
+fn markdown_to_html(markdown: &String) -> String {
     // Set up options and parser. Strikethroughs are not part of the CommonMark standard
     // and we therefore must enable it explicitly.
     let mut options = Options::empty();
@@ -450,7 +443,7 @@ fn convert_markdown_to_html(markdown: &String) -> String {
     html_output
 }
 
-fn convert_markdown_to_plain(markdown: &String) -> String {
+fn markdown_to_plain(markdown: &String) -> String {
     // GFM tables and tasks lists are not enabled.
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
