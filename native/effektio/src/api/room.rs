@@ -72,14 +72,13 @@ impl Room {
             .await
         {
             true
-        } else if let Ok(Some(_)) = self
-            .room
-            .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-            .await
-        {
-            true
         } else {
-            false
+            matches!(
+                self.room
+                    .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
+                    .await,
+                Ok(Some(_))
+            )
         }
     }
 
