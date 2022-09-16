@@ -8,6 +8,8 @@ import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/controllers/invite_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
@@ -77,6 +79,8 @@ class Effektio extends StatelessWidget {
           '/profile': (BuildContext context) => const SocialProfileScreen(),
           '/signup': (BuildContext context) => const SignupScreen(),
           '/gallery': (BuildContext context) => const GalleryScreen(),
+          '/todo': (BuildContext context) => const ToDoScreen(),
+          '/addTodo': (BuildContext context) => const AddToDoScreen(),
         },
       ),
     );
@@ -132,15 +136,15 @@ class _EffektioHomeState extends State<EffektioHome>
     inviteController.init(client);
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
-    tnc = await client.getTypingNotificationController();
-    tnc.getEventRx()!.listen((event) {
-      String roomId = event.getRoomId();
-      List<String> userIds = [];
-      for (final userId in event.getUserIds()) {
-        userIds.add(userId.toDartString());
-      }
-      debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
-    });
+    // tnc = await client.getTypingNotificationController();
+    // tnc.getEventRx()!.listen((event) {
+    //   String roomId = event.getRoomId();
+    //   List<String> userIds = [];
+    //   for (final userId in event.getUserIds()) {
+    //     userIds.add(userId.toDartString());
+    //   }
+    //   debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
+    // });
     UserId myId = await client.userId();
     rnc.getEventRx()!.listen((event) {
       for (var record in event.getReceiptRecords()) {
