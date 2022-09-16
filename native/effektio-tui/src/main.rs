@@ -54,7 +54,9 @@ async fn main() -> Result<()> {
         pin_mut!(sync_stream);
 
         loop {
-            if let Some(_x) = sync_stream.next().await {}
+            if let Some(synced) = sync_stream.next().await {
+                sender.send(AppUpdate::SetSynced(synced)).unwrap();
+            }
         }
     });
     ui::run_ui(rx)?;

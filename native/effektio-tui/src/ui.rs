@@ -27,6 +27,7 @@ const BG_DARKER: Color = Color::Rgb(47, 49, 62);
 
 pub enum AppUpdate {
     SetUsername(String), // set the username
+    SetSynced(bool),     // set the synced state
 }
 
 #[derive(PartialEq, Eq)]
@@ -52,6 +53,7 @@ struct App<'a> {
     pub log_state: tui_logger::TuiWidgetState,
     pub tools: Vec<&'a str>,
     pub index: usize,
+    pub synced: bool,
 }
 
 impl<'a> App<'a> {
@@ -62,6 +64,7 @@ impl<'a> App<'a> {
             selected_widget: Widget::Tools,
             log_state: Default::default(),
             username: None,
+            synced: false,
         }
     }
 
@@ -72,6 +75,7 @@ impl<'a> App<'a> {
     pub fn apply(&mut self, update: AppUpdate) {
         match update {
             AppUpdate::SetUsername(u) => self.username = Some(u),
+            AppUpdate::SetSynced(synced) => self.synced = synced,
         }
     }
 
@@ -246,6 +250,10 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     let status = Tabs::new(vec![
         Spans::from(vec![Span::styled(
             app.username.clone().unwrap_or("".to_owned()),
+            Style::default().fg(BG_GRAY),
+        )]),
+        Spans::from(vec![Span::styled(
+            format!("synced: {}", app.synced),
             Style::default().fg(BG_GRAY),
         )]),
         //Span::styled(rest, Style::default().fg(Color::Green)),
