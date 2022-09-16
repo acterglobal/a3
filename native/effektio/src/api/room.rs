@@ -72,14 +72,15 @@ impl Room {
             .await
         {
             true
-        } else if let Ok(Some(_)) = self
-            .room
-            .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-            .await
-        {
-            true
         } else {
-            false
+            match self
+                .room
+                .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
+                .await
+            {
+                Ok(Some(_)) => true,
+                _ => false,
+            }
         }
     }
 
@@ -443,7 +444,7 @@ fn markdown_to_html(markdown: &String) -> String {
     html_output
 }
 
-fn markdown_to_plain(markdown: &String) -> String {
+fn markdown_to_plain(markdown: &str) -> String {
     // GFM tables and tasks lists are not enabled.
     let mut options = Options::empty();
     options.insert(Options::ENABLE_STRIKETHROUGH);
@@ -479,7 +480,7 @@ fn start_tag(tag: &Tag, buffer: &mut String) {
         Tag::List(_number) => fresh_line(buffer),
         Tag::Link(_link_type, _dest, title) | Tag::Image(_link_type, _dest, title) => {
             if !title.is_empty() {
-                buffer.push_str(&title);
+                buffer.push_str(title);
             }
         }
         Tag::Paragraph => (),
