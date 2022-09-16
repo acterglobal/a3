@@ -70,7 +70,7 @@ async fn main() -> Result<()> {
             }
         }
     });
-    ui::run_ui(rx)?;
+    ui::run_ui(rx).await?;
 
     Ok(())
 }

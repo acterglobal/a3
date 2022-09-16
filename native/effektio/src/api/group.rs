@@ -21,6 +21,7 @@ use effektio_core::{
     statics::{default_effektio_group_states, initial_state_for_alias},
 };
 
+#[derive(Debug, Clone)]
 pub struct Group {
     pub(crate) inner: Room,
 }

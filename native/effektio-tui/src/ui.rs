@@ -6,8 +6,10 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use dialoguer::{Input, Select};
 use effektio::{Conversation, Group};
 use effektio_core::models::TaskList;
+use futures::future::join_all;
 use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
 use tui::{
@@ -160,7 +162,7 @@ impl App {
         &self.tools[self.index]
     }
 
-    fn handle_key(&mut self, key: KeyEvent) -> bool {
+    async fn handle_key(&mut self, key: KeyEvent) -> bool {
         // true means exit
         match key.code {
             KeyCode::Esc => return true,
@@ -188,7 +190,31 @@ impl App {
             },
             Widget::Main => {
                 match key.code {
-                    KeyCode::Char('n') if self.selected_tool().is_tasks() => {}
+                    KeyCode::Char('n') if self.selected_tool().is_tasks() => {
+                        let groups = &self.groups;
+                        let names: Vec<String> = join_all(groups.iter().map(|g| g.display_name()))
+                            .await
+                            .into_iter()
+                            .collect::<Result<Vec<_>>>()
+                            .unwrap();
+
+                        let list_title = Input::<String>::new()
+                            .with_prompt("List Title")
+                            .interact_text()
+                            .unwrap();
+
+                        let chosen: usize = Select::new()
+                            .with_prompt("Under which Group?")
+                            .items(&names)
+                            .interact()
+                            .unwrap();
+
+                        let group = &groups[chosen];
+                        let mut tl_draft = group.task_list_draft().unwrap();
+                        tl_draft.name(list_title);
+
+                        tl_draft.send().await.unwrap();
+                    }
                     _ => {
                         // ...
                     }
@@ -212,7 +238,7 @@ impl App {
     }
 }
 
-pub fn run_ui(rx: Receiver<AppUpdate>) -> Result<()> {
+pub async fn run_ui(rx: Receiver<AppUpdate>) -> Result<()> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -222,7 +248,7 @@ pub fn run_ui(rx: Receiver<AppUpdate>) -> Result<()> {
 
     // create app and run it
     let app = App::new();
-    let res = run_app(&mut terminal, app, rx);
+    let res = run_app(&mut terminal, app, rx).await;
 
     // restore terminal
     disable_raw_mode()?;
@@ -240,7 +266,7 @@ pub fn run_ui(rx: Receiver<AppUpdate>) -> Result<()> {
     Ok(())
 }
 
-fn run_app<B: Backend>(
+async fn run_app<B: Backend>(
     terminal: &mut Terminal<B>,
     mut app: App,
     rx: Receiver<AppUpdate>,
@@ -256,7 +282,7 @@ fn run_app<B: Backend>(
             .unwrap_or_else(|| Duration::from_secs(0));
         if crossterm::event::poll(timeout)? {
             if let Event::Key(key) = event::read()? {
-                if app.handle_key(key) {
+                if app.handle_key(key).await {
                     return Ok(());
                 }
             }

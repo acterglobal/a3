@@ -50,6 +50,7 @@ impl Member {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Room {
     pub(crate) client: MatrixClient,
     pub(crate) room: MatrixRoom,
