@@ -64,16 +64,16 @@ class _ChatListState extends State<ChatList> {
         RoomMessage? msg = convo.latestMessage();
         if (msg == null) {
           // prevent latest message from deleting
-          RoomData newRoom = RoomData(
+          RoomData newRoomData = RoomData(
             roomId: roomId,
             conversation: convo,
             recentMessage:
                 oldIndex == -1 ? null : roomDatas[oldIndex].recentMessage,
           );
-          roomDatas.add(newRoom);
+          newRoomDatas.add(newRoomData);
           continue;
         }
-        RoomData newRoom = RoomData(
+        RoomData newRoomData = RoomData(
           roomId: roomId,
           conversation: convo,
           recentMessage: RecentMessage(
@@ -82,7 +82,7 @@ class _ChatListState extends State<ChatList> {
             originServerTs: msg.originServerTs(),
           ),
         );
-        roomDatas.add(newRoom);
+        newRoomDatas.add(newRoomData);
       }
       setState(() => roomDatas = newRoomDatas);
     });
