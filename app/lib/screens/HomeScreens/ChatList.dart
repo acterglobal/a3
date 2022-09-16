@@ -12,7 +12,7 @@ import 'package:themed/themed.dart';
 
 class ChatList extends StatefulWidget {
   const ChatList({Key? key, required this.client}) : super(key: key);
-  final Future<Client> client;
+  final Client client;
 
   @override
   State<ChatList> createState() => _ChatListState();
@@ -32,10 +32,8 @@ class _ChatListState extends State<ChatList> {
     super.dispose();
   }
 
-  Future<void> _getUser() async {
-    var fetchClient = await widget.client;
-    user = await fetchClient.userId().then((u) => u.toString());
-  }
+  Future<void> _getUser() async =>
+      user = await widget.client.userId().then((u) => u.toString());
 
   @override
   Widget build(BuildContext context) {
