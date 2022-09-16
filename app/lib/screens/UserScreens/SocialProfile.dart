@@ -1,10 +1,10 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
 
-import 'package:effektio/common/widget/customAvatar.dart';
+import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 
 class SocialProfileScreen extends StatefulWidget {
   const SocialProfileScreen({
