@@ -12,40 +12,28 @@ import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 
-class ChatOverview extends StatelessWidget {
-  final List<Conversation> rooms;
-  final String? user;
+class RecentMessage {
+  String sender;
+  String body;
+  int originServerTs;
 
-  const ChatOverview({
-    Key? key,
-    required this.rooms,
-    required this.user,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: EdgeInsets.only(top: 10),
-      itemCount: rooms.length,
-      itemBuilder: (BuildContext context, int index) => ChatListItem(
-        room: rooms[index],
-        user: user,
-      ),
-      separatorBuilder: (context, int index) => Divider(height: 1),
-    );
-  }
+  RecentMessage({
+    required this.sender,
+    required this.body,
+    required this.originServerTs,
+  });
 }
 
 class ChatListItem extends StatefulWidget {
   final Conversation room;
-  final String? user;
+  final String user;
+  final RecentMessage? recentMessage;
 
   const ChatListItem({
     Key? key,
     required this.room,
     required this.user,
+    this.recentMessage,
   }) : super(key: key);
 
   @override
@@ -94,14 +82,14 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildSubtitle(BuildContext context) {
-    RoomMessage? msg = widget.room.latestMessage();
-    if (msg == null) {
+    if (widget.recentMessage == null) {
       return SizedBox();
     }
     return Container(
-      margin: const EdgeInsets.only(top: 10, bottom: 10),
+      margin: EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
-        text: '${getNameFromId(msg.sender())}: ${msg.body()}',
+        text:
+            '${getNameFromId(widget.recentMessage!.sender)}: ${widget.recentMessage!.body}',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,
@@ -168,14 +156,13 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildTraining(BuildContext context) {
-    RoomMessage? msg = widget.room.latestMessage();
-    if (msg == null) {
+    if (widget.recentMessage == null) {
       return SizedBox();
     }
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          msg.originServerTs() * 1000,
+          widget.recentMessage!.originServerTs * 1000,
           isUtc: true,
         ),
       ),

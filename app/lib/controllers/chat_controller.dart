@@ -42,9 +42,10 @@ class ChatController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
+  late final StreamSubscription<RoomMessage> _subscription;
 
   //get the timeline of room
-  init(Conversation convoRoom, types.User convoUser) async {
+  Future<void> init(Conversation convoRoom, types.User convoUser) async {
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
@@ -76,11 +77,17 @@ class ChatController extends GetxController {
     newEvent();
   }
 
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+
   Future<void> newEvent() async {
     Stream<RoomMessage> newRoomMessage() =>
         Stream.periodic(const Duration(milliseconds: 800))
             .asyncMap((_) => _stream!.next());
-    newRoomMessage().listen((event) {
+    _subscription = newRoomMessage().listen((event) {
       if (event.sender() != user.id) {
         _loadMessage(event, messages);
         update(['Chat']);

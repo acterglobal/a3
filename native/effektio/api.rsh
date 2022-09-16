@@ -163,6 +163,9 @@ object Conversation {
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
 
+    /// the room id
+    fn get_room_id() -> string;
+
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
     /// point by setting typing to false. If this method is called while the

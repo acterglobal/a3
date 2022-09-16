@@ -3,7 +3,7 @@ use derive_builder::Builder;
 use effektio_core::statics::default_effektio_conversation_states;
 use futures::{pin_mut, StreamExt};
 use futures_signals::{
-    signal::{Mutable, SignalExt, SignalStream},
+    signal::{Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream},
     signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
 };
 use log::{error, info, warn};
@@ -108,6 +108,10 @@ impl Conversation {
     pub fn latest_message(&self) -> Option<RoomMessage> {
         self.latest_message.lock_mut().take()
     }
+
+    pub fn get_room_id(&self) -> String {
+        self.room_id().to_string()
+    }
 }
 
 impl std::ops::Deref for Conversation {
@@ -119,7 +123,7 @@ impl std::ops::Deref for Conversation {
 
 #[derive(Clone)]
 pub(crate) struct ConversationController {
-    conversations: MutableVec<Conversation>,
+    conversations: Mutable<Vec<Conversation>>,
 }
 
 impl ConversationController {
@@ -134,7 +138,7 @@ impl ConversationController {
         for convo in convos.iter() {
             convo.load_latest_message();
         }
-        self.conversations.lock_mut().replace_cloned(convos);
+        self.conversations.lock_mut().clone_from(&convos);
 
         let me = self.clone();
         client
@@ -173,14 +177,15 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                info!("existing convo index: {}", idx);
                 let convo = Conversation::new(Room {
                     client: client.clone(),
                     room: room.clone(),
                 });
                 let msg = RoomMessage::new(ev.clone(), room.clone(), ev.content.body().to_string());
                 convo.set_latest_message(msg);
-                convos.set_cloned(idx, convo);
-                convos.move_from_to(idx, 0);
+                convos.remove(idx);
+                convos.insert(0, convo);
             }
         }
     }
@@ -201,7 +206,7 @@ impl ConversationController {
                         client: client.clone(),
                         room: room.clone(),
                     });
-                    convos.push_cloned(convo);
+                    convos.push(convo);
                 }
                 (MembershipState::Join, MembershipState::Leave) => {
                     // remove existing room
@@ -270,13 +275,10 @@ impl Client {
             .await?
     }
 
-    fn conversations_diff_rx(&self) -> MutableSignalVec<Conversation> {
+    pub fn conversations_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Conversation>>> {
         self.conversation_controller
             .conversations
-            .signal_vec_cloned()
-    }
-
-    pub fn conversations_rx(&self) -> SignalStream<ToSignalCloned<MutableSignalVec<Conversation>>> {
-        self.conversations_diff_rx().to_signal_cloned().to_stream()
+            .signal_cloned()
+            .to_stream()
     }
 }
