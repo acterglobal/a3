@@ -218,7 +218,7 @@ class _EffektioHomeState extends State<EffektioHome>
             ],
           ),
           drawer: SideDrawer(
-            client: _client,
+            client: client,
           ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,

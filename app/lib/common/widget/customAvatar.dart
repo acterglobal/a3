@@ -55,6 +55,7 @@ class CustomAvatar extends StatelessWidget {
             } else {
               if (stringName.isNotEmpty) {
                 return TextAvatar(
+                  fontSize: 12,
                   numberLetters: 2,
                   shape: Shape.Circular,
                   upperCase: true,
