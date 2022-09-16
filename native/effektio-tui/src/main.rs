@@ -56,6 +56,17 @@ async fn main() -> Result<()> {
         loop {
             if let Some(synced) = sync_stream.next().await {
                 sender.send(AppUpdate::SetSynced(synced)).unwrap();
+                if synced {
+                    // let's update the chats;
+                    let conversastions = client.conversations().await.unwrap();
+                    sender
+                        .send(AppUpdate::UpdateConversations(conversastions))
+                        .unwrap();
+
+                    // let's update the groups;
+                    let groups = client.groups().await.unwrap();
+                    sender.send(AppUpdate::UpdateGroups(groups)).unwrap();
+                }
             }
         }
     });

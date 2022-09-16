@@ -6,6 +6,8 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
+use effektio::{Conversation, Group};
+use effektio_core::models::TaskList;
 use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
 use tui::{
@@ -28,6 +30,8 @@ const BG_DARKER: Color = Color::Rgb(47, 49, 62);
 pub enum AppUpdate {
     SetUsername(String), // set the username
     SetSynced(bool),     // set the synced state
+    UpdateConversations(Vec<Conversation>),
+    UpdateGroups(Vec<Group>),
 }
 
 #[derive(PartialEq, Eq)]
@@ -35,6 +39,59 @@ enum Widget {
     Tools,
     Main,
     Logs,
+}
+
+#[derive(Clone, Debug)]
+struct ChatStats {
+    total: u32,
+    unread: u32,
+    notifications: u32,
+}
+
+#[derive(Clone, Debug)]
+enum Tool {
+    News,
+    Tasks(Vec<TaskList>),
+    Chat(Option<ChatStats>),
+}
+
+impl Tool {
+    fn name(&self) -> String {
+        match self {
+            Tool::News => "News".to_owned(),
+            Tool::Tasks(_) => "Tasks".to_owned(),
+            Tool::Chat(stats) => match stats {
+                Some(s) => {
+                    format!("Chat ({}/{})", s.unread, s.total)
+                }
+                _ => "Chat".to_owned(),
+            },
+        }
+    }
+
+    fn is_tasks(&self) -> bool {
+        matches!(self, Tool::Tasks(_))
+    }
+
+    fn is_chat(&self) -> bool {
+        matches!(self, Tool::Chat(_))
+    }
+
+    fn update_chat_stats(&mut self, new_stats: ChatStats) {
+        if !self.is_chat() {
+            unimplemented!("What are you doing here?")
+        }
+
+        *self = Tool::Chat(Some(new_stats))
+    }
+
+    fn all() -> [Self; 3] {
+        [
+            Tool::Tasks(Default::default()),
+            Tool::News,
+            Tool::Chat(None),
+        ]
+    }
 }
 
 impl Widget {
@@ -47,22 +104,26 @@ impl Widget {
     }
 }
 
-struct App<'a> {
+struct App {
     pub username: Option<String>,
     pub selected_widget: Widget,
     pub log_state: tui_logger::TuiWidgetState,
-    pub tools: Vec<&'a str>,
+    pub tools: Vec<Tool>,
+    pub groups: Vec<Group>,
+    pub conversations: Vec<Conversation>,
     pub index: usize,
     pub synced: bool,
 }
 
-impl<'a> App<'a> {
-    fn new() -> App<'a> {
+impl App {
+    fn new() -> App {
         App {
-            tools: vec!["News", "Tasks", "Chat"],
+            tools: Tool::all().to_vec(),
             index: 0,
             selected_widget: Widget::Tools,
             log_state: Default::default(),
+            groups: Default::default(),
+            conversations: Default::default(),
             username: None,
             synced: false,
         }
@@ -76,7 +137,27 @@ impl<'a> App<'a> {
         match update {
             AppUpdate::SetUsername(u) => self.username = Some(u),
             AppUpdate::SetSynced(synced) => self.synced = synced,
+            AppUpdate::UpdateGroups(groups) => {
+                self.groups = groups;
+            }
+            AppUpdate::UpdateConversations(convos) => {
+                for m in self.tools.iter_mut() {
+                    if m.is_chat() {
+                        m.update_chat_stats(ChatStats {
+                            total: convos.len() as u32,
+                            unread: 0,
+                            notifications: 0,
+                        });
+                        break;
+                    }
+                }
+                self.conversations = convos;
+            }
         }
+    }
+
+    pub fn selected_tool(&self) -> &Tool {
+        &self.tools[self.index]
     }
 
     fn handle_key(&mut self, key: KeyEvent) -> bool {
@@ -106,7 +187,12 @@ impl<'a> App<'a> {
                 _ => {}
             },
             Widget::Main => {
-                //..
+                match key.code {
+                    KeyCode::Char('n') if self.selected_tool().is_tasks() => {}
+                    _ => {
+                        // ...
+                    }
+                }
             }
         }
 
@@ -217,7 +303,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .iter()
         .map(|t| {
             Spans::from(vec![Span::styled(
-                String::from(*t),
+                String::from(t.name()),
                 Style::default().fg(TERTIARY),
             )])
         })
@@ -234,13 +320,9 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 
     f.render_widget(tabs, chunks[0]);
 
-    let mut main = match app.index {
-        0 => Block::default().title(" News ").borders(Borders::ALL),
-        1 => Block::default().title(" Tasks ").borders(Borders::ALL),
-        2 => Block::default().title(" Chat ").borders(Borders::ALL),
-        3 => Block::default().title(" Inner 3 ").borders(Borders::ALL),
-        _ => unreachable!(),
-    };
+    let mut main = Block::default()
+        .title(format!(" {:} ", app.selected_tool().name()))
+        .borders(Borders::ALL);
 
     if app.selected_widget == Widget::Main {
         main = main.border_style(Style::default().fg(PRIMARY));
@@ -254,6 +336,10 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         )]),
         Spans::from(vec![Span::styled(
             format!("synced: {}", app.synced),
+            Style::default().fg(BG_GRAY),
+        )]),
+        Spans::from(vec![Span::styled(
+            format!("{} Groups", app.groups.len()),
             Style::default().fg(BG_GRAY),
         )]),
         //Span::styled(rest, Style::default().fg(Color::Green)),
