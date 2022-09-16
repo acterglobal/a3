@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/widgets/CommentView.dart';
-import 'package:effektio/widgets/like_button.dart';
+import 'package:effektio/widgets/LikeButton.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
