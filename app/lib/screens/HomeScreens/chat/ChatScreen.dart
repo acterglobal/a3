@@ -9,7 +9,7 @@ import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
-import 'package:effektio/widgets/emptyMessagesPlaceholder.dart';
+import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
