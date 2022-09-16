@@ -75,7 +75,7 @@ impl SessionVerificationEvent {
     }
 
     pub fn get_cancel_code(&self) -> Option<String> {
-        self.cancel_code.clone().map(|e| e.as_str().to_owned())
+        self.cancel_code.clone().map(|e| e.to_string())
     }
 
     pub fn get_reason(&self) -> Option<String> {
@@ -396,7 +396,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let from_device = ev.content.from_device.to_string();
                 let msg = SessionVerificationEvent::new(
                     client,
@@ -415,7 +415,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let from_device = ev.content.from_device.to_string();
                 let msg = SessionVerificationEvent::new(
                     client,
@@ -434,7 +434,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let msg = SessionVerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
@@ -452,7 +452,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let cancel_code = ev.content.code.clone();
                 let reason = ev.content.reason.clone();
                 let msg = SessionVerificationEvent::new(
@@ -472,7 +472,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let msg = SessionVerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
@@ -490,7 +490,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let msg = SessionVerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
@@ -508,7 +508,7 @@ impl SessionVerificationController {
                 let dev_id = client.device_id().expect("guest user cannot get device id");
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
-                let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
+                let txn_id = ev.content.relates_to.event_id.to_string();
                 let msg = SessionVerificationEvent::new(
                     client,
                     evt.event_type().to_string(),

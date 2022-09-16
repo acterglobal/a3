@@ -402,7 +402,7 @@ impl Room {
                         .unwrap();
                     accounts.push(Account::new(
                         other_client.account(),
-                        user_id.as_str().to_owned(),
+                        user_id.to_string(),
                     ));
                 }
                 Ok(accounts)

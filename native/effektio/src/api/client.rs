@@ -298,7 +298,7 @@ impl Client {
         let user_id = self.client.user_id().unwrap();
         Ok(Account::new(
             self.client.account(),
-            user_id.as_str().to_owned(),
+            user_id.to_string(),
         ))
     }
 
