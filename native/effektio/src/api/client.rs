@@ -296,10 +296,7 @@ impl Client {
 
     pub async fn account(&self) -> Result<Account> {
         let user_id = self.client.user_id().unwrap();
-        Ok(Account::new(
-            self.client.account(),
-            user_id.to_string(),
-        ))
+        Ok(Account::new(self.client.account(), user_id.to_string()))
     }
 
     pub async fn display_name(&self) -> Result<String> {

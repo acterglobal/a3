@@ -400,10 +400,7 @@ impl Room {
                         .build()
                         .await
                         .unwrap();
-                    accounts.push(Account::new(
-                        other_client.account(),
-                        user_id.to_string(),
-                    ));
+                    accounts.push(Account::new(other_client.account(), user_id.to_string()));
                 }
                 Ok(accounts)
             })
