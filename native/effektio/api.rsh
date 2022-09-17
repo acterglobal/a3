@@ -318,8 +318,8 @@ object Client {
     /// Return the typing event receiver
     fn typing_event_rx() -> Option<Stream<TypingEvent>>;
 
-    /// Return the read notification event receiver
-    fn receipt_notification_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
+    /// Return the receipt event receiver
+    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 }
 
 object SessionVerificationEvent {
@@ -386,8 +386,8 @@ object SessionVerificationEmoji {
     fn description() -> string;
 }
 
-/// Deliver read notification from rust to flutter
-object ReceiptNotificationEvent {
+/// Deliver receipt event from rust to flutter
+object ReceiptEvent {
     /// Get transaction id or flow id
     fn room_id() -> string;
 
@@ -395,7 +395,7 @@ object ReceiptNotificationEvent {
     fn receipt_records() -> Vec<ReceiptRecord>;
 }
 
-/// Deliver read notification from rust to flutter
+/// Deliver receipt record from rust to flutter
 object ReceiptRecord {
     /// Get id of event that this user read message from peer
     fn event_id() -> string;

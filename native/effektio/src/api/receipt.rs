@@ -39,12 +39,12 @@ impl ReceiptRecord {
 }
 
 #[derive(Clone, Debug)]
-pub struct ReceiptNotificationEvent {
+pub struct ReceiptEvent {
     room_id: String,
     receipt_records: Vec<ReceiptRecord>,
 }
 
-impl ReceiptNotificationEvent {
+impl ReceiptEvent {
     pub(crate) fn new(room_id: String) -> Self {
         Self {
             room_id,
@@ -70,15 +70,15 @@ impl ReceiptNotificationEvent {
 }
 
 #[derive(Clone)]
-pub(crate) struct ReceiptNotificationController {
-    event_tx: Sender<ReceiptNotificationEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<ReceiptNotificationEvent>>>>,
+pub(crate) struct ReceiptController {
+    event_tx: Sender<ReceiptEvent>,
+    event_rx: Arc<Mutex<Option<Receiver<ReceiptEvent>>>>,
 }
 
-impl ReceiptNotificationController {
+impl ReceiptController {
     pub fn new() -> Self {
-        let (tx, rx) = channel::<ReceiptNotificationEvent>(10); // dropping after more than 10 items queued
-        ReceiptNotificationController {
+        let (tx, rx) = channel::<ReceiptEvent>(10); // dropping after more than 10 items queued
+        ReceiptController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
         }
@@ -91,7 +91,7 @@ impl ReceiptNotificationController {
             .register_event_handler(
                 |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
                  room: MatrixRoom,
-                 Ctx(me): Ctx<ReceiptNotificationController>| async move {
+                 Ctx(me): Ctx<ReceiptController>| async move {
                     me.clone().process_ephemeral_event(ev, &room);
                 },
             )
@@ -105,7 +105,7 @@ impl ReceiptNotificationController {
     ) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
-        let mut msg = ReceiptNotificationEvent::new(room_id.to_string());
+        let mut msg = ReceiptEvent::new(room_id.to_string());
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
             for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
@@ -122,7 +122,7 @@ impl ReceiptNotificationController {
 }
 
 impl Client {
-    pub fn receipt_notification_event_rx(&self) -> Option<Receiver<ReceiptNotificationEvent>> {
-        self.receipt_notification_controller.event_rx.lock().take()
+    pub fn receipt_event_rx(&self) -> Option<Receiver<ReceiptEvent>> {
+        self.receipt_controller.event_rx.lock().take()
     }
 }

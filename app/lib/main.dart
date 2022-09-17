@@ -132,11 +132,11 @@ class _EffektioHomeState extends State<EffektioHome>
       debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
     });
     UserId myId = await client.userId();
-    client.receiptNotificationEventRx()!.listen((event) {
+    client.receiptEventRx()!.listen((event) {
       for (var record in event.receiptRecords()) {
         String userId = record.userId();
         if (userId != myId.toString()) {
-          debugPrint('receipt notification for ' + event.roomId());
+          debugPrint('receipt event for ' + event.roomId());
           debugPrint('event id: ' + record.eventId());
           debugPrint('user id: ' + userId);
           debugPrint('timestamp: ' + record.timestamp().toString());

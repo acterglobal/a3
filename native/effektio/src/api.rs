@@ -19,7 +19,7 @@ mod device_lists;
 mod group;
 mod message;
 mod news;
-mod receipt_notification;
+mod receipt;
 mod room;
 mod session_verification;
 mod stream;
@@ -35,7 +35,7 @@ pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsC
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use message::{FileDescription, ImageDescription, RoomMessage};
-pub use receipt_notification::{ReceiptNotificationEvent, ReceiptRecord};
+pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,

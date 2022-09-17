@@ -37,7 +37,7 @@ use super::{
     conversation::{Conversation, ConversationController},
     device_lists::DeviceListsController,
     group::Group,
-    receipt_notification::ReceiptNotificationController,
+    receipt::ReceiptController,
     room::Room,
     session_verification::SessionVerificationController,
     typing::TypingController,
@@ -63,7 +63,7 @@ pub struct Client {
     pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
     pub(crate) typing_controller: TypingController,
-    pub(crate) receipt_notification_controller: ReceiptNotificationController,
+    pub(crate) receipt_controller: ReceiptController,
     pub(crate) conversation_controller: ConversationController,
 }
 
@@ -122,7 +122,7 @@ impl Client {
             session_verification_controller: SessionVerificationController::new(),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_controller: TypingController::new(),
-            receipt_notification_controller: ReceiptNotificationController::new(),
+            receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
         }
     }
@@ -133,7 +133,7 @@ impl Client {
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
         let typing_controller = self.typing_controller.clone();
-        let receipt_notification_controller = self.receipt_notification_controller.clone();
+        let receipt_controller = self.receipt_controller.clone();
         let conversation_controller = self.conversation_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(false);
@@ -148,7 +148,7 @@ impl Client {
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
             typing_controller.setup(&client).await;
-            receipt_notification_controller.setup(&client).await;
+            receipt_controller.setup(&client).await;
             conversation_controller.setup(&client).await;
 
             client
