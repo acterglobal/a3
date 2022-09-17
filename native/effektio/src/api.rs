@@ -41,7 +41,7 @@ pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
 };
 pub use stream::TimelineStream;
-pub use typing_notification::{TypingNotificationController, TypingNotificationEvent};
+pub use typing_notification::TypingNotificationEvent;
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
