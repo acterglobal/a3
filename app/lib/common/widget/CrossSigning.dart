@@ -35,12 +35,10 @@ class CrossSigning {
   }
 
   void installDeviceChangedEvent(Stream<DeviceChangedEvent> receiver) async {
-    debugPrint('listenToDevicesChangedEvent');
     _devicesChangedEventSubscription = receiver.listen((event) async {
-      debugPrint('listenToDevicesChangedEvent');
-      var devices = await event.getDevices(false);
-      for (var device in devices) {
-        debugPrint('found device id: ' + device.getDeviceId());
+      var records = await event.deviceRecords(false);
+      for (var record in records) {
+        debugPrint('found device id: ' + record.deviceId());
       }
       Get.generalDialog(
         pageBuilder: (context, anim1, anim2) {
