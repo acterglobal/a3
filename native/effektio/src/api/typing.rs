@@ -15,12 +15,12 @@ use std::sync::Arc;
 use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct TypingNotificationEvent {
+pub struct TypingEvent {
     room_id: String,
     user_ids: Vec<String>,
 }
 
-impl TypingNotificationEvent {
+impl TypingEvent {
     pub(crate) fn new(room_id: String, user_ids: Vec<String>) -> Self {
         Self { room_id, user_ids }
     }
@@ -35,15 +35,15 @@ impl TypingNotificationEvent {
 }
 
 #[derive(Clone)]
-pub(crate) struct TypingNotificationController {
-    event_tx: Sender<TypingNotificationEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<TypingNotificationEvent>>>>,
+pub(crate) struct TypingController {
+    event_tx: Sender<TypingEvent>,
+    event_rx: Arc<Mutex<Option<Receiver<TypingEvent>>>>,
 }
 
-impl TypingNotificationController {
+impl TypingController {
     pub fn new() -> Self {
-        let (tx, rx) = channel::<TypingNotificationEvent>(10); // dropping after more than 10 items queued
-        TypingNotificationController {
+        let (tx, rx) = channel::<TypingEvent>(10); // dropping after more than 10 items queued
+        TypingController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
         }
@@ -56,7 +56,7 @@ impl TypingNotificationController {
             .register_event_handler(
                 |ev: SyncEphemeralRoomEvent<TypingEventContent>,
                  room: MatrixRoom,
-                 Ctx(me): Ctx<TypingNotificationController>| async move {
+                 Ctx(me): Ctx<TypingController>| async move {
                     me.clone().process_ephemeral_event(ev, &room);
                 },
             )
@@ -74,7 +74,7 @@ impl TypingNotificationController {
         for user_id in ev.content.user_ids {
             user_ids.push(user_id.to_string());
         }
-        let msg = TypingNotificationEvent::new(room_id.to_string(), user_ids);
+        let msg = TypingEvent::new(room_id.to_string(), user_ids);
         let mut event_tx = self.event_tx.clone();
         if let Err(e) = event_tx.try_send(msg) {
             warn!("Dropping ephemeral event for {}: {}", room_id, e);
@@ -83,7 +83,7 @@ impl TypingNotificationController {
 }
 
 impl Client {
-    pub fn typing_notification_event_rx(&self) -> Option<Receiver<TypingNotificationEvent>> {
-        self.typing_notification_controller.event_rx.lock().take()
+    pub fn typing_event_rx(&self) -> Option<Receiver<TypingEvent>> {
+        self.typing_controller.event_rx.lock().take()
     }
 }

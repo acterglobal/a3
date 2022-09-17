@@ -40,7 +40,7 @@ use super::{
     receipt_notification::ReceiptNotificationController,
     room::Room,
     session_verification::SessionVerificationController,
-    typing_notification::TypingNotificationController,
+    typing::TypingController,
     RUNTIME,
 };
 
@@ -62,7 +62,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
-    pub(crate) typing_notification_controller: TypingNotificationController,
+    pub(crate) typing_controller: TypingController,
     pub(crate) receipt_notification_controller: ReceiptNotificationController,
     pub(crate) conversation_controller: ConversationController,
 }
@@ -121,7 +121,7 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: SessionVerificationController::new(),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
-            typing_notification_controller: TypingNotificationController::new(),
+            typing_controller: TypingController::new(),
             receipt_notification_controller: ReceiptNotificationController::new(),
             conversation_controller: ConversationController::new(),
         }
@@ -132,7 +132,7 @@ impl Client {
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
-        let typing_notification_controller = self.typing_notification_controller.clone();
+        let typing_controller = self.typing_controller.clone();
         let receipt_notification_controller = self.receipt_notification_controller.clone();
         let conversation_controller = self.conversation_controller.clone();
 
@@ -147,7 +147,7 @@ impl Client {
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
-            typing_notification_controller.setup(&client).await;
+            typing_controller.setup(&client).await;
             receipt_notification_controller.setup(&client).await;
             conversation_controller.setup(&client).await;
 

@@ -9,4 +9,4 @@ mod formatted_body;
 // #[cfg(test)]
 // mod session_verification;
 // #[cfg(test)]
-// mod typing_notification;
+// mod typing;
