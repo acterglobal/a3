@@ -1342,51 +1342,6 @@ class Api {
     return tmp7;
   }
 
-  RoomMessage? __conversationLatestMessageFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _conversationLatestMessageFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomMessage");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = RoomMessage._(this, tmp13_1);
-    return tmp7;
-  }
-
   bool? __conversationTypingNoticeFuturePoll(
     int boxed,
     int postCobject,
@@ -1486,6 +1441,56 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _conversationSendPlainMessageFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
+    return tmp7;
+  }
+
+  String? __conversationSendFormattedMessageFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationSendFormattedMessageFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3730,6 +3735,43 @@ class Api {
     return tmp9;
   }
 
+  FfiListConversation? __clientConversationsRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientConversationsRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListConversation");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp12 = FfiListConversation._(this, tmp11_1);
+    final tmp9 = tmp12;
+    return tmp9;
+  }
+
   SessionVerificationEvent? __sessionVerificationControllerGetEventRxStreamPoll(
     int boxed,
     int postCobject,
@@ -4239,6 +4281,17 @@ class Api {
       _RoomMessageBodyReturn Function(
     int,
   )>();
+  late final _roomMessageFormattedBodyPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageFormattedBodyReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_formatted_body");
+
+  late final _roomMessageFormattedBody =
+      _roomMessageFormattedBodyPtr.asFunction<
+          _RoomMessageFormattedBodyReturn Function(
+    int,
+  )>();
   late final _roomMessageOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
@@ -4445,13 +4498,23 @@ class Api {
   )>();
   late final _conversationLatestMessagePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ConversationLatestMessageReturn Function(
     ffi.Int64,
   )>>("__Conversation_latest_message");
 
   late final _conversationLatestMessage =
       _conversationLatestMessagePtr.asFunction<
-          int Function(
+          _ConversationLatestMessageReturn Function(
+    int,
+  )>();
+  late final _conversationGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationGetRoomIdReturn Function(
+    ffi.Int64,
+  )>>("__Conversation_get_room_id");
+
+  late final _conversationGetRoomId = _conversationGetRoomIdPtr.asFunction<
+      _ConversationGetRoomIdReturn Function(
     int,
   )>();
   late final _conversationTypingNoticePtr = _lookup<
@@ -4494,6 +4557,23 @@ class Api {
 
   late final _conversationSendPlainMessage =
       _conversationSendPlainMessagePtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationSendFormattedMessagePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Conversation_send_formatted_message");
+
+  late final _conversationSendFormattedMessage =
+      _conversationSendFormattedMessagePtr.asFunction<
           int Function(
     int,
     int,
@@ -4888,6 +4968,16 @@ class Api {
   )>>("__Client_conversations");
 
   late final _clientConversations = _clientConversationsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientConversationsRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_conversations_rx");
+
+  late final _clientConversationsRx = _clientConversationsRxPtr.asFunction<
       int Function(
     int,
   )>();
@@ -5653,21 +5743,6 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationLatestMessageFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationLatestMessageFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Conversation_latest_message_future_poll");
-
-  late final _conversationLatestMessageFuturePoll =
-      _conversationLatestMessageFuturePollPtr.asFunction<
-          _ConversationLatestMessageFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _conversationTypingNoticeFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ConversationTypingNoticeFuturePollReturn Function(
@@ -5709,6 +5784,21 @@ class Api {
   late final _conversationSendPlainMessageFuturePoll =
       _conversationSendPlainMessageFuturePollPtr.asFunction<
           _ConversationSendPlainMessageFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationSendFormattedMessageFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationSendFormattedMessageFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_send_formatted_message_future_poll");
+
+  late final _conversationSendFormattedMessageFuturePoll =
+      _conversationSendFormattedMessageFuturePollPtr.asFunction<
+          _ConversationSendFormattedMessageFuturePollReturn Function(
     int,
     int,
     int,
@@ -6488,6 +6578,23 @@ class Api {
   late final _syncStateGetFirstSyncedRxStreamPoll =
       _syncStateGetFirstSyncedRxStreamPollPtr.asFunction<
           _SyncStateGetFirstSyncedRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientConversationsRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientConversationsRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_conversations_rx_stream_poll");
+
+  late final _clientConversationsRxStreamPoll =
+      _clientConversationsRxStreamPollPtr.asFunction<
+          _ClientConversationsRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -7568,6 +7675,30 @@ class RoomMessage {
     return tmp2;
   }
 
+  /// get html body
+  String? formattedBody() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageFormattedBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the server receiving timestamp
   int originServerTs() {
     var tmp0 = 0;
@@ -7972,19 +8103,41 @@ class Conversation {
   }
 
   /// The last message sent to the room
-  Future<RoomMessage> latestMessage() {
+  RoomMessage? latestMessage() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._conversationLatestMessage(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 =
-        _Box(_api, tmp3_0, "__Conversation_latest_message_future_drop");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 =
-        _nativeFuture(tmp3_1, _api.__conversationLatestMessageFuturePoll);
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomMessage._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// the room id
+  String getRoomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationGetRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -8080,6 +8233,39 @@ class Conversation {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 =
         _nativeFuture(tmp7_1, _api.__conversationSendPlainMessageFuturePoll);
+    return tmp6;
+  }
+
+  /// Send a text message in MarkDown format to the room
+  Future<String> sendFormattedMessage(
+    String markdownMessage,
+  ) {
+    final tmp1 = markdownMessage;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._conversationSendFormattedMessage(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Conversation_send_formatted_message_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeFuture(
+        tmp7_1, _api.__conversationSendFormattedMessageFuturePoll);
     return tmp6;
   }
 
@@ -8853,6 +9039,21 @@ class Client {
     final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientConversationsFuturePoll);
+    return tmp2;
+  }
+
+  /// The update event of conversations the user is involved in
+  Stream<FfiListConversation> conversationsRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientConversationsRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_conversations_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientConversationsRxStreamPoll);
     return tmp2;
   }
 
@@ -10163,6 +10364,17 @@ class _RoomMessageBodyReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _RoomMessageFormattedBodyReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _RoomMessageMsgtypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -10252,6 +10464,22 @@ class _FileDescriptionSizeReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
+}
+
+class _ConversationLatestMessageReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ConversationGetRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _MemberDisplayNameReturn extends ffi.Struct {
@@ -10616,21 +10844,6 @@ class _ConversationGetMemberFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationLatestMessageFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ConversationTypingNoticeFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -10662,6 +10875,25 @@ class _ConversationReadReceiptFuturePollReturn extends ffi.Struct {
 }
 
 class _ConversationSendPlainMessageFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
+}
+
+class _ConversationSendFormattedMessageFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -11459,6 +11691,13 @@ class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
+  external int arg1;
+}
+
+class _ClientConversationsRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
   external int arg1;
 }
 
