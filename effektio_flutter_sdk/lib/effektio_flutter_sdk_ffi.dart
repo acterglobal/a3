@@ -3667,7 +3667,7 @@ class Api {
     return tmp9;
   }
 
-  TypingNotificationEvent? __clientTypingNotificationEventRxStreamPoll(
+  TypingEvent? __clientTypingEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3685,7 +3685,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientTypingNotificationEventRxStreamPoll(
+    final tmp8 = _clientTypingEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3697,9 +3697,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TypingNotificationEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TypingEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = TypingNotificationEvent._(this, tmp11_1);
+    final tmp9 = TypingEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -4924,15 +4924,14 @@ class Api {
           int Function(
     int,
   )>();
-  late final _clientTypingNotificationEventRxPtr = _lookup<
+  late final _clientTypingEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientTypingNotificationEventRxReturn Function(
+          _ClientTypingEventRxReturn Function(
     ffi.Int64,
-  )>>("__Client_typing_notification_event_rx");
+  )>>("__Client_typing_event_rx");
 
-  late final _clientTypingNotificationEventRx =
-      _clientTypingNotificationEventRxPtr.asFunction<
-          _ClientTypingNotificationEventRxReturn Function(
+  late final _clientTypingEventRx = _clientTypingEventRxPtr.asFunction<
+      _ClientTypingEventRxReturn Function(
     int,
   )>();
   late final _clientReceiptNotificationEventRxPtr = _lookup<
@@ -5383,26 +5382,24 @@ class Api {
       _DeviceGetDisplayNameReturn Function(
     int,
   )>();
-  late final _typingNotificationEventRoomIdPtr = _lookup<
+  late final _typingEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _TypingNotificationEventRoomIdReturn Function(
+          _TypingEventRoomIdReturn Function(
     ffi.Int64,
-  )>>("__TypingNotificationEvent_room_id");
+  )>>("__TypingEvent_room_id");
 
-  late final _typingNotificationEventRoomId =
-      _typingNotificationEventRoomIdPtr.asFunction<
-          _TypingNotificationEventRoomIdReturn Function(
+  late final _typingEventRoomId = _typingEventRoomIdPtr.asFunction<
+      _TypingEventRoomIdReturn Function(
     int,
   )>();
-  late final _typingNotificationEventUserIdsPtr = _lookup<
+  late final _typingEventUserIdsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__TypingNotificationEvent_user_ids");
+  )>>("__TypingEvent_user_ids");
 
-  late final _typingNotificationEventUserIds =
-      _typingNotificationEventUserIdsPtr.asFunction<
-          int Function(
+  late final _typingEventUserIds = _typingEventUserIdsPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _loginNewClientFuturePollPtr = _lookup<
@@ -6398,18 +6395,18 @@ class Api {
     int,
     int,
   )>();
-  late final _clientTypingNotificationEventRxStreamPollPtr = _lookup<
+  late final _clientTypingEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientTypingNotificationEventRxStreamPollReturn Function(
+          _ClientTypingEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_typing_notification_event_rx_stream_poll");
+  )>>("__Client_typing_event_rx_stream_poll");
 
-  late final _clientTypingNotificationEventRxStreamPoll =
-      _clientTypingNotificationEventRxStreamPollPtr.asFunction<
-          _ClientTypingNotificationEventRxStreamPollReturn Function(
+  late final _clientTypingEventRxStreamPoll =
+      _clientTypingEventRxStreamPollPtr.asFunction<
+          _ClientTypingEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8984,11 +8981,11 @@ class Client {
     return tmp2;
   }
 
-  /// Return the typing notification event receiver
-  Stream<TypingNotificationEvent>? typingNotificationEventRx() {
+  /// Return the typing event receiver
+  Stream<TypingEvent>? typingEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientTypingNotificationEventRx(
+    final tmp1 = _api._clientTypingEventRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8997,11 +8994,9 @@ class Client {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_typing_notification_event_rx_stream_drop");
+    final tmp4_1 = _Box(_api, tmp4_0, "__Client_typing_event_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__clientTypingNotificationEventRxStreamPoll);
+    final tmp2 = _nativeStream(tmp4_1, _api.__clientTypingEventRxStreamPoll);
     return tmp2;
   }
 
@@ -9472,7 +9467,7 @@ class ReceiptNotificationEvent {
   }
 }
 
-/// Deliver typing notification from rust to flutter
+/// Deliver read notification from rust to flutter
 class ReceiptRecord {
   final Api _api;
   final _Box _box;
@@ -9875,18 +9870,18 @@ class Device {
   }
 }
 
-/// Deliver typing notification from rust to flutter
-class TypingNotificationEvent {
+/// Deliver typing event from rust to flutter
+class TypingEvent {
   final Api _api;
   final _Box _box;
 
-  TypingNotificationEvent._(this._api, this._box);
+  TypingEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
   String roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._typingNotificationEventRoomId(
+    final tmp1 = _api._typingEventRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9906,7 +9901,7 @@ class TypingNotificationEvent {
   FfiListFfiString userIds() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._typingNotificationEventUserIds(
+    final tmp1 = _api._typingEventUserIds(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -10213,7 +10208,7 @@ class _ClientSessionVerificationEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientTypingNotificationEventRxReturn extends ffi.Struct {
+class _ClientTypingEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -10363,7 +10358,7 @@ class _DeviceGetDisplayNameReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _TypingNotificationEventRoomIdReturn extends ffi.Struct {
+class _TypingEventRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -11357,7 +11352,7 @@ class _ClientSessionVerificationEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientTypingNotificationEventRxStreamPollReturn extends ffi.Struct {
+class _ClientTypingEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
