@@ -3703,7 +3703,7 @@ class Api {
     return tmp9;
   }
 
-  ReceiptNotificationEvent? __clientReceiptNotificationEventRxStreamPoll(
+  ReceiptEvent? __clientReceiptEventRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3721,7 +3721,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientReceiptNotificationEventRxStreamPoll(
+    final tmp8 = _clientReceiptEventRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3733,9 +3733,9 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptNotificationEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_ReceiptEvent");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = ReceiptNotificationEvent._(this, tmp11_1);
+    final tmp9 = ReceiptEvent._(this, tmp11_1);
     return tmp9;
   }
 
@@ -4934,15 +4934,14 @@ class Api {
       _ClientTypingEventRxReturn Function(
     int,
   )>();
-  late final _clientReceiptNotificationEventRxPtr = _lookup<
+  late final _clientReceiptEventRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientReceiptNotificationEventRxReturn Function(
+          _ClientReceiptEventRxReturn Function(
     ffi.Int64,
-  )>>("__Client_receipt_notification_event_rx");
+  )>>("__Client_receipt_event_rx");
 
-  late final _clientReceiptNotificationEventRx =
-      _clientReceiptNotificationEventRxPtr.asFunction<
-          _ClientReceiptNotificationEventRxReturn Function(
+  late final _clientReceiptEventRx = _clientReceiptEventRxPtr.asFunction<
+      _ClientReceiptEventRxReturn Function(
     int,
   )>();
   late final _sessionVerificationEventGetEventNamePtr = _lookup<
@@ -5169,25 +5168,24 @@ class Api {
           _SessionVerificationEmojiDescriptionReturn Function(
     int,
   )>();
-  late final _receiptNotificationEventRoomIdPtr = _lookup<
+  late final _receiptEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptNotificationEventRoomIdReturn Function(
+          _ReceiptEventRoomIdReturn Function(
     ffi.Int64,
-  )>>("__ReceiptNotificationEvent_room_id");
+  )>>("__ReceiptEvent_room_id");
 
-  late final _receiptNotificationEventRoomId =
-      _receiptNotificationEventRoomIdPtr.asFunction<
-          _ReceiptNotificationEventRoomIdReturn Function(
+  late final _receiptEventRoomId = _receiptEventRoomIdPtr.asFunction<
+      _ReceiptEventRoomIdReturn Function(
     int,
   )>();
-  late final _receiptNotificationEventReceiptRecordsPtr = _lookup<
+  late final _receiptEventReceiptRecordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__ReceiptNotificationEvent_receipt_records");
+  )>>("__ReceiptEvent_receipt_records");
 
-  late final _receiptNotificationEventReceiptRecords =
-      _receiptNotificationEventReceiptRecordsPtr.asFunction<
+  late final _receiptEventReceiptRecords =
+      _receiptEventReceiptRecordsPtr.asFunction<
           int Function(
     int,
   )>();
@@ -6411,18 +6409,18 @@ class Api {
     int,
     int,
   )>();
-  late final _clientReceiptNotificationEventRxStreamPollPtr = _lookup<
+  late final _clientReceiptEventRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientReceiptNotificationEventRxStreamPollReturn Function(
+          _ClientReceiptEventRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_receipt_notification_event_rx_stream_poll");
+  )>>("__Client_receipt_event_rx_stream_poll");
 
-  late final _clientReceiptNotificationEventRxStreamPoll =
-      _clientReceiptNotificationEventRxStreamPollPtr.asFunction<
-          _ClientReceiptNotificationEventRxStreamPollReturn Function(
+  late final _clientReceiptEventRxStreamPoll =
+      _clientReceiptEventRxStreamPollPtr.asFunction<
+          _ClientReceiptEventRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8999,11 +8997,11 @@ class Client {
     return tmp2;
   }
 
-  /// Return the read notification event receiver
-  Stream<ReceiptNotificationEvent>? receiptNotificationEventRx() {
+  /// Return the receipt event receiver
+  Stream<ReceiptEvent>? receiptEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientReceiptNotificationEventRx(
+    final tmp1 = _api._clientReceiptEventRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9012,11 +9010,9 @@ class Client {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(
-        _api, tmp4_0, "__Client_receipt_notification_event_rx_stream_drop");
+    final tmp4_1 = _Box(_api, tmp4_0, "__Client_receipt_event_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(
-        tmp4_1, _api.__clientReceiptNotificationEventRxStreamPoll);
+    final tmp2 = _nativeStream(tmp4_1, _api.__clientReceiptEventRxStreamPoll);
     return tmp2;
   }
 
@@ -9417,18 +9413,18 @@ class SessionVerificationEmoji {
   }
 }
 
-/// Deliver read notification from rust to flutter
-class ReceiptNotificationEvent {
+/// Deliver receipt event from rust to flutter
+class ReceiptEvent {
   final Api _api;
   final _Box _box;
 
-  ReceiptNotificationEvent._(this._api, this._box);
+  ReceiptEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
   String roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptNotificationEventRoomId(
+    final tmp1 = _api._receiptEventRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9448,7 +9444,7 @@ class ReceiptNotificationEvent {
   FfiListReceiptRecord receiptRecords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptNotificationEventReceiptRecords(
+    final tmp1 = _api._receiptEventReceiptRecords(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -9466,7 +9462,7 @@ class ReceiptNotificationEvent {
   }
 }
 
-/// Deliver read notification from rust to flutter
+/// Deliver receipt record from rust to flutter
 class ReceiptRecord {
   final Api _api;
   final _Box _box;
@@ -10214,7 +10210,7 @@ class _ClientTypingEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientReceiptNotificationEventRxReturn extends ffi.Struct {
+class _ClientReceiptEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -10287,7 +10283,7 @@ class _SessionVerificationEmojiDescriptionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptNotificationEventRoomIdReturn extends ffi.Struct {
+class _ReceiptEventRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -11358,7 +11354,7 @@ class _ClientTypingEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientReceiptNotificationEventRxStreamPollReturn extends ffi.Struct {
+class _ClientReceiptEventRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
