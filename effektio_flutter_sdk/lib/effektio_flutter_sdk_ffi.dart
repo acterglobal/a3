@@ -8997,7 +8997,7 @@ class Client {
     return tmp2;
   }
 
-  /// Return the read notification event receiver
+  /// Return the receipt event receiver
   Stream<ReceiptEvent>? receiptEventRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -9413,7 +9413,7 @@ class SessionVerificationEmoji {
   }
 }
 
-/// Deliver read notification from rust to flutter
+/// Deliver receipt event from rust to flutter
 class ReceiptEvent {
   final Api _api;
   final _Box _box;
@@ -9462,7 +9462,7 @@ class ReceiptEvent {
   }
 }
 
-/// Deliver read notification from rust to flutter
+/// Deliver receipt record from rust to flutter
 class ReceiptRecord {
   final Api _api;
   final _Box _box;
