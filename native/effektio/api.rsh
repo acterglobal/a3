@@ -80,7 +80,6 @@ object UserId {
 
 /// A room Message metadata and content
 object RoomMessage {
-
     /// Unique ID of this event
     fn event_id() -> string;
 
@@ -89,6 +88,9 @@ object RoomMessage {
 
     /// the body of the massage - fallback string reprensentation
     fn body() -> string;
+
+    /// get html body
+    fn formatted_body() -> Option<string>;
 
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;
@@ -159,7 +161,10 @@ object Conversation {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
-    fn latest_message() -> Future<Result<RoomMessage>>;
+    fn latest_message() -> Option<RoomMessage>;
+
+    /// the room id
+    fn get_room_id() -> string;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -175,6 +180,9 @@ object Conversation {
     /// returns the event_id as given by the server of the event soon after
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
+
+    /// Send a text message in MarkDown format to the room
+    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
 
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
@@ -281,6 +289,9 @@ object Client {
 
     /// The conversations the user is involved in
     fn conversations() -> Future<Result<Vec<Conversation>>>;
+
+    /// The update event of conversations the user is involved in
+    fn conversations_rx() -> Stream<Vec<Conversation>>;
 
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;

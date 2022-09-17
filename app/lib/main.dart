@@ -205,19 +205,15 @@ class _EffektioHomeState extends State<EffektioHome>
           body: TabBarView(
             controller: _tabController,
             children: [
-              NewsScreen(
-                client: client,
-              ),
+              NewsScreen(client: client),
               FaqOverviewScreen(client: client),
-              NewsScreen(
-                client: client,
-              ),
-              ChatList(client: _client),
+              NewsScreen(client: client),
+              ChatList(client: client),
               NotificationScreen(),
             ],
           ),
           drawer: SideDrawer(
-            client: _client,
+            client: client,
           ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,

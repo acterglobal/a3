@@ -1,9 +1,11 @@
+// #[cfg(test)]
+// mod auth;
 #[cfg(test)]
-mod auth;
-#[cfg(test)]
-mod news;
-#[cfg(test)]
-mod receipt_notification;
+mod formatted_body;
+// #[cfg(test)]
+// mod news;
+// #[cfg(test)]
+// mod receipt_notification;
 // #[cfg(test)]
 // mod session_verification;
 // #[cfg(test)]

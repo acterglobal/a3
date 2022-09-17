@@ -8,13 +8,8 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    stream, StreamExt,
-};
-use futures_signals::signal::{
-    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
-};
+use futures::{stream, StreamExt};
+use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
@@ -38,9 +33,16 @@ use std::sync::{
 };
 
 use super::{
-    api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
-    ReceiptNotificationController, Room, SessionVerificationController,
-    TypingNotificationController, RUNTIME,
+    account::Account,
+    api::FfiBuffer,
+    conversation::{Conversation, ConversationController},
+    device_lists::DeviceListsController,
+    group::Group,
+    receipt_notification::ReceiptNotificationController,
+    room::Room,
+    session_verification::SessionVerificationController,
+    typing_notification::TypingNotificationController,
+    RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -65,6 +67,7 @@ pub struct Client {
         Arc<MatrixRwLock<Option<TypingNotificationController>>>,
     pub(crate) receipt_notification_controller:
         Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
+    pub(crate) conversation_controller: ConversationController,
 }
 
 impl std::ops::Deref for Client {
@@ -81,37 +84,14 @@ pub(crate) async fn devide_groups_from_common(
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut groups, mut conversations, client), room| {
-                let is_effektio_group = {
-                    #[allow(clippy::match_like_matches_macro)]
-                    if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else {
-                        false
-                    }
+                let r = Room {
+                    room: room.clone(),
+                    client: client.clone(),
                 };
-
-                if is_effektio_group {
-                    groups.push(Group {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                    });
+                if r.is_effektio_group().await {
+                    groups.push(Group { inner: r });
                 } else {
-                    conversations.push(Conversation {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                    });
+                    conversations.push(Conversation::new(r));
                 }
 
                 (groups, conversations, client)
@@ -123,16 +103,16 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
+    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
         Self { first_synced_rx }
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
+    pub fn get_first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 }
@@ -146,6 +126,7 @@ impl Client {
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
             receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            conversation_controller: ConversationController::new(),
         }
     }
 
@@ -154,8 +135,9 @@ impl Client {
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
+        let conversation_controller = self.conversation_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = signal_channel(false);
+        let (first_synced_tx, first_synced_rx) = channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
@@ -166,6 +148,7 @@ impl Client {
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
+            conversation_controller.setup(&client).await;
 
             client
                 .clone()
