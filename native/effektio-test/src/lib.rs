@@ -1,9 +1,11 @@
 #[cfg(test)]
 mod auth;
 #[cfg(test)]
-mod news;
+mod formatted_body;
 // #[cfg(test)]
 // mod membership;
+// #[cfg(test)]
+// mod news;
 // #[cfg(test)]
 // mod receipt_notification;
 // #[cfg(test)]

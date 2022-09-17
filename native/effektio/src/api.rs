@@ -18,7 +18,7 @@ mod conversation;
 mod device_lists;
 mod group;
 mod membership;
-mod messages;
+mod message;
 mod news;
 mod receipt_notification;
 mod room;
@@ -31,12 +31,12 @@ pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
 pub use client::{Client, ClientStateBuilder, SyncState};
-pub use conversation::Conversation;
+pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use membership::{MembershipController, MembershipEvent};
-pub use messages::{FileDescription, ImageDescription, RoomMessage};
+pub use message::{FileDescription, ImageDescription, RoomMessage};
 pub use receipt_notification::{
     ReceiptNotificationController, ReceiptNotificationEvent, ReceiptRecord,
 };
