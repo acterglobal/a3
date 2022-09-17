@@ -8,13 +8,8 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    stream, StreamExt,
-};
-use futures_signals::signal::{
-    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
-};
+use futures::{stream, StreamExt};
+use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
@@ -38,9 +33,16 @@ use std::sync::{
 };
 
 use super::{
-    api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
-    ReceiptNotificationController, Room, SessionVerificationController,
-    TypingNotificationController, RUNTIME,
+    account::Account,
+    api::FfiBuffer,
+    conversation::{Conversation, ConversationController},
+    device_lists::DeviceListsController,
+    group::Group,
+    receipt_notification::ReceiptNotificationController,
+    room::Room,
+    session_verification::SessionVerificationController,
+    typing_notification::TypingNotificationController,
+    RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -59,13 +61,13 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) session_verification_controller:
-        Arc<MatrixRwLock<Option<SessionVerificationController>>>,
+    pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
     pub(crate) typing_notification_controller:
         Arc<MatrixRwLock<Option<TypingNotificationController>>>,
     pub(crate) receipt_notification_controller:
         Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
+    pub(crate) conversation_controller: ConversationController,
 }
 
 impl std::ops::Deref for Client {
@@ -82,37 +84,14 @@ pub(crate) async fn devide_groups_from_common(
         .fold(
             (Vec::new(), Vec::new(), client),
             async move |(mut groups, mut conversations, client), room| {
-                let is_effektio_group = {
-                    #[allow(clippy::match_like_matches_macro)]
-                    if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else {
-                        false
-                    }
+                let r = Room {
+                    room: room.clone(),
+                    client: client.clone(),
                 };
-
-                if is_effektio_group {
-                    groups.push(Group {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                    });
+                if r.is_effektio_group().await {
+                    groups.push(Group { inner: r });
                 } else {
-                    conversations.push(Conversation {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                    });
+                    conversations.push(Conversation::new(r));
                 }
 
                 (groups, conversations, client)
@@ -124,16 +103,16 @@ pub(crate) async fn devide_groups_from_common(
 
 #[derive(Clone)]
 pub struct SyncState {
-    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
+    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
         Self { first_synced_rx }
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
+    pub fn get_first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 }
@@ -143,10 +122,11 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            session_verification_controller: Arc::new(MatrixRwLock::new(None)),
+            session_verification_controller: SessionVerificationController::new(),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
             receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            conversation_controller: ConversationController::new(),
         }
     }
 
@@ -155,8 +135,9 @@ impl Client {
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
+        let conversation_controller = self.conversation_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = signal_channel(false);
+        let (first_synced_tx, first_synced_rx) = channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
@@ -167,6 +148,7 @@ impl Client {
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
+            conversation_controller.setup(&client).await;
 
             client
                 .clone()
@@ -187,9 +169,8 @@ impl Client {
                         }
 
                         if !initial.load(Ordering::SeqCst) {
-                            if let Some(svc) = &*session_verification_controller.read().await {
-                                svc.process_sync_messages(&client, &response.rooms);
-                            }
+                            session_verification_controller
+                                .process_sync_messages(&client, &response.rooms);
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -206,10 +187,8 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        if let Some(svc) = &*session_verification_controller.read().await {
-                            svc.process_to_device_messages(&client, response.to_device);
-                        }
-                        // the lock is unlocked here when `s` goes out of scope.
+                        session_verification_controller
+                            .process_to_device_messages(&client, response.to_device);
                         LoopCtrl::Continue
                     }
                 })
@@ -337,25 +316,6 @@ impl Client {
                     .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
-            })
-            .await?
-    }
-
-    pub async fn get_session_verification_controller(
-        &self,
-    ) -> Result<SessionVerificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let c = self.client.clone();
-        let session_verification_controller = self.session_verification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(svc) = &*session_verification_controller.read().await {
-                    return Ok(svc.clone());
-                }
-                let svc = SessionVerificationController::new();
-                *session_verification_controller.write().await = Some(svc.clone());
-                Ok(svc)
             })
             .await?
     }

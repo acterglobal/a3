@@ -20,16 +20,16 @@ use matrix_sdk::{
         },
         UserId,
     },
-    Client,
+    Client as MatrixClient,
 };
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use super::RUNTIME;
+use super::{Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct SessionVerificationEvent {
-    client: Client,
+    client: MatrixClient,
     event_name: String,
     txn_id: String,
     sender: String,
@@ -43,7 +43,7 @@ pub struct SessionVerificationEvent {
 
 impl SessionVerificationEvent {
     pub(crate) fn new(
-        client: &Client,
+        client: &MatrixClient,
         event_name: String,
         txn_id: String,
         sender: String,
@@ -365,11 +365,7 @@ impl SessionVerificationController {
         }
     }
 
-    pub fn get_event_rx(&self) -> Option<Receiver<SessionVerificationEvent>> {
-        self.event_rx.lock().take()
-    }
-
-    fn handle_sync_messages(&self, client: &Client, evt: &AnySyncMessageLikeEvent) {
+    fn handle_sync_messages(&self, client: &MatrixClient, evt: &AnySyncMessageLikeEvent) {
         let mut event_tx = self.event_tx.clone();
         match evt {
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)) => {
@@ -526,7 +522,7 @@ impl SessionVerificationController {
         }
     }
 
-    pub(crate) fn process_sync_messages(&self, client: &Client, rooms: &Rooms) {
+    pub(crate) fn process_sync_messages(&self, client: &MatrixClient, rooms: &Rooms) {
         for (room_id, room_info) in rooms.join.iter() {
             for event in room_info
                 .timeline
@@ -541,7 +537,7 @@ impl SessionVerificationController {
         }
     }
 
-    fn handle_to_device_messages(&self, client: &Client, evt: &AnyToDeviceEvent) {
+    fn handle_to_device_messages(&self, client: &MatrixClient, evt: &AnyToDeviceEvent) {
         let mut event_tx = self.event_tx.clone();
         match evt {
             AnyToDeviceEvent::KeyVerificationRequest(ref ev) => {
@@ -700,7 +696,7 @@ impl SessionVerificationController {
         }
     }
 
-    pub(crate) fn process_to_device_messages(&self, client: &Client, to_device: ToDevice) {
+    pub(crate) fn process_to_device_messages(&self, client: &MatrixClient, to_device: ToDevice) {
         for evt in to_device
             .events
             .into_iter()
@@ -708,5 +704,11 @@ impl SessionVerificationController {
         {
             self.handle_to_device_messages(client, &evt);
         }
+    }
+}
+
+impl Client {
+    pub fn session_verification_event_rx(&self) -> Option<Receiver<SessionVerificationEvent>> {
+        self.session_verification_controller.event_rx.lock().take()
     }
 }

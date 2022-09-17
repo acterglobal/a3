@@ -47,17 +47,15 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // sync both up to ensure they've seen the other device
     let alice_dlc = alice.get_device_lists_controller().await?;
     let mut alice_device_changed_rx = alice_dlc.get_changed_event_rx().unwrap();
-    let alice_svc = alice.get_session_verification_controller().await?;
     let syncer = alice.start_sync();
     let mut first_synced = syncer.get_first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut alice_rx = alice_svc.get_event_rx().unwrap();
+    let mut alice_rx = alice.session_verification_event_rx().unwrap();
 
-    let bob_svc = bob.get_session_verification_controller().await?;
     let syncer = bob.start_sync();
     let mut first_synced = syncer.get_first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut bob_rx = bob_svc.get_event_rx().unwrap();
+    let mut bob_rx = bob.session_verification_event_rx().unwrap();
 
     // according to alice bob is not verfied:
     assert!(!alice.verified_device(bob_device_id.clone()).await?);
