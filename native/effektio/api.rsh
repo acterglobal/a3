@@ -315,8 +315,8 @@ object Client {
     /// Return the device lists controller. If not exists, create it.
     fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
 
-    /// Return the typing notification controller. If not exists, create it.
-    fn get_typing_notification_controller() -> Future<Result<TypingNotificationController>>;
+    /// Return the typing notification event receiver
+    fn typing_notification_event_rx() -> Option<Stream<TypingNotificationEvent>>;
 
     /// Return the read notification event receiver
     fn receipt_notification_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
@@ -457,15 +457,11 @@ object Device {
     fn get_display_name() -> Option<string>;
 }
 
-object TypingNotificationController {
-    fn get_event_rx() -> Option<Stream<TypingNotificationEvent>>;
-}
-
 /// Deliver typing notification from rust to flutter
 object TypingNotificationEvent {
     /// Get transaction id or flow id
-    fn get_room_id() -> string;
+    fn room_id() -> string;
 
     /// Get list of user id
-    fn get_user_ids() -> Vec<string>;
+    fn user_ids() -> Vec<string>;
 }
