@@ -25,15 +25,15 @@ pub struct ReceiptRecord {
 }
 
 impl ReceiptRecord {
-    pub fn get_event_id(&self) -> String {
+    pub fn event_id(&self) -> String {
         self.event_id.clone()
     }
 
-    pub fn get_user_id(&self) -> String {
+    pub fn user_id(&self) -> String {
         self.user_id.clone()
     }
 
-    pub fn get_timestamp(&self) -> u64 {
+    pub fn timestamp(&self) -> u64 {
         self.timestamp
     }
 }
@@ -52,7 +52,7 @@ impl ReceiptNotificationEvent {
         }
     }
 
-    pub fn get_room_id(&self) -> String {
+    pub fn room_id(&self) -> String {
         self.room_id.clone()
     }
 
@@ -64,19 +64,19 @@ impl ReceiptNotificationEvent {
         });
     }
 
-    pub fn get_receipt_records(&self) -> Vec<ReceiptRecord> {
+    pub fn receipt_records(&self) -> Vec<ReceiptRecord> {
         self.receipt_records.clone()
     }
 }
 
 #[derive(Clone)]
-pub struct ReceiptNotificationController {
+pub(crate) struct ReceiptNotificationController {
     event_tx: Sender<ReceiptNotificationEvent>,
     event_rx: Arc<Mutex<Option<Receiver<ReceiptNotificationEvent>>>>,
 }
 
 impl ReceiptNotificationController {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         let (tx, rx) = channel::<ReceiptNotificationEvent>(10); // dropping after more than 10 items queued
         ReceiptNotificationController {
             event_tx: tx,
@@ -84,7 +84,7 @@ impl ReceiptNotificationController {
         }
     }
 
-    pub(crate) async fn setup(&self, client: &MatrixClient) {
+    pub async fn setup(&self, client: &MatrixClient) {
         let me = self.clone();
         client
             .register_event_handler_context(me)

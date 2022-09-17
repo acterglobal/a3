@@ -5169,57 +5169,56 @@ class Api {
           _SessionVerificationEmojiDescriptionReturn Function(
     int,
   )>();
-  late final _receiptNotificationEventGetRoomIdPtr = _lookup<
+  late final _receiptNotificationEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptNotificationEventGetRoomIdReturn Function(
+          _ReceiptNotificationEventRoomIdReturn Function(
     ffi.Int64,
-  )>>("__ReceiptNotificationEvent_get_room_id");
+  )>>("__ReceiptNotificationEvent_room_id");
 
-  late final _receiptNotificationEventGetRoomId =
-      _receiptNotificationEventGetRoomIdPtr.asFunction<
-          _ReceiptNotificationEventGetRoomIdReturn Function(
+  late final _receiptNotificationEventRoomId =
+      _receiptNotificationEventRoomIdPtr.asFunction<
+          _ReceiptNotificationEventRoomIdReturn Function(
     int,
   )>();
-  late final _receiptNotificationEventGetReceiptRecordsPtr = _lookup<
+  late final _receiptNotificationEventReceiptRecordsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__ReceiptNotificationEvent_get_receipt_records");
+  )>>("__ReceiptNotificationEvent_receipt_records");
 
-  late final _receiptNotificationEventGetReceiptRecords =
-      _receiptNotificationEventGetReceiptRecordsPtr.asFunction<
+  late final _receiptNotificationEventReceiptRecords =
+      _receiptNotificationEventReceiptRecordsPtr.asFunction<
           int Function(
     int,
   )>();
-  late final _receiptRecordGetEventIdPtr = _lookup<
+  late final _receiptRecordEventIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordGetEventIdReturn Function(
+          _ReceiptRecordEventIdReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_get_event_id");
+  )>>("__ReceiptRecord_event_id");
 
-  late final _receiptRecordGetEventId = _receiptRecordGetEventIdPtr.asFunction<
-      _ReceiptRecordGetEventIdReturn Function(
+  late final _receiptRecordEventId = _receiptRecordEventIdPtr.asFunction<
+      _ReceiptRecordEventIdReturn Function(
     int,
   )>();
-  late final _receiptRecordGetUserIdPtr = _lookup<
+  late final _receiptRecordUserIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordGetUserIdReturn Function(
+          _ReceiptRecordUserIdReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_get_user_id");
+  )>>("__ReceiptRecord_user_id");
 
-  late final _receiptRecordGetUserId = _receiptRecordGetUserIdPtr.asFunction<
-      _ReceiptRecordGetUserIdReturn Function(
+  late final _receiptRecordUserId = _receiptRecordUserIdPtr.asFunction<
+      _ReceiptRecordUserIdReturn Function(
     int,
   )>();
-  late final _receiptRecordGetTimestampPtr = _lookup<
+  late final _receiptRecordTimestampPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint32 Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_get_timestamp");
+  )>>("__ReceiptRecord_timestamp");
 
-  late final _receiptRecordGetTimestamp =
-      _receiptRecordGetTimestampPtr.asFunction<
-          int Function(
+  late final _receiptRecordTimestamp = _receiptRecordTimestampPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _deviceListsControllerGetChangedEventRxPtr = _lookup<
@@ -9426,10 +9425,10 @@ class ReceiptNotificationEvent {
   ReceiptNotificationEvent._(this._api, this._box);
 
   /// Get transaction id or flow id
-  String getRoomId() {
+  String roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptNotificationEventGetRoomId(
+    final tmp1 = _api._receiptNotificationEventRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9446,10 +9445,10 @@ class ReceiptNotificationEvent {
   }
 
   /// Get records
-  FfiListReceiptRecord getReceiptRecords() {
+  FfiListReceiptRecord receiptRecords() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptNotificationEventGetReceiptRecords(
+    final tmp1 = _api._receiptNotificationEventReceiptRecords(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -9475,10 +9474,10 @@ class ReceiptRecord {
   ReceiptRecord._(this._api, this._box);
 
   /// Get id of event that this user read message from peer
-  String getEventId() {
+  String eventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordGetEventId(
+    final tmp1 = _api._receiptRecordEventId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9495,10 +9494,10 @@ class ReceiptRecord {
   }
 
   /// Get id of user that read message from peer
-  String getUserId() {
+  String userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordGetUserId(
+    final tmp1 = _api._receiptRecordUserId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9515,10 +9514,10 @@ class ReceiptRecord {
   }
 
   /// Get time that this user read message from peer
-  int getTimestamp() {
+  int timestamp() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordGetTimestamp(
+    final tmp1 = _api._receiptRecordTimestamp(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -10288,7 +10287,7 @@ class _SessionVerificationEmojiDescriptionReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptNotificationEventGetRoomIdReturn extends ffi.Struct {
+class _ReceiptNotificationEventRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10297,7 +10296,7 @@ class _ReceiptNotificationEventGetRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordGetEventIdReturn extends ffi.Struct {
+class _ReceiptRecordEventIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10306,7 +10305,7 @@ class _ReceiptRecordGetEventIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordGetUserIdReturn extends ffi.Struct {
+class _ReceiptRecordUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

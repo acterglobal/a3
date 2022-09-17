@@ -133,13 +133,13 @@ class _EffektioHomeState extends State<EffektioHome>
     });
     UserId myId = await client.userId();
     client.receiptNotificationEventRx()!.listen((event) {
-      for (var record in event.getReceiptRecords()) {
-        String userId = record.getUserId();
+      for (var record in event.receiptRecords()) {
+        String userId = record.userId();
         if (userId != myId.toString()) {
-          debugPrint('receipt notification for ' + event.getRoomId());
-          debugPrint('event id: ' + record.getEventId());
+          debugPrint('receipt notification for ' + event.roomId());
+          debugPrint('event id: ' + record.eventId());
           debugPrint('user id: ' + userId);
-          debugPrint('timestamp: ' + record.getTimestamp().toString());
+          debugPrint('timestamp: ' + record.timestamp().toString());
         }
       }
     });
