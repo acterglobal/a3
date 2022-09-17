@@ -87,7 +87,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 padding: const EdgeInsets.all(8),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    primary: AppCommonTheme.primaryColor,
+                    backgroundColor: AppCommonTheme.primaryColor,
                     shape: const StadiumBorder(),
                   ),
                   onPressed: () async {
@@ -379,7 +379,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                         })
                       },
                       style: ElevatedButton.styleFrom(
-                        primary: AppCommonTheme.primaryColor,
+                        backgroundColor: AppCommonTheme.primaryColor,
                         shape: const StadiumBorder(),
                       ),
                       child: const Padding(

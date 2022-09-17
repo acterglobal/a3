@@ -80,7 +80,6 @@ object UserId {
 
 /// A room Message metadata and content
 object RoomMessage {
-
     /// Unique ID of this event
     fn event_id() -> string;
 
@@ -89,6 +88,9 @@ object RoomMessage {
 
     /// the body of the massage - fallback string reprensentation
     fn body() -> string;
+
+    /// get html body
+    fn formatted_body() -> Option<string>;
 
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;
@@ -156,10 +158,13 @@ object Conversation {
     fn timeline() -> Future<Result<TimelineStream>>;
 
     // the members currently in the room
-    fn get_member(user_id: UserId) -> Future<Result<Member>>;
+    fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
-    fn latest_message() -> Future<Result<RoomMessage>>;
+    fn latest_message() -> Option<RoomMessage>;
+
+    /// the room id
+    fn get_room_id() -> string;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -175,6 +180,9 @@ object Conversation {
     /// returns the event_id as given by the server of the event soon after
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
+
+    /// Send a text message in MarkDown format to the room
+    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
 
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
@@ -203,7 +211,7 @@ object Group {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    fn get_member(user: UserId) -> Future<Result<Member>>;
+    fn get_member(user: string) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -215,7 +223,7 @@ object Member {
     fn display_name() -> Option<string>;
 
     /// Full user_id
-    fn user_id() -> UserId;
+    fn user_id() -> string;
 
 }
 
@@ -282,6 +290,9 @@ object Client {
     /// The conversations the user is involved in
     fn conversations() -> Future<Result<Vec<Conversation>>>;
 
+    /// The update event of conversations the user is involved in
+    fn conversations_rx() -> Stream<Vec<Conversation>>;
+
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;
 
@@ -298,8 +309,8 @@ object Client {
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
-    /// Return the session verification controller. If not exists, create it.
-    fn get_session_verification_controller() -> Future<Result<SessionVerificationController>>;
+    /// Get the session verification event receiver
+    fn session_verification_event_rx() -> Option<Stream<SessionVerificationEvent>>;
 
     /// Return the device lists controller. If not exists, create it.
     fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
@@ -309,10 +320,6 @@ object Client {
 
     /// Return the read notification event receiver
     fn receipt_notification_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
-}
-
-object SessionVerificationController {
-    fn get_event_rx() -> Option<Stream<SessionVerificationEvent>>;
 }
 
 object SessionVerificationEvent {

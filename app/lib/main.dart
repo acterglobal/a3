@@ -7,6 +7,8 @@ import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
 import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/ChatList.dart';
 import 'package:effektio/screens/HomeScreens/News.dart';
@@ -18,13 +20,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show
-        DeviceListsController,
-        ReceiptNotificationController,
-        SessionVerificationController,
-        SyncState,
-        TypingNotificationController,
-        UserId;
+    show DeviceListsController, SyncState, TypingNotificationController, UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,6 +72,8 @@ class Effektio extends StatelessWidget {
           '/profile': (BuildContext context) => const SocialProfileScreen(),
           '/signup': (BuildContext context) => const SignupScreen(),
           '/gallery': (BuildContext context) => const GalleryScreen(),
+          '/todo': (BuildContext context) => const ToDoScreen(),
+          '/addTodo': (BuildContext context) => const AddToDoScreen(),
         },
       ),
     );
@@ -95,7 +93,6 @@ class _EffektioHomeState extends State<EffektioHome>
   int tabIndex = 0;
   late TabController _tabController;
   late DeviceListsController dlc;
-  late SessionVerificationController svc;
   late TypingNotificationController tnc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
@@ -122,11 +119,11 @@ class _EffektioHomeState extends State<EffektioHome>
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
     dlc = await client.getDeviceListsController();
-    svc = await client.getSessionVerificationController();
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
-    crossSigning.installSessionVerificationEvent(svc.getEventRx()!);
+    crossSigning
+        .installSessionVerificationEvent(client.sessionVerificationEventRx()!);
     tnc = await client.getTypingNotificationController();
     tnc.getEventRx()!.listen((event) {
       String roomId = event.getRoomId();
@@ -201,19 +198,15 @@ class _EffektioHomeState extends State<EffektioHome>
           body: TabBarView(
             controller: _tabController,
             children: [
-              NewsScreen(
-                client: client,
-              ),
+              NewsScreen(client: client),
               FaqOverviewScreen(client: client),
-              NewsScreen(
-                client: client,
-              ),
-              ChatList(client: _client),
+              NewsScreen(client: client),
+              ChatList(client: client),
               NotificationScreen(),
             ],
           ),
           drawer: SideDrawer(
-            client: _client,
+            client: client,
           ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,

@@ -11,15 +11,13 @@ Widget navBarTitle(String title) {
   );
 }
 
-String getNameFromId(String name) {
-  int start = 0, end = 0;
-  if (name.contains('@')) {
-    start = name.indexOf('@') + 1;
+String? getNameFromId(String name) {
+  RegExp re = RegExp(r'^@(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w{2,3})+$');
+  RegExpMatch? match = re.firstMatch(name);
+  if (match != null) {
+    return match.group(1);
   }
-  if (name.contains(':')) {
-    end = name.indexOf(':');
-  }
-  return name.substring(start, end);
+  return null;
 }
 
 String randomString() {
@@ -37,7 +35,7 @@ Widget elevatedButton(
   return ElevatedButton(
     onPressed: callback,
     style: ElevatedButton.styleFrom(
-      primary: color,
+      backgroundColor: color,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),

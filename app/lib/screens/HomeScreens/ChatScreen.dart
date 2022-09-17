@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/chatTheme.dart';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/InviteInfoWidget.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
 import 'package:effektio/common/widget/custom_chat_input.dart';
@@ -13,7 +14,7 @@ import 'package:effektio/controllers/chat_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiListMember;
+    show Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -46,6 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _user = types.User(
       id: widget.user!,
     );
+
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
@@ -111,6 +113,33 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<FfiBufferUint8> _userAvatar(String userId) async {
+    final member = await widget.room.getMember(userId);
+    return member.avatar();
+  }
+
+  Widget _avatarBuilder(String userId) {
+    return GetBuilder<ChatController>(
+      id: 'Avatar',
+      builder: (ChatController controller) {
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: SizedBox(
+            height: 28,
+            width: 28,
+            child: CustomAvatar(
+              avatar: _userAvatar(userId),
+              displayName: null,
+              radius: 15,
+              isGroup: false,
+              stringName: getNameFromId(userId) ?? '',
             ),
           ),
         );
@@ -312,6 +341,8 @@ class _ChatScreenState extends State<ChatScreen> {
               onSendPressed: (_) {},
               user: _user,
               disableImageGallery: roomState ? true : false,
+              //custom avatar builder
+              avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
               //Whenever users starts typing on keyboard, this will trigger the function
               onTextChanged: (text) async {
