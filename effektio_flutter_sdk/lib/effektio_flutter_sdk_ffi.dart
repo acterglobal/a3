@@ -6462,6 +6462,7 @@ class Api {
     ffi.Int64,
     ffi.Int64,
   )>>("__Client_session_verification_event_rx_stream_poll");
+
   late final _clientSessionVerificationEventRxStreamPoll =
       _clientSessionVerificationEventRxStreamPollPtr.asFunction<
           _ClientSessionVerificationEventRxStreamPollReturn Function(
