@@ -62,8 +62,7 @@ pub struct Client {
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
-    pub(crate) typing_notification_controller:
-        Arc<MatrixRwLock<Option<TypingNotificationController>>>,
+    pub(crate) typing_notification_controller: TypingNotificationController,
     pub(crate) receipt_notification_controller: ReceiptNotificationController,
     pub(crate) conversation_controller: ConversationController,
 }
@@ -122,7 +121,7 @@ impl Client {
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: SessionVerificationController::new(),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
-            typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            typing_notification_controller: TypingNotificationController::new(),
             receipt_notification_controller: ReceiptNotificationController::new(),
             conversation_controller: ConversationController::new(),
         }
@@ -133,6 +132,7 @@ impl Client {
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
         let device_lists_controller = self.device_lists_controller.clone();
+        let typing_notification_controller = self.typing_notification_controller.clone();
         let conversation_controller = self.conversation_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(false);
@@ -146,6 +146,7 @@ impl Client {
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
+            typing_notification_controller.setup(&client).await;
             conversation_controller.setup(&client).await;
 
             client
@@ -331,33 +332,6 @@ impl Client {
                 let dlc = DeviceListsController::new();
                 *device_lists_controller.write().await = Some(dlc.clone());
                 Ok(dlc)
-            })
-            .await?
-    }
-
-    pub async fn get_typing_notification_controller(&self) -> Result<TypingNotificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let client = self.client.clone();
-        let typing_notification_controller = self.typing_notification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(tnc) = &*typing_notification_controller.read().await {
-                    return Ok(tnc.clone());
-                }
-                let tnc = TypingNotificationController::new();
-                client
-                    .register_event_handler_context(tnc.clone())
-                    .register_event_handler(
-                        |ev: SyncEphemeralRoomEvent<TypingEventContent>,
-                         room: MatrixRoom,
-                         Ctx(tnc): Ctx<TypingNotificationController>| async move {
-                            tnc.process_ephemeral_event(ev, &room);
-                        },
-                    )
-                    .await;
-                *typing_notification_controller.write().await = Some(tnc.clone());
-                Ok(tnc)
             })
             .await?
     }
