@@ -41,8 +41,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .expect("kyra should belong to ops");
     kyra_group.read_receipt(event_id).await?;
 
-    let kyra_rnc = kyra.get_receipt_notification_controller().await?;
-    let mut event_rx = kyra_rnc.get_event_rx().unwrap();
+    let mut event_rx = kyra.receipt_notification_event_rx().unwrap();
     loop {
         match event_rx.try_next() {
             Ok(Some(event)) => {

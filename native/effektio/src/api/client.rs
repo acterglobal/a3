@@ -15,7 +15,6 @@ use matrix_sdk::{
     config::SyncSettings,
     event_handler::Ctx,
     locks::RwLock as MatrixRwLock,
-    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
         device_id,
@@ -65,8 +64,7 @@ pub struct Client {
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
     pub(crate) typing_notification_controller:
         Arc<MatrixRwLock<Option<TypingNotificationController>>>,
-    pub(crate) receipt_notification_controller:
-        Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
+    pub(crate) receipt_notification_controller: ReceiptNotificationController,
     pub(crate) conversation_controller: ConversationController,
 }
 
@@ -125,7 +123,7 @@ impl Client {
             session_verification_controller: SessionVerificationController::new(),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
-            receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            receipt_notification_controller: ReceiptNotificationController::new(),
             conversation_controller: ConversationController::new(),
         }
     }
@@ -360,35 +358,6 @@ impl Client {
                     .await;
                 *typing_notification_controller.write().await = Some(tnc.clone());
                 Ok(tnc)
-            })
-            .await?
-    }
-
-    pub async fn get_receipt_notification_controller(
-        &self,
-    ) -> Result<ReceiptNotificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let client = self.client.clone();
-        let receipt_notification_controller = self.receipt_notification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(rnc) = &*receipt_notification_controller.read().await {
-                    return Ok(rnc.clone());
-                }
-                let rnc = ReceiptNotificationController::new();
-                client
-                    .register_event_handler_context(rnc.clone())
-                    .register_event_handler(
-                        |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
-                         room: MatrixRoom,
-                         Ctx(rnc): Ctx<ReceiptNotificationController>| async move {
-                            rnc.process_ephemeral_event(ev, &room);
-                        },
-                    )
-                    .await;
-                *receipt_notification_controller.write().await = Some(rnc.clone());
-                Ok(rnc)
             })
             .await?
     }
