@@ -23,7 +23,7 @@ mod receipt_notification;
 mod room;
 mod session_verification;
 mod stream;
-mod typing_notification;
+mod typing;
 
 pub use account::Account;
 pub use auth::{
@@ -41,7 +41,7 @@ pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
 };
 pub use stream::TimelineStream;
-pub use typing_notification::TypingNotificationEvent;
+pub use typing::TypingEvent;
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;

@@ -123,13 +123,13 @@ class _EffektioHomeState extends State<EffektioHome>
     crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
     crossSigning
         .installSessionVerificationEvent(client.sessionVerificationEventRx()!);
-    client.typingNotificationEventRx()!.listen((event) {
+    client.typingEventRx()!.listen((event) {
       String roomId = event.roomId();
       List<String> userIds = [];
       for (final userId in event.userIds()) {
         userIds.add(userId.toDartString());
       }
-      debugPrint('typing notification ' + roomId + ': ' + userIds.join(', '));
+      debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
     });
     UserId myId = await client.userId();
     client.receiptNotificationEventRx()!.listen((event) {
