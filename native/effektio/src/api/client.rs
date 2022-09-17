@@ -61,8 +61,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) session_verification_controller:
-        Arc<MatrixRwLock<Option<SessionVerificationController>>>,
+    pub(crate) session_verification_controller: SessionVerificationController,
     pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
     pub(crate) typing_notification_controller:
         Arc<MatrixRwLock<Option<TypingNotificationController>>>,
@@ -123,7 +122,7 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            session_verification_controller: Arc::new(MatrixRwLock::new(None)),
+            session_verification_controller: SessionVerificationController::new(),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
             typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
             receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
@@ -170,9 +169,8 @@ impl Client {
                         }
 
                         if !initial.load(Ordering::SeqCst) {
-                            if let Some(svc) = &*session_verification_controller.read().await {
-                                svc.process_sync_messages(&client, &response.rooms);
-                            }
+                            session_verification_controller
+                                .process_sync_messages(&client, &response.rooms);
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -189,10 +187,8 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        if let Some(svc) = &*session_verification_controller.read().await {
-                            svc.process_to_device_messages(&client, response.to_device);
-                        }
-                        // the lock is unlocked here when `s` goes out of scope.
+                        session_verification_controller
+                            .process_to_device_messages(&client, response.to_device);
                         LoopCtrl::Continue
                     }
                 })
@@ -320,25 +316,6 @@ impl Client {
                     .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
-            })
-            .await?
-    }
-
-    pub async fn get_session_verification_controller(
-        &self,
-    ) -> Result<SessionVerificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let c = self.client.clone();
-        let session_verification_controller = self.session_verification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(svc) = &*session_verification_controller.read().await {
-                    return Ok(svc.clone());
-                }
-                let svc = SessionVerificationController::new();
-                *session_verification_controller.write().await = Some(svc.clone());
-                Ok(svc)
             })
             .await?
     }
