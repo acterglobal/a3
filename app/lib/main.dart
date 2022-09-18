@@ -20,7 +20,7 @@ import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show DeviceListsController, SyncState, UserId;
+    show SyncState, UserId;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -92,7 +92,6 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
-  late DeviceListsController dlc;
   CrossSigning crossSigning = CrossSigning();
   bool isLoading = false;
 
@@ -117,10 +116,9 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
-    dlc = await client.getDeviceListsController();
     SyncState _ = client.startSync();
     //Start listening for cross signing events
-    crossSigning.installDeviceChangedEvent(dlc.getChangedEventRx()!);
+    crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);
     crossSigning
         .installSessionVerificationEvent(client.sessionVerificationEventRx()!);
     client.typingEventRx()!.listen((event) {

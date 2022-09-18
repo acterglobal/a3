@@ -15,7 +15,7 @@ mod account;
 mod auth;
 mod client;
 mod conversation;
-mod device_lists;
+mod device;
 mod group;
 mod message;
 mod news;
@@ -31,7 +31,7 @@ pub use auth::{
 };
 pub use client::{Client, ClientStateBuilder, SyncState};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
-pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
+pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use message::{FileDescription, ImageDescription, RoomMessage};

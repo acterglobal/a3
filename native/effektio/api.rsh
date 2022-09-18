@@ -312,8 +312,11 @@ object Client {
     /// Get the session verification event receiver
     fn session_verification_event_rx() -> Option<Stream<SessionVerificationEvent>>;
 
-    /// Return the device lists controller. If not exists, create it.
-    fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
+    /// Return the event handler of device changed
+    fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+
+    /// Return the event handler of device left
+    fn device_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
 
     /// Return the typing event receiver
     fn typing_event_rx() -> Option<Stream<TypingEvent>>;
@@ -407,18 +410,10 @@ object ReceiptRecord {
     fn timestamp() -> u32;
 }
 
-object DeviceListsController {
-    /// Get event handler of devices changed
-    fn get_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
-
-    /// Get event handler of devices left
-    fn get_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
-}
-
 /// Deliver devices changed event from rust to flutter
 object DeviceChangedEvent {
     /// Get the device list, excluding verified ones
-    fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
+    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
 
     /// Request verification to any devices of user
     fn request_verification_to_user() -> Future<Result<bool>>;
@@ -436,25 +431,31 @@ object DeviceChangedEvent {
 /// Deliver devices left event from rust to flutter
 object DeviceLeftEvent {
     /// Get the device list, including deleted ones
-    fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
+    fn device_records(deleted: bool) -> Future<Result<Vec<DeviceRecord>>>;
 }
 
 /// Provide various device infos
-object Device {
+object DeviceRecord {
     /// whether this device was verified
-    fn was_verified() -> bool;
+    fn verified() -> bool;
 
     /// whether this device was deleted
-    fn was_deleted() -> bool;
+    fn deleted() -> bool;
 
     /// get the id of this device user
-    fn get_user_id() -> string;
+    fn user_id() -> string;
 
     /// get the id of this device
-    fn get_device_id() -> string;
+    fn device_id() -> string;
 
     /// get the display name of this device
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// last seen ip of this device
+    fn last_seen_ip() -> Option<string>;
+
+    /// last seen timestamp of this device
+    fn last_seen_ts() -> Option<u64>;
 }
 
 /// Deliver typing event from rust to flutter

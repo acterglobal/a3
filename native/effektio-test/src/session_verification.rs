@@ -69,7 +69,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // Alice gets notified that new device (Bob) was logged in
     loop {
         if let Ok(Some(event)) = alice_device_changed_rx.try_next() {
-            if let Ok(devices) = event.get_devices(false).await {
+            if let Ok(devices) = event.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
                 event
                     .request_verification_to_device_with_methods(

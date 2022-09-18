@@ -5,39 +5,39 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
-    encryption::identities::Device as MatrixDevice,
+    encryption::identities::Device,
     ruma::{
         api::client::sync::sync_events::v3::DeviceLists, device_id,
         events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch, OwnedUserId,
     },
-    Client,
+    Client as MatrixClient,
 };
 use parking_lot::Mutex;
 use serde_json::{json, Value};
 use std::sync::Arc;
 
-use crate::RUNTIME;
+use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct DeviceChangedEvent {
-    client: Client,
+    client: MatrixClient,
 }
 
 impl DeviceChangedEvent {
-    pub(crate) fn new(client: &Client) -> Self {
+    pub(crate) fn new(client: &MatrixClient) -> Self {
         DeviceChangedEvent {
             client: client.clone(),
         }
     }
 
-    pub async fn get_devices(&self, verified: bool) -> Result<Vec<Device>> {
+    pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let user_id = c
                     .user_id()
                     .expect("guest user cannot get the verified devices");
-                let mut devices: Vec<Device> = vec![];
+                let mut records: Vec<DeviceRecord> = vec![];
                 let response = c.devices().await?;
                 for device in c.encryption().get_user_devices(user_id).await?.devices() {
                     if device.verified() == verified {
@@ -46,17 +46,17 @@ impl DeviceChangedEvent {
                             .iter()
                             .find(|e| e.device_id == device.device_id())
                         {
-                            devices.push(Device::new(
+                            records.push(DeviceRecord::new(
                                 &device,
                                 dev.last_seen_ip.clone(),
                                 dev.last_seen_ts,
                             ));
                         } else {
-                            devices.push(Device::new(&device, None, None));
+                            records.push(DeviceRecord::new(&device, None, None));
                         }
                     }
                 }
-                Ok(devices)
+                Ok(records)
             })
             .await?
     }
@@ -142,24 +142,24 @@ impl DeviceChangedEvent {
 
 #[derive(Clone, Debug)]
 pub struct DeviceLeftEvent {
-    client: Client,
+    client: MatrixClient,
 }
 
 impl DeviceLeftEvent {
-    pub(crate) fn new(client: &Client) -> Self {
+    pub(crate) fn new(client: &MatrixClient) -> Self {
         DeviceLeftEvent {
             client: client.clone(),
         }
     }
 
-    pub async fn get_devices(&self, deleted: bool) -> Result<Vec<Device>> {
+    pub async fn device_records(&self, deleted: bool) -> Result<Vec<DeviceRecord>> {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let user_id = c
                     .user_id()
                     .expect("guest user cannot get the deleted devices");
-                let mut devices: Vec<Device> = vec![];
+                let mut records: Vec<DeviceRecord> = vec![];
                 let response = c.devices().await?;
                 for device in c.encryption().get_user_devices(user_id).await?.devices() {
                     if device.deleted() == deleted {
@@ -168,84 +168,84 @@ impl DeviceLeftEvent {
                             .iter()
                             .find(|e| e.device_id == device.device_id())
                         {
-                            devices.push(Device::new(
+                            records.push(DeviceRecord::new(
                                 &device,
                                 dev.last_seen_ip.clone(),
                                 dev.last_seen_ts,
                             ));
                         } else {
-                            devices.push(Device::new(&device, None, None));
+                            records.push(DeviceRecord::new(&device, None, None));
                         }
                     }
                 }
-                Ok(devices)
+                Ok(records)
             })
             .await?
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct Device {
-    inner: MatrixDevice,
+pub struct DeviceRecord {
+    device: Device,
     last_seen_ip: Option<String>,
     last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
-impl Device {
+impl DeviceRecord {
     pub(crate) fn new(
-        inner: &MatrixDevice,
+        device: &Device,
         last_seen_ip: Option<String>,
         last_seen_ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
-        Device {
-            inner: inner.clone(),
+        DeviceRecord {
+            device: device.clone(),
             last_seen_ip,
             last_seen_ts,
         }
     }
 
-    pub fn was_verified(&self) -> bool {
-        self.inner.verified()
+    pub fn verified(&self) -> bool {
+        self.device.verified()
     }
 
-    pub fn was_deleted(&self) -> bool {
-        self.inner.deleted()
+    pub fn deleted(&self) -> bool {
+        self.device.deleted()
     }
 
-    pub fn get_user_id(&self) -> String {
-        self.inner.user_id().to_string()
+    pub fn user_id(&self) -> String {
+        self.device.user_id().to_string()
     }
 
-    pub fn get_device_id(&self) -> String {
-        self.inner.device_id().to_string()
+    pub fn device_id(&self) -> String {
+        self.device.device_id().to_string()
     }
 
-    pub fn get_display_name(&self) -> Option<String> {
-        self.inner.display_name().map(|s| s.to_owned())
+    pub fn display_name(&self) -> Option<String> {
+        self.device.display_name().map(|s| s.to_owned())
     }
 
-    pub fn get_last_seen_ip(&self) -> Option<String> {
+    pub fn last_seen_ip(&self) -> Option<String> {
         self.last_seen_ip.clone()
     }
 
-    pub fn get_last_seen_ts(&self) -> Option<MilliSecondsSinceUnixEpoch> {
-        self.last_seen_ts
+    pub fn last_seen_ts(&self) -> Option<u64> {
+        self.last_seen_ts.map(|x| x.as_secs().into())
     }
 }
 
 #[derive(Clone)]
-pub struct DeviceListsController {
+pub(crate) struct DeviceController {
     changed_event_tx: Sender<DeviceChangedEvent>,
     changed_event_rx: Arc<Mutex<Option<Receiver<DeviceChangedEvent>>>>,
     left_event_tx: Sender<DeviceLeftEvent>,
     left_event_rx: Arc<Mutex<Option<Receiver<DeviceLeftEvent>>>>,
 }
 
-impl DeviceListsController {
-    pub(crate) fn new() -> Self {
+impl DeviceController {
+    pub fn new() -> Self {
         let (changed_event_tx, changed_event_rx) = channel::<DeviceChangedEvent>(10); // dropping after more than 10 items queued
         let (left_event_tx, left_event_rx) = channel::<DeviceLeftEvent>(10); // dropping after more than 10 items queued
-        DeviceListsController {
+        DeviceController {
             changed_event_tx,
             changed_event_rx: Arc::new(Mutex::new(Some(changed_event_rx))),
             left_event_tx,
@@ -253,15 +253,7 @@ impl DeviceListsController {
         }
     }
 
-    pub fn get_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
-        self.changed_event_rx.lock().take()
-    }
-
-    pub fn get_left_event_rx(&self) -> Option<Receiver<DeviceLeftEvent>> {
-        self.left_event_rx.lock().take()
-    }
-
-    pub(crate) fn process_events(&self, client: &Client, device_lists: DeviceLists) {
+    pub fn process_events(&self, client: &MatrixClient, device_lists: DeviceLists) {
         let mut changed_event_tx = self.changed_event_tx.clone();
         for user_id in device_lists.changed.into_iter() {
             info!("device-changed user_id: {}", user_id);
@@ -289,5 +281,15 @@ impl DeviceListsController {
                 }
             }
         }
+    }
+}
+
+impl Client {
+    pub fn device_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
+        self.device_controller.changed_event_rx.lock().take()
+    }
+
+    pub fn device_left_event_rx(&self) -> Option<Receiver<DeviceLeftEvent>> {
+        self.device_controller.left_event_rx.lock().take()
     }
 }

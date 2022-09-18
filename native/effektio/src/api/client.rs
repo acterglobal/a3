@@ -35,7 +35,7 @@ use super::{
     account::Account,
     api::FfiBuffer,
     conversation::{Conversation, ConversationController},
-    device_lists::DeviceListsController,
+    device::DeviceController,
     group::Group,
     receipt::ReceiptController,
     room::Room,
@@ -61,7 +61,7 @@ pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) session_verification_controller: SessionVerificationController,
-    pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
+    pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
     pub(crate) conversation_controller: ConversationController,
@@ -120,7 +120,7 @@ impl Client {
             client,
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: SessionVerificationController::new(),
-            device_lists_controller: Arc::new(MatrixRwLock::new(None)),
+            device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
@@ -131,7 +131,7 @@ impl Client {
         let client = self.client.clone();
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
-        let device_lists_controller = self.device_lists_controller.clone();
+        let device_controller = self.device_controller.clone();
         let typing_controller = self.typing_controller.clone();
         let receipt_controller = self.receipt_controller.clone();
         let conversation_controller = self.conversation_controller.clone();
@@ -146,7 +146,7 @@ impl Client {
             let client = client.clone();
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
-            let device_lists_controller = device_lists_controller.clone();
+            let device_controller = device_controller.clone();
             typing_controller.setup(&client).await;
             receipt_controller.setup(&client).await;
             conversation_controller.setup(&client).await;
@@ -157,7 +157,7 @@ impl Client {
                     let client = client.clone();
                     let state = state.clone();
                     let session_verification_controller = session_verification_controller.clone();
-                    let device_lists_controller = device_lists_controller.clone();
+                    let device_controller = device_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -165,9 +165,7 @@ impl Client {
                         let state = state.clone();
                         let initial = initial_arc.clone();
 
-                        if let Some(dlc) = &*device_lists_controller.read().await {
-                            dlc.process_events(&client, response.device_lists);
-                        }
+                        device_controller.process_events(&client, response.device_lists);
 
                         if !initial.load(Ordering::SeqCst) {
                             session_verification_controller
@@ -317,23 +315,6 @@ impl Client {
                     .expect("client should get device")
                     .unwrap();
                 Ok(dev.verified())
-            })
-            .await?
-    }
-
-    pub async fn get_device_lists_controller(&self) -> Result<DeviceListsController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let c = self.client.clone();
-        let device_lists_controller = self.device_lists_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(dlc) = &*device_lists_controller.read().await {
-                    return Ok(dlc.clone());
-                }
-                let dlc = DeviceListsController::new();
-                *device_lists_controller.write().await = Some(dlc.clone());
-                Ok(dlc)
             })
             .await?
     }
