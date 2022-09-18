@@ -3,6 +3,7 @@ use super::room::Room;
 use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
+use effektio_core::executor::Executor;
 use effektio_core::{
     ruma::{
         api::client::{
@@ -20,10 +21,77 @@ use effektio_core::{
     },
     statics::{default_effektio_group_states, initial_state_for_alias},
 };
+use log::warn;
+use matrix_sdk::room::{Messages, MessagesOptions};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 pub struct Group {
+    pub(crate) executor: Executor,
     pub(crate) inner: Room,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct HistoryState {
+    /// The last `end` send from the server
+    seen: String,
+}
+
+impl Group {
+    pub(crate) async fn refresh_history(&self) -> anyhow::Result<()> {
+        let room = self.inner.clone();
+        let client = room.client.clone();
+        room.sync_members().await?;
+
+        let custom_storage_key = format!("{:}:history", room.room_id());
+
+        let mut from = if let Some(Ok(h)) = client
+            .store()
+            .get_custom_value(custom_storage_key.as_bytes())
+            .await?
+            .map(|v| serde_json::from_slice::<HistoryState>(&v))
+        {
+            h.seen
+        } else {
+            "".to_owned()
+        };
+
+        let mut msg_options = MessagesOptions::forward(&from);
+
+        loop {
+            let Messages {
+                start,
+                end,
+                chunk,
+                state,
+            } = room.messages(msg_options).await?;
+
+            for msg in chunk {
+                // ...
+                self.executor.handle(msg).await;
+            }
+
+            // Todo: Do we want to do something with the states, too?
+
+            if let Some(seen) = end {
+                from = seen.clone();
+                msg_options = MessagesOptions::forward(&from);
+                client
+                    .store()
+                    .set_custom_value(
+                        custom_storage_key.as_bytes(),
+                        serde_json::to_vec(&HistoryState { seen })?,
+                    )
+                    .await?;
+            } else {
+                // how do we want to understand this case?
+                warn!("No end of history found for {:}", room.room_id());
+                break;
+            }
+        }
+
+        Ok(())
+    }
 }
 
 impl std::ops::Deref for Group {
@@ -80,9 +148,10 @@ impl Client {
 
     pub async fn groups(&self) -> Result<Vec<Group>> {
         let c = self.client.clone();
+        let e = self.executor.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = devide_groups_from_common(c).await;
+                let (groups, _) = devide_groups_from_common(c, e).await;
                 Ok(groups)
             })
             .await?
@@ -92,6 +161,7 @@ impl Client {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             match self.get_room(&room_id) {
                 Some(room) => Ok(Group {
+                    executor: self.executor().clone(),
                     inner: Room {
                         room,
                         client: self.client.clone(),

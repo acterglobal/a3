@@ -4,6 +4,7 @@ pub use matrix_sdk;
 pub use matrix_sdk::ruma;
 
 pub mod events;
+pub mod executor;
 pub mod models;
 pub mod statics;
 pub mod support;

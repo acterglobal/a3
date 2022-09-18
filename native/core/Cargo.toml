@@ -13,6 +13,7 @@ license-file = "../../LICENSE.txt"
 with-mocks = ["fake", "rand"]
 
 [dependencies]
+thiserror = "1.0"
 assign = "1.1.1"
 chrono = {version = "0.4", default-features = false, features = ["serde"]}
 chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }

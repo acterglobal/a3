@@ -1,6 +1,7 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
+    executor::Executor,
     models::Faq,
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     RestoreToken,
@@ -10,6 +11,7 @@ use effektio_core::{
 use effektio_core::mocks::gen_mock_faqs;
 use futures::{
     channel::mpsc::{channel, Receiver},
+    future::try_join_all,
     stream, StreamExt,
 };
 use futures_signals::signal::{
@@ -58,6 +60,7 @@ pub struct ClientState {
 #[derive(Clone)]
 pub struct Client {
     pub(crate) client: MatrixClient,
+    pub(crate) executor: Executor,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) session_verification_controller:
         Arc<MatrixRwLock<Option<SessionVerificationController>>>,
@@ -77,11 +80,12 @@ impl std::ops::Deref for Client {
 
 pub(crate) async fn devide_groups_from_common(
     client: MatrixClient,
+    executor: Executor,
 ) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
-            (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut conversations, client), room| {
+            (Vec::new(), Vec::new(), (client, executor)),
+            async move |(mut groups, mut conversations, (client, executor)), room| {
                 let is_effektio_group = {
                     #[allow(clippy::match_like_matches_macro)]
                     if let Ok(Some(_)) = room
@@ -101,6 +105,7 @@ pub(crate) async fn devide_groups_from_common(
 
                 if is_effektio_group {
                     groups.push(Group {
+                        executor: executor.clone(),
                         inner: Room {
                             room,
                             client: client.clone(),
@@ -115,7 +120,7 @@ pub(crate) async fn devide_groups_from_common(
                     });
                 }
 
-                (groups, conversations, client)
+                (groups, conversations, (client, executor))
             },
         )
         .await;
@@ -140,8 +145,10 @@ impl SyncState {
 
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
+        let executor = Executor::new(client.clone()).await?;
         let cl = Client {
             client,
+            executor,
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: Arc::new(MatrixRwLock::new(None)),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),
@@ -153,7 +160,30 @@ impl Client {
         Ok(cl)
     }
 
+    /// Get access to the internal state
+    pub fn executor(&self) -> &Executor {
+        &self.executor
+    }
+
+    async fn refresh_history(&self) -> anyhow::Result<()> {
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let groups = me.groups().await?;
+                try_join_all(groups.iter().map(|g| g.refresh_history())).await?;
+                Ok(())
+            })
+            .await?
+    }
+
+    async fn refresh_history_on_start(&self) {
+        if let Err(e) = self.refresh_history().await {
+            tracing::error!("Refreshing history failed: {:}", e);
+        }
+    }
+
     pub fn start_sync(&self) -> SyncState {
+        let me = self.clone();
         let client = self.client.clone();
         let state = self.state.clone();
         let session_verification_controller = self.session_verification_controller.clone();
@@ -175,6 +205,7 @@ impl Client {
                 .clone()
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
+                    let me = me.clone();
                     let state = state.clone();
                     let session_verification_controller = session_verification_controller.clone();
                     let device_lists_controller = device_lists_controller.clone();
@@ -193,6 +224,8 @@ impl Client {
                             if let Some(svc) = &*session_verification_controller.read().await {
                                 svc.process_sync_messages(&client, &response.rooms);
                             }
+
+                            me.refresh_history_on_start();
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -249,9 +282,10 @@ impl Client {
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
         let c = self.client.clone();
+        let e = self.executor.clone();
         RUNTIME
             .spawn(async move {
-                let (_, conversations) = devide_groups_from_common(c).await;
+                let (_, conversations) = devide_groups_from_common(c, e).await;
                 Ok(conversations)
             })
             .await?
