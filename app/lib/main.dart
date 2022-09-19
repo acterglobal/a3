@@ -119,8 +119,7 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);
-    crossSigning
-        .installSessionVerificationEvent(client.sessionVerificationEventRx()!);
+    crossSigning.installVerificationEvent(client.verificationEventRx()!);
     client.typingEventRx()!.listen((event) {
       String roomId = event.roomId();
       List<String> userIds = [];

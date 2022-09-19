@@ -1,13 +1,13 @@
 use anyhow::Result;
-use effektio::api::{login_new_client, SessionVerificationEvent};
+use effektio::api::{login_new_client, VerificationEvent};
 use futures::{channel::mpsc::Receiver, stream::StreamExt};
 use log::info;
 use tempfile::TempDir;
 
-fn wait_for_session_verification_event(
-    rx: &mut Receiver<SessionVerificationEvent>,
+fn wait_for_verification_event(
+    rx: &mut Receiver<VerificationEvent>,
     name: &str,
-) -> SessionVerificationEvent {
+) -> VerificationEvent {
     loop {
         if let Ok(Some(event)) = rx.try_next() {
             if event.get_event_name().as_str() == name {
@@ -50,12 +50,12 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let syncer = alice.start_sync();
     let mut first_synced = syncer.get_first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut alice_rx = alice.session_verification_event_rx().unwrap();
+    let mut alice_rx = alice.verification_event_rx().unwrap();
 
     let syncer = bob.start_sync();
     let mut first_synced = syncer.get_first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut bob_rx = bob.session_verification_event_rx().unwrap();
+    let mut bob_rx = bob.verification_event_rx().unwrap();
 
     // according to alice bob is not verfied:
     assert!(!alice.verified_device(bob_device_id.clone()).await?);
@@ -86,7 +86,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // On Bob's device:
 
     // Bob receives the request event from Alice
-    let event = wait_for_session_verification_event(&mut bob_rx, "m.key.verification.request");
+    let event = wait_for_verification_event(&mut bob_rx, "m.key.verification.request");
 
     // Bob accepts the request, sending a Ready request
     event
@@ -100,7 +100,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // On Alice's device:
 
     // Alice receives the ready event from Bob
-    let event = wait_for_session_verification_event(&mut alice_rx, "m.key.verification.ready");
+    let event = wait_for_verification_event(&mut alice_rx, "m.key.verification.ready");
 
     // Alice immediately sends a start request
     let started = event.start_sas_verification().await?;
@@ -108,13 +108,13 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Now Alice receives the start event from Bob
     // Without this loop, sometimes the cancel event follows the start event
-    wait_for_session_verification_event(&mut alice_rx, "m.key.verification.start");
+    wait_for_verification_event(&mut alice_rx, "m.key.verification.start");
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the start event from Alice
-    let event = wait_for_session_verification_event(&mut bob_rx, "m.key.verification.start");
+    let event = wait_for_verification_event(&mut bob_rx, "m.key.verification.start");
 
     // Bob accepts it
     let accepted = event.accept_sas_verification().await?;
@@ -124,7 +124,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // On Alice's device:
 
     // Alice receives the accept event from Bob
-    let event = wait_for_session_verification_event(&mut alice_rx, "m.key.verification.accept");
+    let event = wait_for_verification_event(&mut alice_rx, "m.key.verification.accept");
 
     // Alice sends a key
     event.send_verification_key().await?;
@@ -133,7 +133,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // On Bob's device:
 
     // Bob receives the key event from Alice
-    let bob_event = wait_for_session_verification_event(&mut bob_rx, "m.key.verification.key");
+    let bob_event = wait_for_verification_event(&mut bob_rx, "m.key.verification.key");
 
     // Bob gets the verification key from event
     let emoji_from_alice = bob_event.get_verification_emoji().await?;
@@ -146,7 +146,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // On Alice's device:
 
     // Alice receives the key event from Bob
-    let alice_event = wait_for_session_verification_event(&mut alice_rx, "m.key.verification.key");
+    let alice_event = wait_for_verification_event(&mut alice_rx, "m.key.verification.key");
 
     // Alice gets the verification key from event
     let emoji_from_bob = alice_event.get_verification_emoji().await?;
@@ -168,25 +168,25 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // On Bob's device:
 
     // Bob receives the mac event from Alice
-    wait_for_session_verification_event(&mut bob_rx, "m.key.verification.mac");
+    wait_for_verification_event(&mut bob_rx, "m.key.verification.mac");
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the mac event from Bob
-    wait_for_session_verification_event(&mut alice_rx, "m.key.verification.mac");
+    wait_for_verification_event(&mut alice_rx, "m.key.verification.mac");
 
     // ----------------------------------------------------------------------------
     // On Bob's device:
 
     // Bob receives the done event from Alice
-    wait_for_session_verification_event(&mut bob_rx, "m.key.verification.done");
+    wait_for_verification_event(&mut bob_rx, "m.key.verification.done");
 
     // ----------------------------------------------------------------------------
     // On Alice's device:
 
     // Alice receives the done event from Bob
-    wait_for_session_verification_event(&mut alice_rx, "m.key.verification.done");
+    wait_for_verification_event(&mut alice_rx, "m.key.verification.done");
 
     Ok(())
 }

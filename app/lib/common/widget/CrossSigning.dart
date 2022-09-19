@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show DeviceChangedEvent, SessionVerificationEvent;
+    show DeviceChangedEvent, VerificationEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,15 +23,14 @@ class VerifEvent {
 
 class CrossSigning {
   late StreamSubscription<DeviceChangedEvent> _devicesChangedEventSubscription;
-  late StreamSubscription<SessionVerificationEvent>
-      _sessionVerificationEventSubscription;
+  late StreamSubscription<VerificationEvent> _verificationEventSubscription;
   final Map<String, VerifEvent> _eventMap = {};
   bool acceptingRequest = false;
   bool waitForMatch = false;
 
   void dispose() {
     _devicesChangedEventSubscription.cancel();
-    _sessionVerificationEventSubscription.cancel();
+    _verificationEventSubscription.cancel();
   }
 
   void installDeviceChangedEvent(Stream<DeviceChangedEvent> receiver) async {
@@ -70,10 +69,8 @@ class CrossSigning {
     });
   }
 
-  void installSessionVerificationEvent(
-    Stream<SessionVerificationEvent> receiver,
-  ) async {
-    _sessionVerificationEventSubscription = receiver.listen((event) async {
+  void installVerificationEvent(Stream<VerificationEvent> receiver) async {
+    _verificationEventSubscription = receiver.listen((event) async {
       String eventName = event.getEventName();
       debugPrint(eventName);
       if (eventName == 'm.key.verification.request') {
@@ -96,7 +93,7 @@ class CrossSigning {
     });
   }
 
-  void _onKeyVerificationRequest(SessionVerificationEvent event) {
+  void _onKeyVerificationRequest(VerificationEvent event) {
     String txnId = event.getTxnId();
     if (_eventMap.containsKey(txnId)) {
       return;
@@ -192,7 +189,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationReady(SessionVerificationEvent event, bool manual) {
+  void _onKeyVerificationReady(VerificationEvent event, bool manual) {
     String txnId = event.getTxnId();
     if (manual) {
       _eventMap[txnId]!.stage = 'm.key.verification.ready';
@@ -327,7 +324,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationStart(SessionVerificationEvent event) {
+  void _onKeyVerificationStart(VerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -409,7 +406,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationCancel(SessionVerificationEvent event, bool manual) {
+  void _onKeyVerificationCancel(VerificationEvent event, bool manual) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -529,7 +526,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationAccept(SessionVerificationEvent event) {
+  void _onKeyVerificationAccept(VerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -591,7 +588,7 @@ class CrossSigning {
     );
   }
 
-  void _onKeyVerificationKey(SessionVerificationEvent event) {
+  void _onKeyVerificationKey(VerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
@@ -770,14 +767,14 @@ class CrossSigning {
     });
   }
 
-  void _onKeyVerificationMac(SessionVerificationEvent event) {
+  void _onKeyVerificationMac(VerificationEvent event) {
     _eventMap[event.getTxnId()]?.stage = 'm.key.verification.mac';
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
     });
   }
 
-  void _onKeyVerificationDone(SessionVerificationEvent event) {
+  void _onKeyVerificationDone(VerificationEvent event) {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }

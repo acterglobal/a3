@@ -28,7 +28,7 @@ use std::sync::Arc;
 use super::{Client, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct SessionVerificationEvent {
+pub struct VerificationEvent {
     client: MatrixClient,
     event_name: String,
     txn_id: String,
@@ -41,7 +41,7 @@ pub struct SessionVerificationEvent {
     reason: Option<String>,
 }
 
-impl SessionVerificationEvent {
+impl VerificationEvent {
     pub(crate) fn new(
         client: &MatrixClient,
         event_name: String,
@@ -51,7 +51,7 @@ impl SessionVerificationEvent {
         cancel_code: Option<CancelCode>,
         reason: Option<String>,
     ) -> Self {
-        SessionVerificationEvent {
+        VerificationEvent {
             client: client.clone(),
             event_name,
             txn_id,
@@ -247,7 +247,7 @@ impl SessionVerificationEvent {
             .await?
     }
 
-    pub async fn get_verification_emoji(&self) -> Result<Vec<SessionVerificationEmoji>> {
+    pub async fn get_verification_emoji(&self) -> Result<Vec<VerificationEmoji>> {
         let client = self.client.clone();
         let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
         let txn_id = self.txn_id.clone();
@@ -261,7 +261,7 @@ impl SessionVerificationEvent {
                     if let Some(items) = sas.emoji() {
                         let sequence = items
                             .iter()
-                            .map(|e| SessionVerificationEmoji {
+                            .map(|e| VerificationEmoji {
                                 symbol: e.symbol.chars().collect::<Vec<_>>()[0] as u32,
                                 description: e.description.to_string(),
                             })
@@ -335,12 +335,12 @@ impl SessionVerificationEvent {
 }
 
 #[derive(Clone, Debug)]
-pub struct SessionVerificationEmoji {
+pub struct VerificationEmoji {
     symbol: u32,
     description: String,
 }
 
-impl SessionVerificationEmoji {
+impl VerificationEmoji {
     pub fn symbol(&self) -> u32 {
         self.symbol
     }
@@ -351,15 +351,15 @@ impl SessionVerificationEmoji {
 }
 
 #[derive(Clone)]
-pub struct SessionVerificationController {
-    event_tx: Sender<SessionVerificationEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<SessionVerificationEvent>>>>,
+pub(crate) struct VerificationController {
+    event_tx: Sender<VerificationEvent>,
+    event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,
 }
 
-impl SessionVerificationController {
-    pub(crate) fn new() -> Self {
-        let (tx, rx) = channel::<SessionVerificationEvent>(10); // dropping after more than 10 items queued
-        SessionVerificationController {
+impl VerificationController {
+    pub fn new() -> Self {
+        let (tx, rx) = channel::<VerificationEvent>(10); // dropping after more than 10 items queued
+        VerificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
         }
@@ -374,7 +374,7 @@ impl SessionVerificationController {
                     info!("{} got {}", dev_id.to_string(), evt.event_type());
                     let sender = ev.sender.to_string();
                     let txn_id = ev.event_id.to_string();
-                    let msg = SessionVerificationEvent::new(
+                    let msg = VerificationEvent::new(
                         client,
                         evt.event_type().to_string(),
                         txn_id.clone(),
@@ -394,7 +394,7 @@ impl SessionVerificationController {
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
                 let from_device = ev.content.from_device.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -413,7 +413,7 @@ impl SessionVerificationController {
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
                 let from_device = ev.content.from_device.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -431,7 +431,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -451,7 +451,7 @@ impl SessionVerificationController {
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
                 let cancel_code = ev.content.code.clone();
                 let reason = ev.content.reason.clone();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -469,7 +469,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -487,7 +487,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -505,7 +505,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.relates_to.event_id.as_str().to_owned();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -522,7 +522,7 @@ impl SessionVerificationController {
         }
     }
 
-    pub(crate) fn process_sync_messages(&self, client: &MatrixClient, rooms: &Rooms) {
+    pub fn process_sync_messages(&self, client: &MatrixClient, rooms: &Rooms) {
         for (room_id, room_info) in rooms.join.iter() {
             for event in room_info
                 .timeline
@@ -549,7 +549,7 @@ impl SessionVerificationController {
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
                 let from_device = ev.content.from_device.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -568,7 +568,7 @@ impl SessionVerificationController {
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
                 let from_device = ev.content.from_device.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -587,7 +587,7 @@ impl SessionVerificationController {
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
                 let from_device = ev.content.from_device.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -605,7 +605,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -625,7 +625,7 @@ impl SessionVerificationController {
                 let txn_id = ev.content.transaction_id.to_string();
                 let cancel_code = ev.content.code.clone();
                 let reason = ev.content.reason.clone();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -643,7 +643,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -661,7 +661,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -679,7 +679,7 @@ impl SessionVerificationController {
                 info!("{} got {}", dev_id.to_string(), evt.event_type());
                 let sender = ev.sender.to_string();
                 let txn_id = ev.content.transaction_id.to_string();
-                let msg = SessionVerificationEvent::new(
+                let msg = VerificationEvent::new(
                     client,
                     evt.event_type().to_string(),
                     txn_id.clone(),
@@ -696,7 +696,7 @@ impl SessionVerificationController {
         }
     }
 
-    pub(crate) fn process_to_device_messages(&self, client: &MatrixClient, to_device: ToDevice) {
+    pub fn process_to_device_messages(&self, client: &MatrixClient, to_device: ToDevice) {
         for evt in to_device
             .events
             .into_iter()
@@ -708,7 +708,7 @@ impl SessionVerificationController {
 }
 
 impl Client {
-    pub fn session_verification_event_rx(&self) -> Option<Receiver<SessionVerificationEvent>> {
-        self.session_verification_controller.event_rx.lock().take()
+    pub fn verification_event_rx(&self) -> Option<Receiver<VerificationEvent>> {
+        self.verification_controller.event_rx.lock().take()
     }
 }
