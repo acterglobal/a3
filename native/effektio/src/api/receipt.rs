@@ -31,7 +31,11 @@ impl ReceiptRecord {
         user_id: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
-        ReceiptRecord { event_id, user_id, ts }
+        ReceiptRecord {
+            event_id,
+            user_id,
+            ts,
+        }
     }
 
     pub fn event_id(&self) -> String {
