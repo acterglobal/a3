@@ -39,8 +39,8 @@ use super::{
     group::Group,
     receipt::ReceiptController,
     room::Room,
-    verification::VerificationController,
     typing::TypingController,
+    verification::VerificationController,
     RUNTIME,
 };
 
@@ -185,7 +185,8 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        verification_controller.process_to_device_messages(&client, response.to_device);
+                        verification_controller
+                            .process_to_device_messages(&client, response.to_device);
                         LoopCtrl::Continue
                     }
                 })
