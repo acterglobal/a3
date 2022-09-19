@@ -7,7 +7,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use dialoguer::{Input, Select};
-use effektio::{Conversation, Group};
+use effektio::{Conversation, Group, HistoryLoadState};
 use effektio_core::models::TaskList;
 use futures::future::join_all;
 use std::{io, time::Duration};
@@ -34,6 +34,7 @@ pub enum AppUpdate {
     SetSynced(bool),     // set the synced state
     UpdateConversations(Vec<Conversation>),
     UpdateGroups(Vec<Group>),
+    SetHistoryLoadState(HistoryLoadState),
 }
 
 #[derive(PartialEq, Eq)]
@@ -113,6 +114,7 @@ struct App {
     pub tools: Vec<Tool>,
     pub groups: Vec<Group>,
     pub conversations: Vec<Conversation>,
+    pub history_load_state: HistoryLoadState,
     pub index: usize,
     pub synced: bool,
 }
@@ -126,6 +128,7 @@ impl App {
             log_state: Default::default(),
             groups: Default::default(),
             conversations: Default::default(),
+            history_load_state: Default::default(),
             username: None,
             synced: false,
         }
@@ -141,6 +144,9 @@ impl App {
             AppUpdate::SetSynced(synced) => self.synced = synced,
             AppUpdate::UpdateGroups(groups) => {
                 self.groups = groups;
+            }
+            AppUpdate::SetHistoryLoadState(state) => {
+                self.history_load_state = state;
             }
             AppUpdate::UpdateConversations(convos) => {
                 for m in self.tools.iter_mut() {
@@ -355,7 +361,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     }
     f.render_widget(main, chunks[1]);
 
-    let status = Tabs::new(vec![
+    let mut titles = vec![
         Spans::from(vec![Span::styled(
             app.username.clone().unwrap_or("".to_owned()),
             Style::default().fg(BG_GRAY),
@@ -364,14 +370,25 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
             format!("synced: {}", app.synced),
             Style::default().fg(BG_GRAY),
         )]),
-        Spans::from(vec![Span::styled(
+    ];
+    if !app.history_load_state.is_done_loading() {
+        titles.push(Spans::from(vec![Span::styled(
+            format!(
+                "{} / {} groups history loaded",
+                app.history_load_state.loaded_groups, app.history_load_state.total_groups
+            ),
+            Style::default().fg(BG_GRAY),
+        )]));
+    } else {
+        titles.push(Spans::from(vec![Span::styled(
             format!("{} Groups", app.groups.len()),
             Style::default().fg(BG_GRAY),
-        )]),
-        //Span::styled(rest, Style::default().fg(Color::Green)),
-    ])
-    .block(Block::default().borders(Borders::ALL).title(" Status "))
-    .style(Style::default().fg(BG_GRAY));
+        )]));
+    }
+
+    let status = Tabs::new(titles)
+        .block(Block::default().borders(Borders::ALL).title(" Status "))
+        .style(Style::default().fg(BG_GRAY));
 
     f.render_widget(status, chunks[2]);
 

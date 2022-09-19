@@ -7,6 +7,7 @@ mod config;
 mod ui;
 
 use config::EffektioTuiConfig;
+use futures::future::Either;
 use futures::pin_mut;
 use futures::StreamExt;
 use std::sync::mpsc::channel;
@@ -51,22 +52,37 @@ async fn main() -> Result<()> {
             .unwrap();
 
         let sync_stream = sync_state.get_first_synced_rx().unwrap();
-        pin_mut!(sync_stream);
+        let history_loaded = sync_state.get_history_loading_rx();
+
+        let main_stream = futures::stream::select(
+            history_loaded.map(Either::Right),
+            sync_stream.map(Either::Left),
+        );
+
+        pin_mut!(main_stream);
 
         loop {
-            if let Some(synced) = sync_stream.next().await {
-                sender.send(AppUpdate::SetSynced(synced)).unwrap();
-                if synced {
-                    // let's update the chats;
-                    let conversastions = client.conversations().await.unwrap();
-                    sender
-                        .send(AppUpdate::UpdateConversations(conversastions))
-                        .unwrap();
+            match main_stream.next().await {
+                Some(Either::Left(synced)) => {
+                    sender.send(AppUpdate::SetSynced(synced)).unwrap();
+                    if synced {
+                        // let's update the chats;
+                        let conversastions = client.conversations().await.unwrap();
+                        sender
+                            .send(AppUpdate::UpdateConversations(conversastions))
+                            .unwrap();
 
-                    // let's update the groups;
-                    let groups = client.groups().await.unwrap();
-                    sender.send(AppUpdate::UpdateGroups(groups)).unwrap();
+                        // let's update the groups;
+                        let groups = client.groups().await.unwrap();
+                        sender.send(AppUpdate::UpdateGroups(groups)).unwrap();
+                    }
                 }
+                Some(Either::Right(history)) => {
+                    sender
+                        .send(AppUpdate::SetHistoryLoadState(history))
+                        .unwrap();
+                }
+                _ => {}
             }
         }
     });

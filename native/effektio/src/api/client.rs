@@ -4,6 +4,7 @@ use effektio_core::{
     executor::Executor,
     models::Faq,
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
+    store::Store,
     RestoreToken,
 };
 
@@ -15,7 +16,8 @@ use futures::{
     stream, StreamExt,
 };
 use futures_signals::signal::{
-    channel as signal_channel, Receiver as SignalReceiver, SignalExt, SignalStream,
+    channel as signal_channel, MutableSignalCloned, Receiver as SignalReceiver, SignalExt,
+    SignalStream,
 };
 use log::info;
 use matrix_sdk::{
@@ -127,25 +129,50 @@ pub(crate) async fn devide_groups_from_common(
     (groups, convos)
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct HistoryLoadState {
+    pub total_groups: usize,
+    pub loaded_groups: usize,
+}
+
+impl HistoryLoadState {
+    pub fn is_done_loading(&self) -> bool {
+        self.total_groups <= self.loaded_groups
+    }
+
+    fn group_loaded(&mut self) {
+        self.loaded_groups = self.loaded_groups.checked_add(1).unwrap_or(usize::MAX)
+    }
+}
+
 #[derive(Clone)]
 pub struct SyncState {
     first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
+    history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
 }
 
 impl SyncState {
     pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
-        Self { first_synced_rx }
+        Self {
+            first_synced_rx,
+            history_loading: Default::default(),
+        }
     }
 
     pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
+
+    pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
+        self.history_loading.signal_cloned().to_stream()
+    }
 }
 
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
-        let executor = Executor::new(client.clone()).await?;
+        let store = Store::new(client.clone()).await?;
+        let executor = Executor::new(client.clone(), store).await?;
         let cl = Client {
             client,
             executor,
@@ -165,19 +192,27 @@ impl Client {
         &self.executor
     }
 
-    async fn refresh_history(&self) -> anyhow::Result<()> {
+    async fn refresh_history(
+        &self,
+        history: futures_signals::signal::Mutable<HistoryLoadState>,
+    ) -> anyhow::Result<()> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
                 let groups = me.groups().await?;
+                history.lock_mut().total_groups = groups.len();
+
                 try_join_all(groups.iter().map(|g| g.refresh_history())).await?;
                 Ok(())
             })
             .await?
     }
 
-    async fn refresh_history_on_start(&self) {
-        if let Err(e) = self.refresh_history().await {
+    async fn refresh_history_on_start(
+        &self,
+        history: futures_signals::signal::Mutable<HistoryLoadState>,
+    ) {
+        if let Err(e) = self.refresh_history(history).await {
             tracing::error!("Refreshing history failed: {:}", e);
         }
     }
@@ -195,11 +230,14 @@ impl Client {
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
 
+        let sync_state_history = sync_state.history_loading.clone();
+
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
             let session_verification_controller = session_verification_controller.clone();
             let device_lists_controller = device_lists_controller.clone();
+            let sync_state_history = sync_state_history.clone();
 
             client
                 .clone()
@@ -210,6 +248,7 @@ impl Client {
                     let session_verification_controller = session_verification_controller.clone();
                     let device_lists_controller = device_lists_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
+                    let sync_state_history = sync_state_history.clone();
                     let initial_arc = initial_arc.clone();
 
                     async move {
@@ -225,7 +264,7 @@ impl Client {
                                 svc.process_sync_messages(&client, &response.rooms);
                             }
 
-                            me.refresh_history_on_start();
+                            me.refresh_history_on_start(sync_state_history.clone());
                         }
 
                         initial.store(false, Ordering::SeqCst);
