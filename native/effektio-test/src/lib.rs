@@ -7,6 +7,6 @@ mod formatted_body;
 // #[cfg(test)]
 // mod receipt;
 // #[cfg(test)]
-// mod session_verification;
-// #[cfg(test)]
 // mod typing;
+// #[cfg(test)]
+// mod verification;

@@ -39,8 +39,8 @@ use super::{
     group::Group,
     receipt::ReceiptController,
     room::Room,
-    session_verification::SessionVerificationController,
     typing::TypingController,
+    verification::VerificationController,
     RUNTIME,
 };
 
@@ -60,7 +60,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) session_verification_controller: SessionVerificationController,
+    pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
@@ -119,7 +119,7 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            session_verification_controller: SessionVerificationController::new(),
+            verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
@@ -130,7 +130,7 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        let session_verification_controller = self.session_verification_controller.clone();
+        let verification_controller = self.verification_controller.clone();
         let device_controller = self.device_controller.clone();
         let typing_controller = self.typing_controller.clone();
         let receipt_controller = self.receipt_controller.clone();
@@ -145,7 +145,7 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
-            let session_verification_controller = session_verification_controller.clone();
+            let verification_controller = verification_controller.clone();
             let device_controller = device_controller.clone();
             typing_controller.setup(&client).await;
             receipt_controller.setup(&client).await;
@@ -156,7 +156,7 @@ impl Client {
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
                     let state = state.clone();
-                    let session_verification_controller = session_verification_controller.clone();
+                    let verification_controller = verification_controller.clone();
                     let device_controller = device_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
@@ -168,8 +168,7 @@ impl Client {
                         device_controller.process_events(&client, response.device_lists);
 
                         if !initial.load(Ordering::SeqCst) {
-                            session_verification_controller
-                                .process_sync_messages(&client, &response.rooms);
+                            verification_controller.process_sync_messages(&client, &response.rooms);
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -186,7 +185,7 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        session_verification_controller
+                        verification_controller
                             .process_to_device_messages(&client, response.to_device);
                         LoopCtrl::Continue
                     }

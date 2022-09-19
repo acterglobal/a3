@@ -21,9 +21,9 @@ mod message;
 mod news;
 mod receipt;
 mod room;
-mod session_verification;
 mod stream;
 mod typing;
+mod verification;
 
 pub use account::Account;
 pub use auth::{
@@ -37,11 +37,9 @@ pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use message::{FileDescription, ImageDescription, RoomMessage};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
-pub use session_verification::{
-    SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
-};
 pub use stream::TimelineStream;
 pub use typing::TypingEvent;
+pub use verification::{VerificationEmoji, VerificationEvent};
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;

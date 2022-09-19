@@ -309,8 +309,8 @@ object Client {
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
-    /// Get the session verification event receiver
-    fn session_verification_event_rx() -> Option<Stream<SessionVerificationEvent>>;
+    /// Get the verification event receiver
+    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
     /// Return the event handler of device changed
     fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
@@ -325,7 +325,7 @@ object Client {
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 }
 
-object SessionVerificationEvent {
+object VerificationEvent {
     /// Get event name
     fn get_event_name() -> string;
 
@@ -369,7 +369,7 @@ object SessionVerificationEvent {
     fn cancel_verification_key() -> Future<Result<bool>>;
 
     /// Alice gets the verification emoji from Bob and vice versa
-    fn get_verification_emoji() -> Future<Result<Vec<SessionVerificationEmoji>>>;
+    fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
@@ -381,7 +381,7 @@ object SessionVerificationEvent {
     fn review_verification_mac() -> Future<Result<bool>>;
 }
 
-object SessionVerificationEmoji {
+object VerificationEmoji {
     /// binary representation of emoji unicode
     fn symbol() -> u32;
 
