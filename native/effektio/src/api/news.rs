@@ -108,6 +108,7 @@ impl NewsDraft {
             })
             .await?
     }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let me = self.clone();
         RUNTIME

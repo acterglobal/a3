@@ -3513,7 +3513,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __syncStateGetFirstSyncedRxStreamPoll(
+  bool? __syncStateFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3531,7 +3531,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _syncStateGetFirstSyncedRxStreamPoll(
+    final tmp8 = _syncStateFirstSyncedRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -4651,15 +4651,14 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetFirstSyncedRxPtr = _lookup<
+  late final _syncStateFirstSyncedRxPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetFirstSyncedRxReturn Function(
+          _SyncStateFirstSyncedRxReturn Function(
     ffi.Int64,
-  )>>("__SyncState_get_first_synced_rx");
+  )>>("__SyncState_first_synced_rx");
 
-  late final _syncStateGetFirstSyncedRx =
-      _syncStateGetFirstSyncedRxPtr.asFunction<
-          _SyncStateGetFirstSyncedRxReturn Function(
+  late final _syncStateFirstSyncedRx = _syncStateFirstSyncedRxPtr.asFunction<
+      _SyncStateFirstSyncedRxReturn Function(
     int,
   )>();
   late final _clientStartSyncPtr = _lookup<
@@ -4906,59 +4905,57 @@ class Api {
       _ClientReceiptEventRxReturn Function(
     int,
   )>();
-  late final _verificationEventGetEventNamePtr = _lookup<
+  late final _verificationEventEventNamePtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventGetEventNameReturn Function(
+          _VerificationEventEventNameReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_get_event_name");
+  )>>("__VerificationEvent_event_name");
 
-  late final _verificationEventGetEventName =
-      _verificationEventGetEventNamePtr.asFunction<
-          _VerificationEventGetEventNameReturn Function(
+  late final _verificationEventEventName =
+      _verificationEventEventNamePtr.asFunction<
+          _VerificationEventEventNameReturn Function(
     int,
   )>();
-  late final _verificationEventGetTxnIdPtr = _lookup<
+  late final _verificationEventTransactionIdPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventGetTxnIdReturn Function(
+          _VerificationEventTransactionIdReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_get_txn_id");
+  )>>("__VerificationEvent_transaction_id");
 
-  late final _verificationEventGetTxnId =
-      _verificationEventGetTxnIdPtr.asFunction<
-          _VerificationEventGetTxnIdReturn Function(
+  late final _verificationEventTransactionId =
+      _verificationEventTransactionIdPtr.asFunction<
+          _VerificationEventTransactionIdReturn Function(
     int,
   )>();
-  late final _verificationEventGetSenderPtr = _lookup<
+  late final _verificationEventSenderPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventGetSenderReturn Function(
+          _VerificationEventSenderReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_get_sender");
+  )>>("__VerificationEvent_sender");
 
-  late final _verificationEventGetSender =
-      _verificationEventGetSenderPtr.asFunction<
-          _VerificationEventGetSenderReturn Function(
+  late final _verificationEventSender = _verificationEventSenderPtr.asFunction<
+      _VerificationEventSenderReturn Function(
     int,
   )>();
-  late final _verificationEventGetCancelCodePtr = _lookup<
+  late final _verificationEventCancelCodePtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventGetCancelCodeReturn Function(
+          _VerificationEventCancelCodeReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_get_cancel_code");
+  )>>("__VerificationEvent_cancel_code");
 
-  late final _verificationEventGetCancelCode =
-      _verificationEventGetCancelCodePtr.asFunction<
-          _VerificationEventGetCancelCodeReturn Function(
+  late final _verificationEventCancelCode =
+      _verificationEventCancelCodePtr.asFunction<
+          _VerificationEventCancelCodeReturn Function(
     int,
   )>();
-  late final _verificationEventGetReasonPtr = _lookup<
+  late final _verificationEventReasonPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventGetReasonReturn Function(
+          _VerificationEventReasonReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_get_reason");
+  )>>("__VerificationEvent_reason");
 
-  late final _verificationEventGetReason =
-      _verificationEventGetReasonPtr.asFunction<
-          _VerificationEventGetReasonReturn Function(
+  late final _verificationEventReason = _verificationEventReasonPtr.asFunction<
+      _VerificationEventReasonReturn Function(
     int,
   )>();
   late final _verificationEventAcceptVerificationRequestPtr = _lookup<
@@ -6250,18 +6247,18 @@ class Api {
     int,
     int,
   )>();
-  late final _syncStateGetFirstSyncedRxStreamPollPtr = _lookup<
+  late final _syncStateFirstSyncedRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _SyncStateGetFirstSyncedRxStreamPollReturn Function(
+          _SyncStateFirstSyncedRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__SyncState_get_first_synced_rx_stream_poll");
+  )>>("__SyncState_first_synced_rx_stream_poll");
 
-  late final _syncStateGetFirstSyncedRxStreamPoll =
-      _syncStateGetFirstSyncedRxStreamPollPtr.asFunction<
-          _SyncStateGetFirstSyncedRxStreamPollReturn Function(
+  late final _syncStateFirstSyncedRxStreamPoll =
+      _syncStateFirstSyncedRxStreamPollPtr.asFunction<
+          _SyncStateFirstSyncedRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -8520,10 +8517,10 @@ class SyncState {
   SyncState._(this._api, this._box);
 
   /// Get event handler of first synchronization on every launch
-  Stream<bool>? getFirstSyncedRx() {
+  Stream<bool>? firstSyncedRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._syncStateGetFirstSyncedRx(
+    final tmp1 = _api._syncStateFirstSyncedRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8533,10 +8530,9 @@ class SyncState {
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
     final tmp4_1 =
-        _Box(_api, tmp4_0, "__SyncState_get_first_synced_rx_stream_drop");
+        _Box(_api, tmp4_0, "__SyncState_first_synced_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__syncStateGetFirstSyncedRxStreamPoll);
+    final tmp2 = _nativeStream(tmp4_1, _api.__syncStateFirstSyncedRxStreamPoll);
     return tmp2;
   }
 
@@ -8960,10 +8956,10 @@ class VerificationEvent {
   VerificationEvent._(this._api, this._box);
 
   /// Get event name
-  String getEventName() {
+  String eventName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetEventName(
+    final tmp1 = _api._verificationEventEventName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8980,10 +8976,10 @@ class VerificationEvent {
   }
 
   /// Get transaction id
-  String getTxnId() {
+  String transactionId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetTxnId(
+    final tmp1 = _api._verificationEventTransactionId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9000,10 +8996,10 @@ class VerificationEvent {
   }
 
   /// Get user id of event sender
-  String getSender() {
+  String sender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetSender(
+    final tmp1 = _api._verificationEventSender(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9020,10 +9016,10 @@ class VerificationEvent {
   }
 
   /// An error code for why the process/request was cancelled by the user.
-  String? getCancelCode() {
+  String? cancelCode() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetCancelCode(
+    final tmp1 = _api._verificationEventCancelCode(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9044,10 +9040,10 @@ class VerificationEvent {
   }
 
   /// A description for why the process/request was cancelled by the user.
-  String? getReason() {
+  String? reason() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventGetReason(
+    final tmp1 = _api._verificationEventReason(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -10105,7 +10101,7 @@ class _MemberUserIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _SyncStateGetFirstSyncedRxReturn extends ffi.Struct {
+class _SyncStateFirstSyncedRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -10147,7 +10143,7 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _VerificationEventGetEventNameReturn extends ffi.Struct {
+class _VerificationEventEventNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10156,7 +10152,7 @@ class _VerificationEventGetEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _VerificationEventGetTxnIdReturn extends ffi.Struct {
+class _VerificationEventTransactionIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10165,7 +10161,7 @@ class _VerificationEventGetTxnIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _VerificationEventGetSenderReturn extends ffi.Struct {
+class _VerificationEventSenderReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10174,7 +10170,7 @@ class _VerificationEventGetSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _VerificationEventGetCancelCodeReturn extends ffi.Struct {
+class _VerificationEventCancelCodeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -10185,7 +10181,7 @@ class _VerificationEventGetCancelCodeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _VerificationEventGetReasonReturn extends ffi.Struct {
+class _VerificationEventReasonReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -11243,7 +11239,7 @@ class _DeviceLeftEventDeviceRecordsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _SyncStateGetFirstSyncedRxStreamPollReturn extends ffi.Struct {
+class _SyncStateFirstSyncedRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

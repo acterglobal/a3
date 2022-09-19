@@ -15,7 +15,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.get_first_synced_rx().expect("note yet read");
+    let mut sisko_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
     let sisko_group = sisko
         .get_group("#ops:ds9.effektio.org".to_owned())
@@ -33,8 +33,8 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut kyra_synced = kyra_syncer.get_first_synced_rx().expect("note yet read");
-    while kyra_synced.next().await != Some(true) {} // let's wait for it to have synced
+    let mut first_synced = kyra_syncer.first_synced_rx().expect("note yet read");
+    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let kyra_group = kyra
         .get_group("#ops:ds9.effektio.org".to_owned())
         .await

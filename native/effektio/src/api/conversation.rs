@@ -127,13 +127,13 @@ pub(crate) struct ConversationController {
 }
 
 impl ConversationController {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         ConversationController {
             conversations: Default::default(),
         }
     }
 
-    pub(crate) async fn setup(&self, client: &MatrixClient) {
+    pub async fn setup(&self, client: &MatrixClient) {
         let (_, convos) = devide_groups_from_common(client.clone()).await;
         for convo in convos.iter() {
             convo.load_latest_message();
