@@ -244,7 +244,7 @@ object Account {
 
 object SyncState {
     /// Get event handler of first synchronization on every launch
-    fn get_first_synced_rx() -> Option<Stream<bool>>;
+    fn first_synced_rx() -> Option<Stream<bool>>;
 }
 
 /// Main entry point for `effektio`.
@@ -327,19 +327,19 @@ object Client {
 
 object VerificationEvent {
     /// Get event name
-    fn get_event_name() -> string;
+    fn event_name() -> string;
 
     /// Get transaction id
-    fn get_txn_id() -> string;
+    fn transaction_id() -> string;
 
     /// Get user id of event sender
-    fn get_sender() -> string;
+    fn sender() -> string;
 
     /// An error code for why the process/request was cancelled by the user.
-    fn get_cancel_code() -> Option<string>;
+    fn cancel_code() -> Option<string>;
 
     /// A description for why the process/request was cancelled by the user.
-    fn get_reason() -> Option<string>;
+    fn reason() -> Option<string>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
