@@ -71,9 +71,9 @@ class CrossSigning {
 
   void installVerificationEvent(Stream<VerificationEvent> receiver) async {
     _verificationEventSubscription = receiver.listen((event) async {
-      String eventName = event.eventName();
-      debugPrint(eventName);
-      switch (eventName) {
+      String eventType = event.eventType();
+      debugPrint(eventType);
+      switch (eventType) {
         case 'm.key.verification.request':
           _onKeyVerificationRequest(event);
           break;
@@ -103,12 +103,12 @@ class CrossSigning {
   }
 
   void _onKeyVerificationRequest(VerificationEvent event) {
-    String transactionId = event.transactionId();
-    if (_eventMap.containsKey(transactionId)) {
+    String flowId = event.flowId();
+    if (_eventMap.containsKey(flowId)) {
       return;
     }
     // this case is bob side
-    _eventMap[transactionId] = VerifEvent(
+    _eventMap[flowId] = VerifEvent(
       verifyingThisDev: true,
       stage: 'm.key.verification.request',
     );
@@ -148,7 +148,7 @@ class CrossSigning {
                         onPressed: () async {
                           await event.cancelVerificationRequest();
                           Get.back();
-                          _eventMap.remove(transactionId);
+                          _eventMap.remove(flowId);
                         },
                         color: Colors.white,
                       ),
@@ -199,12 +199,12 @@ class CrossSigning {
   }
 
   void _onKeyVerificationReady(VerificationEvent event, bool manual) {
-    String transactionId = event.transactionId();
+    String flowId = event.flowId();
     if (manual) {
-      _eventMap[transactionId]!.stage = 'm.key.verification.ready';
+      _eventMap[flowId]!.stage = 'm.key.verification.ready';
     } else {
       // this device is alice side
-      _eventMap[transactionId] = VerifEvent(
+      _eventMap[flowId] = VerifEvent(
         verifyingThisDev: false,
         stage: 'm.key.verification.ready',
       );
@@ -229,7 +229,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      _eventMap[transactionId]!.verifyingThisDev
+                      _eventMap[flowId]!.verifyingThisDev
                           ? AppLocalizations.of(context)!.verifyThisSession
                           : AppLocalizations.of(context)!.verifySession,
                       style: CrossSigningSheetTheme.primaryTextStyle,
@@ -242,7 +242,7 @@ class CrossSigning {
                         onPressed: () async {
                           await event.cancelVerificationRequest();
                           Get.back();
-                          _eventMap.remove(transactionId);
+                          _eventMap.remove(flowId);
                         },
                         color: Colors.white,
                       ),
@@ -337,12 +337,12 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String transactionId = event.transactionId();
-    if (_eventMap[transactionId]?.stage != 'm.key.verification.request' &&
-        _eventMap[transactionId]?.stage != 'm.key.verification.ready') {
+    String flowId = event.flowId();
+    if (_eventMap[flowId]?.stage != 'm.key.verification.request' &&
+        _eventMap[flowId]?.stage != 'm.key.verification.ready') {
       return;
     }
-    _eventMap[transactionId]?.stage = 'm.key.verification.start';
+    _eventMap[flowId]?.stage = 'm.key.verification.start';
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setState) {
@@ -364,7 +364,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      _eventMap[transactionId]?.verifyingThisDev == true
+                      _eventMap[flowId]?.verifyingThisDev == true
                           ? AppLocalizations.of(context)!.verifyThisSession
                           : AppLocalizations.of(context)!.verifySession,
                       style: CrossSigningSheetTheme.primaryTextStyle,
@@ -419,8 +419,8 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String transactionId = event.transactionId();
-    _eventMap[transactionId]?.stage = 'm.key.verification.cancel';
+    String flowId = event.flowId();
+    _eventMap[flowId]?.stage = 'm.key.verification.cancel';
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setState) {
@@ -442,7 +442,7 @@ class CrossSigning {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            _eventMap[transactionId]?.verifyingThisDev == true
+                            _eventMap[flowId]?.verifyingThisDev == true
                                 ? AppLocalizations.of(context)!
                                     .verifyThisSession
                                 : AppLocalizations.of(context)!.verifySession,
@@ -473,7 +473,7 @@ class CrossSigning {
                           AppCommonTheme.greenButtonColor,
                           () {
                             Get.back();
-                            _eventMap.remove(transactionId);
+                            _eventMap.remove(flowId);
                           },
                           CrossSigningSheetTheme.buttonTextStyle,
                         ),
@@ -490,7 +490,7 @@ class CrossSigning {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            _eventMap[transactionId]?.verifyingThisDev == true
+                            _eventMap[flowId]?.verifyingThisDev == true
                                 ? AppLocalizations.of(context)!
                                     .verifyThisSession
                                 : AppLocalizations.of(context)!.verifySession,
@@ -522,7 +522,7 @@ class CrossSigning {
                           AppCommonTheme.greenButtonColor,
                           () {
                             Get.back();
-                            _eventMap.remove(transactionId);
+                            _eventMap.remove(flowId);
                           },
                           CrossSigningSheetTheme.buttonTextStyle,
                         ),
@@ -539,8 +539,8 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String transactionId = event.transactionId();
-    _eventMap[transactionId]?.stage = 'm.key.verification.accept';
+    String flowId = event.flowId();
+    _eventMap[flowId]?.stage = 'm.key.verification.accept';
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setState) {
@@ -565,7 +565,7 @@ class CrossSigning {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      _eventMap[transactionId]?.verifyingThisDev == true
+                      _eventMap[flowId]?.verifyingThisDev == true
                           ? AppLocalizations.of(context)!.verifyThisSession
                           : AppLocalizations.of(context)!.verifySession,
                       style: CrossSigningSheetTheme.primaryTextStyle,
@@ -601,8 +601,8 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String transactionId = event.transactionId();
-    _eventMap[transactionId]?.stage = 'm.key.verification.key';
+    String flowId = event.flowId();
+    _eventMap[flowId]?.stage = 'm.key.verification.key';
     event.getVerificationEmoji().then((emoji) {
       List<int> emojiCodes = emoji.map((e) => e.symbol()).toList();
       List<String> emojiDescriptions =
@@ -632,7 +632,7 @@ class CrossSigning {
                       ),
                       const SizedBox(width: 5),
                       Text(
-                        _eventMap[transactionId]?.verifyingThisDev == true
+                        _eventMap[flowId]?.verifyingThisDev == true
                             ? AppLocalizations.of(context)!.verifyThisSession
                             : AppLocalizations.of(context)!.verifySession,
                         style: CrossSigningSheetTheme.primaryTextStyle,
@@ -777,7 +777,7 @@ class CrossSigning {
   }
 
   void _onKeyVerificationMac(VerificationEvent event) {
-    _eventMap[event.transactionId()]?.stage = 'm.key.verification.mac';
+    _eventMap[event.flowId()]?.stage = 'm.key.verification.mac';
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
     });
@@ -787,8 +787,8 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String transactionId = event.transactionId();
-    _eventMap[transactionId]?.stage = 'm.key.verification.done';
+    String flowId = event.flowId();
+    _eventMap[flowId]?.stage = 'm.key.verification.done';
     Get.bottomSheet(
       StatefulBuilder(
         builder: (context, setState) {
@@ -821,7 +821,7 @@ class CrossSigning {
                     vertical: 10,
                   ),
                   child: Text(
-                    _eventMap[transactionId]!.verifyingThisDev
+                    _eventMap[flowId]!.verifyingThisDev
                         ? AppLocalizations.of(context)!
                             .verificationConclusionOkSelfNotice
                         : AppLocalizations.of(context)!
@@ -847,7 +847,7 @@ class CrossSigning {
                       CrossSigningSheetTheme.greenButtonColor,
                       () {
                         Get.back();
-                        _eventMap.remove(transactionId);
+                        _eventMap.remove(flowId);
                       },
                       CrossSigningSheetTheme.buttonTextStyle,
                     ),
