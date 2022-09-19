@@ -9,6 +9,7 @@ use matrix_sdk::{
     ruma::{
         events::{receipt::ReceiptEventContent, SyncEphemeralRoomEvent},
         receipt::ReceiptType,
+        MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedUserId,
     },
     Client as MatrixClient,
 };
@@ -19,22 +20,30 @@ use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct ReceiptRecord {
-    event_id: String,
-    user_id: String,
-    timestamp: u64,
+    event_id: OwnedEventId,
+    user_id: OwnedUserId,
+    ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
 impl ReceiptRecord {
+    pub(crate) fn new(
+        event_id: OwnedEventId,
+        user_id: OwnedUserId,
+        ts: Option<MilliSecondsSinceUnixEpoch>,
+    ) -> Self {
+        ReceiptRecord { event_id, user_id, ts }
+    }
+
     pub fn event_id(&self) -> String {
-        self.event_id.clone()
+        self.event_id.to_string()
     }
 
     pub fn user_id(&self) -> String {
-        self.user_id.clone()
+        self.user_id.to_string()
     }
 
-    pub fn timestamp(&self) -> u64 {
-        self.timestamp
+    pub fn ts(&self) -> Option<u64> {
+        self.ts.map(|x| x.as_secs().into())
     }
 }
 
@@ -56,12 +65,14 @@ impl ReceiptEvent {
         self.room_id.clone()
     }
 
-    pub(crate) fn add_receipt_record(&mut self, event_id: String, user_id: String, timestamp: u64) {
-        self.receipt_records.push(ReceiptRecord {
-            event_id,
-            user_id,
-            timestamp,
-        });
+    pub(crate) fn add_receipt_record(
+        &mut self,
+        event_id: OwnedEventId,
+        user_id: OwnedUserId,
+        ts: Option<MilliSecondsSinceUnixEpoch>,
+    ) {
+        let record = ReceiptRecord::new(event_id, user_id, ts);
+        self.receipt_records.push(record);
     }
 
     pub fn receipt_records(&self) -> Vec<ReceiptRecord> {
@@ -110,8 +121,7 @@ impl ReceiptController {
             info!("receipt iter: {:?}", event_id);
             for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
                 info!("user receipt: {:?}", receipt);
-                let timestamp = u64::try_from(receipt.ts.unwrap().get()).unwrap();
-                msg.add_receipt_record(event_id.to_string(), user_id.to_string(), timestamp);
+                msg.add_receipt_record(event_id.clone(), user_id.clone(), receipt.ts);
             }
         }
         let mut event_tx = self.event_tx.clone();

@@ -4905,26 +4905,25 @@ class Api {
       _ClientReceiptEventRxReturn Function(
     int,
   )>();
-  late final _verificationEventEventNamePtr = _lookup<
+  late final _verificationEventEventTypePtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventEventNameReturn Function(
+          _VerificationEventEventTypeReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_event_name");
+  )>>("__VerificationEvent_event_type");
 
-  late final _verificationEventEventName =
-      _verificationEventEventNamePtr.asFunction<
-          _VerificationEventEventNameReturn Function(
+  late final _verificationEventEventType =
+      _verificationEventEventTypePtr.asFunction<
+          _VerificationEventEventTypeReturn Function(
     int,
   )>();
-  late final _verificationEventTransactionIdPtr = _lookup<
+  late final _verificationEventFlowIdPtr = _lookup<
       ffi.NativeFunction<
-          _VerificationEventTransactionIdReturn Function(
+          _VerificationEventFlowIdReturn Function(
     ffi.Int64,
-  )>>("__VerificationEvent_transaction_id");
+  )>>("__VerificationEvent_flow_id");
 
-  late final _verificationEventTransactionId =
-      _verificationEventTransactionIdPtr.asFunction<
-          _VerificationEventTransactionIdReturn Function(
+  late final _verificationEventFlowId = _verificationEventFlowIdPtr.asFunction<
+      _VerificationEventFlowIdReturn Function(
     int,
   )>();
   late final _verificationEventSenderPtr = _lookup<
@@ -5166,14 +5165,14 @@ class Api {
       _ReceiptRecordUserIdReturn Function(
     int,
   )>();
-  late final _receiptRecordTimestampPtr = _lookup<
+  late final _receiptRecordTsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint32 Function(
+          _ReceiptRecordTsReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_timestamp");
+  )>>("__ReceiptRecord_ts");
 
-  late final _receiptRecordTimestamp = _receiptRecordTimestampPtr.asFunction<
-      int Function(
+  late final _receiptRecordTs = _receiptRecordTsPtr.asFunction<
+      _ReceiptRecordTsReturn Function(
     int,
   )>();
   late final _deviceChangedEventDeviceRecordsPtr = _lookup<
@@ -8955,11 +8954,11 @@ class VerificationEvent {
 
   VerificationEvent._(this._api, this._box);
 
-  /// Get event name
-  String eventName() {
+  /// Get event type
+  String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventEventName(
+    final tmp1 = _api._verificationEventEventType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8975,11 +8974,11 @@ class VerificationEvent {
     return tmp2;
   }
 
-  /// Get transaction id
-  String transactionId() {
+  /// Get flow id (EventId or TransactionId)
+  String flowId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._verificationEventTransactionId(
+    final tmp1 = _api._verificationEventFlowId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9436,14 +9435,18 @@ class ReceiptRecord {
   }
 
   /// Get time that this user read message from peer
-  int timestamp() {
+  int? ts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordTimestamp(
+    final tmp1 = _api._receiptRecordTs(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -10143,7 +10146,7 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _VerificationEventEventNameReturn extends ffi.Struct {
+class _VerificationEventEventTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10152,7 +10155,7 @@ class _VerificationEventEventNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _VerificationEventTransactionIdReturn extends ffi.Struct {
+class _VerificationEventFlowIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10233,6 +10236,13 @@ class _ReceiptRecordUserIdReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _ReceiptRecordTsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
 }
 
 class _DeviceRecordUserIdReturn extends ffi.Struct {
