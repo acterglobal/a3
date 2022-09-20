@@ -313,7 +313,7 @@ impl Client {
                     .await
                     .expect("client should get device")
                     .unwrap();
-                Ok(dev.verified())
+                Ok(dev.is_verified())
             })
             .await?
     }

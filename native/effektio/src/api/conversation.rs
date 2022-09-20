@@ -253,7 +253,7 @@ impl Client {
                         visibility: Visibility::Private,
                     }))
                     .await?;
-                Ok(res.room_id)
+                Ok(res.room_id().to_owned())
             })
             .await?
     }
