@@ -73,7 +73,7 @@ pub async fn login_new_client(
 ) -> Result<Client> {
     let user = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
     let mut config =
-        platform::new_client_config(base_path, username)?.server_name(&user.server_name());
+        platform::new_client_config(base_path, username)?.server_name(user.server_name());
 
     match user.server_name().as_str() {
         "effektio.org" => {
@@ -114,7 +114,7 @@ pub async fn register_with_registration_token(
 ) -> Result<Client> {
     let user = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
     let config =
-        platform::new_client_config(base_path, username.clone())?.server_name(&user.server_name());
+        platform::new_client_config(base_path, username.clone())?.server_name(user.server_name());
     // First we need to log in.
     RUNTIME
         .spawn(async move {
