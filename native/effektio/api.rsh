@@ -326,11 +326,11 @@ object Client {
 }
 
 object VerificationEvent {
-    /// Get event name
-    fn event_name() -> string;
+    /// Get event type
+    fn event_type() -> string;
 
-    /// Get transaction id
-    fn transaction_id() -> string;
+    /// Get flow id (EventId or TransactionId)
+    fn flow_id() -> string;
 
     /// Get user id of event sender
     fn sender() -> string;
@@ -407,7 +407,7 @@ object ReceiptRecord {
     fn user_id() -> string;
 
     /// Get time that this user read message from peer
-    fn timestamp() -> u32;
+    fn ts() -> Option<u64>;
 }
 
 /// Deliver devices changed event from rust to flutter

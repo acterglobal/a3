@@ -6,7 +6,10 @@ use log::{info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
-    ruma::events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
+    ruma::{
+        events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
+        OwnedRoomId, OwnedUserId,
+    },
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
@@ -16,21 +19,25 @@ use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct TypingEvent {
-    room_id: String,
-    user_ids: Vec<String>,
+    room_id: OwnedRoomId,
+    user_ids: Vec<OwnedUserId>,
 }
 
 impl TypingEvent {
-    pub(crate) fn new(room_id: String, user_ids: Vec<String>) -> Self {
+    pub(crate) fn new(room_id: OwnedRoomId, user_ids: Vec<OwnedUserId>) -> Self {
         Self { room_id, user_ids }
     }
 
     pub fn room_id(&self) -> String {
-        self.room_id.clone()
+        self.room_id.to_string()
     }
 
     pub fn user_ids(&self) -> Vec<String> {
-        self.user_ids.clone()
+        let mut res: Vec<String> = vec![];
+        for user_id in self.user_ids.iter() {
+            res.push(user_id.to_string());
+        }
+        res
     }
 }
 
@@ -69,12 +76,8 @@ impl TypingController {
         room: &MatrixRoom,
     ) {
         info!("typing: {:?}", ev.content.user_ids);
-        let room_id = room.room_id();
-        let mut user_ids = vec![];
-        for user_id in ev.content.user_ids {
-            user_ids.push(user_id.to_string());
-        }
-        let msg = TypingEvent::new(room_id.to_string(), user_ids);
+        let room_id = room.room_id().to_owned();
+        let msg = TypingEvent::new(room_id.clone(), ev.content.user_ids);
         let mut event_tx = self.event_tx.clone();
         if let Err(e) = event_tx.try_send(msg) {
             warn!("Dropping ephemeral event for {}: {}", room_id, e);

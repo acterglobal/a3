@@ -136,7 +136,10 @@ class _EffektioHomeState extends State<EffektioHome>
           debugPrint('receipt event for ' + event.roomId());
           debugPrint('event id: ' + record.eventId());
           debugPrint('user id: ' + userId);
-          debugPrint('timestamp: ' + record.timestamp().toString());
+          int? ts = record.ts();
+          if (ts != null) {
+            debugPrint('timestamp: ' + ts.toString());
+          }
         }
       }
     });
