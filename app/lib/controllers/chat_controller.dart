@@ -364,8 +364,8 @@ class ChatController extends GetxController {
               break;
             }
           }
-          update(['Chat']);
           mtx.release();
+          update(['Chat']);
         });
       }
     } else if (msgtype == 'm.location') {

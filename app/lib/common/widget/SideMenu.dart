@@ -10,9 +10,31 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:themed/themed.dart';
 
-class SideDrawer extends StatelessWidget {
+class SideDrawer extends StatefulWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
   final Client client;
+
+  @override
+  State<SideDrawer> createState() => _SideDrawerState();
+}
+
+class _SideDrawerState extends State<SideDrawer> {
+  late Future<String> displayName;
+  late Future<String> userId;
+  late Future<FfiBufferUint8> avatar;
+
+  @override
+  void initState() {
+    super.initState();
+    displayName = getDisplayName();
+    avatar = getAvatar();
+    userId = getUserId();
+  }
+
+  Future<String> getDisplayName() async => await widget.client.displayName();
+  Future<FfiBufferUint8> getAvatar() async => await widget.client.avatar();
+  Future<String> getUserId() async =>
+      await widget.client.userId().then((id) => id.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +49,7 @@ class SideDrawer extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              client.isGuest()
+              widget.client.isGuest()
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -68,7 +90,7 @@ class SideDrawer extends StatelessWidget {
                       onTap: () => Navigator.pushNamed(
                         context,
                         '/profile',
-                        arguments: client,
+                        arguments: widget.client,
                       ),
                       child: Row(
                         children: [
@@ -76,8 +98,8 @@ class SideDrawer extends StatelessWidget {
                             margin: EdgeInsets.all(10),
                             child: CustomAvatar(
                               radius: 24,
-                              avatar: client.avatar(),
-                              displayName: client.displayName(),
+                              avatar: avatar,
+                              displayName: displayName,
                               isGroup: false,
                               stringName: '',
                             ),
@@ -89,54 +111,72 @@ class SideDrawer extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               FutureBuilder<String>(
-                                future: client
-                                    .displayName(), // a previously-obtained Future<String> or null
+                                future:
+                                    displayName, // a previously-obtained Future<String> or null
                                 builder: (
                                   BuildContext context,
                                   AsyncSnapshot<String> snapshot,
                                 ) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                      snapshot.data ??
-                                          AppLocalizations.of(context)!.noName,
-                                      style: SideMenuAndProfileTheme
-                                          .sideMenuProfileStyle,
-                                    );
-                                  } else {
-                                    return const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        color: AppCommonTheme.primaryColor,
-                                      ),
-                                    );
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                        child: Text(
+                                          '${snapshot.error} occurred',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      );
+                                    } else if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data ??
+                                            AppLocalizations.of(context)!
+                                                .noName,
+                                        style: SideMenuAndProfileTheme
+                                            .sideMenuProfileStyle,
+                                      );
+                                    }
                                   }
+                                  return const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: AppCommonTheme.primaryColor,
+                                    ),
+                                  );
                                 },
                               ),
                               FutureBuilder<String>(
-                                future: client.userId().then(
-                                      (u) => u.toString(),
-                                    ), // a previously-obtained Future<String> or null
+                                future: userId,
+                                // a previously-obtained Future<String> or null
                                 builder: (
                                   BuildContext context,
                                   AsyncSnapshot<String> snapshot,
                                 ) {
-                                  if (snapshot.hasData) {
-                                    return Text(
-                                      snapshot.data ?? '',
-                                      style: SideMenuAndProfileTheme
-                                              .sideMenuProfileStyle +
-                                          FontSize(14),
-                                    );
-                                  } else {
-                                    return const SizedBox(
-                                      height: 50,
-                                      width: 50,
-                                      child: CircularProgressIndicator(
-                                        color: AppCommonTheme.primaryColor,
-                                      ),
-                                    );
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                        child: Text(
+                                          '${snapshot.error} occurred',
+                                          style: TextStyle(fontSize: 18),
+                                        ),
+                                      );
+                                    } else if (snapshot.hasData) {
+                                      return Text(
+                                        snapshot.data ?? '',
+                                        style: SideMenuAndProfileTheme
+                                                .sideMenuProfileStyle +
+                                            FontSize(14),
+                                      );
+                                    }
                                   }
+                                  return const SizedBox(
+                                    height: 50,
+                                    width: 50,
+                                    child: CircularProgressIndicator(
+                                      color: AppCommonTheme.primaryColor,
+                                    ),
+                                  );
                                 },
                               ),
                             ],
@@ -265,7 +305,7 @@ class SideDrawer extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              client.isGuest()
+              widget.client.isGuest()
                   ? const SizedBox()
                   : Container(
                       margin: EdgeInsets.only(bottom: 20, left: 10),
