@@ -48,7 +48,7 @@ impl LoginConfig {
 
         let client = default_client_config()
             .await?
-            .server_name(&username.server_name())
+            .server_name(username.server_name())
             .build()
             .await?;
 
