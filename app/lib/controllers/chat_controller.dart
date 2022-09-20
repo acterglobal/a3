@@ -77,12 +77,6 @@ class ChatController extends GetxController {
     newEvent();
   }
 
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-
   Future<void> newEvent() async {
     Stream<RoomMessage> newRoomMessage() =>
         Stream.periodic(const Duration(milliseconds: 800))
@@ -291,7 +285,7 @@ class ChatController extends GetxController {
     final List<types.Message> nextMessages = [];
     // i am fetching messages from remote
     for (RoomMessage message in msgs) {
-      _loadMessage(message, nextMessages);
+      await _loadMessage(message, nextMessages);
     }
     messages = [...messages, ...nextMessages];
     _page = _page + 1;
@@ -308,7 +302,10 @@ class ChatController extends GetxController {
     c.add(m);
   }
 
-  void _loadMessage(RoomMessage message, List<types.Message> container) {
+  Future<void> _loadMessage(
+    RoomMessage message,
+    List<types.Message> container,
+  ) async {
     String msgtype = message.msgtype();
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
@@ -401,6 +398,7 @@ class ChatController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    _subscription.cancel();
     textEditingController.dispose();
     focusNode.removeListener(() {});
   }
