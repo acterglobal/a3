@@ -132,8 +132,8 @@ impl Client {
         let state = self.state.clone();
         let verification_controller = self.verification_controller.clone();
         let device_controller = self.device_controller.clone();
-        let typing_controller = self.typing_controller.clone();
-        let receipt_controller = self.receipt_controller.clone();
+        self.typing_controller.setup(&client);
+        self.receipt_controller.setup(&client);
         let conversation_controller = self.conversation_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(false);
@@ -147,8 +147,6 @@ impl Client {
             let state = state.clone();
             let verification_controller = verification_controller.clone();
             let device_controller = device_controller.clone();
-            typing_controller.setup(&client).await;
-            receipt_controller.setup(&client).await;
             conversation_controller.setup(&client).await;
 
             client
