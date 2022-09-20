@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatController chatController = ChatController.instance;
+  ChatController chatController = Get.put(ChatController());
 
   @override
   void initState() {
@@ -47,7 +47,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _user = types.User(
       id: widget.user!,
     );
-
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
@@ -126,24 +125,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatarBuilder(String userId) {
-    return GetBuilder<ChatController>(
-      id: 'Avatar',
-      builder: (ChatController controller) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 28,
-            width: 28,
-            child: CustomAvatar(
-              avatar: _userAvatar(userId),
-              displayName: null,
-              radius: 15,
-              isGroup: false,
-              stringName: getNameFromId(userId) ?? '',
-            ),
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: SizedBox(
+        height: 28,
+        width: 28,
+        child: CustomAvatar(
+          avatar: _userAvatar(userId),
+          displayName: null,
+          radius: 15,
+          isGroup: false,
+          stringName: getNameFromId(userId) ?? '',
+        ),
+      ),
     );
   }
 
@@ -346,7 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
               imageMessageBuilder: _imageMessageBuilder,
               //Whenever users starts typing on keyboard, this will trigger the function
               onTextChanged: (text) async {
-                await controller.room.typingNotice(true);
+                // await controller.room.typingNotice(true);
               },
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),

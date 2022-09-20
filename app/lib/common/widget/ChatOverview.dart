@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:effektio/common/store/themes/separatedThemes.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/customAvatar.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/screens/HomeScreens/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -11,18 +12,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
-
-class RecentMessage {
-  String sender;
-  String body;
-  int originServerTs;
-
-  RecentMessage({
-    required this.sender,
-    required this.body,
-    required this.originServerTs,
-  });
-}
 
 class ChatListItem extends StatefulWidget {
   final Conversation room;
@@ -41,49 +30,77 @@ class ChatListItem extends StatefulWidget {
 }
 
 class _ChatListItemState extends State<ChatListItem> {
+  late Future<String> displayName;
+  late Future<FfiBufferUint8> avatar;
+
+  @override
+  void initState() {
+    super.initState();
+    displayName = getDisplayName();
+    avatar = getAvatar();
+  }
+
+  Future<String> getDisplayName() async => await widget.room.displayName();
+  Future<FfiBufferUint8> getAvatar() async => await widget.room.avatar();
+
   @override
   Widget build(BuildContext context) {
     // ToDo: UnreadCounter
-    return ListTile(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              room: widget.room,
-              user: widget.user,
-            ),
-          ),
-        );
-      },
-      leading: CustomAvatar(
-        avatar: widget.room.avatar(),
-        displayName: widget.room.displayName(),
-        radius: 25,
-        isGroup: true,
-        stringName: '',
-      ),
-      title: FutureBuilder<String>(
-        future: widget.room.displayName(),
-        builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-          if (snapshot.hasData) {
-            return Text(
-              snapshot.requireData,
-              style: ChatTheme01.chatTitleStyle,
+    return Column(
+      children: <Widget>[
+        ListTile(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChatScreen(
+                  room: widget.room,
+                  user: widget.user,
+                ),
+              ),
             );
-          } else {
-            return Text(AppLocalizations.of(context)!.loadingName);
-          }
-        },
-      ),
-      subtitle: buildSubtitle(context),
-      trailing: buildTraining(context),
+          },
+          leading: CustomAvatar(
+            avatar: avatar,
+            displayName: displayName,
+            radius: 25,
+            isGroup: true,
+            stringName: '',
+          ),
+          title: FutureBuilder<String>(
+            future: displayName,
+            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  snapshot.requireData,
+                  style: ChatTheme01.chatTitleStyle,
+                );
+              } else {
+                return Text(
+                  AppLocalizations.of(context)!.loadingName,
+                  style: ChatTheme01.chatTitleStyle,
+                );
+              }
+            },
+          ),
+          subtitle: buildSubtitle(context),
+          trailing: buildTrailing(context),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5),
+          child: const Divider(
+            indent: 75,
+            endIndent: 10,
+            color: AppCommonTheme.dividerColor,
+          ),
+        ),
+      ],
     );
   }
 
   Widget buildSubtitle(BuildContext context) {
     if (widget.recentMessage == null) {
-      return SizedBox();
+      return const SizedBox();
     }
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
@@ -155,9 +172,9 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget buildTraining(BuildContext context) {
+  Widget buildTrailing(BuildContext context) {
     if (widget.recentMessage == null) {
-      return SizedBox();
+      return const SizedBox();
     }
     return Text(
       DateFormat.Hm().format(

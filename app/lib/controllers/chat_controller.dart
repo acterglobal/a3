@@ -364,8 +364,8 @@ class ChatController extends GetxController {
               break;
             }
           }
-          update(['Chat']);
           mtx.release();
+          update(['Chat']);
         });
       }
     } else if (msgtype == 'm.location') {
@@ -401,6 +401,7 @@ class ChatController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    _subscription.cancel();
     textEditingController.dispose();
     focusNode.removeListener(() {});
   }
