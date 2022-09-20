@@ -1772,6 +1772,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListUserReceipt? __conversationUserReceiptsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationUserReceiptsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListUserReceipt");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListUserReceipt._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   String? __groupDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -4517,6 +4563,17 @@ class Api {
     int,
     int,
   )>();
+  late final _conversationUserReceiptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Conversation_user_receipts");
+
+  late final _conversationUserReceipts =
+      _conversationUserReceiptsPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _groupDisplayNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5134,45 +5191,45 @@ class Api {
       _ReceiptEventRoomIdReturn Function(
     int,
   )>();
-  late final _receiptEventReceiptRecordsPtr = _lookup<
+  late final _receiptEventUserReceiptsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__ReceiptEvent_receipt_records");
+  )>>("__ReceiptEvent_user_receipts");
 
-  late final _receiptEventReceiptRecords =
-      _receiptEventReceiptRecordsPtr.asFunction<
+  late final _receiptEventUserReceipts =
+      _receiptEventUserReceiptsPtr.asFunction<
           int Function(
     int,
   )>();
-  late final _receiptRecordEventIdPtr = _lookup<
+  late final _userReceiptEventIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordEventIdReturn Function(
+          _UserReceiptEventIdReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_event_id");
+  )>>("__UserReceipt_event_id");
 
-  late final _receiptRecordEventId = _receiptRecordEventIdPtr.asFunction<
-      _ReceiptRecordEventIdReturn Function(
+  late final _userReceiptEventId = _userReceiptEventIdPtr.asFunction<
+      _UserReceiptEventIdReturn Function(
     int,
   )>();
-  late final _receiptRecordUserIdPtr = _lookup<
+  late final _userReceiptUserIdPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordUserIdReturn Function(
+          _UserReceiptUserIdReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_user_id");
+  )>>("__UserReceipt_user_id");
 
-  late final _receiptRecordUserId = _receiptRecordUserIdPtr.asFunction<
-      _ReceiptRecordUserIdReturn Function(
+  late final _userReceiptUserId = _userReceiptUserIdPtr.asFunction<
+      _UserReceiptUserIdReturn Function(
     int,
   )>();
-  late final _receiptRecordTsPtr = _lookup<
+  late final _userReceiptTsPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordTsReturn Function(
+          _UserReceiptTsReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_ts");
+  )>>("__UserReceipt_ts");
 
-  late final _receiptRecordTs = _receiptRecordTsPtr.asFunction<
-      _ReceiptRecordTsReturn Function(
+  late final _userReceiptTs = _userReceiptTsPtr.asFunction<
+      _UserReceiptTsReturn Function(
     int,
   )>();
   late final _deviceChangedEventDeviceRecordsPtr = _lookup<
@@ -5648,6 +5705,21 @@ class Api {
   late final _conversationFilePathFuturePoll =
       _conversationFilePathFuturePollPtr.asFunction<
           _ConversationFilePathFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationUserReceiptsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationUserReceiptsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_user_receipts_future_poll");
+
+  late final _conversationUserReceiptsFuturePoll =
+      _conversationUserReceiptsFuturePollPtr.asFunction<
+          _ConversationUserReceiptsFuturePollReturn Function(
     int,
     int,
     int,
@@ -6705,55 +6777,6 @@ class Api {
 
   late final _ffiListNewsInsert =
       _ffiListNewsInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListReceiptRecord createFfiListReceiptRecord() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListReceiptRecordCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListReceiptRecord");
-    return FfiListReceiptRecord._(this, list_box);
-  }
-
-  late final _ffiListReceiptRecordCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListReceiptRecordCreate");
-
-  late final _ffiListReceiptRecordCreate =
-      _ffiListReceiptRecordCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListReceiptRecordLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListReceiptRecordLen");
-
-  late final _ffiListReceiptRecordLen =
-      _ffiListReceiptRecordLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListReceiptRecordElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListReceiptRecordElementAt");
-
-  late final _ffiListReceiptRecordElementAt =
-      _ffiListReceiptRecordElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListReceiptRecordRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListReceiptRecordRemove");
-
-  late final _ffiListReceiptRecordRemove =
-      _ffiListReceiptRecordRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListReceiptRecordAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListReceiptRecordAdd");
-
-  late final _ffiListReceiptRecordAdd =
-      _ffiListReceiptRecordAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListReceiptRecordInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListReceiptRecordInsert");
-
-  late final _ffiListReceiptRecordInsert =
-      _ffiListReceiptRecordInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListRoomMessage createFfiListRoomMessage() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListRoomMessageCreate());
@@ -6850,6 +6873,55 @@ class Api {
 
   late final _ffiListTagInsert =
       _ffiListTagInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListUserReceipt createFfiListUserReceipt() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListUserReceiptCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListUserReceipt");
+    return FfiListUserReceipt._(this, list_box);
+  }
+
+  late final _ffiListUserReceiptCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListUserReceiptCreate");
+
+  late final _ffiListUserReceiptCreate =
+      _ffiListUserReceiptCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListUserReceiptLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListUserReceiptLen");
+
+  late final _ffiListUserReceiptLen =
+      _ffiListUserReceiptLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListUserReceiptElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserReceiptElementAt");
+
+  late final _ffiListUserReceiptElementAt =
+      _ffiListUserReceiptElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserReceiptRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserReceiptRemove");
+
+  late final _ffiListUserReceiptRemove =
+      _ffiListUserReceiptRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserReceiptAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListUserReceiptAdd");
+
+  late final _ffiListUserReceiptAdd =
+      _ffiListUserReceiptAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListUserReceiptInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListUserReceiptInsert");
+
+  late final _ffiListUserReceiptInsert =
+      _ffiListUserReceiptInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListVerificationEmoji createFfiListVerificationEmoji() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListVerificationEmojiCreate());
@@ -8226,6 +8298,23 @@ class Conversation {
     return tmp6;
   }
 
+  /// get receipt status of room members
+  Future<FfiListUserReceipt> userReceipts() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationUserReceipts(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Conversation_user_receipts_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__conversationUserReceiptsFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -9366,17 +9455,17 @@ class ReceiptEvent {
   }
 
   /// Get records
-  FfiListReceiptRecord receiptRecords() {
+  FfiListUserReceipt userReceipts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptEventReceiptRecords(
+    final tmp1 = _api._receiptEventUserReceipts(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListReceiptRecord");
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserReceipt");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListReceiptRecord._(_api, tmp3_1);
+    final tmp4 = FfiListUserReceipt._(_api, tmp3_1);
     final tmp2 = tmp4;
     return tmp2;
   }
@@ -9388,17 +9477,17 @@ class ReceiptEvent {
 }
 
 /// Deliver receipt record from rust to flutter
-class ReceiptRecord {
+class UserReceipt {
   final Api _api;
   final _Box _box;
 
-  ReceiptRecord._(this._api, this._box);
+  UserReceipt._(this._api, this._box);
 
   /// Get id of event that this user read message from peer
   String eventId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordEventId(
+    final tmp1 = _api._userReceiptEventId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9418,7 +9507,7 @@ class ReceiptRecord {
   String userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordUserId(
+    final tmp1 = _api._userReceiptUserId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9438,7 +9527,7 @@ class ReceiptRecord {
   int? ts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordTs(
+    final tmp1 = _api._userReceiptTs(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -10220,7 +10309,7 @@ class _ReceiptEventRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordEventIdReturn extends ffi.Struct {
+class _UserReceiptEventIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10229,7 +10318,7 @@ class _ReceiptRecordEventIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordUserIdReturn extends ffi.Struct {
+class _UserReceiptUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10238,7 +10327,7 @@ class _ReceiptRecordUserIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordTsReturn extends ffi.Struct {
+class _UserReceiptTsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
@@ -10627,6 +10716,21 @@ class _ConversationFilePathFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
+}
+
+class _ConversationUserReceiptsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
 }
 
 class _GroupDisplayNameFuturePollReturn extends ffi.Struct {
@@ -11716,67 +11820,6 @@ class FfiListNews extends Iterable<News> implements CustomIterable<News> {
   }
 }
 
-class FfiListReceiptRecord extends Iterable<ReceiptRecord>
-    implements CustomIterable<ReceiptRecord> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListReceiptRecord._(this._api, this._box);
-
-  @override
-  Iterator<ReceiptRecord> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListReceiptRecordLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  ReceiptRecord elementAt(int index) {
-    final address = _api._ffiListReceiptRecordElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return ReceiptRecord._(_api, reference);
-  }
-
-  ReceiptRecord operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  ReceiptRecord remove(int index) {
-    final address = _api._ffiListReceiptRecordRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ReceiptRecord");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return ReceiptRecord._(_api, reference);
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(ReceiptRecord element) {
-    _api._ffiListReceiptRecordAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, ReceiptRecord element) {
-    _api._ffiListReceiptRecordInsert(
-        _box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
 class FfiListRoomMessage extends Iterable<RoomMessage>
     implements CustomIterable<RoomMessage> {
   final Api _api;
@@ -11888,6 +11931,66 @@ class FfiListTag extends Iterable<Tag> implements CustomIterable<Tag> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Tag element) {
     _api._ffiListTagInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListUserReceipt extends Iterable<UserReceipt>
+    implements CustomIterable<UserReceipt> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListUserReceipt._(this._api, this._box);
+
+  @override
+  Iterator<UserReceipt> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListUserReceiptLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  UserReceipt elementAt(int index) {
+    final address = _api._ffiListUserReceiptElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return UserReceipt._(_api, reference);
+  }
+
+  UserReceipt operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  UserReceipt remove(int index) {
+    final address = _api._ffiListUserReceiptRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_UserReceipt");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return UserReceipt._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(UserReceipt element) {
+    _api._ffiListUserReceiptAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, UserReceipt element) {
+    _api._ffiListUserReceiptInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

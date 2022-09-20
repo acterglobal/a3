@@ -198,6 +198,9 @@ object Conversation {
 
     /// get the path that file was saved
     fn file_path(event_id: string) -> Future<Result<string>>;
+
+    /// get receipt status of room members
+    fn user_receipts() -> Future<Result<Vec<UserReceipt>>>;
 }
 
 object Group {
@@ -395,11 +398,11 @@ object ReceiptEvent {
     fn room_id() -> string;
 
     /// Get records
-    fn receipt_records() -> Vec<ReceiptRecord>;
+    fn user_receipts() -> Vec<UserReceipt>;
 }
 
 /// Deliver receipt record from rust to flutter
-object ReceiptRecord {
+object UserReceipt {
     /// Get id of event that this user read message from peer
     fn event_id() -> string;
 
