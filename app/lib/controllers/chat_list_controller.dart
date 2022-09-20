@@ -1,6 +1,5 @@
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, RoomMessage;
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 //Helper class.
