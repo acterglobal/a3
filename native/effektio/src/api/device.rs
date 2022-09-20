@@ -40,7 +40,7 @@ impl DeviceChangedEvent {
                 let mut records: Vec<DeviceRecord> = vec![];
                 let response = c.devices().await?;
                 for device in c.encryption().get_user_devices(user_id).await?.devices() {
-                    if device.verified() == verified {
+                    if device.is_verified() == verified {
                         if let Some(dev) = response
                             .devices
                             .iter()
@@ -162,7 +162,7 @@ impl DeviceLeftEvent {
                 let mut records: Vec<DeviceRecord> = vec![];
                 let response = c.devices().await?;
                 for device in c.encryption().get_user_devices(user_id).await?.devices() {
-                    if device.deleted() == deleted {
+                    if device.is_deleted() == deleted {
                         if let Some(dev) = response
                             .devices
                             .iter()
@@ -205,11 +205,11 @@ impl DeviceRecord {
     }
 
     pub fn verified(&self) -> bool {
-        self.device.verified()
+        self.device.is_verified()
     }
 
     pub fn deleted(&self) -> bool {
-        self.device.deleted()
+        self.device.is_deleted()
     }
 
     pub fn user_id(&self) -> String {

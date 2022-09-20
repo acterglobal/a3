@@ -7,8 +7,10 @@ use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
     ruma::{
-        events::{receipt::ReceiptEventContent, SyncEphemeralRoomEvent},
-        receipt::ReceiptType,
+        events::{
+            receipt::{ReceiptEventContent, ReceiptType},
+            SyncEphemeralRoomEvent,
+        },
         MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedUserId,
     },
     Client as MatrixClient,
@@ -99,18 +101,16 @@ impl ReceiptController {
         }
     }
 
-    pub async fn setup(&self, client: &MatrixClient) {
+    pub fn setup(&self, client: &MatrixClient) {
         let me = self.clone();
-        client
-            .register_event_handler_context(me)
-            .register_event_handler(
-                |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
-                 room: MatrixRoom,
-                 Ctx(me): Ctx<ReceiptController>| async move {
-                    me.clone().process_ephemeral_event(ev, &room);
-                },
-            )
-            .await;
+        client.add_event_handler_context(me);
+        client.add_event_handler(
+            |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
+             room: MatrixRoom,
+             Ctx(me): Ctx<ReceiptController>| async move {
+                me.clone().process_ephemeral_event(ev, &room);
+            },
+        );
     }
 
     fn process_ephemeral_event(

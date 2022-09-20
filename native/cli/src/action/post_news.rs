@@ -6,7 +6,6 @@ use effektio_core::events;
 
 use log::info;
 use std::ffi::OsStr;
-use std::fs::File;
 use std::path::PathBuf;
 
 /// Posting a news item to a given room
@@ -57,9 +56,9 @@ impl PostNews {
                 Some(".png") => mime::IMAGE_PNG,
                 _ => mime::IMAGE_STAR,
             };
-            let mut image = File::open(p).context("Couldn't open file for reading")?;
+            let image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-            let res = client.upload(&mime, &mut image).await?;
+            let res = client.media().upload(&mime, &image).await?;
 
             contents.push(events::NewsContentType::Image(
                 events::ImageMessageEventContent::plain("".to_owned(), res.content_uri, None),

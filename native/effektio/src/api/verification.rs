@@ -16,7 +16,7 @@ use matrix_sdk::{
         events::{
             key::verification::{cancel::CancelCode, VerificationMethod},
             room::message::MessageType,
-            AnySyncMessageLikeEvent, AnySyncRoomEvent, AnyToDeviceEvent, SyncMessageLikeEvent,
+            AnySyncMessageLikeEvent, AnySyncTimelineEvent, AnyToDeviceEvent, SyncMessageLikeEvent,
         },
         OwnedDeviceId, OwnedUserId, UserId,
     },
@@ -519,7 +519,7 @@ impl VerificationController {
                 .iter()
                 .filter_map(|ev| ev.event.deserialize().ok())
             {
-                if let AnySyncRoomEvent::MessageLike(ref evt) = event {
+                if let AnySyncTimelineEvent::MessageLike(ref evt) = event {
                     self.handle_sync_messages(client, evt);
                 }
             }
