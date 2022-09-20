@@ -62,6 +62,7 @@ pub struct ClientState {
 #[derive(Clone)]
 pub struct Client {
     pub(crate) client: MatrixClient,
+    pub(crate) store: Store,
     pub(crate) executor: Executor,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) session_verification_controller:
@@ -172,10 +173,11 @@ impl SyncState {
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
         let store = Store::new(client.clone()).await?;
-        let executor = Executor::new(client.clone(), store).await?;
+        let executor = Executor::new(client.clone(), store.clone()).await?;
         let cl = Client {
             client,
             executor,
+            store,
             state: Arc::new(RwLock::new(state)),
             session_verification_controller: Arc::new(MatrixRwLock::new(None)),
             device_lists_controller: Arc::new(MatrixRwLock::new(None)),

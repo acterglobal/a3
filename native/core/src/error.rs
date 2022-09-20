@@ -16,6 +16,9 @@ pub enum Error {
 
     #[error("Reference Model not found.")]
     ModelNotFound,
+
+    #[error("Index not found.")]
+    IndexNotFound,
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

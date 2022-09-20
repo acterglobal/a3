@@ -5,6 +5,11 @@ pub static PURPOSE_FIELD: &str = "m.room.purpose";
 pub static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
 pub static PURPOSE_TEAM_VALUE: &str = "org.effektio.team";
 
+#[allow(non_snake_case)]
+pub mod KEYS {
+    pub static TASKS: &str = "tasks";
+}
+
 const HISTORY: &str = r#"{
   "type": "m.room.history_visibility",
   "state_key": "",

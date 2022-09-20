@@ -64,6 +64,9 @@ pub struct EffektioTuiConfig {
     #[clap(short, long, default_value = "warn")]
     pub log: String,
 
+    #[clap(short, long)]
+    pub fresh: bool,
+
     /// The action to perform
     #[clap(flatten)]
     pub login: LoginConfig,

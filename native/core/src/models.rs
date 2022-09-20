@@ -4,6 +4,7 @@ mod news;
 mod tag;
 mod tasks;
 
+use crate::statics::KEYS;
 pub use color::Color;
 pub use faq::Faq;
 pub use news::News;
@@ -21,7 +22,7 @@ pub enum AnyEffektioModel {
 impl AnyEffektioModel {
     pub fn indizes(&self) -> Vec<String> {
         match self {
-            AnyEffektioModel::TaskList(_) => vec!["tasks".to_owned()],
+            AnyEffektioModel::TaskList(_) => vec![KEYS::TASKS.to_owned()],
         }
     }
     pub fn key(&self) -> String {

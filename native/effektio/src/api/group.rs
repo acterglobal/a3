@@ -43,7 +43,7 @@ impl Group {
         let client = room.client.clone();
         room.sync_members().await?;
 
-        let custom_storage_key = format!("{:}:history", room.room_id());
+        let custom_storage_key = format!("{:}_:history", room.room_id());
 
         let mut from = if let Some(Ok(h)) = client
             .store()
@@ -67,6 +67,7 @@ impl Group {
             } = room.messages(msg_options).await?;
 
             for msg in chunk {
+                warn!("{:} handling {:?}", room.room_id(), msg);
                 // ...
                 self.executor.handle(msg).await;
             }

@@ -44,7 +44,7 @@ pub use session_verification::{
     SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
 };
 pub use stream::TimelineStream;
-pub use tasks::TaskListDraft;
+pub use tasks::{Task, TaskList, TaskListDraft};
 pub use typing_notification::{TypingNotificationController, TypingNotificationEvent};
 
 #[cfg(feature = "with-mocks")]

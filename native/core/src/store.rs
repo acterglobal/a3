@@ -59,6 +59,18 @@ impl Store {
         })
     }
 
+    pub fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
+        let listing = if let Some(r) = self.indizes.get(key) {
+            r.value().clone()
+        } else {
+            vec![]
+        };
+        let models = self.models.clone();
+        Ok(listing
+            .into_iter()
+            .filter_map(move |name| models.get(&name).map(|v| v.value().clone())))
+    }
+
     pub async fn get(&self, evt_id: &EventId) -> Result<AnyEffektioModel> {
         Ok(self
             .models

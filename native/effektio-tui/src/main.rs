@@ -10,6 +10,7 @@ use config::EffektioTuiConfig;
 use futures::future::Either;
 use futures::pin_mut;
 use futures::StreamExt;
+use log::warn;
 use std::sync::mpsc::channel;
 use tui_logger;
 use ui::AppUpdate;
@@ -32,6 +33,10 @@ async fn main() -> Result<()> {
     tui_logger::set_default_level(log::LevelFilter::Warn);
     let (sender, rx) = channel::<AppUpdate>();
     let app_dir = app_root(AppDataType::UserData, &APP_INFO)?;
+
+    if cli.fresh {
+        std::fs::remove_dir_all(app_dir.clone())?;
+    }
 
     let client = cli.login.client(app_dir).await?;
     let sync_state = client.start_sync();
@@ -78,6 +83,19 @@ async fn main() -> Result<()> {
                     }
                 }
                 Some(Either::Right(history)) => {
+                    if history.is_done_loading() {
+                        match client.task_lists().await {
+                            Ok(task_lists) => {
+                                if task_lists.is_empty() {
+                                    warn!("No task lists found");
+                                }
+                                sender.send(AppUpdate::SetTasksList(task_lists)).unwrap();
+                            }
+                            Err(e) => {
+                                warn!("TaskList couldn't be read: {:?}", e);
+                            }
+                        }
+                    }
                     sender
                         .send(AppUpdate::SetHistoryLoadState(history))
                         .unwrap();

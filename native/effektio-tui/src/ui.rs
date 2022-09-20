@@ -7,8 +7,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use dialoguer::{Input, Select};
-use effektio::{Conversation, Group, HistoryLoadState};
-use effektio_core::models::TaskList;
+use effektio::{Conversation, Group, HistoryLoadState, TaskList};
 use futures::future::join_all;
 use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
@@ -35,6 +34,7 @@ pub enum AppUpdate {
     UpdateConversations(Vec<Conversation>),
     UpdateGroups(Vec<Group>),
     SetHistoryLoadState(HistoryLoadState),
+    SetTasksList(Vec<TaskList>),
 }
 
 #[derive(PartialEq, Eq)]
@@ -62,7 +62,13 @@ impl Tool {
     fn name(&self) -> String {
         match self {
             Tool::News => "News".to_owned(),
-            Tool::Tasks(_) => "Tasks".to_owned(),
+            Tool::Tasks(t) => {
+                if t.is_empty() {
+                    "Tasks".to_owned()
+                } else {
+                    format!("Tasks ({:})", t.len())
+                }
+            }
             Tool::Chat(stats) => match stats {
                 Some(s) => {
                     format!("Chat ({}/{})", s.unread, s.total)
@@ -86,6 +92,13 @@ impl Tool {
         }
 
         *self = Tool::Chat(Some(new_stats))
+    }
+
+    fn set_tasks(&mut self, t: Vec<TaskList>) {
+        if !self.is_tasks() {
+            unimplemented!("What are you doing here?")
+        }
+        *self = Tool::Tasks(t)
     }
 
     fn all() -> [Self; 3] {
@@ -144,6 +157,14 @@ impl App {
             AppUpdate::SetSynced(synced) => self.synced = synced,
             AppUpdate::UpdateGroups(groups) => {
                 self.groups = groups;
+            }
+            AppUpdate::SetTasksList(t) => {
+                for m in self.tools.iter_mut() {
+                    if m.is_tasks() {
+                        m.set_tasks(t);
+                        break;
+                    }
+                }
             }
             AppUpdate::SetHistoryLoadState(state) => {
                 self.history_load_state = state;

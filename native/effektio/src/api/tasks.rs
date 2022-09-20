@@ -1,11 +1,16 @@
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    convert::{TryFrom, TryInto},
+};
+
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use effektio_core::{
     events::{
         self,
-        tasks::{SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
+        tasks::{self, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
     },
-    models,
+    models::{self, AnyEffektioModel},
     // models::,
     ruma::{
         events::{
@@ -14,6 +19,7 @@ use effektio_core::{
         },
         OwnedEventId, OwnedRoomId,
     },
+    statics::KEYS,
 };
 use futures_signals::signal::Mutable;
 use matrix_sdk::{room::Joined, room::Room, Client as MatrixClient};
@@ -31,8 +37,35 @@ impl Client {
             .await;
     }
 
-    pub async fn task_lists(&self) -> Vec<TaskList> {
-        Default::default()
+    pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
+        let mut task_lists = Vec::new();
+        let mut rooms_map: HashMap<OwnedRoomId, Joined> = HashMap::new();
+        let client = self.client.clone();
+        for mdl in self.store.get_list(KEYS::TASKS)? {
+            if let AnyEffektioModel::TaskList(t) = mdl {
+                let room_id = t.room_id();
+                let room = match rooms_map.entry(room_id) {
+                    Entry::Occupied(t) => t.get().clone(),
+                    Entry::Vacant(e) => {
+                        if let Some(joined) = client.get_joined_room(e.key()) {
+                            e.insert(joined.clone());
+                            joined
+                        } else {
+                            /// User not part of the room anymore, ignore
+                            continue;
+                        }
+                    }
+                };
+                task_lists.push(TaskList {
+                    client: client.clone(),
+                    room,
+                    content: t,
+                })
+            } else {
+                tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+            }
+        }
+        Ok(task_lists)
     }
 }
 
@@ -69,6 +102,7 @@ impl TaskListDraft {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct TaskList {
     client: MatrixClient,
     room: Joined,
