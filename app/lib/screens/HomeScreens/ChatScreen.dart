@@ -126,24 +126,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatarBuilder(String userId) {
-    return GetBuilder<ChatController>(
-      id: 'Avatar',
-      builder: (ChatController controller) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: SizedBox(
-            height: 28,
-            width: 28,
-            child: CustomAvatar(
-              avatar: _userAvatar(userId),
-              displayName: null,
-              radius: 15,
-              isGroup: false,
-              stringName: getNameFromId(userId) ?? '',
-            ),
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: SizedBox(
+        height: 28,
+        width: 28,
+        child: CustomAvatar(
+          avatar: _userAvatar(userId),
+          displayName: null,
+          radius: 15,
+          isGroup: false,
+          stringName: getNameFromId(userId) ?? '',
+        ),
+      ),
     );
   }
 

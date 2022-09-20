@@ -35,7 +35,9 @@ class _ChatListState extends State<ChatList>
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     super.initState();
-    _chatListController.init(widget.client);
+    if (!widget.client.isGuest()) {
+      _chatListController.init(widget.client);
+    }
   }
 
   @override
@@ -103,12 +105,14 @@ class _ChatListState extends State<ChatList>
                         ),
                       ),
                       SizedBox(height: 10),
-                      GetBuilder<ChatListController>(
-                        id: 'chatlist',
-                        builder: (ChatListController controller) {
-                          return buildJoinedList(context, controller);
-                        },
-                      ),
+                      widget.client.isGuest()
+                          ? const SizedBox()
+                          : GetBuilder<ChatListController>(
+                              id: 'chatlist',
+                              builder: (ChatListController controller) {
+                                return buildJoinedList(context, controller);
+                              },
+                            ),
                     ],
                   ),
                 ],
