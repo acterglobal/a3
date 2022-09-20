@@ -25,9 +25,11 @@ class _SideDrawerState extends State<SideDrawer> {
   @override
   void initState() {
     super.initState();
-    displayName = getDisplayName();
-    avatar = getAvatar();
-    userId = getUserId();
+    if (!widget.client.isGuest()) {
+      displayName = getDisplayName();
+      avatar = getAvatar();
+      userId = getUserId();
+    }
   }
 
   Future<String> getDisplayName() async => await widget.client.displayName();
