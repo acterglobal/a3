@@ -24,31 +24,57 @@ class ChatList extends StatefulWidget {
   State<ChatList> createState() => _ChatListState();
 }
 
-class _ChatListState extends State<ChatList>
-    with AutomaticKeepAliveClientMixin {
+class _ChatListState extends State<ChatList> {
   late final countInvites;
+  String userId = '';
   Random random = Random();
-  ChatListController _chatListController = ChatListController.instance;
+  ChatListController _chatListController = Get.put(ChatListController());
 
   @override
   void initState() {
+    super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    super.initState();
+    getUserId();
     if (!widget.client.isGuest()) {
-      _chatListController.init(widget.client);
+      widget.client.conversationsRx().listen((event) async {
+        _chatListController.updateList(event, userId);
+      });
+      widget.client.typingEventRx()?.listen((event) {
+        String roomId = event.roomId();
+        List<String> userIds = [];
+        for (final userId in event.userIds()) {
+          userIds.add(userId.toDartString());
+        }
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      });
+      widget.client.receiptEventRx()?.listen((event) {
+        for (var record in event.receiptRecords()) {
+          String recordUserId = record.userId();
+          if (recordUserId != userId.toString()) {
+            debugPrint('receipt event for ' + event.roomId());
+            debugPrint('event id: ' + record.eventId());
+            debugPrint('user id: ' + recordUserId);
+            int? ts = record.ts();
+            if (ts != null) {
+              debugPrint('timestamp: ' + ts.toString());
+            }
+          }
+        }
+      });
     }
   }
 
-  @override
-  void dispose() {
-    Get.delete<ChatListController>();
-    super.dispose();
+  Future<void> getUserId() async {
+    await widget.client.userId().then((id) {
+      setState(() {
+        userId = id.toString();
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       body: CustomScrollView(
         physics: BouncingScrollPhysics(),
@@ -147,7 +173,7 @@ class _ChatListState extends State<ChatList>
         areItemsTheSame: (a, b) => a.roomId == b.roomId,
         // Remember to update the underlying data when the list has been reordered.
         onReorderFinished: (item, from, to, newItems) =>
-            controller.updateList(from, to, item),
+            controller.sortList(from, to, item),
         itemBuilder: (context, itemAnimation, item, index) => Reorderable(
           key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
@@ -165,7 +191,7 @@ class _ChatListState extends State<ChatList>
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: controller.user,
+                  user: userId,
                   recentMessage: item.recentMessage,
                 ),
               ),
@@ -179,7 +205,7 @@ class _ChatListState extends State<ChatList>
               opacity: animation,
               child: ChatListItem(
                 room: item.conversation,
-                user: controller.user,
+                user: userId,
                 recentMessage: item.recentMessage,
               ),
             );
@@ -202,7 +228,7 @@ class _ChatListState extends State<ChatList>
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: controller.user,
+                  user: userId,
                   recentMessage: item.recentMessage,
                 ),
               ),
@@ -226,7 +252,4 @@ class _ChatListState extends State<ChatList>
       );
     }
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }

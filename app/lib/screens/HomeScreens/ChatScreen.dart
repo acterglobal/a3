@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatController chatController = ChatController.instance;
+  ChatController chatController = Get.put(ChatController());
 
   @override
   void initState() {
@@ -47,7 +47,6 @@ class _ChatScreenState extends State<ChatScreen> {
     _user = types.User(
       id: widget.user!,
     );
-
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
@@ -341,7 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
               imageMessageBuilder: _imageMessageBuilder,
               //Whenever users starts typing on keyboard, this will trigger the function
               onTextChanged: (text) async {
-                await controller.room.typingNotice(true);
+                // await controller.room.typingNotice(true);
               },
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),

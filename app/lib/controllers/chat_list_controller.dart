@@ -1,5 +1,5 @@
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, RoomMessage;
+    show Conversation, FfiListConversation, RoomMessage;
 import 'package:get/get.dart';
 
 //Helper class.
@@ -29,53 +29,47 @@ class RecentMessage {
 }
 
 class ChatListController extends GetxController {
-  static ChatListController get instance =>
-      Get.put<ChatListController>(ChatListController());
-  late final String user;
   List<RoomData> roomDatas = [];
+
   bool initialLoaded = false;
   // ignore: always_declare_return_types
-  init(Client client) async {
-    var userId = await client.userId();
-    user = userId.toString();
-    client.conversationsRx().listen((event) {
-      if (!initialLoaded) {
-        initialLoaded = true;
-      }
-      update(['chatlist']);
-      List<RoomData> newRoomDatas = [];
-      for (Conversation convo in event.toList()) {
-        String roomId = convo.getRoomId();
-        int oldIndex = roomDatas.indexWhere((x) => x.roomId == roomId);
-        RoomMessage? msg = convo.latestMessage();
-        if (msg == null) {
-          // prevent latest message from deleting
-          RoomData newRoomData = RoomData(
-            roomId: roomId,
-            conversation: convo,
-            recentMessage:
-                oldIndex == -1 ? null : roomDatas[oldIndex].recentMessage,
-          );
-          newRoomDatas.add(newRoomData);
-          continue;
-        }
+  void updateList(FfiListConversation conversation, String userId) {
+    if (!initialLoaded) {
+      initialLoaded = true;
+    }
+    update(['chatlist']);
+    List<RoomData> newRoomDatas = [];
+    for (Conversation convo in conversation.toList()) {
+      String roomId = convo.getRoomId();
+      int oldIndex = roomDatas.indexWhere((x) => x.roomId == roomId);
+      RoomMessage? msg = convo.latestMessage();
+      if (msg == null) {
+        // prevent latest message from deleting
         RoomData newRoomData = RoomData(
           roomId: roomId,
           conversation: convo,
-          recentMessage: RecentMessage(
-            sender: msg.sender(),
-            body: msg.body(),
-            originServerTs: msg.originServerTs(),
-          ),
+          recentMessage:
+              oldIndex == -1 ? null : roomDatas[oldIndex].recentMessage,
         );
         newRoomDatas.add(newRoomData);
+        continue;
       }
-      roomDatas = newRoomDatas;
-      update(['chatlist']);
-    });
+      RoomData newRoomData = RoomData(
+        roomId: roomId,
+        conversation: convo,
+        recentMessage: RecentMessage(
+          sender: msg.sender(),
+          body: msg.body(),
+          originServerTs: msg.originServerTs(),
+        ),
+      );
+      newRoomDatas.add(newRoomData);
+    }
+    roomDatas = newRoomDatas;
+    update(['chatlist']);
   }
 
-  void updateList(int from, int to, RoomData item) {
+  void sortList(int from, int to, RoomData item) {
     roomDatas
       ..removeAt(from)
       ..insert(to, item);

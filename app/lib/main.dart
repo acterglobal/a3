@@ -6,6 +6,7 @@ import 'package:effektio/common/store/themes/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
@@ -104,6 +105,7 @@ class _EffektioHomeState extends State<EffektioHome>
         tabIndex = _tabController.index;
       });
     });
+
     super.initState();
   }
 
@@ -120,29 +122,6 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);
     crossSigning.installVerificationEvent(client.verificationEventRx()!);
-    client.typingEventRx()!.listen((event) {
-      String roomId = event.roomId();
-      List<String> userIds = [];
-      for (final userId in event.userIds()) {
-        userIds.add(userId.toDartString());
-      }
-      debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-    });
-    UserId myId = await client.userId();
-    client.receiptEventRx()!.listen((event) {
-      for (var record in event.receiptRecords()) {
-        String userId = record.userId();
-        if (userId != myId.toString()) {
-          debugPrint('receipt event for ' + event.roomId());
-          debugPrint('event id: ' + record.eventId());
-          debugPrint('user id: ' + userId);
-          int? ts = record.ts();
-          if (ts != null) {
-            debugPrint('timestamp: ' + ts.toString());
-          }
-        }
-      }
-    });
     return client;
   }
 
