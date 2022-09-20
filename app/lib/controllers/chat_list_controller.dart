@@ -73,8 +73,6 @@ class ChatListController extends GetxController {
       }
       roomDatas = newRoomDatas;
       update(['chatlist']);
-    }).onError((error) {
-      debugPrint('$error');
     });
   }
 
