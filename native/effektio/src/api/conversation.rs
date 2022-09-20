@@ -152,7 +152,7 @@ impl ConversationController {
             },
         );
         client.add_event_handler_context(client.clone());
-        client.add_event_handler_context(me.clone());
+        client.add_event_handler_context(me);
         client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
              room: MatrixRoom,
