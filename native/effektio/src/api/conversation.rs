@@ -121,12 +121,9 @@ impl Conversation {
                 let mut records: Vec<UserReceipt> = vec![];
                 for member in room.active_members().await? {
                     let user_id = member.user_id();
-                    match room.user_read_receipt(user_id).await? {
-                        Some((event_id, receipt)) => {
-                            let record = UserReceipt::new(event_id, user_id.to_owned(), receipt.ts);
-                            records.push(record);
-                        }
-                        None => {}
+                    if let Some((event_id, receipt)) = room.user_read_receipt(user_id).await? {
+                        let record = UserReceipt::new(event_id, user_id.to_owned(), receipt.ts);
+                        records.push(record);
                     }
                 }
                 Ok(records)
