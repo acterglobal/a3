@@ -56,7 +56,7 @@ async fn main() -> Result<()> {
             )))
             .unwrap();
 
-        let sync_stream = sync_state.get_first_synced_rx().unwrap();
+        let sync_stream = sync_state.first_synced_rx().unwrap();
         let history_loaded = sync_state.get_history_loading_rx();
 
         let main_stream = futures::stream::select(

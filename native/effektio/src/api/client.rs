@@ -10,14 +10,9 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
-use futures::{
-    channel::mpsc::{channel, Receiver},
-    future::try_join_all,
-    stream, StreamExt,
-};
+use futures::{future::try_join_all, stream, StreamExt};
 use futures_signals::signal::{
-    channel as signal_channel, MutableSignalCloned, Receiver as SignalReceiver, SignalExt,
-    SignalStream,
+    channel, MutableSignalCloned, Receiver as SignalReceiver, SignalExt, SignalStream,
 };
 use log::info;
 use matrix_sdk::{
@@ -91,20 +86,20 @@ pub(crate) async fn devide_groups_from_common(
 ) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
-            (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut conversations, client), room| {
-                let r = Room {
+            (Vec::new(), Vec::new(), (client, executor)),
+            async move |(mut groups, mut conversations, (client, executor)), room| {
+                let inner = Room {
                     room: room.clone(),
                     client: client.clone(),
                 };
 
-                if is_effektio_group {
+                if inner.is_effektio_group().await {
                     groups.push(Group {
                         executor: executor.clone(),
-                        inner: r,
+                        inner,
                     });
                 } else {
-                    conversations.push(Conversation::new(r));
+                    conversations.push(Conversation::new(inner));
                 }
 
                 (groups, conversations, (client, executor))
@@ -132,12 +127,12 @@ impl HistoryLoadState {
 
 #[derive(Clone)]
 pub struct SyncState {
-    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
     history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
+    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
         Self {
             first_synced_rx,
@@ -145,7 +140,7 @@ impl SyncState {
         }
     }
 
-    pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
+    pub fn first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 
@@ -206,6 +201,7 @@ impl Client {
 
     pub fn start_sync(&self) -> SyncState {
         let me = self.clone();
+        let executor = self.executor.clone();
         let client = self.client.clone();
         let state = self.state.clone();
         let verification_controller = self.verification_controller.clone();
@@ -228,7 +224,9 @@ impl Client {
             let verification_controller = verification_controller.clone();
             let device_controller = device_controller.clone();
             let sync_state_history = sync_state_history.clone();
-            conversation_controller.setup(&client).await;
+            conversation_controller
+                .setup(&client, executor.clone())
+                .await;
 
             client
                 .clone()

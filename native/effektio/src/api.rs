@@ -32,9 +32,7 @@ pub use auth::{
 };
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
-pub use device::{
-    Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController, DeviceRecord,
-};
+pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use message::{FileDescription, ImageDescription, RoomMessage};

@@ -1,6 +1,6 @@
 use crate::{events::AnyEffektioEvent, store::Store};
 use crate::{Error, Result};
-use matrix_sdk::{deserialized_responses::RoomEvent, Client as MatrixClient};
+use matrix_sdk::{deserialized_responses::TimelineEvent, Client as MatrixClient};
 
 #[derive(Clone, Debug)]
 pub struct Executor {
@@ -12,7 +12,7 @@ impl Executor {
     pub async fn new(client: MatrixClient, store: Store) -> Result<Self> {
         Ok(Executor { client, store })
     }
-    pub async fn handle(&self, msg: RoomEvent) -> Result<()> {
+    pub async fn handle(&self, msg: TimelineEvent) -> Result<()> {
         let event: AnyEffektioEvent = msg
             .event
             .deserialize_as()

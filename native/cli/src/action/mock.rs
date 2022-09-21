@@ -49,7 +49,7 @@ async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result
         }
     };
     cl.login_username(username, password).send().await?;
-    Ok(EfkClient::new(cl, Default::default()))
+    EfkClient::new(cl, Default::default()).await
 }
 
 /// Posting a news item to a given room

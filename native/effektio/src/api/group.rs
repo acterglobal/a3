@@ -51,12 +51,12 @@ impl Group {
             .await?
             .map(|v| serde_json::from_slice::<HistoryState>(&v))
         {
-            h.seen
+            Some(h.seen.clone())
         } else {
-            "".to_owned()
+            None
         };
 
-        let mut msg_options = MessagesOptions::forward(&from);
+        let mut msg_options = MessagesOptions::forward().from(from.as_deref());
 
         loop {
             let Messages {
@@ -75,8 +75,8 @@ impl Group {
             // Todo: Do we want to do something with the states, too?
 
             if let Some(seen) = end {
-                from = seen.clone();
-                msg_options = MessagesOptions::forward(&from);
+                from = Some(seen.clone());
+                msg_options = MessagesOptions::forward().from(from.as_deref());
                 client
                     .store()
                     .set_custom_value(

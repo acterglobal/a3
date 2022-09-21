@@ -1,6 +1,6 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
-use effektio_core::statics::default_effektio_conversation_states;
+use effektio_core::{executor::Executor, statics::default_effektio_conversation_states};
 use futures::{pin_mut, StreamExt};
 use futures_signals::{
     signal::{Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream},
@@ -133,8 +133,8 @@ impl ConversationController {
         }
     }
 
-    pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = devide_groups_from_common(client.clone()).await;
+    pub async fn setup(&self, client: &MatrixClient, executor: Executor) {
+        let (_, convos) = devide_groups_from_common(client.clone(), executor).await;
         for convo in convos.iter() {
             convo.load_latest_message();
         }
