@@ -268,7 +268,7 @@ impl Room {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't read message from a room we are not in")
         };
         let client = self.client.clone();
         // any variable in self can't be called directly in spawn
@@ -335,7 +335,7 @@ impl Room {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't read message from a room we are not in")
         };
         let client = self.client.clone();
         // any variable in self can't be called directly in spawn
@@ -388,7 +388,7 @@ impl Room {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't read message from a room we are not in")
         };
         let client = self.client.clone();
         RUNTIME
