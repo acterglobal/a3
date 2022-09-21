@@ -63,10 +63,9 @@ impl Account {
 
     pub async fn set_avatar(&self, c_type: String, data: Vec<u8>) -> Result<bool> {
         let l = self.account.clone();
-        let mut c = Cursor::new(data);
         RUNTIME
             .spawn(async move {
-                let new_url = l.upload_avatar(&c_type.parse()?, &mut c).await?;
+                let new_url = l.upload_avatar(&c_type.parse()?, &data).await?;
                 Ok(true)
             })
             .await?

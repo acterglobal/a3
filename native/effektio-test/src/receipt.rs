@@ -15,7 +15,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.get_first_synced_rx().expect("note yet read");
+    let mut sisko_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
     let sisko_group = sisko
         .get_group("#ops:ds9.effektio.org".to_owned())
@@ -33,22 +33,21 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut kyra_synced = kyra_syncer.get_first_synced_rx().expect("note yet read");
-    while kyra_synced.next().await != Some(true) {} // let's wait for it to have synced
+    let mut first_synced = kyra_syncer.first_synced_rx().expect("note yet read");
+    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let kyra_group = kyra
         .get_group("#ops:ds9.effektio.org".to_owned())
         .await
         .expect("kyra should belong to ops");
     kyra_group.read_receipt(event_id).await?;
 
-    let kyra_rnc = kyra.get_receipt_notification_controller().await?;
-    let mut event_rx = kyra_rnc.get_event_rx().unwrap();
+    let mut event_rx = kyra.receipt_event_rx().unwrap();
     loop {
         match event_rx.try_next() {
             Ok(Some(event)) => {
                 let mut found = false;
-                for record in event.get_receipt_records() {
-                    if record.get_user_id().as_str() == "@kyra:ds9.effektio.org" {
+                for record in event.receipt_records() {
+                    if record.user_id().as_str() == "@kyra:ds9.effektio.org" {
                         found = true;
                         break;
                     }

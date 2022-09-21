@@ -15,7 +15,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut first_synced = sisko_syncer.get_first_synced_rx().expect("note yet read");
+    let mut first_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let group = sisko
         .get_group("#ops:ds9.effektio.org".to_owned())
@@ -32,8 +32,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let kyra_tnc = kyra.get_typing_notification_controller().await?;
-    let mut event_rx = kyra_tnc.get_event_rx().unwrap();
+    let mut event_rx = kyra.typing_event_rx().unwrap();
 
     loop {
         match event_rx.try_next() {

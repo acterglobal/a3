@@ -15,37 +15,35 @@ mod account;
 mod auth;
 mod client;
 mod conversation;
-mod device_lists;
+mod device;
 mod group;
-mod messages;
+mod message;
 mod news;
-mod receipt_notification;
+mod receipt;
 mod room;
-mod session_verification;
 mod stream;
 mod tasks;
-mod typing_notification;
+mod typing;
+mod verification;
 
 pub use account::Account;
 pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
-pub use conversation::Conversation;
-pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
+pub use conversation::{Conversation, CreateConversationSettingsBuilder};
+pub use device::{
+    Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController, DeviceRecord,
+};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
-pub use messages::{FileDescription, ImageDescription, RoomMessage};
-pub use receipt_notification::{
-    ReceiptNotificationController, ReceiptNotificationEvent, ReceiptRecord,
-};
+pub use message::{FileDescription, ImageDescription, RoomMessage};
+pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
-pub use session_verification::{
-    SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
-};
 pub use stream::TimelineStream;
 pub use tasks::{Task, TaskList, TaskListDraft};
-pub use typing_notification::{TypingNotificationController, TypingNotificationEvent};
+pub use typing::TypingEvent;
+pub use verification::{VerificationEmoji, VerificationEvent};
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;

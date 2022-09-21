@@ -22,6 +22,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.0"
+  avatar_stack:
+    dependency: "direct main"
+    description:
+      name: avatar_stack
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -303,6 +310,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_lorem:
+    dependency: "direct main"
+    description:
+      name: flutter_lorem
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   flutter_parsed_text:
     dependency: "direct main"
     description:
@@ -367,6 +381,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.6.5"
+  get_time_ago:
+    dependency: "direct main"
+    description:
+      name: get_time_ago
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.5"
   google_fonts:
     dependency: "direct main"
     description:
@@ -444,6 +465,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.4"
+  implicitly_animated_reorderable_list:
+    dependency: "direct main"
+    description:
+      name: implicitly_animated_reorderable_list
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.2"
   infinite_listview:
     dependency: transitive
     description:

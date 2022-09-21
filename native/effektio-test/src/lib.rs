@@ -3,6 +3,14 @@ mod receipt_notification;
 #[cfg(test)]
 mod tests;
 // #[cfg(test)]
-// mod session_verification;
+// mod auth;
+#[cfg(test)]
+mod formatted_body;
 // #[cfg(test)]
-// mod typing_notification;
+// mod news;
+// #[cfg(test)]
+// mod receipt;
+// #[cfg(test)]
+// mod typing;
+// #[cfg(test)]
+// mod verification;

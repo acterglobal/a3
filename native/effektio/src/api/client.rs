@@ -24,7 +24,6 @@ use matrix_sdk::{
     config::SyncSettings,
     event_handler::Ctx,
     locks::RwLock as MatrixRwLock,
-    media::{MediaFormat, MediaRequest},
     room::Room as MatrixRoom,
     ruma::{
         device_id,
@@ -42,9 +41,16 @@ use std::sync::{
 };
 
 use super::{
-    api::FfiBuffer, Account, Conversation, DeviceListsController, Group,
-    ReceiptNotificationController, Room, SessionVerificationController,
-    TypingNotificationController, RUNTIME,
+    account::Account,
+    api::FfiBuffer,
+    conversation::{Conversation, ConversationController},
+    device::DeviceController,
+    group::Group,
+    receipt::ReceiptController,
+    room::Room,
+    typing::TypingController,
+    verification::VerificationController,
+    RUNTIME,
 };
 
 #[derive(Default, Builder, Debug)]
@@ -65,13 +71,11 @@ pub struct Client {
     pub(crate) store: Store,
     pub(crate) executor: Executor,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) session_verification_controller:
-        Arc<MatrixRwLock<Option<SessionVerificationController>>>,
-    pub(crate) device_lists_controller: Arc<MatrixRwLock<Option<DeviceListsController>>>,
-    pub(crate) typing_notification_controller:
-        Arc<MatrixRwLock<Option<TypingNotificationController>>>,
-    pub(crate) receipt_notification_controller:
-        Arc<MatrixRwLock<Option<ReceiptNotificationController>>>,
+    pub(crate) verification_controller: VerificationController,
+    pub(crate) device_controller: DeviceController,
+    pub(crate) typing_controller: TypingController,
+    pub(crate) receipt_controller: ReceiptController,
+    pub(crate) conversation_controller: ConversationController,
 }
 
 impl std::ops::Deref for Client {
@@ -87,40 +91,20 @@ pub(crate) async fn devide_groups_from_common(
 ) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
-            (Vec::new(), Vec::new(), (client, executor)),
-            async move |(mut groups, mut conversations, (client, executor)), room| {
-                let is_effektio_group = {
-                    #[allow(clippy::match_like_matches_macro)]
-                    if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else if let Ok(Some(_)) = room
-                        .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                        .await
-                    {
-                        true
-                    } else {
-                        false
-                    }
+            (Vec::new(), Vec::new(), client),
+            async move |(mut groups, mut conversations, client), room| {
+                let r = Room {
+                    room: room.clone(),
+                    client: client.clone(),
                 };
 
                 if is_effektio_group {
                     groups.push(Group {
                         executor: executor.clone(),
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
+                        inner: r,
                     });
                 } else {
-                    conversations.push(Conversation {
-                        inner: Room {
-                            room,
-                            client: client.clone(),
-                        },
-                    });
+                    conversations.push(Conversation::new(r));
                 }
 
                 (groups, conversations, (client, executor))
@@ -148,12 +132,12 @@ impl HistoryLoadState {
 
 #[derive(Clone)]
 pub struct SyncState {
-    first_synced_rx: Arc<Mutex<Option<SignalReceiver<bool>>>>,
+    first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
     history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
 }
 
 impl SyncState {
-    pub fn new(first_synced_rx: SignalReceiver<bool>) -> Self {
+    pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
         Self {
             first_synced_rx,
@@ -161,7 +145,7 @@ impl SyncState {
         }
     }
 
-    pub fn get_first_synced_rx(&self) -> Option<SignalStream<SignalReceiver<bool>>> {
+    pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
 
@@ -179,10 +163,11 @@ impl Client {
             executor,
             store,
             state: Arc::new(RwLock::new(state)),
-            session_verification_controller: Arc::new(MatrixRwLock::new(None)),
-            device_lists_controller: Arc::new(MatrixRwLock::new(None)),
-            typing_notification_controller: Arc::new(MatrixRwLock::new(None)),
-            receipt_notification_controller: Arc::new(MatrixRwLock::new(None)),
+            verification_controller: VerificationController::new(),
+            device_controller: DeviceController::new(),
+            typing_controller: TypingController::new(),
+            receipt_controller: ReceiptController::new(),
+            conversation_controller: ConversationController::new(),
         };
 
         cl.init_tasks().await;
@@ -223,10 +208,13 @@ impl Client {
         let me = self.clone();
         let client = self.client.clone();
         let state = self.state.clone();
-        let session_verification_controller = self.session_verification_controller.clone();
-        let device_lists_controller = self.device_lists_controller.clone();
+        let verification_controller = self.verification_controller.clone();
+        let device_controller = self.device_controller.clone();
+        self.typing_controller.setup(&client);
+        self.receipt_controller.setup(&client);
+        let conversation_controller = self.conversation_controller.clone();
 
-        let (first_synced_tx, first_synced_rx) = signal_channel(false);
+        let (first_synced_tx, first_synced_rx) = channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);
 
         let initial_arc = Arc::new(AtomicBool::from(true));
@@ -237,9 +225,10 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
-            let session_verification_controller = session_verification_controller.clone();
-            let device_lists_controller = device_lists_controller.clone();
+            let verification_controller = verification_controller.clone();
+            let device_controller = device_controller.clone();
             let sync_state_history = sync_state_history.clone();
+            conversation_controller.setup(&client).await;
 
             client
                 .clone()
@@ -247,8 +236,8 @@ impl Client {
                     let client = client.clone();
                     let me = me.clone();
                     let state = state.clone();
-                    let session_verification_controller = session_verification_controller.clone();
-                    let device_lists_controller = device_lists_controller.clone();
+                    let verification_controller = verification_controller.clone();
+                    let device_controller = device_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let sync_state_history = sync_state_history.clone();
                     let initial_arc = initial_arc.clone();
@@ -257,15 +246,10 @@ impl Client {
                         let state = state.clone();
                         let initial = initial_arc.clone();
 
-                        if let Some(dlc) = &*device_lists_controller.read().await {
-                            dlc.process_events(&client, response.device_lists);
-                        }
+                        device_controller.process_events(&client, response.device_lists);
 
                         if !initial.load(Ordering::SeqCst) {
-                            if let Some(svc) = &*session_verification_controller.read().await {
-                                svc.process_sync_messages(&client, &response.rooms);
-                            }
-
+                            verification_controller.process_sync_messages(&client, &response.rooms);
                             me.refresh_history_on_start(sync_state_history.clone());
                         }
 
@@ -283,10 +267,8 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        if let Some(svc) = &*session_verification_controller.read().await {
-                            svc.process_to_device_messages(&client, response.to_device);
-                        }
-                        // the lock is unlocked here when `s` goes out of scope.
+                        verification_controller
+                            .process_to_device_messages(&client, response.to_device);
                         LoopCtrl::Continue
                     }
                 })
@@ -414,99 +396,7 @@ impl Client {
                     .await
                     .expect("client should get device")
                     .unwrap();
-                Ok(dev.verified())
-            })
-            .await?
-    }
-
-    pub async fn get_session_verification_controller(
-        &self,
-    ) -> Result<SessionVerificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let c = self.client.clone();
-        let session_verification_controller = self.session_verification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(svc) = &*session_verification_controller.read().await {
-                    return Ok(svc.clone());
-                }
-                let svc = SessionVerificationController::new();
-                *session_verification_controller.write().await = Some(svc.clone());
-                Ok(svc)
-            })
-            .await?
-    }
-
-    pub async fn get_device_lists_controller(&self) -> Result<DeviceListsController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let c = self.client.clone();
-        let device_lists_controller = self.device_lists_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(dlc) = &*device_lists_controller.read().await {
-                    return Ok(dlc.clone());
-                }
-                let dlc = DeviceListsController::new();
-                *device_lists_controller.write().await = Some(dlc.clone());
-                Ok(dlc)
-            })
-            .await?
-    }
-
-    pub async fn get_typing_notification_controller(&self) -> Result<TypingNotificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let client = self.client.clone();
-        let typing_notification_controller = self.typing_notification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(tnc) = &*typing_notification_controller.read().await {
-                    return Ok(tnc.clone());
-                }
-                let tnc = TypingNotificationController::new();
-                client
-                    .register_event_handler_context(tnc.clone())
-                    .register_event_handler(
-                        |ev: SyncEphemeralRoomEvent<TypingEventContent>,
-                         room: MatrixRoom,
-                         Ctx(tnc): Ctx<TypingNotificationController>| async move {
-                            tnc.process_ephemeral_event(ev, &room);
-                        },
-                    )
-                    .await;
-                *typing_notification_controller.write().await = Some(tnc.clone());
-                Ok(tnc)
-            })
-            .await?
-    }
-
-    pub async fn get_receipt_notification_controller(
-        &self,
-    ) -> Result<ReceiptNotificationController> {
-        // if not exists, create new controller and return it.
-        // thus Result is necessary but Option is not necessary.
-        let client = self.client.clone();
-        let receipt_notification_controller = self.receipt_notification_controller.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(rnc) = &*receipt_notification_controller.read().await {
-                    return Ok(rnc.clone());
-                }
-                let rnc = ReceiptNotificationController::new();
-                client
-                    .register_event_handler_context(rnc.clone())
-                    .register_event_handler(
-                        |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
-                         room: MatrixRoom,
-                         Ctx(rnc): Ctx<ReceiptNotificationController>| async move {
-                            rnc.process_ephemeral_event(ev, &room);
-                        },
-                    )
-                    .await;
-                *receipt_notification_controller.write().await = Some(rnc.clone());
-                Ok(rnc)
+                Ok(dev.is_verified())
             })
             .await?
     }

@@ -5,13 +5,23 @@
 
 Your social organizing app build on [matrix](https://matrix.org): think WhatsApp, but with proper task lists, structured discussion, etc. 
 
-![Native Build](https://img.shields.io/github/workflow/status/effektio/effektio/Native?label=Rust%20Build&style=for-the-badge) ![App Build](https://img.shields.io/github/workflow/status/effektio/effektio/App?label=App%20Build&style=for-the-badge)  ![Docs](https://img.shields.io/github/workflow/status/effektio/effektio/Docs?label=Docs&style=for-the-badge) [![Effektio Source License](https://img.shields.io/badge/License-Effektio%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
+[![Homepage ](https://img.shields.io/badge/HOMEPAGE-gray?style=for-the-badge)](https://effektio.org)
+[![Docs ](https://img.shields.io/badge/DOCS-blue?style=for-the-badge)](https://docs.effektio.org)
+[![Matrix ](https://img.shields.io/badge/News-yellow?style=for-the-badge)](https://matrix.to/#/#news:effektio.org)
 
-## Quick Links
+## Build
 
-[![Homepage ](https://img.shields.io/badge/HOMEPAGE-gray?style=for-the-badge)](https://effektio.org) 
-[![Homepage ](https://img.shields.io/badge/DOCS-blue?style=for-the-badge)](https://docs.effektio.org)
-[![Homepage ](https://img.shields.io/badge/CONTACT-yellow?style=for-the-badge)](mailto:contact@effektio.org)
+![Native Build](https://img.shields.io/github/workflow/status/effektio/effektio/Native?label=Rust%20Build&style=for-the-badge)
+![App Build](https://img.shields.io/github/workflow/status/effektio/effektio/App?label=App%20Build&style=for-the-badge) 
+![Docs](https://img.shields.io/github/workflow/status/effektio/effektio/Docs?label=Docs&style=for-the-badge)
+
+
+[![Matrix: #News](https://img.shields.io/badge/Matrix-gray?style=for-the-badge)](https://matrix.to/#/#news:effektio.org)
+[![Matrix: #News](https://img.shields.io/badge/News-green?style=for-the-badge)](https://matrix.to/#/#news:effektio.org)
+[![Matrix: #Foyer](https://img.shields.io/badge/Foyer-green?style=for-the-badge)](https://matrix.to/#/#foyer:effektio.org)
+[![Matrix: #Tech](https://img.shields.io/badge/tech-green?style=for-the-badge)](https://matrix.to/#/#tech:effektio.org)
+
+[![Effektio Source License](https://img.shields.io/badge/License-Effektio%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
 
 </div>
 

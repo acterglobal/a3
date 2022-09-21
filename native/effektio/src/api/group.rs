@@ -142,7 +142,8 @@ impl Client {
                     visibility: settings.visibility,
                 }))
                 .await?
-                .room_id)
+                .room_id()
+                .to_owned())
             })
             .await?
     }

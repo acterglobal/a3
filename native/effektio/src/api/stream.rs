@@ -1,22 +1,24 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use core::pin::Pin;
 use futures::{lock::Mutex, pin_mut, StreamExt};
-use matrix_sdk::{deserialized_responses::SyncRoomEvent, room::Room, Client};
+use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room, Client};
 use std::sync::Arc;
 
-use super::messages::{sync_event_to_message, RoomMessage};
-use super::RUNTIME;
+use super::{
+    message::{sync_event_to_message, RoomMessage},
+    RUNTIME,
+};
 
 type BackwardMsgStream =
-    Pin<Box<dyn futures::Stream<Item = Result<SyncRoomEvent, matrix_sdk::Error>> + Send>>;
-type FwdMsgStream = Pin<Box<dyn futures::Stream<Item = SyncRoomEvent> + Send>>;
+    Pin<Box<dyn futures::Stream<Item = Result<SyncTimelineEvent, matrix_sdk::Error>> + Send>>;
+type ForwardMsgStream = Pin<Box<dyn futures::Stream<Item = SyncTimelineEvent> + Send>>;
 
 #[derive(Clone)]
 pub struct TimelineStream {
     client: Client,
     room: Room,
     backward: Arc<Mutex<BackwardMsgStream>>,
-    forward: Arc<Mutex<FwdMsgStream>>,
+    forward: Arc<Mutex<ForwardMsgStream>>,
 }
 
 unsafe impl Send for TimelineStream {}
@@ -24,7 +26,7 @@ unsafe impl Sync for TimelineStream {}
 
 impl TimelineStream {
     pub fn new(
-        forward: FwdMsgStream,
+        forward: ForwardMsgStream,
         backward: BackwardMsgStream,
         client: Client,
         room: Room,
@@ -36,6 +38,7 @@ impl TimelineStream {
             room,
         }
     }
+
     pub async fn paginate_backwards(&self, mut count: u64) -> Result<Vec<RoomMessage>> {
         let backward = self.backward.clone();
         let room = self.room.clone();
@@ -67,6 +70,7 @@ impl TimelineStream {
             })
             .await?
     }
+
     pub async fn next(&self) -> Result<RoomMessage> {
         let forward = self.forward.clone();
         let room = self.room.clone();

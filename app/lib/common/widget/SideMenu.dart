@@ -12,13 +12,11 @@ import 'package:themed/themed.dart';
 
 class SideDrawer extends StatelessWidget {
   const SideDrawer({Key? key, required this.client}) : super(key: key);
-  final Future<Client> client;
+  final Client client;
 
   @override
   Widget build(BuildContext context) {
     final _size = MediaQuery.of(context).size;
-    late Future<String> name;
-    late Future<String> username;
     return Drawer(
       backgroundColor: AppCommonTheme.backgroundColor,
       child: ScrollConfiguration(
@@ -29,143 +27,123 @@ class SideDrawer extends StatelessWidget {
               const SizedBox(
                 height: 20,
               ),
-              FutureBuilder<Client>(
-                future: client,
-                builder:
-                    (BuildContext context, AsyncSnapshot<Client> snapshot) {
-                  if (snapshot.hasData) {
-                    if (snapshot.requireData.isGuest()) {
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              client.isGuest()
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(right: 20),
+                          alignment: Alignment.bottomCenter,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              alignment: Alignment.center,
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                AppCommonTheme.primaryColor,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/login');
+                            },
+                            child: Text(AppLocalizations.of(context)!.login),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.bottomCenter,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              alignment: Alignment.center,
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                AppCommonTheme.primaryColor,
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/signup');
+                            },
+                            child: Text(AppLocalizations.of(context)!.signUp),
+                          ),
+                        ),
+                      ],
+                    )
+                  : GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        '/profile',
+                        arguments: client,
+                      ),
+                      child: Row(
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(right: 20),
-                            alignment: Alignment.bottomCenter,
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                alignment: Alignment.center,
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                  AppCommonTheme.primaryColor,
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/login');
-                              },
-                              child: Text(AppLocalizations.of(context)!.login),
+                            margin: EdgeInsets.all(10),
+                            child: CustomAvatar(
+                              radius: 24,
+                              avatar: client.avatar(),
+                              displayName: client.displayName(),
+                              isGroup: false,
+                              stringName: '',
                             ),
                           ),
-                          Container(
-                            alignment: Alignment.bottomCenter,
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                alignment: Alignment.center,
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                  AppCommonTheme.primaryColor,
-                                ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              FutureBuilder<String>(
+                                future: client
+                                    .displayName(), // a previously-obtained Future<String> or null
+                                builder: (
+                                  BuildContext context,
+                                  AsyncSnapshot<String> snapshot,
+                                ) {
+                                  if (snapshot.hasData) {
+                                    return Text(
+                                      snapshot.data ??
+                                          AppLocalizations.of(context)!.noName,
+                                      style: SideMenuAndProfileTheme
+                                          .sideMenuProfileStyle,
+                                    );
+                                  } else {
+                                    return const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        color: AppCommonTheme.primaryColor,
+                                      ),
+                                    );
+                                  }
+                                },
                               ),
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/signup');
-                              },
-                              child: Text(AppLocalizations.of(context)!.signUp),
-                            ),
+                              FutureBuilder<String>(
+                                future: client.userId().then(
+                                      (u) => u.toString(),
+                                    ), // a previously-obtained Future<String> or null
+                                builder: (
+                                  BuildContext context,
+                                  AsyncSnapshot<String> snapshot,
+                                ) {
+                                  if (snapshot.hasData) {
+                                    return Text(
+                                      snapshot.data ?? '',
+                                      style: SideMenuAndProfileTheme
+                                              .sideMenuProfileStyle +
+                                          FontSize(14),
+                                    );
+                                  } else {
+                                    return const SizedBox(
+                                      height: 50,
+                                      width: 50,
+                                      child: CircularProgressIndicator(
+                                        color: AppCommonTheme.primaryColor,
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            ],
                           ),
                         ],
-                      );
-                    } else {
-                      name = snapshot.requireData.displayName();
-                      username = snapshot.requireData
-                          .userId()
-                          .then((u) => u.toString());
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/profile',
-                            arguments: snapshot.requireData,
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.all(10),
-                              child: CustomAvatar(
-                                radius: 24,
-                                avatar: snapshot.requireData.avatar(),
-                                displayName: name,
-                                isGroup: false,
-                                stringName: '',
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                FutureBuilder<String>(
-                                  future:
-                                      name, // a previously-obtained Future<String> or null
-                                  builder: (
-                                    BuildContext context,
-                                    AsyncSnapshot<String> snapshot,
-                                  ) {
-                                    if (snapshot.hasData) {
-                                      return Text(
-                                        snapshot.data ??
-                                            AppLocalizations.of(context)!
-                                                .noName,
-                                        style: SideMenuAndProfileTheme
-                                            .sideMenuProfileStyle,
-                                      );
-                                    } else {
-                                      return const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          color: AppCommonTheme.primaryColor,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                                FutureBuilder<String>(
-                                  future:
-                                      username, // a previously-obtained Future<String> or null
-                                  builder: (
-                                    BuildContext context,
-                                    AsyncSnapshot<String> snapshot,
-                                  ) {
-                                    if (snapshot.hasData) {
-                                      return Text(
-                                        snapshot.data ?? '',
-                                        style: SideMenuAndProfileTheme
-                                                .sideMenuProfileStyle +
-                                            FontSize(14),
-                                      );
-                                    } else {
-                                      return const SizedBox(
-                                        height: 50,
-                                        width: 50,
-                                        child: CircularProgressIndicator(
-                                          color: AppCommonTheme.primaryColor,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
+                      ),
+                    ),
               SizedBox(
                 height: _size.height * 0.04,
               ),
@@ -180,7 +158,9 @@ class SideDrawer extends StatelessWidget {
                   AppLocalizations.of(context)!.toDoList,
                   style: SideMenuAndProfileTheme.sideMenuStyle,
                 ),
-                onTap: () => {},
+                onTap: () => {
+                  Navigator.pushNamed(context, '/todo'),
+                },
               ),
               ListTile(
                 leading: SvgPicture.asset(
@@ -285,49 +265,37 @@ class SideDrawer extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              FutureBuilder<Client>(
-                future: client,
-                builder:
-                    (BuildContext context, AsyncSnapshot<Client> snapshot) {
-                  if (snapshot.hasData) {
-                    if (!snapshot.requireData.isGuest()) {
-                      return Container(
-                        margin: EdgeInsets.only(bottom: 20, left: 10),
-                        alignment: Alignment.bottomCenter,
-                        child: InkWell(
-                          onTap: () {},
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: Container(
-                                  margin: const EdgeInsets.only(right: 10),
-                                  child: SvgPicture.asset(
-                                    'assets/images/logout.svg',
-                                  ),
+              client.isGuest()
+                  ? const SizedBox()
+                  : Container(
+                      margin: EdgeInsets.only(bottom: 20, left: 10),
+                      alignment: Alignment.bottomCenter,
+                      child: InkWell(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Container(
+                                margin: const EdgeInsets.only(right: 10),
+                                child: SvgPicture.asset(
+                                  'assets/images/logout.svg',
                                 ),
-                                onPressed: () {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/login',
-                                  );
-                                },
                               ),
-                              Text(
-                                AppLocalizations.of(context)!.logOut,
-                                style: SideMenuAndProfileTheme.signOutText,
-                              )
-                            ],
-                          ),
+                              onPressed: () {
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  '/login',
+                                );
+                              },
+                            ),
+                            Text(
+                              AppLocalizations.of(context)!.logOut,
+                              style: SideMenuAndProfileTheme.signOutText,
+                            )
+                          ],
                         ),
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
+                      ),
+                    ),
             ],
           ),
         ),
