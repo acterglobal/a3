@@ -162,29 +162,26 @@ impl ConversationController {
         self.conversations.lock_mut().clone_from(&convos);
 
         let me = self.clone();
-        client
-            .register_event_handler_context(client.clone())
-            .register_event_handler_context(me.clone())
-            .register_event_handler(
-                |ev: OriginalSyncRoomMessageEvent,
-                 room: MatrixRoom,
-                 Ctx(client): Ctx<MatrixClient>,
-                 Ctx(me): Ctx<ConversationController>| async move {
-                    me.clone().process_room_message(ev, &room, &client);
-                },
-            )
-            .await
-            .register_event_handler_context(client.clone())
-            .register_event_handler_context(me)
-            .register_event_handler(
-                |ev: OriginalSyncRoomMemberEvent,
-                 room: MatrixRoom,
-                 Ctx(client): Ctx<MatrixClient>,
-                 Ctx(me): Ctx<ConversationController>| async move {
-                    me.clone().process_room_member(ev, &room, &client);
-                },
-            )
-            .await;
+        client.add_event_handler_context(client.clone());
+        client.add_event_handler_context(me.clone());
+        client.add_event_handler(
+            |ev: OriginalSyncRoomMessageEvent,
+             room: MatrixRoom,
+             Ctx(client): Ctx<MatrixClient>,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_message(ev, &room, &client);
+            },
+        );
+        client.add_event_handler_context(client.clone());
+        client.add_event_handler_context(me);
+        client.add_event_handler(
+            |ev: OriginalSyncRoomMemberEvent,
+             room: MatrixRoom,
+             Ctx(client): Ctx<MatrixClient>,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_member(ev, &room, &client);
+            },
+        );
     }
 
     fn process_room_message(
@@ -274,7 +271,7 @@ impl Client {
                         visibility: Visibility::Private,
                     }))
                     .await?;
-                Ok(res.room_id)
+                Ok(res.room_id().to_owned())
             })
             .await?
     }

@@ -1,9 +1,9 @@
 use matrix_sdk::{
-    deserialized_responses::SyncRoomEvent,
+    deserialized_responses::SyncTimelineEvent,
     room::Room,
     ruma::events::{
         room::message::{MessageFormat, MessageType, RoomMessageEventContent},
-        AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
+        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
 };
@@ -142,8 +142,8 @@ impl FileDescription {
     }
 }
 
-pub(crate) fn sync_event_to_message(ev: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
-    if let Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option<RoomMessage> {
+    if let Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
         SyncMessageLikeEvent::Original(m),
     ))) = ev.event.deserialize()
     {

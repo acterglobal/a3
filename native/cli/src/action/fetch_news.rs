@@ -30,7 +30,8 @@ impl FetchNews {
             .get_joined_room(&self.room)
             .context("Room not found or not joined")?;
         info!("Found room {:?}", room.name());
-        let mut query = matrix_sdk::room::MessagesOptions::backward(&sync_resp.next_batch);
+        let mut query =
+            matrix_sdk::room::MessagesOptions::backward().from(Some(sync_resp.next_batch.as_str()));
         let mut filter = RoomEventFilter::default();
         filter.types = Some(types.as_slice());
         query.filter = filter;
