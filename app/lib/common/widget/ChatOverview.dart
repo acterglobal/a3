@@ -31,17 +31,14 @@ class ChatListItem extends StatefulWidget {
 
 class _ChatListItemState extends State<ChatListItem> {
   late Future<String> displayName;
-  late Future<FfiBufferUint8> avatar;
 
   @override
   void initState() {
     super.initState();
     displayName = getDisplayName();
-    avatar = getAvatar();
   }
 
   Future<String> getDisplayName() async => await widget.room.displayName();
-  Future<FfiBufferUint8> getAvatar() async => await widget.room.avatar();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +58,7 @@ class _ChatListItemState extends State<ChatListItem> {
             );
           },
           leading: CustomAvatar(
-            avatar: avatar,
+            avatar: widget.room.avatar(),
             displayName: displayName,
             radius: 25,
             isGroup: true,
