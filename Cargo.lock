@@ -611,6 +611,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "darling"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4529658bdda7fd6769b8614be250cdcfc3aeb0ee72fe66f9e41e5e5eb73eac02"
+dependencies = [
+ "darling_core 0.14.1",
+ "darling_macro 0.14.1",
+]
+
+[[package]]
 name = "darling_core"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -629,6 +639,20 @@ name = "darling_core"
 version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "859d65a907b6852c9361e3185c862aae7fafd2887876799fa55f5f99dc40d610"
+dependencies = [
+ "fnv",
+ "ident_case",
+ "proc-macro2",
+ "quote",
+ "strsim 0.10.0",
+ "syn",
+]
+
+[[package]]
+name = "darling_core"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "649c91bc01e8b1eac09fb91e8dbc7d517684ca6be8ebc75bb9cafc894f9fdb6f"
 dependencies = [
  "fnv",
  "ident_case",
@@ -661,13 +685,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "darling_macro"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ddfc69c5bfcbd2fc09a0f38451d2daf0e372e367986a83906d1b0dbc88134fb5"
+dependencies = [
+ "darling_core 0.14.1",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "dashmap"
 version = "5.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3495912c9c1ccf2e18976439f4443f3fee0fd61f424ff99fde6a66b15ecb448f"
 dependencies = [
  "cfg-if",
- "hashbrown 0.12.2",
+ "hashbrown",
  "lock_api",
  "parking_lot_core 0.9.3",
 ]
@@ -687,7 +722,16 @@ version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d13202debe11181040ae9063d739fa32cfcaaebe2275fe387703460ae2365b30"
 dependencies = [
- "derive_builder_macro",
+ "derive_builder_macro 0.10.2",
+]
+
+[[package]]
+name = "derive_builder"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d07adf7be193b71cc36b193d0f5fe60b918a3a9db4dad0449f57bcfd519704a3"
+dependencies = [
+ "derive_builder_macro 0.11.2",
 ]
 
 [[package]]
@@ -703,12 +747,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive_builder_core"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f91d4cfa921f1c05904dc3c57b4a32c38aed3340cce209f3a6fd1478babafc4"
+dependencies = [
+ "darling 0.14.1",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "derive_builder_macro"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58a94ace95092c5acb1e97a7e846b310cfbd499652f72297da7493f618a98d73"
 dependencies = [
- "derive_builder_core",
+ "derive_builder_core 0.10.2",
+ "syn",
+]
+
+[[package]]
+name = "derive_builder_macro"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8f0314b72bed045f3a68671b3c86328386762c93f82d98c65c3cb5e5f573dd68"
+dependencies = [
+ "derive_builder_core 0.11.2",
  "syn",
 ]
 
@@ -814,7 +880,7 @@ dependencies = [
  "anyhow",
  "assign",
  "cbindgen",
- "derive_builder",
+ "derive_builder 0.10.2",
  "effektio-core",
  "ffi-gen",
  "ffi-gen-macro",
@@ -1039,6 +1105,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fs_extra"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2022715d62ab30faffd124d40b76f4134a550a87792276512b18d63272333394"
+
+[[package]]
 name = "futures"
 version = "0.3.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1099,9 +1171,9 @@ dependencies = [
 
 [[package]]
 name = "futures-signals"
-version = "0.3.29"
+version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0ef3fac1b9c84bda2273ceb52645d7d9bbecebcba9aa664b6e4d6775235b5e9e"
+checksum = "a3acc659ba666cff13fdf65242d16428f2f11935b688f82e4024ad39667a5132"
 dependencies = [
  "discard",
  "futures-channel",
@@ -1245,18 +1317,12 @@ dependencies = [
 
 [[package]]
 name = "hashbrown"
-version = "0.11.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
-dependencies = [
- "ahash",
-]
-
-[[package]]
-name = "hashbrown"
 version = "0.12.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "607c8a29735385251a339424dd462993c0fed8fa09d378f259377df08c126022"
+dependencies = [
+ "ahash",
+]
 
 [[package]]
 name = "heck"
@@ -1397,8 +1463,7 @@ dependencies = [
 [[package]]
 name = "indexed_db_futures"
 version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d26ac735f676c52305becf53264b91cea9866a8de61ccbf464405b377b9cbca9"
+source = "git+https://github.com/Hywan/rust-indexed-db?branch=feat-factory-nodejs#5dab67890cea0ab88b967031adc09179a537d77c"
 dependencies = [
  "cfg-if",
  "js-sys",
@@ -1415,7 +1480,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "10a35a97730320ffe8e2d410b5d3b69279b98d2c14bdb8b70ea89ecf7888d41e"
 dependencies = [
  "autocfg",
- "hashbrown 0.12.2",
+ "hashbrown",
  "serde",
 ]
 
@@ -1531,11 +1596,11 @@ dependencies = [
 
 [[package]]
 name = "lru"
-version = "0.7.7"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c84e6fe5655adc6ce00787cf7dcaf8dc4f998a0565d23eafc207a8b08ca3349a"
+checksum = "936d98d2ddd79c18641c6709e7bb09981449694e402d1a0f0f657ea8d61f4a51"
 dependencies = [
- "hashbrown 0.11.2",
+ "hashbrown",
 ]
 
 [[package]]
@@ -1553,7 +1618,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "matrix-sdk"
 version = "0.5.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -1563,8 +1628,11 @@ dependencies = [
  "backoff",
  "bytes",
  "dashmap",
+ "derive_builder 0.11.2",
  "event-listener",
+ "futures-channel",
  "futures-core",
+ "futures-signals",
  "futures-util",
  "http",
  "matrix-sdk-base",
@@ -1573,8 +1641,7 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "reqwest",
- "ruma 0.6.3",
- "ruma-client-api",
+ "ruma 0.7.3",
  "serde",
  "serde_json",
  "thiserror",
@@ -1588,19 +1655,20 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.5.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "async-stream",
  "async-trait",
  "dashmap",
  "futures-channel",
  "futures-core",
+ "futures-signals",
  "futures-util",
  "lru",
  "matrix-sdk-common",
  "matrix-sdk-crypto",
  "once_cell",
- "ruma 0.6.3",
+ "ruma 0.7.3",
  "serde",
  "serde_json",
  "thiserror",
@@ -1611,21 +1679,23 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.5.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "async-lock",
+ "futures-core",
  "futures-util",
  "instant",
- "ruma 0.6.3",
+ "ruma 0.7.3",
  "serde",
  "tokio",
  "wasm-bindgen-futures",
+ "wasm-timer",
 ]
 
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.5.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "aes",
  "async-trait",
@@ -1640,7 +1710,7 @@ dependencies = [
  "matrix-sdk-common",
  "pbkdf2",
  "rand 0.8.5",
- "ruma 0.6.3",
+ "ruma 0.7.3",
  "serde",
  "serde_json",
  "sha2 0.10.2",
@@ -1654,19 +1724,21 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64",
  "dashmap",
+ "derive_builder 0.11.2",
  "futures-util",
  "getrandom 0.2.7",
  "indexed_db_futures",
+ "js-sys",
  "matrix-sdk-base",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
- "ruma 0.6.3",
+ "ruma 0.7.3",
  "serde",
  "serde_json",
  "thiserror",
@@ -1678,18 +1750,20 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sled"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "async-stream",
  "async-trait",
  "dashmap",
+ "derive_builder 0.11.2",
+ "fs_extra",
  "futures-core",
  "futures-util",
  "matrix-sdk-base",
  "matrix-sdk-common",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
- "ruma 0.6.3",
+ "ruma 0.7.3",
  "serde",
  "serde_json",
  "sled",
@@ -1701,7 +1775,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#09c56ea0575c95b43f348d62bc3138d6bf61238d"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#b12da9d4db15e5da5e903ac545dba88d97af74b2"
 dependencies = [
  "blake3",
  "chacha20poly1305",
@@ -2094,9 +2168,9 @@ dependencies = [
 
 [[package]]
 name = "prost"
-version = "0.10.4"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71adf41db68aa0daaefc69bb30bcd68ded9b9abaad5d1fbb6304c4fb390e083e"
+checksum = "399c3c31cdec40583bb68f0b18403400d01ec4289c383aa047560439952c4dd7"
 dependencies = [
  "bytes",
  "prost-derive",
@@ -2104,9 +2178,9 @@ dependencies = [
 
 [[package]]
 name = "prost-derive"
-version = "0.10.1"
+version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b670f45da57fb8542ebdbb6105a925fe571b67f9e7ed9f47a06a84e72b4e7cc"
+checksum = "7345d5f0e08c0536d7ac7229952590239e77abf0a0100a1b1d890add6ea96364"
 dependencies = [
  "anyhow",
  "itertools",
@@ -2313,18 +2387,6 @@ dependencies = [
 
 [[package]]
 name = "ruma"
-version = "0.6.3"
-source = "git+https://github.com/ruma/ruma?rev=96155915f#96155915fe9b445e2fa8beaec9ef9430b68c5360"
-dependencies = [
- "assign",
- "js_int",
- "ruma-client-api",
- "ruma-common 0.9.2",
- "ruma-federation-api",
-]
-
-[[package]]
-name = "ruma"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6602cb2ef70629013d1bfade5aeb775d971a5d87f008dd6a8c99566235fa1933"
@@ -2335,9 +2397,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruma"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f656968adbb2d26f4de1d522abbc876eaac7b0484a8d875d4a38573bb5fb986"
+dependencies = [
+ "assign",
+ "js_int",
+ "js_option",
+ "ruma-client-api",
+ "ruma-common 0.10.3",
+ "ruma-federation-api",
+]
+
+[[package]]
 name = "ruma-client-api"
-version = "0.14.1"
-source = "git+https://github.com/ruma/ruma?rev=96155915f#96155915fe9b445e2fa8beaec9ef9430b68c5360"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2709c891d277ef94d56657c3ec92ed464779dbfff055e518425eedf11d9ecb7"
 dependencies = [
  "assign",
  "bytes",
@@ -2345,38 +2422,9 @@ dependencies = [
  "js_int",
  "maplit",
  "percent-encoding",
- "ruma-common 0.9.2",
+ "ruma-common 0.10.3",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "ruma-common"
-version = "0.9.2"
-source = "git+https://github.com/ruma/ruma?rev=96155915f#96155915fe9b445e2fa8beaec9ef9430b68c5360"
-dependencies = [
- "base64",
- "bytes",
- "form_urlencoded",
- "getrandom 0.2.7",
- "http",
- "indexmap",
- "itoa",
- "js-sys",
- "js_int",
- "js_option",
- "percent-encoding",
- "rand 0.8.5",
- "regex",
- "ruma-identifiers-validation 0.8.1 (git+https://github.com/ruma/ruma?rev=96155915f)",
- "ruma-macros 0.9.2",
- "serde",
- "serde_json",
- "thiserror",
- "tracing",
- "url",
- "uuid 1.1.2",
- "wildmatch",
 ]
 
 [[package]]
@@ -2393,7 +2441,7 @@ dependencies = [
  "js_int",
  "js_option",
  "percent-encoding",
- "ruma-identifiers-validation 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruma-identifiers-validation 0.8.1",
  "ruma-macros 0.9.3",
  "serde",
  "serde_json",
@@ -2403,12 +2451,43 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruma-common"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1e629a01f359234798531a99ba83997abd4c15a65b5bcb8354c4171b59c25be"
+dependencies = [
+ "base64",
+ "bytes",
+ "form_urlencoded",
+ "getrandom 0.2.7",
+ "http",
+ "indexmap",
+ "itoa",
+ "js-sys",
+ "js_int",
+ "js_option",
+ "percent-encoding",
+ "rand 0.8.5",
+ "regex",
+ "ruma-identifiers-validation 0.9.0",
+ "ruma-macros 0.10.3",
+ "serde",
+ "serde_json",
+ "thiserror",
+ "tracing",
+ "url",
+ "uuid 1.1.2",
+ "wildmatch",
+]
+
+[[package]]
 name = "ruma-federation-api"
-version = "0.5.0"
-source = "git+https://github.com/ruma/ruma?rev=96155915f#96155915fe9b445e2fa8beaec9ef9430b68c5360"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f905d12f6144c7a754bd0339fa6893698c03d03a908abb20cc6eeb4ec7f9466"
 dependencies = [
  "js_int",
- "ruma-common 0.9.2",
+ "ruma-common 0.10.3",
  "serde",
  "serde_json",
 ]
@@ -2424,23 +2503,12 @@ dependencies = [
 
 [[package]]
 name = "ruma-identifiers-validation"
-version = "0.8.1"
-source = "git+https://github.com/ruma/ruma?rev=96155915f#96155915fe9b445e2fa8beaec9ef9430b68c5360"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eabac62d16465a87435579c779d74dceabb93b09e44c766af6085050f3cc4275"
 dependencies = [
  "js_int",
  "thiserror",
-]
-
-[[package]]
-name = "ruma-macros"
-version = "0.9.2"
-source = "git+https://github.com/ruma/ruma?rev=96155915f#96155915fe9b445e2fa8beaec9ef9430b68c5360"
-dependencies = [
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "ruma-identifiers-validation 0.8.1 (git+https://github.com/ruma/ruma?rev=96155915f)",
- "syn",
 ]
 
 [[package]]
@@ -2452,8 +2520,24 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "ruma-identifiers-validation 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruma-identifiers-validation 0.8.1",
  "syn",
+]
+
+[[package]]
+name = "ruma-macros"
+version = "0.10.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f7cd8cf8771aaca36042fb7659f4647b05e74a2058d843474dde5e51a56cd85"
+dependencies = [
+ "once_cell",
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "ruma-identifiers-validation 0.9.0",
+ "serde",
+ "syn",
+ "toml",
 ]
 
 [[package]]
@@ -2516,9 +2600,9 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.139"
+version = "1.0.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0171ebb889e45aa68b44aee0859b3eede84c6f5f5c228e6f140c0b2a0a46cad6"
+checksum = "0f747710de3dcd43b88c9168773254e809d8ddbdf9653b84e2554ab219f17860"
 dependencies = [
  "serde_derive",
 ]
@@ -2534,9 +2618,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.139"
+version = "1.0.144"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc1d3230c1de7932af58ad8ffbe1d784bd55efd5a9d84ac24f69c72d83543dfb"
+checksum = "94ed3a816fb1d101812f83e789f888322c34e291f894f19590dc310963e87a00"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3148,8 +3232,9 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
 name = "vodozemac"
-version = "0.2.0"
-source = "git+https://github.com/matrix-org/vodozemac/?rev=2404f83f7d3a3779c1f518e4d949f7da9677c3dd#2404f83f7d3a3779c1f518e4d949f7da9677c3dd"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6f20153a1c82ac5f1243b62e80f067ae608facc415c6ef82f88426a61c79886"
 dependencies = [
  "aes",
  "arrayvec",
@@ -3164,6 +3249,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.10.2",
+ "subtle",
  "thiserror",
  "x25519-dalek",
  "zeroize",

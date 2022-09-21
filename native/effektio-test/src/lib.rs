@@ -5,8 +5,8 @@ mod formatted_body;
 // #[cfg(test)]
 // mod news;
 // #[cfg(test)]
-// mod receipt_notification;
+// mod receipt;
 // #[cfg(test)]
-// mod session_verification;
+// mod typing;
 // #[cfg(test)]
-// mod typing_notification;
+// mod verification;

@@ -1,7 +1,7 @@
 use anyhow::Result;
 use core::pin::Pin;
 use futures::{lock::Mutex, pin_mut, StreamExt};
-use matrix_sdk::{deserialized_responses::SyncRoomEvent, room::Room, Client};
+use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room, Client};
 use std::sync::Arc;
 
 use super::{
@@ -10,8 +10,8 @@ use super::{
 };
 
 type BackwardMsgStream =
-    Pin<Box<dyn futures::Stream<Item = Result<SyncRoomEvent, matrix_sdk::Error>> + Send>>;
-type ForwardMsgStream = Pin<Box<dyn futures::Stream<Item = SyncRoomEvent> + Send>>;
+    Pin<Box<dyn futures::Stream<Item = Result<SyncTimelineEvent, matrix_sdk::Error>> + Send>>;
+type ForwardMsgStream = Pin<Box<dyn futures::Stream<Item = SyncTimelineEvent> + Send>>;
 
 #[derive(Clone)]
 pub struct TimelineStream {

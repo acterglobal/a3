@@ -40,9 +40,9 @@ impl NewsDraft {
         // First we need to log in.
         RUNTIME
             .spawn(async move {
-                let mut image = File::open(p).context("Couldn't open file for reading")?;
+                let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let res = me.client.upload(&mime, &mut image).await?;
+                let res = me.client.media().upload(&mime, &image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
@@ -94,9 +94,9 @@ impl NewsDraft {
         // First we need to log in.
         RUNTIME
             .spawn(async move {
-                let mut image = File::open(p).context("Couldn't open file for reading")?;
+                let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let res = me.client.upload(&mime, &mut image).await?;
+                let res = me.client.media().upload(&mime, &image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
@@ -108,6 +108,7 @@ impl NewsDraft {
             })
             .await?
     }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let me = self.clone();
         RUNTIME

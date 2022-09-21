@@ -244,7 +244,7 @@ object Account {
 
 object SyncState {
     /// Get event handler of first synchronization on every launch
-    fn get_first_synced_rx() -> Option<Stream<bool>>;
+    fn first_synced_rx() -> Option<Stream<bool>>;
 }
 
 /// Main entry point for `effektio`.
@@ -309,34 +309,37 @@ object Client {
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
-    /// Get the session verification event receiver
-    fn session_verification_event_rx() -> Option<Stream<SessionVerificationEvent>>;
+    /// Get the verification event receiver
+    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
-    /// Return the device lists controller. If not exists, create it.
-    fn get_device_lists_controller() -> Future<Result<DeviceListsController>>;
+    /// Return the event handler of device changed
+    fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
 
-    /// Return the typing notification controller. If not exists, create it.
-    fn get_typing_notification_controller() -> Future<Result<TypingNotificationController>>;
+    /// Return the event handler of device left
+    fn device_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
 
-    /// Return the read notification controller. If not exists, create it.
-    fn get_receipt_notification_controller() -> Future<Result<ReceiptNotificationController>>;
+    /// Return the typing event receiver
+    fn typing_event_rx() -> Option<Stream<TypingEvent>>;
+
+    /// Return the receipt event receiver
+    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 }
 
-object SessionVerificationEvent {
-    /// Get event name
-    fn get_event_name() -> string;
+object VerificationEvent {
+    /// Get event type
+    fn event_type() -> string;
 
-    /// Get transaction id
-    fn get_txn_id() -> string;
+    /// Get flow id (EventId or TransactionId)
+    fn flow_id() -> string;
 
     /// Get user id of event sender
-    fn get_sender() -> string;
+    fn sender() -> string;
 
     /// An error code for why the process/request was cancelled by the user.
-    fn get_cancel_code() -> Option<string>;
+    fn cancel_code() -> Option<string>;
 
     /// A description for why the process/request was cancelled by the user.
-    fn get_reason() -> Option<string>;
+    fn reason() -> Option<string>;
 
     /// Bob accepts the verification request from Alice
     fn accept_verification_request() -> Future<Result<bool>>;
@@ -366,7 +369,7 @@ object SessionVerificationEvent {
     fn cancel_verification_key() -> Future<Result<bool>>;
 
     /// Alice gets the verification emoji from Bob and vice versa
-    fn get_verification_emoji() -> Future<Result<Vec<SessionVerificationEmoji>>>;
+    fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;
 
     /// Alice says to Bob that SAS verification matches and vice versa
     fn confirm_sas_verification() -> Future<Result<bool>>;
@@ -378,7 +381,7 @@ object SessionVerificationEvent {
     fn review_verification_mac() -> Future<Result<bool>>;
 }
 
-object SessionVerificationEmoji {
+object VerificationEmoji {
     /// binary representation of emoji unicode
     fn symbol() -> u32;
 
@@ -386,43 +389,31 @@ object SessionVerificationEmoji {
     fn description() -> string;
 }
 
-object ReceiptNotificationController {
-    fn get_event_rx() -> Option<Stream<ReceiptNotificationEvent>>;
-}
-
-/// Deliver read notification from rust to flutter
-object ReceiptNotificationEvent {
+/// Deliver receipt event from rust to flutter
+object ReceiptEvent {
     /// Get transaction id or flow id
-    fn get_room_id() -> string;
+    fn room_id() -> string;
 
     /// Get records
-    fn get_receipt_records() -> Vec<ReceiptRecord>;
+    fn receipt_records() -> Vec<ReceiptRecord>;
 }
 
-/// Deliver typing notification from rust to flutter
+/// Deliver receipt record from rust to flutter
 object ReceiptRecord {
     /// Get id of event that this user read message from peer
-    fn get_event_id() -> string;
+    fn event_id() -> string;
 
     /// Get id of user that read message from peer
-    fn get_user_id() -> string;
+    fn user_id() -> string;
 
     /// Get time that this user read message from peer
-    fn get_timestamp() -> u32;
-}
-
-object DeviceListsController {
-    /// Get event handler of devices changed
-    fn get_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
-
-    /// Get event handler of devices left
-    fn get_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
+    fn ts() -> Option<u64>;
 }
 
 /// Deliver devices changed event from rust to flutter
 object DeviceChangedEvent {
     /// Get the device list, excluding verified ones
-    fn get_devices(verified: bool) -> Future<Result<Vec<Device>>>;
+    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
 
     /// Request verification to any devices of user
     fn request_verification_to_user() -> Future<Result<bool>>;
@@ -440,36 +431,38 @@ object DeviceChangedEvent {
 /// Deliver devices left event from rust to flutter
 object DeviceLeftEvent {
     /// Get the device list, including deleted ones
-    fn get_devices(deleted: bool) -> Future<Result<Vec<Device>>>;
+    fn device_records(deleted: bool) -> Future<Result<Vec<DeviceRecord>>>;
 }
 
 /// Provide various device infos
-object Device {
+object DeviceRecord {
     /// whether this device was verified
-    fn was_verified() -> bool;
+    fn verified() -> bool;
 
     /// whether this device was deleted
-    fn was_deleted() -> bool;
+    fn deleted() -> bool;
 
     /// get the id of this device user
-    fn get_user_id() -> string;
+    fn user_id() -> string;
 
     /// get the id of this device
-    fn get_device_id() -> string;
+    fn device_id() -> string;
 
     /// get the display name of this device
-    fn get_display_name() -> Option<string>;
+    fn display_name() -> Option<string>;
+
+    /// last seen ip of this device
+    fn last_seen_ip() -> Option<string>;
+
+    /// last seen timestamp of this device
+    fn last_seen_ts() -> Option<u64>;
 }
 
-object TypingNotificationController {
-    fn get_event_rx() -> Option<Stream<TypingNotificationEvent>>;
-}
-
-/// Deliver typing notification from rust to flutter
-object TypingNotificationEvent {
+/// Deliver typing event from rust to flutter
+object TypingEvent {
     /// Get transaction id or flow id
-    fn get_room_id() -> string;
+    fn room_id() -> string;
 
     /// Get list of user id
-    fn get_user_ids() -> Vec<string>;
+    fn user_ids() -> Vec<string>;
 }
