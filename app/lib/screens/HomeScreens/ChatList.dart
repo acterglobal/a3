@@ -38,7 +38,7 @@ class _ChatListState extends State<ChatList> {
     getUserId();
     if (!widget.client.isGuest()) {
       widget.client.conversationsRx().listen((event) async {
-        _chatListController.updateList(event, userId);
+        _chatListController.updateList(event.toList(), userId);
       });
       widget.client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
@@ -49,7 +49,7 @@ class _ChatListState extends State<ChatList> {
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
       });
       widget.client.receiptEventRx()?.listen((event) {
-        for (var record in event.receiptRecords()) {
+        for (var record in event.userReceipts()) {
           String recordUserId = record.userId();
           if (recordUserId != userId.toString()) {
             debugPrint('receipt event for ' + event.roomId());
@@ -162,19 +162,20 @@ class _ChatListState extends State<ChatList> {
 
   Widget buildJoinedList(BuildContext context, ChatListController controller) {
     if (controller.initialLoaded) {
-      return ImplicitlyAnimatedReorderableList<RoomData>(
+      return ImplicitlyAnimatedReorderableList<RoomItem>(
         header: ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: countInvites,
           itemBuilder: buildInvitedItem,
         ),
-        items: controller.roomDatas,
-        areItemsTheSame: (a, b) => a.roomId == b.roomId,
+        items: controller.roomItems,
+        areItemsTheSame: (a, b) =>
+            a.conversation.getRoomId() == b.conversation.getRoomId(),
         // Remember to update the underlying data when the list has been reordered.
-        onReorderFinished: (item, from, to, newItems) =>
-            controller.sortList(from, to, item),
-        itemBuilder: (context, itemAnimation, item, index) => Reorderable(
+        onReorderFinished: (roomItem, from, to, newRoomItems) =>
+            controller.sortList(from, to, roomItem),
+        itemBuilder: (context, itemAnimation, roomItem, index) => Reorderable(
           key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
             final t = dragAnimation.value;
@@ -190,28 +191,28 @@ class _ChatListState extends State<ChatList> {
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
                 child: ChatListItem(
-                  room: item.conversation,
+                  room: roomItem.conversation,
                   user: userId,
-                  recentMessage: item.recentMessage,
+                  latestMessage: roomItem.latestMessage,
                 ),
               ),
             );
           },
         ),
-        removeItemBuilder: (context, animation, item) => Reorderable(
+        removeItemBuilder: (context, animation, roomItem) => Reorderable(
           key: UniqueKey(),
           builder: (context, animation, inDrag) {
             return FadeTransition(
               opacity: animation,
               child: ChatListItem(
-                room: item.conversation,
+                room: roomItem.conversation,
                 user: userId,
-                recentMessage: item.recentMessage,
+                latestMessage: roomItem.latestMessage,
               ),
             );
           },
         ),
-        updateItemBuilder: (context, itemAnimation, item) => Reorderable(
+        updateItemBuilder: (context, itemAnimation, roomItem) => Reorderable(
           key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
             final t = dragAnimation.value;
@@ -227,9 +228,9 @@ class _ChatListState extends State<ChatList> {
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
                 child: ChatListItem(
-                  room: item.conversation,
+                  room: roomItem.conversation,
                   user: userId,
-                  recentMessage: item.recentMessage,
+                  latestMessage: roomItem.latestMessage,
                 ),
               ),
             );

@@ -9,7 +9,7 @@ use matrix_sdk::{
     ruma::{
         events::{receipt::ReceiptEventContent, SyncEphemeralRoomEvent},
         receipt::ReceiptType,
-        MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedUserId,
+        MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
     },
     Client as MatrixClient,
 };
@@ -19,19 +19,19 @@ use std::sync::Arc;
 use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct ReceiptRecord {
+pub struct UserReceipt {
     event_id: OwnedEventId,
     user_id: OwnedUserId,
     ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
-impl ReceiptRecord {
+impl UserReceipt {
     pub(crate) fn new(
         event_id: OwnedEventId,
         user_id: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
-        ReceiptRecord {
+        UserReceipt {
             event_id,
             user_id,
             ts,
@@ -53,34 +53,34 @@ impl ReceiptRecord {
 
 #[derive(Clone, Debug)]
 pub struct ReceiptEvent {
-    room_id: String,
-    receipt_records: Vec<ReceiptRecord>,
+    room_id: OwnedRoomId,
+    user_receipts: Vec<UserReceipt>,
 }
 
 impl ReceiptEvent {
-    pub(crate) fn new(room_id: String) -> Self {
+    pub(crate) fn new(room_id: OwnedRoomId) -> Self {
         Self {
             room_id,
-            receipt_records: vec![],
+            user_receipts: vec![],
         }
     }
 
     pub fn room_id(&self) -> String {
-        self.room_id.clone()
+        self.room_id.to_string()
     }
 
-    pub(crate) fn add_receipt_record(
+    pub(crate) fn add_user_receipt(
         &mut self,
         event_id: OwnedEventId,
         user_id: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) {
-        let record = ReceiptRecord::new(event_id, user_id, ts);
-        self.receipt_records.push(record);
+        let record = UserReceipt::new(event_id, user_id, ts);
+        self.user_receipts.push(record);
     }
 
-    pub fn receipt_records(&self) -> Vec<ReceiptRecord> {
-        self.receipt_records.clone()
+    pub fn user_receipts(&self) -> Vec<UserReceipt> {
+        self.user_receipts.clone()
     }
 }
 
@@ -120,12 +120,12 @@ impl ReceiptController {
     ) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
-        let mut msg = ReceiptEvent::new(room_id.to_string());
+        let mut msg = ReceiptEvent::new(room_id.to_owned());
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
             for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
                 info!("user receipt: {:?}", receipt);
-                msg.add_receipt_record(event_id.clone(), user_id.clone(), receipt.ts);
+                msg.add_user_receipt(event_id.clone(), user_id.clone(), receipt.ts);
             }
         }
         let mut event_tx = self.event_tx.clone();
