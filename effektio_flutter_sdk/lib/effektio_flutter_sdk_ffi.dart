@@ -8298,7 +8298,7 @@ class Conversation {
     return tmp6;
   }
 
-  /// get receipt status of room members
+  /// initially called to get receipt status of room members
   Future<FfiListUserReceipt> userReceipts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();

@@ -199,7 +199,7 @@ object Conversation {
     /// get the path that file was saved
     fn file_path(event_id: string) -> Future<Result<string>>;
 
-    /// get receipt status of room members
+    /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<UserReceipt>>>;
 }
 
