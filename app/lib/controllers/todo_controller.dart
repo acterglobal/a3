@@ -3,8 +3,8 @@
 import 'dart:math';
 
 import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/common/widget/ToDoListView.dart';
-import 'package:effektio/common/widget/ToDoTaskItem.dart';
+import 'package:effektio/widgets/ToDoListView.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:get/get.dart';
