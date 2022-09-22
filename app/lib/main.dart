@@ -6,6 +6,7 @@ import 'package:effektio/common/store/themes/appTheme.dart';
 import 'package:effektio/common/widget/AppCommon.dart';
 import 'package:effektio/common/widget/MaterialIndicator.dart';
 import 'package:effektio/common/widget/SideMenu.dart';
+import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
@@ -110,6 +111,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
   @override
   void dispose() {
+    Get.delete<ReceiptController>();
     crossSigning.dispose();
     super.dispose();
   }
@@ -117,6 +119,14 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+
+    String userId = (await client.userId()).toString();
+    var receiptController = ReceiptController(
+      client: client,
+      userId: userId,
+    );
+    Get.put<ReceiptController>(receiptController);
+
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);

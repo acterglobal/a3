@@ -46,7 +46,7 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         match event_rx.try_next() {
             Ok(Some(event)) => {
                 let mut found = false;
-                for record in event.user_receipts() {
+                for record in event.receipt_records() {
                     if record.user_id().as_str() == "@kyra:ds9.effektio.org" {
                         found = true;
                         break;

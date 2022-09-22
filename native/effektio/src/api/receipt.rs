@@ -21,21 +21,21 @@ use std::sync::Arc;
 use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
-pub struct UserReceipt {
+pub struct ReceiptRecord {
     event_id: OwnedEventId,
-    user_id: OwnedUserId,
+    seen_by: OwnedUserId,
     ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
-impl UserReceipt {
+impl ReceiptRecord {
     pub(crate) fn new(
         event_id: OwnedEventId,
-        user_id: OwnedUserId,
+        seen_by: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
-        UserReceipt {
+        ReceiptRecord {
             event_id,
-            user_id,
+            seen_by,
             ts,
         }
     }
@@ -44,8 +44,8 @@ impl UserReceipt {
         self.event_id.to_string()
     }
 
-    pub fn user_id(&self) -> String {
-        self.user_id.to_string()
+    pub fn seen_by(&self) -> String {
+        self.seen_by.to_string()
     }
 
     pub fn ts(&self) -> Option<u64> {
@@ -56,14 +56,14 @@ impl UserReceipt {
 #[derive(Clone, Debug)]
 pub struct ReceiptEvent {
     room_id: OwnedRoomId,
-    user_receipts: Vec<UserReceipt>,
+    receipt_records: Vec<ReceiptRecord>,
 }
 
 impl ReceiptEvent {
     pub(crate) fn new(room_id: OwnedRoomId) -> Self {
         Self {
             room_id,
-            user_receipts: vec![],
+            receipt_records: vec![],
         }
     }
 
@@ -71,18 +71,18 @@ impl ReceiptEvent {
         self.room_id.to_string()
     }
 
-    pub(crate) fn add_user_receipt(
+    pub(crate) fn add_receipt_record(
         &mut self,
         event_id: OwnedEventId,
-        user_id: OwnedUserId,
+        seen_by: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) {
-        let record = UserReceipt::new(event_id, user_id, ts);
-        self.user_receipts.push(record);
+        let record = ReceiptRecord::new(event_id, seen_by, ts);
+        self.receipt_records.push(record);
     }
 
-    pub fn user_receipts(&self) -> Vec<UserReceipt> {
-        self.user_receipts.clone()
+    pub fn receipt_records(&self) -> Vec<ReceiptRecord> {
+        self.receipt_records.clone()
     }
 }
 
@@ -123,9 +123,9 @@ impl ReceiptController {
         let mut msg = ReceiptEvent::new(room_id.to_owned());
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
-            for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
+            for (seen_by, receipt) in event_info[&ReceiptType::Read].iter() {
                 info!("user receipt: {:?}", receipt);
-                msg.add_user_receipt(event_id.clone(), user_id.clone(), receipt.ts);
+                msg.add_receipt_record(event_id.clone(), seen_by.clone(), receipt.ts);
             }
         }
         let mut event_tx = self.event_tx.clone();

@@ -29,7 +29,7 @@ use matrix_sdk::{
 use super::{
     client::{devide_groups_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
-    receipt::UserReceipt,
+    receipt::ReceiptRecord,
     room::Room,
     RUNTIME,
 };
@@ -114,15 +114,15 @@ impl Conversation {
         self.room_id().to_string()
     }
 
-    pub async fn user_receipts(&self) -> Result<Vec<UserReceipt>> {
+    pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
         let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let mut records: Vec<UserReceipt> = vec![];
+                let mut records: Vec<ReceiptRecord> = vec![];
                 for member in room.active_members().await? {
                     let user_id = member.user_id();
                     if let Some((event_id, receipt)) = room.user_read_receipt(user_id).await? {
-                        let record = UserReceipt::new(event_id, user_id.to_owned(), receipt.ts);
+                        let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
                         records.push(record);
                     }
                 }

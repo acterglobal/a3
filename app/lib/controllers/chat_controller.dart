@@ -3,12 +3,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:effektio/common/widget/AppCommon.dart';
+import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/ChatProfileScreen/ImageSelectionScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Conversation,
         FileDescription,
         ImageDescription,
+        Member,
         RoomMessage,
         TimelineStream;
 import 'package:file_picker/file_picker.dart';
@@ -43,6 +45,8 @@ class ChatController extends GetxController {
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
   late final StreamSubscription<RoomMessage> _subscription;
+  ReceiptController _receiptController = Get.find<ReceiptController>();
+  late List<Member> activeMembers;
 
   //get the timeline of room
   Future<void> init(Conversation convoRoom, types.User convoUser) async {
@@ -55,6 +59,7 @@ class ChatController extends GetxController {
     room = convoRoom;
     user = convoUser;
     isLoading.value = true;
+    activeMembers = (await room.activeMembers()).toList();
     _stream = await room.timeline();
     // i am fetching messages from remote
     var _messages = await _stream!.paginateBackwards(10);
@@ -376,14 +381,23 @@ class ChatController extends GetxController {
       if (formatted != null) {
         debugPrint('formatted_body: ' + formatted);
       }
+      int ts = message.originServerTs() * 1000;
+      List<String> seenByList = _receiptController.getSeenByList(
+        room.getRoomId(),
+        ts,
+      );
       types.TextMessage m = types.TextMessage(
         author: types.User(
           id: message.sender(),
           firstName: getNameFromId(message.sender()),
         ),
-        createdAt: message.originServerTs() * 1000,
+        createdAt: ts,
         id: message.eventId(),
         text: message.body(),
+        showStatus: true,
+        status: seenByList.length < activeMembers.length
+            ? types.Status.delivered
+            : types.Status.seen,
       );
       _insertMessage(m, container);
       if (isLoading.isFalse) {

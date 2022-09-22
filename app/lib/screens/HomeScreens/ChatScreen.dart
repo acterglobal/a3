@@ -39,7 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatController chatController = Get.put(ChatController());
+  ChatController chatController = Get.put<ChatController>(ChatController());
 
   @override
   void initState() {

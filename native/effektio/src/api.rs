@@ -34,7 +34,7 @@ pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use message::{FileDescription, ImageDescription, RoomMessage};
-pub use receipt::{ReceiptEvent, UserReceipt};
+pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
 pub use typing::TypingEvent;

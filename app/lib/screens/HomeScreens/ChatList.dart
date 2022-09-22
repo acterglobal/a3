@@ -49,12 +49,12 @@ class _ChatListState extends State<ChatList> {
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
       });
       widget.client.receiptEventRx()?.listen((event) {
-        for (var record in event.userReceipts()) {
-          String recordUserId = record.userId();
-          if (recordUserId != userId.toString()) {
+        for (var record in event.receiptRecords()) {
+          String seenBy = record.seenBy();
+          if (seenBy != userId.toString()) {
             debugPrint('receipt event for ' + event.roomId());
             debugPrint('event id: ' + record.eventId());
-            debugPrint('user id: ' + recordUserId);
+            debugPrint('seen by: ' + seenBy);
             int? ts = record.ts();
             if (ts != null) {
               debugPrint('timestamp: ' + ts.toString());

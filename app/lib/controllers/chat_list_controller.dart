@@ -36,7 +36,7 @@ class ChatListController extends GetxController {
       initialLoaded = true;
     }
     update(['chatlist']);
-    List<RoomItem> newRoomItems = [];
+    List<RoomItem> newItems = [];
     for (Conversation convo in convos) {
       String roomId = convo.getRoomId();
       int oldIndex =
@@ -44,15 +44,15 @@ class ChatListController extends GetxController {
       RoomMessage? msg = convo.latestMessage();
       if (msg == null) {
         // prevent latest message from deleting
-        RoomItem newRoomItem = RoomItem(
+        RoomItem newItem = RoomItem(
           conversation: convo,
           latestMessage:
               oldIndex == -1 ? null : roomItems[oldIndex].latestMessage,
         );
-        newRoomItems.add(newRoomItem);
+        newItems.add(newItem);
         continue;
       }
-      RoomItem newRoomItem = RoomItem(
+      RoomItem newItem = RoomItem(
         conversation: convo,
         latestMessage: LatestMessage(
           sender: msg.sender(),
@@ -60,9 +60,9 @@ class ChatListController extends GetxController {
           originServerTs: msg.originServerTs(),
         ),
       );
-      newRoomItems.add(newRoomItem);
+      newItems.add(newItem);
     }
-    roomItems = newRoomItems;
+    roomItems = newItems;
     update(['chatlist']);
   }
 
