@@ -1,9 +1,9 @@
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
-import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/ToDoTaskItem.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDoTaskAssign.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -12,8 +12,10 @@ import 'package:get_time_ago/get_time_ago.dart';
 class ToDoTaskEditor extends StatefulWidget {
   const ToDoTaskEditor({Key? key, required this.item, required this.avatars})
       : super(key: key);
+
   final ToDoTaskItem item;
   final List<ImageProvider<Object>> avatars;
+
   @override
   State<ToDoTaskEditor> createState() => _ToDoTaskEditorState();
 }

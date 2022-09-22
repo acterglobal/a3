@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
-import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/OnboardingWidget.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/login_controller.dart';
+import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,6 +19,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final loginController = Get.put(LoginController());
+
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
