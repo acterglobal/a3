@@ -15,7 +15,7 @@ use matrix_sdk::{
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use super::{client::Client, RUNTIME};
+use super::client::Client;
 
 #[derive(Clone, Debug)]
 pub struct TypingEvent {
