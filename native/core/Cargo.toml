@@ -33,9 +33,11 @@ rand = { version = "0.8", optional = true }
 
 [dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
+branch = "jplatte/room-api"
 default-features = false
 
 [dev-dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
+branch = "jplatte/room-api"
 features = ["rustls-tls"]
 default-features = false

@@ -30,9 +30,11 @@ default-features = false
 [dependencies.matrix-sdk]
 # FIXME: temp to configure feature 
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
+branch = "jplatte/room-api"
 default-features = false
 features = ["rustls-tls"]
 
 [dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
+branch = "jplatte/room-api"
 default-features = false

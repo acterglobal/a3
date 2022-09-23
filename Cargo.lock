@@ -1745,7 +1745,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "matrix-sdk"
 version = "0.5.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -1755,7 +1755,7 @@ dependencies = [
  "backoff",
  "bytes",
  "dashmap",
- "derive_builder 0.11.2",
+ "derive_builder 0.10.2",
  "event-listener",
  "futures-channel",
  "futures-core",
@@ -1782,7 +1782,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.5.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1806,7 +1806,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.5.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "async-lock",
  "futures-core",
@@ -1822,7 +1822,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.5.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "aes",
  "async-trait",
@@ -1851,7 +1851,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1877,7 +1877,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sled"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1902,7 +1902,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.1.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#6be0fc1fae23b4b28c9afc6a6c04cba8ff9e08a7"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/?branch=jplatte/room-api#5f8c9ee0ca4b2d8d00837add39857a7e5b2d26cd"
 dependencies = [
  "blake3",
  "chacha20poly1305",
