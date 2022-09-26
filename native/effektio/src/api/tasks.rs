@@ -189,4 +189,15 @@ impl Group {
             bail!("You can't create todos for groups we are not part on")
         }
     }
+    pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
+        if let matrix_sdk::room::Room::Joined(joined) = &self.inner.room {
+            Ok(TaskListDraft {
+                client: self.client.clone(),
+                room: joined.clone(),
+                content,
+            })
+        } else {
+            bail!("You can't create todos for groups we are not part on")
+        }
+    }
 }

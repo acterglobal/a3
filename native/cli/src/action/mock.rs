@@ -3,6 +3,7 @@ use clap::{crate_version, Parser};
 
 use effektio::{Client as EfkClient, CreateGroupSettingsBuilder};
 use effektio_core::{
+    events::TextMessageEventContent,
     matrix_sdk::{Client, ClientBuilder},
     ruma::{
         api::client::{
@@ -66,6 +67,7 @@ pub enum MockCmd {
     Users,
     Spaces,
     AcceptInvites,
+    Tasks,
     // Conversations,
 }
 
@@ -79,9 +81,11 @@ impl MockOpts {
             }
             Some(MockCmd::Spaces) => m.spaces().await?,
             Some(MockCmd::AcceptInvites) => m.accept_invitations().await?,
+            Some(MockCmd::Tasks) => m.tasks().await?,
             Some(MockCmd::All) | None => {
                 m.spaces().await?;
                 m.accept_invitations().await?;
+                m.tasks().await?;
             }
         }
         Ok(())
@@ -288,6 +292,45 @@ impl Mock {
             }
         }
         log::info!("Done accepting invites");
+
+        Ok(())
+    }
+
+    pub async fn tasks(&self) -> Result<()> {
+        let sisko = &self.sisko;
+        let odo = &self.odo;
+        let kyra = &self.kyra;
+        sisko.sync_once(Default::default()).await?;
+        odo.sync_once(Default::default()).await?;
+        kyra.sync_once(Default::default()).await?;
+
+        let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
+        let mut draft = odo_ops.task_list_draft()?;
+
+        let builder =
+            draft
+                .name("Daily Security Brief".into())
+                .description(TextMessageEventContent::plain(
+                    "The tops of the daily security briefing with kyra",
+                ));
+
+        let task_list_id = odo_ops
+            .task_list_draft_with_builder(builder.clone())?
+            .send()
+            .await?;
+
+        odo.sync_once(Default::default()).await?;
+
+        let task_list = odo
+            .task_lists()
+            .await?
+            .into_iter()
+            .find(|e| e.event_id == task_list_id)
+            .unwrap();
+
+        // let task_draft = task_list.task_builder();
+
+        log::info!("Creating task lists and tasks done.");
 
         Ok(())
     }
