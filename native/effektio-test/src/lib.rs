@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod receipt_notification;
+mod receipt;
 #[cfg(test)]
 mod tests;
 // #[cfg(test)]

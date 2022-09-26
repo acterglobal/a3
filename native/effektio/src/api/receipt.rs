@@ -86,7 +86,7 @@ impl ReceiptEvent {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct ReceiptController {
     event_tx: Sender<ReceiptEvent>,
     event_rx: Arc<Mutex<Option<Receiver<ReceiptEvent>>>>,

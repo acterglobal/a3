@@ -52,37 +52,132 @@ async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result
     EfkClient::new(cl, Default::default()).await
 }
 
-/// Posting a news item to a given room
 #[derive(Parser, Debug)]
-pub struct Mock {
+pub struct MockOpts {
     #[clap()]
     pub homeserver: String,
+    #[clap(subcommand)]
+    pub cmd: Option<MockCmd>,
+}
+
+#[derive(clap::Subcommand, Debug)]
+pub enum MockCmd {
+    All,
+    Users,
+    Spaces,
+    AcceptInvites,
+    // Conversations,
+}
+
+impl MockOpts {
+    pub async fn run(&self) -> Result<()> {
+        let homeserver = self.homeserver.clone();
+        let m = Mock::new(homeserver).await?;
+        match self.cmd {
+            Some(MockCmd::Users) => {
+                // happens on startup
+            }
+            Some(MockCmd::Spaces) => m.spaces().await?,
+            Some(MockCmd::AcceptInvites) => m.accept_invitations().await?,
+            Some(MockCmd::All) | None => {
+                m.spaces().await?;
+                m.accept_invitations().await?;
+            }
+        }
+        Ok(())
+    }
+}
+
+/// Posting a news item to a given room
+#[derive(Debug, Clone)]
+pub struct Mock {
+    admin: EfkClient,
+    sisko: EfkClient,
+    kyra: EfkClient,
+    worf: EfkClient,
+    bashir: EfkClient,
+    miles: EfkClient,
+    jadzia: EfkClient,
+    odo: EfkClient,
+    quark: EfkClient,
+    rom: EfkClient,
+    morn: EfkClient,
+    keiko: EfkClient,
 }
 
 impl Mock {
-    pub async fn run(&self) -> Result<()> {
-        let homeserver = self.homeserver.as_str();
+    pub async fn new(homeserver: String) -> Result<Self> {
+        let admin = ensure_user(homeserver.as_str(), "admin", "admin").await?;
 
-        // FIXME: would be better if we used the effektio API for this...
+        let sisko = ensure_user(homeserver.as_str(), "sisko", "sisko").await?;
+        let kyra = ensure_user(homeserver.as_str(), "kyra", "kyra").await?;
+        let worf = ensure_user(homeserver.as_str(), "worf", "worf").await?;
+        let bashir = ensure_user(homeserver.as_str(), "bashir", "bashir").await?;
+        let miles = ensure_user(homeserver.as_str(), "miles", "miles").await?;
+        let jadzia = ensure_user(homeserver.as_str(), "jadzia", "jadzia").await?;
+        let odo = ensure_user(homeserver.as_str(), "odo", "odo").await?;
 
-        let admin = ensure_user(homeserver, "admin", "admin").await?;
+        let quark = ensure_user(homeserver.as_str(), "quark", "quark").await?;
+        let rom = ensure_user(homeserver.as_str(), "rom", "rom").await?;
+        let morn = ensure_user(homeserver.as_str(), "morn", "morn").await?;
+        let keiko = ensure_user(homeserver.as_str(), "keiko", "keiko").await?;
 
-        let sisko = ensure_user(homeserver, "sisko", "sisko").await?;
-        let kyra = ensure_user(homeserver, "kyra", "kyra").await?;
-        let worf = ensure_user(homeserver, "worf", "worf").await?;
-        let bashir = ensure_user(homeserver, "bashir", "bashir").await?;
-        let miles = ensure_user(homeserver, "miles", "miles").await?;
-        let jadzia = ensure_user(homeserver, "jadzia", "jadzia").await?;
-        let odo = ensure_user(homeserver, "odo", "odo").await?;
+        log::info!("Done ensuring users");
 
-        let quark = ensure_user(homeserver, "quark", "quark").await?;
-        let rom = ensure_user(homeserver, "rom", "rom").await?;
-        let morn = ensure_user(homeserver, "morn", "morn").await?;
-        let keiko = ensure_user(homeserver, "keiko", "keiko").await?;
+        Ok(Mock {
+            admin,
+            sisko,
+            kyra,
+            worf,
+            bashir,
+            miles,
+            jadzia,
+            odo,
+            quark,
+            rom,
+            morn,
+            keiko,
+        })
+    }
 
-        let team = [&sisko, &kyra, &worf, &bashir, &miles, &jadzia, &odo];
-        let civilians = [&quark, &rom, &morn, &keiko];
-        let quark_customers = [&quark, &rom, &morn, &jadzia, &kyra, &miles, &bashir];
+    pub fn team(&self) -> [&EfkClient; 7] {
+        [
+            &self.sisko,
+            &self.kyra,
+            &self.worf,
+            &self.bashir,
+            &self.miles,
+            &self.jadzia,
+            &self.odo,
+        ]
+    }
+    pub fn civilians(&self) -> [&EfkClient; 4] {
+        [&self.quark, &self.rom, &self.morn, &self.keiko]
+    }
+
+    pub fn quark_customers(&self) -> [&EfkClient; 7] {
+        [
+            &self.quark,
+            &self.rom,
+            &self.morn,
+            &self.jadzia,
+            &self.kyra,
+            &self.miles,
+            &self.bashir,
+        ]
+    }
+
+    pub fn everyone(&self) -> Vec<&EfkClient> {
+        let mut everyone = Vec::new();
+        everyone.extend_from_slice(&self.team());
+        everyone.extend_from_slice(&self.civilians());
+        everyone
+    }
+
+    pub async fn spaces(&self) -> Result<()> {
+        let team = self.team();
+        let civilians = self.civilians();
+        let quark_customers = self.quark_customers();
 
         let team_ids: Vec<OwnedUserId> =
             futures::future::join_all(team.iter().map(|a| a.user_id()))
@@ -116,15 +211,13 @@ impl Mock {
                 .map(|a| a.expect("everyone here has an id"))
                 .collect();
 
-        log::warn!("Done ensuring users");
-
         let ops_settings = CreateGroupSettingsBuilder::default()
             .name("Ops".to_owned())
             .alias("ops".to_owned())
             .invites(team_ids)
             .build()?;
 
-        match admin.create_effektio_group(ops_settings).await {
+        match self.admin.create_effektio_group(ops_settings).await {
             Ok(ops_id) => {
                 log::info!("Ops Room Id: {:?}", ops_id);
             }
@@ -146,7 +239,7 @@ impl Mock {
             .invites(civilians_ids)
             .build()?;
 
-        match admin.create_effektio_group(promenade_settings).await {
+        match self.admin.create_effektio_group(promenade_settings).await {
             Ok(promenade_room_id) => {
                 log::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
@@ -168,7 +261,7 @@ impl Mock {
             .invites(quark_customer_ids)
             .build()?;
 
-        match admin.create_effektio_group(quarks_settings).await {
+        match self.admin.create_effektio_group(quarks_settings).await {
             Ok(quarks_id) => {
                 log::info!("Quarks Room Id: {:?}", quarks_id);
             }
@@ -183,19 +276,18 @@ impl Mock {
             }
         }
 
-        log::warn!("Done creating spaces");
+        log::info!("Done creating spaces");
+        Ok(())
+    }
 
-        let mut everyone = Vec::new();
-        everyone.extend_from_slice(&team);
-        everyone.extend_from_slice(&civilians);
-
-        for member in everyone.iter() {
+    pub async fn accept_invitations(&self) -> Result<()> {
+        for member in self.everyone().iter() {
             member.sync_once(Default::default()).await?;
             for invited in member.invited_rooms().iter() {
                 invited.accept_invitation().await?;
             }
         }
-        log::warn!("Done accepting invites");
+        log::info!("Done accepting invites");
 
         Ok(())
     }

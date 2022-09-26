@@ -65,7 +65,7 @@ impl LoginConfig {
 #[clap(author, version, about, long_about = None)]
 pub struct EffektioCliConfig {
     /// Logging configuration
-    #[clap(short, long, default_value = "warn")]
+    #[clap(short, long, default_value = "effektio_cli=info,warn")]
     pub log: String,
 
     /// The action to perform
