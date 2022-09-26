@@ -26,15 +26,13 @@ use matrix_sdk::{room::Joined, room::Room, Client as MatrixClient};
 
 impl Client {
     pub(crate) async fn init_tasks(&self) {
-        self.client
-            .register_event_handler(
-                |ev: SyncTaskListEvent, room: Room, client: MatrixClient| async move {
-                    println!("received the task list event: {:?}", ev);
-                    // Common usage: Room event plus room and client.
-                    // if let ruma::events::SyncMessageLikeEvent::Original() ev {}
-                },
-            )
-            .await;
+        self.client.add_event_handler(
+            |ev: SyncTaskListEvent, room: Room, client: MatrixClient| async move {
+                println!("received the task list event: {:?}", ev);
+                // Common usage: Room event plus room and client.
+                // if let ruma::events::SyncMessageLikeEvent::Original() ev {}
+            },
+        );
     }
 
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
@@ -42,6 +40,7 @@ impl Client {
         let mut rooms_map: HashMap<OwnedRoomId, Joined> = HashMap::new();
         let client = self.client.clone();
         for mdl in self.store.get_list(KEYS::TASKS)? {
+            #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
                 let room_id = t.room_id();
                 let room = match rooms_map.entry(room_id) {

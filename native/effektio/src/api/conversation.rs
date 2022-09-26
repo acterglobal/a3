@@ -250,7 +250,7 @@ impl Client {
                         visibility: Visibility::Private,
                     }))
                     .await?;
-                Ok(res.room_id().to_owned())
+                Ok(res.room_id.to_owned())
             })
             .await?
     }

@@ -47,7 +47,6 @@ path = "../core"
 
 [dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk/"
-branch = "jplatte/room-api"
 default-features = false
 features = [
     "anyhow",
