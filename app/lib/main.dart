@@ -44,9 +44,7 @@ Future<void> startApp() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(
-    Effektio(),
-  );
+  runApp(Effektio());
 }
 
 class Effektio extends StatelessWidget {
@@ -120,12 +118,9 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
-
     String userId = (await client.userId()).toString();
-    var receiptController = ReceiptController(
-      client: client,
-      userId: userId,
-    );
+
+    var receiptController = ReceiptController(client: client, userId: userId);
     Get.put<ReceiptController>(receiptController);
 
     SyncState _ = client.startSync();

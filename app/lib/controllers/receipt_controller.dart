@@ -3,23 +3,28 @@ import 'dart:async';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:get/get.dart';
 
-class ReceiptRoom {
-  String roomId;
-  List<ReceiptUser> users;
+// this controller keeps seen_by data by room/user
 
-  ReceiptRoom({
-    required this.roomId,
-    required this.users,
-  });
+class ReceiptRoom {
+  Map<String, ReceiptUser> users = {};
+
+  void updateUser(String userId, String eventId, int? ts) {
+    if (users.containsKey(userId)) {
+      users[userId]!.eventId = eventId;
+      if (ts != null) {
+        users[userId]!.ts = ts;
+      }
+    } else {
+      users[userId] = ReceiptUser(eventId: eventId, ts: ts);
+    }
+  }
 }
 
 class ReceiptUser {
-  String userId;
   String eventId;
   int? ts;
 
   ReceiptUser({
-    required this.userId,
     required this.eventId,
     this.ts,
   });
@@ -28,8 +33,8 @@ class ReceiptUser {
 class ReceiptController extends GetxController {
   Client client;
   String userId;
-  StreamSubscription<ReceiptEvent>? _eventSubscription;
-  final List<ReceiptRoom> _rooms = [];
+  StreamSubscription<ReceiptEvent>? _eventReceiver;
+  final Map<String, ReceiptRoom> _rooms = {};
 
   ReceiptController({
     required this.client,
@@ -41,15 +46,19 @@ class ReceiptController extends GetxController {
     super.onInit();
 
     if (!client.isGuest()) {
-      _eventSubscription = client.receiptEventRx()!.listen((event) {
+      _eventReceiver = client.receiptEventRx()?.listen((event) {
         String roomId = event.roomId();
+        bool changed = false;
         for (var record in event.receiptRecords()) {
           String seenBy = record.seenBy();
           if (seenBy != userId) {
             var room = _getRoom(roomId);
-            _updateUser(room, seenBy, record.eventId(), record.ts());
-            update(['Chat']);
+            room.updateUser(seenBy, record.eventId(), record.ts());
+            changed = true;
           }
+        }
+        if (changed) {
+          update(['Chat']);
         }
       });
     }
@@ -57,59 +66,30 @@ class ReceiptController extends GetxController {
 
   @override
   void onClose() {
+    _eventReceiver?.cancel();
     super.onClose();
-
-    if (_eventSubscription != null) {
-      _eventSubscription!.cancel();
-    }
   }
 
   ReceiptRoom _getRoom(String roomId) {
-    int idx = _rooms.indexWhere((x) => x.roomId == roomId);
-    if (idx == -1) {
-      ReceiptRoom room = ReceiptRoom(
-        roomId: roomId,
-        users: [],
-      );
-      _rooms.add(room);
-      return room;
+    if (_rooms.containsKey(roomId)) {
+      return _rooms[roomId]!;
     }
-    return _rooms[idx];
+    ReceiptRoom room = ReceiptRoom();
+    _rooms[roomId] = room;
+    return room;
   }
 
-  void _updateUser(
-    ReceiptRoom room,
-    String userId,
-    String eventId,
-    int? ts,
-  ) {
-    int idx = room.users.indexWhere((x) => x.userId == userId);
-    if (idx == -1) {
-      ReceiptUser user = ReceiptUser(
-        userId: userId,
-        eventId: eventId,
-        ts: ts,
-      );
-      room.users.add(user);
-    } else {
-      room.users[idx].eventId = eventId;
-      if (ts != null) {
-        room.users[idx].ts = ts;
-      }
-    }
-  }
-
+  // this will be called via update(['Chat'])
   List<String> getSeenByList(String roomId, int ts) {
     List<String> userIds = [];
-    int idx = _rooms.indexWhere((x) => x.roomId == roomId);
-    if (idx != -1) {
-      for (var user in _rooms[idx].users) {
+    if (_rooms.containsKey(roomId)) {
+      _rooms[roomId]!.users.forEach((userId, user) {
         if (user.ts != null) {
           if (user.ts! >= ts) {
-            userIds.add(user.userId);
+            userIds.add(userId);
           }
         }
-      }
+      });
     }
     return userIds;
   }

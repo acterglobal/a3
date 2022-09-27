@@ -75,7 +75,7 @@ impl TypingController {
     ) {
         info!("typing: {:?}", ev.content.user_ids);
         let room_id = room.room_id().to_owned();
-        let msg = TypingEvent::new(room_id.clone(), ev.content.user_ids);
+        let msg = TypingEvent::new(room_id.clone(), ev.content.user_ids.clone());
         let mut event_tx = self.event_tx.clone();
         if let Err(e) = event_tx.try_send(msg) {
             warn!("Dropping ephemeral event for {}: {}", room_id, e);

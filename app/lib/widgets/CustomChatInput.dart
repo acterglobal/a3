@@ -19,7 +19,7 @@ class CustomChatInput extends StatelessWidget {
 
   final BuildContext context;
   final Function()? onButtonPressed;
-  final controller = Get.put(ChatRoomController());
+  ChatRoomController controller = Get.find<ChatRoomController>();
   bool isChatScreen = true;
   final String roomName;
   static const List<List<String>> attachmentNameList = [

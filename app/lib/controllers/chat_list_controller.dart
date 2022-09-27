@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, RoomMessage;
+    show Client, Conversation, FfiListConversation, RoomMessage, TypingEvent;
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 //Helper class.
@@ -27,8 +31,56 @@ class LatestMessage {
 }
 
 class ChatListController extends GetxController {
+  Client client;
+  late String userId;
   List<RoomItem> roomItems = [];
   bool initialLoaded = false;
+  String? currentRoomId;
+  StreamSubscription<FfiListConversation>? convosReceiver;
+  StreamSubscription<TypingEvent>? typingReceiver;
+  StreamSubscription<RoomMessage>? messageReceiver;
+
+  ChatListController({required this.client}) : super();
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    userId = (await client.userId()).toString();
+    if (!client.isGuest()) {
+      convosReceiver = client.conversationsRx().listen((event) async {
+        updateList(event.toList(), userId);
+      });
+      typingReceiver = client.typingEventRx()?.listen((event) {
+        String roomId = event.roomId();
+        List<String> userIds = [];
+        for (final userId in event.userIds()) {
+          userIds.add(userId.toDartString());
+        }
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      });
+      messageReceiver = client.messageEventRx()?.listen((event) {
+        if (currentRoomId != null) {
+          ChatRoomController controller = Get.find<ChatRoomController>();
+          if (event.sender() != userId) {
+            controller.loadMessage(event);
+          }
+          update(['Chat']);
+        }
+      });
+    }
+  }
+
+  @override
+  void onClose() {
+    convosReceiver?.cancel();
+    typingReceiver?.cancel();
+    messageReceiver?.cancel();
+    super.onClose();
+  }
+
+  void setCurrentRoomId(String? roomId) {
+    currentRoomId = roomId;
+  }
 
   // ignore: always_declare_return_types
   void updateList(List<Conversation> convos, String userId) {

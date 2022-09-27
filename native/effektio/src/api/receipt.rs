@@ -121,11 +121,13 @@ impl ReceiptController {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
         let mut msg = ReceiptEvent::new(room_id.to_owned());
-        for (event_id, event_info) in ev.content.iter() {
+        for (event_id, event_info) in ev.content.clone().iter() {
             info!("receipt iter: {:?}", event_id);
-            for (seen_by, receipt) in event_info[&ReceiptType::Read].iter() {
-                info!("user receipt: {:?}", receipt);
-                msg.add_receipt_record(event_id.clone(), seen_by.clone(), receipt.ts);
+            if event_info.contains_key(&ReceiptType::Read) {
+                for (seen_by, receipt) in event_info[&ReceiptType::Read].iter() {
+                    info!("user receipt: {:?}", receipt);
+                    msg.add_receipt_record(event_id.clone(), seen_by.clone(), receipt.ts);
+                }
             }
         }
         let mut event_tx = self.event_tx.clone();

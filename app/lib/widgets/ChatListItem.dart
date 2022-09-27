@@ -27,12 +27,14 @@ class RecentMessage {
 }
 
 class ChatListItem extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final String user;
   final LatestMessage? latestMessage;
 
   const ChatListItem({
     Key? key,
+    required this.client,
     required this.room,
     required this.user,
     this.latestMessage,
@@ -64,6 +66,7 @@ class _ChatListItemState extends State<ChatListItem> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChatScreen(
+                  client: widget.client,
                   room: widget.room,
                   user: widget.user,
                 ),

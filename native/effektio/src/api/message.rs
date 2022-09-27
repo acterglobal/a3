@@ -8,7 +8,7 @@ use matrix_sdk::{
     },
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
     room: Room,

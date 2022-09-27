@@ -6,7 +6,8 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/widgets/ChatListView.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation;
@@ -44,7 +45,7 @@ class _ChatOverviewState extends State<ChatOverview> {
   late final countInvites;
   String userId = '';
   Random random = Random();
-  ChatListController _chatListController = Get.put(ChatListController());
+  late ChatListController _chatListController;
 
   @override
   void initState() {
@@ -52,40 +53,12 @@ class _ChatOverviewState extends State<ChatOverview> {
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     getUserId();
-    if (!widget.client.isGuest()) {
-      widget.client.conversationsRx().listen((event) async {
-        _chatListController.updateList(event.toList(), userId);
-      });
-      widget.client.typingEventRx()?.listen((event) {
-        String roomId = event.roomId();
-        List<String> userIds = [];
-        for (final userId in event.userIds()) {
-          userIds.add(userId.toDartString());
-        }
-        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-      });
-      widget.client.receiptEventRx()?.listen((event) {
-        for (var record in event.receiptRecords()) {
-          String seenBy = record.seenBy();
-          if (seenBy != userId.toString()) {
-            debugPrint('receipt event for ' + event.roomId());
-            debugPrint('event id: ' + record.eventId());
-            debugPrint('seen by: ' + seenBy);
-            int? ts = record.ts();
-            if (ts != null) {
-              debugPrint('timestamp: ' + ts.toString());
-            }
-          }
-        }
-      });
-    }
+    _chatListController = Get.put(ChatListController(client: widget.client));
   }
 
   Future<void> getUserId() async {
     await widget.client.userId().then((id) {
-      setState(() {
-        userId = id.toString();
-      });
+      setState(() => userId = id.toString());
     });
   }
 
@@ -207,6 +180,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
                 child: ChatListItem(
+                  client: widget.client,
                   room: roomItem.conversation,
                   user: userId,
                   latestMessage: roomItem.latestMessage,
@@ -221,6 +195,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             return FadeTransition(
               opacity: animation,
               child: ChatListItem(
+                client: widget.client,
                 room: roomItem.conversation,
                 user: userId,
                 latestMessage: roomItem.latestMessage,
@@ -244,6 +219,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
                 child: ChatListItem(
+                  client: widget.client,
                   room: roomItem.conversation,
                   user: userId,
                   latestMessage: roomItem.latestMessage,

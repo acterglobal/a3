@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -14,7 +15,7 @@ import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember;
+    show Client, Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -26,37 +27,43 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final String? user;
 
-  const ChatScreen({Key? key, required this.room, required this.user})
-      : super(key: key);
+  const ChatScreen({
+    Key? key,
+    required this.client,
+    required this.room,
+    this.user,
+  }) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late final _user;
+  late types.User _user;
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatController = ChatRoomController.instance;
+  ChatRoomController chatRoomController = Get.put(ChatRoomController());
+  ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    _user = types.User(
-      id: widget.user!,
-    );
+    _user = types.User(id: widget.user!);
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
-    chatController.init(widget.room, _user);
+    chatRoomController.init(widget.room, _user);
+    chatListController.setCurrentRoomId(widget.room.getRoomId());
   }
 
   @override
   void dispose() {
+    chatListController.setCurrentRoomId(null);
     Get.delete<ChatRoomController>();
     super.dispose();
   }
@@ -73,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => chatController.handleImageSelection(context),
+                  onTap: () => chatRoomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -93,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => chatController.handleFileSelection(context),
+                  onTap: () => chatRoomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -295,7 +302,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (chatController.isLoading.isTrue) {
+    if (chatRoomController.isLoading.isTrue) {
       return Center(
         child: Container(
           height: 15,
@@ -331,7 +338,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: chatController.messages,
+              messages: chatRoomController.messages,
               sendButtonVisibilityMode: roomState
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
