@@ -1,33 +1,21 @@
 // ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
 
-import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/widgets/ChatListView.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiListConversation, RoomMessage;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:themed/themed.dart';
-
-class RoomData {
-  String roomId;
-  Conversation conversation;
-  RecentMessage? recentMessage;
-
-  RoomData({
-    required this.roomId,
-    required this.conversation,
-    this.recentMessage,
-  });
-}
 
 class ChatOverview extends StatefulWidget {
   const ChatOverview({Key? key, required this.client}) : super(key: key);
@@ -40,64 +28,51 @@ class ChatOverview extends StatefulWidget {
 class _ChatOverviewState extends State<ChatOverview> {
   late final String user;
   late final countInvites;
+  String userId = '';
   Random random = Random();
-  late final Stream<FfiListConversation> stream;
-  late final StreamSubscription<FfiListConversation> subscription;
-  List<RoomData> roomDatas = [];
-  bool initialLoaded = false;
+  ChatListController _chatListController = Get.put(ChatListController());
 
   @override
   void initState() {
+    super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    super.initState();
-    _getUser();
-
-    stream = widget.client.conversationsRx();
-    subscription = stream.listen((event) {
-      if (!initialLoaded) {
-        setState(() => initialLoaded = true);
-      }
-      List<RoomData> newRoomDatas = [];
-      for (Conversation convo in event.toList()) {
-        String roomId = convo.getRoomId();
-        int oldIndex = roomDatas.indexWhere((x) => x.roomId == roomId);
-        RoomMessage? msg = convo.latestMessage();
-        if (msg == null) {
-          // prevent latest message from deleting
-          RoomData newRoomData = RoomData(
-            roomId: roomId,
-            conversation: convo,
-            recentMessage:
-                oldIndex == -1 ? null : roomDatas[oldIndex].recentMessage,
-          );
-          newRoomDatas.add(newRoomData);
-          continue;
+    getUserId();
+    if (!widget.client.isGuest()) {
+      widget.client.conversationsRx().listen((event) async {
+        _chatListController.updateList(event, userId);
+      });
+      widget.client.typingEventRx()?.listen((event) {
+        String roomId = event.roomId();
+        List<String> userIds = [];
+        for (final userId in event.userIds()) {
+          userIds.add(userId.toDartString());
         }
-        RoomData newRoomData = RoomData(
-          roomId: roomId,
-          conversation: convo,
-          recentMessage: RecentMessage(
-            sender: msg.sender(),
-            body: msg.body(),
-            originServerTs: msg.originServerTs(),
-          ),
-        );
-        newRoomDatas.add(newRoomData);
-      }
-      setState(() => roomDatas = newRoomDatas);
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      });
+      widget.client.receiptEventRx()?.listen((event) {
+        for (var record in event.receiptRecords()) {
+          String recordUserId = record.userId();
+          if (recordUserId != userId.toString()) {
+            debugPrint('receipt event for ' + event.roomId());
+            debugPrint('event id: ' + record.eventId());
+            debugPrint('user id: ' + recordUserId);
+            int? ts = record.ts();
+            if (ts != null) {
+              debugPrint('timestamp: ' + ts.toString());
+            }
+          }
+        }
+      });
+    }
+  }
+
+  Future<void> getUserId() async {
+    await widget.client.userId().then((id) {
+      setState(() {
+        userId = id.toString();
+      });
     });
-  }
-
-  @override
-  void dispose() {
-    subscription.cancel();
-    super.dispose();
-  }
-
-  Future<void> _getUser() async {
-    var userId = await widget.client.userId();
-    user = userId.toString();
   }
 
   @override
@@ -158,7 +133,14 @@ class _ChatOverviewState extends State<ChatOverview> {
                         ),
                       ),
                       SizedBox(height: 10),
-                      buildJoinedList(context),
+                      widget.client.isGuest()
+                          ? const SizedBox()
+                          : GetBuilder<ChatListController>(
+                              id: 'chatlist',
+                              builder: (ChatListController controller) {
+                                return buildJoinedList(context, controller);
+                              },
+                            ),
                     ],
                   ),
                 ],
@@ -180,27 +162,22 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Widget buildJoinedList(BuildContext context) {
-    if (initialLoaded) {
-      return ImplicitlyAnimatedReorderableList<RoomData>(
+  Widget buildJoinedList(BuildContext context, ChatListController controller) {
+    if (controller.initialLoaded) {
+      return ImplicitlyAnimatedReorderableList<RoomItem>(
         header: ListView.builder(
           physics: NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: countInvites,
           itemBuilder: buildInvitedItem,
         ),
-        items: roomDatas,
+        items: controller.roomItems,
         areItemsTheSame: (a, b) => a.roomId == b.roomId,
-        onReorderFinished: (item, from, to, newItems) {
-          // Remember to update the underlying data when the list has been reordered.
-          setState(() {
-            roomDatas
-              ..removeAt(from)
-              ..insert(to, item);
-          });
-        },
+        // Remember to update the underlying data when the list has been reordered.
+        onReorderFinished: (item, from, to, newItems) =>
+            controller.sortList(from, to, item),
         itemBuilder: (context, itemAnimation, item, index) => Reorderable(
-          key: ValueKey(item.roomId),
+          key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
             final t = dragAnimation.value;
             final elevation = lerpDouble(0, 8, t);
@@ -216,7 +193,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: user,
+                  user: userId,
                   recentMessage: item.recentMessage,
                 ),
               ),
@@ -224,20 +201,20 @@ class _ChatOverviewState extends State<ChatOverview> {
           },
         ),
         removeItemBuilder: (context, animation, item) => Reorderable(
-          key: ValueKey(item.roomId),
+          key: UniqueKey(),
           builder: (context, animation, inDrag) {
             return FadeTransition(
               opacity: animation,
               child: ChatListItem(
                 room: item.conversation,
-                user: user,
+                user: userId,
                 recentMessage: item.recentMessage,
               ),
             );
           },
         ),
         updateItemBuilder: (context, itemAnimation, item) => Reorderable(
-          key: ValueKey(item.roomId),
+          key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
             final t = dragAnimation.value;
             final elevation = lerpDouble(0, 8, t);
@@ -253,7 +230,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: user,
+                  user: userId,
                   recentMessage: item.recentMessage,
                 ),
               ),

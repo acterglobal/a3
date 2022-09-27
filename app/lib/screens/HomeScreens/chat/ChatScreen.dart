@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'dart:math';
+
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -39,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatController = ChatRoomController.instance;
+  ChatRoomController chatRoomController = Get.put(ChatRoomController());
 
   @override
   void initState() {
@@ -47,11 +48,10 @@ class _ChatScreenState extends State<ChatScreen> {
     _user = types.User(
       id: widget.user!,
     );
-
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
-    chatController.init(widget.room, _user);
+    chatRoomController.init(widget.room, _user);
   }
 
   @override
@@ -72,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => chatController.handleImageSelection(context),
+                  onTap: () => chatRoomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -92,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => chatController.handleFileSelection(context),
+                  onTap: () => chatRoomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -126,20 +126,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatarBuilder(String userId) {
-    return GetBuilder<ChatRoomController>(
-      id: 'Avatar',
-      builder: (ChatRoomController controller) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: CustomAvatar(
-            avatar: _userAvatar(userId),
-            displayName: null,
-            radius: 15,
-            isGroup: false,
-            stringName: getNameFromId(userId) ?? '',
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: SizedBox(
+        height: 28,
+        width: 28,
+        child: CustomAvatar(
+          avatar: _userAvatar(userId),
+          displayName: null,
+          radius: 15,
+          isGroup: false,
+          stringName: getNameFromId(userId) ?? '',
+        ),
+      ),
     );
   }
 
@@ -294,7 +293,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (chatController.isLoading.isTrue) {
+    if (chatRoomController.isLoading.isTrue) {
       return Center(
         child: Container(
           height: 15,
@@ -330,7 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: chatController.messages,
+              messages: chatRoomController.messages,
               sendButtonVisibilityMode: roomState
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
@@ -342,7 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
               imageMessageBuilder: _imageMessageBuilder,
               //Whenever users starts typing on keyboard, this will trigger the function
               onTextChanged: (text) async {
-                await controller.room.typingNotice(true);
+                // await controller.room.typingNotice(true);
               },
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),
