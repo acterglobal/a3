@@ -207,7 +207,8 @@ impl ConversationController {
                     client: client.clone(),
                     room: room.clone(),
                 });
-                let msg = RoomMessage::new(ev.clone(), room.clone(), ev.content.clone().body().to_string());
+                let fallback = ev.content.body().to_string();
+                let msg = RoomMessage::new(ev, room.clone(), fallback);
                 convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
@@ -227,8 +228,8 @@ impl ConversationController {
     ) {
         info!("original sync room member event: {:?}", ev);
         let mut convos = self.conversations.lock_mut();
-        if let Some(prev_content) = ev.unsigned.prev_content.clone() {
-            match (prev_content.membership, ev.content.membership.clone()) {
+        if let Some(prev_content) = ev.unsigned.prev_content {
+            match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
                     // add new room
                     let convo = Conversation::new(Room {

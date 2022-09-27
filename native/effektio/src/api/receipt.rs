@@ -73,11 +73,11 @@ impl ReceiptEvent {
 
     pub(crate) fn add_receipt_record(
         &mut self,
-        event_id: OwnedEventId,
-        seen_by: OwnedUserId,
+        event_id: &OwnedEventId,
+        seen_by: &OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) {
-        let record = ReceiptRecord::new(event_id, seen_by, ts);
+        let record = ReceiptRecord::new(event_id.clone(), seen_by.clone(), ts);
         self.receipt_records.push(record);
     }
 
@@ -121,12 +121,12 @@ impl ReceiptController {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
         let mut msg = ReceiptEvent::new(room_id.to_owned());
-        for (event_id, event_info) in ev.content.clone().iter() {
+        for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
             if event_info.contains_key(&ReceiptType::Read) {
                 for (seen_by, receipt) in event_info[&ReceiptType::Read].iter() {
                     info!("user receipt: {:?}", receipt);
-                    msg.add_receipt_record(event_id.clone(), seen_by.clone(), receipt.ts);
+                    msg.add_receipt_record(event_id, seen_by, receipt.ts);
                 }
             }
         }
