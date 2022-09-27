@@ -1,7 +1,7 @@
 // ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
 
-import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/OnboardingWidget.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:effektio/controllers/login_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

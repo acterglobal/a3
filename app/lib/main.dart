@@ -1,17 +1,17 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:async';
-import 'package:effektio/common/widget/CrossSigning.dart';
-import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/store/themes/appTheme.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
-import 'package:effektio/common/widget/MaterialIndicator.dart';
-import 'package:effektio/common/widget/SideMenu.dart';
+import 'package:effektio/widgets/CrossSigning.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/common/store/themes/AppTheme.dart';
+import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/MaterialIndicator.dart';
+import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
-import 'package:effektio/screens/faq/Overview.dart';
-import 'package:effektio/screens/HomeScreens/ChatList.dart';
-import 'package:effektio/screens/HomeScreens/News.dart';
+import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
+import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
+import 'package:effektio/screens/HomeScreens/news/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
@@ -60,7 +60,6 @@ class Effektio extends StatelessWidget {
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: ApplicationLocalizations.supportedLocales,
@@ -198,8 +197,10 @@ class _EffektioHomeState extends State<EffektioHome>
             children: [
               NewsScreen(client: client),
               FaqOverviewScreen(client: client),
-              NewsScreen(client: client),
-              ChatList(client: client),
+              NewsScreen(
+                client: client,
+              ),
+              ChatOverview(client: client),
               NotificationScreen(),
             ],
           ),
