@@ -51,12 +51,12 @@ class CustomChatInput extends StatelessWidget {
                               () => InkWell(
                                 onTap: () {
                                   controller.isEmojiVisible.value = false;
-                                  controller.isattachmentVisible.value =
-                                      !controller.isattachmentVisible.value;
+                                  controller.isAttachmentVisible.value =
+                                      !controller.isAttachmentVisible.value;
                                   controller.focusNode.unfocus();
                                   controller.focusNode.canRequestFocus = true;
                                 },
-                                child: controller.isattachmentVisible.value
+                                child: controller.isAttachmentVisible.value
                                     ? Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
@@ -98,7 +98,7 @@ class CustomChatInput extends StatelessWidget {
                               isCollapsed: true,
                               suffixIcon: InkWell(
                                 onTap: () {
-                                  controller.isattachmentVisible.value = false;
+                                  controller.isAttachmentVisible.value = false;
                                   controller.isEmojiVisible.value =
                                       !controller.isEmojiVisible.value;
                                   controller.focusNode.unfocus();
@@ -196,7 +196,7 @@ class AttachmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !controller.isattachmentVisible.value,
+        offstage: !controller.isAttachmentVisible.value,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           width: double.infinity,
@@ -244,7 +244,7 @@ class AttachmentWidget extends StatelessWidget {
                           onTap: () {
                             switch (item[0]) {
                               case 'camera':
-                                controller.isattachmentVisible.value = false;
+                                controller.isAttachmentVisible.value = false;
                                 controller.handleMultipleImageSelection(
                                   context,
                                   roomName,
