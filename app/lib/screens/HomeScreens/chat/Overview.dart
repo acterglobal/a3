@@ -6,7 +6,6 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -45,7 +44,6 @@ class _ChatOverviewState extends State<ChatOverview> {
   late final countInvites;
   String userId = '';
   Random random = Random();
-  late ChatListController _chatListController;
 
   @override
   void initState() {
@@ -53,7 +51,7 @@ class _ChatOverviewState extends State<ChatOverview> {
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     getUserId();
-    _chatListController = Get.put(ChatListController(client: widget.client));
+    Get.put(ChatListController(client: widget.client));
   }
 
   Future<void> getUserId() async {
