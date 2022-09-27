@@ -60,7 +60,6 @@ class Effektio extends StatelessWidget {
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: ApplicationLocalizations.supportedLocales,
