@@ -30,6 +30,7 @@ class ChatRoomController extends GetxController {
       Get.put<ChatRoomController>(ChatRoomController());
 
   List<types.Message> messages = [];
+  List<types.User> typingUsers = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
@@ -396,6 +397,18 @@ class ChatRoomController extends GetxController {
   void sendButtonUpdate() {
     isSendButtonVisible = textEditingController.text.trim().isNotEmpty;
     update();
+  }
+
+  void updateTypingList(List<String> userIds) {
+    typingUsers.clear();
+    for (var id in userIds) {
+      types.User typingUser = types.User(
+        id: id,
+        firstName: getNameFromId(id),
+      );
+      typingUsers.add(typingUser);
+    }
+    update(['Chat']);
   }
 
   @override

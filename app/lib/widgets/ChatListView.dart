@@ -28,12 +28,13 @@ class ChatListItem extends StatefulWidget {
   final Conversation room;
   final String user;
   final RecentMessage? recentMessage;
-
+  final Client client;
   const ChatListItem({
     Key? key,
     required this.room,
     required this.user,
     this.recentMessage,
+    required this.client,
   }) : super(key: key);
 
   @override
@@ -52,6 +53,7 @@ class _ChatListItemState extends State<ChatListItem> {
             builder: (context) => ChatScreen(
               room: widget.room,
               user: widget.user,
+              client: widget.client,
             ),
           ),
         );

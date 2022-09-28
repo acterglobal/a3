@@ -229,14 +229,16 @@ packages:
       name: flutter_chat_types
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.3"
+    version: "3.4.5"
   flutter_chat_ui:
     dependency: "direct main"
     description:
-      name: flutter_chat_ui
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.6.3"
+      path: "."
+      ref: HEAD
+      resolved-ref: e54f85703f7f27b725bb0923178653da1aec2275
+      url: "https://github.com/effektio/flyer-flutter_chat_ui.git"
+    source: git
+    version: "1.6.4"
   flutter_colorpicker:
     dependency: "direct main"
     description:
@@ -750,6 +752,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.27.5"
+  scroll_to_index:
+    dependency: transitive
+    description:
+      name: scroll_to_index
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   shared_preferences:
     dependency: transitive
     description:

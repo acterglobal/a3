@@ -119,14 +119,6 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);
     crossSigning.installVerificationEvent(client.verificationEventRx()!);
-    client.typingEventRx()!.listen((event) {
-      String roomId = event.roomId();
-      List<String> userIds = [];
-      for (final userId in event.userIds()) {
-        userIds.add(userId.toDartString());
-      }
-      debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-    });
     UserId myId = await client.userId();
     client.receiptEventRx()!.listen((event) {
       for (var record in event.receiptRecords()) {

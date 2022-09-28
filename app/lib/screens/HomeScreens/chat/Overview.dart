@@ -218,6 +218,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   room: item.conversation,
                   user: user,
                   recentMessage: item.recentMessage,
+                  client: widget.client,
                 ),
               ),
             );
@@ -232,6 +233,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 room: item.conversation,
                 user: user,
                 recentMessage: item.recentMessage,
+                client: widget.client,
               ),
             );
           },
@@ -255,6 +257,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   room: item.conversation,
                   user: user,
                   recentMessage: item.recentMessage,
+                  client: widget.client,
                 ),
               ),
             );

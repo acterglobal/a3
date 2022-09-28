@@ -14,7 +14,7 @@ import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember;
+    show Client, Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -27,7 +27,9 @@ import 'package:transparent_image/transparent_image.dart';
 class ChatScreen extends StatefulWidget {
   final Conversation room;
   final String? user;
-  const ChatScreen({Key? key, required this.room, required this.user})
+  final Client client;
+  const ChatScreen(
+      {Key? key, required this.room, required this.user, required this.client})
       : super(key: key);
 
   @override
@@ -52,6 +54,23 @@ class _ChatScreenState extends State<ChatScreen> {
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
     chatController.init(widget.room, _user);
+    widget.client.typingEventRx()!.listen((event) {
+      String roomId = event.roomId();
+      if (widget.room.getRoomId() == roomId) {
+        List<String> userIds = [];
+        if (event.userIds().isEmpty) {
+          chatController.typingUsers.clear();
+        } else {
+          for (final userId in event.userIds()) {
+            userIds.add(userId.toDartString());
+          }
+        }
+
+        //store the typing users.
+        chatController.updateTypingList(userIds);
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      }
+    });
   }
 
   @override
@@ -331,19 +350,21 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonAccessibilityLabel: '',
               ),
               messages: chatController.messages,
-              sendButtonVisibilityMode: roomState
-                  ? SendButtonVisibilityMode.hidden
-                  : SendButtonVisibilityMode.editing,
+              inputOptions: InputOptions(
+                sendButtonVisibilityMode: roomState
+                    ? SendButtonVisibilityMode.hidden
+                    : SendButtonVisibilityMode.editing,
+              ),
+              typingIndicatorOptions: TypingIndicatorOptions(
+                typingUsers: controller.typingUsers,
+                typingMode: TypingIndicatorMode.text,
+              ),
               onSendPressed: (_) {},
               user: _user,
               disableImageGallery: roomState ? true : false,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
-              //Whenever users starts typing on keyboard, this will trigger the function
-              onTextChanged: (text) async {
-                await controller.room.typingNotice(true);
-              },
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
