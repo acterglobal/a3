@@ -1,11 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:async';
-import 'package:effektio/widgets/CrossSigning.dart';
+
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
-import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/MaterialIndicator.dart';
-import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
@@ -17,10 +14,14 @@ import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/CrossSigning.dart';
+import 'package:effektio/widgets/MaterialIndicator.dart';
+import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState, UserId;
+    show SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -103,6 +104,7 @@ class _EffektioHomeState extends State<EffektioHome>
         tabIndex = _tabController.index;
       });
     });
+
     super.initState();
   }
 
@@ -119,29 +121,6 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);
     crossSigning.installVerificationEvent(client.verificationEventRx()!);
-    client.typingEventRx()!.listen((event) {
-      String roomId = event.roomId();
-      List<String> userIds = [];
-      for (final userId in event.userIds()) {
-        userIds.add(userId.toDartString());
-      }
-      debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-    });
-    UserId myId = await client.userId();
-    client.receiptEventRx()!.listen((event) {
-      for (var record in event.receiptRecords()) {
-        String userId = record.userId();
-        if (userId != myId.toString()) {
-          debugPrint('receipt event for ' + event.roomId());
-          debugPrint('event id: ' + record.eventId());
-          debugPrint('user id: ' + userId);
-          int? ts = record.ts();
-          if (ts != null) {
-            debugPrint('timestamp: ' + ts.toString());
-          }
-        }
-      }
-    });
     return client;
   }
 
@@ -297,6 +276,12 @@ class _EffektioHomeState extends State<EffektioHome>
       builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
         if (snapshot.hasData) {
           return homeScreen(context, snapshot.requireData);
+        } else if (snapshot.hasError) {
+          return SizedBox(
+            height: 40,
+            width: 40,
+            child: Text('${snapshot.error}'),
+          );
         } else {
           return Scaffold(
             body: Center(
