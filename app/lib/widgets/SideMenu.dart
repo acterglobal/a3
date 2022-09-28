@@ -147,8 +147,8 @@ class _SideDrawerState extends State<SideDrawer> {
                                 },
                               ),
                               FutureBuilder<String>(
-                                future: userId,
-                                // a previously-obtained Future<String> or null
+                                future:
+                                    userId, // a previously-obtained Future<String> or null
                                 builder: (
                                   BuildContext context,
                                   AsyncSnapshot<String> snapshot,

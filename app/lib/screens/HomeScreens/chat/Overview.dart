@@ -37,11 +37,11 @@ class _ChatOverviewState extends State<ChatOverview> {
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    getUserId();
+    _fetchUserId();
     Get.put(ChatListController(client: widget.client));
   }
 
-  Future<void> getUserId() async {
+  Future<void> _fetchUserId() async {
     var uid = await widget.client.userId();
     setState(() => userId = uid.toString());
   }
@@ -147,7 +147,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             a.conversation.getRoomId() == b.conversation.getRoomId(),
         // Remember to update the underlying data when the list has been reordered.
         onReorderFinished: (item, from, to, newItems) =>
-            controller.sortList(from, to, item),
+            controller.moveItem(from, to),
         itemBuilder: (context, itemAnimation, item, index) => Reorderable(
           key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
