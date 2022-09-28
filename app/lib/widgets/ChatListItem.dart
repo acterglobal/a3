@@ -14,18 +14,6 @@ import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 
-class RecentMessage {
-  String sender;
-  String body;
-  int originServerTs;
-
-  RecentMessage({
-    required this.sender,
-    required this.body,
-    required this.originServerTs,
-  });
-}
-
 class ChatListItem extends StatefulWidget {
   final Client client;
   final Conversation room;

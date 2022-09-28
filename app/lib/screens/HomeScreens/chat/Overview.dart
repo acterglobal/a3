@@ -8,8 +8,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,18 +16,6 @@ import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:themed/themed.dart';
-
-class RoomData {
-  String roomId;
-  Conversation conversation;
-  RecentMessage? recentMessage;
-
-  RoomData({
-    required this.roomId,
-    required this.conversation,
-    this.recentMessage,
-  });
-}
 
 class ChatOverview extends StatefulWidget {
   const ChatOverview({Key? key, required this.client}) : super(key: key);
@@ -50,14 +37,13 @@ class _ChatOverviewState extends State<ChatOverview> {
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    getUserId();
+    _fetchUserId();
     Get.put(ChatListController(client: widget.client));
   }
 
-  Future<void> getUserId() async {
-    await widget.client.userId().then((id) {
-      setState(() => userId = id.toString());
-    });
+  Future<void> _fetchUserId() async {
+    var uid = await widget.client.userId();
+    setState(() => userId = uid.toString());
   }
 
   @override
@@ -160,9 +146,9 @@ class _ChatOverviewState extends State<ChatOverview> {
         areItemsTheSame: (a, b) =>
             a.conversation.getRoomId() == b.conversation.getRoomId(),
         // Remember to update the underlying data when the list has been reordered.
-        onReorderFinished: (roomItem, from, to, newRoomItems) =>
-            controller.sortList(from, to, roomItem),
-        itemBuilder: (context, itemAnimation, roomItem, index) => Reorderable(
+        onReorderFinished: (item, from, to, newItems) =>
+            controller.moveItem(from, to),
+        itemBuilder: (context, itemAnimation, item, index) => Reorderable(
           key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
             final t = dragAnimation.value;
@@ -179,29 +165,29 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   client: widget.client,
-                  room: roomItem.conversation,
+                  room: item.conversation,
                   user: userId,
-                  latestMessage: roomItem.latestMessage,
+                  latestMessage: item.latestMessage,
                 ),
               ),
             );
           },
         ),
-        removeItemBuilder: (context, animation, roomItem) => Reorderable(
+        removeItemBuilder: (context, animation, item) => Reorderable(
           key: UniqueKey(),
           builder: (context, animation, inDrag) {
             return FadeTransition(
               opacity: animation,
               child: ChatListItem(
                 client: widget.client,
-                room: roomItem.conversation,
+                room: item.conversation,
                 user: userId,
-                latestMessage: roomItem.latestMessage,
+                latestMessage: item.latestMessage,
               ),
             );
           },
         ),
-        updateItemBuilder: (context, itemAnimation, roomItem) => Reorderable(
+        updateItemBuilder: (context, itemAnimation, item) => Reorderable(
           key: UniqueKey(),
           builder: (context, dragAnimation, inDrag) {
             final t = dragAnimation.value;
@@ -218,9 +204,9 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   client: widget.client,
-                  room: roomItem.conversation,
+                  room: item.conversation,
                   user: userId,
-                  latestMessage: roomItem.latestMessage,
+                  latestMessage: item.latestMessage,
                 ),
               ),
             );

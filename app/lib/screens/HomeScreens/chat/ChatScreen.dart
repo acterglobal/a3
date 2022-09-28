@@ -10,10 +10,10 @@ import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
+import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
@@ -134,20 +134,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatarBuilder(String userId) {
-    return GetBuilder<ChatRoomController>(
-      id: 'Avatar',
-      builder: (ChatRoomController controller) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: CustomAvatar(
-            avatar: _userAvatar(userId),
-            displayName: null,
-            radius: 15,
-            isGroup: false,
-            stringName: getNameFromId(userId) ?? '',
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: SizedBox(
+        height: 28,
+        width: 28,
+        child: CustomAvatar(
+          avatar: _userAvatar(userId),
+          displayName: null,
+          radius: 15,
+          isGroup: false,
+          stringName: getNameFromId(userId) ?? '',
+        ),
+      ),
     );
   }
 
@@ -216,8 +215,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   future: widget.room
                       .displayName()
                       .then((value) => roomName = value),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<String> snapshot,
+                  ) {
                     if (snapshot.hasData) {
                       return Text(
                         snapshot.requireData,

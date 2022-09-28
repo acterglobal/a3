@@ -34,7 +34,7 @@ class ChatRoomController extends GetxController {
   late final types.User user;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
   RxBool isEmojiVisible = false.obs;
-  RxBool isattachmentVisible = false.obs;
+  RxBool isAttachmentVisible = false.obs;
   FocusNode focusNode = FocusNode();
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
@@ -47,7 +47,7 @@ class ChatRoomController extends GetxController {
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
-        isattachmentVisible.value = false;
+        isAttachmentVisible.value = false;
       }
     });
     room = convoRoom;

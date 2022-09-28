@@ -47,7 +47,7 @@ class ChatListController extends GetxController {
     super.onInit();
     userId = (await client.userId()).toString();
     if (!client.isGuest()) {
-      convosReceiver = client.conversationsRx().listen((event) async {
+      convosReceiver = client.conversationsRx().listen((event) {
         updateList(event.toList(), userId);
       });
       typingReceiver = client.typingEventRx()?.listen((event) {
@@ -118,10 +118,9 @@ class ChatListController extends GetxController {
     update(['chatlist']);
   }
 
-  void sortList(int from, int to, RoomItem item) {
-    roomItems
-      ..removeAt(from)
-      ..insert(to, item);
+  void moveItem(int from, int to) {
+    RoomItem item = roomItems.removeAt(from);
+    roomItems.insert(to, item);
     update(['chatlist']);
   }
 }
