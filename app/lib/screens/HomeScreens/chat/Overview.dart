@@ -19,6 +19,7 @@ import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
   const ChatOverview({Key? key, required this.client}) : super(key: key);
+
   final Client client;
 
   @override
@@ -30,7 +31,6 @@ class _ChatOverviewState extends State<ChatOverview> {
   late final countInvites;
   String userId = '';
   Random random = Random();
-  ChatListController _chatListController = Get.put(ChatListController());
 
   @override
   void initState() {
@@ -38,41 +38,12 @@ class _ChatOverviewState extends State<ChatOverview> {
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     getUserId();
-    if (!widget.client.isGuest()) {
-      widget.client.conversationsRx().listen((event) async {
-        _chatListController.updateList(event, userId);
-      });
-      widget.client.typingEventRx()?.listen((event) {
-        String roomId = event.roomId();
-        List<String> userIds = [];
-        for (final userId in event.userIds()) {
-          userIds.add(userId.toDartString());
-        }
-        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-      });
-      widget.client.receiptEventRx()?.listen((event) {
-        for (var record in event.receiptRecords()) {
-          String recordUserId = record.userId();
-          if (recordUserId != userId.toString()) {
-            debugPrint('receipt event for ' + event.roomId());
-            debugPrint('event id: ' + record.eventId());
-            debugPrint('user id: ' + recordUserId);
-            int? ts = record.ts();
-            if (ts != null) {
-              debugPrint('timestamp: ' + ts.toString());
-            }
-          }
-        }
-      });
-    }
+    Get.put(ChatListController(client: widget.client));
   }
 
   Future<void> getUserId() async {
-    await widget.client.userId().then((id) {
-      setState(() {
-        userId = id.toString();
-      });
-    });
+    var uid = await widget.client.userId();
+    setState(() => userId = uid.toString());
   }
 
   @override
@@ -172,7 +143,8 @@ class _ChatOverviewState extends State<ChatOverview> {
           itemBuilder: buildInvitedItem,
         ),
         items: controller.roomItems,
-        areItemsTheSame: (a, b) => a.roomId == b.roomId,
+        areItemsTheSame: (a, b) =>
+            a.conversation.getRoomId() == b.conversation.getRoomId(),
         // Remember to update the underlying data when the list has been reordered.
         onReorderFinished: (item, from, to, newItems) =>
             controller.sortList(from, to, item),
@@ -194,7 +166,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 child: ChatListItem(
                   room: item.conversation,
                   user: userId,
-                  recentMessage: item.recentMessage,
+                  latestMessage: item.latestMessage,
                 ),
               ),
             );
@@ -208,7 +180,7 @@ class _ChatOverviewState extends State<ChatOverview> {
               child: ChatListItem(
                 room: item.conversation,
                 user: userId,
-                recentMessage: item.recentMessage,
+                latestMessage: item.latestMessage,
               ),
             );
           },
@@ -231,7 +203,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 child: ChatListItem(
                   room: item.conversation,
                   user: userId,
-                  recentMessage: item.recentMessage,
+                  latestMessage: item.latestMessage,
                 ),
               ),
             );

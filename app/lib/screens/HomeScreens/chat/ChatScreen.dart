@@ -6,17 +6,18 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
-import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -36,26 +37,27 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late final _user;
+  late types.User _user;
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
   ChatRoomController chatRoomController = Get.put(ChatRoomController());
+  ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    _user = types.User(
-      id: widget.user!,
-    );
+    _user = types.User(id: widget.user!);
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
     chatRoomController.init(widget.room, _user);
+    chatListController.setCurrentRoomId(widget.room.getRoomId());
   }
 
   @override
   void dispose() {
+    chatListController.setCurrentRoomId(null);
     Get.delete<ChatRoomController>();
     super.dispose();
   }
@@ -207,8 +209,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   future: widget.room
                       .displayName()
                       .then((value) => roomName = value),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<String> snapshot,
+                  ) {
                     if (snapshot.hasData) {
                       return Text(
                         snapshot.requireData,

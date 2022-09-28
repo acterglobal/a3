@@ -1,25 +1,14 @@
-use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
-};
-use log::{info, warn};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
-    event_handler::Ctx,
     room::Room,
     ruma::events::{
-        room::message::{MessageFormat, MessageType, OriginalSyncRoomMessageEvent, RoomMessageEventContent},
+        room::message::{MessageFormat, MessageType, RoomMessageEventContent},
         AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
-    Client as MatrixClient,
 };
-use parking_lot::Mutex;
-use std::sync::Arc;
 
-use super::client::Client;
-
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
     room: Room,
@@ -165,58 +154,5 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
         })
     } else {
         None
-    }
-}
-
-#[derive(Clone)]
-pub(crate) struct MessageController {
-    event_tx: Sender<RoomMessage>,
-    event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
-}
-
-impl MessageController {
-    pub fn new() -> Self {
-        let (tx, rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
-        MessageController {
-            event_tx: tx,
-            event_rx: Arc::new(Mutex::new(Some(rx))),
-        }
-    }
-
-    pub fn setup(&self, client: &MatrixClient) {
-        let me = self.clone();
-        client.add_event_handler_context(client.clone());
-        client.add_event_handler_context(me.clone());
-        client.add_event_handler(
-            |ev: OriginalSyncRoomMessageEvent,
-             room: Room,
-             Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<MessageController>| async move {
-                me.clone().process_room_message(ev, &room, &client);
-            },
-        );
-    }
-
-    fn process_room_message(
-        &self,
-        ev: OriginalSyncRoomMessageEvent,
-        room: &Room,
-        client: &MatrixClient,
-    ) {
-        info!("original sync room message event: {:?}", ev);
-        if let Room::Joined(joined) = room {
-            let room_id = room.room_id().to_owned();
-            let msg = RoomMessage::new(ev.clone(), room.clone(), ev.content.body().to_string());
-            let mut event_tx = self.event_tx.clone();
-            if let Err(e) = event_tx.try_send(msg) {
-                warn!("Dropping ephemeral event for {}: {}", room_id, e);
-            }
-        }
-    }
-}
-
-impl Client {
-    pub fn message_event_rx(&self) -> Option<Receiver<RoomMessage>> {
-        self.message_controller.event_rx.lock().take()
     }
 }

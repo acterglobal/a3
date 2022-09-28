@@ -4,9 +4,9 @@ import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
-import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,13 +17,13 @@ import 'package:intl/intl.dart';
 class ChatListItem extends StatefulWidget {
   final Conversation room;
   final String user;
-  final RecentMessage? recentMessage;
+  final LatestMessage? latestMessage;
 
   const ChatListItem({
     Key? key,
     required this.room,
     required this.user,
-    this.recentMessage,
+    this.latestMessage,
   }) : super(key: key);
 
   @override
@@ -32,17 +32,14 @@ class ChatListItem extends StatefulWidget {
 
 class _ChatListItemState extends State<ChatListItem> {
   late Future<String> displayName;
-  late Future<FfiBufferUint8> avatar;
 
   @override
   void initState() {
     super.initState();
     displayName = getDisplayName();
-    avatar = getAvatar();
   }
 
   Future<String> getDisplayName() async => await widget.room.displayName();
-  Future<FfiBufferUint8> getAvatar() async => await widget.room.avatar();
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +59,7 @@ class _ChatListItemState extends State<ChatListItem> {
             );
           },
           leading: CustomAvatar(
-            avatar: avatar,
+            avatar: widget.room.avatar(),
             displayName: displayName,
             radius: 25,
             isGroup: true,
@@ -100,14 +97,14 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildSubtitle(BuildContext context) {
-    if (widget.recentMessage == null) {
+    if (widget.latestMessage == null) {
       return const SizedBox();
     }
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
         text:
-            '${getNameFromId(widget.recentMessage!.sender)}: ${widget.recentMessage!.body}',
+            '${getNameFromId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,
@@ -174,13 +171,13 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildTrailing(BuildContext context) {
-    if (widget.recentMessage == null) {
+    if (widget.latestMessage == null) {
       return const SizedBox();
     }
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          widget.recentMessage!.originServerTs * 1000,
+          widget.latestMessage!.originServerTs * 1000,
           isUtc: true,
         ),
       ),

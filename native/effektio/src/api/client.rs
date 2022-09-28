@@ -37,7 +37,6 @@ use super::{
     conversation::{Conversation, ConversationController},
     device::DeviceController,
     group::Group,
-    message::MessageController,
     receipt::ReceiptController,
     room::Room,
     typing::TypingController,
@@ -66,7 +65,6 @@ pub struct Client {
     pub(crate) typing_controller: TypingController,
     pub(crate) receipt_controller: ReceiptController,
     pub(crate) conversation_controller: ConversationController,
-    pub(crate) message_controller: MessageController,
 }
 
 impl std::ops::Deref for Client {
@@ -126,7 +124,6 @@ impl Client {
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
-            message_controller: MessageController::new(),
         }
     }
 
@@ -138,7 +135,6 @@ impl Client {
         self.typing_controller.setup(&client);
         self.receipt_controller.setup(&client);
         let conversation_controller = self.conversation_controller.clone();
-        self.message_controller.setup(&client);
 
         let (first_synced_tx, first_synced_rx) = channel(false);
         let first_synced_arc = Arc::new(first_synced_tx);

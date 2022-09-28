@@ -2,8 +2,8 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Conversation,
@@ -18,17 +18,11 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'package:mutex/mutex.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-final mtx = Mutex(); // acquire this mutex, when updating state
-
 class ChatRoomController extends GetxController {
-  static ChatRoomController get instance =>
-      Get.put<ChatRoomController>(ChatRoomController());
-
   List<types.Message> messages = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
@@ -42,7 +36,6 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  late final StreamSubscription<RoomMessage> _subscription;
 
   //get the timeline of room
   Future<void> init(Conversation convoRoom, types.User convoUser) async {
@@ -57,44 +50,11 @@ class ChatRoomController extends GetxController {
     isLoading.value = true;
     _stream = await room.timeline();
     // i am fetching messages from remote
-    var _messages = await _stream!.paginateBackwards(10);
-    mtx.acquire();
-    for (RoomMessage message in _messages) {
-      _loadMessage(message, messages);
+    var msgs = await _stream!.paginateBackwards(10);
+    for (RoomMessage message in msgs) {
+      loadMessage(message);
     }
     isLoading.value = false;
-    if (messages.isNotEmpty) {
-      if (messages.first.author.id == user.id) {
-        bool isSeen = await room.readReceipt(messages.first.id);
-        messages[0] = messages[0].copyWith(
-          showStatus: true,
-          status: isSeen ? types.Status.seen : types.Status.delivered,
-        );
-      }
-    }
-    mtx.release();
-    //waits for new event
-    newEvent();
-  }
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-
-  Future<void> newEvent() async {
-    Stream<RoomMessage> newRoomMessage() =>
-        Stream.periodic(const Duration(milliseconds: 800))
-            .asyncMap((_) => _stream!.next());
-    _subscription = newRoomMessage().listen((event) {
-      if (event.sender() != user.id) {
-        _loadMessage(event, messages);
-        update(['Chat']);
-      } else {
-        update(['Chat']);
-      }
-    });
   }
 
   //preview message link
@@ -288,59 +248,59 @@ class ChatRoomController extends GetxController {
   //Pagination Control
   Future<void> handleEndReached() async {
     final msgs = await _stream!.paginateBackwards(10);
-    final List<types.Message> nextMessages = [];
     // i am fetching messages from remote
     for (RoomMessage message in msgs) {
-      _loadMessage(message, nextMessages);
+      loadMessage(message);
     }
-    messages = [...messages, ...nextMessages];
     _page = _page + 1;
     update(['Chat']);
   }
 
-  void _insertMessage(types.Message m, List<types.Message> c) {
-    for (var i = 0; i < c.length; i++) {
-      if (c[i].createdAt! < m.createdAt!) {
-        c.insert(i, m);
+  void _insertMessage(types.Message m) {
+    var msg = m.copyWith(
+      showStatus: true,
+      status: types.Status.delivered,
+    );
+    for (var i = 0; i < messages.length; i++) {
+      if (messages[i].createdAt! < m.createdAt!) {
+        messages.insert(i, msg);
         return;
       }
     }
-    c.add(m);
+    messages.add(msg);
   }
 
-  void _loadMessage(RoomMessage message, List<types.Message> container) {
+  void loadMessage(RoomMessage message) {
     String msgtype = message.msgtype();
+    String sender = message.sender();
+    var author = types.User(id: sender, firstName: getNameFromId(sender));
+    int createdAt = message.originServerTs() * 1000;
+    String eventId = message.eventId();
+
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
       FileDescription? description = message.fileDescription();
       if (description != null) {
         types.FileMessage m = types.FileMessage(
-          author: types.User(
-            id: message.sender(),
-            firstName: getNameFromId(message.sender()),
-          ),
-          createdAt: message.originServerTs() * 1000,
-          id: message.eventId(),
+          author: author,
+          createdAt: createdAt,
+          id: eventId,
           name: description.name(),
           size: description.size() ?? 0,
           uri: '',
         );
-        _insertMessage(m, container);
+        _insertMessage(m);
       }
       if (isLoading.isFalse) {
         update(['Chat']);
       }
     } else if (msgtype == 'm.image') {
-      String eventId = message.eventId();
       ImageDescription? description = message.imageDescription();
       if (description != null) {
         types.ImageMessage m = types.ImageMessage(
-          author: types.User(
-            id: message.sender(),
-            firstName: getNameFromId(message.sender()),
-          ),
-          createdAt: message.originServerTs() * 1000,
+          author: author,
+          createdAt: createdAt,
           height: description.height()?.toDouble(),
           id: eventId,
           name: description.name(),
@@ -348,23 +308,19 @@ class ChatRoomController extends GetxController {
           uri: '',
           width: description.width()?.toDouble(),
         );
-        _insertMessage(m, container);
+        _insertMessage(m);
         if (isLoading.isFalse) {
           update(['Chat']);
         }
         room.imageBinary(eventId).then((data) async {
-          await mtx.acquire();
-          for (var i = 0; i < messages.length; i++) {
-            if (messages[i].id == eventId) {
-              messages[i] = messages[i].copyWith(
-                metadata: {
-                  'binary': data.asTypedList(),
-                },
-              );
-              break;
-            }
+          int idx = _findMessage(eventId);
+          if (idx != -1) {
+            messages[idx] = messages[idx].copyWith(
+              metadata: {
+                'binary': data.asTypedList(),
+              },
+            );
           }
-          mtx.release();
           update(['Chat']);
         });
       }
@@ -372,25 +328,27 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
-      String? formatted = message.formattedBody();
-      if (formatted != null) {
-        debugPrint('formatted_body: ' + formatted);
-      }
       types.TextMessage m = types.TextMessage(
-        author: types.User(
-          id: message.sender(),
-          firstName: getNameFromId(message.sender()),
-        ),
-        createdAt: message.originServerTs() * 1000,
-        id: message.eventId(),
+        author: author,
+        createdAt: createdAt,
+        id: eventId,
         text: message.body(),
       );
-      _insertMessage(m, container);
+      _insertMessage(m);
       if (isLoading.isFalse) {
         update(['Chat']);
       }
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
+  }
+
+  int _findMessage(String eventId) {
+    for (var i = 0; i < messages.length; i++) {
+      if (messages[i].id == eventId) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   void sendButtonUpdate() {
@@ -401,7 +359,6 @@ class ChatRoomController extends GetxController {
   @override
   void onClose() {
     super.onClose();
-    _subscription.cancel();
     textEditingController.dispose();
     focusNode.removeListener(() {});
   }

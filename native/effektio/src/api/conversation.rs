@@ -1,7 +1,10 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::default_effektio_conversation_states;
-use futures::{pin_mut, StreamExt};
+use futures::{
+    channel::mpsc::{channel, Receiver, Sender},
+    pin_mut, StreamExt,
+};
 use futures_signals::{
     signal::{Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream},
     signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
@@ -25,6 +28,8 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
+use parking_lot::Mutex;
+use std::sync::Arc;
 
 use super::{
     client::{devide_groups_from_common, Client},
@@ -124,12 +129,17 @@ impl std::ops::Deref for Conversation {
 #[derive(Clone)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
+    event_tx: Sender<RoomMessage>,
+    event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
 }
 
 impl ConversationController {
     pub fn new() -> Self {
+        let (tx, rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
         ConversationController {
             conversations: Default::default(),
+            event_tx: tx,
+            event_rx: Arc::new(Mutex::new(Some(rx))),
         }
     }
 
@@ -179,10 +189,15 @@ impl ConversationController {
                     client: client.clone(),
                     room: room.clone(),
                 });
-                let msg = RoomMessage::new(ev.clone(), room.clone(), ev.content.body().to_string());
-                convo.set_latest_message(msg);
+                let fallback = ev.content.body().to_string();
+                let msg = RoomMessage::new(ev, room.clone(), fallback);
+                convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
+                let mut event_tx = self.event_tx.clone();
+                if let Err(e) = event_tx.try_send(msg) {
+                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                }
             }
         }
     }
@@ -277,5 +292,9 @@ impl Client {
             .conversations
             .signal_cloned()
             .to_stream()
+    }
+
+    pub fn message_event_rx(&self) -> Option<Receiver<RoomMessage>> {
+        self.conversation_controller.event_rx.lock().take()
     }
 }
