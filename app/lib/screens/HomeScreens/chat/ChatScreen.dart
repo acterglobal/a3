@@ -2,20 +2,24 @@
 
 import 'dart:io';
 import 'dart:math';
+
+import 'package:cached_memory_image/cached_memory_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
-import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,29 +41,27 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late final _user;
+  late types.User _user;
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatController = ChatRoomController.instance;
+  ChatRoomController chatRoomController = Get.put(ChatRoomController());
+  ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    _user = types.User(
-      id: widget.user!,
-    );
+    _user = types.User(id: widget.user!);
 
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
-    chatController.init(widget.room, _user);
     widget.client.typingEventRx()!.listen((event) {
       String roomId = event.roomId();
       if (widget.room.getRoomId() == roomId) {
         List<String> userIds = [];
         if (event.userIds().isEmpty) {
-          chatController.typingUsers.clear();
+          chatRoomController.typingUsers.clear();
         } else {
           for (final userId in event.userIds()) {
             userIds.add(userId.toDartString());
@@ -67,14 +69,17 @@ class _ChatScreenState extends State<ChatScreen> {
         }
 
         //store the typing users.
-        chatController.updateTypingList(userIds);
+        chatRoomController.updateTypingList(userIds);
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
       }
     });
+    chatRoomController.init(widget.room, _user);
+    chatListController.setCurrentRoomId(widget.room.getRoomId());
   }
 
   @override
   void dispose() {
+    chatListController.setCurrentRoomId(null);
     Get.delete<ChatRoomController>();
     super.dispose();
   }
@@ -91,7 +96,7 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => chatController.handleImageSelection(context),
+                  onTap: () => chatRoomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -111,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => chatController.handleFileSelection(context),
+                  onTap: () => chatRoomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -145,20 +150,19 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _avatarBuilder(String userId) {
-    return GetBuilder<ChatRoomController>(
-      id: 'Avatar',
-      builder: (ChatRoomController controller) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 10),
-          child: CustomAvatar(
-            avatar: _userAvatar(userId),
-            displayName: null,
-            radius: 15,
-            isGroup: false,
-            stringName: getNameFromId(userId) ?? '',
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(right: 10),
+      child: SizedBox(
+        height: 28,
+        width: 28,
+        child: CustomAvatar(
+          avatar: _userAvatar(userId),
+          displayName: null,
+          radius: 15,
+          isGroup: false,
+          stringName: getNameFromId(userId) ?? '',
+        ),
+      ),
     );
   }
 
@@ -169,20 +173,25 @@ class _ChatScreenState extends State<ChatScreen> {
     if (imageMessage.uri.isEmpty) {
       // binary data
       if (imageMessage.metadata?.containsKey('binary') ?? false) {
-        return Image.memory(
-          imageMessage.metadata?['binary'],
+        return CachedMemoryImage(
+          uniqueKey: imageMessage.id,
+          bytes: imageMessage.metadata?['binary'],
           width: messageWidth.toDouble(),
+          placeholder: const CircularProgressIndicator(
+            color: AppCommonTheme.primaryColor,
+          ),
         );
       } else {
-        return Image.memory(
-          kTransparentImage,
+        return CachedMemoryImage(
+          uniqueKey: UniqueKey().toString(),
+          bytes: kTransparentImage,
           width: messageWidth.toDouble(),
         );
       }
     } else if (isURL(imageMessage.uri)) {
       // remote url
-      return Image.network(
-        imageMessage.uri,
+      return CachedNetworkImage(
+        imageUrl: imageMessage.uri,
         width: messageWidth.toDouble(),
       );
     } else {
@@ -227,8 +236,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   future: widget.room
                       .displayName()
                       .then((value) => roomName = value),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<String> snapshot,
+                  ) {
                     if (snapshot.hasData) {
                       return Text(
                         snapshot.requireData,
@@ -313,7 +324,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (chatController.isLoading.isTrue) {
+    if (chatRoomController.isLoading.isTrue) {
       return Center(
         child: Container(
           height: 15,
@@ -349,7 +360,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: chatController.messages,
+              messages: chatRoomController.messages,
               inputOptions: InputOptions(
                 sendButtonVisibilityMode: roomState
                     ? SendButtonVisibilityMode.hidden
