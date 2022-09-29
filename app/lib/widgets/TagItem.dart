@@ -19,18 +19,13 @@ class TagListItem extends StatelessWidget {
           color: tagColor,
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            tagTitle,
-            style: GoogleFonts.roboto(
-              color: tagColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+      child: Text(
+        tagTitle,
+        style: GoogleFonts.roboto(
+          color: tagColor,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
