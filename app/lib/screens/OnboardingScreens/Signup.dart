@@ -64,165 +64,161 @@ class _SignupScreentate extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            GetBuilder<SignUpController>(
-              builder: (SignUpController controller) {
-                return Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        child: GetBuilder<SignUpController>(
+          builder: (SignUpController controller) {
+            return Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 80,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: SvgPicture.asset('assets/images/logo.svg'),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.onboardText,
+                    style: AuthTheme.authTitleStyle,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.createAccountText,
+                    style: AuthTheme.authBodyStyle,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  signUpOnboardingTextField(
+                    AppLocalizations.of(context)!.name,
+                    controller.name,
+                    AppLocalizations.of(context)!.missingName,
+                    SignUpOnboardingTextFieldEnum.name,
+                  ),
+                  signUpOnboardingTextField(
+                    AppLocalizations.of(context)!.username,
+                    controller.username,
+                    AppLocalizations.of(context)!.emptyUsername,
+                    SignUpOnboardingTextFieldEnum.userName,
+                  ),
+                  signUpOnboardingTextField(
+                    AppLocalizations.of(context)!.password,
+                    controller.password,
+                    AppLocalizations.of(context)!.emptyPassword,
+                    SignUpOnboardingTextFieldEnum.password,
+                  ),
+                  signUpOnboardingTextField(
+                    AppLocalizations.of(context)!.token,
+                    controller.token,
+                    AppLocalizations.of(context)!.emptyToken,
+                    SignUpOnboardingTextFieldEnum.token,
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: RichText(
+                      textAlign: TextAlign.start,
+                      text: TextSpan(
+                        // Note: Styles for TextSpans must be explicitly defined.
+                        // Child text spans will inherit styles from parent
+                        style: AuthTheme.authBodyStyle,
+                        children: <TextSpan>[
+                          TextSpan(
+                            text:
+                                '${AppLocalizations.of(context)!.termsText1} ',
+                          ),
+                          TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                debugPrint('Terms of Service"');
+                              },
+                            text: AppLocalizations.of(context)!.termsText2,
+                            style: AuthTheme.authBodyStyle +
+                                AppCommonTheme.primaryColor,
+                          ),
+                          TextSpan(
+                            text:
+                                ' ${AppLocalizations.of(context)!.termsText3} ',
+                          ),
+                          TextSpan(
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                debugPrint('policy"');
+                              },
+                            text: AppLocalizations.of(context)!.termsText4,
+                            style: AuthTheme.authBodyStyle +
+                                AppCommonTheme.primaryColor,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  controller.isSubmitting
+                      ? CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        )
+                      : CustomOnbaordingButton(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              await _signUpValidate().then(
+                                (value) => {
+                                  if (value)
+                                    {
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        '/',
+                                      )
+                                    }
+                                },
+                              );
+                            }
+                          },
+                          title: AppLocalizations.of(context)!.signUp,
+                        ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        height: 80,
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: SvgPicture.asset('assets/images/logo.svg'),
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
                       Text(
-                        AppLocalizations.of(context)!.onboardText,
-                        style: AuthTheme.authTitleStyle,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.createAccountText,
+                        '${AppLocalizations.of(context)!.haveAccount}  ',
                         style: AuthTheme.authBodyStyle,
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      signUpOnboardingTextField(
-                        AppLocalizations.of(context)!.name,
-                        controller.name,
-                        AppLocalizations.of(context)!.missingName,
-                        SignUpOnboardingTextFieldEnum.name,
-                      ),
-                      signUpOnboardingTextField(
-                        AppLocalizations.of(context)!.username,
-                        controller.username,
-                        AppLocalizations.of(context)!.emptyUsername,
-                        SignUpOnboardingTextFieldEnum.userName,
-                      ),
-                      signUpOnboardingTextField(
-                        AppLocalizations.of(context)!.password,
-                        controller.password,
-                        AppLocalizations.of(context)!.emptyPassword,
-                        SignUpOnboardingTextFieldEnum.password,
-                      ),
-                      signUpOnboardingTextField(
-                        AppLocalizations.of(context)!.token,
-                        controller.token,
-                        AppLocalizations.of(context)!.emptyToken,
-                        SignUpOnboardingTextFieldEnum.token,
-                      ),
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        child: RichText(
-                          textAlign: TextAlign.start,
-                          text: TextSpan(
-                            // Note: Styles for TextSpans must be explicitly defined.
-                            // Child text spans will inherit styles from parent
-                            style: AuthTheme.authBodyStyle,
-                            children: <TextSpan>[
-                              TextSpan(
-                                text:
-                                    '${AppLocalizations.of(context)!.termsText1} ',
-                              ),
-                              TextSpan(
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    debugPrint('Terms of Service"');
-                                  },
-                                text: AppLocalizations.of(context)!.termsText2,
-                                style: AuthTheme.authBodyStyle +
-                                    AppCommonTheme.primaryColor,
-                              ),
-                              TextSpan(
-                                text:
-                                    ' ${AppLocalizations.of(context)!.termsText3} ',
-                              ),
-                              TextSpan(
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    debugPrint('policy"');
-                                  },
-                                text: AppLocalizations.of(context)!.termsText4,
-                                style: AuthTheme.authBodyStyle +
-                                    AppCommonTheme.primaryColor,
-                              ),
-                            ],
-                          ),
+                      InkWell(
+                        onTap: () {
+                          Get.delete<SignUpController>();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginScreen(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.login,
+                          style: AuthTheme.authBodyStyle +
+                              AppCommonTheme.primaryColor,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
-                      controller.isSubmitting
-                          ? CircularProgressIndicator(
-                              color: AppCommonTheme.primaryColor,
-                            )
-                          : CustomOnbaordingButton(
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  await _signUpValidate().then(
-                                    (value) => {
-                                      if (value)
-                                        {
-                                          Navigator.pushReplacementNamed(
-                                            context,
-                                            '/',
-                                          )
-                                        }
-                                    },
-                                  );
-                                }
-                              },
-                              title: AppLocalizations.of(context)!.signUp,
-                            ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '${AppLocalizations.of(context)!.haveAccount}  ',
-                            style: AuthTheme.authBodyStyle,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Get.delete<SignUpController>();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LoginScreen(),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              AppLocalizations.of(context)!.login,
-                              style: AuthTheme.authBodyStyle +
-                                  AppCommonTheme.primaryColor,
-                            ),
-                          )
-                        ],
                       )
                     ],
-                  ),
-                );
-              },
-            ),
-          ],
+                  )
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

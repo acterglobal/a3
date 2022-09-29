@@ -36,9 +36,9 @@ class ChatListController extends GetxController {
   List<RoomItem> roomItems = [];
   bool initialLoaded = false;
   String? currentRoomId;
-  StreamSubscription<FfiListConversation>? convosReceiver;
-  StreamSubscription<TypingEvent>? typingReceiver;
-  StreamSubscription<RoomMessage>? messageReceiver;
+  StreamSubscription<FfiListConversation>? convosSubscription;
+  StreamSubscription<TypingEvent>? typingSubscription;
+  StreamSubscription<RoomMessage>? messageSubscription;
 
   ChatListController({required this.client}) : super();
 
@@ -47,10 +47,10 @@ class ChatListController extends GetxController {
     super.onInit();
     userId = (await client.userId()).toString();
     if (!client.isGuest()) {
-      convosReceiver = client.conversationsRx().listen((event) {
+      convosSubscription = client.conversationsRx().listen((event) {
         updateList(event.toList(), userId);
       });
-      typingReceiver = client.typingEventRx()?.listen((event) {
+      typingSubscription = client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
         List<String> userIds = [];
         for (final userId in event.userIds()) {
@@ -58,7 +58,7 @@ class ChatListController extends GetxController {
         }
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
       });
-      messageReceiver = client.messageEventRx()?.listen((event) {
+      messageSubscription = client.messageEventRx()?.listen((event) {
         if (currentRoomId != null) {
           ChatRoomController controller = Get.find<ChatRoomController>();
           if (event.sender() != userId) {
@@ -72,9 +72,9 @@ class ChatListController extends GetxController {
 
   @override
   void onClose() {
-    convosReceiver?.cancel();
-    typingReceiver?.cancel();
-    messageReceiver?.cancel();
+    convosSubscription?.cancel();
+    typingSubscription?.cancel();
+    messageSubscription?.cancel();
     super.onClose();
   }
 
