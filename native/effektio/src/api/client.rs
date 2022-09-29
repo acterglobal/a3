@@ -74,7 +74,7 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn devide_groups_from_common(
+pub(crate) async fn divide_groups_from_common(
     client: MatrixClient,
 ) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
@@ -223,7 +223,7 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let (_, conversations) = devide_groups_from_common(c).await;
+                let (_, conversations) = divide_groups_from_common(c).await;
                 Ok(conversations)
             })
             .await?
