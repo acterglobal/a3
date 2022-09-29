@@ -174,7 +174,7 @@ impl ConversationController {
     }
 
     fn process_room_message(
-        &self,
+        &mut self,
         ev: OriginalSyncRoomMessageEvent,
         room: &MatrixRoom,
         client: &MatrixClient,
@@ -194,8 +194,7 @@ impl ConversationController {
                 convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
-                let mut event_tx = self.event_tx.clone();
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping ephemeral event for {}: {}", room_id, e);
                 }
             }

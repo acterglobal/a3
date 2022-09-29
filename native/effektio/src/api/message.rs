@@ -39,7 +39,6 @@ impl RoomMessage {
     pub fn formatted_body(&self) -> Option<String> {
         let m = self.inner.clone();
         if let MessageType::Text(content) = m.content.msgtype {
-            let mut html_body: Option<String> = None;
             if let Some(formatted_body) = content.formatted {
                 if formatted_body.format == MessageFormat::Html {
                     return Some(formatted_body.body);
