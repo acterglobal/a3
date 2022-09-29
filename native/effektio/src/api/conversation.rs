@@ -32,7 +32,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
-    client::{devide_groups_from_common, Client},
+    client::{divide_groups_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
     room::Room,
     RUNTIME,
@@ -144,7 +144,7 @@ impl ConversationController {
     }
 
     pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = devide_groups_from_common(client.clone()).await;
+        let (_, convos) = divide_groups_from_common(client.clone()).await;
         for convo in convos.iter() {
             convo.load_latest_message();
         }
