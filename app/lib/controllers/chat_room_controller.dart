@@ -7,11 +7,13 @@ import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
+        Client,
         Conversation,
         FileDescription,
         ImageDescription,
         RoomMessage,
-        TimelineStream;
+        TimelineStream,
+        TypingEvent;
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -38,18 +40,23 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-
+  String currentRoomId = '';
+  StreamSubscription<TypingEvent>? typingReceiver;
+  StreamSubscription<RoomMessage>? messageReceiver;
   //get the timeline of room
-  Future<void> init(Conversation convoRoom, types.User convoUser) async {
+  Future<void> init(Conversation convoRoom, Client client) async {
+    isLoading.value = true;
+    await client.userId().then((res) {
+      user = types.User(id: res.toString());
+    });
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
         isAttachmentVisible.value = false;
       }
     });
+
     room = convoRoom;
-    user = convoUser;
-    isLoading.value = true;
     _stream = await room.timeline();
     // i am fetching messages from remote
     var msgs = await _stream!.paginateBackwards(10);
@@ -57,6 +64,35 @@ class ChatRoomController extends GetxController {
       loadMessage(message);
     }
     isLoading.value = false;
+
+    typingReceiver = client.typingEventRx()?.listen((event) {
+      String roomId = event.roomId();
+      if (roomId == currentRoomId) {
+        List<String> userIds = [];
+        if (event.userIds().isEmpty) {
+          typingUsers.clear();
+        } else {
+          for (final userId in event.userIds()) {
+            userIds.add(userId.toDartString());
+          }
+        }
+
+        //store the typing users.
+        updateTypingList(userIds);
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      }
+    });
+    messageReceiver = client.messageEventRx()?.listen((event) {
+      if (currentRoomId.isNotEmpty) {
+        if (event.sender() != user.id) {
+          loadMessage(event);
+        }
+      }
+    });
+  }
+
+  void setCurrentRoomId(String roomId) {
+    currentRoomId = roomId;
   }
 
   //preview message link
@@ -367,12 +403,15 @@ class ChatRoomController extends GetxController {
       );
       typingUsers.add(typingUser);
     }
+    debugPrint('typing Users: $typingUsers');
     update(['Chat']);
   }
 
   @override
   void onClose() {
     super.onClose();
+    typingReceiver?.cancel();
+    messageReceiver?.cancel();
     textEditingController.dispose();
     focusNode.removeListener(() {});
   }

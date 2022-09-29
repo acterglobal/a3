@@ -27,9 +27,7 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late final String user;
   late final countInvites;
-  String userId = '';
   Random random = Random();
 
   @override
@@ -37,13 +35,7 @@ class _ChatOverviewState extends State<ChatOverview> {
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    _fetchUserId();
     Get.put(ChatListController(client: widget.client));
-  }
-
-  Future<void> _fetchUserId() async {
-    var uid = await widget.client.userId();
-    setState(() => userId = uid.toString());
   }
 
   @override
@@ -165,7 +157,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: userId,
                   latestMessage: item.latestMessage,
                   client: widget.client,
                 ),
@@ -180,7 +171,6 @@ class _ChatOverviewState extends State<ChatOverview> {
               opacity: animation,
               child: ChatListItem(
                 room: item.conversation,
-                user: user,
                 latestMessage: item.latestMessage,
                 client: widget.client,
               ),
@@ -204,7 +194,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: user,
                   latestMessage: item.latestMessage,
                   client: widget.client,
                 ),

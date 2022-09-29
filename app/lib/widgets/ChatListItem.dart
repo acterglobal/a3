@@ -16,14 +16,13 @@ import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
   final Conversation room;
-  final String user;
+
   final Client client;
   final LatestMessage? latestMessage;
 
   const ChatListItem({
     Key? key,
     required this.room,
-    required this.user,
     required this.client,
     this.latestMessage,
   }) : super(key: key);
@@ -55,7 +54,6 @@ class _ChatListItemState extends State<ChatListItem> {
               MaterialPageRoute(
                 builder: (context) => ChatScreen(
                   room: widget.room,
-                  user: widget.user,
                   client: widget.client,
                 ),
               ),
