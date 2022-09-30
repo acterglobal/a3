@@ -62,89 +62,85 @@ class _ImageSelectionState extends State<ImageSelection> {
           Container(
             width: double.infinity,
             color: AppCommonTheme.backgroundColorLight,
-            child: Column(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (var item in widget.imageList)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 10,
-                            left: 8,
-                          ),
-                          child: InkWell(
-                            onTap: () {
-                              setState(() {
-                                selectedIndex = widget.imageList.indexOf(item);
-                                _pageController.jumpToPage(selectedIndex);
-                              });
-                            },
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: 60,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
-                                    image: DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image: FileImage(
-                                        File(
-                                          item.path,
-                                        ),
-                                      ),
-                                    ),
-                                    color: AppCommonTheme.backgroundColor,
-                                    border: selectedIndex ==
-                                            widget.imageList.indexOf(item)
-                                        ? Border.all(
-                                            color: ChatTheme01
-                                                .chatSelectedImageBorderColor,
-                                            width: 2,
-                                          )
-                                        : null,
-                                  ),
-                                ),
-                                Positioned(
-                                  right: 4,
-                                  top: 4,
-                                  child: InkWell(
-                                    onTap: () {
-                                      setState(() {
-                                        widget.imageList.removeAt(
-                                          widget.imageList.indexOf(item),
-                                        );
-                                      });
-                                      if (widget.imageList.isEmpty) {
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    child: CircleAvatar(
-                                      radius: 8,
-                                      backgroundColor:
-                                          AppCommonTheme.transparentColor,
-                                      child: SvgPicture.asset(
-                                        'assets/images/remove_selected_item.svg',
-                                      ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (var item in widget.imageList)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        top: 10,
+                        left: 8,
+                      ),
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            selectedIndex = widget.imageList.indexOf(item);
+                            _pageController.jumpToPage(selectedIndex);
+                          });
+                        },
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 60,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                image: DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: FileImage(
+                                    File(
+                                      item.path,
                                     ),
                                   ),
                                 ),
-                              ],
+                                color: AppCommonTheme.backgroundColor,
+                                border: selectedIndex ==
+                                        widget.imageList.indexOf(item)
+                                    ? Border.all(
+                                        color: ChatTheme01
+                                            .chatSelectedImageBorderColor,
+                                        width: 2,
+                                      )
+                                    : null,
+                              ),
                             ),
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: SvgPicture.asset(
-                          'assets/images/select_new_item.svg',
+                            Positioned(
+                              right: 4,
+                              top: 4,
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    widget.imageList.removeAt(
+                                      widget.imageList.indexOf(item),
+                                    );
+                                  });
+                                  if (widget.imageList.isEmpty) {
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                child: CircleAvatar(
+                                  radius: 8,
+                                  backgroundColor:
+                                      AppCommonTheme.transparentColor,
+                                  child: SvgPicture.asset(
+                                    'assets/images/remove_selected_item.svg',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: SvgPicture.asset(
+                      'assets/images/select_new_item.svg',
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           CustomChatInput(

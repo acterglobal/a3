@@ -68,38 +68,34 @@ class ReplyViewState extends State<ReplyView> {
               ),
             ),
           ),
-          Column(
-            children: [
-              if (liked == false)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      liked = true;
-                      likeCount = likeCount + 1;
-                    });
-                  },
-                  child: SvgPicture.asset(
-                    'assets/images/heart.svg',
-                    color: Colors.white,
-                    width: 24,
-                    height: 24,
-                  ),
-                )
-              else
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      liked = false;
-                      likeCount = likeCount - 1;
-                    });
-                  },
-                  child: const Icon(
-                    Icons.favorite,
-                    color: Colors.red,
-                  ),
-                ),
-            ],
-          ),
+          if (liked == false)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  liked = true;
+                  likeCount = likeCount + 1;
+                });
+              },
+              child: SvgPicture.asset(
+                'assets/images/heart.svg',
+                color: Colors.white,
+                width: 24,
+                height: 24,
+              ),
+            )
+          else
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  liked = false;
+                  likeCount = likeCount - 1;
+                });
+              },
+              child: const Icon(
+                Icons.favorite,
+                color: Colors.red,
+              ),
+            ),
         ],
       ),
     );

@@ -32,7 +32,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
-    client::{devide_groups_from_common, Client},
+    client::{divide_groups_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
@@ -162,7 +162,7 @@ impl ConversationController {
     }
 
     pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = devide_groups_from_common(client.clone()).await;
+        let (_, convos) = divide_groups_from_common(client.clone()).await;
         for convo in convos.iter() {
             convo.load_latest_message();
         }
@@ -192,7 +192,7 @@ impl ConversationController {
     }
 
     fn process_room_message(
-        &self,
+        &mut self,
         ev: OriginalSyncRoomMessageEvent,
         room: &MatrixRoom,
         client: &MatrixClient,
@@ -212,8 +212,7 @@ impl ConversationController {
                 convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
-                let mut event_tx = self.event_tx.clone();
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping ephemeral event for {}: {}", room_id, e);
                 }
             }

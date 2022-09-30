@@ -91,7 +91,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
-  CrossSigning crossSigning = CrossSigning();
+  CrossSigning? crossSigning;
   bool isLoading = false;
 
   @override
@@ -110,7 +110,7 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   void dispose() {
     Get.delete<ReceiptController>();
-    crossSigning.dispose();
+    crossSigning?.dispose();
     super.dispose();
   }
 
@@ -124,8 +124,9 @@ class _EffektioHomeState extends State<EffektioHome>
 
     SyncState _ = client.startSync();
     //Start listening for cross signing events
-    crossSigning.installDeviceChangedEvent(client.deviceChangedEventRx()!);
-    crossSigning.installVerificationEvent(client.verificationEventRx()!);
+    if (!client.isGuest()) {
+      crossSigning = CrossSigning(client: client);
+    }
     return client;
   }
 

@@ -62,126 +62,122 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            GetBuilder<LoginController>(
-              builder: (LoginController controller) {
-                return Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+        child: GetBuilder<LoginController>(
+          builder: (LoginController controller) {
+            return Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: SvgPicture.asset('assets/images/logo.svg'),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.welcomeBack,
+                    style: AuthTheme.authTitleStyle,
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.signInContinue,
+                    style: AuthTheme.authBodyStyle,
+                  ),
+                  const SizedBox(
+                    height: 35,
+                  ),
+                  signInOnboardingTextField(
+                    AppLocalizations.of(context)!.username,
+                    controller.username,
+                    AppLocalizations.of(context)!.emptyUsername,
+                    SignInOnboardingTextFieldEnum.userName,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  signInOnboardingTextField(
+                    AppLocalizations.of(context)!.password,
+                    controller.password,
+                    AppLocalizations.of(context)!.emptyPassword,
+                    SignInOnboardingTextFieldEnum.password,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(right: 20),
+                    width: double.infinity,
+                    alignment: Alignment.bottomRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        AppLocalizations.of(context)!.forgotPassword,
+                        style: AuthTheme.authBodyStyle +
+                            AuthTheme.forgotPasswordColor,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 100,
+                  ),
+                  controller.isSubmitting
+                      ? CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        )
+                      : CustomOnbaordingButton(
+                          onPressed: () async {
+                            controller.isSubmitting = true;
+                            if (_formKey.currentState!.validate()) {
+                              await _loginValidate().then(
+                                (value) => {
+                                  if (value)
+                                    {
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        '/',
+                                      ),
+                                    }
+                                },
+                              );
+                            }
+                          },
+                          title: AppLocalizations.of(context)!.login,
+                        ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(
-                        height: 100,
-                      ),
-                      SizedBox(
-                        height: 50,
-                        width: 50,
-                        child: SvgPicture.asset('assets/images/logo.svg'),
-                      ),
-                      const SizedBox(
-                        height: 40,
-                      ),
                       Text(
-                        AppLocalizations.of(context)!.welcomeBack,
-                        style: AuthTheme.authTitleStyle,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        AppLocalizations.of(context)!.signInContinue,
+                        AppLocalizations.of(context)!.noAccount,
                         style: AuthTheme.authBodyStyle,
                       ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      signInOnboardingTextField(
-                        AppLocalizations.of(context)!.username,
-                        controller.username,
-                        AppLocalizations.of(context)!.emptyUsername,
-                        SignInOnboardingTextFieldEnum.userName,
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      signInOnboardingTextField(
-                        AppLocalizations.of(context)!.password,
-                        controller.password,
-                        AppLocalizations.of(context)!.emptyPassword,
-                        SignInOnboardingTextFieldEnum.password,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(right: 20),
-                        width: double.infinity,
-                        alignment: Alignment.bottomRight,
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            AppLocalizations.of(context)!.forgotPassword,
-                            style: AuthTheme.authBodyStyle +
-                                AuthTheme.forgotPasswordColor,
-                          ),
+                      InkWell(
+                        onTap: () {
+                          Get.delete<LoginController>();
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/signup',
+                          );
+                        },
+                        child: Text(
+                          AppLocalizations.of(context)!.signUp,
+                          style: AuthTheme.authBodyStyle +
+                              AppCommonTheme.primaryColor,
                         ),
-                      ),
-                      const SizedBox(
-                        height: 100,
-                      ),
-                      controller.isSubmitting
-                          ? CircularProgressIndicator(
-                              color: AppCommonTheme.primaryColor,
-                            )
-                          : CustomOnbaordingButton(
-                              onPressed: () async {
-                                controller.isSubmitting = true;
-                                if (_formKey.currentState!.validate()) {
-                                  await _loginValidate().then(
-                                    (value) => {
-                                      if (value)
-                                        {
-                                          Navigator.pushReplacementNamed(
-                                            context,
-                                            '/',
-                                          ),
-                                        }
-                                    },
-                                  );
-                                }
-                              },
-                              title: AppLocalizations.of(context)!.login,
-                            ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)!.noAccount,
-                            style: AuthTheme.authBodyStyle,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Get.delete<LoginController>();
-                              Navigator.pushReplacementNamed(
-                                context,
-                                '/signup',
-                              );
-                            },
-                            child: Text(
-                              AppLocalizations.of(context)!.signUp,
-                              style: AuthTheme.authBodyStyle +
-                                  AppCommonTheme.primaryColor,
-                            ),
-                          )
-                        ],
                       )
                     ],
-                  ),
-                );
-              },
-            ),
-          ],
+                  )
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

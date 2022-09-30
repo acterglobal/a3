@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show DeviceChangedEvent, VerificationEvent;
+    show Client, DeviceChangedEvent, VerificationEvent;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -23,55 +23,56 @@ class VerifEvent {
 }
 
 class CrossSigning {
-  late StreamSubscription<DeviceChangedEvent> _devicesChangedEventSubscription;
-  late StreamSubscription<VerificationEvent> _verificationEventSubscription;
+  Client client;
+  late StreamSubscription<DeviceChangedEvent>? _deviceSubscription;
+  late StreamSubscription<VerificationEvent>? _verifSubscription;
   final Map<String, VerifEvent> _eventMap = {};
   bool acceptingRequest = false;
   bool waitForMatch = false;
 
-  void dispose() {
-    _devicesChangedEventSubscription.cancel();
-    _verificationEventSubscription.cancel();
+  CrossSigning({required this.client}) {
+    _installDeviceChangedEvent();
+    _installVerificationEvent();
   }
 
-  void installDeviceChangedEvent(Stream<DeviceChangedEvent> receiver) async {
-    _devicesChangedEventSubscription = receiver.listen((event) async {
+  void dispose() {
+    _deviceSubscription?.cancel();
+    _verifSubscription?.cancel();
+  }
+
+  void _installDeviceChangedEvent() {
+    _deviceSubscription = client.deviceChangedEventRx()?.listen((event) async {
       var records = await event.deviceRecords(false);
       for (var record in records) {
         debugPrint('found device id: ' + record.deviceId());
       }
       Get.generalDialog(
         pageBuilder: (context, anim1, anim2) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                color: Colors.white,
-                child: Card(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      ListTile(
-                        title: Text('New device detected'),
-                        onTap: () async {
-                          await event.requestVerificationToUser();
-                          Get.back();
-                        },
-                      ),
-                    ],
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            color: Colors.white,
+            child: Card(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  ListTile(
+                    title: Text('New device detected'),
+                    onTap: () async {
+                      await event.requestVerificationToUser();
+                      Get.back();
+                    },
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           );
         },
       );
     });
   }
 
-  void installVerificationEvent(Stream<VerificationEvent> receiver) async {
-    _verificationEventSubscription = receiver.listen((event) async {
+  void _installVerificationEvent() {
+    _verifSubscription = client.verificationEventRx()?.listen((event) async {
       String eventType = event.eventType();
       debugPrint(eventType);
       switch (eventType) {

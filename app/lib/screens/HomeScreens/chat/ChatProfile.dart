@@ -6,8 +6,8 @@ import 'package:effektio/screens/HomeScreens/chat/GroupLinkScreen.dart';
 import 'package:effektio/screens/HomeScreens/chat/ReqAndInvites.dart';
 import 'package:effektio/screens/HomeScreens/chat/RoomLinkSetting.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
+import 'package:effektio/widgets/GroupMember.dart';
 import 'package:effektio/widgets/InviteListView.dart';
-import 'package:effektio/widgets/MembersList.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -21,7 +21,7 @@ class ChatProfileScreen extends StatefulWidget {
   const ChatProfileScreen({
     Key? key,
     required this.room,
-    required this.user,
+    this.user,
     required this.isGroup,
     required this.isAdmin,
   }) : super(key: key);
@@ -373,21 +373,18 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                showInviteBottomSheet();
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.only(bottom: 12, left: 16),
-                                child: Text(
-                                  'Create Room Invite',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            )
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            showInviteBottomSheet();
+                          },
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            padding: EdgeInsets.only(bottom: 12, left: 16),
+                            child: Text(
+                              'Create Room Invite',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -517,38 +514,35 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             ),
             Visibility(
               visible: widget.isGroup,
-              child: Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: FutureBuilder<FfiListMember>(
-                      future: widget.room.activeMembers(),
-                      builder: (
-                        BuildContext context,
-                        AsyncSnapshot<FfiListMember> snapshot,
-                      ) {
-                        if (snapshot.hasData) {
-                          return Text(
-                            '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        } else {
-                          return SizedBox(
-                            height: 15,
-                            width: 15,
-                            child: CircularProgressIndicator(
-                              color: AppCommonTheme.primaryColor,
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  )
-                ],
+              child: Container(
+                alignment: Alignment.centerLeft,
+                padding: EdgeInsets.all(16),
+                child: FutureBuilder<FfiListMember>(
+                  future: widget.room.activeMembers(),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<FfiListMember> snapshot,
+                  ) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    } else {
+                      return SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
             ),
             Visibility(
@@ -567,10 +561,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: const EdgeInsets.all(12),
-                        child: MembersList(
-                          name: 'Ronaldo',
-                          isAdmin: true,
-                        ),
+                        child: GroupMember(name: 'Ronaldo', isAdmin: true),
                       );
                     },
                   ),
@@ -951,23 +942,18 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Mute this chat for',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
+                          Container(
+                            padding: EdgeInsets.all(8),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 12),
+                              child: Text(
+                                'Mute this chat for',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                           ClipRRect(
@@ -986,19 +972,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '1 Hour',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                '1 Hour',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                           ClipRRect(
@@ -1017,19 +996,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '8 Hours',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                '8 Hours',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                           ClipRRect(
@@ -1048,19 +1020,12 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '1 Day',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                '1 Day',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ),
                           ClipRRect(
@@ -1079,54 +1044,11 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '1 Week',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
                             child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      'Always',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Text(
+                                '1 Week',
+                                style: TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
@@ -1150,19 +1072,41 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             },
                             child: Padding(
                               padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  'Always',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(6.33),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppCommonTheme.dividerColor,
+                                    width: 1,
                                   ),
-                                ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                           ),

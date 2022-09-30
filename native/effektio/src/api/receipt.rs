@@ -114,7 +114,7 @@ impl ReceiptController {
     }
 
     fn process_ephemeral_event(
-        &self,
+        &mut self,
         ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
         room: &MatrixRoom,
     ) {
@@ -130,8 +130,7 @@ impl ReceiptController {
                 }
             }
         }
-        let mut event_tx = self.event_tx.clone();
-        if let Err(e) = event_tx.try_send(msg) {
+        if let Err(e) = self.event_tx.try_send(msg) {
             log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
         }
     }

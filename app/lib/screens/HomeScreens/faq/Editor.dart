@@ -107,78 +107,73 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
             ],
           ),
           body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                HtmlEditor(
-                  controller: controller,
-                  htmlEditorOptions: const HtmlEditorOptions(
-                    hint: 'Write about the FAQ',
-                    shouldEnsureVisible: true,
-                  ),
-                  htmlToolbarOptions: HtmlToolbarOptions(
-                    toolbarPosition: ToolbarPosition.belowEditor,
-                    toolbarType: ToolbarType.nativeScrollable,
-                    onButtonPressed: (
-                      ButtonType type,
-                      bool? status,
-                      Function? updateStatus,
-                    ) {
-                      return true;
-                    },
-                    onDropdownChanged: (
-                      DropdownType type,
-                      dynamic changed,
-                      Function(dynamic)? updateSelectedItem,
-                    ) {
-                      return true;
-                    },
-                    mediaUploadInterceptor:
-                        (PlatformFile file, InsertFileType type) async {
-                      return true;
-                    },
-                  ),
-                  otherOptions: OtherOptions(
-                    height: MediaQuery.of(context).size.height - 115,
-                  ),
-                  callbacks: Callbacks(
-                    onBeforeCommand: (String? currentHtml) {},
-                    onChangeContent: (String? changed) {},
-                    onChangeCodeview: (String? changed) {},
-                    onChangeSelection: (EditorSettings settings) {},
-                    onDialogShown: () {},
-                    onEnter: () {},
-                    onFocus: () {},
-                    onBlur: () {},
-                    onBlurCodeview: () {},
-                    onInit: () {},
-                    onImageUploadError: (
-                      FileUpload? file,
-                      String? base64Str,
-                      UploadError error,
-                    ) {},
-                    onKeyDown: (int? keyCode) {},
-                    onKeyUp: (int? keyCode) {},
-                    onMouseDown: () {},
-                    onMouseUp: () {},
-                    onNavigationRequestMobile: (String url) {
-                      return NavigationActionPolicy.ALLOW;
-                    },
-                    onPaste: () {},
-                    onScroll: () {},
-                  ),
-                  plugins: [
-                    SummernoteAtMention(
-                      getSuggestionsMobile: (String value) {
-                        var mentions = <String>['test1', 'test2', 'test3'];
-                        return mentions
-                            .where((element) => element.contains(value))
-                            .toList();
-                      },
-                      mentionsWeb: ['test1', 'test2', 'test3'],
-                      onSelect: (String value) {},
-                    )
-                  ],
+            child: HtmlEditor(
+              controller: controller,
+              htmlEditorOptions: const HtmlEditorOptions(
+                hint: 'Write about the FAQ',
+                shouldEnsureVisible: true,
+              ),
+              htmlToolbarOptions: HtmlToolbarOptions(
+                toolbarPosition: ToolbarPosition.belowEditor,
+                toolbarType: ToolbarType.nativeScrollable,
+                onButtonPressed: (
+                  ButtonType type,
+                  bool? status,
+                  Function? updateStatus,
+                ) {
+                  return true;
+                },
+                onDropdownChanged: (
+                  DropdownType type,
+                  dynamic changed,
+                  Function(dynamic)? updateSelectedItem,
+                ) {
+                  return true;
+                },
+                mediaUploadInterceptor:
+                    (PlatformFile file, InsertFileType type) async {
+                  return true;
+                },
+              ),
+              otherOptions: OtherOptions(
+                height: MediaQuery.of(context).size.height - 115,
+              ),
+              callbacks: Callbacks(
+                onBeforeCommand: (String? currentHtml) {},
+                onChangeContent: (String? changed) {},
+                onChangeCodeview: (String? changed) {},
+                onChangeSelection: (EditorSettings settings) {},
+                onDialogShown: () {},
+                onEnter: () {},
+                onFocus: () {},
+                onBlur: () {},
+                onBlurCodeview: () {},
+                onInit: () {},
+                onImageUploadError: (
+                  FileUpload? file,
+                  String? base64Str,
+                  UploadError error,
+                ) {},
+                onKeyDown: (int? keyCode) {},
+                onKeyUp: (int? keyCode) {},
+                onMouseDown: () {},
+                onMouseUp: () {},
+                onNavigationRequestMobile: (String url) {
+                  return NavigationActionPolicy.ALLOW;
+                },
+                onPaste: () {},
+                onScroll: () {},
+              ),
+              plugins: [
+                SummernoteAtMention(
+                  getSuggestionsMobile: (String value) {
+                    var mentions = <String>['test1', 'test2', 'test3'];
+                    return mentions
+                        .where((element) => element.contains(value))
+                        .toList();
+                  },
+                  mentionsWeb: ['test1', 'test2', 'test3'],
+                  onSelect: (String value) {},
                 )
               ],
             ),

@@ -253,8 +253,7 @@ impl DeviceController {
         }
     }
 
-    pub fn process_events(&self, client: &MatrixClient, device_lists: DeviceLists) {
-        let mut changed_event_tx = self.changed_event_tx.clone();
+    pub fn process_events(&mut self, client: &MatrixClient, device_lists: DeviceLists) {
         for user_id in device_lists.changed.into_iter() {
             info!("device-changed user_id: {}", user_id);
             let current_user_id = client
@@ -262,13 +261,12 @@ impl DeviceController {
                 .expect("guest user cannot handle the device changed event");
             if *user_id == *current_user_id {
                 let evt = DeviceChangedEvent::new(client);
-                if let Err(e) = changed_event_tx.try_send(evt) {
+                if let Err(e) = self.changed_event_tx.try_send(evt) {
                     warn!("Dropping devices changed event: {}", e);
                 }
             }
         }
 
-        let mut left_event_tx = self.left_event_tx.clone();
         for user_id in device_lists.left.into_iter() {
             info!("device-left user_id: {}", user_id);
             let current_user_id = client
@@ -276,7 +274,7 @@ impl DeviceController {
                 .expect("guest user cannot handle the device left event");
             if *user_id == *current_user_id {
                 let evt = DeviceLeftEvent::new(client);
-                if let Err(e) = left_event_tx.try_send(evt) {
+                if let Err(e) = self.left_event_tx.try_send(evt) {
                     warn!("Dropping devices left event: {}", e);
                 }
             }

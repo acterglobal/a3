@@ -20,44 +20,40 @@ class NotificationScreen extends StatelessWidget {
           margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
           child: Row(
             children: [
-              Row(
+              Container(
+                height: 60,
+                width: 60,
+                margin: EdgeInsets.all(10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  // ignore: sized_box_for_whitespace
                   Container(
-                    height: 60,
-                    width: 60,
-                    margin: EdgeInsets.all(10),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-                        fit: BoxFit.fill,
-                      ),
+                    width: MediaQuery.of(context).size.width - 150,
+                    margin: EdgeInsets.only(right: 10),
+                    child: const Text(
+                      'Lorem Ipsum is simply dummy text of the printing',
+                      style: NotificationTheme.titleStyle,
                     ),
                   ),
                   const SizedBox(
-                    width: 10,
+                    height: 5,
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // ignore: sized_box_for_whitespace
-                      Container(
-                        width: MediaQuery.of(context).size.width - 150,
-                        margin: EdgeInsets.only(right: 10),
-                        child: const Text(
-                          'Lorem Ipsum is simply dummy text of the printing',
-                          style: NotificationTheme.titleStyle,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      const Text(
-                        '35 members',
-                        style: NotificationTheme.subTitleStyle,
-                      )
-                    ],
+                  const Text(
+                    '35 members',
+                    style: NotificationTheme.subTitleStyle,
                   )
                 ],
               )

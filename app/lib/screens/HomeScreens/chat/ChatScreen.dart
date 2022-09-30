@@ -3,6 +3,8 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cached_memory_image/cached_memory_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -157,20 +159,25 @@ class _ChatScreenState extends State<ChatScreen> {
     if (imageMessage.uri.isEmpty) {
       // binary data
       if (imageMessage.metadata?.containsKey('binary') ?? false) {
-        return Image.memory(
-          imageMessage.metadata?['binary'],
+        return CachedMemoryImage(
+          uniqueKey: imageMessage.id,
+          bytes: imageMessage.metadata?['binary'],
           width: messageWidth.toDouble(),
+          placeholder: const CircularProgressIndicator(
+            color: AppCommonTheme.primaryColor,
+          ),
         );
       } else {
-        return Image.memory(
-          kTransparentImage,
+        return CachedMemoryImage(
+          uniqueKey: UniqueKey().toString(),
+          bytes: kTransparentImage,
           width: messageWidth.toDouble(),
         );
       }
     } else if (isURL(imageMessage.uri)) {
       // remote url
-      return Image.network(
-        imageMessage.uri,
+      return CachedNetworkImage(
+        imageUrl: imageMessage.uri,
         width: messageWidth.toDouble(),
       );
     } else {
@@ -194,18 +201,14 @@ class _ChatScreenState extends State<ChatScreen> {
             elevation: 1,
             centerTitle: true,
             toolbarHeight: 70,
-            leading: Row(
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/images/back_button.svg',
-                    color: AppCommonTheme.svgIconColor,
-                  ),
-                ),
-              ],
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: SvgPicture.asset(
+                'assets/images/back_button.svg',
+                color: AppCommonTheme.svgIconColor,
+              ),
             ),
             title: Column(
               mainAxisSize: MainAxisSize.max,
@@ -239,7 +242,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ) {
                     if (snapshot.hasData) {
                       return Text(
-                        '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
+                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
                         style: ChatTheme01.chatBodyStyle +
                             AppCommonTheme.primaryColor,
                       );
@@ -331,6 +334,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller.textEditingController.clear();
                   controller.sendButtonUpdate();
                 },
+              ),
+              scrollController: ScrollController(
+                initialScrollOffset: 10,
               ),
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
