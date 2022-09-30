@@ -14,14 +14,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatProfileScreen extends StatefulWidget {
   final Conversation room;
-  final String? user;
   final bool isGroup;
   final bool isAdmin;
 
   const ChatProfileScreen({
     Key? key,
     required this.room,
-    this.user,
     required this.isGroup,
     required this.isAdmin,
   }) : super(key: key);

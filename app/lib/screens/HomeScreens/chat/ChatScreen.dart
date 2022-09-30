@@ -17,7 +17,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiBufferUint8, FfiListMember;
+    show Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -29,43 +29,33 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Client client;
   final Conversation room;
-  final String? user;
 
-  const ChatScreen({
-    Key? key,
-    required this.client,
-    required this.room,
-    this.user,
-  }) : super(key: key);
+  const ChatScreen({Key? key, required this.room}) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late types.User _user;
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatRoomController = Get.put(ChatRoomController());
   ChatListController chatListController = Get.find<ChatListController>();
+  ChatRoomController chatRoomController = Get.find<ChatRoomController>();
 
   @override
   void initState() {
     super.initState();
-    _user = types.User(id: widget.user!);
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
-    chatRoomController.init(widget.room, _user);
-    chatListController.setCurrentRoomId(widget.room.getRoomId());
+    chatRoomController.reset(widget.room);
   }
 
   @override
   void dispose() {
-    chatListController.setCurrentRoomId(null);
+    chatRoomController.reset(null);
     Get.delete<ChatRoomController>();
     super.dispose();
   }
@@ -130,23 +120,23 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<FfiBufferUint8> _userAvatar(String userId) async {
-    final member = await widget.room.getMember(userId);
+  Future<FfiBufferUint8> _userAvatar(String uid) async {
+    final member = await widget.room.getMember(uid);
     return member.avatar();
   }
 
-  Widget _avatarBuilder(String userId) {
+  Widget _avatarBuilder(String uid) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
         child: CustomAvatar(
-          avatar: _userAvatar(userId),
+          avatar: _userAvatar(uid),
           displayName: null,
           radius: 15,
           isGroup: false,
-          stringName: getNameFromId(userId) ?? '',
+          stringName: getNameFromId(uid) ?? '',
         ),
       ),
     );
@@ -267,7 +257,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     MaterialPageRoute(
                       builder: (context) => ChatProfileScreen(
                         room: widget.room,
-                        user: widget.user,
                         isGroup: true,
                         isAdmin: true,
                       ),
@@ -350,7 +339,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
               onSendPressed: (_) {},
-              user: _user,
+              user: types.User(id: chatRoomController.userId),
               disableImageGallery: roomState ? true : false,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,

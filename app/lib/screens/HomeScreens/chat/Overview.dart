@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -18,18 +19,17 @@ import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
-  const ChatOverview({Key? key, required this.client}) : super(key: key);
-
   final Client client;
+
+  const ChatOverview({Key? key, required this.client}) : super(key: key);
 
   @override
   State<ChatOverview> createState() => _ChatOverviewState();
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late final String user;
   late final countInvites;
-  String userId = '';
+  String? _userId;
   Random random = Random();
 
   @override
@@ -43,7 +43,10 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   Future<void> _fetchUserId() async {
     var uid = await widget.client.userId();
-    setState(() => userId = uid.toString());
+    setState(() {
+      _userId = uid.toString();
+      Get.put(ChatRoomController(client: widget.client, userId: _userId!));
+    });
   }
 
   @override
@@ -164,9 +167,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
                 child: ChatListItem(
-                  client: widget.client,
                   room: item.conversation,
-                  user: userId,
                   latestMessage: item.latestMessage,
                 ),
               ),
@@ -179,9 +180,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             return FadeTransition(
               opacity: animation,
               child: ChatListItem(
-                client: widget.client,
                 room: item.conversation,
-                user: userId,
                 latestMessage: item.latestMessage,
               ),
             );
@@ -203,9 +202,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
                 child: ChatListItem(
-                  client: widget.client,
                   room: item.conversation,
-                  user: userId,
                   latestMessage: item.latestMessage,
                 ),
               ),
