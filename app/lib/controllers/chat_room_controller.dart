@@ -1,5 +1,3 @@
-// ignore_for_file: always_declare_return_types
-
 import 'dart:async';
 import 'dart:io';
 
@@ -29,7 +27,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ChatRoomController extends GetxController {
   Client client;
   String userId;
-  List<types.Message> messages = [];
+  RxList<types.Message> messages = RxList([]);
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
@@ -357,16 +355,16 @@ class ChatRoomController extends GetxController {
         if (isLoading.isFalse) {
           update(['Chat']);
         }
-        _room!.imageBinary(eventId).then((data) async {
-          int idx = _findMessage(eventId);
+        _room!.imageBinary(eventId).then((data) {
+          int idx = messages.indexWhere((x) => x.id == eventId);
           if (idx != -1) {
             messages[idx] = messages[idx].copyWith(
               metadata: {
                 'binary': data.asTypedList(),
               },
             );
+            update(['Chat']);
           }
-          update(['Chat']);
         });
       }
     } else if (msgtype == 'm.location') {
@@ -385,15 +383,6 @@ class ChatRoomController extends GetxController {
       }
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
-  }
-
-  int _findMessage(String eventId) {
-    for (var i = 0; i < messages.length; i++) {
-      if (messages[i].id == eventId) {
-        return i;
-      }
-    }
-    return -1;
   }
 
   void sendButtonUpdate() {
