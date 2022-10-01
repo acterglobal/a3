@@ -82,7 +82,6 @@ class ChatListController extends GetxController {
     currentRoomId = roomId;
   }
 
-  // ignore: always_declare_return_types
   void updateList(List<Conversation> convos, String userId) {
     if (!initialLoaded) {
       initialLoaded = true;

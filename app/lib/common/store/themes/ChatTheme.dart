@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
 @immutable
