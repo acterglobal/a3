@@ -37,3 +37,7 @@
 ## 1.0.8
 
 - Fix readme video urls
+
+## 1.0.9
+
+- Upgraded riverpod version to 2.0.0
