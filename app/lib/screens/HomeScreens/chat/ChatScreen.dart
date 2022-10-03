@@ -45,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatRoomController = Get.put(ChatRoomController());
+  ChatRoomController chatRoomController = Get.find<ChatRoomController>();
 
   @override
   void initState() {
@@ -53,14 +53,13 @@ class _ChatScreenState extends State<ChatScreen> {
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
-    chatRoomController.setCurrentRoomId(widget.room.getRoomId());
-    chatRoomController.init(widget.room, widget.client);
+    chatRoomController.reset(widget.room);
   }
 
   @override
   void dispose() {
+    chatRoomController.reset(null);
     super.dispose();
-    Get.delete<ChatRoomController>();
   }
 
   void _handleAttachmentPressed(BuildContext context) {
@@ -264,7 +263,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     MaterialPageRoute(
                       builder: (context) => ChatProfileScreen(
                         room: widget.room,
-                        user: chatRoomController.user.id,
                         isGroup: true,
                         isAdmin: true,
                       ),
@@ -350,7 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 typingMode: TypingIndicatorMode.text,
               ),
               onSendPressed: (_) {},
-              user: chatRoomController.user,
+              user: types.User(id: chatRoomController.userId),
               disableImageGallery: roomState ? true : false,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,

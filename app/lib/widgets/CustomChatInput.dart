@@ -18,7 +18,7 @@ class CustomChatInput extends StatelessWidget {
   }) : super(key: key);
   final BuildContext context;
   final Function()? onButtonPressed;
-  final controller = Get.put(ChatRoomController());
+  ChatRoomController controller = Get.find<ChatRoomController>();
   bool isChatScreen = true;
   final String roomName;
   static const List<List<String>> attachmentNameList = [
@@ -82,7 +82,7 @@ class CustomChatInput extends StatelessWidget {
                           child: TextField(
                             onChanged: ((value) async {
                               controller.sendButtonUpdate();
-                              await controller.room.typingNotice(true);
+                              await controller.typingNotice(true);
                             }),
                             maxLines: MediaQuery.of(context).orientation ==
                                     Orientation.portrait
@@ -159,13 +159,8 @@ class CustomChatInput extends StatelessWidget {
             );
           },
         ),
-        EmojiPickerWidget(
-          controller: controller,
-          context: context,
-          size: _size,
-        ),
+        EmojiPickerWidget(context: context, size: _size),
         AttachmentWidget(
-          controller: controller,
           context: context,
           attachmentNameList: attachmentNameList,
           roomName: roomName,
@@ -177,16 +172,15 @@ class CustomChatInput extends StatelessWidget {
 }
 
 class AttachmentWidget extends StatelessWidget {
-  const AttachmentWidget({
+  AttachmentWidget({
     Key? key,
-    required this.controller,
     required this.context,
     required this.attachmentNameList,
     required this.roomName,
     required this.size,
   }) : super(key: key);
 
-  final ChatRoomController controller;
+  final ChatRoomController controller = Get.find<ChatRoomController>();
   final BuildContext context;
   final List<List<String>> attachmentNameList;
   final String roomName;
@@ -298,14 +292,13 @@ class AttachmentWidget extends StatelessWidget {
 }
 
 class EmojiPickerWidget extends StatelessWidget {
-  const EmojiPickerWidget({
+  EmojiPickerWidget({
     Key? key,
-    required this.controller,
     required this.context,
     required this.size,
   }) : super(key: key);
 
-  final ChatRoomController controller;
+  final ChatRoomController controller = Get.find<ChatRoomController>();
   final BuildContext context;
   final Size size;
 

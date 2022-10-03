@@ -22,9 +22,10 @@ class ImageSelection extends StatefulWidget {
 }
 
 class _ImageSelectionState extends State<ImageSelection> {
-  final controller = Get.put(ChatRoomController());
+  ChatRoomController controller = Get.find<ChatRoomController>();
   int selectedIndex = 0;
   final PageController _pageController = PageController(initialPage: 0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

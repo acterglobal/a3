@@ -26,13 +26,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
+  Client client;
+  String userId;
   List<types.Message> messages = [];
   List<types.User> typingUsers = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
-  late final Conversation room;
-  late final types.User user;
+  Conversation? _room;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
@@ -40,59 +41,56 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  String currentRoomId = '';
-  StreamSubscription<TypingEvent>? typingReceiver;
-  StreamSubscription<RoomMessage>? messageReceiver;
-  //get the timeline of room
-  Future<void> init(Conversation convoRoom, Client client) async {
-    isLoading.value = true;
-    await client.userId().then((res) {
-      user = types.User(id: res.toString());
-    });
+  StreamSubscription<RoomMessage>? _messageSubscription;
+
+  ChatRoomController({required this.client, required this.userId}) : super();
+
+  @override
+  void onInit() {
+    super.onInit();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
         isAttachmentVisible.value = false;
       }
     });
-
-    room = convoRoom;
-    _stream = await room.timeline();
-    // i am fetching messages from remote
-    var msgs = await _stream!.paginateBackwards(10);
-    for (RoomMessage message in msgs) {
-      loadMessage(message);
-    }
-    isLoading.value = false;
-
-    typingReceiver = client.typingEventRx()?.listen((event) {
-      String roomId = event.roomId();
-      if (roomId == currentRoomId) {
-        List<String> userIds = [];
-        if (event.userIds().isEmpty) {
-          typingUsers.clear();
-        } else {
-          for (final userId in event.userIds()) {
-            userIds.add(userId.toDartString());
-          }
+    _messageSubscription = client.messageEventRx()?.listen((event) {
+      if (_room != null) {
+        if (event.sender() != userId) {
+          _loadMessage(event);
         }
-
-        //store the typing users.
-        updateTypingList(userIds);
-        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-      }
-    });
-    messageReceiver = client.messageEventRx()?.listen((event) {
-      if (currentRoomId.isNotEmpty) {
-        if (event.sender() != user.id) {
-          loadMessage(event);
-        }
+        update(['Chat']);
       }
     });
   }
 
-  void setCurrentRoomId(String roomId) {
-    currentRoomId = roomId;
+  @override
+  void onClose() {
+    textEditingController.dispose();
+    focusNode.removeListener(() {});
+    _messageSubscription?.cancel();
+    super.onClose();
+  }
+
+  //get the timeline of room
+  Future<void> reset(Conversation? convoRoom) async {
+    if (convoRoom == null) {
+      messages = [];
+      typingUsers = [];
+      _stream?.drop();
+      _page = 0;
+      _room = null;
+    } else {
+      _room = convoRoom;
+      isLoading.value = true;
+      _stream = await _room!.timeline();
+      // i am fetching messages from remote
+      var msgs = await _stream!.paginateBackwards(10);
+      for (RoomMessage message in msgs) {
+        _loadMessage(message);
+      }
+      isLoading.value = false;
+    }
   }
 
   //preview message link
@@ -114,10 +112,10 @@ class ChatRoomController extends GetxController {
   Future<void> handleSendPressed(String message) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
-    await room.typingNotice(false);
-    var eventId = await room.sendPlainMessage(message);
+    await _room!.typingNotice(false);
+    var eventId = await _room!.sendPlainMessage(message);
     final textMessage = types.TextMessage(
-      author: user,
+      author: types.User(id: userId),
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: eventId,
       text: message,
@@ -156,7 +154,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await room.sendImageMessage(
+      var eventId = await _room!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -166,7 +164,7 @@ class ChatRoomController extends GetxController {
       );
 
       final message = types.ImageMessage(
-        author: user,
+        author: types.User(id: userId),
         createdAt: DateTime.now().millisecondsSinceEpoch,
         height: image.height.toDouble(),
         id: eventId,
@@ -192,7 +190,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await room.sendImageMessage(
+      var eventId = await _room!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -203,7 +201,7 @@ class ChatRoomController extends GetxController {
 
       // i am sending message
       final message = types.ImageMessage(
-        author: user,
+        author: types.User(id: userId),
         createdAt: DateTime.now().millisecondsSinceEpoch,
         height: image.height.toDouble(),
         id: eventId,
@@ -226,7 +224,7 @@ class ChatRoomController extends GetxController {
 
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
-      await room.sendFileMessage(
+      await _room!.sendFileMessage(
         result.files.single.path!,
         result.files.single.name,
         mimeType!,
@@ -235,7 +233,7 @@ class ChatRoomController extends GetxController {
 
       // i am sending message
       final message = types.FileMessage(
-        author: user,
+        author: types.User(id: userId),
         createdAt: DateTime.now().millisecondsSinceEpoch,
         id: randomString(),
         name: result.files.single.name,
@@ -253,7 +251,7 @@ class ChatRoomController extends GetxController {
     types.Message message,
   ) async {
     if (message is types.FileMessage) {
-      String filePath = await room.filePath(message.id);
+      String filePath = await _room!.filePath(message.id);
       if (filePath.isEmpty) {
         Directory? rootPath = await getTemporaryDirectory();
         String? dirPath = await FilesystemPicker.open(
@@ -268,7 +266,7 @@ class ChatRoomController extends GetxController {
               : null,
         );
         if (dirPath != null) {
-          await room.saveFile(message.id, dirPath);
+          await _room!.saveFile(message.id, dirPath);
         }
       } else {
         final result = await OpenFile.open(filePath);
@@ -288,7 +286,7 @@ class ChatRoomController extends GetxController {
     final msgs = await _stream!.paginateBackwards(10);
     // i am fetching messages from remote
     for (RoomMessage message in msgs) {
-      loadMessage(message);
+      _loadMessage(message);
     }
     _page = _page + 1;
     update(['Chat']);
@@ -308,7 +306,7 @@ class ChatRoomController extends GetxController {
     messages.add(msg);
   }
 
-  void loadMessage(RoomMessage message) {
+  void _loadMessage(RoomMessage message) {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: getNameFromId(sender));
@@ -350,7 +348,7 @@ class ChatRoomController extends GetxController {
         if (isLoading.isFalse) {
           update(['Chat']);
         }
-        room.imageBinary(eventId).then((data) async {
+        _room!.imageBinary(eventId).then((data) async {
           int idx = _findMessage(eventId);
           if (idx != -1) {
             messages[idx] = messages[idx].copyWith(
@@ -394,7 +392,11 @@ class ChatRoomController extends GetxController {
     update();
   }
 
-  void updateTypingList(List<String> userIds) {
+  Future<bool> typingNotice(bool typing) async {
+    return await _room!.typingNotice(typing);
+  }
+
+  void _updateTypingList(List<String> userIds) {
     typingUsers.clear();
     for (var id in userIds) {
       types.User typingUser = types.User(
@@ -407,12 +409,23 @@ class ChatRoomController extends GetxController {
     update(['Chat']);
   }
 
-  @override
-  void onClose() {
-    super.onClose();
-    typingReceiver?.cancel();
-    messageReceiver?.cancel();
-    textEditingController.dispose();
-    focusNode.removeListener(() {});
+  void updateTyping(TypingEvent event) {
+    if (_room != null) {
+      String roomId = event.roomId();
+      if (roomId == _room!.getRoomId()) {
+        List<String> userIds = [];
+        if (event.userIds().isEmpty) {
+          typingUsers.clear();
+        } else {
+          for (final userId in event.userIds()) {
+            userIds.add(userId.toDartString());
+          }
+        }
+
+        //store the typing users.
+        _updateTypingList(userIds);
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      }
+    }
   }
 }

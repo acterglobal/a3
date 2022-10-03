@@ -6,9 +6,11 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show Client, UserId;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,7 +29,7 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late final countInvites;
+  late int countInvites;
   Random random = Random();
 
   @override
@@ -36,6 +38,17 @@ class _ChatOverviewState extends State<ChatOverview> {
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     Get.put(ChatListController(client: widget.client));
+    widget.client.userId().then((UserId uid) {
+      String userId = uid.toString();
+      Get.put(ChatRoomController(client: widget.client, userId: userId));
+    });
+  }
+
+  @override
+  void dispose() {
+    Get.delete<ChatRoomController>();
+    Get.delete<ChatListController>();
+    super.dispose();
   }
 
   @override

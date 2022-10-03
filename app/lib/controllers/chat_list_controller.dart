@@ -1,7 +1,8 @@
 import 'dart:async';
 
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiListConversation, RoomMessage;
+    show Client, Conversation, FfiListConversation, RoomMessage, TypingEvent;
 import 'package:get/get.dart';
 
 //Helper class.
@@ -34,7 +35,8 @@ class ChatListController extends GetxController {
   List<RoomItem> roomItems = [];
   bool initialLoaded = false;
 
-  StreamSubscription<FfiListConversation>? convosReceiver;
+  StreamSubscription<FfiListConversation>? _convosSubscription;
+  StreamSubscription<TypingEvent>? _typingSubscription;
 
   ChatListController({required this.client}) : super();
 
@@ -43,15 +45,20 @@ class ChatListController extends GetxController {
     super.onInit();
     userId = (await client.userId()).toString();
     if (!client.isGuest()) {
-      convosReceiver = client.conversationsRx().listen((event) {
+      _convosSubscription = client.conversationsRx().listen((event) {
         updateList(event.toList(), userId);
+      });
+      _typingSubscription = client.typingEventRx()?.listen((event) {
+        ChatRoomController controller = Get.find<ChatRoomController>();
+        controller.updateTyping(event);
       });
     }
   }
 
   @override
   void onClose() {
-    convosReceiver?.cancel();
+    _convosSubscription?.cancel();
+    _typingSubscription?.cancel();
     super.onClose();
   }
 
