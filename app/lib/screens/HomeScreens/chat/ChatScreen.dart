@@ -56,7 +56,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     chatRoomController.reset(null);
-    Get.delete<ChatRoomController>();
     super.dispose();
   }
 
