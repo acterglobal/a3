@@ -75,9 +75,9 @@ class ChatRoomController extends GetxController {
   //get the timeline of room
   Future<void> reset(Conversation? convoRoom) async {
     if (convoRoom == null) {
-      messages = [];
-      typingUsers = [];
-      _stream?.drop();
+      messages.clear();
+      typingUsers.clear();
+      _stream = null;
       _page = 0;
       _room = null;
     } else {

@@ -193,18 +193,14 @@ class _ChatScreenState extends State<ChatScreen> {
             elevation: 1,
             centerTitle: true,
             toolbarHeight: 70,
-            leading: Row(
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/images/back_button.svg',
-                    color: AppCommonTheme.svgIconColor,
-                  ),
-                ),
-              ],
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: SvgPicture.asset(
+                'assets/images/back_button.svg',
+                color: AppCommonTheme.svgIconColor,
+              ),
             ),
             title: Column(
               mainAxisSize: MainAxisSize.max,
@@ -238,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ) {
                     if (snapshot.hasData) {
                       return Text(
-                        '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
+                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
                         style: ChatTheme01.chatBodyStyle +
                             AppCommonTheme.primaryColor,
                       );

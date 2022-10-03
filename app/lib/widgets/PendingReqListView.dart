@@ -32,18 +32,9 @@ class PendingReqListView extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            children: [
-              Row(
-                children: const [
-                  Text(
-                    'Withdraw',
-                    style: TextStyle(
-                        color: AppCommonTheme.primaryColor, fontSize: 16),
-                  ),
-                ],
-              ),
-            ],
+          Text(
+            'Withdraw',
+            style: TextStyle(color: AppCommonTheme.primaryColor, fontSize: 16),
           )
         ],
       ),

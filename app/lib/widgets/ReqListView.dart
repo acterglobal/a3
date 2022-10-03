@@ -33,23 +33,19 @@ class ReqListView extends StatelessWidget {
             ],
           ),
           Row(
-            children: [
-              Row(
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      'Accept',
-                      style: TextStyle(
-                          color: AppCommonTheme.greenButtonColor, fontSize: 16),
-                    ),
-                  ),
-                  Text(
-                    'Decline',
-                    style: TextStyle(
-                        color: AppCommonTheme.primaryColor, fontSize: 16),
-                  ),
-                ],
+            children: const [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'Accept',
+                  style: TextStyle(
+                      color: AppCommonTheme.greenButtonColor, fontSize: 16),
+                ),
+              ),
+              Text(
+                'Decline',
+                style:
+                    TextStyle(color: AppCommonTheme.primaryColor, fontSize: 16),
               ),
             ],
           )
