@@ -9,16 +9,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class NewsItem extends StatelessWidget {
+  final Client client;
+  final News news;
+  final int index;
+
   const NewsItem({
     Key? key,
     required this.client,
     required this.news,
     required this.index,
   }) : super(key: key);
-
-  final Client client;
-  final News news;
-  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +43,7 @@ class NewsItem extends StatelessWidget {
           children: <Widget>[
             Expanded(
               flex: 5,
-              // ignore: sized_box_for_whitespace
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height / 4,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -66,9 +65,7 @@ class NewsItem extends StatelessWidget {
                           ],
                         ),
                       ),
-                      // ignore: prefer_const_constructors
                       const SizedBox(height: 10),
-                      // ignore: prefer_const_constructors
                       ExpandableText(
                         news.text() ?? '',
                         maxLines: 2,
@@ -98,8 +95,7 @@ class NewsItem extends StatelessWidget {
             ),
             Expanded(
               flex: 1,
-              // ignore: sized_box_for_whitespace
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height / 2.5,
                 child: InkWell(
                   child: NewsSideBar(

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
@@ -10,9 +8,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:themed/themed.dart';
 
 class SideDrawer extends StatefulWidget {
-  const SideDrawer({Key? key, required this.client}) : super(key: key);
-
   final Client client;
+
+  const SideDrawer({Key? key, required this.client}) : super(key: key);
 
   @override
   State<SideDrawer> createState() => _SideDrawerState();
@@ -48,9 +46,7 @@ class _SideDrawerState extends State<SideDrawer> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               widget.client.isGuest()
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -97,7 +93,7 @@ class _SideDrawerState extends State<SideDrawer> {
                       child: Row(
                         children: [
                           Container(
-                            margin: EdgeInsets.all(10),
+                            margin: const EdgeInsets.all(10),
                             child: CustomAvatar(
                               radius: 24,
                               avatar: avatar,
@@ -106,9 +102,7 @@ class _SideDrawerState extends State<SideDrawer> {
                               stringName: '',
                             ),
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
+                          const SizedBox(width: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -125,7 +119,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                       return Center(
                                         child: Text(
                                           '${snapshot.error} occurred',
-                                          style: TextStyle(fontSize: 18),
+                                          style: const TextStyle(fontSize: 18),
                                         ),
                                       );
                                     } else if (snapshot.hasData) {
@@ -160,7 +154,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                       return Center(
                                         child: Text(
                                           '${snapshot.error} occurred',
-                                          style: TextStyle(fontSize: 18),
+                                          style: const TextStyle(fontSize: 18),
                                         ),
                                       );
                                     } else if (snapshot.hasData) {
@@ -168,7 +162,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                         snapshot.data ?? '',
                                         style: SideMenuAndProfileTheme
                                                 .sideMenuProfileStyle +
-                                            FontSize(14),
+                                            const FontSize(14),
                                       );
                                     }
                                   }
@@ -186,9 +180,7 @@ class _SideDrawerState extends State<SideDrawer> {
                         ],
                       ),
                     ),
-              SizedBox(
-                height: _size.height * 0.04,
-              ),
+              SizedBox(height: _size.height * 0.04),
               ListTile(
                 leading: SvgPicture.asset(
                   'assets/images/task.svg',
@@ -273,7 +265,7 @@ class _SideDrawerState extends State<SideDrawer> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SocialProfileScreen(),
+                      builder: (context) => const SocialProfileScreen(),
                     ),
                   );
                 },
@@ -310,7 +302,7 @@ class _SideDrawerState extends State<SideDrawer> {
               widget.client.isGuest()
                   ? const SizedBox()
                   : Container(
-                      margin: EdgeInsets.only(bottom: 20, left: 10),
+                      margin: const EdgeInsets.only(bottom: 20, left: 10),
                       alignment: Alignment.bottomCenter,
                       child: InkWell(
                         onTap: () {},

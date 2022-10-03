@@ -1,4 +1,3 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:async';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -44,7 +43,7 @@ Future<void> startApp() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(Effektio());
+  runApp(const Effektio());
 }
 
 class Effektio extends StatelessWidget {
@@ -66,7 +65,7 @@ class Effektio extends StatelessWidget {
         // MaterialApp contains our top-level Navigator
         initialRoute: '/',
         routes: <String, WidgetBuilder>{
-          '/': (BuildContext context) => EffektioHome(),
+          '/': (BuildContext context) => const EffektioHome(),
           '/login': (BuildContext context) => const LoginScreen(),
           '/profile': (BuildContext context) => const SocialProfileScreen(),
           '/signup': (BuildContext context) => const SignupScreen(),
@@ -171,7 +170,7 @@ class _EffektioHomeState extends State<EffektioHome>
                     IconButton(
                       icon: Container(
                         margin: const EdgeInsets.only(bottom: 10, right: 10),
-                        child: Icon(Icons.search),
+                        child: const Icon(Icons.search),
                       ),
                       onPressed: () {},
                     )
@@ -184,7 +183,7 @@ class _EffektioHomeState extends State<EffektioHome>
               FaqOverviewScreen(client: client),
               NewsScreen(client: client),
               ChatOverview(client: client),
-              NotificationScreen(),
+              const NotificationScreen(),
             ],
           ),
           drawer: SideDrawer(
@@ -194,7 +193,7 @@ class _EffektioHomeState extends State<EffektioHome>
             labelColor: AppCommonTheme.primaryColor,
             unselectedLabelColor: AppCommonTheme.svgIconColor,
             controller: _tabController,
-            indicator: MaterialIndicator(
+            indicator: const MaterialIndicator(
               height: 5,
               bottomLeftRadius: 8,
               bottomRightRadius: 8,
@@ -206,61 +205,45 @@ class _EffektioHomeState extends State<EffektioHome>
             ),
             tabs: [
               Container(
-                margin: EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 10),
                 child: Tab(
                   icon: tabIndex == 0
-                      ? SvgPicture.asset(
-                          'assets/images/newsfeed_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/newsfeed_linear.svg',
-                        ),
+                      ? SvgPicture.asset('assets/images/newsfeed_bold.svg')
+                      : SvgPicture.asset('assets/images/newsfeed_linear.svg'),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 10),
                 child: Tab(
                   icon: tabIndex == 1
-                      ? SvgPicture.asset(
-                          'assets/images/menu_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/menu_linear.svg',
-                        ),
+                      ? SvgPicture.asset('assets/images/menu_bold.svg')
+                      : SvgPicture.asset('assets/images/menu_linear.svg'),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 10),
                 child: Tab(
                   icon: tabIndex == 2
                       ? SvgPicture.asset(
                           'assets/images/add.svg',
                           color: AppCommonTheme.primaryColor,
                         )
-                      : SvgPicture.asset(
-                          'assets/images/add.svg',
-                        ),
+                      : SvgPicture.asset('assets/images/add.svg'),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 10),
                 child: Tab(
                   icon: tabIndex == 3
-                      ? SvgPicture.asset(
-                          'assets/images/chat_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/chat_linear.svg',
-                        ),
+                      ? SvgPicture.asset('assets/images/chat_bold.svg')
+                      : SvgPicture.asset('assets/images/chat_linear.svg'),
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 10),
                 child: Tab(
                   icon: tabIndex == 4
-                      ? SvgPicture.asset(
-                          'assets/images/notification_bold.svg',
-                        )
+                      ? SvgPicture.asset('assets/images/notification_bold.svg')
                       : SvgPicture.asset(
                           'assets/images/notification_linear.svg',
                         ),
@@ -287,7 +270,7 @@ class _EffektioHomeState extends State<EffektioHome>
             child: Text('${snapshot.error}'),
           );
         } else {
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: SizedBox(
                 height: 50,

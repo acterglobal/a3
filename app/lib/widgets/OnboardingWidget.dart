@@ -1,36 +1,31 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
-// CLASS BUTTON
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// ignore: must_be_immutable
 class CustomOnbaordingButton extends StatelessWidget {
-  // ignore: prefer_const_constructors_in_immutables
-  CustomOnbaordingButton({
+  final GestureTapCallback onPressed;
+  final String title;
+
+  const CustomOnbaordingButton({
     Key? key,
     required this.onPressed,
     required this.title,
   }) : super(key: key);
 
-  final GestureTapCallback onPressed;
-  String title;
-
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       child: MaterialButton(
-        padding: EdgeInsets.symmetric(vertical: 18),
+        padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5),
-          side: BorderSide(color: Colors.pink),
+          side: const BorderSide(color: Colors.pink),
         ),
         child: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -46,7 +41,6 @@ class CustomOnbaordingButton extends StatelessWidget {
 enum SignUpOnboardingTextFieldEnum { name, userName, password, token }
 
 // ON BOARDING TEXT FILED
-// ignore: unused_element
 Widget signUpOnboardingTextField(
   String hintText,
   TextEditingController controller,
@@ -54,7 +48,7 @@ Widget signUpOnboardingTextField(
   SignUpOnboardingTextFieldEnum type,
 ) {
   return Container(
-    margin: EdgeInsets.only(left: 20, right: 20, top: 20),
+    margin: const EdgeInsets.fromLTRB(20, 20, 20, 0),
     height: 60,
     decoration: BoxDecoration(
       color: AppCommonTheme.textFieldColor,
@@ -70,13 +64,12 @@ Widget signUpOnboardingTextField(
       obscureText: type == SignUpOnboardingTextFieldEnum.password,
       controller: controller,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.only(left: 10, top: 12, right: 10),
+        contentPadding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
         border: InputBorder.none,
-
         hintText: hintText, // pass the hint text parameter here
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
       ),
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       validator: (val) {
         if (val == null || val.trim().isEmpty) {
           return validatorText;
@@ -124,7 +117,7 @@ Widget signInOnboardingTextField(
   SignInOnboardingTextFieldEnum type,
 ) {
   return Container(
-    margin: EdgeInsets.symmetric(horizontal: 20),
+    margin: const EdgeInsets.symmetric(horizontal: 20),
     height: 60,
     decoration: BoxDecoration(
       color: AppCommonTheme.textFieldColor,
@@ -137,18 +130,16 @@ Widget signInOnboardingTextField(
       obscureText: type == SignInOnboardingTextFieldEnum.password,
       controller: controller,
       decoration: InputDecoration(
-        contentPadding: EdgeInsets.only(left: 10.0, top: 12, right: 10),
+        contentPadding: const EdgeInsets.fromLTRB(10, 12, 10, 0),
         border: InputBorder.none,
-
         hintText: hintText, // pass the hint text parameter here
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
       ),
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
       validator: (val) {
         if (val == null || val.trim().isEmpty) {
           return validatorText;
         }
-
         return null;
       },
       onChanged: (value) {

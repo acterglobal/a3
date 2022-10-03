@@ -1,21 +1,19 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables,
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InviteInfoWidget extends StatelessWidget {
+  final Color avatarColor;
+  final String inviter;
+  final String groupName;
+
   const InviteInfoWidget({
     Key? key,
     required this.avatarColor,
     required this.inviter,
     required this.groupName,
   }) : super(key: key);
-
-  final Color avatarColor;
-  final String inviter;
-  final String groupName;
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +24,7 @@ class InviteInfoWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           ListTile(
-            leading: CircleAvatar(
-              backgroundColor: avatarColor,
-            ),
+            leading: CircleAvatar(backgroundColor: avatarColor),
             title: Text(
               inviter,
               style: AppCommonTheme.appBarTitleStyle
@@ -52,10 +48,7 @@ class InviteInfoWidget extends StatelessWidget {
               ),
             ),
           ),
-          const Divider(
-            color: AppCommonTheme.dividerColor,
-            indent: 15,
-          ),
+          const Divider(color: AppCommonTheme.dividerColor, indent: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[

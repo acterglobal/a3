@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/signup_controller.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
@@ -31,32 +29,27 @@ class _SignupScreentate extends State<SignupScreen> {
 
   Future<bool> _signUpValidate() async {
     bool isRegistered = false;
-    await signUpController.signUpSubmitted().then(
-          (value) => {
-            if (value)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppLocalizations.of(context)!.loginSuccess),
-                    backgroundColor: AuthTheme.authSuccess,
-                    duration: const Duration(seconds: 4),
-                  ),
-                ),
-                isRegistered = true,
-              }
-            else
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppLocalizations.of(context)!.loginFailed),
-                    backgroundColor: AuthTheme.authFailed,
-                    duration: const Duration(seconds: 4),
-                  ),
-                ),
-                isRegistered = false,
-              }
-          },
+    await signUpController.signUpSubmitted().then((value) {
+      if (value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.loginSuccess),
+            backgroundColor: AuthTheme.authSuccess,
+            duration: const Duration(seconds: 4),
+          ),
         );
+        isRegistered = true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.loginFailed),
+            backgroundColor: AuthTheme.authFailed,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        isRegistered = false;
+      }
+    });
     return isRegistered;
   }
 
@@ -71,31 +64,23 @@ class _SignupScreentate extends State<SignupScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    height: 80,
-                  ),
+                  const SizedBox(height: 80),
                   SizedBox(
                     height: 50,
                     width: 50,
                     child: SvgPicture.asset('assets/images/logo.svg'),
                   ),
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
                   Text(
                     AppLocalizations.of(context)!.onboardText,
                     style: AuthTheme.authTitleStyle,
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Text(
                     AppLocalizations.of(context)!.createAccountText,
                     style: AuthTheme.authBodyStyle,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   signUpOnboardingTextField(
                     AppLocalizations.of(context)!.name,
                     controller.name,
@@ -120,9 +105,7 @@ class _SignupScreentate extends State<SignupScreen> {
                     AppLocalizations.of(context)!.emptyToken,
                     SignUpOnboardingTextFieldEnum.token,
                   ),
-                  const SizedBox(
-                    height: 30,
-                  ),
+                  const SizedBox(height: 30),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20),
                     child: RichText(
@@ -162,27 +145,19 @@ class _SignupScreentate extends State<SignupScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
                   controller.isSubmitting
-                      ? CircularProgressIndicator(
+                      ? const CircularProgressIndicator(
                           color: AppCommonTheme.primaryColor,
                         )
                       : CustomOnbaordingButton(
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              await _signUpValidate().then(
-                                (value) => {
-                                  if (value)
-                                    {
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        '/',
-                                      )
-                                    }
-                                },
-                              );
+                              await _signUpValidate().then((value) {
+                                if (value) {
+                                  Navigator.pushReplacementNamed(context, '/');
+                                }
+                              });
                             }
                           },
                           title: AppLocalizations.of(context)!.signUp,
@@ -203,7 +178,7 @@ class _SignupScreentate extends State<SignupScreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginScreen(),
+                              builder: (context) => const LoginScreen(),
                             ),
                           );
                         },

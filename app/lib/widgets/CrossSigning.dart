@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -60,7 +58,7 @@ class CrossSigning {
                 shrinkWrap: true,
                 children: [
                   ListTile(
-                    title: Text('New device detected'),
+                    title: const Text('New device detected'),
                     onTap: () async {
                       await event.requestVerificationToUser();
                       Get.back();
@@ -121,15 +119,13 @@ class CrossSigning {
     acceptingRequest = false;
     Get.bottomSheet(
       StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
-            ),
-            child: _buildOnRequest(context, event, flowId, setState),
-          );
-        },
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: _buildOnRequest(context, event, flowId, setState),
+        ),
       ),
       isDismissible: false,
     );
@@ -183,7 +179,9 @@ class CrossSigning {
         ),
         const SizedBox(height: 50),
         acceptingRequest
-            ? SizedBox(
+            ? const SizedBox(
+                width: 100,
+                height: 100,
                 child: CircularProgressIndicator(
                   color: CrossSigningSheetTheme.loadingIndicatorColor,
                 ),
@@ -195,7 +193,7 @@ class CrossSigning {
                   setState(() => acceptingRequest = true);
                   await event.acceptVerificationRequest();
                   Get.back();
-                  Future.delayed(Duration(milliseconds: 500), () {
+                  Future.delayed(const Duration(milliseconds: 500), () {
                     _onKeyVerificationReady(event, true);
                   });
                 },
@@ -218,17 +216,122 @@ class CrossSigning {
     }
     Get.bottomSheet(
       StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
-            ),
-            child: _buildOnReady(context, event, flowId),
-          );
-        },
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: _buildOnReady(context, event, flowId),
+        ),
       ),
       isDismissible: false,
+    );
+  }
+
+  Widget _buildOnReady(
+    BuildContext context,
+    VerificationEvent event,
+    String flowId,
+  ) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              _eventMap[flowId]!.verifyingThisDev
+                  ? AppLocalizations.of(context)!.verifyThisSession
+                  : AppLocalizations.of(context)!.verifySession,
+              style: CrossSigningSheetTheme.primaryTextStyle,
+            ),
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () async {
+                  await event.cancelVerificationRequest();
+                  Get.back();
+                  _eventMap.remove(flowId);
+                },
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+          child: Text(
+            AppLocalizations.of(context)!.verificationScanSelfNotice,
+            style: CrossSigningSheetTheme.secondaryTextStyle,
+          ),
+        ),
+        const Center(
+          child: Padding(
+            padding: EdgeInsets.all(25),
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: CircularProgressIndicator(
+                color: CrossSigningSheetTheme.loadingIndicatorColor,
+              ),
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () {},
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: SvgPicture.asset(
+                  'assets/images/camera.svg',
+                  color: AppCommonTheme.primaryColor,
+                  height: 14,
+                  width: 14,
+                ),
+              ),
+              Text(
+                AppLocalizations.of(context)!.verificationScanWithThisDevice,
+                style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                  color: AppCommonTheme.primaryColor,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Wrap(
+          children: [
+            ListTile(
+              title: Text(
+                AppLocalizations.of(context)!.verificationScanEmojiTitle,
+                style: CrossSigningSheetTheme.primaryTextStyle,
+              ),
+              subtitle: Text(
+                AppLocalizations.of(context)!.verificationScanSelfEmojiSubtitle,
+                style: CrossSigningSheetTheme.secondaryTextStyle,
+              ),
+              trailing: const Icon(
+                Icons.keyboard_arrow_right_outlined,
+                color: CrossSigningSheetTheme.primaryTextColor,
+              ),
+              onTap: () async {
+                await event.startSasVerification();
+                Get.back();
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  _onKeyVerificationStart(event);
+                });
+              },
+            ),
+          ],
+        )
+      ],
     );
   }
 
@@ -356,15 +459,13 @@ class CrossSigning {
     _eventMap[flowId]?.stage = 'm.key.verification.start';
     Get.bottomSheet(
       StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
-            ),
-            child: _buildOnStart(context, event, flowId),
-          );
-        },
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: _buildOnStart(context, event, flowId),
+        ),
       ),
       isDismissible: false,
     );
@@ -395,10 +496,10 @@ class CrossSigning {
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () async {
                   await event.cancelSasVerification();
-                  Future.delayed(Duration(milliseconds: 500), () {
+                  Future.delayed(const Duration(milliseconds: 500), () {
                     _onKeyVerificationCancel(event, true);
                   });
                 },
@@ -407,9 +508,9 @@ class CrossSigning {
             ),
           ],
         ),
-        Center(
+        const Center(
           child: Padding(
-            padding: const EdgeInsets.all(50),
+            padding: EdgeInsets.all(50),
             child: SizedBox(
               height: 100,
               width: 100,
@@ -437,15 +538,13 @@ class CrossSigning {
     _eventMap[flowId]?.stage = 'm.key.verification.cancel';
     Get.bottomSheet(
       StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
-            ),
-            child: _buildOnCancel(context, event, flowId, manual),
-          );
-        },
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: _buildOnCancel(context, event, flowId, manual),
+        ),
       ),
     );
   }
@@ -563,16 +662,58 @@ class CrossSigning {
     _eventMap[flowId]?.stage = 'm.key.verification.accept';
     Get.bottomSheet(
       StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
-            ),
-            child: _buildOnAccept(context, event, flowId),
-          );
-        },
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: _buildOnAccept(context, event, flowId),
+        ),
       ),
+    );
+  }
+
+  Widget _buildOnAccept(
+    BuildContext context,
+    VerificationEvent event,
+    String flowId,
+  ) {
+    String waitingFor = sprintf(
+      AppLocalizations.of(context)!.verificationRequestWaitingFor,
+      [event.sender()],
+    );
+    return Column(
+      children: [
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              _eventMap[flowId]?.verifyingThisDev == true
+                  ? AppLocalizations.of(context)!.verifyThisSession
+                  : AppLocalizations.of(context)!.verifySession,
+              style: CrossSigningSheetTheme.primaryTextStyle,
+            ),
+            const Spacer(),
+          ],
+        ),
+        const Center(
+          child: Padding(
+            padding: EdgeInsets.all(50),
+            child: SizedBox(
+              height: 100,
+              width: 100,
+              child: CircularProgressIndicator(
+                color: CrossSigningSheetTheme.loadingIndicatorColor,
+              ),
+            ),
+          ),
+        ),
+        Text(waitingFor, style: CrossSigningSheetTheme.secondaryTextStyle),
+      ],
     );
   }
 
@@ -632,15 +773,13 @@ class CrossSigning {
     event.getVerificationEmoji().then((emoji) {
       Get.bottomSheet(
         StatefulBuilder(
-          builder: (context, setState) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: CrossSigningSheetTheme.backgroundColor,
-              ),
-              child: _buildOnKey(context, event, flowId, emoji, setState),
-            );
-          },
+          builder: (context, setState) => Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: CrossSigningSheetTheme.backgroundColor,
+            ),
+            child: _buildOnKey(context, event, flowId, emoji, setState),
+          ),
         ),
         isDismissible: false,
       );
@@ -680,11 +819,11 @@ class CrossSigning {
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: IconButton(
-                icon: Icon(Icons.close),
+                icon: const Icon(Icons.close),
                 onPressed: () async {
                   await event.cancelVerificationKey();
                   Get.back();
-                  Future.delayed(Duration(milliseconds: 500), () {
+                  Future.delayed(const Duration(milliseconds: 500), () {
                     _onKeyVerificationCancel(event, true);
                   });
                 },
@@ -694,7 +833,7 @@ class CrossSigning {
           ],
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Text(
             AppLocalizations.of(context)!.verificationEmojiNotice,
             style: CrossSigningSheetTheme.secondaryTextStyle,
@@ -712,7 +851,7 @@ class CrossSigning {
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: GridView.count(
-                physics: BouncingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 crossAxisCount: 4,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -720,7 +859,7 @@ class CrossSigning {
                   return GridTile(
                     child: Text(
                       String.fromCharCode(emojiCodes[index]),
-                      style: TextStyle(fontSize: 32),
+                      style: const TextStyle(fontSize: 32),
                       textAlign: TextAlign.center,
                     ),
                     footer: Text(
@@ -761,7 +900,7 @@ class CrossSigning {
                       () async {
                         await event.mismatchSasVerification();
                         Get.back();
-                        Future.delayed(Duration(milliseconds: 500), () {
+                        Future.delayed(const Duration(milliseconds: 500), () {
                           _onKeyVerificationCancel(event, true);
                         });
                       },
@@ -780,7 +919,7 @@ class CrossSigning {
                         await event.confirmSasVerification();
                         Get.back();
                         setState(() => waitForMatch = false);
-                        Future.delayed(Duration(milliseconds: 500), () {
+                        Future.delayed(const Duration(milliseconds: 500), () {
                           _onKeyVerificationMac(event);
                         });
                       },
@@ -808,15 +947,13 @@ class CrossSigning {
     _eventMap[flowId]?.stage = 'm.key.verification.done';
     Get.bottomSheet(
       StatefulBuilder(
-        builder: (context, setState) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.backgroundColor,
-            ),
-            child: _buildOnDone(context, event, flowId),
-          );
-        },
+        builder: (context, setState) => Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: CrossSigningSheetTheme.backgroundColor,
+          ),
+          child: _buildOnDone(context, event, flowId),
+        ),
       ),
       isDismissible: false,
     );
@@ -844,7 +981,10 @@ class CrossSigning {
           ],
         ),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 10,
+          ),
           child: Text(
             _eventMap[flowId]!.verifyingThisDev
                 ? AppLocalizations.of(context)!

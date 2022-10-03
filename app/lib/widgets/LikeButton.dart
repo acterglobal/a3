@@ -29,8 +29,10 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    );
     LikeAnimation.controller = controller;
 
     _heartSize = TweenSequence(
@@ -103,12 +105,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     );
   }
 
-  SvgPicture _likeImage(
-    Size size,
-    String iconName,
-    color,
-    bool isSmall,
-  ) {
+  SvgPicture _likeImage(Size size, String iconName, color, bool isSmall) {
     return SvgPicture.asset(
       'assets/images/$iconName.svg',
       color: color,
@@ -122,10 +119,7 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
-        Text(
-          widget.likeCount,
-          style: widget.style,
-        ),
+        Text(widget.likeCount, style: widget.style),
         AnimatedBuilder(
           animation: controller,
           builder: (context, w) {

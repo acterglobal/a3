@@ -26,24 +26,20 @@ class CustomAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder<List<int>>(
       future: avatar.then((fb) => fb.asTypedList()),
-      builder: (
-        BuildContext context,
-        AsyncSnapshot<List<int>> snapshot,
-      ) {
+      builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const SizedBox(
             height: 20,
             width: 20,
-            child:
-                CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+            child: CircularProgressIndicator(
+              color: AppCommonTheme.primaryColor,
+            ),
           );
         } else {
           if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
             return CircleAvatar(
               backgroundImage: MemoryImage(
-                Uint8List.fromList(
-                  snapshot.requireData,
-                ),
+                Uint8List.fromList(snapshot.requireData),
               ),
               radius: radius,
             );

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
-
 import 'dart:math';
 import 'dart:ui';
 
@@ -48,13 +46,13 @@ class _ChatOverviewState extends State<ChatOverview> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
             leading: TextButton(
               onPressed: () {},
               child: Container(
-                margin: EdgeInsets.only(right: 15),
+                margin: const EdgeInsets.only(right: 15),
                 child: Text(
                   AppLocalizations.of(context)!.select,
                   style:
@@ -66,7 +64,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             actions: [
               IconButton(
                 onPressed: () {},
-                padding: EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: 10),
                 icon: SvgPicture.asset(
                   'assets/images/edit.svg',
                   color: AppCommonTheme.svgIconColor,
@@ -77,31 +75,29 @@ class _ChatOverviewState extends State<ChatOverview> {
             ],
           ),
           SliverToBoxAdapter(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(left: 18),
-                    child: Text(
-                      AppLocalizations.of(context)!.chat,
-                      style: AppCommonTheme.appBarTitleStyle,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.only(left: 18),
+                  child: Text(
+                    AppLocalizations.of(context)!.chat,
+                    style: AppCommonTheme.appBarTitleStyle,
                   ),
-                  SizedBox(height: 10),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        alignment: Alignment.topLeft,
-                        padding: EdgeInsets.only(left: 18),
-                        child: Text(
-                          AppLocalizations.of(context)!.invites,
-                          style: AppCommonTheme.appBarTitleStyle
-                              .copyWith(fontSize: 16),
-                        ),
+                ),
+                const SizedBox(height: 10),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      alignment: Alignment.topLeft,
+                      padding: const EdgeInsets.only(left: 18),
+                      child: Text(
+                        AppLocalizations.of(context)!.invites,
+                        style: AppCommonTheme.appBarTitleStyle
+                            .copyWith(fontSize: 16),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       widget.client.isGuest()
                           ? const SizedBox()
                           : GetBuilder<ChatListController>(

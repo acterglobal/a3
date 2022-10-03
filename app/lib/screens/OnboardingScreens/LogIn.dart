@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/login_controller.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
@@ -29,32 +27,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<bool> _loginValidate() async {
     bool isLoggedIn = false;
-    await loginController.loginSubmitted().then(
-          (value) => {
-            if (value)
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppLocalizations.of(context)!.loginSuccess),
-                    backgroundColor: AuthTheme.authSuccess,
-                    duration: const Duration(seconds: 4),
-                  ),
-                ),
-                isLoggedIn = true,
-              }
-            else
-              {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(AppLocalizations.of(context)!.loginFailed),
-                    backgroundColor: AuthTheme.authFailed,
-                    duration: const Duration(seconds: 4),
-                  ),
-                ),
-                isLoggedIn = false,
-              }
-          },
+    await loginController.loginSubmitted().then((value) {
+      if (value) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.loginSuccess),
+            backgroundColor: AuthTheme.authSuccess,
+            duration: const Duration(seconds: 4),
+          ),
         );
+        isLoggedIn = true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.loginFailed),
+            backgroundColor: AuthTheme.authFailed,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        isLoggedIn = false;
+      }
+    });
     return isLoggedIn;
   }
 
@@ -69,40 +62,30 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(
-                    height: 100,
-                  ),
+                  const SizedBox(height: 100),
                   SizedBox(
                     height: 50,
                     width: 50,
                     child: SvgPicture.asset('assets/images/logo.svg'),
                   ),
-                  const SizedBox(
-                    height: 40,
-                  ),
+                  const SizedBox(height: 40),
                   Text(
                     AppLocalizations.of(context)!.welcomeBack,
                     style: AuthTheme.authTitleStyle,
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Text(
                     AppLocalizations.of(context)!.signInContinue,
                     style: AuthTheme.authBodyStyle,
                   ),
-                  const SizedBox(
-                    height: 35,
-                  ),
+                  const SizedBox(height: 35),
                   signInOnboardingTextField(
                     AppLocalizations.of(context)!.username,
                     controller.username,
                     AppLocalizations.of(context)!.emptyUsername,
                     SignInOnboardingTextFieldEnum.userName,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   signInOnboardingTextField(
                     AppLocalizations.of(context)!.password,
                     controller.password,
@@ -122,35 +105,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 100,
-                  ),
+                  const SizedBox(height: 100),
                   controller.isSubmitting
-                      ? CircularProgressIndicator(
+                      ? const CircularProgressIndicator(
                           color: AppCommonTheme.primaryColor,
                         )
                       : CustomOnbaordingButton(
                           onPressed: () async {
                             controller.isSubmitting = true;
                             if (_formKey.currentState!.validate()) {
-                              await _loginValidate().then(
-                                (value) => {
-                                  if (value)
-                                    {
-                                      Navigator.pushReplacementNamed(
-                                        context,
-                                        '/',
-                                      ),
-                                    }
-                                },
-                              );
+                              await _loginValidate().then((value) {
+                                if (value) {
+                                  Navigator.pushReplacementNamed(context, '/');
+                                }
+                              });
                             }
                           },
                           title: AppLocalizations.of(context)!.login,
                         ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -161,10 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       InkWell(
                         onTap: () {
                           Get.delete<LoginController>();
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/signup',
-                          );
+                          Navigator.pushReplacementNamed(context, '/signup');
                         },
                         child: Text(
                           AppLocalizations.of(context)!.signUp,

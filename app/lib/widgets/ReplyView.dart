@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ReplyView extends StatefulWidget {
+  final String name;
+  final Color titleColor;
+  final String reply;
+
   const ReplyView({
     Key? key,
     required this.name,
     required this.titleColor,
     required this.reply,
   }) : super(key: key);
-
-  final String name;
-  final Color titleColor;
-  final String reply;
 
   @override
   ReplyViewState createState() => ReplyViewState();
@@ -28,9 +28,7 @@ class ReplyViewState extends State<ReplyView> {
       child: Flex(
         direction: Axis.horizontal,
         children: [
-          const CircleAvatar(
-            backgroundColor: Colors.white,
-          ),
+          const CircleAvatar(backgroundColor: Colors.white),
           Flexible(
             fit: FlexFit.loose,
             child: Padding(
@@ -91,10 +89,7 @@ class ReplyViewState extends State<ReplyView> {
                   likeCount = likeCount - 1;
                 });
               },
-              child: const Icon(
-                Icons.favorite,
-                color: Colors.red,
-              ),
+              child: const Icon(Icons.favorite, color: Colors.red),
             ),
         ],
       ),

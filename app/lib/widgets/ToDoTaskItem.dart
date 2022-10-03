@@ -9,6 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ToDoTaskItem extends StatefulWidget {
+  final String title;
+  final bool hasMessage;
+  final bool isCompleted;
+  final String dateTime;
+  final String subtitle;
+  final String? notes;
+  final DateTime? lastUpdated;
+
   const ToDoTaskItem({
     Key? key,
     required this.title,
@@ -19,14 +27,6 @@ class ToDoTaskItem extends StatefulWidget {
     required this.notes,
     required this.lastUpdated,
   }) : super(key: key);
-
-  final String title;
-  final bool hasMessage;
-  final bool isCompleted;
-  final String dateTime;
-  final String subtitle;
-  final String? notes;
-  final DateTime? lastUpdated;
 
   @override
   State<ToDoTaskItem> createState() => _ToDoTaskItemState();
@@ -45,6 +45,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
     minCoverage: 0.1,
     align: StackAlign.right,
   );
+
   @override
   void initState() {
     super.initState();
@@ -190,19 +191,18 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
     );
   }
 
-  Widget _infoAvatar(int count) => CircleAvatar(
-        radius: 28,
-        backgroundColor: ToDoTheme.infoAvatarColor,
-        child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
-      );
+  Widget _infoAvatar(int count) {
+    return CircleAvatar(
+      radius: 28,
+      backgroundColor: ToDoTheme.infoAvatarColor,
+      child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
+    );
+  }
 
-  List<ImageProvider<Object>> _getMockAvatars(int count) => List.generate(
-        count,
-        (index) {
-          int id = Random().nextInt(70);
-          return NetworkImage(
-            'https://i.pravatar.cc/100?img = ${id.toString()}',
-          );
-        },
-      );
+  List<ImageProvider<Object>> _getMockAvatars(int count) {
+    return List.generate(count, (index) {
+      int id = Random().nextInt(70);
+      return NetworkImage('https://i.pravatar.cc/100?img = ${id.toString()}');
+    });
+  }
 }

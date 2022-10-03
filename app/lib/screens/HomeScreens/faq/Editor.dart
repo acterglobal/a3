@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
@@ -98,7 +96,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     }
                     setState(() {
                       result = txt;
-                      print(result);
+                      debugPrint(result);
                     });
                   },
                   child: const Text('Save'),
@@ -317,7 +315,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                                 visible: selectedIndexList.contains(index)
                                     ? true
                                     : false,
-                                child: Icon(
+                                child: const Icon(
                                   Icons.done,
                                   color: Colors.white,
                                 ),
@@ -337,29 +335,28 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     child: ElevatedButton(
                       onPressed: () => {
                         setState(() {
-                          print(indexing);
-                          print(_tagColorList.length);
-                          print(tagColor);
+                          debugPrint(indexing.toString());
+                          debugPrint(_tagColorList.length.toString());
+                          debugPrint(tagColor.toString());
                           if (tagTitleController.text.isNotEmpty) {
                             _tagList.add(tagTitleController.text.toString());
                             _tagColorList.add(
                               tagColor == null ? Colors.white : tagColor!,
                             );
-                            print(_tagColorList.length);
+                            debugPrint(_tagColorList.length.toString());
                             Navigator.of(context).pop();
                             tagTitleController.clear();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 margin: EdgeInsets.only(bottom: 420),
                                 backgroundColor: Colors.black87,
-                                duration: const Duration(seconds: 2),
-                                // ignore: sized_box_for_whitespace
-                                content: Container(
+                                duration: Duration(seconds: 2),
+                                content: SizedBox(
                                   height: 20,
                                   child: Center(
-                                    child: const Text(
+                                    child: Text(
                                       'Please fill the title of Tag',
                                       style: TextStyle(
                                         color: Colors.white,

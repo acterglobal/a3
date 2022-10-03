@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/HomeScreens/faq/Editor.dart';
 import 'package:effektio/widgets/FaqListItem.dart';
@@ -21,7 +19,7 @@ class FaqOverviewScreen extends StatelessWidget {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             color: AppCommonTheme.backgroundColor,
-            child: Center(
+            child: const Center(
               child: SizedBox(
                 height: 50,
                 width: 50,
@@ -35,28 +33,22 @@ class FaqOverviewScreen extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               backgroundColor: AppCommonTheme.backgroundColor,
-              title: Text(
+              title: const Text(
                 'Faq',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
               centerTitle: true,
               actions: [
                 IconButton(
                   icon: Container(
                     margin: const EdgeInsets.only(bottom: 10, right: 10),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.add, color: Colors.white),
                   ),
                   onPressed: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => HtmlEditorExample(
+                        builder: (context) => const HtmlEditorExample(
                           title: 'Create FAQ',
                         ),
                       ),

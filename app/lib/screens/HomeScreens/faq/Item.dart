@@ -1,21 +1,23 @@
-// ignore_for_file: unused_element, always_declare_return_types, library_prefixes, prefer_const_constructors
-
 import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/TagItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:flutter/painting.dart' as m_colors;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/painting.dart' as mColors;
 import 'package:flutter/material.dart';
 
 class FaqItemScreen extends StatefulWidget {
-  const FaqItemScreen({Key? key, required this.client, required this.faq})
-      : super(key: key);
-
   final Client client;
   final Faq faq;
+
+  const FaqItemScreen({
+    Key? key,
+    required this.client,
+    required this.faq,
+  }) : super(key: key);
 
   @override
   _FaqItemScreenState createState() => _FaqItemScreenState();
@@ -37,7 +39,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
     faqController.text = widget.faq.title();
   }
 
-  _onEmojiSelected(Emoji emoji) {
+  void _onEmojiSelected(Emoji emoji) {
     _controller
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
@@ -45,7 +47,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
       );
   }
 
-  _onBackspacePressed() {
+  void _onBackspacePressed() {
     _controller
       ..text = _controller.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
@@ -80,11 +82,11 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: TextField(
                           controller: faqController,
-                          style: mColors.TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
+                          style: const m_colors.TextStyle(color: Colors.white),
+                          decoration: const InputDecoration(
                             labelText: 'Faq title',
                             labelStyle: TextStyle(color: Colors.white),
                             enabledBorder: OutlineInputBorder(
@@ -116,8 +118,10 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   ),
                 ),
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   child: Visibility(
                     visible: editFaqTitle ? false : true,
                     child: Row(
@@ -137,10 +141,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                                 editFaqTitle = true;
                               })
                             },
-                            child: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            ),
+                            child: const Icon(Icons.edit, color: Colors.white),
                           ),
                         )
                       ],
@@ -159,9 +160,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         margin: const EdgeInsets.only(left: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: FAQTheme.supportColor,
-                          ),
+                          border: Border.all(color: FAQTheme.supportColor),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,9 +168,9 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                             Image.asset(
                               'assets/images/asakerImage.png',
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8),
-                              child: const Text(
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8),
+                              child: Text(
                                 'Support',
                                 style: FAQTheme.teamNameStyle,
                               ),
@@ -261,7 +260,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         return TagListItem(
                           tagTitle: widget.faq.tags().elementAt(index).title(),
                           tagColor: colorToShow > 0
-                              ? mColors.Color(colorToShow)
+                              ? m_colors.Color(colorToShow)
                               : Colors.white,
                         );
                       },
@@ -338,10 +337,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         },
-                        icon: const Icon(
-                          Icons.send,
-                          color: Colors.pink,
-                        ),
+                        icon: const Icon(Icons.send, color: Colors.pink),
                       )
                     ],
                   ),
@@ -414,9 +410,9 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           enableSkinTones: true,
                           showRecentsTab: true,
                           recentsLimit: 28,
-                          noRecents: Text(
+                          noRecents: const Text(
                             'No recents',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 20,
                               color: Colors.black26,
                             ),
@@ -430,13 +426,13 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   )
                 ],
               ),
-              decoration: mColors.BoxDecoration(
+              decoration: m_colors.BoxDecoration(
                 color: Colors.grey[800],
-                borderRadius: const mColors.BorderRadius.only(
+                borderRadius: const m_colors.BorderRadius.only(
                   topLeft: Radius.circular(16.0),
                   topRight: Radius.circular(16.0),
-                  bottomLeft: mColors.Radius.zero,
-                  bottomRight: mColors.Radius.zero,
+                  bottomLeft: m_colors.Radius.zero,
+                  bottomRight: m_colors.Radius.zero,
                 ),
               ),
             ),

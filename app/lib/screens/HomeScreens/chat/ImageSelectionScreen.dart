@@ -144,7 +144,6 @@ class _ImageSelectionState extends State<ImageSelection> {
             ),
           ),
           CustomChatInput(
-            context: context,
             isChatScreen: false,
             roomName: widget.roomName,
             onButtonPressed: () async {
