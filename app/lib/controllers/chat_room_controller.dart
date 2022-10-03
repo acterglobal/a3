@@ -1,5 +1,3 @@
-// ignore_for_file: always_declare_return_types
-
 import 'dart:async';
 import 'dart:io';
 

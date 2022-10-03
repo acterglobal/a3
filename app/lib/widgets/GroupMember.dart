@@ -1,16 +1,14 @@
-// ignore_for_file: prefer_const_constructors, require_trailing_commas
-
 import 'package:flutter/material.dart';
 
 class GroupMember extends StatelessWidget {
+  final String name;
+  final bool isAdmin;
+
   const GroupMember({
     Key? key,
     required this.name,
     required this.isAdmin,
   }) : super(key: key);
-
-  final String name;
-  final bool isAdmin;
 
   @override
   Widget build(BuildContext context) {

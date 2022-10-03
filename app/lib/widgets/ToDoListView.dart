@@ -5,13 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class ToDoListView extends StatefulWidget {
+  final String title;
+  final String subtitle;
+
   const ToDoListView({
     Key? key,
     required this.title,
     required this.subtitle,
   }) : super(key: key);
-  final String title;
-  final String subtitle;
 
   @override
   State<ToDoListView> createState() => _ToDoListViewState();
@@ -25,9 +26,7 @@ class _ToDoListViewState extends State<ToDoListView> {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.all(8.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
       color: ToDoTheme.secondaryColor,
       child: Obx(
         () => ExpansionTile(
