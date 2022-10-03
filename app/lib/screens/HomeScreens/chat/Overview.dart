@@ -28,7 +28,7 @@ class ChatOverview extends StatefulWidget {
 
 class _ChatOverviewState extends State<ChatOverview> {
   late int _countInvites;
-  Random _random = Random();
+  final Random _random = Random();
 
   @override
   void initState() {
