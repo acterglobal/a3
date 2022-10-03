@@ -1,17 +1,15 @@
-// ignore_for_file: prefer_const_constructors, require_trailing_commas
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 
 class InviteListView extends StatelessWidget {
+  final String name;
+  final bool isAdded;
+
   const InviteListView({
     Key? key,
     required this.name,
     required this.isAdded,
   }) : super(key: key);
-
-  final String name;
-  final bool isAdded;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +25,7 @@ class InviteListView extends StatelessWidget {
             padding: const EdgeInsets.only(left: 12.0),
             child: Text(
               name,
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
         ),
@@ -40,7 +38,7 @@ class InviteListView extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppCommonTheme.greenButtonColor,
                 ),
-                child: Text(
+                child: const Text(
                   'Invite',
                   style: TextStyle(color: Colors.white),
                 ),
@@ -54,7 +52,7 @@ class InviteListView extends StatelessWidget {
                   backgroundColor: AppCommonTheme.darkShade,
                   elevation: 0.0,
                 ),
-                child: Text(
+                child: const Text(
                   'Invited',
                   style: TextStyle(color: Colors.white),
                 ),

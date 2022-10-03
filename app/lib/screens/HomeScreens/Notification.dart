@@ -1,6 +1,5 @@
-// ignore_for_file: prefer_const_constructors
-import 'package:flutter/material.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({Key? key}) : super(key: key);
@@ -23,7 +22,7 @@ class NotificationScreen extends StatelessWidget {
               Container(
                 height: 60,
                 width: 60,
-                margin: EdgeInsets.all(10),
+                margin: const EdgeInsets.all(10),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.network(
@@ -32,9 +31,7 @@ class NotificationScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(
-                width: 10,
-              ),
+              const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -42,15 +39,13 @@ class NotificationScreen extends StatelessWidget {
                   // ignore: sized_box_for_whitespace
                   Container(
                     width: MediaQuery.of(context).size.width - 150,
-                    margin: EdgeInsets.only(right: 10),
+                    margin: const EdgeInsets.only(right: 10),
                     child: const Text(
                       'Lorem Ipsum is simply dummy text of the printing',
                       style: NotificationTheme.titleStyle,
                     ),
                   ),
-                  const SizedBox(
-                    height: 5,
-                  ),
+                  const SizedBox(height: 5),
                   const Text(
                     '35 members',
                     style: NotificationTheme.subTitleStyle,

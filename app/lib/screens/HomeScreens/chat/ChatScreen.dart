@@ -1,6 +1,3 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
-
-import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -81,18 +78,18 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/camera.svg'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.photo,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       )
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () => chatRoomController.handleFileSelection(context),
                   child: Row(
@@ -101,14 +98,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/document.svg'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.file,
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       )
                     ],
@@ -239,7 +234,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             AppCommonTheme.primaryColor,
                       );
                     } else {
-                      return Container(
+                      return const SizedBox(
                         height: 15,
                         width: 15,
                         child: CircularProgressIndicator(
@@ -267,7 +262,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 10),
-                  child: Container(
+                  child: SizedBox(
                     height: 45,
                     width: 45,
                     child: FittedBox(
@@ -298,8 +293,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildBody(BuildContext context) {
     if (chatRoomController.isLoading.isTrue) {
-      return Center(
-        child: Container(
+      return const Center(
+        child: SizedBox(
           height: 15,
           width: 15,
           child: CircularProgressIndicator(
@@ -354,7 +349,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onMessageTap: controller.handleMessageTap,
               onEndReached: roomState ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              emptyState: EmptyPlaceholder(),
+              emptyState: const EmptyPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
                 attachmentButtonIcon:

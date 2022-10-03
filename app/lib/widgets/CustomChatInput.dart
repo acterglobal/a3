@@ -7,12 +7,11 @@ import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-// ignore: must_be_immutable
 class CustomChatInput extends StatelessWidget {
-  Function()? onButtonPressed;
-  ChatRoomController controller = Get.find<ChatRoomController>();
-  bool isChatScreen = true;
-  String roomName;
+  final Function()? onButtonPressed;
+  final ChatRoomController controller = Get.find<ChatRoomController>();
+  final bool isChatScreen;
+  final String roomName;
   static const List<List<String>> attachmentNameList = [
     ['camera', 'Camera'],
     ['gif', 'GIF'],
@@ -170,17 +169,17 @@ class CustomChatInput extends StatelessWidget {
 }
 
 class AttachmentWidget extends StatelessWidget {
+  final ChatRoomController controller = Get.find<ChatRoomController>();
+  final List<List<String>> attachmentNameList;
+  final String roomName;
+  final Size size;
+
   AttachmentWidget({
     Key? key,
     required this.attachmentNameList,
     required this.roomName,
     required this.size,
   }) : super(key: key);
-
-  final ChatRoomController controller = Get.find<ChatRoomController>();
-  final List<List<String>> attachmentNameList;
-  final String roomName;
-  final Size size;
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names, prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/PendingReqListView.dart';
 import 'package:effektio/widgets/ReqListView.dart';
@@ -18,12 +16,12 @@ class RequestScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Container(
-        child: Tabbar(context, 5, 3),
+        child: _buildTabBar(context, 5, 3),
       ),
     );
   }
 
-  Widget Tabbar(BuildContext context, int reqLength, int pendingLength) {
+  Widget _buildTabBar(BuildContext context, int reqLength, int pendingLength) {
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -40,9 +38,7 @@ class RequestScreen extends StatelessWidget {
               ),
               indicatorPadding: const EdgeInsets.only(top: 6, bottom: 6),
               tabs: const [
-                Tab(
-                  text: 'Invites',
-                ),
+                Tab(text: 'Invites'),
                 Tab(text: 'Requests'),
               ],
             ),
@@ -58,12 +54,8 @@ class RequestScreen extends StatelessWidget {
                         itemCount: pendingLength,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                              left: 8,
-                              right: 8,
-                              top: 8,
-                            ),
+                          return const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                             child: PendingReqListView(name: 'Ben'),
                           );
                         },
@@ -80,9 +72,7 @@ class RequestScreen extends StatelessWidget {
                               width: 200,
                               child: FittedBox(
                                 fit: BoxFit.contain,
-                                child: Image.asset(
-                                  'assets/images/no_req.png',
-                                ),
+                                child: Image.asset('assets/images/no_req.png'),
                               ),
                             ),
                             const Text(
@@ -117,12 +107,8 @@ class RequestScreen extends StatelessWidget {
                         itemCount: reqLength,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.only(
-                              left: 8,
-                              right: 8,
-                              top: 8,
-                            ),
+                          return const Padding(
+                            padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                             child: ReqListView(name: 'Ben'),
                           );
                         },
@@ -139,9 +125,7 @@ class RequestScreen extends StatelessWidget {
                               width: 200,
                               child: FittedBox(
                                 fit: BoxFit.contain,
-                                child: Image.asset(
-                                  'assets/images/no_req.png',
-                                ),
+                                child: Image.asset('assets/images/no_req.png'),
                               ),
                             ),
                             const Text(

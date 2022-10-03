@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +56,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              margin: EdgeInsets.only(top: 16, bottom: 10),
+              margin: const EdgeInsets.only(top: 16, bottom: 10),
               child: const Text(
                 'Room',
                 style: TextStyle(color: Colors.white, fontSize: 18),
@@ -71,7 +69,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                   return Text(
                     '@' + snapshot.requireData,
                     overflow: TextOverflow.clip,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppCommonTheme.primaryColor,
                       fontSize: 16,
                     ),
@@ -82,7 +80,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
               },
             ),
             Container(
-              margin: EdgeInsets.only(top: 20, bottom: 10),
+              margin: const EdgeInsets.only(top: 20, bottom: 10),
               child: const Text(
                 'Expires After',
                 style: TextStyle(color: Colors.white, fontSize: 18),
@@ -114,7 +112,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                       child: Center(
                         child: Text(
                           timeArr[index],
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                       decoration: BoxDecoration(
@@ -129,7 +127,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 20, bottom: 10),
+              margin: const EdgeInsets.only(top: 20, bottom: 10),
               child: const Text(
                 'Max Uses',
                 style: TextStyle(color: Colors.white, fontSize: 18),
@@ -160,7 +158,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                     child: Center(
                       child: Text(
                         usesArr[index],
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                     decoration: BoxDecoration(

@@ -1,7 +1,6 @@
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 
 class AddToDoScreen extends StatefulWidget {
   const AddToDoScreen({Key? key}) : super(key: key);
