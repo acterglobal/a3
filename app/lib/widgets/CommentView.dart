@@ -5,12 +5,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CommentView extends StatefulWidget {
-  const CommentView(
-      {Key? key,
-      required this.name,
-      required this.titleColor,
-      required this.comment})
-      : super(key: key);
+  const CommentView({
+    Key? key,
+    required this.name,
+    required this.titleColor,
+    required this.comment,
+  }) : super(key: key);
 
   final String name;
   final Color titleColor;
