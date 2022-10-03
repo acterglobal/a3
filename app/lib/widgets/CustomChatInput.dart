@@ -9,7 +9,7 @@ import 'package:themed/themed.dart';
 
 class CustomChatInput extends StatelessWidget {
   final Function()? onButtonPressed;
-  final controller = Get.put(ChatRoomController());
+  final controller = Get.find<ChatRoomController>();
   final bool isChatScreen;
   final String roomName;
   static const List<List<String>> attachmentNameList = [

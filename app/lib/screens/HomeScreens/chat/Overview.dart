@@ -97,19 +97,19 @@ class _ChatOverviewState extends State<ChatOverview> {
                         style: AppCommonTheme.appBarTitleStyle
                             .copyWith(fontSize: 16),
                       ),
-                      const SizedBox(height: 10),
-                      widget.client.isGuest()
-                          ? const SizedBox()
-                          : GetBuilder<ChatListController>(
-                              id: 'chatlist',
-                              builder: (ChatListController controller) {
-                                return _buildJoinedList(context, controller);
-                              },
-                            ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    const SizedBox(height: 10),
+                    widget.client.isGuest()
+                        ? const SizedBox()
+                        : GetBuilder<ChatListController>(
+                            id: 'chatlist',
+                            builder: (ChatListController controller) {
+                              return _buildJoinedList(context, controller);
+                            },
+                          ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
@@ -118,12 +118,10 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget _buildInvitedItem(BuildContext context, int index) {
-    return Container(
-      child: InviteInfoWidget(
-        avatarColor: Colors.white,
-        inviter: inviters[_random.nextInt(inviters.length)],
-        groupName: groups[_random.nextInt(groups.length)],
-      ),
+    return InviteInfoWidget(
+      avatarColor: Colors.white,
+      inviter: inviters[_random.nextInt(inviters.length)],
+      groupName: groups[_random.nextInt(groups.length)],
     );
   }
 
@@ -143,7 +141,7 @@ class _ChatOverviewState extends State<ChatOverview> {
     }
     return ImplicitlyAnimatedReorderableList<RoomItem>(
       header: ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: _countInvites,
         itemBuilder: _buildInvitedItem,

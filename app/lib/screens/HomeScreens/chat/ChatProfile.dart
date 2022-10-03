@@ -169,7 +169,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                     ),
                     color: AppCommonTheme.darkShade,
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 8,
                         horizontal: 16,
                       ),
@@ -205,7 +205,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 8,
                         horizontal: 16,
                       ),
@@ -241,7 +241,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         vertical: 8,
                         horizontal: 16,
                       ),
