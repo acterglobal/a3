@@ -1,9 +1,9 @@
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDoTaskAssign.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
-
 import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -84,9 +82,9 @@ class _ChatListItemState extends State<ChatListItem> {
           subtitle: buildSubtitle(context),
           trailing: buildTrailing(context),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: const Divider(
+        const Padding(
+          padding: EdgeInsets.only(bottom: 5),
+          child: Divider(
             indent: 75,
             endIndent: 10,
             color: AppCommonTheme.dividerColor,
@@ -101,7 +99,7 @@ class _ChatListItemState extends State<ChatListItem> {
       return const SizedBox();
     }
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
         text:
             '${getNameFromId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
