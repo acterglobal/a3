@@ -315,7 +315,6 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Chat(
               customBottomWidget: CustomChatInput(
-                context: context,
                 isChatScreen: true,
                 roomName: roomName,
                 onButtonPressed: () async {
