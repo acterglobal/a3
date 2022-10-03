@@ -40,7 +40,7 @@ class ChatRoomController extends GetxController {
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
   final ReceiptController _receiptController = Get.find<ReceiptController>();
-  late List<Member> _activeMembers;
+  List<Member> _activeMembers = [];
   StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatRoomController({required this.client, required this.userId}) : super();
@@ -86,9 +86,11 @@ class ChatRoomController extends GetxController {
       }
       isLoading.value = false;
     } else {
-      _room = null;
-      _activeMembers = [];
+      messages.clear();
       _stream = null;
+      _page = 0;
+      _room = null;
+      _activeMembers.clear();
     }
   }
 
