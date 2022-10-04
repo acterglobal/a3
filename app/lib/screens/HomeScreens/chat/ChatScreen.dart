@@ -15,7 +15,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember;
+    show Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -28,9 +28,13 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
-  final String? user;
-  const ChatScreen({Key? key, required this.room, required this.user})
-      : super(key: key);
+  final String userId;
+
+  const ChatScreen({
+    Key? key,
+    required this.room,
+    required this.userId,
+  }) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -40,14 +44,14 @@ class _ChatScreenState extends State<ChatScreen> {
   late types.User _user;
   String roomName = '';
   bool roomState = false;
-  final Random random = Random();
+  Random random = Random();
   ChatRoomController chatRoomController = Get.put(ChatRoomController());
   ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    _user = types.User(id: widget.user!);
+    _user = types.User(id: widget.userId);
 
     //roomState is true in case of invited and false if already joined
     //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
@@ -122,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<FfiBufferUint8> _userAvatar(String userId) async {
-    final member = await widget.room.getMember(userId);
+    Member member = await widget.room.getMember(userId);
     return member.avatar();
   }
 
@@ -258,7 +262,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     MaterialPageRoute(
                       builder: (context) => ChatProfileScreen(
                         room: widget.room,
-                        user: widget.user,
                         isGroup: true,
                         isAdmin: true,
                       ),
