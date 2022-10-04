@@ -159,7 +159,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: userId,
+                  userId: userId,
                   latestMessage: item.latestMessage,
                 ),
               ),
@@ -173,7 +173,7 @@ class _ChatOverviewState extends State<ChatOverview> {
               opacity: animation,
               child: ChatListItem(
                 room: item.conversation,
-                user: userId,
+                userId: userId,
                 latestMessage: item.latestMessage,
               ),
             );
@@ -196,7 +196,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
-                  user: userId,
+                  userId: userId,
                   latestMessage: item.latestMessage,
                 ),
               ),
