@@ -65,51 +65,50 @@ impl MembershipController {
 
     pub(crate) async fn setup(&mut self, client: &MatrixClient) -> Result<()> {
         let mut me = self.clone();
-        client
-            .register_event_handler_context(me.clone()) // past event
-            .register_event_handler(
-                |ev: SyncRoomMemberEvent,
-                 room: MatrixRoom,
-                 Ctx(mut me): Ctx<MembershipController>| async move {
-                    let msg = MembershipEvent {
-                        timestamp: u64::try_from(ev.origin_server_ts().get()).ok(),
-                        room_id: room.room_id().to_string(),
-                        room_name: room.display_name().await.unwrap().to_string(),
-                        sender: ev.sender().to_string(),
-                    };
+        // past event
+        client.add_event_handler_context(me.clone());
+        client.add_event_handler(
+            |ev: SyncRoomMemberEvent,
+             room: MatrixRoom,
+             Ctx(mut me): Ctx<MembershipController>| async move {
+                let msg = MembershipEvent {
+                    timestamp: u64::try_from(ev.origin_server_ts().get()).ok(),
+                    room_id: room.room_id().to_string(),
+                    room_name: room.display_name().await.unwrap().to_string(),
+                    sender: ev.sender().to_string(),
+                };
 
-                    info!("event type: {:?}", ev.event_type());
-                    info!("membership: {:?}", ev.membership());
-                    info!("invitation: {:?}", msg);
+                info!("event type: {:?}", ev.event_type());
+                info!("membership: {:?}", ev.membership());
+                info!("invitation: {:?}", msg);
 
-                    if let Err(e) = me.event_tx.try_send(msg) {
-                        warn!("Dropping invitation event: {:?}", e);
-                    }
-                },
-            )
-            .await
-            .register_event_handler_context(me) // realtime event
-            .register_event_handler(
-                |ev: StrippedRoomMemberEvent,
-                 room: MatrixRoom,
-                 Ctx(mut me): Ctx<MembershipController>| async move {
-                    let msg = MembershipEvent {
-                        timestamp: None,
-                        room_id: room.room_id().to_string(),
-                        room_name: room.display_name().await.unwrap().to_string(),
-                        sender: ev.sender.to_string(),
-                    };
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping invitation event: {:?}", e);
+                }
+            },
+        );
+        // incoming event
+        client.add_event_handler_context(me);
+        client.add_event_handler(
+            |ev: StrippedRoomMemberEvent,
+             room: MatrixRoom,
+             Ctx(mut me): Ctx<MembershipController>| async move {
+                let msg = MembershipEvent {
+                    timestamp: None,
+                    room_id: room.room_id().to_string(),
+                    room_name: room.display_name().await.unwrap().to_string(),
+                    sender: ev.sender.to_string(),
+                };
 
-                    info!("event type: StrippedRoomMemberEvent");
-                    info!("membership: {:?}", ev.content.membership);
-                    info!("invitation: {:?}", msg);
+                info!("event type: StrippedRoomMemberEvent");
+                info!("membership: {:?}", ev.content.membership);
+                info!("invitation: {:?}", msg);
 
-                    if let Err(e) = me.event_tx.try_send(msg) {
-                        warn!("Dropping invitation event: {:?}", e);
-                    }
-                },
-            )
-            .await;
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping invitation event: {:?}", e);
+                }
+            },
+        );
         Ok(())
     }
 }
@@ -118,7 +117,7 @@ impl Client {
     pub(crate) async fn create_room(&self) -> Result<String> {
         let req = CreateRoomRequest::new();
         let res = self.client.create_room(req).await?;
-        Ok(res.room_id.to_string())
+        Ok(res.room_id().to_string())
     }
 
     pub fn membership_event_rx(&self) -> Option<Receiver<MembershipEvent>> {

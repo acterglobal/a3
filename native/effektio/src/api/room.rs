@@ -8,12 +8,8 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         events::{
-            room::{
-                member::StrippedRoomMemberEvent,
-                message::{MessageType, RoomMessageEventContent},
-            },
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyRoomEvent, AnySyncMessageLikeEvent,
-            AnySyncRoomEvent, MessageLikeEvent, SyncMessageLikeEvent,
+            room::message::{MessageType, RoomMessageEventContent},
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
         EventId, UInt, UserId,
     },
@@ -34,12 +30,12 @@ use super::{
 };
 
 pub struct Member {
-    pub(crate) member: matrix_sdk::RoomMember,
+    pub(crate) member: matrix_sdk::room::RoomMember,
 }
 
 impl std::ops::Deref for Member {
-    type Target = matrix_sdk::RoomMember;
-    fn deref(&self) -> &matrix_sdk::RoomMember {
+    type Target = matrix_sdk::room::RoomMember;
+    fn deref(&self) -> &matrix_sdk::room::RoomMember {
         &self.member
     }
 }
@@ -255,7 +251,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let path = PathBuf::from(uri);
-                let mut image = File::open(path)?;
+                let mut image = std::fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
                     height: height.map(UInt::from),
                     width: width.map(UInt::from),
@@ -264,7 +260,7 @@ impl Room {
                 }));
                 let mime_type: mime::Mime = mimetype.parse().unwrap();
                 let r = room
-                    .send_attachment(name.as_str(), &mime_type, &mut image, config)
+                    .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
                 Ok(r.event_id.to_string())
             })
@@ -413,7 +409,7 @@ impl Room {
                 let mut accounts: Vec<Account> = vec![];
                 for user_id in invited.iter() {
                     let other_client = MatrixClient::builder()
-                        .user_id(user_id)
+                        .server_name(user_id.server_name())
                         .build()
                         .await
                         .unwrap();
@@ -436,13 +432,14 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize()
                 {
                     if let MessageType::Image(content) = &m.content.msgtype {
                         let source = content.source.clone();
                         let data = client
+                            .media()
                             .get_media_content(
                                 &MediaRequest {
                                     source,
@@ -477,13 +474,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let path = PathBuf::from(uri);
-                let mut image = File::open(path)?;
+                let mut image = std::fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
                     size: Some(UInt::from(size)),
                 }));
                 let mime_type: mime::Mime = mimetype.parse().unwrap();
                 let r = room
-                    .send_attachment(name.as_str(), &mime_type, &mut image, config)
+                    .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
                 Ok(r.event_id.to_string())
             })
@@ -502,7 +499,7 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize()
                 {
@@ -513,6 +510,7 @@ impl Room {
                         path.push(name);
                         let mut file = File::create(path.clone())?;
                         let data = client
+                            .media()
                             .get_media_content(
                                 &MediaRequest {
                                     source,
@@ -553,7 +551,7 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyRoomEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
                     MessageLikeEvent::Original(m),
                 ))) = evt.event.deserialize()
                 {

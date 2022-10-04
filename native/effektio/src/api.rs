@@ -15,16 +15,16 @@ mod account;
 mod auth;
 mod client;
 mod conversation;
-mod device_lists;
+mod device;
 mod group;
 mod membership;
 mod message;
 mod news;
-mod receipt_notification;
+mod receipt;
 mod room;
-mod session_verification;
 mod stream;
-mod typing_notification;
+mod typing;
+mod verification;
 
 pub use account::Account;
 pub use auth::{
@@ -32,20 +32,16 @@ pub use auth::{
 };
 pub use client::{Client, ClientStateBuilder, SyncState};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
-pub use device_lists::{Device, DeviceChangedEvent, DeviceLeftEvent, DeviceListsController};
+pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use membership::{MembershipController, MembershipEvent};
 pub use message::{FileDescription, ImageDescription, RoomMessage};
-pub use receipt_notification::{
-    ReceiptNotificationController, ReceiptNotificationEvent, ReceiptRecord,
-};
+pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
-pub use session_verification::{
-    SessionVerificationController, SessionVerificationEmoji, SessionVerificationEvent,
-};
 pub use stream::TimelineStream;
-pub use typing_notification::{TypingNotificationController, TypingNotificationEvent};
+pub use typing::TypingEvent;
+pub use verification::{VerificationEmoji, VerificationEvent};
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;

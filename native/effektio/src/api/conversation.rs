@@ -1,7 +1,10 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::default_effektio_conversation_states;
-use futures::{pin_mut, StreamExt};
+use futures::{
+    channel::mpsc::{channel, Receiver, Sender},
+    pin_mut, StreamExt,
+};
 use futures_signals::{
     signal::{Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream},
     signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
@@ -25,9 +28,11 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
+use parking_lot::Mutex;
+use std::sync::Arc;
 
 use super::{
-    client::{devide_groups_from_common, Client},
+    client::{divide_groups_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
     room::Room,
     RUNTIME,
@@ -124,50 +129,52 @@ impl std::ops::Deref for Conversation {
 #[derive(Clone)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
+    event_tx: Sender<RoomMessage>,
+    event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
 }
 
 impl ConversationController {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
+        let (tx, rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
         ConversationController {
             conversations: Default::default(),
+            event_tx: tx,
+            event_rx: Arc::new(Mutex::new(Some(rx))),
         }
     }
 
-    pub(crate) async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = devide_groups_from_common(client.clone()).await;
+    pub async fn setup(&self, client: &MatrixClient) {
+        let (_, convos) = divide_groups_from_common(client.clone()).await;
         for convo in convos.iter() {
             convo.load_latest_message();
         }
         self.conversations.lock_mut().clone_from(&convos);
 
         let me = self.clone();
-        client
-            .register_event_handler_context(client.clone())
-            .register_event_handler_context(me.clone())
-            .register_event_handler(
-                |ev: OriginalSyncRoomMessageEvent,
-                 room: MatrixRoom,
-                 Ctx(client): Ctx<MatrixClient>,
-                 Ctx(me): Ctx<ConversationController>| async move {
-                    me.clone().process_room_message(ev, &room, &client);
-                },
-            )
-            .await
-            .register_event_handler_context(client.clone())
-            .register_event_handler_context(me)
-            .register_event_handler(
-                |ev: OriginalSyncRoomMemberEvent,
-                 room: MatrixRoom,
-                 Ctx(client): Ctx<MatrixClient>,
-                 Ctx(me): Ctx<ConversationController>| async move {
-                    me.clone().process_room_member(ev, &room, &client);
-                },
-            )
-            .await;
+        client.add_event_handler_context(client.clone());
+        client.add_event_handler_context(me.clone());
+        client.add_event_handler(
+            |ev: OriginalSyncRoomMessageEvent,
+             room: MatrixRoom,
+             Ctx(client): Ctx<MatrixClient>,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_message(ev, &room, &client);
+            },
+        );
+        client.add_event_handler_context(client.clone());
+        client.add_event_handler_context(me);
+        client.add_event_handler(
+            |ev: OriginalSyncRoomMemberEvent,
+             room: MatrixRoom,
+             Ctx(client): Ctx<MatrixClient>,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_member(ev, &room, &client);
+            },
+        );
     }
 
     fn process_room_message(
-        &self,
+        &mut self,
         ev: OriginalSyncRoomMessageEvent,
         room: &MatrixRoom,
         client: &MatrixClient,
@@ -182,10 +189,14 @@ impl ConversationController {
                     client: client.clone(),
                     room: room.clone(),
                 });
-                let msg = RoomMessage::new(ev.clone(), room.clone(), ev.content.body().to_string());
-                convo.set_latest_message(msg);
+                let fallback = ev.content.body().to_string();
+                let msg = RoomMessage::new(ev, room.clone(), fallback);
+                convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
+                if let Err(e) = self.event_tx.try_send(msg) {
+                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                }
             }
         }
     }
@@ -253,7 +264,7 @@ impl Client {
                         visibility: Visibility::Private,
                     }))
                     .await?;
-                Ok(res.room_id)
+                Ok(res.room_id().to_owned())
             })
             .await?
     }
@@ -280,5 +291,9 @@ impl Client {
             .conversations
             .signal_cloned()
             .to_stream()
+    }
+
+    pub fn message_event_rx(&self) -> Option<Receiver<RoomMessage>> {
+        self.conversation_controller.event_rx.lock().take()
     }
 }

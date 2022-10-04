@@ -3,12 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 class InviteController extends GetxController {
-  static InviteController get instance =>
-      Get.put<InviteController>(InviteController());
-
   List<MembershipEvent> eventList = [];
 
-  void init(Client client) {
+  InviteController(Client client) : super() {
     client.membershipEventRx()!.listen((event) {
       debugPrint('invited event: ' + event.getRoomName());
       int index =

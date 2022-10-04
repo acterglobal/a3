@@ -1,5 +1,5 @@
 import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,8 +13,6 @@ class ToDoScreen extends StatefulWidget {
 }
 
 class _ToDoScreenState extends State<ToDoScreen> {
-  // ignore: prefer_final_fields
-
   final ToDoController todoController = ToDoController.instance;
   List<String> buttonText = ['Mine', 'All Teams', 'Unassigned'];
 
@@ -80,13 +78,12 @@ class _ToDoScreenState extends State<ToDoScreen> {
                   child: Wrap(
                     direction: Axis.horizontal,
                     spacing: 5.0,
-                    children: List.generate(
-                      buttonText.length,
-                      (index) => radioButton(
+                    children: List.generate(buttonText.length, (index) {
+                      return radioButton(
                         text: buttonText[index],
                         index: index,
-                      ),
-                    ),
+                      );
+                    }),
                   ),
                 ),
                 ListView.builder(

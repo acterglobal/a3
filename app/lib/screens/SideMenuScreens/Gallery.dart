@@ -1,7 +1,7 @@
 import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/common/store/themes/separatedThemes.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
-import 'package:effektio/common/widget/GalleryView.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/GalleryView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

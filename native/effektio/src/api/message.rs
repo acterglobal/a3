@@ -1,14 +1,14 @@
 use matrix_sdk::{
-    deserialized_responses::SyncRoomEvent,
+    deserialized_responses::SyncTimelineEvent,
     room::Room,
     ruma::events::{
         room::message::{MessageFormat, MessageType, RoomMessageEventContent},
-        AnySyncMessageLikeEvent, AnySyncRoomEvent, OriginalSyncMessageLikeEvent,
+        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
 };
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RoomMessage {
     inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
     room: Room,
@@ -39,7 +39,6 @@ impl RoomMessage {
     pub fn formatted_body(&self) -> Option<String> {
         let m = self.inner.clone();
         if let MessageType::Text(content) = m.content.msgtype {
-            let mut html_body: Option<String> = None;
             if let Some(formatted_body) = content.formatted {
                 if formatted_body.format == MessageFormat::Html {
                     return Some(formatted_body.body);
@@ -142,8 +141,8 @@ impl FileDescription {
     }
 }
 
-pub(crate) fn sync_event_to_message(ev: SyncRoomEvent, room: Room) -> Option<RoomMessage> {
-    if let Ok(AnySyncRoomEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option<RoomMessage> {
+    if let Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
         SyncMessageLikeEvent::Original(m),
     ))) = ev.event.deserialize()
     {

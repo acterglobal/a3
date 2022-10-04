@@ -1,10 +1,8 @@
-// ignore_for_file: always_declare_return_types
-
 import 'dart:math';
 
 import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/common/widget/ToDoListView.dart';
-import 'package:effektio/common/widget/ToDoTaskItem.dart';
+import 'package:effektio/widgets/ToDoListView.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_lorem/flutter_lorem.dart';
 import 'package:get/get.dart';
@@ -26,14 +24,13 @@ class ToDoController extends GetxController {
   Random random = Random();
 
   // initialize todolist and tasks.
-  init() {
+  void init() {
     taskCount = random.nextInt(8) + 1;
     listCount = random.nextInt(10) + 3;
     likeCount = random.nextInt(100);
     messageCount = random.nextInt(100);
-    tasksList = List.generate(
-      taskCount,
-      (index) => ToDoTaskItem(
+    tasksList = List.generate(taskCount, (index) {
+      return ToDoTaskItem(
         title: titleTasks[random.nextInt(titleTasks.length)],
         isCompleted: random.nextBool(),
         hasMessage: random.nextBool(),
@@ -41,15 +38,14 @@ class ToDoController extends GetxController {
         subtitle: lorem(paragraphs: 1, words: 20),
         notes: null,
         lastUpdated: DateTime.now(),
-      ),
-    );
-    todoList = List.generate(
-      listCount,
-      (index) => ToDoListView(
+      );
+    });
+    todoList = List.generate(listCount, (index) {
+      return ToDoListView(
         title: titleTasks[random.nextInt(titleTasks.length)],
         subtitle: loremPara2,
-      ),
-    );
+      );
+    });
     for (var t in tasksList!) {
       if (t.isCompleted == true) {
         completedTasks.add(t);

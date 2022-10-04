@@ -18,7 +18,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
-    let mut sisko_synced = sisko_syncer.get_first_synced_rx().expect("note yet read");
+    let mut sisko_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // sisko creates room and invites kyra
@@ -39,8 +39,8 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut kyra_synced = kyra_syncer.get_first_synced_rx().expect("not yet read");
-    while kyra_synced.next().await != Some(true) {} // let's wait for it to have synced
+    let mut first_synced = kyra_syncer.first_synced_rx().expect("not yet read");
+    while first_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // kyra accepts invitation from sisko
     let invited = kyra.get_invited_room(&sisko_kyra_dm_id).unwrap();

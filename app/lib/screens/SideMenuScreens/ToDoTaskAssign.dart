@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/common/store/themes/separatedThemes.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 
 class ToDoTaskAssignScreen extends StatelessWidget {
