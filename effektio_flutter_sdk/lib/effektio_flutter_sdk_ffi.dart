@@ -5286,48 +5286,45 @@ class Api {
       _ClientMessageEventRxReturn Function(
     int,
   )>();
-  late final _membershipEventGetTimestampPtr = _lookup<
+  late final _membershipEventOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
-          _MembershipEventGetTimestampReturn Function(
+          ffi.Uint64 Function(
     ffi.Int64,
-  )>>("__MembershipEvent_get_timestamp");
+  )>>("__MembershipEvent_origin_server_ts");
 
-  late final _membershipEventGetTimestamp =
-      _membershipEventGetTimestampPtr.asFunction<
-          _MembershipEventGetTimestampReturn Function(
+  late final _membershipEventOriginServerTs =
+      _membershipEventOriginServerTsPtr.asFunction<
+          int Function(
     int,
   )>();
-  late final _membershipEventGetRoomIdPtr = _lookup<
+  late final _membershipEventRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _MembershipEventGetRoomIdReturn Function(
+          _MembershipEventRoomIdReturn Function(
     ffi.Int64,
-  )>>("__MembershipEvent_get_room_id");
+  )>>("__MembershipEvent_room_id");
 
-  late final _membershipEventGetRoomId =
-      _membershipEventGetRoomIdPtr.asFunction<
-          _MembershipEventGetRoomIdReturn Function(
+  late final _membershipEventRoomId = _membershipEventRoomIdPtr.asFunction<
+      _MembershipEventRoomIdReturn Function(
     int,
   )>();
-  late final _membershipEventGetRoomNamePtr = _lookup<
+  late final _membershipEventRoomNamePtr = _lookup<
       ffi.NativeFunction<
-          _MembershipEventGetRoomNameReturn Function(
+          _MembershipEventRoomNameReturn Function(
     ffi.Int64,
-  )>>("__MembershipEvent_get_room_name");
+  )>>("__MembershipEvent_room_name");
 
-  late final _membershipEventGetRoomName =
-      _membershipEventGetRoomNamePtr.asFunction<
-          _MembershipEventGetRoomNameReturn Function(
+  late final _membershipEventRoomName = _membershipEventRoomNamePtr.asFunction<
+      _MembershipEventRoomNameReturn Function(
     int,
   )>();
-  late final _membershipEventGetSenderPtr = _lookup<
+  late final _membershipEventSenderPtr = _lookup<
       ffi.NativeFunction<
-          _MembershipEventGetSenderReturn Function(
+          _MembershipEventSenderReturn Function(
     ffi.Int64,
-  )>>("__MembershipEvent_get_sender");
+  )>>("__MembershipEvent_sender");
 
-  late final _membershipEventGetSender =
-      _membershipEventGetSenderPtr.asFunction<
-          _MembershipEventGetSenderReturn Function(
+  late final _membershipEventSender = _membershipEventSenderPtr.asFunction<
+      _MembershipEventSenderReturn Function(
     int,
   )>();
   late final _verificationEventEventTypePtr = _lookup<
@@ -9873,26 +9870,22 @@ class MembershipEvent {
   MembershipEvent._(this._api, this._box);
 
   /// get the timestamp of this invitation
-  int? getTimestamp() {
+  int originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._membershipEventGetTimestamp(
+    final tmp1 = _api._membershipEventOriginServerTs(
       tmp0,
     );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
   /// get the room id of this invitation
-  String getRoomId() {
+  String roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._membershipEventGetRoomId(
+    final tmp1 = _api._membershipEventRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9909,10 +9902,10 @@ class MembershipEvent {
   }
 
   /// get the room name of this invitation
-  String getRoomName() {
+  String roomName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._membershipEventGetRoomName(
+    final tmp1 = _api._membershipEventRoomName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9929,10 +9922,10 @@ class MembershipEvent {
   }
 
   /// get the user id of this invitation sender
-  String getSender() {
+  String sender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._membershipEventGetSender(
+    final tmp1 = _api._membershipEventSender(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -11254,14 +11247,7 @@ class _ClientMessageEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _MembershipEventGetTimestampReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _MembershipEventGetRoomIdReturn extends ffi.Struct {
+class _MembershipEventRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -11270,7 +11256,7 @@ class _MembershipEventGetRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _MembershipEventGetRoomNameReturn extends ffi.Struct {
+class _MembershipEventRoomNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -11279,7 +11265,7 @@ class _MembershipEventGetRoomNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _MembershipEventGetSenderReturn extends ffi.Struct {
+class _MembershipEventSenderReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

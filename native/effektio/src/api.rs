@@ -35,7 +35,7 @@ pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
-pub use membership::{MembershipController, MembershipEvent};
+pub use membership::MembershipEvent;
 pub use message::{FileDescription, ImageDescription, RoomMessage};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};

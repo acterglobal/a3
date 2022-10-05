@@ -372,16 +372,16 @@ object Client {
 
 object MembershipEvent {
     /// get the timestamp of this invitation
-    fn get_timestamp() -> Option<u64>;
+    fn origin_server_ts() -> u64;
 
     /// get the room id of this invitation
-    fn get_room_id() -> string;
+    fn room_id() -> string;
 
     /// get the room name of this invitation
-    fn get_room_name() -> string;
+    fn room_name() -> string;
 
     /// get the user id of this invitation sender
-    fn get_sender() -> string;
+    fn sender() -> string;
 }
 
 object VerificationEvent {

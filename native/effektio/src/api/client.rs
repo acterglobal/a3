@@ -134,7 +134,7 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        let mut membership_controller = self.membership_controller.clone();
+        self.membership_controller.setup(&client);
         let mut verification_controller = self.verification_controller.clone();
         let mut device_controller = self.device_controller.clone();
         self.typing_controller.setup(&client);
@@ -150,12 +150,10 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
+
             let mut verification_controller = verification_controller.clone();
             let mut device_controller = device_controller.clone();
             conversation_controller.setup(&client).await;
-
-            let mut membership_controller = membership_controller.clone();
-            membership_controller.setup(&client).await;
 
             // fetch the events that received when offline
             client
