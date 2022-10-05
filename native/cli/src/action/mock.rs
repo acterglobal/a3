@@ -84,37 +84,33 @@ impl Mock {
         let civilians = [&quark, &rom, &morn, &keiko];
         let quark_customers = [&quark, &rom, &morn, &jadzia, &kyra, &miles, &bashir];
 
-        let team_ids: Vec<OwnedUserId> =
-            futures::future::join_all(team.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let team_ids: Vec<OwnedUserId> = team
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
-        let civilians_ids: Vec<OwnedUserId> =
-            futures::future::join_all(civilians.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let civilians_ids: Vec<OwnedUserId> = civilians
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
-        let quark_customer_ids: Vec<OwnedUserId> =
-            futures::future::join_all(quark_customers.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let quark_customer_ids: Vec<OwnedUserId> = quark_customers
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
         let mut everyone = Vec::new();
         everyone.extend_from_slice(&team);
         everyone.extend_from_slice(&civilians);
 
-        let _everyones_ids: Vec<OwnedUserId> =
-            futures::future::join_all(everyone.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let _everyones_ids: Vec<OwnedUserId> = everyone
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
         log::warn!("Done ensuring users");
 
