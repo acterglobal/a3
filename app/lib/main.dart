@@ -116,7 +116,7 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
-    String userId = (await client.userId()).toString();
+    String userId = client.userId().toString();
 
     var receiptController = ReceiptController(client: client, userId: userId);
     Get.put<ReceiptController>(receiptController);
