@@ -1,8 +1,6 @@
 use anyhow::Result;
 use flexi_logger;
-use matrix_sdk::{store::make_store_config, Client, ClientBuilder};
-use sanitize_filename_reader_friendly::sanitize;
-use std::{fs, path};
+use matrix_sdk::ClientBuilder;
 
 use super::native;
 
