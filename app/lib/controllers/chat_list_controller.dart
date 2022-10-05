@@ -43,9 +43,9 @@ class ChatListController extends GetxController {
   ChatListController({required this.client}) : super();
 
   @override
-  Future<void> onInit() async {
+  void onInit() {
     super.onInit();
-    userId = (await client.userId()).toString();
+    userId = client.userId().toString();
     if (!client.isGuest()) {
       convosSubscription = client.conversationsRx().listen((event) {
         updateList(event.toList(), userId);

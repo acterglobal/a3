@@ -124,7 +124,7 @@ class EffektioSdk {
   Future<ffi.Client> login(String username, String password) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
-      if ((await client.userId()).toString() == username) {
+      if (client.userId().toString() == username) {
         return client;
       }
     }
@@ -149,7 +149,7 @@ class EffektioSdk {
   ) async {
     // To be removed when client management is implemented.
     for (final client in _clients) {
-      if ((await client.userId()).toString() == username) {
+      if (client.userId().toString() == username) {
         return client;
       }
     }
@@ -162,8 +162,8 @@ class EffektioSdk {
       password,
       token,
     );
-    final ac = await client.account();
-    await ac.setDisplayName(displayName);
+    final account = client.account();
+    await account.setDisplayName(displayName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       _clients.removeAt(0);

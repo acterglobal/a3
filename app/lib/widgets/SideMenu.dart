@@ -18,7 +18,7 @@ class SideDrawer extends StatefulWidget {
 
 class _SideDrawerState extends State<SideDrawer> {
   late Future<String> displayName;
-  late Future<String> userId;
+  String userId = '';
   late Future<FfiBufferUint8> avatar;
 
   @override
@@ -27,14 +27,12 @@ class _SideDrawerState extends State<SideDrawer> {
     if (!widget.client.isGuest()) {
       displayName = getDisplayName();
       avatar = getAvatar();
-      userId = getUserId();
+      userId = widget.client.userId().toString();
     }
   }
 
   Future<String> getDisplayName() async => await widget.client.displayName();
   Future<FfiBufferUint8> getAvatar() async => await widget.client.avatar();
-  Future<String> getUserId() async =>
-      await widget.client.userId().then((id) => id.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -141,39 +139,11 @@ class _SideDrawerState extends State<SideDrawer> {
                                   );
                                 },
                               ),
-                              FutureBuilder<String>(
-                                future:
-                                    userId, // a previously-obtained Future<String> or null
-                                builder: (
-                                  BuildContext context,
-                                  AsyncSnapshot<String> snapshot,
-                                ) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.hasError) {
-                                      return Center(
-                                        child: Text(
-                                          '${snapshot.error} occurred',
-                                          style: const TextStyle(fontSize: 18),
-                                        ),
-                                      );
-                                    } else if (snapshot.hasData) {
-                                      return Text(
-                                        snapshot.data ?? '',
-                                        style: SideMenuAndProfileTheme
-                                                .sideMenuProfileStyle +
-                                            const FontSize(14),
-                                      );
-                                    }
-                                  }
-                                  return const SizedBox(
-                                    height: 50,
-                                    width: 50,
-                                    child: CircularProgressIndicator(
-                                      color: AppCommonTheme.primaryColor,
-                                    ),
-                                  );
-                                },
+                              Text(
+                                userId,
+                                style: SideMenuAndProfileTheme
+                                        .sideMenuProfileStyle +
+                                    const FontSize(14),
                               ),
                             ],
                           ),

@@ -29,7 +29,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     )
     .await?;
 
-    let alice_device_id = alice.device_id().await.expect("alice should get device id");
+    let alice_device_id = alice.device_id().expect("alice should get device id");
     info!("alice device id: {}", alice_device_id);
 
     let bob_dir = TempDir::new()?;
@@ -40,7 +40,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     )
     .await?;
 
-    let bob_device_id = bob.device_id().await.expect("bob should get device id");
+    let bob_device_id = bob.device_id().expect("bob should get device id");
     info!("bob device id: {}", bob_device_id);
     // we have two devices logged in
 

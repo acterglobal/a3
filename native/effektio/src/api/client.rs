@@ -246,37 +246,31 @@ impl Client {
     //     let l = self.client.clone();
     //     RUNTIME.spawn(async move {
     //         let user_id = l.user_id().await.expect("No User ID found");
-    //         Ok(user_id.as_str().to_string())
+    //         Ok(user_id.to_string())
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<OwnedUserId> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = l.user_id().context("No User ID found")?.to_owned();
-                Ok(user_id)
-            })
-            .await?
+    pub fn user_id(&self) -> Result<OwnedUserId> {
+        let user_id = self
+            .client
+            .user_id()
+            .context("No User ID found")?
+            .to_owned();
+        Ok(user_id)
     }
 
-    pub async fn room(&self, room_name: String) -> Result<Room> {
+    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(room) = l.get_room(&room_id) {
-                    return Ok(Room {
-                        room,
-                        client: l.clone(),
-                    });
-                }
-                bail!("Room not found")
-            })
-            .await?
+        if let Some(room) = self.client.get_room(&room_id) {
+            return Ok(Room {
+                room,
+                client: self.client.clone(),
+            });
+        }
+        bail!("Room not found")
     }
 
-    pub async fn account(&self) -> Result<Account> {
+    pub fn account(&self) -> Result<Account> {
         let user_id = self.client.user_id().unwrap();
         Ok(Account::new(self.client.account(), user_id.to_string()))
     }
@@ -290,23 +284,18 @@ impl Client {
                     .get_display_name()
                     .await?
                     .context("No User ID found")?;
-                Ok(display_name.as_str().to_string())
+                Ok(display_name)
             })
             .await?
     }
 
-    pub async fn device_id(&self) -> Result<String> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let device_id = l.device_id().context("No Device ID found")?;
-                Ok(device_id.as_str().to_string())
-            })
-            .await?
+    pub fn device_id(&self) -> Result<String> {
+        let device_id = self.client.device_id().context("No Device ID found")?;
+        Ok(device_id.to_string())
     }
 
     pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
-        self.account().await?.avatar().await
+        self.account()?.avatar().await
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
