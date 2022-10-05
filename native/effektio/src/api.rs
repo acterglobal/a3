@@ -1,7 +1,6 @@
 use anyhow::Result;
 use futures::Stream;
 use lazy_static::lazy_static;
-pub use ruma;
 use tokio::runtime;
 
 use crate::platform;
