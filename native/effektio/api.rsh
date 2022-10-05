@@ -270,14 +270,14 @@ object Client {
     fn logged_in() -> bool;
 
     /// return the account of the logged in user, if given
-    fn account() -> Future<Result<Account>>;
+    fn account() -> Result<Account>;
 
     // The device_id of the client
-    fn device_id() -> Future<Result<string>>;
+    fn device_id() -> Result<string>;
 
     /// The user_id of the client
     /// deprecated, please use account() instead.
-    fn user_id() -> Future<Result<UserId>>;
+    fn user_id() -> Result<UserId>;
 
     /// The display_name of the client
     /// deprecated, please use account() instead.

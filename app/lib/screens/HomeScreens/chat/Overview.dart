@@ -35,13 +35,8 @@ class _ChatOverviewState extends State<ChatOverview> {
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    _fetchUserId();
+    setState(() => userId = widget.client.userId().toString());
     Get.put(ChatListController(client: widget.client));
-  }
-
-  Future<void> _fetchUserId() async {
-    var uid = await widget.client.userId();
-    setState(() => userId = uid.toString());
   }
 
   @override

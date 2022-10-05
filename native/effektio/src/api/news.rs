@@ -55,11 +55,7 @@ impl NewsDraft {
             .await?
     }
 
-    pub async fn set_colors(
-        &self,
-        foreground: Option<String>,
-        background: Option<String>,
-    ) -> Result<()> {
+    pub fn set_colors(&self, foreground: Option<String>, background: Option<String>) -> Result<()> {
         let mut inner = self.content.lock_mut();
         let colors = if foreground.is_none() && background.is_none() {
             None
@@ -73,7 +69,7 @@ impl NewsDraft {
         Ok(())
     }
 
-    pub async fn add_text(&self, text: String) -> Result<u32> {
+    pub fn add_text(&self, text: String) -> Result<u32> {
         let mut inner = self.content.lock_mut();
         let counter = inner.contents.len();
         inner.contents.push(events::NewsContentType::Text(

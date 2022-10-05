@@ -53,7 +53,7 @@ async fn kyra_can_restore() -> Result<()> {
     )
     .await?;
     let token = client.restore_token().await?;
-    let user_id = client.user_id().await?;
+    let user_id = client.user_id()?;
     drop(client);
 
     let client = login_with_token(
@@ -61,6 +61,6 @@ async fn kyra_can_restore() -> Result<()> {
         token,
     )
     .await?;
-    assert_eq!(client.user_id().await?, user_id);
+    assert_eq!(client.user_id()?, user_id);
     Ok(())
 }

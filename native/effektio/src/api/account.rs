@@ -28,7 +28,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let display_name = l.get_display_name().await?.context("No User ID found")?;
-                Ok(display_name.as_str().to_string())
+                Ok(display_name.to_string())
             })
             .await?
     }
