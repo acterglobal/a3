@@ -366,11 +366,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     builder: (context, constraints) {
                       return Container(
                         alignment: Alignment.topLeft,
-                        padding: const EdgeInsets.only(
-                          top: 10,
-                          bottom: 20,
-                          left: 10,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 0, 20),
                         color: AppCommonTheme.backgroundColor,
                         height: constraints.maxHeight * 0.25,
                         width: double.infinity,

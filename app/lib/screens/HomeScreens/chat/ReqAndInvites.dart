@@ -36,7 +36,7 @@ class RequestScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(15), // Creates border
                 color: AppCommonTheme.primaryColor,
               ),
-              indicatorPadding: const EdgeInsets.only(top: 6, bottom: 6),
+              indicatorPadding: const EdgeInsets.symmetric(vertical: 6),
               tabs: const [
                 Tab(text: 'Invites'),
                 Tab(text: 'Requests'),

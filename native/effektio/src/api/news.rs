@@ -1,9 +1,5 @@
 use anyhow::{bail, Context, Result};
-use effektio_core::{
-    events,
-    models::News,
-    ruma::{OwnedEventId, OwnedRoomId},
-};
+use effektio_core::{events, models::News, ruma::OwnedEventId};
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_news;
