@@ -301,8 +301,8 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    InvitationEvent? invitationEvent = chatListController.invitationEvents
-        .firstWhere((x) => x.roomId() == widget.room.getRoomId());
+    int invitedIndex = chatListController.invitationEvents
+        .indexWhere((x) => x.roomId() == widget.room.getRoomId());
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
@@ -331,12 +331,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonAccessibilityLabel: '',
               ),
               messages: chatRoomController.messages,
-              sendButtonVisibilityMode: invitationEvent != null
+              sendButtonVisibilityMode: invitedIndex != -1
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
               onSendPressed: (_) {},
               user: user,
-              disableImageGallery: invitationEvent != null,
+              disableImageGallery: invitedIndex != -1,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
@@ -349,7 +349,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached:
-                  invitationEvent != null ? null : controller.handleEndReached,
+                  invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               emptyState: const EmptyPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
@@ -361,7 +361,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
-            invitationEvent != null
+            invitedIndex != -1
                 ? LayoutBuilder(
                     builder: (context, constraints) {
                       return Container(
@@ -383,14 +383,18 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   )
                 : const SizedBox(),
-            invitationEvent != null
+            invitedIndex != -1
                 ? Padding(
                     padding: const EdgeInsets.only(top: 40),
                     child: InviteInfoWidget(
                       avatarColor: Colors.white,
-                      inviter: invitationEvent.sender(),
-                      groupId: invitationEvent.roomId(),
-                      groupName: invitationEvent.roomName(),
+                      inviter: chatListController.invitationEvents[invitedIndex]
+                          .sender(),
+                      groupId: chatListController.invitationEvents[invitedIndex]
+                          .roomId(),
+                      groupName: chatListController
+                          .invitationEvents[invitedIndex]
+                          .roomName(),
                     ),
                   )
                 : const SizedBox(),
