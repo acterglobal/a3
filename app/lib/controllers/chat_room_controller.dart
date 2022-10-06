@@ -27,7 +27,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ChatRoomController extends GetxController {
   Client client;
   String userId;
-  RxList<types.Message> messages = RxList([]);
+  List<types.Message> messages = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;

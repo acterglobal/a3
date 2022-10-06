@@ -15,7 +15,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember, Member;
+    show Conversation, FfiBufferUint8, FfiListMember;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
