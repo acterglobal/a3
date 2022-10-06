@@ -13,16 +13,7 @@ use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    event_handler::Ctx,
-    locks::RwLock as MatrixRwLock,
-    room::Room as MatrixRoom,
-    ruma::{
-        device_id,
-        events::{
-            receipt::ReceiptEventContent, typing::TypingEventContent, SyncEphemeralRoomEvent,
-        },
-        OwnedUserId, RoomId,
-    },
+    ruma::{device_id, OwnedUserId, RoomId},
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};

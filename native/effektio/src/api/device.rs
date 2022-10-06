@@ -8,12 +8,11 @@ use matrix_sdk::{
     encryption::identities::Device,
     ruma::{
         api::client::sync::sync_events::v3::DeviceLists, device_id,
-        events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch, OwnedUserId,
+        events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
     },
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
-use serde_json::{json, Value};
 use std::sync::Arc;
 
 use super::{client::Client, RUNTIME};
