@@ -107,7 +107,7 @@ impl InvitationController {
             .expect("Time went backwards");
 
         let msg = InvitationEvent {
-            origin_server_ts: since_the_epoch.as_secs().into(),
+            origin_server_ts: since_the_epoch.as_secs(),
             room_id: room.room_id().to_string(),
             room_name: room.display_name().await.unwrap().to_string(),
             sender: ev.sender.to_string(),
