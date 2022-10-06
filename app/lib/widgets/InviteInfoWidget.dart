@@ -19,7 +19,7 @@ class InviteInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: AppCommonTheme.darkShade,
-      margin: const EdgeInsets.only(top: 1, bottom: 1),
+      margin: const EdgeInsets.symmetric(vertical: 1),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[

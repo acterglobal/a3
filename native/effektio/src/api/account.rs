@@ -1,8 +1,5 @@
 use anyhow::{Context, Result};
-pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{media::MediaFormat, Account as MatrixAccount};
-use std::io::Cursor;
-use url::Url;
 
 use super::{api::FfiBuffer, RUNTIME};
 
