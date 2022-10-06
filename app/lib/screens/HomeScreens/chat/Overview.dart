@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/controllers/invite_controller.dart';
+import 'package:effektio/controllers/invitation_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -24,13 +24,14 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  String userId = '';
-  final InviteController _inviteController = Get.find<InviteController>();
+  late String userId;
+  final InvitationController _invitationController =
+      Get.find<InvitationController>();
 
   @override
   void initState() {
     super.initState();
-    setState(() => userId = widget.client.userId().toString());
+    userId = widget.client.userId().toString();
     Get.put(ChatListController(client: widget.client));
   }
 
@@ -88,7 +89,7 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget _buildListHeader(BuildContext context) {
-    if (_inviteController.eventList.isEmpty) {
+    if (_invitationController.eventList.isEmpty) {
       return const SizedBox();
     }
     return Column(
@@ -106,11 +107,11 @@ class _ChatOverviewState extends State<ChatOverview> {
         ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: _inviteController.eventList.length,
+          itemCount: _invitationController.eventList.length,
           itemBuilder: (BuildContext context, int index) => InviteInfoWidget(
             avatarColor: Colors.white,
-            inviter: _inviteController.eventList[index].sender(),
-            groupName: _inviteController.eventList[index].roomName(),
+            inviter: _invitationController.eventList[index].sender(),
+            groupName: _invitationController.eventList[index].roomName(),
           ),
         ),
         Container(

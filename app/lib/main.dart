@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:effektio/common/store/themes/AppTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/invite_controller.dart';
+import 'package:effektio/controllers/invitation_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
@@ -109,7 +109,7 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   void dispose() {
     _crossSigning?.dispose();
-    Get.delete<InviteController>();
+    Get.delete<InvitationController>();
     super.dispose();
   }
 
@@ -121,7 +121,7 @@ class _EffektioHomeState extends State<EffektioHome>
     if (!client.isGuest()) {
       _crossSigning = CrossSigning(client: client);
     }
-    Get.put(InviteController(client));
+    Get.put(InvitationController(client));
     return client;
   }
 

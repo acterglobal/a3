@@ -39,7 +39,7 @@ async fn load_pending_invitation() -> Result<()> {
 
     // sleep(Duration::from_secs(3)).await;
 
-    let mut event_rx = kyra.membership_event_rx().unwrap();
+    let mut event_rx = kyra.invitation_event_rx().unwrap();
     loop {
         match event_rx.try_next() {
             Ok(Some(event)) => {

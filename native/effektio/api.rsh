@@ -345,8 +345,11 @@ object Client {
     /// Get the invitation list
     fn create_room() -> Future<Result<string>>;
 
-    /// Get the invitation list
-    fn membership_event_rx() -> Option<Stream<MembershipEvent>>;
+    /// Get the invitation event stream
+    fn invitation_event_rx() -> Option<Stream<InvitationEvent>>;
+
+    /// Get the past invitation events
+    fn get_invited_rooms() -> Future<Result<Vec<InvitationEvent>>>;
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
@@ -370,7 +373,7 @@ object Client {
     fn message_event_rx() -> Option<Stream<RoomMessage>>;
 }
 
-object MembershipEvent {
+object InvitationEvent {
     /// get the timestamp of this invitation
     fn origin_server_ts() -> u64;
 

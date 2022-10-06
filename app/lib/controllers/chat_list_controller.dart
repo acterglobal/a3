@@ -40,12 +40,13 @@ class ChatListController extends GetxController {
   StreamSubscription<TypingEvent>? typingSubscription;
   StreamSubscription<RoomMessage>? messageSubscription;
 
-  ChatListController({required this.client}) : super();
+  ChatListController({required this.client}) : super() {
+    userId = client.userId().toString();
+  }
 
   @override
   void onInit() {
     super.onInit();
-    userId = client.userId().toString();
     if (!client.isGuest()) {
       convosSubscription = client.conversationsRx().listen((event) {
         updateList(event.toList(), userId);

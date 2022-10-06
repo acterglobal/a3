@@ -19,17 +19,17 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use super::Client;
+use super::{client::Client, RUNTIME};
 
 #[derive(Default, Clone, Debug)]
-pub struct MembershipEvent {
+pub struct InvitationEvent {
     origin_server_ts: u64,
     room_id: String,
     room_name: String,
     sender: String,
 }
 
-impl MembershipEvent {
+impl InvitationEvent {
     pub fn origin_server_ts(&self) -> u64 {
         self.origin_server_ts
     }
@@ -48,41 +48,35 @@ impl MembershipEvent {
 }
 
 #[derive(Clone)]
-pub(crate) struct MembershipController {
-    event_tx: Sender<MembershipEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<MembershipEvent>>>>,
+pub(crate) struct InvitationController {
+    event_tx: Sender<InvitationEvent>,
+    event_rx: Arc<Mutex<Option<Receiver<InvitationEvent>>>>,
 }
 
-impl MembershipController {
+impl InvitationController {
     pub fn new() -> Self {
-        let (tx, rx) = channel::<MembershipEvent>(10); // dropping after more than 10 items queued
-        MembershipController {
+        let (tx, rx) = channel::<InvitationEvent>(10); // dropping after more than 10 items queued
+        InvitationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
         }
     }
 
-    pub fn get_event_rx(&self) -> Option<Receiver<MembershipEvent>> {
-        self.event_rx.lock().take()
-    }
-
     pub fn setup(&self, client: &MatrixClient) -> Result<()> {
         let me = self.clone();
-        // past event
         client.add_event_handler_context(me.clone());
         client.add_event_handler(
             |ev: SyncRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(me): Ctx<MembershipController>| async move {
+             Ctx(me): Ctx<InvitationController>| async move {
                 me.clone().process_sync_event(ev, room).await;
             },
         );
-        // incoming event
         client.add_event_handler_context(me);
         client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(me): Ctx<MembershipController>| async move {
+             Ctx(me): Ctx<InvitationController>| async move {
                 me.clone().process_stripped_event(ev, room);
             },
         );
@@ -90,7 +84,7 @@ impl MembershipController {
     }
 
     async fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: MatrixRoom) {
-        let msg = MembershipEvent {
+        let msg = InvitationEvent {
             origin_server_ts: ev.origin_server_ts().as_secs().into(),
             room_id: room.room_id().to_string(),
             room_name: room.display_name().await.unwrap().to_string(),
@@ -112,7 +106,7 @@ impl MembershipController {
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards");
 
-        let msg = MembershipEvent {
+        let msg = InvitationEvent {
             origin_server_ts: since_the_epoch.as_secs().into(),
             room_id: room.room_id().to_string(),
             room_name: room.display_name().await.unwrap().to_string(),
@@ -136,7 +130,27 @@ impl Client {
         Ok(res.room_id().to_string())
     }
 
-    pub fn membership_event_rx(&self) -> Option<Receiver<MembershipEvent>> {
-        self.membership_controller.event_rx.lock().take()
+    pub fn invitation_event_rx(&self) -> Option<Receiver<InvitationEvent>> {
+        self.invitation_controller.event_rx.lock().take()
+    }
+
+    pub async fn get_invited_rooms(&self) -> Result<Vec<InvitationEvent>> {
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut events: Vec<InvitationEvent> = vec![];
+                for room in client.invited_rooms().iter() {
+                    let invite = room.invite_details().await?;
+                    let event = InvitationEvent {
+                        origin_server_ts: 0,
+                        room_id: room.room_id().to_string(),
+                        room_name: room.display_name().await.unwrap().to_string(),
+                        sender: invite.inviter.unwrap().user_id().to_string(),
+                    };
+                    events.push(event);
+                }
+                Ok(events)
+            })
+            .await?
     }
 }

@@ -3,7 +3,7 @@ mod auth;
 #[cfg(test)]
 mod formatted_body;
 // #[cfg(test)]
-// mod membership;
+// mod invitation;
 // #[cfg(test)]
 // mod news;
 // #[cfg(test)]

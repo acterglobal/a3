@@ -38,7 +38,7 @@ use super::{
     conversation::{Conversation, ConversationController},
     device::DeviceController,
     group::Group,
-    membership::MembershipController,
+    invitation::InvitationController,
     receipt::ReceiptController,
     room::Room,
     typing::TypingController,
@@ -62,7 +62,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
-    pub(crate) membership_controller: MembershipController,
+    pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
@@ -122,7 +122,7 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
-            membership_controller: MembershipController::new(),
+            invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
@@ -134,7 +134,7 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        self.membership_controller.setup(&client);
+        self.invitation_controller.setup(&client);
         let mut verification_controller = self.verification_controller.clone();
         let mut device_controller = self.device_controller.clone();
         self.typing_controller.setup(&client);
