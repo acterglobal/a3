@@ -375,7 +375,7 @@ object Client {
 
 object InvitationEvent {
     /// get the timestamp of this invitation
-    fn origin_server_ts() -> u64;
+    fn origin_server_ts() -> Option<u64>;
 
     /// get the room id of this invitation
     fn room_id() -> string;

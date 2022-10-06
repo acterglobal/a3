@@ -5354,13 +5354,13 @@ class Api {
   )>();
   late final _invitationEventOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint64 Function(
+          _InvitationEventOriginServerTsReturn Function(
     ffi.Int64,
   )>>("__InvitationEvent_origin_server_ts");
 
   late final _invitationEventOriginServerTs =
       _invitationEventOriginServerTsPtr.asFunction<
-          int Function(
+          _InvitationEventOriginServerTsReturn Function(
     int,
   )>();
   late final _invitationEventRoomIdPtr = _lookup<
@@ -10043,14 +10043,18 @@ class InvitationEvent {
   InvitationEvent._(this._api, this._box);
 
   /// get the timestamp of this invitation
-  int originServerTs() {
+  int? originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._invitationEventOriginServerTs(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -11417,6 +11421,13 @@ class _ClientMessageEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _InvitationEventOriginServerTsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
   external int arg1;
 }
 

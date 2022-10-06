@@ -25,14 +25,14 @@ use super::{client::Client, RUNTIME};
 
 #[derive(Default, Clone, Debug)]
 pub struct InvitationEvent {
-    origin_server_ts: u64,
+    origin_server_ts: Option<u64>,
     room_id: String,
     room_name: String,
     sender: String,
 }
 
 impl InvitationEvent {
-    pub fn origin_server_ts(&self) -> u64 {
+    pub fn origin_server_ts(&self) -> Option<u64> {
         self.origin_server_ts
     }
 
@@ -87,7 +87,7 @@ impl InvitationController {
 
     async fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: MatrixRoom) {
         let msg = InvitationEvent {
-            origin_server_ts: ev.origin_server_ts().as_secs().into(),
+            origin_server_ts: Some(ev.origin_server_ts().as_secs().into()),
             room_id: room.room_id().to_string(),
             room_name: room.display_name().await.unwrap().to_string(),
             sender: ev.sender().to_string(),
@@ -109,7 +109,7 @@ impl InvitationController {
             .expect("Time went backwards");
 
         let msg = InvitationEvent {
-            origin_server_ts: since_the_epoch.as_secs(),
+            origin_server_ts: Some(since_the_epoch.as_secs()),
             room_id: room.room_id().to_string(),
             room_name: room.display_name().await.unwrap().to_string(),
             sender: ev.sender.to_string(),
@@ -144,7 +144,7 @@ impl Client {
                 for room in client.invited_rooms().iter() {
                     let invite = room.invite_details().await?;
                     let event = InvitationEvent {
-                        origin_server_ts: 0,
+                        origin_server_ts: None,
                         room_id: room.room_id().to_string(),
                         room_name: room.display_name().await.unwrap().to_string(),
                         sender: invite.inviter.unwrap().user_id().to_string(),
