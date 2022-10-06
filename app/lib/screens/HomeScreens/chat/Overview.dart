@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/controllers/invitation_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -15,9 +14,9 @@ import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
-  const ChatOverview({Key? key, required this.client}) : super(key: key);
-
   final Client client;
+
+  const ChatOverview({Key? key, required this.client}) : super(key: key);
 
   @override
   State<ChatOverview> createState() => _ChatOverviewState();
@@ -25,8 +24,6 @@ class ChatOverview extends StatefulWidget {
 
 class _ChatOverviewState extends State<ChatOverview> {
   late String userId;
-  final InvitationController _invitationController =
-      Get.find<InvitationController>();
 
   @override
   void initState() {
@@ -89,41 +86,49 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget _buildListHeader(BuildContext context) {
-    if (_invitationController.eventList.isEmpty) {
-      return const SizedBox();
-    }
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.only(left: 18),
-          child: Text(
-            AppLocalizations.of(context)!.invitedRooms,
-            style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
-          ),
-        ),
-        const SizedBox(height: 10),
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: _invitationController.eventList.length,
-          itemBuilder: (BuildContext context, int index) => InviteInfoWidget(
-            avatarColor: Colors.white,
-            inviter: _invitationController.eventList[index].sender(),
-            groupName: _invitationController.eventList[index].roomName(),
-          ),
-        ),
-        Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.only(left: 18),
-          child: Text(
-            AppLocalizations.of(context)!.joinedRooms,
-            style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
-          ),
-        ),
-        const SizedBox(height: 10),
-      ],
+    return GetBuilder<ChatListController>(
+      builder: (ChatListController controller) {
+        if (controller.invitationEvents.isEmpty) {
+          return const SizedBox();
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.invitedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: controller.invitationEvents.length,
+              itemBuilder: (BuildContext context, int index) {
+                var event = controller.invitationEvents[index];
+                return InviteInfoWidget(
+                  avatarColor: Colors.white,
+                  inviter: event.sender(),
+                  groupId: event.roomId(),
+                  groupName: event.roomName(),
+                );
+              },
+            ),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.joinedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        );
+      },
     );
   }
 
@@ -147,9 +152,9 @@ class _ChatOverviewState extends State<ChatOverview> {
             ),
           );
         }
-        return ImplicitlyAnimatedReorderableList<RoomItem>(
+        return ImplicitlyAnimatedReorderableList<JoinedRoom>(
           header: _buildListHeader(context),
-          items: controller.roomItems,
+          items: controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
           // Remember to update the underlying data when the list has been reordered.

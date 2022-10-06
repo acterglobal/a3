@@ -6,12 +6,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class InviteInfoWidget extends StatelessWidget {
   final Color avatarColor;
   final String inviter;
+  final String groupId;
   final String groupName;
 
   const InviteInfoWidget({
     Key? key,
     required this.avatarColor,
     required this.inviter,
+    required this.groupId,
     required this.groupName,
   }) : super(key: key);
 
