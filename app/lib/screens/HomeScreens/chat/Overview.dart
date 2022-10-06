@@ -7,8 +7,7 @@ import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, UserId;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
