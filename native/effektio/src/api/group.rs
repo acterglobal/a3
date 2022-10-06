@@ -1,6 +1,3 @@
-use super::client::{divide_groups_from_common, Client};
-use super::room::Room;
-use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
@@ -19,6 +16,12 @@ use effektio_core::{
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
     },
     statics::{default_effektio_group_states, initial_state_for_alias},
+};
+
+use super::{
+    client::{divide_groups_from_common, Client},
+    room::Room,
+    RUNTIME,
 };
 
 pub struct Group {

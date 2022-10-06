@@ -1,11 +1,14 @@
 use anyhow::{bail, Context, Result};
 use assign::assign;
-use effektio_core::ruma::api::client::{account::register, uiaa};
-use effektio_core::RestoreToken;
+use effektio_core::{
+    ruma::api::client::{account::register, uiaa},
+    RestoreToken,
+};
 use matrix_sdk::Session;
 
-use super::{Client, ClientStateBuilder, RUNTIME};
 use crate::platform;
+
+use super::{Client, ClientStateBuilder, RUNTIME};
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
