@@ -16,7 +16,7 @@ class NotificationScreen extends StatelessWidget {
             color: NotificationTheme.notificationcardColor,
             borderRadius: BorderRadius.circular(10),
           ),
-          margin: const EdgeInsets.only(top: 10, left: 15, right: 15),
+          margin: const EdgeInsets.fromLTRB(15, 10, 15, 0),
           child: Row(
             children: [
               Container(

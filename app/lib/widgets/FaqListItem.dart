@@ -64,7 +64,7 @@ class FaqListItem extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 12),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +82,7 @@ class FaqListItem extends StatelessWidget {
                         children: [
                           Image.asset('assets/images/asakerImage.png'),
                           const Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
+                            padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text(
                               'Support',
                               style: FAQTheme.teamNameStyle,

@@ -66,10 +66,7 @@ class _ImageSelectionState extends State<ImageSelection> {
                 children: [
                   for (var item in widget.imageList)
                     Padding(
-                      padding: const EdgeInsets.only(
-                        top: 10,
-                        left: 8,
-                      ),
+                      padding: const EdgeInsets.only(top: 10, left: 8),
                       child: InkWell(
                         onTap: () {
                           setState(() {

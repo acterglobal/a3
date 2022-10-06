@@ -284,10 +284,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                           child: Row(
                             children: [
                               const Padding(
-                                padding: EdgeInsets.only(
-                                  left: 16,
-                                  right: 16,
-                                ),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
                                 child: Icon(
                                   Icons.person_add_alt_1_outlined,
                                   color: Colors.white,
@@ -403,10 +400,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         Row(
                           children: [
                             const Padding(
-                              padding: EdgeInsets.only(
-                                left: 16,
-                                right: 16,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Icon(
                                 Icons.groups_outlined,
                                 color: Colors.white,
@@ -573,8 +567,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12, right: 12, bottom: 16),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
