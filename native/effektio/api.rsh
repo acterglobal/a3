@@ -198,12 +198,6 @@ object Conversation {
     /// get the user status on this room
     fn room_type() -> string;
 
-    /// accept invitation about me to this room
-    fn accept_invitation() -> Future<Result<bool>>;
-
-    /// reject invitation about me to this room
-    fn reject_invitation() -> Future<Result<bool>>;
-
     /// join this room
     fn join() -> Future<Result<bool>>;
 
@@ -350,6 +344,12 @@ object Client {
 
     /// Get the past invitation events
     fn get_invited_rooms() -> Future<Result<Vec<InvitationEvent>>>;
+
+    /// accept invitation about me to this room
+    fn accept_invitation(room_id: string) -> Future<Result<bool>>;
+
+    /// reject invitation about me to this room
+    fn reject_invitation(room_id: string) -> Future<Result<bool>>;
 
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;

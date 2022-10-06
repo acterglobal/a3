@@ -1,15 +1,18 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 class InviteInfoWidget extends StatelessWidget {
   final Color avatarColor;
   final String inviter;
   final String groupId;
   final String groupName;
+  final ChatListController _chatListController = Get.find<ChatListController>();
 
-  const InviteInfoWidget({
+  InviteInfoWidget({
     Key? key,
     required this.avatarColor,
     required this.inviter,
@@ -59,7 +62,9 @@ class InviteInfoWidget extends StatelessWidget {
                 child: elevatedButton(
                   AppLocalizations.of(context)!.accept,
                   AppCommonTheme.greenButtonColor,
-                  () => {},
+                  () async {
+                    await _chatListController.acceptInvitation(groupId);
+                  },
                   AppCommonTheme.appBarTitleStyle
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
@@ -69,7 +74,9 @@ class InviteInfoWidget extends StatelessWidget {
                 child: elevatedButton(
                   AppLocalizations.of(context)!.decline,
                   AppCommonTheme.primaryColor,
-                  () => {},
+                  () async {
+                    await _chatListController.rejectInvitation(groupId);
+                  },
                   AppCommonTheme.appBarTitleStyle
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),

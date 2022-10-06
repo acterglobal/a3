@@ -1,15 +1,16 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
 };
-use log::{info, warn};
+use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
     ruma::{
         api::client::room::create_room::v3::Request as CreateRoomRequest,
         events::room::member::{StrippedRoomMemberEvent, SyncRoomMemberEvent},
+        RoomId,
     },
     Client as MatrixClient,
 };
@@ -18,6 +19,7 @@ use std::{
     sync::Arc,
     time::{SystemTime, UNIX_EPOCH},
 };
+use tokio::time::{sleep, Duration};
 
 use super::{client::Client, RUNTIME};
 
@@ -152,5 +154,81 @@ impl Client {
                 Ok(events)
             })
             .await?
+    }
+
+    pub async fn accept_invitation(&self, room_id: String) -> Result<bool> {
+        let room_id = RoomId::parse(room_id)?;
+        match self.client.get_invited_room(&room_id) {
+            Some(room) => {
+                // any variable in self can't be called directly in spawn
+                RUNTIME
+                    .spawn(async move {
+                        let mut delay = 2;
+                        while let Err(err) = room.accept_invitation().await {
+                            // retry autojoin due to synapse sending invites, before the
+                            // invited user can join for more information see
+                            // https://github.com/matrix-org/synapse/issues/4345
+                            error!(
+                                "Failed to accept room {} ({:?}), retrying in {}s",
+                                room.room_id(),
+                                err,
+                                delay,
+                            );
+
+                            sleep(Duration::from_secs(delay)).await;
+                            delay *= 2;
+
+                            if delay > 3600 {
+                                error!("Can't accept room {} ({:?})", room.room_id(), err);
+                                break;
+                            }
+                        }
+                        info!("Successfully accepted room {}", room.room_id());
+                        Ok(delay <= 3600)
+                    })
+                    .await?
+            }
+            None => {
+                bail!("Can't accept a room we are not invited")
+            }
+        }
+    }
+
+    pub async fn reject_invitation(&self, room_id: String) -> Result<bool> {
+        let room_id = RoomId::parse(room_id)?;
+        match self.client.get_invited_room(&room_id) {
+            Some(room) => {
+                // any variable in self can't be called directly in spawn
+                RUNTIME
+                    .spawn(async move {
+                        let mut delay = 2;
+                        while let Err(err) = room.reject_invitation().await {
+                            // retry autojoin due to synapse sending invites, before the
+                            // invited user can join for more information see
+                            // https://github.com/matrix-org/synapse/issues/4345
+                            error!(
+                                "Failed to reject room {} ({:?}), retrying in {}s",
+                                room.room_id(),
+                                err,
+                                delay,
+                            );
+        
+                            sleep(Duration::from_secs(delay)).await;
+                            delay *= 2;
+        
+                            if delay > 3600 {
+                                error!("Can't reject room {} ({:?})", room.room_id(), err);
+                                break;
+                            }
+                        }
+                        info!("Successfully rejected room {}", room.room_id());
+                        Ok(delay <= 3600)
+                    })
+                    .await?
+            }
+            None => {
+                bail!("Can't reject a room we are not invited")
+            }
+        }
     }
 }

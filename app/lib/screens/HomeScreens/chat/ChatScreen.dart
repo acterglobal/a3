@@ -301,8 +301,8 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    InvitationEvent? invitationEvent =
-        chatListController.findInvitation(widget.room.getRoomId());
+    InvitationEvent? invitationEvent = chatListController.invitationEvents
+        .firstWhere((x) => x.roomId() == widget.room.getRoomId());
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
