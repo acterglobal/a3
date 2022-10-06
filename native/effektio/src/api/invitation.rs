@@ -212,10 +212,10 @@ impl Client {
                                 err,
                                 delay,
                             );
-        
+
                             sleep(Duration::from_secs(delay)).await;
                             delay *= 2;
-        
+
                             if delay > 3600 {
                                 error!("Can't reject room {} ({:?})", room.room_id(), err);
                                 break;
