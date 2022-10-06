@@ -14,7 +14,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiBufferUint8, FfiListMember;
+    show Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -27,11 +27,12 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
-  final Client client;
+  final String userId;
+
   const ChatScreen({
     Key? key,
     required this.room,
-    required this.client,
+    required this.userId,
   }) : super(key: key);
 
   @override
@@ -118,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<FfiBufferUint8> _userAvatar(String userId) async {
-    final member = await widget.room.getMember(userId);
+    Member member = await widget.room.getMember(userId);
     return member.avatar();
   }
 

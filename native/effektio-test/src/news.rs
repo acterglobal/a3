@@ -24,9 +24,7 @@ async fn sisko_posts_news() -> Result<()> {
     let news_draft = ops
         .news_draft()
         .expect("we are in, we can create news drafts");
-    news_draft
-        .add_text("This is a simple text example".to_owned())
-        .await?;
+    news_draft.add_text("This is a simple text example".to_owned())?;
     let event_id = news_draft.send().await?;
     client
         .sync_once(Default::default())

@@ -38,10 +38,8 @@ class _ChatOverviewState extends State<ChatOverview> {
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     Get.put(ChatListController(client: widget.client));
-    widget.client.userId().then((UserId uid) {
-      String userId = uid.toString();
-      Get.put(ChatRoomController(client: widget.client, userId: userId));
-    });
+    userId = widget.client.userId().toString();
+    Get.put(ChatRoomController(client: widget.client, userId: userId));
   }
 
   @override
@@ -166,8 +164,8 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
+                  userId: userId,
                   latestMessage: item.latestMessage,
-                  client: widget.client,
                 ),
               ),
             );
@@ -180,8 +178,8 @@ class _ChatOverviewState extends State<ChatOverview> {
               opacity: animation,
               child: ChatListItem(
                 room: item.conversation,
+                userId: userId,
                 latestMessage: item.latestMessage,
-                client: widget.client,
               ),
             );
           },
@@ -203,8 +201,8 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: ChatListItem(
                   room: item.conversation,
+                  userId: userId,
                   latestMessage: item.latestMessage,
-                  client: widget.client,
                 ),
               ),
             );
