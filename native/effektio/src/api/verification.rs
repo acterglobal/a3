@@ -7,10 +7,7 @@ use log::{info, warn};
 use matrix_sdk::{
     config::SyncSettings,
     deserialized_responses::Rooms,
-    encryption::{
-        identities::UserIdentity,
-        verification::{SasVerification, Verification, VerificationRequest},
-    },
+    encryption::verification::{Verification, VerificationRequest},
     ruma::{
         api::client::sync::sync_events::v3::ToDevice,
         events::{
@@ -25,7 +22,7 @@ use matrix_sdk::{
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use super::{Client, RUNTIME};
+use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {

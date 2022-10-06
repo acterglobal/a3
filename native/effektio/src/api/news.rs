@@ -1,17 +1,17 @@
-use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
+use effektio_core::{events, models::News, ruma::OwnedEventId};
+
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_news;
-use effektio_core::{
-    events,
-    models::News,
-    ruma::{OwnedEventId, OwnedRoomId},
-};
 use futures_signals::signal::Mutable;
 use matrix_sdk::{room::Joined, Client as MatrixClient};
-use std::ffi::OsStr;
-use std::fs::File;
-use std::path::PathBuf; // FIXME: make these optional for wasm
+use std::{
+    ffi::OsStr,
+    fs::File,
+    path::PathBuf, // FIXME: make these optional for wasm
+};
+
+use super::{client::Client, group::Group, RUNTIME};
 
 impl Client {
     #[cfg(feature = "with-mocks")]

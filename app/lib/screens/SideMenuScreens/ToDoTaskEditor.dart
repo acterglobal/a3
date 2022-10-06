@@ -325,8 +325,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: TextButton(
                       onPressed: () {},
                       child: Text(
@@ -347,8 +346,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(

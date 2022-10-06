@@ -5,9 +5,8 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     pin_mut, StreamExt,
 };
-use futures_signals::{
-    signal::{Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream},
-    signal_vec::{MutableSignalVec, MutableVec, SignalVecExt, ToSignalCloned},
+use futures_signals::signal::{
+    Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
 };
 use log::{error, info, warn};
 use matrix_sdk::{

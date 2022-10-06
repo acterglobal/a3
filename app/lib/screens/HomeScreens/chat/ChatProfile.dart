@@ -576,8 +576,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12, right: 12, bottom: 16),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
