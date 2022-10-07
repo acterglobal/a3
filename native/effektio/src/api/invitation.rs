@@ -64,7 +64,7 @@ impl InvitationController {
         }
     }
 
-    pub fn setup(&self, client: &MatrixClient) -> Result<()> {
+    pub fn setup(&self, client: &MatrixClient) {
         let me = self.clone();
         client.add_event_handler_context(me.clone());
         client.add_event_handler(
@@ -82,7 +82,6 @@ impl InvitationController {
                 me.clone().process_stripped_event(ev, room);
             },
         );
-        Ok(())
     }
 
     async fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: MatrixRoom) {

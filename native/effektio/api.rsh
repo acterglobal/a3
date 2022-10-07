@@ -330,6 +330,9 @@ object Client {
     /// roomId or room alias;
     fn get_group(id_or_alias: string) -> Future<Result<Group>>;
 
+    /// Get the conversation using room name or room id
+    fn conversation(name_or_id: string) -> Future<Result<Conversation>>;
+
     /// Get the latest News for the client
     fn latest_news() -> Future<Result<Vec<News>>>;
 

@@ -15,7 +15,7 @@ use effektio_core::{
 };
 
 use super::{
-    client::{divide_groups_from_common, Client},
+    client::{divide_rooms_from_common, Client},
     room::Room,
     RUNTIME,
 };
@@ -81,7 +81,7 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = divide_groups_from_common(c).await;
+                let (groups, _) = divide_rooms_from_common(c).await;
                 Ok(groups)
             })
             .await?

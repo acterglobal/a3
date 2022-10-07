@@ -31,7 +31,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
-    client::{divide_groups_from_common, Client},
+    client::{divide_rooms_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
     room::Room,
     RUNTIME,
@@ -143,7 +143,7 @@ impl ConversationController {
     }
 
     pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = divide_groups_from_common(client.clone()).await;
+        let (_, convos) = divide_rooms_from_common(client.clone()).await;
         for convo in convos.iter() {
             convo.load_latest_message();
         }
@@ -268,18 +268,18 @@ impl Client {
             .await?
     }
 
-    pub async fn conversation(&self, name_or_id: String) -> Result<Option<Conversation>> {
+    pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
                 if let Ok(room) = me.room(name_or_id) {
                     if !room.is_effektio_group().await {
-                        Ok(Some(Conversation::new(room)))
+                        Ok(Conversation::new(room))
                     } else {
                         bail!("Not a regular conversation but an effektio group!")
                     }
                 } else {
-                    Ok(None)
+                    bail!("Neither roomId nor alias provided")
                 }
             })
             .await?

@@ -153,17 +153,22 @@ class ChatListController extends GetxController {
 
   Future<void> acceptInvitation(String roomId) async {
     await client.acceptInvitation(roomId);
-    // remove item from list
+    // remove item from invited list
     int index = invitationEvents.indexWhere((x) => x.roomId() == roomId);
     invitationEvents.removeAt(index);
+    // add item to joined list
+    var convo = await client.conversation(roomId);
+    JoinedRoom newItem = JoinedRoom(conversation: convo);
+    joinedRooms.insert(0, newItem);
     update(['chatlist']);
   }
 
   Future<void> rejectInvitation(String roomId) async {
     await client.rejectInvitation(roomId);
-    // remove item from list
+    // remove item from invited list
     int index = invitationEvents.indexWhere((x) => x.roomId() == roomId);
     invitationEvents.removeAt(index);
+    // ignore the invited event
     update(['chatlist']);
   }
 }
