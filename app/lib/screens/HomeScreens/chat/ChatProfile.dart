@@ -1,9 +1,7 @@
-// ignore_for_file: prefer_const_constructors, require_trailing_commas
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/widgets/InviteListView.dart';
-import 'package:effektio/widgets/MembersList.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
+import 'package:effektio/widgets/GroupMember.dart';
+import 'package:effektio/widgets/InviteListView.dart';
 import 'package:effektio/screens/HomeScreens/chat/EditGroupInfo.dart';
 import 'package:effektio/screens/HomeScreens/chat/GroupLinkScreen.dart';
 import 'package:effektio/screens/HomeScreens/chat/ReqAndInvites.dart';
@@ -14,14 +12,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatProfileScreen extends StatefulWidget {
   final Conversation room;
-  final String? user;
   final bool isGroup;
   final bool isAdmin;
 
   const ChatProfileScreen({
     Key? key,
     required this.room,
-    required this.user,
     required this.isGroup,
     required this.isAdmin,
   }) : super(key: key);
@@ -57,13 +53,15 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ),
                 );
               },
-              child: Padding(
-                padding: const EdgeInsets.only(right: 8),
+              child: const Padding(
+                padding: EdgeInsets.only(right: 8),
                 child: Center(
-                  child: const Text(
+                  child: Text(
                     'Edit',
                     style: TextStyle(
-                        color: AppCommonTheme.primaryColor, fontSize: 22),
+                      color: AppCommonTheme.primaryColor,
+                      fontSize: 22,
+                    ),
                   ),
                 ),
               ),
@@ -279,27 +277,24 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => RequestScreen(),
+                                builder: (context) => const RequestScreen(),
                               ),
                             );
                           },
                           child: Row(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  left: 16,
-                                  right: 16,
-                                ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
                                 child: Icon(
                                   Icons.person_add_alt_1_outlined,
                                   color: Colors.white,
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'Requests & Invites',
                                 style: TextStyle(color: Colors.white),
                               ),
-                              Spacer(),
+                              const Spacer(),
                               Row(
                                 children: const [
                                   Text(
@@ -327,19 +322,15 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => GroupLinkScreen(),
+                                builder: (context) => const GroupLinkScreen(),
                               ),
                             );
                           },
                           child: Row(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Icon(
-                                  Icons.link,
-                                  color: Colors.white,
-                                ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Icon(Icons.link, color: Colors.white),
                               ),
                               const Text(
                                 'Group Link',
@@ -368,21 +359,21 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                showInviteBottomSheet();
-                              },
-                              child: const Padding(
-                                padding: EdgeInsets.only(bottom: 12, left: 16),
-                                child: Text(
-                                  'Create Room Invite',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ),
-                            )
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                            showInviteBottomSheet();
+                          },
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.only(
+                              bottom: 12,
+                              left: 16,
+                            ),
+                            child: const Text(
+                              'Create Room Invite',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -409,10 +400,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         Row(
                           children: [
                             const Padding(
-                              padding: EdgeInsets.only(
-                                left: 16,
-                                right: 16,
-                              ),
+                              padding: EdgeInsets.symmetric(horizontal: 16),
                               child: Icon(
                                 Icons.groups_outlined,
                                 color: Colors.white,
@@ -515,44 +503,41 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             ),
             Visibility(
               visible: widget.isGroup,
-              child: Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: FutureBuilder<FfiListMember>(
-                      future: widget.room.activeMembers(),
-                      builder: (
-                        BuildContext context,
-                        AsyncSnapshot<FfiListMember> snapshot,
-                      ) {
-                        if (snapshot.hasData) {
-                          return Text(
-                            '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        } else {
-                          return SizedBox(
-                            height: 15,
-                            width: 15,
-                            child: CircularProgressIndicator(
-                              color: AppCommonTheme.primaryColor,
-                            ),
-                          );
-                        }
-                      },
-                    ),
-                  )
-                ],
+              child: Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.all(16),
+                child: FutureBuilder<FfiListMember>(
+                  future: widget.room.activeMembers(),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<FfiListMember> snapshot,
+                  ) {
+                    if (snapshot.hasData) {
+                      return Text(
+                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    } else {
+                      return const SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
             ),
             Visibility(
               visible: widget.isGroup,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                 child: Card(
                   color: AppCommonTheme.darkShade,
                   shape: RoundedRectangleBorder(
@@ -561,14 +546,11 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   child: ListView.builder(
                     itemCount: 10,
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: MembersList(
-                          name: 'Ronaldo',
-                          isAdmin: true,
-                        ),
+                      return const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: GroupMember(name: 'Ronaldo', isAdmin: true),
                       );
                     },
                   ),
@@ -585,15 +567,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
                 },
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 12, right: 12, bottom: 16),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
                       color: ChatTheme01.leaveBtnBg,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
                       child: Center(
                         child: Text(
                           'Leave Group',
@@ -636,8 +617,8 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16,
@@ -655,7 +636,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         child: Container(
                           width: double.infinity,
                           height: 40,
@@ -680,7 +661,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 8,
                         ),
@@ -693,9 +674,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 fontSize: 14,
                               ),
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
+                            const SizedBox(width: 5),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
@@ -708,7 +687,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                   ),
                                 );
                               },
-                              child: Text(
+                              child: const Text(
                                 'Edit invite link',
                                 style: TextStyle(
                                   color: AppCommonTheme.primaryColor,
@@ -723,15 +702,13 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         child: ListView.builder(
                           controller: scrollController,
                           itemCount: 10,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: InviteListView(
-                                isAdded: false,
-                                name: 'Abhishek',
-                              ),
-                            );
-                          },
+                          itemBuilder: (context, index) => const Padding(
+                            padding: EdgeInsets.all(12),
+                            child: InviteListView(
+                              isAdded: false,
+                              name: 'Abhishek',
+                            ),
+                          ),
                         ),
                       ),
                     ],
@@ -746,432 +723,380 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
   }
 
   void handleClick(int item) {
-    switch (item) {
-      case 0:
-        showReportBottomSheet();
-        break;
+    if (item == 0) {
+      showReportBottomSheet();
     }
   }
 
   void showReportBottomSheet() {
     showModalBottomSheet(
-        backgroundColor: AppCommonTheme.backgroundColor,
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(30),
-          ),
-        ),
-        builder: (context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setSheetState) {
-              return DraggableScrollableSheet(
-                initialChildSize: 0.55,
-                minChildSize: 0.25,
-                expand: false,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return Container(
-                    margin: EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Spam',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right,
-                                color: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6.33),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppCommonTheme.dividerColor,
-                                  width: 1.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Violence',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right,
-                                color: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6.33),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppCommonTheme.dividerColor,
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Fake Account',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right,
-                                color: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6.33),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppCommonTheme.dividerColor,
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Copyrights',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right,
-                                color: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(6.33),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(
-                                  color: AppCommonTheme.dividerColor,
-                                  width: 1,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
-                              Text(
-                                'Spam',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Icon(
-                                Icons.keyboard_arrow_right,
-                                color: Colors.white,
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
+      backgroundColor: AppCommonTheme.backgroundColor,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.55,
+              minChildSize: 0.25,
+              expand: false,
+              builder: (
+                BuildContext context,
+                ScrollController scrollController,
+              ) =>
+                  Container(
+                margin:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text('Spam', style: TextStyle(color: Colors.white)),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
                     ),
-                  );
-                },
-              );
-            },
-          );
-        });
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text(
+                            'Violence',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text(
+                            'Fake Account',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text(
+                            'Copyrights',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Text('Spam', style: TextStyle(color: Colors.white)),
+                          Icon(
+                            Icons.keyboard_arrow_right,
+                            color: Colors.white,
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void showMuteBottomSheet() {
     showModalBottomSheet(
-        backgroundColor: AppCommonTheme.backgroundColor,
-        context: context,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(30),
-          ),
-        ),
-        builder: (context) {
-          return StatefulBuilder(
-            builder: (BuildContext context, StateSetter setSheetState) {
-              return DraggableScrollableSheet(
-                initialChildSize: 0.85,
-                minChildSize: 0.5,
-                expand: false,
-                builder:
-                    (BuildContext context, ScrollController scrollController) {
-                  return SingleChildScrollView(
-                    child: Container(
-                      margin:
-                          EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  child: Text(
-                                    'Mute this chat for',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+      backgroundColor: AppCommonTheme.backgroundColor,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (
+            BuildContext context,
+            StateSetter setSheetState,
+          ) =>
+              DraggableScrollableSheet(
+            initialChildSize: 0.85,
+            minChildSize: 0.5,
+            expand: false,
+            builder: (
+              BuildContext context,
+              ScrollController scrollController,
+            ) =>
+                SingleChildScrollView(
+              child: Container(
+                margin: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: const Text(
+                          'Mute this chat for',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                           ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '1 Hour',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '8 Hours',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '1 Day',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8),
-                                  child: Text(
-                                    '1 Week',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      'Always',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(6.33),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: AppCommonTheme.dividerColor,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 8),
-                                    child: Text(
-                                      'Cancel',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  );
-                },
-              );
-            },
-          );
-        });
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: const Text(
+                          '1 Hour',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: const Text(
+                          '8 Hours',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: const Text(
+                          '1 Day',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: const Text(
+                          '1 Week',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text(
+                            'Always',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6.33),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: AppCommonTheme.dividerColor,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

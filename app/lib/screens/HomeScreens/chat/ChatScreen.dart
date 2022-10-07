@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
-
 import 'dart:io';
 import 'dart:math';
 
@@ -17,7 +15,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiBufferUint8, FfiListMember;
+    show Client, Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -65,9 +63,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    super.dispose();
     chatListController.setCurrentRoomId(null);
     Get.delete<ChatRoomController>();
-    super.dispose();
   }
 
   void _handleAttachmentPressed(BuildContext context) {
@@ -89,18 +87,18 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/camera.svg'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.photo,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       )
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () => chatRoomController.handleFileSelection(context),
                   child: Row(
@@ -109,14 +107,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(8),
                         child: SvgPicture.asset('assets/images/document.svg'),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
                           AppLocalizations.of(context)!.file,
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       )
                     ],
@@ -131,7 +127,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<FfiBufferUint8> _userAvatar(String userId) async {
-    final member = await widget.room.getMember(userId);
+    Member member = await widget.room.getMember(userId);
     return member.avatar();
   }
 
@@ -201,18 +197,14 @@ class _ChatScreenState extends State<ChatScreen> {
             elevation: 1,
             centerTitle: true,
             toolbarHeight: 70,
-            leading: Row(
-              children: <Widget>[
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: SvgPicture.asset(
-                    'assets/images/back_button.svg',
-                    color: AppCommonTheme.svgIconColor,
-                  ),
-                ),
-              ],
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: SvgPicture.asset(
+                'assets/images/back_button.svg',
+                color: AppCommonTheme.svgIconColor,
+              ),
             ),
             title: Column(
               mainAxisSize: MainAxisSize.max,
@@ -246,12 +238,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   ) {
                     if (snapshot.hasData) {
                       return Text(
-                        '${snapshot.requireData.length.toString()} ${AppLocalizations.of(context)!.members}',
+                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
                         style: ChatTheme01.chatBodyStyle +
                             AppCommonTheme.primaryColor,
                       );
                     } else {
-                      return Container(
+                      return const SizedBox(
                         height: 15,
                         width: 15,
                         child: CircularProgressIndicator(
@@ -271,7 +263,6 @@ class _ChatScreenState extends State<ChatScreen> {
                     MaterialPageRoute(
                       builder: (context) => ChatProfileScreen(
                         room: widget.room,
-                        user: widget.user,
                         isGroup: true,
                         isAdmin: true,
                       ),
@@ -280,7 +271,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 10),
-                  child: Container(
+                  child: SizedBox(
                     height: 45,
                     width: 45,
                     child: FittedBox(
@@ -311,8 +302,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildBody(BuildContext context) {
     if (chatRoomController.isLoading.isTrue) {
-      return Center(
-        child: Container(
+      return const Center(
+        child: SizedBox(
           height: 15,
           width: 15,
           child: CircularProgressIndicator(
@@ -328,7 +319,6 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             Chat(
               customBottomWidget: CustomChatInput(
-                context: context,
                 isChatScreen: true,
                 roomName: roomName,
                 onButtonPressed: () async {
@@ -368,7 +358,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onMessageTap: controller.handleMessageTap,
               onEndReached: roomState ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              emptyState: EmptyPlaceholder(),
+              emptyState: const EmptyPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
                 attachmentButtonIcon:
@@ -383,11 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     builder: (context, constraints) {
                       return Container(
                         alignment: Alignment.topLeft,
-                        padding: const EdgeInsets.only(
-                          top: 10,
-                          bottom: 20,
-                          left: 10,
-                        ),
+                        padding: const EdgeInsets.fromLTRB(10, 10, 0, 20),
                         color: AppCommonTheme.backgroundColor,
                         height: constraints.maxHeight * 0.25,
                         width: double.infinity,

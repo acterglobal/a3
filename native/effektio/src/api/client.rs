@@ -13,16 +13,7 @@ use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    event_handler::Ctx,
-    locks::RwLock as MatrixRwLock,
-    room::Room as MatrixRoom,
-    ruma::{
-        device_id,
-        events::{
-            receipt::ReceiptEventContent, typing::TypingEventContent, SyncEphemeralRoomEvent,
-        },
-        OwnedUserId, RoomId,
-    },
+    ruma::{device_id, OwnedUserId, RoomId},
     Client as MatrixClient, LoopCtrl,
 };
 use parking_lot::{Mutex, RwLock};
@@ -74,7 +65,7 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn devide_groups_from_common(
+pub(crate) async fn divide_groups_from_common(
     client: MatrixClient,
 ) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
@@ -130,8 +121,8 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        let verification_controller = self.verification_controller.clone();
-        let device_controller = self.device_controller.clone();
+        let mut verification_controller = self.verification_controller.clone();
+        let mut device_controller = self.device_controller.clone();
         self.typing_controller.setup(&client);
         self.receipt_controller.setup(&client);
         let conversation_controller = self.conversation_controller.clone();
@@ -145,8 +136,8 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
-            let verification_controller = verification_controller.clone();
-            let device_controller = device_controller.clone();
+            let mut verification_controller = verification_controller.clone();
+            let mut device_controller = device_controller.clone();
             conversation_controller.setup(&client).await;
 
             client
@@ -154,8 +145,8 @@ impl Client {
                 .sync_with_callback(SyncSettings::new(), move |response| {
                     let client = client.clone();
                     let state = state.clone();
-                    let verification_controller = verification_controller.clone();
-                    let device_controller = device_controller.clone();
+                    let mut verification_controller = verification_controller.clone();
+                    let mut device_controller = device_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -223,7 +214,7 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let (_, conversations) = devide_groups_from_common(c).await;
+                let (_, conversations) = divide_groups_from_common(c).await;
                 Ok(conversations)
             })
             .await?
@@ -238,37 +229,31 @@ impl Client {
     //     let l = self.client.clone();
     //     RUNTIME.spawn(async move {
     //         let user_id = l.user_id().await.expect("No User ID found");
-    //         Ok(user_id.as_str().to_string())
+    //         Ok(user_id.to_string())
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<OwnedUserId> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = l.user_id().context("No User ID found")?.to_owned();
-                Ok(user_id)
-            })
-            .await?
+    pub fn user_id(&self) -> Result<OwnedUserId> {
+        let user_id = self
+            .client
+            .user_id()
+            .context("No User ID found")?
+            .to_owned();
+        Ok(user_id)
     }
 
-    pub async fn room(&self, room_name: String) -> Result<Room> {
+    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                if let Some(room) = l.get_room(&room_id) {
-                    return Ok(Room {
-                        room,
-                        client: l.clone(),
-                    });
-                }
-                bail!("Room not found")
-            })
-            .await?
+        if let Some(room) = self.client.get_room(&room_id) {
+            return Ok(Room {
+                room,
+                client: self.client.clone(),
+            });
+        }
+        bail!("Room not found")
     }
 
-    pub async fn account(&self) -> Result<Account> {
+    pub fn account(&self) -> Result<Account> {
         Ok(Account::new(self.client.account()))
     }
 
@@ -281,23 +266,18 @@ impl Client {
                     .get_display_name()
                     .await?
                     .context("No User ID found")?;
-                Ok(display_name.as_str().to_string())
+                Ok(display_name)
             })
             .await?
     }
 
-    pub async fn device_id(&self) -> Result<String> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let device_id = l.device_id().context("No Device ID found")?;
-                Ok(device_id.as_str().to_string())
-            })
-            .await?
+    pub fn device_id(&self) -> Result<String> {
+        let device_id = self.client.device_id().context("No Device ID found")?;
+        Ok(device_id.to_string())
     }
 
     pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
-        self.account().await?.avatar().await
+        self.account()?.avatar().await
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

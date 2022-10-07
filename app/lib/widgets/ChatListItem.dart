@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers
-
 import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -18,18 +16,18 @@ import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
   final Conversation room;
-  final String user;
-  final Client client;
+  final String userId;
   final LatestMessage? latestMessage;
   final List<types.User> typingUsers;
+  final Client client;
 
   const ChatListItem({
     Key? key,
     required this.room,
-    required this.user,
-    required this.client,
+    required this.userId,
     this.latestMessage,
     required this.typingUsers,
+    required this.client,
   }) : super(key: key);
 
   @override
@@ -62,7 +60,7 @@ class _ChatListItemState extends State<ChatListItem> {
                   builder: (ChatListController controller) {
                     return ChatScreen(
                       room: widget.room,
-                      user: widget.user,
+                      user: widget.userId,
                       client: widget.client,
                       typingUsers: widget.typingUsers,
                     );
@@ -97,9 +95,9 @@ class _ChatListItemState extends State<ChatListItem> {
           subtitle: buildSubtitle(context),
           trailing: buildTrailing(context),
         ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: const Divider(
+        const Padding(
+          padding: EdgeInsets.only(bottom: 5),
+          child: Divider(
             indent: 75,
             endIndent: 10,
             color: AppCommonTheme.dividerColor,
@@ -114,7 +112,7 @@ class _ChatListItemState extends State<ChatListItem> {
       return const SizedBox();
     }
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10),
       child: chatListController.typingUsers.isEmpty
           ? ParsedText(
               text:

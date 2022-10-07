@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
 @immutable
@@ -8,10 +7,7 @@ class EffektioChatTheme extends ChatTheme {
     Widget? attachmentButtonIcon,
     EdgeInsets? attachmentButtonMargin,
     Color backgroundColor = const Color.fromRGBO(36, 38, 50, 0),
-    EdgeInsets dateDividerMargin = const EdgeInsets.only(
-      bottom: 32,
-      top: 16,
-    ),
+    EdgeInsets dateDividerMargin = const EdgeInsets.only(bottom: 32, top: 16),
     TextStyle dateDividerTextStyle = const TextStyle(
       color: Colors.white,
       fontSize: 12,

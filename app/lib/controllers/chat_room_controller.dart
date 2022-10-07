@@ -1,5 +1,3 @@
-// ignore_for_file: always_declare_return_types
-
 import 'dart:async';
 import 'dart:io';
 
@@ -7,6 +5,7 @@ import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
+        Client,
         Conversation,
         FileDescription,
         ImageDescription,
@@ -37,6 +36,7 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
+  StreamSubscription<RoomMessage>? _messageSubscription;
 
   //get the timeline of room
   Future<void> init(Conversation convoRoom, types.User convoUser) async {
@@ -56,6 +56,14 @@ class ChatRoomController extends GetxController {
       loadMessage(message);
     }
     isLoading.value = false;
+  }
+
+  @override
+  void onClose() {
+    textEditingController.dispose();
+    focusNode.removeListener(() {});
+    _messageSubscription?.cancel();
+    super.onClose();
   }
 
   //preview message link
@@ -355,24 +363,5 @@ class ChatRoomController extends GetxController {
   void sendButtonUpdate() {
     isSendButtonVisible = textEditingController.text.trim().isNotEmpty;
     update();
-  }
-
-  // void updateTypingList(List<String> userIds) {
-  //   typingUsers.clear();
-  //   for (var id in userIds) {
-  //     types.User typingUser = types.User(
-  //       id: id,
-  //       firstName: getNameFromId(id),
-  //     );
-  //     typingUsers.add(typingUser);
-  //   }
-  //   update(['Chat']);
-  // }
-
-  @override
-  void onClose() {
-    super.onClose();
-    textEditingController.dispose();
-    focusNode.removeListener(() {});
   }
 }

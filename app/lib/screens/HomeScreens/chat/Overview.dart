@@ -1,11 +1,10 @@
-// ignore_for_file: prefer_const_constructors, avoid_unnecessary_containers, sized_box_for_whitespace, prefer_final_fields, prefer_typing_uninitialized_variables
-
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -27,8 +26,7 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late final String user;
-  late final countInvites;
+  late int countInvites;
   String userId = '';
   Random random = Random();
 
@@ -38,26 +36,29 @@ class _ChatOverviewState extends State<ChatOverview> {
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-
     Get.put(ChatListController(client: widget.client));
   }
 
-  Future<void> _fetchUserId() async {
-    var uid = await widget.client.userId();
-    setState(() => userId = uid.toString());
+  void _fetchUserId() =>
+      setState(() => userId = widget.client.userId().toString());
+
+  @override
+  void dispose() {
+    Get.delete<ChatListController>();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
-        physics: BouncingScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
             leading: TextButton(
               onPressed: () {},
               child: Container(
-                margin: EdgeInsets.only(right: 15),
+                margin: const EdgeInsets.only(right: 15),
                 child: Text(
                   AppLocalizations.of(context)!.select,
                   style:
@@ -69,7 +70,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             actions: [
               IconButton(
                 onPressed: () {},
-                padding: EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.only(right: 10),
                 icon: SvgPicture.asset(
                   'assets/images/edit.svg',
                   color: AppCommonTheme.svgIconColor,
@@ -80,43 +81,41 @@ class _ChatOverviewState extends State<ChatOverview> {
             ],
           ),
           SliverToBoxAdapter(
-            child: Container(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.only(left: 18),
-                    child: Text(
-                      AppLocalizations.of(context)!.chat,
-                      style: AppCommonTheme.appBarTitleStyle,
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  margin: const EdgeInsets.only(left: 18),
+                  child: Text(
+                    AppLocalizations.of(context)!.chat,
+                    style: AppCommonTheme.appBarTitleStyle,
                   ),
-                  SizedBox(height: 10),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        alignment: Alignment.topLeft,
-                        padding: EdgeInsets.only(left: 18),
-                        child: Text(
-                          AppLocalizations.of(context)!.invites,
-                          style: AppCommonTheme.appBarTitleStyle
-                              .copyWith(fontSize: 16),
-                        ),
+                ),
+                const SizedBox(height: 10),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      alignment: Alignment.topLeft,
+                      padding: const EdgeInsets.only(left: 18),
+                      child: Text(
+                        AppLocalizations.of(context)!.invites,
+                        style: AppCommonTheme.appBarTitleStyle
+                            .copyWith(fontSize: 16),
                       ),
-                      SizedBox(height: 10),
-                      widget.client.isGuest()
-                          ? const SizedBox()
-                          : GetBuilder<ChatListController>(
-                              id: 'chatlist',
-                              builder: (ChatListController controller) {
-                                return buildJoinedList(context, controller);
-                              },
-                            ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    const SizedBox(height: 10),
+                    widget.client.isGuest()
+                        ? const SizedBox()
+                        : GetBuilder<ChatListController>(
+                            id: 'chatlist',
+                            builder: (ChatListController controller) {
+                              return buildJoinedList(context, controller);
+                            },
+                          ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
@@ -125,12 +124,10 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget buildInvitedItem(BuildContext context, int index) {
-    return Container(
-      child: InviteInfoWidget(
-        avatarColor: Colors.white,
-        inviter: inviters[random.nextInt(inviters.length)],
-        groupName: groups[random.nextInt(groups.length)],
-      ),
+    return InviteInfoWidget(
+      avatarColor: Colors.white,
+      inviter: inviters[random.nextInt(inviters.length)],
+      groupName: groups[random.nextInt(groups.length)],
     );
   }
 
@@ -138,7 +135,7 @@ class _ChatOverviewState extends State<ChatOverview> {
     if (controller.initialLoaded) {
       return ImplicitlyAnimatedReorderableList<RoomItem>(
         header: ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: countInvites,
           itemBuilder: buildInvitedItem,
@@ -170,7 +167,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                     return ChatListItem(
                       key: Key(item.conversation.getRoomId()),
                       room: item.conversation,
-                      user: userId,
+                      userId: userId,
                       latestMessage: item.latestMessage,
                       client: widget.client,
                       typingUsers: controller.typingUsers,
@@ -192,7 +189,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   return ChatListItem(
                     key: Key(item.conversation.getRoomId()),
                     room: item.conversation,
-                    user: user,
+                    userId: userId,
                     latestMessage: item.latestMessage,
                     client: widget.client,
                     typingUsers: controller.typingUsers,
@@ -223,7 +220,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                     return ChatListItem(
                       key: Key(item.conversation.getRoomId()),
                       room: item.conversation,
-                      user: user,
+                      userId: userId,
                       latestMessage: item.latestMessage,
                       client: widget.client,
                       typingUsers: controller.typingUsers,

@@ -7,19 +7,10 @@ import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-// ignore: must_be_immutable
 class CustomChatInput extends StatelessWidget {
-  CustomChatInput({
-    Key? key,
-    required this.context,
-    required this.isChatScreen,
-    this.onButtonPressed,
-    required this.roomName,
-  }) : super(key: key);
-  final BuildContext context;
   final Function()? onButtonPressed;
-  final controller = Get.put(ChatRoomController());
-  bool isChatScreen = true;
+  final ChatRoomController controller = Get.find<ChatRoomController>();
+  final bool isChatScreen;
   final String roomName;
   static const List<List<String>> attachmentNameList = [
     ['camera', 'Camera'],
@@ -27,6 +18,13 @@ class CustomChatInput extends StatelessWidget {
     ['document', 'File'],
     ['location', 'Location'],
   ];
+
+  CustomChatInput({
+    Key? key,
+    required this.isChatScreen,
+    this.onButtonPressed,
+    required this.roomName,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +80,6 @@ class CustomChatInput extends StatelessWidget {
                           child: TextField(
                             onChanged: ((value) async {
                               controller.sendButtonUpdate();
-                              await controller.room.typingNotice(true);
                             }),
                             maxLines: MediaQuery.of(context).orientation ==
                                     Orientation.portrait
@@ -159,14 +156,8 @@ class CustomChatInput extends StatelessWidget {
             );
           },
         ),
-        EmojiPickerWidget(
-          controller: controller,
-          context: context,
-          size: _size,
-        ),
+        EmojiPickerWidget(size: _size),
         AttachmentWidget(
-          controller: controller,
-          context: context,
           attachmentNameList: attachmentNameList,
           roomName: roomName,
           size: _size,
@@ -177,20 +168,17 @@ class CustomChatInput extends StatelessWidget {
 }
 
 class AttachmentWidget extends StatelessWidget {
-  const AttachmentWidget({
+  final ChatRoomController controller = Get.find<ChatRoomController>();
+  final List<List<String>> attachmentNameList;
+  final String roomName;
+  final Size size;
+
+  AttachmentWidget({
     Key? key,
-    required this.controller,
-    required this.context,
     required this.attachmentNameList,
     required this.roomName,
     required this.size,
   }) : super(key: key);
-
-  final ChatRoomController controller;
-  final BuildContext context;
-  final List<List<String>> attachmentNameList;
-  final String roomName;
-  final Size size;
 
   @override
   Widget build(BuildContext context) {
@@ -298,15 +286,9 @@ class AttachmentWidget extends StatelessWidget {
 }
 
 class EmojiPickerWidget extends StatelessWidget {
-  const EmojiPickerWidget({
-    Key? key,
-    required this.controller,
-    required this.context,
-    required this.size,
-  }) : super(key: key);
+  EmojiPickerWidget({Key? key, required this.size}) : super(key: key);
 
-  final ChatRoomController controller;
-  final BuildContext context;
+  final ChatRoomController controller = Get.find<ChatRoomController>();
   final Size size;
 
   @override

@@ -1,17 +1,20 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/screens/HomeScreens/faq/Item.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:flutter/material.dart';
+import 'package:effektio/widgets/TagItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Faq;
-import 'package:effektio/screens/HomeScreens/faq/Item.dart';
-
-import 'package:effektio/widgets/TagItem.dart';
+import 'package:flutter/material.dart';
 
 class FaqListItem extends StatelessWidget {
-  const FaqListItem({Key? key, required this.client, required this.faq})
-      : super(key: key);
   final Client client;
   final Faq faq;
+
+  const FaqListItem({
+    Key? key,
+    required this.client,
+    required this.faq,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +35,10 @@ class FaqListItem extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 child: Row(
                   children: [
                     Flexible(
@@ -47,9 +52,7 @@ class FaqListItem extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () => {
-                          const SnackBar(
-                            content: Text('Bookmark Icon tapped'),
-                          )
+                          const SnackBar(content: Text('Bookmark Icon tapped'))
                         },
                         child: Image.asset(
                           'assets/images/bookmark.png',
@@ -61,7 +64,7 @@ class FaqListItem extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 12, bottom: 12),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -72,18 +75,14 @@ class FaqListItem extends StatelessWidget {
                       margin: const EdgeInsets.only(left: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: FAQTheme.supportColor,
-                        ),
+                        border: Border.all(color: FAQTheme.supportColor),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset(
-                            'assets/images/asakerImage.png',
-                          ),
+                          Image.asset('assets/images/asakerImage.png'),
                           const Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
+                            padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text(
                               'Support',
                               style: FAQTheme.teamNameStyle,
@@ -100,17 +99,14 @@ class FaqListItem extends StatelessWidget {
                         child: Row(
                           children: [
                             GestureDetector(
-                              // ignore: avoid_print
-                              onTap: () => {print('Heart icon tapped')},
+                              onTap: () => debugPrint('Heart icon tapped'),
                               child: Image.asset(
                                 'assets/images/heart_like.png',
                                 color: AppCommonTheme.svgIconColor,
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(
-                                left: 8,
-                              ),
+                              padding: const EdgeInsets.only(left: 8),
                               child: Text(
                                 faq.likesCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
@@ -119,11 +115,8 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: GestureDetector(
-                                // ignore: avoid_print
-                                onTap: () => {print('Comment icon tapped')},
-                                child: Image.asset(
-                                  'assets/images/comment.png',
-                                ),
+                                onTap: () => debugPrint('Comment icon tapped'),
+                                child: Image.asset('assets/images/comment.png'),
                               ),
                             ),
                             Padding(
@@ -141,7 +134,7 @@ class FaqListItem extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
                   height: 40,
                   child: ListView.builder(

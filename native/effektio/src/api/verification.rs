@@ -7,10 +7,7 @@ use log::{info, warn};
 use matrix_sdk::{
     config::SyncSettings,
     deserialized_responses::Rooms,
-    encryption::{
-        identities::UserIdentity,
-        verification::{SasVerification, Verification, VerificationRequest},
-    },
+    encryption::verification::{Verification, VerificationRequest},
     ruma::{
         api::client::sync::sync_events::v3::ToDevice,
         events::{
@@ -25,7 +22,7 @@ use matrix_sdk::{
 use parking_lot::Mutex;
 use std::sync::Arc;
 
-use super::{Client, RUNTIME};
+use super::{client::Client, RUNTIME};
 
 #[derive(Clone, Debug)]
 pub struct VerificationEvent {
@@ -366,8 +363,7 @@ impl VerificationController {
         }
     }
 
-    fn handle_sync_messages(&self, client: &MatrixClient, evt: &AnySyncMessageLikeEvent) {
-        let mut event_tx = self.event_tx.clone();
+    fn handle_sync_messages(&mut self, client: &MatrixClient, evt: &AnySyncMessageLikeEvent) {
         match evt {
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)) => {
                 if let MessageType::VerificationRequest(_) = &ev.content.msgtype {
@@ -383,7 +379,7 @@ impl VerificationController {
                         None,
                         None,
                     );
-                    if let Err(e) = event_tx.try_send(msg) {
+                    if let Err(e) = self.event_tx.try_send(msg) {
                         warn!("Dropping event for {}: {}", flow_id, e);
                     }
                 }
@@ -401,7 +397,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -418,7 +414,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -435,7 +431,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -452,7 +448,7 @@ impl VerificationController {
                     Some(ev.content.code.clone()),
                     Some(ev.content.reason.clone()),
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -469,7 +465,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -486,7 +482,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -503,7 +499,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping event for {}: {}", flow_id, e);
                 }
             }
@@ -511,7 +507,7 @@ impl VerificationController {
         }
     }
 
-    pub fn process_sync_messages(&self, client: &MatrixClient, rooms: &Rooms) {
+    pub fn process_sync_messages(&mut self, client: &MatrixClient, rooms: &Rooms) {
         for (room_id, room_info) in rooms.join.iter() {
             for event in room_info
                 .timeline
@@ -526,8 +522,7 @@ impl VerificationController {
         }
     }
 
-    fn handle_to_device_messages(&self, client: &MatrixClient, evt: &AnyToDeviceEvent) {
-        let mut event_tx = self.event_tx.clone();
+    fn handle_to_device_messages(&mut self, client: &MatrixClient, evt: &AnyToDeviceEvent) {
         match evt {
             AnyToDeviceEvent::KeyVerificationRequest(ref ev) => {
                 let dev_id = client
@@ -545,7 +540,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -562,7 +557,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -579,7 +574,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -596,7 +591,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -613,7 +608,7 @@ impl VerificationController {
                     Some(ev.content.code.clone()),
                     Some(ev.content.reason.clone()),
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -630,7 +625,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -647,7 +642,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -664,7 +659,7 @@ impl VerificationController {
                     None,
                     None,
                 );
-                if let Err(e) = event_tx.try_send(msg) {
+                if let Err(e) = self.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
             }
@@ -672,7 +667,7 @@ impl VerificationController {
         }
     }
 
-    pub fn process_to_device_messages(&self, client: &MatrixClient, to_device: ToDevice) {
+    pub fn process_to_device_messages(&mut self, client: &MatrixClient, to_device: ToDevice) {
         for evt in to_device
             .events
             .into_iter()

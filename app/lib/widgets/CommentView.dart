@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, require_trailing_commas
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/ReplyView.dart';
 import 'package:flutter/material.dart';
@@ -7,12 +5,12 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CommentView extends StatefulWidget {
-  const CommentView(
-      {Key? key,
-      required this.name,
-      required this.titleColor,
-      required this.comment})
-      : super(key: key);
+  const CommentView({
+    Key? key,
+    required this.name,
+    required this.titleColor,
+    required this.comment,
+  }) : super(key: key);
 
   final String name;
   final Color titleColor;
@@ -34,7 +32,7 @@ class CommentViewState extends State<CommentView> {
       children: [
         Slidable(
           endActionPane: ActionPane(
-            motion: ScrollMotion(),
+            motion: const ScrollMotion(),
             children: [
               SlidableAction(
                 onPressed: (BuildContext context) {},
@@ -53,9 +51,7 @@ class CommentViewState extends State<CommentView> {
           child: Flex(
             direction: Axis.horizontal,
             children: [
-              const CircleAvatar(
-                backgroundColor: Colors.white,
-              ),
+              const CircleAvatar(backgroundColor: Colors.white),
               Expanded(
                 // fit: FlexFit.loose,
                 child: Padding(
@@ -65,13 +61,17 @@ class CommentViewState extends State<CommentView> {
                     children: [
                       Text(
                         widget.name,
-                        style:
-                            TextStyle(color: widget.titleColor, fontSize: 16),
+                        style: TextStyle(
+                          color: widget.titleColor,
+                          fontSize: 16,
+                        ),
                       ),
                       Text(
                         widget.comment,
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 16),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 12.0),
@@ -79,8 +79,10 @@ class CommentViewState extends State<CommentView> {
                           children: const [
                             Text(
                               '2h',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 14),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 8.0),
@@ -124,16 +126,13 @@ class CommentViewState extends State<CommentView> {
                           likeCount = likeCount - 1;
                         });
                       },
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                      ),
+                      child: const Icon(Icons.favorite, color: Colors.red),
                     ),
                   Padding(
-                    padding: EdgeInsets.only(top: 8.0),
+                    padding: const EdgeInsets.only(top: 8),
                     child: Text(
                       likeCount.toString(),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   )
                 ],
@@ -151,7 +150,7 @@ class CommentViewState extends State<CommentView> {
             padding: const EdgeInsets.fromLTRB(52.0, 12.0, 0.0, 8.0),
             child: Text(
               replyView ? 'Hide replies' : 'View replies',
-              style: TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
         ),
@@ -163,7 +162,7 @@ class CommentViewState extends State<CommentView> {
               itemCount: 5,
               shrinkWrap: true,
               itemBuilder: (context, index) {
-                return Padding(
+                return const Padding(
                   padding: EdgeInsets.all(12),
                   child: ReplyView(
                     name: 'Abhishek',

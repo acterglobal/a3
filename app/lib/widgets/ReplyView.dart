@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ReplyView extends StatefulWidget {
+  final String name;
+  final Color titleColor;
+  final String reply;
+
   const ReplyView({
     Key? key,
     required this.name,
@@ -9,9 +13,6 @@ class ReplyView extends StatefulWidget {
     required this.reply,
   }) : super(key: key);
 
-  final String name;
-  final Color titleColor;
-  final String reply;
   @override
   ReplyViewState createState() => ReplyViewState();
 }
@@ -27,9 +28,7 @@ class ReplyViewState extends State<ReplyView> {
       child: Flex(
         direction: Axis.horizontal,
         children: [
-          const CircleAvatar(
-            backgroundColor: Colors.white,
-          ),
+          const CircleAvatar(backgroundColor: Colors.white),
           Flexible(
             fit: FlexFit.loose,
             child: Padding(
@@ -67,38 +66,31 @@ class ReplyViewState extends State<ReplyView> {
               ),
             ),
           ),
-          Column(
-            children: [
-              if (liked == false)
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      liked = true;
-                      likeCount = likeCount + 1;
-                    });
-                  },
-                  child: SvgPicture.asset(
-                    'assets/images/heart.svg',
-                    color: Colors.white,
-                    width: 24,
-                    height: 24,
-                  ),
-                )
-              else
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      liked = false;
-                      likeCount = likeCount - 1;
-                    });
-                  },
-                  child: const Icon(
-                    Icons.favorite,
-                    color: Colors.red,
-                  ),
-                ),
-            ],
-          ),
+          if (liked == false)
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  liked = true;
+                  likeCount = likeCount + 1;
+                });
+              },
+              child: SvgPicture.asset(
+                'assets/images/heart.svg',
+                color: Colors.white,
+                width: 24,
+                height: 24,
+              ),
+            )
+          else
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  liked = false;
+                  likeCount = likeCount - 1;
+                });
+              },
+              child: const Icon(Icons.favorite, color: Colors.red),
+            ),
         ],
       ),
     );

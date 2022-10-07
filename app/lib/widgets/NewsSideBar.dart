@@ -1,27 +1,26 @@
-// ignore_for_file: prefer_const_constructors, always_declare_return_types
-
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/CommentView.dart';
 import 'package:effektio/widgets/LikeButton.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class NewsSideBar extends StatefulWidget {
+  final ffi.Client client;
+  final ffi.News news;
+  final int index;
+
   const NewsSideBar({
     Key? key,
     required this.client,
     required this.news,
     required this.index,
   }) : super(key: key);
-  final ffi.Client client;
-  final ffi.News news;
-  final int index;
 
   @override
   _NewsSideBarState createState() => _NewsSideBarState();
@@ -32,7 +31,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
   bool emojiShowing = false;
   bool isKeyBoardOpen = false;
 
-  _onEmojiSelected(Emoji emoji) {
+  void _onEmojiSelected(Emoji emoji) {
     commentController
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
@@ -40,7 +39,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       );
   }
 
-  _onBackspacePressed() {
+  void _onBackspacePressed() {
     commentController
       ..text = commentController.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
@@ -78,13 +77,16 @@ class _NewsSideBarState extends State<NewsSideBar> {
     Colors.pink
   ];
 
-  TextEditingController commentcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    var bgColor =
-        convertColor(widget.news.bgColor(), AppCommonTheme.backgroundColor);
-    var fgColor =
-        convertColor(widget.news.fgColor(), AppCommonTheme.primaryColor);
+    var bgColor = convertColor(
+      widget.news.bgColor(),
+      AppCommonTheme.backgroundColor,
+    );
+    var fgColor = convertColor(
+      widget.news.fgColor(),
+      AppCommonTheme.primaryColor,
+    );
 
     TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
       fontSize: 13,
@@ -117,7 +119,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
     );
   }
 
-  _profileImageButton(Color color) {
+  Widget _profileImageButton(Color color) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Stack(
@@ -138,20 +140,27 @@ class _NewsSideBarState extends State<NewsSideBar> {
                 image: DecorationImage(
                   image: imageProvider,
                   fit: BoxFit.cover,
-                  colorFilter:
-                      ColorFilter.mode(Colors.red, BlendMode.colorBurn),
+                  colorFilter: const ColorFilter.mode(
+                    Colors.red,
+                    BlendMode.colorBurn,
+                  ),
                 ),
               ),
             ),
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Icon(Icons.error),
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
         ],
       ),
     );
   }
 
-  _sideBarItem(String iconName, String label, Color? color, TextStyle style) {
+  Widget _sideBarItem(
+    String iconName,
+    String label,
+    Color? color,
+    TextStyle style,
+  ) {
     return GestureDetector(
       onTap: (() {
         if (iconName == 'comment') {
@@ -168,9 +177,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
               width: 35,
               height: 35,
             ),
-            const SizedBox(
-              height: 5,
-            ),
+            const SizedBox(height: 5),
             Text(label, style: style),
           ],
         ),
@@ -184,9 +191,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       backgroundColor: AppCommonTheme.backgroundColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(30),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (context) {
         return StatefulBuilder(
@@ -199,12 +204,12 @@ class _NewsSideBarState extends State<NewsSideBar> {
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Column(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12),
                         child: SizedBox(
                           height: 40,
                           child: Center(
-                            child: const Text(
+                            child: Text(
                               '101 Comments',
                               style: TextStyle(
                                 color: Colors.white,
@@ -217,7 +222,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                       ),
                       Expanded(
                         child: ListView.builder(
-                          physics: BouncingScrollPhysics(),
+                          physics: const BouncingScrollPhysics(),
                           controller: scrollController,
                           itemCount: 10,
                           itemBuilder: (context, index) {
@@ -241,7 +246,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                         child: Row(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(right: 8),
+                              padding: const EdgeInsets.only(right: 8),
                               child: _profileImageButton(Colors.black),
                             ),
                             Expanded(
@@ -294,10 +299,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(snackBar);
                               },
-                              icon: const Icon(
-                                Icons.send,
-                                color: Colors.pink,
-                              ),
+                              icon: const Icon(Icons.send, color: Colors.pink),
                             ),
                           ],
                         ),
@@ -329,9 +331,9 @@ class _NewsSideBarState extends State<NewsSideBar> {
                               enableSkinTones: true,
                               showRecentsTab: true,
                               recentsLimit: 28,
-                              noRecents: Text(
+                              noRecents: const Text(
                                 'No Recents',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.black26,
                                 ),
@@ -363,7 +365,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
           builder: (BuildContext context, StateSetter setSheetState) {
             return Container(
               width: double.infinity,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppCommonTheme.textFieldColor,
               ),
               child: Column(
@@ -373,14 +375,8 @@ class _NewsSideBarState extends State<NewsSideBar> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Text(
-                          'Spam',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Icon(
-                          Icons.keyboard_arrow_right,
-                          color: Colors.white,
-                        )
+                        Text('Spam', style: TextStyle(color: Colors.white)),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
                       ],
                     ),
                   ),
@@ -389,12 +385,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Text(
-                          'Violence',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
+                        Text('Violence', style: TextStyle(color: Colors.white)),
                         Icon(Icons.keyboard_arrow_right, color: Colors.white)
                       ],
                     ),

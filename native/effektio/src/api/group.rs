@@ -1,24 +1,23 @@
-use super::client::{devide_groups_from_common, Client};
-use super::room::Room;
-use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
     ruma::{
-        api::client::{
-            account::register::v3::Request as RegistrationRequest,
-            room::{
-                create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
-                Visibility,
-            },
-            uiaa,
+        api::client::room::{
+            create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
+            Visibility,
         },
         assign,
         room::RoomType,
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
     },
-    statics::{default_effektio_group_states, initial_state_for_alias},
+    statics::default_effektio_group_states,
+};
+
+use super::{
+    client::{divide_groups_from_common, Client},
+    room::Room,
+    RUNTIME,
 };
 
 pub struct Group {
@@ -82,7 +81,7 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = devide_groups_from_common(c).await;
+                let (groups, _) = divide_groups_from_common(c).await;
                 Ok(groups)
             })
             .await?

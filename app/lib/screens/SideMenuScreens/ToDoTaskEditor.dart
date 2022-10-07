@@ -1,9 +1,9 @@
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDoTaskAssign.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -323,8 +323,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: TextButton(
                       onPressed: () {},
                       child: Text(
@@ -345,8 +344,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                 Expanded(
                   flex: 2,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 10, right: 10, top: 10),
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(

@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors, avoid_print
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
@@ -98,7 +96,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     }
                     setState(() {
                       result = txt;
-                      print(result);
+                      debugPrint(result);
                     });
                   },
                   child: const Text('Save'),
@@ -107,78 +105,73 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
             ],
           ),
           body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                HtmlEditor(
-                  controller: controller,
-                  htmlEditorOptions: const HtmlEditorOptions(
-                    hint: 'Write about the FAQ',
-                    shouldEnsureVisible: true,
-                  ),
-                  htmlToolbarOptions: HtmlToolbarOptions(
-                    toolbarPosition: ToolbarPosition.belowEditor,
-                    toolbarType: ToolbarType.nativeScrollable,
-                    onButtonPressed: (
-                      ButtonType type,
-                      bool? status,
-                      Function? updateStatus,
-                    ) {
-                      return true;
-                    },
-                    onDropdownChanged: (
-                      DropdownType type,
-                      dynamic changed,
-                      Function(dynamic)? updateSelectedItem,
-                    ) {
-                      return true;
-                    },
-                    mediaUploadInterceptor:
-                        (PlatformFile file, InsertFileType type) async {
-                      return true;
-                    },
-                  ),
-                  otherOptions: OtherOptions(
-                    height: MediaQuery.of(context).size.height - 115,
-                  ),
-                  callbacks: Callbacks(
-                    onBeforeCommand: (String? currentHtml) {},
-                    onChangeContent: (String? changed) {},
-                    onChangeCodeview: (String? changed) {},
-                    onChangeSelection: (EditorSettings settings) {},
-                    onDialogShown: () {},
-                    onEnter: () {},
-                    onFocus: () {},
-                    onBlur: () {},
-                    onBlurCodeview: () {},
-                    onInit: () {},
-                    onImageUploadError: (
-                      FileUpload? file,
-                      String? base64Str,
-                      UploadError error,
-                    ) {},
-                    onKeyDown: (int? keyCode) {},
-                    onKeyUp: (int? keyCode) {},
-                    onMouseDown: () {},
-                    onMouseUp: () {},
-                    onNavigationRequestMobile: (String url) {
-                      return NavigationActionPolicy.ALLOW;
-                    },
-                    onPaste: () {},
-                    onScroll: () {},
-                  ),
-                  plugins: [
-                    SummernoteAtMention(
-                      getSuggestionsMobile: (String value) {
-                        var mentions = <String>['test1', 'test2', 'test3'];
-                        return mentions
-                            .where((element) => element.contains(value))
-                            .toList();
-                      },
-                      mentionsWeb: ['test1', 'test2', 'test3'],
-                      onSelect: (String value) {},
-                    )
-                  ],
+            child: HtmlEditor(
+              controller: controller,
+              htmlEditorOptions: const HtmlEditorOptions(
+                hint: 'Write about the FAQ',
+                shouldEnsureVisible: true,
+              ),
+              htmlToolbarOptions: HtmlToolbarOptions(
+                toolbarPosition: ToolbarPosition.belowEditor,
+                toolbarType: ToolbarType.nativeScrollable,
+                onButtonPressed: (
+                  ButtonType type,
+                  bool? status,
+                  Function? updateStatus,
+                ) {
+                  return true;
+                },
+                onDropdownChanged: (
+                  DropdownType type,
+                  dynamic changed,
+                  Function(dynamic)? updateSelectedItem,
+                ) {
+                  return true;
+                },
+                mediaUploadInterceptor:
+                    (PlatformFile file, InsertFileType type) async {
+                  return true;
+                },
+              ),
+              otherOptions: OtherOptions(
+                height: MediaQuery.of(context).size.height - 115,
+              ),
+              callbacks: Callbacks(
+                onBeforeCommand: (String? currentHtml) {},
+                onChangeContent: (String? changed) {},
+                onChangeCodeview: (String? changed) {},
+                onChangeSelection: (EditorSettings settings) {},
+                onDialogShown: () {},
+                onEnter: () {},
+                onFocus: () {},
+                onBlur: () {},
+                onBlurCodeview: () {},
+                onInit: () {},
+                onImageUploadError: (
+                  FileUpload? file,
+                  String? base64Str,
+                  UploadError error,
+                ) {},
+                onKeyDown: (int? keyCode) {},
+                onKeyUp: (int? keyCode) {},
+                onMouseDown: () {},
+                onMouseUp: () {},
+                onNavigationRequestMobile: (String url) {
+                  return NavigationActionPolicy.ALLOW;
+                },
+                onPaste: () {},
+                onScroll: () {},
+              ),
+              plugins: [
+                SummernoteAtMention(
+                  getSuggestionsMobile: (String value) {
+                    var mentions = <String>['test1', 'test2', 'test3'];
+                    return mentions
+                        .where((element) => element.contains(value))
+                        .toList();
+                  },
+                  mentionsWeb: ['test1', 'test2', 'test3'],
+                  onSelect: (String value) {},
                 )
               ],
             ),
@@ -288,7 +281,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 12, right: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
@@ -322,7 +315,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                                 visible: selectedIndexList.contains(index)
                                     ? true
                                     : false,
-                                child: Icon(
+                                child: const Icon(
                                   Icons.done,
                                   color: Colors.white,
                                 ),
@@ -342,29 +335,28 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                     child: ElevatedButton(
                       onPressed: () => {
                         setState(() {
-                          print(indexing);
-                          print(_tagColorList.length);
-                          print(tagColor);
+                          debugPrint(indexing.toString());
+                          debugPrint(_tagColorList.length.toString());
+                          debugPrint(tagColor.toString());
                           if (tagTitleController.text.isNotEmpty) {
                             _tagList.add(tagTitleController.text.toString());
                             _tagColorList.add(
                               tagColor == null ? Colors.white : tagColor!,
                             );
-                            print(_tagColorList.length);
+                            debugPrint(_tagColorList.length.toString());
                             Navigator.of(context).pop();
                             tagTitleController.clear();
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 behavior: SnackBarBehavior.floating,
                                 margin: EdgeInsets.only(bottom: 420),
                                 backgroundColor: Colors.black87,
-                                duration: const Duration(seconds: 2),
-                                // ignore: sized_box_for_whitespace
-                                content: Container(
+                                duration: Duration(seconds: 2),
+                                content: SizedBox(
                                   height: 20,
                                   child: Center(
-                                    child: const Text(
+                                    child: Text(
                                       'Please fill the title of Tag',
                                       style: TextStyle(
                                         color: Colors.white,
