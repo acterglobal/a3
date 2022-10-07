@@ -32,9 +32,14 @@ class ChatScreen extends StatefulWidget {
   final Conversation room;
   final String? user;
   final Client client;
-  const ChatScreen(
-      {Key? key, required this.room, required this.user, required this.client})
-      : super(key: key);
+  final List<types.User> typingUsers;
+  const ChatScreen({
+    Key? key,
+    required this.room,
+    required this.user,
+    required this.client,
+    required this.typingUsers,
+  }) : super(key: key);
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -53,26 +58,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     _user = types.User(id: widget.user!);
 
-    //roomState is true in case of invited and false if already joined
-    //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
     roomState = random.nextBool();
-    widget.client.typingEventRx()!.listen((event) {
-      String roomId = event.roomId();
-      if (widget.room.getRoomId() == roomId) {
-        List<String> userIds = [];
-        if (event.userIds().isEmpty) {
-          chatRoomController.typingUsers.clear();
-        } else {
-          for (final userId in event.userIds()) {
-            userIds.add(userId.toDartString());
-          }
-        }
-
-        //store the typing users.
-        chatRoomController.updateTypingList(userIds);
-        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-      }
-    });
     chatRoomController.init(widget.room, _user);
     chatListController.setCurrentRoomId(widget.room.getRoomId());
   }
@@ -367,7 +353,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     : SendButtonVisibilityMode.editing,
               ),
               typingIndicatorOptions: TypingIndicatorOptions(
-                typingUsers: controller.typingUsers,
+                typingUsers: chatListController.typingUsers,
                 typingMode: TypingIndicatorMode.text,
               ),
               onSendPressed: (_) {},

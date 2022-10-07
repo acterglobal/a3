@@ -25,7 +25,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
   List<types.Message> messages = [];
-  List<types.User> typingUsers = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
@@ -358,17 +357,17 @@ class ChatRoomController extends GetxController {
     update();
   }
 
-  void updateTypingList(List<String> userIds) {
-    typingUsers.clear();
-    for (var id in userIds) {
-      types.User typingUser = types.User(
-        id: id,
-        firstName: getNameFromId(id),
-      );
-      typingUsers.add(typingUser);
-    }
-    update(['Chat']);
-  }
+  // void updateTypingList(List<String> userIds) {
+  //   typingUsers.clear();
+  //   for (var id in userIds) {
+  //     types.User typingUser = types.User(
+  //       id: id,
+  //       firstName: getNameFromId(id),
+  //     );
+  //     typingUsers.add(typingUser);
+  //   }
+  //   update(['Chat']);
+  // }
 
   @override
   void onClose() {

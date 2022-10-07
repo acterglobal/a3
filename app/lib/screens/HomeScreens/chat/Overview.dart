@@ -34,10 +34,11 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   @override
   void initState() {
+    _fetchUserId();
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    _fetchUserId();
+
     Get.put(ChatListController(client: widget.client));
   }
 
@@ -163,11 +164,18 @@ class _ChatOverviewState extends State<ChatOverview> {
                 color: color,
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
-                child: ChatListItem(
-                  room: item.conversation,
-                  user: userId,
-                  latestMessage: item.latestMessage,
-                  client: widget.client,
+                child: GetBuilder<ChatListController>(
+                  id: item.conversation.getRoomId(),
+                  builder: (ChatListController controller) {
+                    return ChatListItem(
+                      key: Key(item.conversation.getRoomId()),
+                      room: item.conversation,
+                      user: userId,
+                      latestMessage: item.latestMessage,
+                      client: widget.client,
+                      typingUsers: controller.typingUsers,
+                    );
+                  },
                 ),
               ),
             );
@@ -178,11 +186,18 @@ class _ChatOverviewState extends State<ChatOverview> {
           builder: (context, animation, inDrag) {
             return FadeTransition(
               opacity: animation,
-              child: ChatListItem(
-                room: item.conversation,
-                user: user,
-                latestMessage: item.latestMessage,
-                client: widget.client,
+              child: GetBuilder<ChatListController>(
+                id: item.conversation.getRoomId(),
+                builder: (ChatListController controller) {
+                  return ChatListItem(
+                    key: Key(item.conversation.getRoomId()),
+                    room: item.conversation,
+                    user: user,
+                    latestMessage: item.latestMessage,
+                    client: widget.client,
+                    typingUsers: controller.typingUsers,
+                  );
+                },
               ),
             );
           },
@@ -202,11 +217,18 @@ class _ChatOverviewState extends State<ChatOverview> {
                 color: color,
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
-                child: ChatListItem(
-                  room: item.conversation,
-                  user: user,
-                  latestMessage: item.latestMessage,
-                  client: widget.client,
+                child: GetBuilder<ChatListController>(
+                  id: item.conversation.getRoomId(),
+                  builder: (ChatListController controller) {
+                    return ChatListItem(
+                      key: Key(item.conversation.getRoomId()),
+                      room: item.conversation,
+                      user: user,
+                      latestMessage: item.latestMessage,
+                      client: widget.client,
+                      typingUsers: controller.typingUsers,
+                    );
+                  },
                 ),
               ),
             );
