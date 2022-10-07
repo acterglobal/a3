@@ -14,6 +14,7 @@ import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
+import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
@@ -343,8 +344,15 @@ class _ChatScreenState extends State<ChatScreen> {
                     : SendButtonVisibilityMode.editing,
               ),
               typingIndicatorOptions: TypingIndicatorOptions(
-                typingUsers: chatListController.typingUsers,
-                typingMode: TypingIndicatorMode.text,
+                customTypingIndicator: TypeIndicator(
+                  bubbleAlignment: BubbleRtlAlignment.right,
+                  showIndicator: chatListController.typingUsers.isNotEmpty,
+                  options: TypingIndicatorOptions(
+                    animationSpeed: const Duration(milliseconds: 800),
+                    typingUsers: chatListController.typingUsers,
+                    typingMode: TypingIndicatorMode.text,
+                  ),
+                ),
               ),
               onSendPressed: (_) {},
               user: _user,

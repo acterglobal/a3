@@ -70,6 +70,7 @@ class ChatListController extends GetxController {
           if (roomId == currentRoomId) {
             update(['typing indicator']);
             Future.delayed(const Duration(seconds: 4), () {
+              userIds.clear();
               typingUsers.clear();
               update(['typing indicator']);
             });
@@ -79,6 +80,7 @@ class ChatListController extends GetxController {
           if (currentRoomId != null) {
             update(['$currentRoomId']);
             Future.delayed(const Duration(seconds: 4), () {
+              userIds.clear();
               typingUsers.clear();
               setCurrentRoomId(null);
               update(['$currentRoomId']);
