@@ -71,6 +71,10 @@ impl ReceiptEvent {
         self.room_id.clone()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.receipt_records.is_empty()
+    }
+
     pub(crate) fn add_receipt_record(
         &mut self,
         event_id: OwnedEventId,
@@ -123,13 +127,17 @@ impl ReceiptController {
         let mut msg = ReceiptEvent::new(room_id.to_string());
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
-            for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
-                info!("user receipt: {:?}", receipt);
-                msg.add_receipt_record(event_id.clone(), user_id.clone(), receipt.ts);
+            if event_info.contains_key(&ReceiptType::Read) {
+                for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
+                    info!("user receipt: {:?}", receipt);
+                    msg.add_receipt_record(event_id.clone(), user_id.clone(), receipt.ts);
+                }
             }
         }
-        if let Err(e) = self.event_tx.try_send(msg) {
-            log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
+        if !msg.is_empty() {
+            if let Err(e) = self.event_tx.try_send(msg) {
+                log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
+            }
         }
     }
 }
