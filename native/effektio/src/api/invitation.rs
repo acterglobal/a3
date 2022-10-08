@@ -133,7 +133,10 @@ impl InvitationController {
                 sender: sender.to_string(),
             };
             let mut invitations = self.invitations.lock_mut();
-            if invitations.iter().position(|x| x.room_id == room_id.to_string() && x.sender == sender.to_string()) == None {
+            let idx = invitations
+                .iter()
+                .position(|x| x.room_id == room_id.to_string() && x.sender == sender.to_string());
+            if idx.is_none() {
                 invitations.insert(0, invitation);
             }
         }

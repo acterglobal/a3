@@ -222,7 +222,10 @@ impl ConversationController {
                     // when user accepted invitation, this event is called twice
                     // i don't know that reason
                     // anyway i prevent this event from being called twice
-                    if conversations.iter().position(|x| x.room_id() == room.room_id()) == None {
+                    let idx = conversations
+                        .iter()
+                        .position(|x| x.room_id() == room.room_id());
+                    if idx.is_none() {
                         info!("conversation - original sync room member event: {:?}", evt);
                         // add new room
                         let conversation = Conversation::new(Room {
