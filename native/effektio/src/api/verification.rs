@@ -6,10 +6,9 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     config::SyncSettings,
-    deserialized_responses::Rooms,
+    deserialized_responses::SyncResponse,
     encryption::verification::{Verification, VerificationRequest},
     ruma::{
-        api::client::sync::sync_events::v3::ToDevice,
         events::{
             key::verification::{cancel::CancelCode, VerificationMethod},
             room::message::MessageType,
@@ -363,7 +362,7 @@ impl VerificationController {
         }
     }
 
-    fn handle_sync_messages(&mut self, client: &MatrixClient, evt: &AnySyncMessageLikeEvent) {
+    fn handle_sync_event(&mut self, client: &MatrixClient, evt: &AnySyncMessageLikeEvent) {
         match evt {
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)) => {
                 if let MessageType::VerificationRequest(_) = &ev.content.msgtype {
@@ -507,8 +506,8 @@ impl VerificationController {
         }
     }
 
-    pub fn process_sync_messages(&mut self, client: &MatrixClient, rooms: &Rooms) {
-        for (room_id, room_info) in rooms.join.iter() {
+    pub fn process_sync_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
+        for (room_id, room_info) in response.rooms.join.iter() {
             for event in room_info
                 .timeline
                 .events
@@ -516,13 +515,13 @@ impl VerificationController {
                 .filter_map(|ev| ev.event.deserialize().ok())
             {
                 if let AnySyncTimelineEvent::MessageLike(ref evt) = event {
-                    self.handle_sync_messages(client, evt);
+                    self.handle_sync_event(client, evt);
                 }
             }
         }
     }
 
-    fn handle_to_device_messages(&mut self, client: &MatrixClient, evt: &AnyToDeviceEvent) {
+    fn handle_to_device_event(&mut self, client: &MatrixClient, evt: &AnyToDeviceEvent) {
         match evt {
             AnyToDeviceEvent::KeyVerificationRequest(ref ev) => {
                 let dev_id = client
@@ -667,13 +666,15 @@ impl VerificationController {
         }
     }
 
-    pub fn process_to_device_messages(&mut self, client: &MatrixClient, to_device: ToDevice) {
-        for evt in to_device
+    pub fn process_to_device_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
+        for evt in response
+            .to_device
             .events
+            .clone()
             .into_iter()
             .filter_map(|e| e.deserialize().ok())
         {
-            self.handle_to_device_messages(client, &evt);
+            self.handle_to_device_event(client, &evt);
         }
     }
 }
