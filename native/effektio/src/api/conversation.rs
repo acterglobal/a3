@@ -209,7 +209,7 @@ impl ConversationController {
     ) {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
-        if ev.state_key != user_id.to_string() {
+        if ev.state_key != *user_id {
             return;
         }
 
