@@ -161,10 +161,10 @@ impl Client {
                         let state = state.clone();
                         let initial = initial_arc.clone();
 
-                        device_controller.process_events(&client, response.device_lists);
+                        device_controller.process_device_events(&client, &response);
 
                         if !initial.load(Ordering::SeqCst) {
-                            verification_controller.process_sync_messages(&client, &response.rooms);
+                            verification_controller.process_sync_events(&client, &response);
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -180,8 +180,7 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        verification_controller
-                            .process_to_device_messages(&client, response.to_device);
+                        verification_controller.process_to_device_events(&client, &response);
                         LoopCtrl::Continue
                     }
                 })
