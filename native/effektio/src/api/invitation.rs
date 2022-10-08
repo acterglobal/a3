@@ -110,7 +110,7 @@ impl InvitationController {
     ) {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
-        if ev.state_key != user_id.to_string() {
+        if ev.state_key != *user_id {
             return;
         }
 
@@ -135,7 +135,7 @@ impl InvitationController {
             let mut invitations = self.invitations.lock_mut();
             let idx = invitations
                 .iter()
-                .position(|x| x.room_id == room_id.to_string() && x.sender == sender.to_string());
+                .position(|x| x.room_id == *room_id && x.sender == *sender);
             if idx.is_none() {
                 invitations.insert(0, invitation);
             }
@@ -150,7 +150,7 @@ impl InvitationController {
     ) {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
-        if ev.state_key != user_id.to_string() {
+        if ev.state_key != *user_id {
             return;
         }
 
