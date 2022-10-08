@@ -6,7 +6,8 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Client,
         Conversation,
         FfiListConversation,
-        InvitationEvent,
+        FfiListInvitation,
+        Invitation,
         RoomMessage,
         TypingEvent;
 import 'package:flutter/foundation.dart';
@@ -40,10 +41,11 @@ class ChatListController extends GetxController {
   Client client;
   late String userId;
   List<JoinedRoom> joinedRooms = [];
-  List<InvitationEvent> invitationEvents = [];
+  List<Invitation> invitations = [];
   bool initialLoaded = false;
   String? _currentRoomId;
   StreamSubscription<FfiListConversation>? _convosSubscription;
+  StreamSubscription<FfiListInvitation>? _invitesSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
   StreamSubscription<RoomMessage>? _messageSubscription;
 
@@ -57,6 +59,10 @@ class ChatListController extends GetxController {
     if (!client.isGuest()) {
       _convosSubscription = client.conversationsRx().listen((event) {
         updateList(event.toList(), userId);
+      });
+      _invitesSubscription = client.invitationsRx().listen((event) {
+        invitations = event.toList();
+        update(['invited_list']);
       });
       _typingSubscription = client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
@@ -75,27 +81,13 @@ class ChatListController extends GetxController {
           update(['Chat']);
         }
       });
-      client.getInvitedRooms().then((events) {
-        invitationEvents = events.toList();
-        client.invitationEventRx()?.listen((event) {
-          debugPrint('invited event: ' + event.roomName());
-          int index = invitationEvents.indexWhere((x) {
-            return x.roomId() == event.roomId();
-          });
-          if (index == -1) {
-            invitationEvents.insert(0, event);
-          } else {
-            invitationEvents.removeAt(index);
-          }
-          update(['Chat']);
-        });
-      });
     }
   }
 
   @override
   void onClose() {
     _convosSubscription?.cancel();
+    _invitesSubscription?.cancel();
     _typingSubscription?.cancel();
     _messageSubscription?.cancel();
     super.onClose();
@@ -109,7 +101,6 @@ class ChatListController extends GetxController {
     if (!initialLoaded) {
       initialLoaded = true;
     }
-    update(['chatlist']);
     List<JoinedRoom> newItems = [];
     for (Conversation convo in convos) {
       String roomId = convo.getRoomId();
@@ -154,21 +145,16 @@ class ChatListController extends GetxController {
   Future<void> acceptInvitation(String roomId) async {
     await client.acceptInvitation(roomId);
     // remove item from invited list
-    int index = invitationEvents.indexWhere((x) => x.roomId() == roomId);
-    invitationEvents.removeAt(index);
-    // add item to joined list
-    var convo = await client.conversation(roomId);
-    JoinedRoom newItem = JoinedRoom(conversation: convo);
-    joinedRooms.insert(0, newItem);
-    update(['chatlist']);
+    // int index = invitations.indexWhere((x) => x.roomId() == roomId);
+    // invitations.removeAt(index);
+    // update(['chatlist']);
   }
 
   Future<void> rejectInvitation(String roomId) async {
     await client.rejectInvitation(roomId);
     // remove item from invited list
-    int index = invitationEvents.indexWhere((x) => x.roomId() == roomId);
-    invitationEvents.removeAt(index);
-    // ignore the invited event
-    update(['chatlist']);
+    // int index = invitations.indexWhere((x) => x.roomId() == roomId);
+    // invitations.removeAt(index);
+    // update(['chatlist']);
   }
 }

@@ -1,7 +1,6 @@
 use anyhow::{bail, Result};
-use futures::{
-    channel::mpsc::{channel, Receiver, Sender},
-    StreamExt,
+use futures_signals::signal::{
+    Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
 };
 use log::{error, info, warn};
 use matrix_sdk::{
@@ -9,29 +8,27 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         api::client::room::create_room::v3::Request as CreateRoomRequest,
-        events::room::member::{StrippedRoomMemberEvent, SyncRoomMemberEvent},
+        events::room::member::{
+            MembershipState, OriginalSyncRoomMemberEvent, StrippedRoomMemberEvent,
+        },
         RoomId,
     },
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
-use std::{
-    sync::Arc,
-    time::{SystemTime, UNIX_EPOCH},
-};
+use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 
 use super::{client::Client, RUNTIME};
 
 #[derive(Default, Clone, Debug)]
-pub struct InvitationEvent {
+pub struct Invitation {
     origin_server_ts: Option<u64>,
     room_id: String,
     room_name: String,
     sender: String,
 }
 
-impl InvitationEvent {
+impl Invitation {
     pub fn origin_server_ts(&self) -> Option<u64> {
         self.origin_server_ts
     }
@@ -51,75 +48,131 @@ impl InvitationEvent {
 
 #[derive(Clone)]
 pub(crate) struct InvitationController {
-    event_tx: Sender<InvitationEvent>,
-    event_rx: Arc<Mutex<Option<Receiver<InvitationEvent>>>>,
+    invitations: Mutable<Vec<Invitation>>,
 }
 
 impl InvitationController {
     pub fn new() -> Self {
-        let (tx, rx) = channel::<InvitationEvent>(10); // dropping after more than 10 items queued
         InvitationController {
-            event_tx: tx,
-            event_rx: Arc::new(Mutex::new(Some(rx))),
+            invitations: Default::default(),
         }
     }
 
-    pub fn setup(&self, client: &MatrixClient) {
+    pub async fn setup(&self, client: &MatrixClient) {
+        let invitations = self.get_invitations(client).await;
+        self.invitations.lock_mut().clone_from(&invitations);
+
         let me = self.clone();
+        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
-        client.add_event_handler(
-            |ev: SyncRoomMemberEvent,
-             room: MatrixRoom,
-             Ctx(me): Ctx<InvitationController>| async move {
-                me.clone().process_sync_event(ev, room).await;
-            },
-        );
-        client.add_event_handler_context(me);
         client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
              room: MatrixRoom,
+             Ctx(client): Ctx<MatrixClient>,
              Ctx(me): Ctx<InvitationController>| async move {
-                me.clone().process_stripped_event(ev, room);
+                // user got invitation
+                me.clone().process_stripped_event(ev, room, &client).await;
+            },
+        );
+        client.add_event_handler_context(client.clone());
+        client.add_event_handler_context(me);
+        client.add_event_handler(
+            |ev: OriginalSyncRoomMemberEvent,
+             room: MatrixRoom,
+             Ctx(client): Ctx<MatrixClient>,
+             Ctx(me): Ctx<InvitationController>| async move {
+                // user accepted or rejected invitation
+                me.clone().process_sync_event(ev, room, &client);
             },
         );
     }
 
-    async fn process_sync_event(&mut self, ev: SyncRoomMemberEvent, room: MatrixRoom) {
-        let msg = InvitationEvent {
-            origin_server_ts: Some(ev.origin_server_ts().as_secs().into()),
-            room_id: room.room_id().to_string(),
-            room_name: room.display_name().await.unwrap().to_string(),
-            sender: ev.sender().to_string(),
-        };
-
-        info!("event type: {:?}", ev.event_type());
-        info!("membership: {:?}", ev.membership());
-        info!("invitation: {:?}", msg);
-
-        if let Err(e) = self.event_tx.try_send(msg) {
-            warn!("Dropping invitation event: {:?}", e);
+    async fn get_invitations(&self, client: &MatrixClient) -> Vec<Invitation> {
+        let mut invitations: Vec<Invitation> = vec![];
+        for room in client.invited_rooms().iter() {
+            let details = room.invite_details().await.unwrap();
+            let invitation = Invitation {
+                origin_server_ts: None,
+                room_id: room.room_id().to_string(),
+                room_name: room.display_name().await.unwrap().to_string(),
+                sender: details.inviter.unwrap().user_id().to_string(),
+            };
+            invitations.push(invitation);
         }
+        invitations
     }
 
-    async fn process_stripped_event(&mut self, ev: StrippedRoomMemberEvent, room: MatrixRoom) {
+    async fn process_stripped_event(
+        &mut self,
+        ev: StrippedRoomMemberEvent,
+        room: MatrixRoom,
+        client: &MatrixClient,
+    ) {
+        // filter only event for me
+        let user_id = client.user_id().expect("You seem to be not logged in");
+        if ev.state_key != user_id.to_string() {
+            return;
+        }
+
+        info!("invitation - stripped room member event: {:?}", ev);
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
             .expect("Time went backwards");
 
-        let msg = InvitationEvent {
-            origin_server_ts: Some(since_the_epoch.as_secs()),
-            room_id: room.room_id().to_string(),
-            room_name: room.display_name().await.unwrap().to_string(),
-            sender: ev.sender.to_string(),
-        };
-
         info!("event type: StrippedRoomMemberEvent");
         info!("membership: {:?}", ev.content.membership);
-        info!("invitation: {:?}", msg);
 
-        if let Err(e) = self.event_tx.try_send(msg) {
-            warn!("Dropping invitation event: {:?}", e);
+        if ev.content.membership == MembershipState::Invite {
+            let room_id = room.room_id();
+            let sender = ev.sender;
+            let invitation = Invitation {
+                origin_server_ts: Some(since_the_epoch.as_secs()),
+                room_id: room_id.to_string(),
+                room_name: room.display_name().await.unwrap().to_string(),
+                sender: sender.to_string(),
+            };
+            let mut invitations = self.invitations.lock_mut();
+            if invitations.iter().position(|x| x.room_id == room_id.to_string() && x.sender == sender.to_string()) == None {
+                invitations.insert(0, invitation);
+            }
+        }
+    }
+
+    fn process_sync_event(
+        &mut self,
+        ev: OriginalSyncRoomMemberEvent,
+        room: MatrixRoom,
+        client: &MatrixClient,
+    ) {
+        // filter only event for me
+        let user_id = client.user_id().expect("You seem to be not logged in");
+        if ev.state_key != user_id.to_string() {
+            return;
+        }
+
+        let evt = ev.clone();
+        // info!("invitation - original sync room member event: {:?}", ev);
+        if let Some(prev_content) = ev.unsigned.prev_content {
+            let mut invitations = self.invitations.lock_mut();
+            match (prev_content.membership, ev.content.membership) {
+                (MembershipState::Invite, MembershipState::Join) => {
+                    info!("invitation - original sync room member event: {:?}", evt);
+                    // remove this invitation from list
+                    let room_id = room.room_id().to_string();
+                    if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                        invitations.remove(idx);
+                    }
+                }
+                (MembershipState::Invite, MembershipState::Leave) => {
+                    // remove this invitation from list
+                    let room_id = room.room_id().to_string();
+                    if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                        invitations.remove(idx);
+                    }
+                }
+                _ => {}
+            }
         }
     }
 }
@@ -131,28 +184,11 @@ impl Client {
         Ok(res.room_id().to_string())
     }
 
-    pub fn invitation_event_rx(&self) -> Option<Receiver<InvitationEvent>> {
-        self.invitation_controller.event_rx.lock().take()
-    }
-
-    pub async fn get_invited_rooms(&self) -> Result<Vec<InvitationEvent>> {
-        let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut events: Vec<InvitationEvent> = vec![];
-                for room in client.invited_rooms().iter() {
-                    let invite = room.invite_details().await?;
-                    let event = InvitationEvent {
-                        origin_server_ts: None,
-                        room_id: room.room_id().to_string(),
-                        room_name: room.display_name().await.unwrap().to_string(),
-                        sender: invite.inviter.unwrap().user_id().to_string(),
-                    };
-                    events.push(event);
-                }
-                Ok(events)
-            })
-            .await?
+    pub fn invitations_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Invitation>>> {
+        self.invitation_controller
+            .invitations
+            .signal_cloned()
+            .to_stream()
     }
 
     pub async fn accept_invitation(&self, room_id: String) -> Result<bool> {

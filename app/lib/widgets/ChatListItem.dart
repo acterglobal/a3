@@ -13,12 +13,14 @@ import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final String userId;
   final LatestMessage? latestMessage;
 
   const ChatListItem({
     Key? key,
+    required this.client,
     required this.room,
     required this.userId,
     this.latestMessage,
@@ -50,6 +52,7 @@ class _ChatListItemState extends State<ChatListItem> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChatScreen(
+                  client: widget.client,
                   room: widget.room,
                   userId: widget.userId,
                 ),

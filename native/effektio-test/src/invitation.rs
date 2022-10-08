@@ -1,5 +1,6 @@
 use anyhow::Result;
 use effektio::{login_new_client, matrix_sdk::ruma::user_id};
+use futures::{pin_mut, StreamExt};
 use std::time::Duration;
 use tempfile::TempDir;
 use tokio::time::sleep;
@@ -39,17 +40,17 @@ async fn load_pending_invitation() -> Result<()> {
 
     // sleep(Duration::from_secs(3)).await;
 
-    let mut event_rx = kyra.invitation_event_rx().unwrap();
+    let receiver = kyra.invitations_rx();
+    pin_mut!(receiver);
     loop {
-        match event_rx.try_next() {
-            Ok(Some(event)) => {
-                println!("received: {:?}", event);
+        match receiver.next().await {
+            Some(invitations) => {
+                println!("received: {:?}", invitations);
                 // break;
             }
-            Ok(None) => {
+            None => {
                 println!("received: none");
             }
-            Err(e) => {}
         }
     }
 

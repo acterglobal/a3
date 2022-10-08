@@ -124,7 +124,7 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
-        self.invitation_controller.setup(&client);
+        let invitation_controller = self.invitation_controller.clone();
         let mut verification_controller = self.verification_controller.clone();
         let mut device_controller = self.device_controller.clone();
         self.typing_controller.setup(&client);
@@ -141,6 +141,7 @@ impl Client {
             let client = client.clone();
             let state = state.clone();
 
+            invitation_controller.setup(&client).await;
             let mut verification_controller = verification_controller.clone();
             let mut device_controller = device_controller.clone();
             conversation_controller.setup(&client).await;

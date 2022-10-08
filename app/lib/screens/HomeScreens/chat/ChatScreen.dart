@@ -13,7 +13,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember, Member;
+    show Client, Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -25,11 +25,13 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final String userId;
 
   const ChatScreen({
     Key? key,
+    required this.client,
     required this.room,
     required this.userId,
   }) : super(key: key);
@@ -301,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    int invitedIndex = chatListController.invitationEvents
+    int wasInvited = chatListController.invitations
         .indexWhere((x) => x.roomId() == widget.room.getRoomId());
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
@@ -331,12 +333,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonAccessibilityLabel: '',
               ),
               messages: chatRoomController.messages,
-              sendButtonVisibilityMode: invitedIndex != -1
+              sendButtonVisibilityMode: wasInvited != -1
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
               onSendPressed: (_) {},
               user: user,
-              disableImageGallery: invitedIndex != -1,
+              disableImageGallery: wasInvited != -1,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
@@ -349,7 +351,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached:
-                  invitedIndex != -1 ? null : controller.handleEndReached,
+                  wasInvited != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               emptyState: const EmptyPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
@@ -361,7 +363,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
-            invitedIndex != -1
+            wasInvited != -1
                 ? LayoutBuilder(
                     builder: (context, constraints) {
                       return Container(
@@ -379,18 +381,18 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   )
                 : const SizedBox(),
-            invitedIndex != -1
+            wasInvited != -1
                 ? Padding(
                     padding: const EdgeInsets.only(top: 40),
                     child: InviteInfoWidget(
+                      client: widget.client,
                       avatarColor: Colors.white,
-                      inviter: chatListController.invitationEvents[invitedIndex]
-                          .sender(),
-                      groupId: chatListController.invitationEvents[invitedIndex]
-                          .roomId(),
-                      groupName: chatListController
-                          .invitationEvents[invitedIndex]
-                          .roomName(),
+                      inviter:
+                          chatListController.invitations[wasInvited].sender(),
+                      groupId:
+                          chatListController.invitations[wasInvited].roomId(),
+                      groupName:
+                          chatListController.invitations[wasInvited].roomName(),
                     ),
                   )
                 : const SizedBox(),

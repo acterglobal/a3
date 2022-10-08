@@ -87,8 +87,9 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   Widget _buildListHeader(BuildContext context) {
     return GetBuilder<ChatListController>(
+      id: 'invited_list',
       builder: (ChatListController controller) {
-        if (controller.invitationEvents.isEmpty) {
+        if (controller.invitations.isEmpty) {
           return const SizedBox();
         }
         return Column(
@@ -106,10 +107,11 @@ class _ChatOverviewState extends State<ChatOverview> {
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: controller.invitationEvents.length,
+              itemCount: controller.invitations.length,
               itemBuilder: (BuildContext context, int index) {
-                var event = controller.invitationEvents[index];
+                var event = controller.invitations[index];
                 return InviteInfoWidget(
+                  client: widget.client,
                   avatarColor: Colors.white,
                   inviter: event.sender(),
                   groupId: event.roomId(),
@@ -176,6 +178,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
                   child: ChatListItem(
+                    client: widget.client,
                     room: item.conversation,
                     userId: userId,
                     latestMessage: item.latestMessage,
@@ -190,6 +193,7 @@ class _ChatOverviewState extends State<ChatOverview> {
               return FadeTransition(
                 opacity: animation,
                 child: ChatListItem(
+                  client: widget.client,
                   room: item.conversation,
                   userId: userId,
                   latestMessage: item.latestMessage,
@@ -213,6 +217,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
                   child: ChatListItem(
+                    client: widget.client,
                     room: item.conversation,
                     userId: userId,
                     latestMessage: item.latestMessage,

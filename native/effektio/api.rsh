@@ -330,23 +330,17 @@ object Client {
     /// roomId or room alias;
     fn get_group(id_or_alias: string) -> Future<Result<Group>>;
 
-    /// Get the conversation using room name or room id
-    fn conversation(name_or_id: string) -> Future<Result<Conversation>>;
-
     /// Get the latest News for the client
     fn latest_news() -> Future<Result<Vec<News>>>;
 
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
-    /// Get the invitation list
+    /// Create room
     fn create_room() -> Future<Result<string>>;
 
     /// Get the invitation event stream
-    fn invitation_event_rx() -> Option<Stream<InvitationEvent>>;
-
-    /// Get the past invitation events
-    fn get_invited_rooms() -> Future<Result<Vec<InvitationEvent>>>;
+    fn invitations_rx() -> Stream<Vec<Invitation>>;
 
     /// accept invitation about me to this room
     fn accept_invitation(room_id: string) -> Future<Result<bool>>;
@@ -376,7 +370,7 @@ object Client {
     fn message_event_rx() -> Option<Stream<RoomMessage>>;
 }
 
-object InvitationEvent {
+object Invitation {
     /// get the timestamp of this invitation
     fn origin_server_ts() -> Option<u64>;
 

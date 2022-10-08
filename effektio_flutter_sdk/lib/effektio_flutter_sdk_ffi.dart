@@ -2635,51 +2635,6 @@ class Api {
     return tmp7;
   }
 
-  Conversation? __clientConversationFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientConversationFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Conversation");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp7 = Conversation._(this, tmp13_1);
-    return tmp7;
-  }
-
   FfiListNews? __clientLatestNewsFuturePoll(
     int boxed,
     int postCobject,
@@ -2819,52 +2774,6 @@ class Api {
       tmp13_0 = ffi.Pointer.fromAddress(tmp13);
       this.__deallocate(tmp13_0, tmp15 * 1, 1);
     }
-    return tmp7;
-  }
-
-  FfiListInvitationEvent? __clientGetInvitedRoomsFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _clientGetInvitedRoomsFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListInvitationEvent");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListInvitationEvent._(this, tmp13_1);
-    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -3835,7 +3744,7 @@ class Api {
     return tmp9;
   }
 
-  InvitationEvent? __clientInvitationEventRxStreamPoll(
+  FfiListInvitation? __clientInvitationsRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -3853,7 +3762,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientInvitationEventRxStreamPoll(
+    final tmp8 = _clientInvitationsRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3865,9 +3774,10 @@ class Api {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
-    final tmp11_1 = _Box(this, tmp11_0, "drop_box_InvitationEvent");
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_FfiListInvitation");
     tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
-    final tmp9 = InvitationEvent._(this, tmp11_1);
+    final tmp12 = FfiListInvitation._(this, tmp11_1);
+    final tmp9 = tmp12;
     return tmp9;
   }
 
@@ -5237,22 +5147,6 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConversationPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__Client_conversation");
-
-  late final _clientConversation = _clientConversationPtr.asFunction<
-      int Function(
-    int,
-    int,
-    int,
-    int,
-  )>();
   late final _clientLatestNewsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5283,23 +5177,13 @@ class Api {
       int Function(
     int,
   )>();
-  late final _clientInvitationEventRxPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientInvitationEventRxReturn Function(
-    ffi.Int64,
-  )>>("__Client_invitation_event_rx");
-
-  late final _clientInvitationEventRx = _clientInvitationEventRxPtr.asFunction<
-      _ClientInvitationEventRxReturn Function(
-    int,
-  )>();
-  late final _clientGetInvitedRoomsPtr = _lookup<
+  late final _clientInvitationsRxPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_get_invited_rooms");
+  )>>("__Client_invitations_rx");
 
-  late final _clientGetInvitedRooms = _clientGetInvitedRoomsPtr.asFunction<
+  late final _clientInvitationsRx = _clientInvitationsRxPtr.asFunction<
       int Function(
     int,
   )>();
@@ -5413,45 +5297,45 @@ class Api {
       _ClientMessageEventRxReturn Function(
     int,
   )>();
-  late final _invitationEventOriginServerTsPtr = _lookup<
+  late final _invitationOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
-          _InvitationEventOriginServerTsReturn Function(
+          _InvitationOriginServerTsReturn Function(
     ffi.Int64,
-  )>>("__InvitationEvent_origin_server_ts");
+  )>>("__Invitation_origin_server_ts");
 
-  late final _invitationEventOriginServerTs =
-      _invitationEventOriginServerTsPtr.asFunction<
-          _InvitationEventOriginServerTsReturn Function(
+  late final _invitationOriginServerTs =
+      _invitationOriginServerTsPtr.asFunction<
+          _InvitationOriginServerTsReturn Function(
     int,
   )>();
-  late final _invitationEventRoomIdPtr = _lookup<
+  late final _invitationRoomIdPtr = _lookup<
       ffi.NativeFunction<
-          _InvitationEventRoomIdReturn Function(
+          _InvitationRoomIdReturn Function(
     ffi.Int64,
-  )>>("__InvitationEvent_room_id");
+  )>>("__Invitation_room_id");
 
-  late final _invitationEventRoomId = _invitationEventRoomIdPtr.asFunction<
-      _InvitationEventRoomIdReturn Function(
+  late final _invitationRoomId = _invitationRoomIdPtr.asFunction<
+      _InvitationRoomIdReturn Function(
     int,
   )>();
-  late final _invitationEventRoomNamePtr = _lookup<
+  late final _invitationRoomNamePtr = _lookup<
       ffi.NativeFunction<
-          _InvitationEventRoomNameReturn Function(
+          _InvitationRoomNameReturn Function(
     ffi.Int64,
-  )>>("__InvitationEvent_room_name");
+  )>>("__Invitation_room_name");
 
-  late final _invitationEventRoomName = _invitationEventRoomNamePtr.asFunction<
-      _InvitationEventRoomNameReturn Function(
+  late final _invitationRoomName = _invitationRoomNamePtr.asFunction<
+      _InvitationRoomNameReturn Function(
     int,
   )>();
-  late final _invitationEventSenderPtr = _lookup<
+  late final _invitationSenderPtr = _lookup<
       ffi.NativeFunction<
-          _InvitationEventSenderReturn Function(
+          _InvitationSenderReturn Function(
     ffi.Int64,
-  )>>("__InvitationEvent_sender");
+  )>>("__Invitation_sender");
 
-  late final _invitationEventSender = _invitationEventSenderPtr.asFunction<
-      _InvitationEventSenderReturn Function(
+  late final _invitationSender = _invitationSenderPtr.asFunction<
+      _InvitationSenderReturn Function(
     int,
   )>();
   late final _verificationEventEventTypePtr = _lookup<
@@ -6481,21 +6365,6 @@ class Api {
     int,
     int,
   )>();
-  late final _clientConversationFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientConversationFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_conversation_future_poll");
-
-  late final _clientConversationFuturePoll =
-      _clientConversationFuturePollPtr.asFunction<
-          _ClientConversationFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
   late final _clientLatestNewsFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientLatestNewsFuturePollReturn Function(
@@ -6536,21 +6405,6 @@ class Api {
   late final _clientCreateRoomFuturePoll =
       _clientCreateRoomFuturePollPtr.asFunction<
           _ClientCreateRoomFuturePollReturn Function(
-    int,
-    int,
-    int,
-  )>();
-  late final _clientGetInvitedRoomsFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ClientGetInvitedRoomsFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__Client_get_invited_rooms_future_poll");
-
-  late final _clientGetInvitedRoomsFuturePoll =
-      _clientGetInvitedRoomsFuturePollPtr.asFunction<
-          _ClientGetInvitedRoomsFuturePollReturn Function(
     int,
     int,
     int,
@@ -6921,18 +6775,18 @@ class Api {
     int,
     int,
   )>();
-  late final _clientInvitationEventRxStreamPollPtr = _lookup<
+  late final _clientInvitationsRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientInvitationEventRxStreamPollReturn Function(
+          _ClientInvitationsRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_invitation_event_rx_stream_poll");
+  )>>("__Client_invitations_rx_stream_poll");
 
-  late final _clientInvitationEventRxStreamPoll =
-      _clientInvitationEventRxStreamPollPtr.asFunction<
-          _ClientInvitationEventRxStreamPollReturn Function(
+  late final _clientInvitationsRxStreamPoll =
+      _clientInvitationsRxStreamPollPtr.asFunction<
+          _ClientInvitationsRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -7332,55 +7186,55 @@ class Api {
 
   late final _ffiListGroupInsert =
       _ffiListGroupInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListInvitationEvent createFfiListInvitationEvent() {
+  FfiListInvitation createFfiListInvitation() {
     final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListInvitationEventCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListInvitationEvent");
-    return FfiListInvitationEvent._(this, list_box);
+        ffi.Pointer.fromAddress(_ffiListInvitationCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListInvitation");
+    return FfiListInvitation._(this, list_box);
   }
 
-  late final _ffiListInvitationEventCreatePtr =
+  late final _ffiListInvitationCreatePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListInvitationEventCreate");
+          "__FfiListInvitationCreate");
 
-  late final _ffiListInvitationEventCreate =
-      _ffiListInvitationEventCreatePtr.asFunction<int Function()>();
+  late final _ffiListInvitationCreate =
+      _ffiListInvitationCreatePtr.asFunction<int Function()>();
 
-  late final _ffiListInvitationEventLenPtr =
+  late final _ffiListInvitationLenPtr =
       _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListInvitationEventLen");
+          "__FfiListInvitationLen");
 
-  late final _ffiListInvitationEventLen =
-      _ffiListInvitationEventLenPtr.asFunction<int Function(int)>();
+  late final _ffiListInvitationLen =
+      _ffiListInvitationLenPtr.asFunction<int Function(int)>();
 
-  late final _ffiListInvitationEventElementAtPtr =
+  late final _ffiListInvitationElementAtPtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListInvitationEventElementAt");
+          "__FfiListInvitationElementAt");
 
-  late final _ffiListInvitationEventElementAt =
-      _ffiListInvitationEventElementAtPtr.asFunction<int Function(int, int)>();
+  late final _ffiListInvitationElementAt =
+      _ffiListInvitationElementAtPtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListInvitationEventRemovePtr =
+  late final _ffiListInvitationRemovePtr =
       _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListInvitationEventRemove");
+          "__FfiListInvitationRemove");
 
-  late final _ffiListInvitationEventRemove =
-      _ffiListInvitationEventRemovePtr.asFunction<int Function(int, int)>();
+  late final _ffiListInvitationRemove =
+      _ffiListInvitationRemovePtr.asFunction<int Function(int, int)>();
 
-  late final _ffiListInvitationEventAddPtr =
+  late final _ffiListInvitationAddPtr =
       _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListInvitationEventAdd");
+          "__FfiListInvitationAdd");
 
-  late final _ffiListInvitationEventAdd =
-      _ffiListInvitationEventAddPtr.asFunction<void Function(int, int)>();
+  late final _ffiListInvitationAdd =
+      _ffiListInvitationAddPtr.asFunction<void Function(int, int)>();
 
-  late final _ffiListInvitationEventInsertPtr = _lookup<
+  late final _ffiListInvitationInsertPtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(ffi.IntPtr, ffi.Uint32,
-              ffi.IntPtr)>>("__FfiListInvitationEventInsert");
+              ffi.IntPtr)>>("__FfiListInvitationInsert");
 
-  late final _ffiListInvitationEventInsert = _ffiListInvitationEventInsertPtr
-      .asFunction<void Function(int, int, int)>();
+  late final _ffiListInvitationInsert =
+      _ffiListInvitationInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListMember createFfiListMember() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListMemberCreate());
@@ -9812,37 +9666,6 @@ class Client {
     return tmp6;
   }
 
-  /// Get the conversation using room name or room id
-  Future<Conversation> conversation(
-    String nameOrId,
-  ) {
-    final tmp1 = nameOrId;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._clientConversation(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5;
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "__Client_conversation_future_drop");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp6 = _nativeFuture(tmp7_1, _api.__clientConversationFuturePoll);
-    return tmp6;
-  }
-
   /// Get the latest News for the client
   Future<FfiListNews> latestNews() {
     var tmp0 = 0;
@@ -9873,7 +9696,7 @@ class Client {
     return tmp2;
   }
 
-  /// Get the invitation list
+  /// Create room
   Future<String> createRoom() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -9889,38 +9712,17 @@ class Client {
   }
 
   /// Get the invitation event stream
-  Stream<InvitationEvent>? invitationEventRx() {
+  Stream<FfiListInvitation> invitationsRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientInvitationEventRx(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 =
-        _Box(_api, tmp4_0, "__Client_invitation_event_rx_stream_drop");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 =
-        _nativeStream(tmp4_1, _api.__clientInvitationEventRxStreamPoll);
-    return tmp2;
-  }
-
-  /// Get the past invitation events
-  Future<FfiListInvitationEvent> getInvitedRooms() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientGetInvitedRooms(
+    final tmp1 = _api._clientInvitationsRx(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_get_invited_rooms_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_invitations_rx_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientGetInvitedRoomsFuturePoll);
+    final tmp2 = _nativeStream(tmp3_1, _api.__clientInvitationsRxStreamPoll);
     return tmp2;
   }
 
@@ -10143,17 +9945,17 @@ class Client {
   }
 }
 
-class InvitationEvent {
+class Invitation {
   final Api _api;
   final _Box _box;
 
-  InvitationEvent._(this._api, this._box);
+  Invitation._(this._api, this._box);
 
   /// get the timestamp of this invitation
   int? originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationEventOriginServerTs(
+    final tmp1 = _api._invitationOriginServerTs(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -10169,7 +9971,7 @@ class InvitationEvent {
   String roomId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationEventRoomId(
+    final tmp1 = _api._invitationRoomId(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -10189,7 +9991,7 @@ class InvitationEvent {
   String roomName() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationEventRoomName(
+    final tmp1 = _api._invitationRoomName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -10209,7 +10011,7 @@ class InvitationEvent {
   String sender() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._invitationEventSender(
+    final tmp1 = _api._invitationSender(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -11482,13 +11284,6 @@ class _ClientUserIdReturn extends ffi.Struct {
   external int arg4;
 }
 
-class _ClientInvitationEventRxReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
 class _ClientVerificationEventRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -11531,14 +11326,14 @@ class _ClientMessageEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _InvitationEventOriginServerTsReturn extends ffi.Struct {
+class _InvitationOriginServerTsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
 }
 
-class _InvitationEventRoomIdReturn extends ffi.Struct {
+class _InvitationRoomIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -11547,7 +11342,7 @@ class _InvitationEventRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _InvitationEventRoomNameReturn extends ffi.Struct {
+class _InvitationRoomNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -11556,7 +11351,7 @@ class _InvitationEventRoomNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _InvitationEventSenderReturn extends ffi.Struct {
+class _InvitationSenderReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -12349,21 +12144,6 @@ class _ClientGetGroupFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientConversationFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-}
-
 class _ClientLatestNewsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -12411,21 +12191,6 @@ class _ClientCreateRoomFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
-}
-
-class _ClientGetInvitedRoomsFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
 }
 
 class _ClientAcceptInvitationFuturePollReturn extends ffi.Struct {
@@ -12772,7 +12537,7 @@ class _ClientConversationsRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientInvitationEventRxStreamPollReturn extends ffi.Struct {
+class _ClientInvitationsRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -13181,59 +12946,58 @@ class FfiListGroup extends Iterable<Group> implements CustomIterable<Group> {
   }
 }
 
-class FfiListInvitationEvent extends Iterable<InvitationEvent>
-    implements CustomIterable<InvitationEvent> {
+class FfiListInvitation extends Iterable<Invitation>
+    implements CustomIterable<Invitation> {
   final Api _api;
   final _Box _box;
 
-  FfiListInvitationEvent._(this._api, this._box);
+  FfiListInvitation._(this._api, this._box);
 
   @override
-  Iterator<InvitationEvent> get iterator => CustomIterator(this);
+  Iterator<Invitation> get iterator => CustomIterator(this);
 
   @override
   int get length {
-    return _api._ffiListInvitationEventLen(_box.borrow());
+    return _api._ffiListInvitationLen(_box.borrow());
   }
 
   ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
   @override
-  InvitationEvent elementAt(int index) {
-    final address = _api._ffiListInvitationEventElementAt(_box.borrow(), index);
+  Invitation elementAt(int index) {
+    final address = _api._ffiListInvitationElementAt(_box.borrow(), index);
     final reference = _Box(
       _api,
       ffi.Pointer.fromAddress(address),
       "drop_box_Leak",
       context: this,
     );
-    return InvitationEvent._(_api, reference);
+    return Invitation._(_api, reference);
   }
 
-  InvitationEvent operator [](int index) {
+  Invitation operator [](int index) {
     return elementAt(index);
   }
 
   /// Moves the element out of this list and returns it
-  InvitationEvent remove(int index) {
-    final address = _api._ffiListInvitationEventRemove(_box.borrow(), index);
-    final reference = _Box(
-        _api, ffi.Pointer.fromAddress(address), "drop_box_InvitationEvent");
+  Invitation remove(int index) {
+    final address = _api._ffiListInvitationRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Invitation");
     reference._finalizer = _api._registerFinalizer(reference);
-    return InvitationEvent._(_api, reference);
+    return Invitation._(_api, reference);
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(InvitationEvent element) {
-    _api._ffiListInvitationEventAdd(_box.borrow(), element._box.borrow());
+  void add(Invitation element) {
+    _api._ffiListInvitationAdd(_box.borrow(), element._box.borrow());
     element._box.move();
   }
 
   ///The inserted element is moved into the list and must not be used again
   ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, InvitationEvent element) {
-    _api._ffiListInvitationEventInsert(
-        _box.borrow(), index, element._box.borrow());
+  void insert(int index, Invitation element) {
+    _api._ffiListInvitationInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
