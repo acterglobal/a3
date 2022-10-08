@@ -57,7 +57,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let user_id = session.user_id.to_string().clone();
+            let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
             let c = Client::new(
                 client,

@@ -71,6 +71,10 @@ impl ReceiptEvent {
         self.room_id.to_string()
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.receipt_records.is_empty()
+    }
+
     pub(crate) fn add_receipt_record(
         &mut self,
         event_id: &OwnedEventId,
@@ -130,8 +134,10 @@ impl ReceiptController {
                 }
             }
         }
-        if let Err(e) = self.event_tx.try_send(msg) {
-            log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
+        if !msg.is_empty() {
+            if let Err(e) = self.event_tx.try_send(msg) {
+                log::warn!("Dropping ephemeral event for {}: {}", room_id, e);
+            }
         }
     }
 }
