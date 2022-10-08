@@ -11,7 +11,7 @@ use matrix_sdk::{
             receipt::{ReceiptEventContent, ReceiptType},
             SyncEphemeralRoomEvent,
         },
-        MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedUserId,
+        MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
     },
     Client as MatrixClient,
 };
@@ -55,12 +55,12 @@ impl ReceiptRecord {
 
 #[derive(Clone, Debug)]
 pub struct ReceiptEvent {
-    room_id: String,
+    room_id: OwnedRoomId,
     receipt_records: Vec<ReceiptRecord>,
 }
 
 impl ReceiptEvent {
-    pub(crate) fn new(room_id: String) -> Self {
+    pub(crate) fn new(room_id: OwnedRoomId) -> Self {
         Self {
             room_id,
             receipt_records: vec![],
@@ -68,7 +68,7 @@ impl ReceiptEvent {
     }
 
     pub fn room_id(&self) -> String {
-        self.room_id.clone()
+        self.room_id.to_string()
     }
 
     pub fn is_empty(&self) -> bool {
@@ -124,7 +124,7 @@ impl ReceiptController {
     ) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
-        let mut msg = ReceiptEvent::new(room_id.to_string());
+        let mut msg = ReceiptEvent::new(room_id.to_owned());
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
             if event_info.contains_key(&ReceiptType::Read) {
