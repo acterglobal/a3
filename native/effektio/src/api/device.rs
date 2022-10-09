@@ -5,6 +5,7 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
+    deserialized_responses::SyncResponse,
     encryption::identities::Device,
     ruma::{
         api::client::sync::sync_events::v3::DeviceLists, device_id,
@@ -252,29 +253,35 @@ impl DeviceController {
         }
     }
 
-    pub fn process_events(&mut self, client: &MatrixClient, device_lists: DeviceLists) {
-        for user_id in device_lists.changed.into_iter() {
-            info!("device-changed user_id: {}", user_id);
-            let current_user_id = client
-                .user_id()
-                .expect("guest user cannot handle the device changed event");
-            if *user_id == *current_user_id {
-                let evt = DeviceChangedEvent::new(client);
-                if let Err(e) = self.changed_event_tx.try_send(evt) {
-                    warn!("Dropping devices changed event: {}", e);
+    pub fn process_device_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
+        // avoid device changed event in case that user joined room
+        if response.rooms.join.is_empty() {
+            for user_id in response.device_lists.changed.clone().into_iter() {
+                info!("device-changed user_id: {}", user_id);
+                let current_user_id = client
+                    .user_id()
+                    .expect("guest user cannot handle the device changed event");
+                if *user_id == *current_user_id {
+                    let evt = DeviceChangedEvent::new(client);
+                    if let Err(e) = self.changed_event_tx.try_send(evt) {
+                        warn!("Dropping devices changed event: {}", e);
+                    }
                 }
             }
         }
 
-        for user_id in device_lists.left.into_iter() {
-            info!("device-left user_id: {}", user_id);
-            let current_user_id = client
-                .user_id()
-                .expect("guest user cannot handle the device left event");
-            if *user_id == *current_user_id {
-                let evt = DeviceLeftEvent::new(client);
-                if let Err(e) = self.left_event_tx.try_send(evt) {
-                    warn!("Dropping devices left event: {}", e);
+        // avoid device left event in case that user left room
+        if response.rooms.leave.is_empty() {
+            for user_id in response.device_lists.left.clone().into_iter() {
+                info!("device-left user_id: {}", user_id);
+                let current_user_id = client
+                    .user_id()
+                    .expect("guest user cannot handle the device left event");
+                if *user_id == *current_user_id {
+                    let evt = DeviceLeftEvent::new(client);
+                    if let Err(e) = self.left_event_tx.try_send(evt) {
+                        warn!("Dropping devices left event: {}", e);
+                    }
                 }
             }
         }
