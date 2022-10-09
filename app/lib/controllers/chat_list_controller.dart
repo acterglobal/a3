@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiListConversation, RoomMessage, TypingEvent;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
 //Helper class.
@@ -33,10 +36,12 @@ class ChatListController extends GetxController {
   Client client;
   late String userId;
   List<RoomItem> roomItems = [];
+  List<types.User> typingUsers = [];
   bool initialLoaded = false;
-
+  String? currentRoomId;
   StreamSubscription<FfiListConversation>? _convosSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
+  StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatListController({required this.client}) : super();
 
@@ -49,8 +54,49 @@ class ChatListController extends GetxController {
         updateList(event.toList(), userId);
       });
       _typingSubscription = client.typingEventRx()?.listen((event) {
-        ChatRoomController controller = Get.find<ChatRoomController>();
-        controller.updateTyping(event);
+        String roomId = event.roomId();
+        List<String> userIds = [];
+        for (final userId in event.userIds()) {
+          userIds.add(userId.toDartString());
+        }
+        for (var id in userIds) {
+          types.User typingUser = types.User(
+            id: id,
+            firstName: getNameFromId(id),
+          );
+          typingUsers.add(typingUser);
+        }
+        if (Get.isRegistered<ChatRoomController>()) {
+          if (roomId == currentRoomId) {
+            update(['typing indicator']);
+            Future.delayed(const Duration(seconds: 4), () {
+              userIds.clear();
+              typingUsers.clear();
+              update(['typing indicator']);
+            });
+          }
+        } else {
+          setCurrentRoomId(roomId);
+          if (currentRoomId != null) {
+            update(['$currentRoomId']);
+            Future.delayed(const Duration(seconds: 4), () {
+              userIds.clear();
+              typingUsers.clear();
+              setCurrentRoomId(null);
+              update(['$currentRoomId']);
+            });
+          }
+        }
+        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+      });
+      _messageSubscription = client.messageEventRx()?.listen((event) {
+        if (currentRoomId != null) {
+          ChatRoomController controller = Get.find<ChatRoomController>();
+          if (event.sender() != userId) {
+            controller.loadMessage(event);
+          }
+          update(['Chat']);
+        }
       });
     }
   }
@@ -59,7 +105,12 @@ class ChatListController extends GetxController {
   void onClose() {
     _convosSubscription?.cancel();
     _typingSubscription?.cancel();
+    _messageSubscription?.cancel();
     super.onClose();
+  }
+
+  void setCurrentRoomId(String? roomId) {
+    currentRoomId = roomId;
   }
 
   // ignore: always_declare_return_types

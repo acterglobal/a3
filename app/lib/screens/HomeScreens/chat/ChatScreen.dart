@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -13,8 +14,9 @@ import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
+import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember, Member;
+    show Client, Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -27,12 +29,15 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
-  final String userId;
-
+  final String? user;
+  final Client client;
+  final List<types.User> typingUsers;
   const ChatScreen({
     Key? key,
     required this.room,
-    required this.userId,
+    required this.user,
+    required this.client,
+    required this.typingUsers,
   }) : super(key: key);
 
   @override
@@ -40,24 +45,28 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late types.User _user;
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatRoomController = Get.find<ChatRoomController>();
+  ChatRoomController chatRoomController = Get.put(ChatRoomController());
+  ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    //roomState is true in case of invited and false if already joined
-    //has some restrictions in case of true i.e.send option is disabled. You can set it permanantly false or true for testing
+    _user = types.User(id: widget.user!);
+
     roomState = random.nextBool();
-    chatRoomController.reset(widget.room);
+    chatRoomController.init(widget.room, _user);
+    chatListController.setCurrentRoomId(widget.room.getRoomId());
   }
 
   @override
   void dispose() {
-    chatRoomController.reset(null);
     super.dispose();
+    chatListController.setCurrentRoomId(null);
+    Get.delete<ChatRoomController>();
   }
 
   void _handleAttachmentPressed(BuildContext context) {
@@ -335,11 +344,18 @@ class _ChatScreenState extends State<ChatScreen> {
                     : SendButtonVisibilityMode.editing,
               ),
               typingIndicatorOptions: TypingIndicatorOptions(
-                typingUsers: controller.typingUsers,
-                typingMode: TypingIndicatorMode.text,
+                customTypingIndicator: TypeIndicator(
+                  bubbleAlignment: BubbleRtlAlignment.right,
+                  showIndicator: chatListController.typingUsers.isNotEmpty,
+                  options: TypingIndicatorOptions(
+                    animationSpeed: const Duration(milliseconds: 800),
+                    typingUsers: chatListController.typingUsers,
+                    typingMode: TypingIndicatorMode.text,
+                  ),
+                ),
               ),
               onSendPressed: (_) {},
-              user: types.User(id: chatRoomController.userId),
+              user: _user,
               disableImageGallery: roomState ? true : false,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,

@@ -80,7 +80,6 @@ class CustomChatInput extends StatelessWidget {
                           child: TextField(
                             onChanged: ((value) async {
                               controller.sendButtonUpdate();
-                              await controller.typingNotice(true);
                             }),
                             maxLines: MediaQuery.of(context).orientation ==
                                     Orientation.portrait

@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -26,24 +25,24 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late String user;
   late int countInvites;
   String userId = '';
   Random random = Random();
 
   @override
   void initState() {
+    _fetchUserId();
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     Get.put(ChatListController(client: widget.client));
-    userId = widget.client.userId().toString();
-    Get.put(ChatRoomController(client: widget.client, userId: userId));
   }
+
+  void _fetchUserId() =>
+      setState(() => userId = widget.client.userId().toString());
 
   @override
   void dispose() {
-    Get.delete<ChatRoomController>();
     Get.delete<ChatListController>();
     super.dispose();
   }
@@ -161,10 +160,18 @@ class _ChatOverviewState extends State<ChatOverview> {
                 color: color,
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
-                child: ChatListItem(
-                  room: item.conversation,
-                  userId: userId,
-                  latestMessage: item.latestMessage,
+                child: GetBuilder<ChatListController>(
+                  id: item.conversation.getRoomId(),
+                  builder: (ChatListController controller) {
+                    return ChatListItem(
+                      key: Key(item.conversation.getRoomId()),
+                      room: item.conversation,
+                      userId: userId,
+                      latestMessage: item.latestMessage,
+                      client: widget.client,
+                      typingUsers: controller.typingUsers,
+                    );
+                  },
                 ),
               ),
             );
@@ -175,10 +182,18 @@ class _ChatOverviewState extends State<ChatOverview> {
           builder: (context, animation, inDrag) {
             return FadeTransition(
               opacity: animation,
-              child: ChatListItem(
-                room: item.conversation,
-                userId: userId,
-                latestMessage: item.latestMessage,
+              child: GetBuilder<ChatListController>(
+                id: item.conversation.getRoomId(),
+                builder: (ChatListController controller) {
+                  return ChatListItem(
+                    key: Key(item.conversation.getRoomId()),
+                    room: item.conversation,
+                    userId: userId,
+                    latestMessage: item.latestMessage,
+                    client: widget.client,
+                    typingUsers: controller.typingUsers,
+                  );
+                },
               ),
             );
           },
@@ -198,10 +213,18 @@ class _ChatOverviewState extends State<ChatOverview> {
                 color: color,
                 elevation: elevation ?? 0.0,
                 type: MaterialType.transparency,
-                child: ChatListItem(
-                  room: item.conversation,
-                  userId: userId,
-                  latestMessage: item.latestMessage,
+                child: GetBuilder<ChatListController>(
+                  id: item.conversation.getRoomId(),
+                  builder: (ChatListController controller) {
+                    return ChatListItem(
+                      key: Key(item.conversation.getRoomId()),
+                      room: item.conversation,
+                      userId: userId,
+                      latestMessage: item.latestMessage,
+                      client: widget.client,
+                      typingUsers: controller.typingUsers,
+                    );
+                  },
                 ),
               ),
             );
