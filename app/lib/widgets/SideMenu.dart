@@ -18,7 +18,6 @@ class SideDrawer extends StatefulWidget {
 
 class _SideDrawerState extends State<SideDrawer> {
   late Future<String> displayName;
-  String userId = '';
   late Future<FfiBufferUint8> avatar;
 
   @override
@@ -27,7 +26,6 @@ class _SideDrawerState extends State<SideDrawer> {
     if (!widget.client.isGuest()) {
       displayName = getDisplayName();
       avatar = getAvatar();
-      userId = widget.client.userId().toString();
     }
   }
 
@@ -140,7 +138,7 @@ class _SideDrawerState extends State<SideDrawer> {
                                 },
                               ),
                               Text(
-                                userId,
+                                widget.client.userId().toString(),
                                 style: SideMenuAndProfileTheme
                                         .sideMenuProfileStyle +
                                     const FontSize(14),

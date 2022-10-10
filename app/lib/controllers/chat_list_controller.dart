@@ -34,7 +34,6 @@ class LatestMessage {
 
 class ChatListController extends GetxController {
   Client client;
-  late String userId;
   List<RoomItem> roomItems = [];
   List<types.User> typingUsers = [];
   bool initialLoaded = false;
@@ -48,10 +47,9 @@ class ChatListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    userId = client.userId().toString();
     if (!client.isGuest()) {
       _convosSubscription = client.conversationsRx().listen((event) {
-        updateList(event.toList(), userId);
+        updateList(event.toList());
       });
       _typingSubscription = client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
@@ -92,7 +90,7 @@ class ChatListController extends GetxController {
       _messageSubscription = client.messageEventRx()?.listen((event) {
         if (currentRoomId != null) {
           ChatRoomController controller = Get.find<ChatRoomController>();
-          if (event.sender() != userId) {
+          if (event.sender() != client.userId.toString()) {
             controller.loadMessage(event);
           }
           update(['Chat']);
@@ -113,8 +111,7 @@ class ChatListController extends GetxController {
     currentRoomId = roomId;
   }
 
-  // ignore: always_declare_return_types
-  void updateList(List<Conversation> convos, String userId) {
+  void updateList(List<Conversation> convos) {
     if (!initialLoaded) {
       initialLoaded = true;
     }

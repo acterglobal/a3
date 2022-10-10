@@ -36,7 +36,6 @@ class NotificationScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // ignore: sized_box_for_whitespace
                   Container(
                     width: MediaQuery.of(context).size.width - 150,
                     margin: const EdgeInsets.only(right: 10),

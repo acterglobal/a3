@@ -26,20 +26,15 @@ class ChatOverview extends StatefulWidget {
 
 class _ChatOverviewState extends State<ChatOverview> {
   late int countInvites;
-  String userId = '';
   Random random = Random();
 
   @override
   void initState() {
-    _fetchUserId();
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
     Get.put(ChatListController(client: widget.client));
   }
-
-  void _fetchUserId() =>
-      setState(() => userId = widget.client.userId().toString());
 
   @override
   void dispose() {
@@ -166,7 +161,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                     return ChatListItem(
                       key: Key(item.conversation.getRoomId()),
                       room: item.conversation,
-                      userId: userId,
                       latestMessage: item.latestMessage,
                       client: widget.client,
                       typingUsers: controller.typingUsers,
@@ -188,7 +182,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                   return ChatListItem(
                     key: Key(item.conversation.getRoomId()),
                     room: item.conversation,
-                    userId: userId,
                     latestMessage: item.latestMessage,
                     client: widget.client,
                     typingUsers: controller.typingUsers,
@@ -219,7 +212,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                     return ChatListItem(
                       key: Key(item.conversation.getRoomId()),
                       room: item.conversation,
-                      userId: userId,
                       latestMessage: item.latestMessage,
                       client: widget.client,
                       typingUsers: controller.typingUsers,

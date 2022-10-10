@@ -16,7 +16,6 @@ import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
   final Conversation room;
-  final String userId;
   final LatestMessage? latestMessage;
   final List<types.User> typingUsers;
   final Client client;
@@ -24,7 +23,6 @@ class ChatListItem extends StatefulWidget {
   const ChatListItem({
     Key? key,
     required this.room,
-    required this.userId,
     this.latestMessage,
     required this.typingUsers,
     required this.client,
@@ -37,6 +35,7 @@ class ChatListItem extends StatefulWidget {
 class _ChatListItemState extends State<ChatListItem> {
   late Future<String> displayName;
   final ChatListController chatListController = Get.find<ChatListController>();
+
   @override
   void initState() {
     super.initState();
@@ -60,7 +59,6 @@ class _ChatListItemState extends State<ChatListItem> {
                   builder: (ChatListController controller) {
                     return ChatScreen(
                       room: widget.room,
-                      user: widget.userId,
                       client: widget.client,
                       typingUsers: widget.typingUsers,
                     );

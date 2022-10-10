@@ -29,13 +29,11 @@ import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation room;
-  final String? user;
   final Client client;
   final List<types.User> typingUsers;
   const ChatScreen({
     Key? key,
     required this.room,
-    required this.user,
     required this.client,
     required this.typingUsers,
   }) : super(key: key);
@@ -55,7 +53,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _user = types.User(id: widget.user!);
+    _user = types.User(id: widget.client.userId().toString());
 
     roomState = random.nextBool();
     chatRoomController.init(widget.room, _user);
