@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
@@ -39,26 +38,21 @@ class LatestMessage {
 
 class ChatListController extends GetxController {
   Client client;
-  late String userId;
   List<JoinedRoom> joinedRooms = [];
   List<Invitation> invitations = [];
   bool initialLoaded = false;
-  String? _currentRoomId;
   StreamSubscription<FfiListConversation>? _convosSubscription;
   StreamSubscription<FfiListInvitation>? _invitesSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
-  StreamSubscription<RoomMessage>? _messageSubscription;
 
-  ChatListController({required this.client}) : super() {
-    userId = client.userId().toString();
-  }
+  ChatListController({required this.client}) : super();
 
   @override
   void onInit() {
     super.onInit();
     if (!client.isGuest()) {
       _convosSubscription = client.conversationsRx().listen((event) {
-        updateList(event.toList(), userId);
+        _updateList(event.toList());
       });
       _invitesSubscription = client.invitationsRx().listen((event) {
         invitations = event.toList();
@@ -67,19 +61,10 @@ class ChatListController extends GetxController {
       _typingSubscription = client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
         List<String> userIds = [];
-        for (final userId in event.userIds()) {
+        for (var userId in event.userIds()) {
           userIds.add(userId.toDartString());
         }
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-      });
-      _messageSubscription = client.messageEventRx()?.listen((event) {
-        if (_currentRoomId != null) {
-          ChatRoomController controller = Get.find<ChatRoomController>();
-          if (event.sender() != userId) {
-            controller.loadMessage(event);
-          }
-          update(['Chat']);
-        }
       });
     }
   }
@@ -89,15 +74,10 @@ class ChatListController extends GetxController {
     _convosSubscription?.cancel();
     _invitesSubscription?.cancel();
     _typingSubscription?.cancel();
-    _messageSubscription?.cancel();
     super.onClose();
   }
 
-  void setCurrentRoomId(String? roomId) {
-    _currentRoomId = roomId;
-  }
-
-  void updateList(List<Conversation> convos, String userId) {
+  void _updateList(List<Conversation> convos) {
     if (!initialLoaded) {
       initialLoaded = true;
     }

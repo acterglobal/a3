@@ -15,14 +15,12 @@ import 'package:intl/intl.dart';
 class ChatListItem extends StatefulWidget {
   final Client client;
   final Conversation room;
-  final String userId;
   final LatestMessage? latestMessage;
 
   const ChatListItem({
     Key? key,
     required this.client,
     required this.room,
-    required this.userId,
     this.latestMessage,
   }) : super(key: key);
 
@@ -54,7 +52,6 @@ class _ChatListItemState extends State<ChatListItem> {
                 builder: (context) => ChatScreen(
                   client: widget.client,
                   room: widget.room,
-                  userId: widget.userId,
                 ),
               ),
             );

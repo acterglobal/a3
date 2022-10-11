@@ -33,6 +33,7 @@ use std::sync::Arc;
 use super::{
     client::{divide_rooms_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
+    receipt::ReceiptRecord,
     room::Room,
     RUNTIME,
 };
@@ -115,6 +116,23 @@ impl Conversation {
 
     pub fn get_room_id(&self) -> String {
         self.room_id().to_string()
+    }
+
+    pub async fn user_receipts(&self) -> Result<Vec<ReceiptRecord>> {
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut records: Vec<ReceiptRecord> = vec![];
+                for member in room.active_members().await? {
+                    let user_id = member.user_id();
+                    if let Some((event_id, receipt)) = room.user_read_receipt(user_id).await? {
+                        let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
+                        records.push(record);
+                    }
+                }
+                Ok(records)
+            })
+            .await?
     }
 }
 

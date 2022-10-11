@@ -226,6 +226,9 @@ object Conversation {
 
     /// get the path that file was saved
     fn file_path(event_id: string) -> Future<Result<string>>;
+
+    /// initially called to get receipt status of room members
+    fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
 }
 
 object Group {
@@ -462,8 +465,8 @@ object ReceiptRecord {
     /// Get id of event that this user read message from peer
     fn event_id() -> string;
 
-    /// Get id of user that read message from peer
-    fn user_id() -> string;
+    /// Get id of user that read this message
+    fn seen_by() -> string;
 
     /// Get time that this user read message from peer
     fn ts() -> Option<u64>;

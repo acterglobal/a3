@@ -35,7 +35,7 @@ class _ToDoListViewState extends State<ToDoListView> {
             child: Text(widget.title, style: ToDoTheme.listTitleTextStyle),
           ),
           subtitle: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+            padding: const EdgeInsets.all(5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

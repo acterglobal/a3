@@ -27,13 +27,11 @@ import 'package:transparent_image/transparent_image.dart';
 class ChatScreen extends StatefulWidget {
   final Client client;
   final Conversation room;
-  final String userId;
 
   const ChatScreen({
     Key? key,
     required this.client,
     required this.room,
-    required this.userId,
   }) : super(key: key);
 
   @override
@@ -41,23 +39,19 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late types.User user;
   String roomName = '';
-  ChatRoomController chatRoomController = Get.put(ChatRoomController());
+  ChatRoomController chatRoomController = Get.find<ChatRoomController>();
   ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    user = types.User(id: widget.userId);
-    chatRoomController.init(widget.room, user);
-    chatListController.setCurrentRoomId(widget.room.getRoomId());
+    chatRoomController.reset(widget.room);
   }
 
   @override
   void dispose() {
-    chatListController.setCurrentRoomId(null);
-    Get.delete<ChatRoomController>();
+    chatRoomController.reset(null);
     super.dispose();
   }
 
@@ -337,7 +331,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ? SendButtonVisibilityMode.hidden
                   : SendButtonVisibilityMode.editing,
               onSendPressed: (_) {},
-              user: user,
+              user: types.User(id: widget.client.userId().toString()),
               disableImageGallery: wasInvited != -1,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,

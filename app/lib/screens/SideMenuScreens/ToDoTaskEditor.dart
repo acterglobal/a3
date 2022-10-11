@@ -12,8 +12,10 @@ import 'package:get_time_ago/get_time_ago.dart';
 class ToDoTaskEditor extends StatefulWidget {
   const ToDoTaskEditor({Key? key, required this.item, required this.avatars})
       : super(key: key);
+
   final ToDoTaskItem item;
   final List<ImageProvider<Object>> avatars;
+
   @override
   State<ToDoTaskEditor> createState() => _ToDoTaskEditorState();
 }

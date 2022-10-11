@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -23,15 +24,6 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late String userId;
-
-  @override
-  void initState() {
-    super.initState();
-    userId = widget.client.userId().toString();
-    Get.put(ChatListController(client: widget.client));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,7 +172,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                   child: ChatListItem(
                     client: widget.client,
                     room: item.conversation,
-                    userId: userId,
                     latestMessage: item.latestMessage,
                   ),
                 ),
@@ -195,7 +186,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                 child: ChatListItem(
                   client: widget.client,
                   room: item.conversation,
-                  userId: userId,
                   latestMessage: item.latestMessage,
                 ),
               );
@@ -219,7 +209,6 @@ class _ChatOverviewState extends State<ChatOverview> {
                   child: ChatListItem(
                     client: widget.client,
                     room: item.conversation,
-                    userId: userId,
                     latestMessage: item.latestMessage,
                   ),
                 ),

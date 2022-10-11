@@ -74,7 +74,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
       child: Card(
         elevation: 0,
         color: ToDoTheme.secondaryCardColor,
-        margin: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+        margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
