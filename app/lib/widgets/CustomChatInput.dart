@@ -2,17 +2,17 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomChatInput extends StatelessWidget {
   final Function()? onButtonPressed;
-  final ChatRoomController controller = Get.find<ChatRoomController>();
   final bool isChatScreen;
   final String roomName;
-  static const List<List<String>> attachmentNameList = [
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
+  static const List<List<String>> _attachmentNameList = [
     ['camera', 'Camera'],
     ['gif', 'GIF'],
     ['document', 'File'],
@@ -48,13 +48,15 @@ class CustomChatInput extends StatelessWidget {
                           ? Obx(
                               () => InkWell(
                                 onTap: () {
-                                  controller.isEmojiVisible.value = false;
-                                  controller.isAttachmentVisible.value =
-                                      !controller.isAttachmentVisible.value;
-                                  controller.focusNode.unfocus();
-                                  controller.focusNode.canRequestFocus = true;
+                                  _roomController.isEmojiVisible.value = false;
+                                  _roomController.isAttachmentVisible.value =
+                                      !_roomController
+                                          .isAttachmentVisible.value;
+                                  _roomController.focusNode.unfocus();
+                                  _roomController.focusNode.canRequestFocus =
+                                      true;
                                 },
-                                child: controller.isAttachmentVisible.value
+                                child: _roomController.isAttachmentVisible.value
                                     ? Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
@@ -79,15 +81,16 @@ class CustomChatInput extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: TextField(
                             onChanged: ((value) async {
-                              controller.sendButtonUpdate();
+                              _roomController.sendButtonUpdate();
+                              await _roomController.typingNotice(true);
                             }),
                             maxLines: MediaQuery.of(context).orientation ==
                                     Orientation.portrait
                                 ? 6
                                 : 2,
                             minLines: 1,
-                            controller: controller.textEditingController,
-                            focusNode: controller.focusNode,
+                            controller: _roomController.textEditingController,
+                            focusNode: _roomController.focusNode,
                             style: const TextStyleRef(
                               TextStyle(color: ChatTheme01.chatInputTextColor),
                             ),
@@ -95,11 +98,13 @@ class CustomChatInput extends StatelessWidget {
                               isCollapsed: true,
                               suffixIcon: InkWell(
                                 onTap: () {
-                                  controller.isAttachmentVisible.value = false;
-                                  controller.isEmojiVisible.value =
-                                      !controller.isEmojiVisible.value;
-                                  controller.focusNode.unfocus();
-                                  controller.focusNode.canRequestFocus = true;
+                                  _roomController.isAttachmentVisible.value =
+                                      false;
+                                  _roomController.isEmojiVisible.value =
+                                      !_roomController.isEmojiVisible.value;
+                                  _roomController.focusNode.unfocus();
+                                  _roomController.focusNode.canRequestFocus =
+                                      true;
                                 },
                                 child: SvgPicture.asset(
                                   'assets/images/emoji.svg',
@@ -125,15 +130,15 @@ class CustomChatInput extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (controller.isSendButtonVisible || !isChatScreen)
+                      if (_roomController.isSendButtonVisible || !isChatScreen)
                         InkWell(
                           onTap: onButtonPressed,
                           child: SvgPicture.asset('assets/images/sendIcon.svg'),
                         ),
-                      if (!controller.isSendButtonVisible && isChatScreen)
+                      if (!_roomController.isSendButtonVisible && isChatScreen)
                         InkWell(
                           onTap: () {
-                            controller.handleMultipleImageSelection(
+                            _roomController.handleMultipleImageSelection(
                               context,
                               roomName,
                             );
@@ -144,7 +149,7 @@ class CustomChatInput extends StatelessWidget {
                           ),
                         ),
                       const SizedBox(width: 10),
-                      if (!controller.isSendButtonVisible && isChatScreen)
+                      if (!_roomController.isSendButtonVisible && isChatScreen)
                         SvgPicture.asset(
                           'assets/images/microphone-2.svg',
                           fit: BoxFit.none,
@@ -158,7 +163,7 @@ class CustomChatInput extends StatelessWidget {
         ),
         EmojiPickerWidget(size: _size),
         AttachmentWidget(
-          attachmentNameList: attachmentNameList,
+          attachmentNameList: _attachmentNameList,
           roomName: roomName,
           size: _size,
         ),
@@ -168,10 +173,10 @@ class CustomChatInput extends StatelessWidget {
 }
 
 class AttachmentWidget extends StatelessWidget {
-  final ChatRoomController controller = Get.find<ChatRoomController>();
   final List<List<String>> attachmentNameList;
   final String roomName;
   final Size size;
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
 
   AttachmentWidget({
     Key? key,
@@ -184,7 +189,7 @@ class AttachmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !controller.isAttachmentVisible.value,
+        offstage: !_roomController.isAttachmentVisible.value,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           width: double.infinity,
@@ -232,8 +237,9 @@ class AttachmentWidget extends StatelessWidget {
                           onTap: () {
                             switch (item[0]) {
                               case 'camera':
-                                controller.isAttachmentVisible.value = false;
-                                controller.handleMultipleImageSelection(
+                                _roomController.isAttachmentVisible.value =
+                                    false;
+                                _roomController.handleMultipleImageSelection(
                                   context,
                                   roomName,
                                 );
@@ -242,7 +248,7 @@ class AttachmentWidget extends StatelessWidget {
                                 //gif handle
                                 break;
                               case 'document':
-                                controller.handleFileSelection(context);
+                                _roomController.handleFileSelection(context);
                                 break;
                               case 'location':
                                 //location handle
@@ -288,28 +294,28 @@ class AttachmentWidget extends StatelessWidget {
 class EmojiPickerWidget extends StatelessWidget {
   EmojiPickerWidget({Key? key, required this.size}) : super(key: key);
 
-  final ChatRoomController controller = Get.find<ChatRoomController>();
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
   final Size size;
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !controller.isEmojiVisible.value,
+        offstage: !_roomController.isEmojiVisible.value,
         child: SizedBox(
           height: size.height * 0.3,
           child: EmojiPicker(
             onEmojiSelected: (category, emoji) {
-              controller.textEditingController.text += emoji.emoji;
-              controller.sendButtonUpdate();
+              _roomController.textEditingController.text += emoji.emoji;
+              _roomController.sendButtonUpdate();
             },
             onBackspacePressed: () {
-              controller.textEditingController.text = controller
+              _roomController.textEditingController.text = _roomController
                   .textEditingController.text.characters
                   .skipLast(1)
                   .string;
-              if (controller.textEditingController.text.isEmpty) {
-                controller.sendButtonUpdate();
+              if (_roomController.textEditingController.text.isEmpty) {
+                _roomController.sendButtonUpdate();
               }
             },
             config: Config(

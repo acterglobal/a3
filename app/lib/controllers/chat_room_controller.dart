@@ -29,7 +29,7 @@ class ChatRoomController extends GetxController {
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
-  Conversation? _room;
+  Conversation? _currentRoom;
   final bool _isDesktop = !(Platform.isAndroid || Platform.isIOS);
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
@@ -51,11 +51,18 @@ class ChatRoomController extends GetxController {
       }
     });
     _messageSubscription = client.messageEventRx()?.listen((event) {
-      if (_room != null) {
-        if (event.sender() != client.userId().toString()) {
-          _loadMessage(event);
+      // the latest message is dealt in convo receiver of ChatListController
+      // here manage only its message history
+      if (_currentRoom != null) {
+        // filter only message of this room
+        if (event.roomId() == _currentRoom!.getRoomId()) {
+          // filter only message from other not me
+          // it is processed in handleSendPressed
+          if (event.sender() != client.userId().toString()) {
+            _loadMessage(event);
+            update(['Chat']);
+          }
         }
-        update(['Chat']);
       }
     });
   }
@@ -75,11 +82,11 @@ class ChatRoomController extends GetxController {
       typingUsers.clear();
       _stream = null;
       _page = 0;
-      _room = null;
+      _currentRoom = null;
     } else {
-      _room = convoRoom;
+      _currentRoom = convoRoom;
       isLoading.value = true;
-      _stream = await _room!.timeline();
+      _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
       var msgs = await _stream!.paginateBackwards(10);
       for (RoomMessage message in msgs) {
@@ -90,7 +97,7 @@ class ChatRoomController extends GetxController {
   }
 
   String? currentRoomId() {
-    return _room == null ? null : _room!.getRoomId();
+    return _currentRoom?.getRoomId();
   }
 
   //preview message link
@@ -112,8 +119,8 @@ class ChatRoomController extends GetxController {
   Future<void> handleSendPressed(String message) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
-    await _room!.typingNotice(false);
-    var eventId = await _room!.sendPlainMessage(message);
+    await _currentRoom!.typingNotice(false);
+    var eventId = await _currentRoom!.sendPlainMessage(message);
     final textMessage = types.TextMessage(
       author: types.User(id: client.userId().toString()),
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -154,7 +161,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await _room!.sendImageMessage(
+      var eventId = await _currentRoom!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -190,7 +197,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await _room!.sendImageMessage(
+      var eventId = await _currentRoom!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -224,7 +231,7 @@ class ChatRoomController extends GetxController {
 
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
-      await _room!.sendFileMessage(
+      await _currentRoom!.sendFileMessage(
         result.files.single.path!,
         result.files.single.name,
         mimeType!,
@@ -251,7 +258,7 @@ class ChatRoomController extends GetxController {
     types.Message message,
   ) async {
     if (message is types.FileMessage) {
-      String filePath = await _room!.filePath(message.id);
+      String filePath = await _currentRoom!.filePath(message.id);
       if (filePath.isEmpty) {
         Directory? rootPath = await getTemporaryDirectory();
         String? dirPath = await FilesystemPicker.open(
@@ -266,7 +273,7 @@ class ChatRoomController extends GetxController {
               : null,
         );
         if (dirPath != null) {
-          await _room!.saveFile(message.id, dirPath);
+          await _currentRoom!.saveFile(message.id, dirPath);
         }
       } else {
         final result = await OpenFile.open(filePath);
@@ -348,7 +355,7 @@ class ChatRoomController extends GetxController {
         if (isLoading.isFalse) {
           update(['Chat']);
         }
-        _room!.imageBinary(eventId).then((data) async {
+        _currentRoom!.imageBinary(eventId).then((data) async {
           int idx = _findMessage(eventId);
           if (idx != -1) {
             messages[idx] = messages[idx].copyWith(
@@ -393,6 +400,9 @@ class ChatRoomController extends GetxController {
   }
 
   Future<bool> typingNotice(bool typing) async {
-    return await _room!.typingNotice(typing);
+    if (_currentRoom == null) {
+      return Future.value(false);
+    }
+    return await _currentRoom!.typingNotice(typing);
   }
 }

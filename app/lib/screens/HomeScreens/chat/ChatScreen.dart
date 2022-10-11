@@ -303,6 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
+    debugPrint('typing users empty: ${_roomController.typingUsers.isEmpty}');
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {

@@ -47,6 +47,7 @@ class ChatListController extends GetxController {
     super.onInit();
     if (!client.isGuest()) {
       _convosSubscription = client.conversationsRx().listen((event) {
+        // process the latest message here
         _updateList(event.toList());
       });
       _typingSubscription = client.typingEventRx()?.listen((event) {
@@ -60,12 +61,18 @@ class ChatListController extends GetxController {
         List<types.User> typingUsers = [];
         for (var userId in event.userIds()) {
           String uid = userId.toDartString();
+          if (uid == client.userId().toString()) {
+            // filter out my typing
+            continue;
+          }
           var user = types.User(
             id: uid,
             firstName: getNameFromId(uid),
           );
           typingUsers.add(user);
         }
+        // will not ignore empty list
+        // because empty list means that peer stopped typing
         var roomController = Get.find<ChatRoomController>();
         String? currentRoomId = roomController.currentRoomId();
         if (currentRoomId == null) {
