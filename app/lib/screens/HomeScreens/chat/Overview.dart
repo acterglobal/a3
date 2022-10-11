@@ -16,9 +16,9 @@ import 'package:implicitly_animated_reorderable_list/transitions.dart';
 import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
-  const ChatOverview({Key? key, required this.client}) : super(key: key);
-
   final Client client;
+
+  const ChatOverview({Key? key, required this.client}) : super(key: key);
 
   @override
   State<ChatOverview> createState() => _ChatOverviewState();
@@ -33,13 +33,6 @@ class _ChatOverviewState extends State<ChatOverview> {
     super.initState();
     //setting random invites
     countInvites = random.nextInt(5) + 1;
-    Get.put(ChatListController(client: widget.client));
-  }
-
-  @override
-  void dispose() {
-    Get.delete<ChatListController>();
-    super.dispose();
   }
 
   @override
@@ -163,7 +156,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                       room: item.conversation,
                       latestMessage: item.latestMessage,
                       client: widget.client,
-                      typingUsers: controller.typingUsers,
+                      typingUsers: item.typingUsers,
                     );
                   },
                 ),
@@ -184,7 +177,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                     room: item.conversation,
                     latestMessage: item.latestMessage,
                     client: widget.client,
-                    typingUsers: controller.typingUsers,
+                    typingUsers: item.typingUsers,
                   );
                 },
               ),
@@ -214,7 +207,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                       room: item.conversation,
                       latestMessage: item.latestMessage,
                       client: widget.client,
-                      typingUsers: controller.typingUsers,
+                      typingUsers: item.typingUsers,
                     );
                   },
                 ),

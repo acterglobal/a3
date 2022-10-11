@@ -34,7 +34,6 @@ class ChatListItem extends StatefulWidget {
 
 class _ChatListItemState extends State<ChatListItem> {
   late Future<String> displayName;
-  final ChatListController chatListController = Get.find<ChatListController>();
 
   @override
   void initState() {
@@ -60,7 +59,6 @@ class _ChatListItemState extends State<ChatListItem> {
                     return ChatScreen(
                       room: widget.room,
                       client: widget.client,
-                      typingUsers: widget.typingUsers,
                     );
                   },
                 ),
@@ -111,7 +109,7 @@ class _ChatListItemState extends State<ChatListItem> {
     }
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: chatListController.typingUsers.isEmpty
+      child: widget.typingUsers.isEmpty
           ? ParsedText(
               text:
                   '${getNameFromId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
@@ -180,7 +178,7 @@ class _ChatListItemState extends State<ChatListItem> {
               ],
             )
           : Text(
-              _multiUserTextBuilder(chatListController.typingUsers),
+              _multiUserTextBuilder(widget.typingUsers),
               style: ChatTheme01.latestChatStyle.copyWith(
                 fontStyle: FontStyle.italic,
               ),

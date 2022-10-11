@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -30,12 +29,11 @@ import 'package:transparent_image/transparent_image.dart';
 class ChatScreen extends StatefulWidget {
   final Conversation room;
   final Client client;
-  final List<types.User> typingUsers;
+
   const ChatScreen({
     Key? key,
     required this.room,
     required this.client,
-    required this.typingUsers,
   }) : super(key: key);
 
   @override
@@ -43,28 +41,22 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  late types.User _user;
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  ChatRoomController chatRoomController = Get.put(ChatRoomController());
-  ChatListController chatListController = Get.find<ChatListController>();
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
 
   @override
   void initState() {
     super.initState();
-    _user = types.User(id: widget.client.userId().toString());
-
     roomState = random.nextBool();
-    chatRoomController.init(widget.room, _user);
-    chatListController.setCurrentRoomId(widget.room.getRoomId());
+    _roomController.setCurrentRoom(widget.room);
   }
 
   @override
   void dispose() {
     super.dispose();
-    chatListController.setCurrentRoomId(null);
-    Get.delete<ChatRoomController>();
+    _roomController.setCurrentRoom(null);
   }
 
   void _handleAttachmentPressed(BuildContext context) {
@@ -79,7 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 GestureDetector(
-                  onTap: () => chatRoomController.handleImageSelection(context),
+                  onTap: () => _roomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -99,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => chatRoomController.handleFileSelection(context),
+                  onTap: () => _roomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -300,7 +292,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (chatRoomController.isLoading.isTrue) {
+    if (_roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
           height: 15,
@@ -335,7 +327,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: chatRoomController.messages,
+              messages: _roomController.messages,
               inputOptions: InputOptions(
                 sendButtonVisibilityMode: roomState
                     ? SendButtonVisibilityMode.hidden
@@ -344,16 +336,16 @@ class _ChatScreenState extends State<ChatScreen> {
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: TypeIndicator(
                   bubbleAlignment: BubbleRtlAlignment.right,
-                  showIndicator: chatListController.typingUsers.isNotEmpty,
+                  showIndicator: _roomController.typingUsers.isNotEmpty,
                   options: TypingIndicatorOptions(
                     animationSpeed: const Duration(milliseconds: 800),
-                    typingUsers: chatListController.typingUsers,
+                    typingUsers: _roomController.typingUsers,
                     typingMode: TypingIndicatorMode.text,
                   ),
                 ),
               ),
               onSendPressed: (_) {},
-              user: _user,
+              user: types.User(id: widget.client.userId().toString()),
               disableImageGallery: roomState ? true : false,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,

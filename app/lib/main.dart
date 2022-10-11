@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
@@ -108,6 +110,8 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   void dispose() {
     crossSigning?.dispose();
+    Get.delete<ChatListController>();
+    Get.delete<ChatRoomController>();
     super.dispose();
   }
 
@@ -118,6 +122,8 @@ class _EffektioHomeState extends State<EffektioHome>
     //Start listening for cross signing events
     if (!client.isGuest()) {
       crossSigning = CrossSigning(client: client);
+      Get.put(ChatListController(client: client));
+      Get.put(ChatRoomController(client: client));
     }
     return client;
   }
