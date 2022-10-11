@@ -2,16 +2,17 @@ import 'dart:async';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
+import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
-import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
+import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
-import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
+import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
@@ -107,6 +108,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
   @override
   void dispose() {
+    Get.delete<ReceiptController>();
     crossSigning?.dispose();
     super.dispose();
   }
@@ -114,6 +116,11 @@ class _EffektioHomeState extends State<EffektioHome>
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+    String userId = client.userId().toString();
+
+    var receiptController = ReceiptController(client: client, userId: userId);
+    Get.put<ReceiptController>(receiptController);
+
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {

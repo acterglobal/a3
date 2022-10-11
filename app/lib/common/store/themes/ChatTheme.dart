@@ -30,7 +30,10 @@ class EffektioChatTheme extends ChatTheme {
     ),
     Decoration? inputContainerDecoration,
     EdgeInsets inputMargin = EdgeInsets.zero,
-    EdgeInsets inputPadding = const EdgeInsets.fromLTRB(14, 5, 14, 5),
+    EdgeInsets inputPadding = const EdgeInsets.symmetric(
+      vertical: 5,
+      horizontal: 14,
+    ),
     Color inputTextColor = neutral7,
     Color? inputTextCursorColor,
     InputDecoration inputTextDecoration = const InputDecoration(

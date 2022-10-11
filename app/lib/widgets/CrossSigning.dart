@@ -15,7 +15,7 @@ import 'package:get/get.dart';
 import 'package:sprintf/sprintf.dart';
 
 class VerifEvent {
-  final bool verifyingThisDev;
+  bool verifyingThisDev;
   String stage;
 
   VerifEvent({

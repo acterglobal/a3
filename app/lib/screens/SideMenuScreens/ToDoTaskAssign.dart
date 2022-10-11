@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 class ToDoTaskAssignScreen extends StatelessWidget {
   const ToDoTaskAssignScreen({Key? key, required this.avatars})
       : super(key: key);
+
   final List<ImageProvider<Object>> avatars;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

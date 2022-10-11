@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiListConversation, RoomMessage, TypingEvent;
 import 'package:flutter/foundation.dart';
@@ -32,73 +31,47 @@ class LatestMessage {
 
 class ChatListController extends GetxController {
   Client client;
-  late String userId;
   List<RoomItem> roomItems = [];
   bool initialLoaded = false;
-  String? currentRoomId;
-  StreamSubscription<FfiListConversation>? convosSubscription;
-  StreamSubscription<TypingEvent>? typingSubscription;
-  StreamSubscription<RoomMessage>? messageSubscription;
+  StreamSubscription<FfiListConversation>? _convosSubscription;
+  StreamSubscription<TypingEvent>? _typingSubscription;
 
   ChatListController({required this.client}) : super();
 
   @override
   void onInit() {
     super.onInit();
-    userId = client.userId().toString();
     if (!client.isGuest()) {
-      convosSubscription = client.conversationsRx().listen((event) {
-        updateList(event.toList(), userId);
+      _convosSubscription = client.conversationsRx().listen((event) {
+        _loadItems(event.toList());
       });
-      typingSubscription = client.typingEventRx()?.listen((event) {
-        String roomId = event.roomId();
+      _typingSubscription = client.typingEventRx()?.listen((event) {
         List<String> userIds = [];
-        for (final userId in event.userIds()) {
+        for (var userId in event.userIds()) {
           userIds.add(userId.toDartString());
         }
+        String roomId = event.roomId();
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
-      });
-      messageSubscription = client.messageEventRx()?.listen((event) {
-        if (currentRoomId != null) {
-          ChatRoomController controller = Get.find<ChatRoomController>();
-          if (event.sender() != userId) {
-            controller.loadMessage(event);
-          }
-          update(['Chat']);
-        }
       });
     }
   }
 
   @override
   void onClose() {
-    convosSubscription?.cancel();
-    typingSubscription?.cancel();
-    messageSubscription?.cancel();
+    _convosSubscription?.cancel();
+    _typingSubscription?.cancel();
     super.onClose();
   }
 
-  void setCurrentRoomId(String? roomId) {
-    currentRoomId = roomId;
-  }
-
-  void updateList(List<Conversation> convos, String userId) {
-    if (!initialLoaded) {
-      initialLoaded = true;
-    }
-    update(['chatlist']);
+  void _loadItems(List<Conversation> convos) {
     List<RoomItem> newItems = [];
     for (Conversation convo in convos) {
-      String roomId = convo.getRoomId();
-      int oldIndex =
-          roomItems.indexWhere((x) => x.conversation.getRoomId() == roomId);
       RoomMessage? msg = convo.latestMessage();
       if (msg == null) {
         // prevent latest message from deleting
         RoomItem newItem = RoomItem(
           conversation: convo,
-          latestMessage:
-              oldIndex == -1 ? null : roomItems[oldIndex].latestMessage,
+          latestMessage: _getLatestMessage(convo.getRoomId()),
         );
         newItems.add(newItem);
         continue;
@@ -114,7 +87,20 @@ class ChatListController extends GetxController {
       newItems.add(newItem);
     }
     roomItems = newItems;
+    if (!initialLoaded) {
+      initialLoaded = true;
+    }
     update(['chatlist']);
+  }
+
+  LatestMessage? _getLatestMessage(String roomId) {
+    int index = roomItems.indexWhere((x) {
+      return x.conversation.getRoomId() == roomId;
+    });
+    if (index != -1) {
+      return roomItems[index].latestMessage;
+    }
+    return null;
   }
 
   void moveItem(int from, int to) {
