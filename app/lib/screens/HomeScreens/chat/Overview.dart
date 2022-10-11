@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -26,13 +27,13 @@ class ChatOverview extends StatefulWidget {
 
 class _ChatOverviewState extends State<ChatOverview> {
   late int countInvites;
-  Random random = Random();
+  Random _random = Random();
 
   @override
   void initState() {
     super.initState();
     //setting random invites
-    countInvites = random.nextInt(5) + 1;
+    countInvites = _random.nextInt(5) + 1;
   }
 
   @override
@@ -97,7 +98,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                         : GetBuilder<ChatListController>(
                             id: 'chatlist',
                             builder: (ChatListController controller) {
-                              return buildJoinedList(context, controller);
+                              return _buildJoinedList(context, controller);
                             },
                           ),
                   ],
@@ -110,22 +111,22 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Widget buildInvitedItem(BuildContext context, int index) {
+  Widget _buildInvitedItem(BuildContext context, int index) {
     return InviteInfoWidget(
       avatarColor: Colors.white,
-      inviter: inviters[random.nextInt(inviters.length)],
-      groupName: groups[random.nextInt(groups.length)],
+      inviter: inviters[_random.nextInt(inviters.length)],
+      groupName: groups[_random.nextInt(groups.length)],
     );
   }
 
-  Widget buildJoinedList(BuildContext context, ChatListController controller) {
+  Widget _buildJoinedList(BuildContext context, ChatListController controller) {
     if (controller.initialLoaded) {
       return ImplicitlyAnimatedReorderableList<RoomItem>(
         header: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: countInvites,
-          itemBuilder: buildInvitedItem,
+          itemBuilder: _buildInvitedItem,
         ),
         items: controller.roomItems,
         areItemsTheSame: (a, b) =>

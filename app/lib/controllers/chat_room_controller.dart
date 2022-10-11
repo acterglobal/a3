@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -9,6 +10,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Conversation,
         FileDescription,
         ImageDescription,
+        Member,
         RoomMessage,
         TimelineStream;
 import 'package:file_picker/file_picker.dart';
@@ -37,6 +39,7 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
+  List<Member> _activeMembers = [];
   StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatRoomController({required this.client}) : super();
@@ -80,12 +83,14 @@ class ChatRoomController extends GetxController {
     if (convoRoom == null) {
       messages.clear();
       typingUsers.clear();
+      _activeMembers.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
     } else {
       _currentRoom = convoRoom;
       isLoading.value = true;
+      _activeMembers = (await _currentRoom!.activeMembers()).toList();
       _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
       var msgs = await _stream!.paginateBackwards(10);
@@ -300,10 +305,19 @@ class ChatRoomController extends GetxController {
   }
 
   void _insertMessage(types.Message m) {
-    var msg = m.copyWith(
-      showStatus: true,
-      status: types.Status.delivered,
+    var receiptController = Get.find<ReceiptController>();
+    List<String> seenByList = receiptController.getSeenByList(
+      _currentRoom!.getRoomId(),
+      m.createdAt!,
     );
+    var msg = (m.author.id == client.userId().toString())
+        ? m.copyWith(
+            showStatus: true,
+            status: seenByList.length < _activeMembers.length
+                ? types.Status.delivered
+                : types.Status.seen,
+          )
+        : m;
     for (var i = 0; i < messages.length; i++) {
       if (messages[i].createdAt! < m.createdAt!) {
         messages.insert(i, msg);
@@ -356,15 +370,15 @@ class ChatRoomController extends GetxController {
           update(['Chat']);
         }
         _currentRoom!.imageBinary(eventId).then((data) async {
-          int idx = _findMessage(eventId);
+          int idx = messages.indexWhere((x) => x.id == eventId);
           if (idx != -1) {
             messages[idx] = messages[idx].copyWith(
               metadata: {
                 'binary': data.asTypedList(),
               },
             );
+            update(['Chat']);
           }
-          update(['Chat']);
         });
       }
     } else if (msgtype == 'm.location') {
@@ -383,15 +397,6 @@ class ChatRoomController extends GetxController {
       }
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
-  }
-
-  int _findMessage(String eventId) {
-    for (var i = 0; i < messages.length; i++) {
-      if (messages[i].id == eventId) {
-        return i;
-      }
-    }
-    return -1;
   }
 
   void sendButtonUpdate() {

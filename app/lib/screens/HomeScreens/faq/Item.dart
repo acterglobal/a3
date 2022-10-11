@@ -2,12 +2,11 @@ import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-
 import 'package:effektio/widgets/TagItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as m_colors;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
-import 'package:flutter/material.dart';
 
 class FaqItemScreen extends StatefulWidget {
   final Client client;

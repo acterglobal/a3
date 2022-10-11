@@ -117,23 +117,23 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<FfiBufferUint8> _userAvatar(String userId) async {
-    Member member = await widget.room.getMember(userId);
+  Future<FfiBufferUint8> _userAvatar(String uid) async {
+    Member member = await widget.room.getMember(uid);
     return member.avatar();
   }
 
-  Widget _avatarBuilder(String userId) {
+  Widget _avatarBuilder(String uid) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
         child: CustomAvatar(
-          avatar: _userAvatar(userId),
+          avatar: _userAvatar(uid),
           displayName: null,
           radius: 15,
           isGroup: false,
-          stringName: getNameFromId(userId) ?? '',
+          stringName: getNameFromId(uid) ?? '',
         ),
       ),
     );
@@ -303,7 +303,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    debugPrint('typing users empty: ${_roomController.typingUsers.isEmpty}');
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
@@ -329,13 +328,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonAccessibilityLabel: '',
               ),
               messages: _roomController.messages,
-              inputOptions: InputOptions(
-                sendButtonVisibilityMode: roomState
-                    ? SendButtonVisibilityMode.hidden
-                    : SendButtonVisibilityMode.editing,
-                onTextChanged: (value) async =>
-                    await _roomController.typingNotice(true),
-              ),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: TypeIndicator(
                   bubbleAlignment: BubbleRtlAlignment.right,

@@ -1,6 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

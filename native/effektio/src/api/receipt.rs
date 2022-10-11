@@ -23,19 +23,19 @@ use super::client::Client;
 #[derive(Clone, Debug)]
 pub struct ReceiptRecord {
     event_id: OwnedEventId,
-    user_id: OwnedUserId,
+    seen_by: OwnedUserId,
     ts: Option<MilliSecondsSinceUnixEpoch>,
 }
 
 impl ReceiptRecord {
     pub(crate) fn new(
         event_id: OwnedEventId,
-        user_id: OwnedUserId,
+        seen_by: OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) -> Self {
         ReceiptRecord {
             event_id,
-            user_id,
+            seen_by,
             ts,
         }
     }
@@ -44,8 +44,8 @@ impl ReceiptRecord {
         self.event_id.to_string()
     }
 
-    pub fn user_id(&self) -> String {
-        self.user_id.to_string()
+    pub fn seen_by(&self) -> String {
+        self.seen_by.to_string()
     }
 
     pub fn ts(&self) -> Option<u64> {
@@ -77,11 +77,11 @@ impl ReceiptEvent {
 
     pub(crate) fn add_receipt_record(
         &mut self,
-        event_id: OwnedEventId,
-        user_id: OwnedUserId,
+        event_id: &OwnedEventId,
+        seen_by: &OwnedUserId,
         ts: Option<MilliSecondsSinceUnixEpoch>,
     ) {
-        let record = ReceiptRecord::new(event_id, user_id, ts);
+        let record = ReceiptRecord::new(event_id.clone(), seen_by.clone(), ts);
         self.receipt_records.push(record);
     }
 
@@ -128,9 +128,9 @@ impl ReceiptController {
         for (event_id, event_info) in ev.content.iter() {
             info!("receipt iter: {:?}", event_id);
             if event_info.contains_key(&ReceiptType::Read) {
-                for (user_id, receipt) in event_info[&ReceiptType::Read].iter() {
+                for (seen_by, receipt) in event_info[&ReceiptType::Read].iter() {
                     info!("user receipt: {:?}", receipt);
-                    msg.add_receipt_record(event_id.clone(), user_id.clone(), receipt.ts);
+                    msg.add_receipt_record(event_id, seen_by, receipt.ts);
                 }
             }
         }

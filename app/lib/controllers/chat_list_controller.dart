@@ -38,7 +38,6 @@ class ChatListController extends GetxController {
   bool initialLoaded = false;
   StreamSubscription<FfiListConversation>? _convosSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
-  StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatListController({required this.client}) : super();
 
@@ -100,7 +99,6 @@ class ChatListController extends GetxController {
   void onClose() {
     _convosSubscription?.cancel();
     _typingSubscription?.cancel();
-    _messageSubscription?.cancel();
     super.onClose();
   }
 
@@ -134,6 +132,9 @@ class ChatListController extends GetxController {
       newItems.add(newItem);
     }
     roomItems = newItems;
+    if (!initialLoaded) {
+      initialLoaded = true;
+    }
     update(['chatlist']);
   }
 
