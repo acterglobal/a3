@@ -105,7 +105,14 @@ class _ChatListItemState extends State<ChatListItem> {
 
   Widget buildSubtitle(BuildContext context) {
     if (widget.latestMessage == null) {
-      return const SizedBox();
+      return widget.typingUsers.isEmpty
+          ? const SizedBox()
+          : Text(
+              _multiUserTextBuilder(widget.typingUsers),
+              style: ChatTheme01.latestChatStyle.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
+            );
     }
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),

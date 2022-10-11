@@ -333,6 +333,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonVisibilityMode: roomState
                     ? SendButtonVisibilityMode.hidden
                     : SendButtonVisibilityMode.editing,
+                onTextChanged: (value) async =>
+                    await _roomController.typingNotice(true),
               ),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: TypeIndicator(
