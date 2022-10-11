@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
@@ -27,7 +26,7 @@ class ChatOverview extends StatefulWidget {
 
 class _ChatOverviewState extends State<ChatOverview> {
   late int countInvites;
-  Random _random = Random();
+  final Random _random = Random();
 
   @override
   void initState() {
