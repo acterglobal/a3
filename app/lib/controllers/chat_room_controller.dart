@@ -38,7 +38,6 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  final ReceiptController _receiptController = Get.find<ReceiptController>();
   List<Member> _activeMembers = [];
   StreamSubscription<RoomMessage>? _messageSubscription;
 
@@ -297,7 +296,8 @@ class ChatRoomController extends GetxController {
   }
 
   void _insertMessage(types.Message m) {
-    List<String> seenByList = _receiptController.getSeenByList(
+    var receiptController = Get.find<ReceiptController>();
+    List<String> seenByList = receiptController.getSeenByList(
       _currentRoom!.getRoomId(),
       m.createdAt!,
     );
