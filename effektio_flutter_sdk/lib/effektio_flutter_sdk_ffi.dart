@@ -1767,6 +1767,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListReceiptRecord? __conversationUserReceiptsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationUserReceiptsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListReceiptRecord");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListReceiptRecord._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   String? __groupDisplayNameFuturePoll(
     int boxed,
     int postCobject,
@@ -4408,6 +4454,17 @@ class Api {
     int,
     int,
   )>();
+  late final _conversationUserReceiptsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Conversation_user_receipts");
+
+  late final _conversationUserReceipts =
+      _conversationUserReceiptsPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _groupDisplayNamePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5056,14 +5113,14 @@ class Api {
       _ReceiptRecordEventIdReturn Function(
     int,
   )>();
-  late final _receiptRecordUserIdPtr = _lookup<
+  late final _receiptRecordSeenByPtr = _lookup<
       ffi.NativeFunction<
-          _ReceiptRecordUserIdReturn Function(
+          _ReceiptRecordSeenByReturn Function(
     ffi.Int64,
-  )>>("__ReceiptRecord_user_id");
+  )>>("__ReceiptRecord_seen_by");
 
-  late final _receiptRecordUserId = _receiptRecordUserIdPtr.asFunction<
-      _ReceiptRecordUserIdReturn Function(
+  late final _receiptRecordSeenBy = _receiptRecordSeenByPtr.asFunction<
+      _ReceiptRecordSeenByReturn Function(
     int,
   )>();
   late final _receiptRecordTsPtr = _lookup<
@@ -5549,6 +5606,21 @@ class Api {
   late final _conversationFilePathFuturePoll =
       _conversationFilePathFuturePollPtr.asFunction<
           _ConversationFilePathFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _conversationUserReceiptsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationUserReceiptsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_user_receipts_future_poll");
+
+  late final _conversationUserReceiptsFuturePoll =
+      _conversationUserReceiptsFuturePollPtr.asFunction<
+          _ConversationUserReceiptsFuturePollReturn Function(
     int,
     int,
     int,
@@ -8101,6 +8173,23 @@ class Conversation {
     return tmp6;
   }
 
+  /// initially called to get receipt status of room members
+  Future<FfiListReceiptRecord> userReceipts() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationUserReceipts(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Conversation_user_receipts_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__conversationUserReceiptsFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -9355,11 +9444,11 @@ class ReceiptRecord {
     return tmp2;
   }
 
-  /// Get id of user that read message from peer
-  String userId() {
+  /// Get id of user that read this message
+  String seenBy() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._receiptRecordUserId(
+    final tmp1 = _api._receiptRecordSeenBy(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -10220,7 +10309,7 @@ class _ReceiptRecordEventIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _ReceiptRecordUserIdReturn extends ffi.Struct {
+class _ReceiptRecordSeenByReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -10618,6 +10707,21 @@ class _ConversationFilePathFuturePollReturn extends ffi.Struct {
   external int arg6;
   @ffi.Uint64()
   external int arg7;
+}
+
+class _ConversationUserReceiptsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
 }
 
 class _GroupDisplayNameFuturePollReturn extends ffi.Struct {

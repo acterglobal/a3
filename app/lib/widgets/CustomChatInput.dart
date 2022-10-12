@@ -2,14 +2,14 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomChatInput extends StatelessWidget {
   final Function()? onButtonPressed;
-  final controller = Get.put(ChatRoomController());
+  final controller = Get.find<ChatRoomController>();
   final bool isChatScreen;
   final String roomName;
   static const List<List<String>> attachmentNameList = [
@@ -80,7 +80,7 @@ class CustomChatInput extends StatelessWidget {
                           child: TextField(
                             onChanged: ((value) async {
                               controller.sendButtonUpdate();
-                              await controller.room.typingNotice(true);
+                              await controller.typingNotice(true);
                             }),
                             maxLines: MediaQuery.of(context).orientation ==
                                     Orientation.portrait

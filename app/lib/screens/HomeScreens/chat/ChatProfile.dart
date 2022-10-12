@@ -1,11 +1,11 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/widgets/CustomAvatar.dart';
-import 'package:effektio/widgets/GroupMember.dart';
-import 'package:effektio/widgets/InviteListView.dart';
 import 'package:effektio/screens/HomeScreens/chat/EditGroupInfo.dart';
 import 'package:effektio/screens/HomeScreens/chat/GroupLinkScreen.dart';
 import 'package:effektio/screens/HomeScreens/chat/ReqAndInvites.dart';
 import 'package:effektio/screens/HomeScreens/chat/RoomLinkSetting.dart';
+import 'package:effektio/widgets/CustomAvatar.dart';
+import 'package:effektio/widgets/GroupMember.dart';
+import 'package:effektio/widgets/InviteListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -169,7 +169,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                     ),
                     color: AppCommonTheme.darkShade,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
                       child: Column(
                         children: const [
                           Padding(
@@ -202,7 +205,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
                       child: Column(
                         children: const [
                           Padding(
@@ -235,7 +241,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 16,
+                      ),
                       child: Column(
                         children: const [
                           Padding(

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 class FaqOverviewScreen extends StatelessWidget {
   const FaqOverviewScreen({Key? key, required this.client}) : super(key: key);
+
   final Client client;
 
   @override

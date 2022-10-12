@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
@@ -15,16 +15,19 @@ class ImageSelection extends StatefulWidget {
     required this.imageList,
     required this.roomName,
   }) : super(key: key);
+
   final List imageList;
   final String roomName;
+
   @override
   State<ImageSelection> createState() => _ImageSelectionState();
 }
 
 class _ImageSelectionState extends State<ImageSelection> {
-  final controller = Get.put(ChatRoomController());
+  ChatRoomController controller = Get.find<ChatRoomController>();
   int selectedIndex = 0;
   final PageController _pageController = PageController(initialPage: 0);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
