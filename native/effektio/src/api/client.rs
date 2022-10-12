@@ -161,7 +161,7 @@ impl Client {
                         let state = state.clone();
                         let initial = initial_arc.clone();
 
-                        device_controller.process_device_events(&client, &response);
+                        device_controller.process_device_lists(&client, &response);
 
                         if !initial.load(Ordering::SeqCst) {
                             verification_controller.process_sync_events(&client, &response);
