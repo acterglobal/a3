@@ -150,7 +150,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: GetBuilder<ChatListController>(
                   id: item.conversation.getRoomId(),
-                  builder: (ChatListController controller) {
+                  builder: (ChatListController listController) {
                     return ChatListItem(
                       key: Key(item.conversation.getRoomId()),
                       room: item.conversation,
@@ -171,7 +171,7 @@ class _ChatOverviewState extends State<ChatOverview> {
               opacity: animation,
               child: GetBuilder<ChatListController>(
                 id: item.conversation.getRoomId(),
-                builder: (ChatListController controller) {
+                builder: (ChatListController listController) {
                   return ChatListItem(
                     key: Key(item.conversation.getRoomId()),
                     room: item.conversation,
@@ -201,7 +201,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 type: MaterialType.transparency,
                 child: GetBuilder<ChatListController>(
                   id: item.conversation.getRoomId(),
-                  builder: (ChatListController controller) {
+                  builder: (ChatListController listController) {
                     return ChatListItem(
                       key: Key(item.conversation.getRoomId()),
                       room: item.conversation,

@@ -6,13 +6,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
-import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
+import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -330,20 +329,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               messages: _roomController.messages,
               typingIndicatorOptions: TypingIndicatorOptions(
-                customTypingIndicator: GetBuilder<ChatListController>(
-                  id: 'typing indicator',
-                  builder: (_) {
-                    return TypeIndicator(
-                      bubbleAlignment: BubbleRtlAlignment.right,
-                      showIndicator: controller.typingUsers.isNotEmpty,
-                      options: TypingIndicatorOptions(
-                        animationSpeed: const Duration(milliseconds: 800),
-                        typingUsers: controller.typingUsers,
-                        typingMode: TypingIndicatorMode.text,
-                      ),
-                    );
-                  },
-                ),
+                customTypingIndicator: _buildTypingIndicator(),
               ),
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),
@@ -357,7 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onMessageTap: controller.handleMessageTap,
               onEndReached: roomState ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              emptyState: const EmptyPlaceholder(),
+              emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
                 attachmentButtonIcon:
@@ -396,6 +382,23 @@ class _ChatScreenState extends State<ChatScreen> {
                   )
                 : const SizedBox(),
           ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTypingIndicator() {
+    return GetBuilder<ChatRoomController>(
+      id: 'typing indicator',
+      builder: (ChatRoomController controller) {
+        return TypeIndicator(
+          bubbleAlignment: BubbleRtlAlignment.right,
+          showIndicator: controller.typingUsers.isNotEmpty,
+          options: TypingIndicatorOptions(
+            animationSpeed: const Duration(milliseconds: 800),
+            typingUsers: controller.typingUsers,
+            typingMode: TypingIndicatorMode.text,
+          ),
         );
       },
     );

@@ -81,7 +81,7 @@ class ChatListController extends GetxController {
         } else if (roomId == currentRoomId) {
           // we are in chat room page
           roomController.typingUsers = typingUsers;
-          update(['typing indicator']);
+          roomController.update(['typing indicator']);
         }
       });
     }

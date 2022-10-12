@@ -1,5 +1,4 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:flutter/material.dart';
@@ -8,21 +7,20 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-class EmptyPlaceholder extends StatelessWidget {
-  const EmptyPlaceholder({Key? key}) : super(key: key);
+class EmptyHistoryPlaceholder extends StatelessWidget {
+  const EmptyHistoryPlaceholder({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var roomController = Get.find<ChatRoomController>();
-    return GetBuilder<ChatListController>(
+    return GetBuilder<ChatRoomController>(
       id: 'typing indicator',
-      builder: (ChatListController controller) {
+      builder: (ChatRoomController controller) {
         return SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: Column(
             mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
+            children: [
               const Spacer(flex: 1),
               SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
               const SizedBox(height: 15),
@@ -36,15 +34,15 @@ class EmptyPlaceholder extends StatelessWidget {
                 style: ChatTheme01.chatBodyStyle,
               ),
               const Spacer(),
-              roomController.typingUsers.isNotEmpty
+              controller.typingUsers.isNotEmpty
                   ? Align(
                       alignment: Alignment.bottomLeft,
                       child: TypeIndicator(
                         bubbleAlignment: BubbleRtlAlignment.right,
-                        showIndicator: roomController.typingUsers.isNotEmpty,
+                        showIndicator: controller.typingUsers.isNotEmpty,
                         options: TypingIndicatorOptions(
                           animationSpeed: const Duration(milliseconds: 800),
-                          typingUsers: roomController.typingUsers,
+                          typingUsers: controller.typingUsers,
                           typingMode: TypingIndicatorMode.text,
                         ),
                       ),
