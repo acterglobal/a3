@@ -6,6 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -329,15 +330,19 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               messages: _roomController.messages,
               typingIndicatorOptions: TypingIndicatorOptions(
-                customTypingIndicator: TypeIndicator(
-                  bubbleAlignment: BubbleRtlAlignment.right,
-                  showIndicator: _roomController.typingUsers.isNotEmpty,
-                  options: TypingIndicatorOptions(
-                    animationSpeed: const Duration(milliseconds: 800),
-                    typingUsers: _roomController.typingUsers,
-                    typingMode: TypingIndicatorMode.text,
-                  ),
-                ),
+                customTypingIndicator: GetBuilder<ChatListController>(
+                    id: 'typing indicator',
+                    builder: (control) {
+                      return TypeIndicator(
+                        bubbleAlignment: BubbleRtlAlignment.right,
+                        showIndicator: controller.typingUsers.isNotEmpty,
+                        options: TypingIndicatorOptions(
+                          animationSpeed: const Duration(milliseconds: 800),
+                          typingUsers: controller.typingUsers,
+                          typingMode: TypingIndicatorMode.text,
+                        ),
+                      );
+                    }),
               ),
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),

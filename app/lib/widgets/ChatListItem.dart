@@ -53,14 +53,9 @@ class _ChatListItemState extends State<ChatListItem> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => GetBuilder<ChatListController>(
-                  id: 'typing indicator',
-                  builder: (ChatListController controller) {
-                    return ChatScreen(
-                      room: widget.room,
-                      client: widget.client,
-                    );
-                  },
+                builder: (context) => ChatScreen(
+                  room: widget.room,
+                  client: widget.client,
                 ),
               ),
             );

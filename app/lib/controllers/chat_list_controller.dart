@@ -78,18 +78,10 @@ class ChatListController extends GetxController {
           // we are in chat list page
           roomItems[idx].typingUsers = typingUsers;
           update([roomId]);
-          Future.delayed(const Duration(seconds: 4), () {
-            roomItems[idx].typingUsers.clear();
-            update([roomId]);
-          });
         } else if (roomId == currentRoomId) {
           // we are in chat room page
           roomController.typingUsers = typingUsers;
           update(['typing indicator']);
-          Future.delayed(const Duration(seconds: 4), () {
-            roomController.typingUsers.clear();
-            update(['typing indicator']);
-          });
         }
       });
     }
