@@ -253,7 +253,7 @@ impl DeviceController {
         }
     }
 
-    pub fn process_device_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
+    pub fn process_device_lists(&mut self, client: &MatrixClient, response: &SyncResponse) {
         // avoid device changed event in case that user joined room
         if response.rooms.join.is_empty() {
             for user_id in response.device_lists.changed.clone().into_iter() {
