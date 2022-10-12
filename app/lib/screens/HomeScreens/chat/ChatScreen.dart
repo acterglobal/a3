@@ -331,18 +331,19 @@ class _ChatScreenState extends State<ChatScreen> {
               messages: _roomController.messages,
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: GetBuilder<ChatListController>(
-                    id: 'typing indicator',
-                    builder: (control) {
-                      return TypeIndicator(
-                        bubbleAlignment: BubbleRtlAlignment.right,
-                        showIndicator: controller.typingUsers.isNotEmpty,
-                        options: TypingIndicatorOptions(
-                          animationSpeed: const Duration(milliseconds: 800),
-                          typingUsers: controller.typingUsers,
-                          typingMode: TypingIndicatorMode.text,
-                        ),
-                      );
-                    }),
+                  id: 'typing indicator',
+                  builder: (_) {
+                    return TypeIndicator(
+                      bubbleAlignment: BubbleRtlAlignment.right,
+                      showIndicator: controller.typingUsers.isNotEmpty,
+                      options: TypingIndicatorOptions(
+                        animationSpeed: const Duration(milliseconds: 800),
+                        typingUsers: controller.typingUsers,
+                        typingMode: TypingIndicatorMode.text,
+                      ),
+                    );
+                  },
+                ),
               ),
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),

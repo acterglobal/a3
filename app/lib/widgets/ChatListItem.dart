@@ -11,7 +11,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {

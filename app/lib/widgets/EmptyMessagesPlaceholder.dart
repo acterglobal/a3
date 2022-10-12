@@ -14,7 +14,6 @@ class EmptyPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var roomController = Get.find<ChatRoomController>();
-    debugPrint('typing users empty: ${roomController.typingUsers.isEmpty}');
     return GetBuilder<ChatListController>(
       id: 'typing indicator',
       builder: (ChatListController controller) {
