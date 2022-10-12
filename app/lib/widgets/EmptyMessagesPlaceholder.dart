@@ -17,41 +17,40 @@ class EmptyPlaceholder extends StatelessWidget {
     return GetBuilder<ChatListController>(
       id: 'typing indicator',
       builder: (ChatListController controller) {
-        return SingleChildScrollView(
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: MediaQuery.of(context).size.height * 0.20),
-                SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
-                const SizedBox(height: 10),
-                Text(
-                  '${AppLocalizations.of(context)!.noMessages} ...',
-                  style: ChatTheme01.emptyMsgTitle,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  AppLocalizations.of(context)!.startConvo,
-                  style: ChatTheme01.chatBodyStyle,
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.28),
-                roomController.typingUsers.isNotEmpty
-                    ? Align(
-                        alignment: Alignment.bottomLeft,
-                        child: TypeIndicator(
-                          bubbleAlignment: BubbleRtlAlignment.right,
-                          showIndicator: roomController.typingUsers.isNotEmpty,
-                          options: TypingIndicatorOptions(
-                            animationSpeed: const Duration(milliseconds: 800),
-                            typingUsers: roomController.typingUsers,
-                            typingMode: TypingIndicatorMode.text,
-                          ),
+        return SizedBox(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              const Spacer(flex: 1),
+              SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
+              const SizedBox(height: 15),
+              Text(
+                '${AppLocalizations.of(context)!.noMessages} ...',
+                style: ChatTheme01.emptyMsgTitle,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                AppLocalizations.of(context)!.startConvo,
+                style: ChatTheme01.chatBodyStyle,
+              ),
+              const Spacer(),
+              roomController.typingUsers.isNotEmpty
+                  ? Align(
+                      alignment: Alignment.bottomLeft,
+                      child: TypeIndicator(
+                        bubbleAlignment: BubbleRtlAlignment.right,
+                        showIndicator: roomController.typingUsers.isNotEmpty,
+                        options: TypingIndicatorOptions(
+                          animationSpeed: const Duration(milliseconds: 800),
+                          typingUsers: roomController.typingUsers,
+                          typingMode: TypingIndicatorMode.text,
                         ),
-                      )
-                    : const SizedBox(),
-              ],
-            ),
+                      ),
+                    )
+                  : const SizedBox(),
+            ],
           ),
         );
       },
