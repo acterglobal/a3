@@ -44,19 +44,22 @@ class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
   bool roomState = false;
   final Random random = Random();
-  final ChatRoomController _roomController = Get.find<ChatRoomController>();
+  final ChatRoomController roomController = Get.find<ChatRoomController>();
 
   @override
   void initState() {
     super.initState();
     roomState = random.nextBool();
-    _roomController.setCurrentRoom(widget.room);
+    roomController.setCurrentRoom(widget.room);
+    widget.room.displayName().then((value) {
+      setState(() => roomName = value);
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    _roomController.setCurrentRoom(null);
+    roomController.setCurrentRoom(null);
   }
 
   void _handleAttachmentPressed(BuildContext context) {
@@ -69,9 +72,9 @@ class _ChatScreenState extends State<ChatScreen> {
             height: 124,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
+              children: [
                 GestureDetector(
-                  onTap: () => _roomController.handleImageSelection(context),
+                  onTap: () => roomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -91,7 +94,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => _roomController.handleFileSelection(context),
+                  onTap: () => roomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -201,49 +204,9 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                FutureBuilder<String>(
-                  future: widget.room
-                      .displayName()
-                      .then((value) => roomName = value),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<String> snapshot,
-                  ) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        snapshot.requireData,
-                        overflow: TextOverflow.clip,
-                        style: ChatTheme01.chatTitleStyle,
-                      );
-                    } else {
-                      return Text(AppLocalizations.of(context)!.loadingName);
-                    }
-                  },
-                ),
+                _buildRoomName(),
                 const SizedBox(height: 5),
-                FutureBuilder<FfiListMember>(
-                  future: widget.room.activeMembers(),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<FfiListMember> snapshot,
-                  ) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
-                        style: ChatTheme01.chatBodyStyle +
-                            AppCommonTheme.primaryColor,
-                      );
-                    } else {
-                      return const SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
-                        ),
-                      );
-                    }
-                  },
-                ),
+                _buildActiveMembers(),
               ],
             ),
             actions: [
@@ -291,8 +254,38 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget _buildRoomName() {
+    if (roomName.isEmpty) {
+      return Text(AppLocalizations.of(context)!.loadingName);
+    }
+    return Text(
+      roomName,
+      overflow: TextOverflow.clip,
+      style: ChatTheme01.chatTitleStyle,
+    );
+  }
+
+  Widget _buildActiveMembers() {
+    return FutureBuilder<FfiListMember>(
+      future: widget.room.activeMembers(),
+      builder: (BuildContext context, AsyncSnapshot<FfiListMember> snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
+            style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
+          );
+        }
+        return const SizedBox(
+          height: 15,
+          width: 15,
+          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+        );
+      },
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
-    if (_roomController.isLoading.isTrue) {
+    if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
           height: 15,
@@ -327,7 +320,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: _roomController.messages,
+              messages: controller.messages,
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: _buildTypingIndicator(),
               ),
