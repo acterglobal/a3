@@ -9336,6 +9336,7 @@ class Account {
 
   Account._(this._api, this._box);
 
+  /// get user id of this account
   String userId() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
