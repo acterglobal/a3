@@ -32,14 +32,10 @@ class ReceiptUser {
 
 class ReceiptController extends GetxController {
   Client client;
-  String userId;
   StreamSubscription<ReceiptEvent>? _eventReceiver;
   final Map<String, ReceiptRoom> _rooms = {};
 
-  ReceiptController({
-    required this.client,
-    required this.userId,
-  }) : super();
+  ReceiptController({required this.client}) : super();
 
   @override
   void onInit() {
@@ -51,7 +47,7 @@ class ReceiptController extends GetxController {
         bool changed = false;
         for (var record in event.receiptRecords()) {
           String seenBy = record.seenBy();
-          if (seenBy != userId) {
+          if (seenBy != client.userId().toString()) {
             var room = _getRoom(roomId);
             room.updateUser(seenBy, record.eventId(), record.ts());
             changed = true;

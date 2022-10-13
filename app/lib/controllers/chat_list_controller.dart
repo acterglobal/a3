@@ -1,16 +1,23 @@
 import 'dart:async';
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiListConversation, RoomMessage, TypingEvent;
+    show
+        Client,
+        Conversation,
+        FfiListConversation,
+        FfiListInvitation,
+        Invitation,
+        RoomMessage,
+        TypingEvent;
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
 //Helper class.
-class RoomItem {
+class JoinedRoom {
   Conversation conversation;
   LatestMessage? latestMessage;
 
-  RoomItem({
+  JoinedRoom({
     required this.conversation,
     this.latestMessage,
   });
@@ -31,9 +38,11 @@ class LatestMessage {
 
 class ChatListController extends GetxController {
   Client client;
-  List<RoomItem> roomItems = [];
+  List<JoinedRoom> joinedRooms = [];
+  List<Invitation> invitations = [];
   bool initialLoaded = false;
   StreamSubscription<FfiListConversation>? _convosSubscription;
+  StreamSubscription<FfiListInvitation>? _invitesSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
 
   ChatListController({required this.client}) : super();
@@ -43,14 +52,18 @@ class ChatListController extends GetxController {
     super.onInit();
     if (!client.isGuest()) {
       _convosSubscription = client.conversationsRx().listen((event) {
-        _loadItems(event.toList());
+        _updateList(event.toList());
+      });
+      _invitesSubscription = client.invitationsRx().listen((event) {
+        invitations = event.toList();
+        update(['invited_list']);
       });
       _typingSubscription = client.typingEventRx()?.listen((event) {
+        String roomId = event.roomId();
         List<String> userIds = [];
         for (var userId in event.userIds()) {
           userIds.add(userId.toDartString());
         }
-        String roomId = event.roomId();
         debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
       });
     }
@@ -59,24 +72,37 @@ class ChatListController extends GetxController {
   @override
   void onClose() {
     _convosSubscription?.cancel();
+    _invitesSubscription?.cancel();
     _typingSubscription?.cancel();
     super.onClose();
   }
 
-  void _loadItems(List<Conversation> convos) {
-    List<RoomItem> newItems = [];
+  void _updateList(List<Conversation> convos) {
+    if (!initialLoaded) {
+      initialLoaded = true;
+    }
+    List<JoinedRoom> newItems = [];
     for (Conversation convo in convos) {
+      String roomId = convo.getRoomId();
+      int oldIndex = joinedRooms.indexWhere((x) {
+        return x.conversation.getRoomId() == roomId;
+      });
       RoomMessage? msg = convo.latestMessage();
       if (msg == null) {
         // prevent latest message from deleting
-        RoomItem newItem = RoomItem(
-          conversation: convo,
-          latestMessage: _getLatestMessage(convo.getRoomId()),
-        );
-        newItems.add(newItem);
+        if (oldIndex == -1) {
+          JoinedRoom newItem = JoinedRoom(conversation: convo);
+          newItems.add(newItem);
+        } else {
+          JoinedRoom newItem = JoinedRoom(
+            conversation: convo,
+            latestMessage: joinedRooms[oldIndex].latestMessage,
+          );
+          newItems.add(newItem);
+        }
         continue;
       }
-      RoomItem newItem = RoomItem(
+      JoinedRoom newItem = JoinedRoom(
         conversation: convo,
         latestMessage: LatestMessage(
           sender: msg.sender(),
@@ -86,26 +112,29 @@ class ChatListController extends GetxController {
       );
       newItems.add(newItem);
     }
-    roomItems = newItems;
-    if (!initialLoaded) {
-      initialLoaded = true;
-    }
+    joinedRooms = newItems;
     update(['chatlist']);
-  }
-
-  LatestMessage? _getLatestMessage(String roomId) {
-    int index = roomItems.indexWhere((x) {
-      return x.conversation.getRoomId() == roomId;
-    });
-    if (index != -1) {
-      return roomItems[index].latestMessage;
-    }
-    return null;
   }
 
   void moveItem(int from, int to) {
-    RoomItem item = roomItems.removeAt(from);
-    roomItems.insert(to, item);
+    JoinedRoom item = joinedRooms.removeAt(from);
+    joinedRooms.insert(to, item);
     update(['chatlist']);
+  }
+
+  Future<void> acceptInvitation(String roomId) async {
+    await client.acceptInvitation(roomId);
+    // remove item from invited list
+    // int index = invitations.indexWhere((x) => x.roomId() == roomId);
+    // invitations.removeAt(index);
+    // update(['chatlist']);
+  }
+
+  Future<void> rejectInvitation(String roomId) async {
+    await client.rejectInvitation(roomId);
+    // remove item from invited list
+    // int index = invitations.indexWhere((x) => x.roomId() == roomId);
+    // invitations.removeAt(index);
+    // update(['chatlist']);
   }
 }

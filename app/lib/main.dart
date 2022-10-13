@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
@@ -90,11 +92,12 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
-  CrossSigning? crossSigning;
+  CrossSigning? _crossSigning;
   bool isLoading = false;
 
   @override
   void initState() {
+    super.initState();
     _client = makeClient();
     _tabController = TabController(length: 5, vsync: this);
     _tabController.addListener(() {
@@ -102,29 +105,28 @@ class _EffektioHomeState extends State<EffektioHome>
         tabIndex = _tabController.index;
       });
     });
-
-    super.initState();
   }
 
   @override
   void dispose() {
-    Get.delete<ReceiptController>();
-    crossSigning?.dispose();
     super.dispose();
+    _crossSigning?.dispose();
+    Get.delete<ChatListController>();
+    Get.delete<ChatRoomController>();
+    Get.delete<ReceiptController>();
   }
 
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
-    String userId = client.userId().toString();
-
-    var receiptController = ReceiptController(client: client, userId: userId);
-    Get.put<ReceiptController>(receiptController);
 
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
-      crossSigning = CrossSigning(client: client);
+      _crossSigning = CrossSigning(client: client);
+      Get.put(ChatListController(client: client));
+      Get.put(ChatRoomController(client: client));
+      Get.put(ReceiptController(client: client));
     }
     return client;
   }

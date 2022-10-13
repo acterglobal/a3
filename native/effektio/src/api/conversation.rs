@@ -31,7 +31,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
-    client::{divide_groups_from_common, Client},
+    client::{divide_rooms_from_common, Client},
     message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
@@ -161,7 +161,7 @@ impl ConversationController {
     }
 
     pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = divide_groups_from_common(client.clone()).await;
+        let (_, convos) = divide_rooms_from_common(client.clone()).await;
         for convo in convos.iter() {
             convo.load_latest_message();
         }
@@ -185,6 +185,7 @@ impl ConversationController {
              room: MatrixRoom,
              Ctx(client): Ctx<MatrixClient>,
              Ctx(me): Ctx<ConversationController>| async move {
+                // user accepted invitation or left room
                 me.clone().process_room_member(ev, &room, &client);
             },
         );
@@ -224,23 +225,39 @@ impl ConversationController {
         room: &MatrixRoom,
         client: &MatrixClient,
     ) {
-        info!("original sync room member event: {:?}", ev);
-        let mut convos = self.conversations.lock_mut();
+        // filter only event for me
+        let user_id = client.user_id().expect("You seem to be not logged in");
+        if ev.state_key != *user_id {
+            return;
+        }
+
+        let evt = ev.clone();
+        // info!("conversation - original sync room member event: {:?}", ev);
+        let mut conversations = self.conversations.lock_mut();
         if let Some(prev_content) = ev.unsigned.prev_content {
             match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
-                    // add new room
-                    let convo = Conversation::new(Room {
-                        client: client.clone(),
-                        room: room.clone(),
-                    });
-                    convos.push(convo);
+                    // when user accepted invitation, this event is called twice
+                    // i don't know that reason
+                    // anyway i prevent this event from being called twice
+                    let idx = conversations
+                        .iter()
+                        .position(|x| x.room_id() == room.room_id());
+                    if idx.is_none() {
+                        info!("conversation - original sync room member event: {:?}", evt);
+                        // add new room
+                        let conversation = Conversation::new(Room {
+                            client: client.clone(),
+                            room: room.clone(),
+                        });
+                        conversations.insert(0, conversation);
+                    }
                 }
                 (MembershipState::Join, MembershipState::Leave) => {
                     // remove existing room
                     let room_id = room.room_id();
-                    if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                        convos.remove(idx);
+                    if let Some(idx) = conversations.iter().position(|x| x.room_id() == room_id) {
+                        conversations.remove(idx);
                     }
                 }
                 _ => {}
@@ -286,18 +303,18 @@ impl Client {
             .await?
     }
 
-    pub async fn conversation(&self, name_or_id: String) -> Result<Option<Conversation>> {
+    pub(crate) async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
                 if let Ok(room) = me.room(name_or_id) {
                     if !room.is_effektio_group().await {
-                        Ok(Some(Conversation::new(room)))
+                        Ok(Conversation::new(room))
                     } else {
                         bail!("Not a regular conversation but an effektio group!")
                     }
                 } else {
-                    Ok(None)
+                    bail!("Neither roomId nor alias provided")
                 }
             })
             .await?

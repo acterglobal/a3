@@ -9,10 +9,7 @@ use matrix_sdk::Session;
 
 use crate::platform;
 
-use super::{
-    client::{Client, ClientStateBuilder},
-    RUNTIME,
-};
+use super::{Client, ClientStateBuilder, RUNTIME};
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);

@@ -1,17 +1,22 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class InviteInfoWidget extends StatelessWidget {
+  final Client client;
   final Color avatarColor;
   final String inviter;
+  final String groupId;
   final String groupName;
 
   const InviteInfoWidget({
     Key? key,
+    required this.client,
     required this.avatarColor,
     required this.inviter,
+    required this.groupId,
     required this.groupName,
   }) : super(key: key);
 
@@ -57,7 +62,9 @@ class InviteInfoWidget extends StatelessWidget {
                 child: elevatedButton(
                   AppLocalizations.of(context)!.accept,
                   AppCommonTheme.greenButtonColor,
-                  () => {},
+                  () async {
+                    await client.acceptInvitation(groupId);
+                  },
                   AppCommonTheme.appBarTitleStyle
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
@@ -67,7 +74,9 @@ class InviteInfoWidget extends StatelessWidget {
                 child: elevatedButton(
                   AppLocalizations.of(context)!.decline,
                   AppCommonTheme.primaryColor,
-                  () => {},
+                  () async {
+                    await client.rejectInvitation(groupId);
+                  },
                   AppCommonTheme.appBarTitleStyle
                       .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
                 ),
