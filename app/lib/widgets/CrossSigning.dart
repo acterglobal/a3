@@ -160,6 +160,7 @@ class CrossSigning {
               child: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () async {
+                  // cancel verification request from other device
                   await event.cancelVerificationRequest();
                   Get.back();
                   _eventMap.remove(flowId);
@@ -191,7 +192,9 @@ class CrossSigning {
                 AppCommonTheme.greenButtonColor,
                 () async {
                   setState(() => acceptingRequest = true);
+                  // accept verification request from other device
                   await event.acceptVerificationRequest();
+                  // go to onReady status
                   Get.back();
                   Future.delayed(const Duration(milliseconds: 500), () {
                     _onKeyVerificationReady(event, true);
@@ -254,7 +257,9 @@ class CrossSigning {
               child: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () async {
+                  // cancel the current verification
                   await event.cancelVerificationRequest();
+                  // finish verification
                   Get.back();
                   _eventMap.remove(flowId);
                 },
@@ -322,8 +327,9 @@ class CrossSigning {
                 color: CrossSigningSheetTheme.primaryTextColor,
               ),
               onTap: () async {
+                // start sas verification from this device
                 await event.startSasVerification();
-                Get.back();
+                // go to onStart status
                 Future.delayed(const Duration(milliseconds: 500), () {
                   _onKeyVerificationStart(event);
                 });
@@ -357,6 +363,10 @@ class CrossSigning {
       ),
       isDismissible: false,
     );
+    // accept the sas verification that other device started
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      await event.acceptSasVerification();
+    });
   }
 
   Widget _buildOnStart(
@@ -386,7 +396,9 @@ class CrossSigning {
               child: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () async {
+                  // cancel sas verification
                   await event.cancelSasVerification();
+                  // go to onCancel status
                   Future.delayed(const Duration(milliseconds: 500), () {
                     _onKeyVerificationCancel(event, true);
                   });
@@ -482,6 +494,7 @@ class CrossSigning {
               AppLocalizations.of(context)!.sasGotIt,
               AppCommonTheme.greenButtonColor,
               () {
+                // finish verification
                 Get.back();
                 _eventMap.remove(flowId);
               },
@@ -531,6 +544,7 @@ class CrossSigning {
               AppLocalizations.of(context)!.sasGotIt,
               AppCommonTheme.greenButtonColor,
               () {
+                // finish verification
                 Get.back();
                 _eventMap.remove(flowId);
               },
@@ -662,8 +676,9 @@ class CrossSigning {
               child: IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () async {
+                  // cancel key verification
                   await event.cancelVerificationKey();
-                  Get.back();
+                  // go to onCancel status
                   Future.delayed(const Duration(milliseconds: 500), () {
                     _onKeyVerificationCancel(event, true);
                   });
@@ -739,7 +754,9 @@ class CrossSigning {
                       AppLocalizations.of(context)!.verificationSasDoNotMatch,
                       CrossSigningSheetTheme.redButtonColor,
                       () async {
+                        // mismatch sas verification
                         await event.mismatchSasVerification();
+                        // go to onCancel status
                         Get.back();
                         Future.delayed(const Duration(milliseconds: 500), () {
                           _onKeyVerificationCancel(event, true);
@@ -757,9 +774,12 @@ class CrossSigning {
                       CrossSigningSheetTheme.greenButtonColor,
                       () async {
                         setState(() => waitForMatch = true);
+                        // confirm sas verification
                         await event.confirmSasVerification();
-                        Get.back();
+                        // close dialog
                         setState(() => waitForMatch = false);
+                        // go to onMac status
+                        Get.back();
                         Future.delayed(const Duration(milliseconds: 500), () {
                           _onKeyVerificationMac(event);
                         });
@@ -851,6 +871,7 @@ class CrossSigning {
               AppLocalizations.of(context)!.sasGotIt,
               CrossSigningSheetTheme.greenButtonColor,
               () {
+                // finish verification
                 Get.back();
                 _eventMap.remove(flowId);
               },
