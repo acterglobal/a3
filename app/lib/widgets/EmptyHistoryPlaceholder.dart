@@ -16,34 +16,44 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
       id: 'typing indicator',
       builder: (ChatRoomController controller) {
         return SizedBox(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
+          child: Stack(
             children: [
-              const Spacer(flex: 1),
-              SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
-              const SizedBox(height: 15),
-              Text(
-                '${AppLocalizations.of(context)!.noMessages} ...',
-                style: ChatTheme01.emptyMsgTitle,
+              Positioned.fill(
+                child: Align(
+                  alignment: const Alignment(0.0, -0.25),
+                  child: SvgPicture.asset('assets/images/emptyPlaceholder.svg'),
+                ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                AppLocalizations.of(context)!.startConvo,
-                style: ChatTheme01.chatBodyStyle,
+              Positioned.fill(
+                child: Align(
+                  alignment: const Alignment(0.0, 0.15),
+                  child: Text(
+                    '${AppLocalizations.of(context)!.noMessages} ...',
+                    style: ChatTheme01.emptyMsgTitle,
+                  ),
+                ),
               ),
-              const Spacer(),
+              Positioned.fill(
+                child: Align(
+                  alignment: const Alignment(0.0, 0.25),
+                  child: Text(
+                    AppLocalizations.of(context)!.startConvo,
+                    style: ChatTheme01.chatBodyStyle,
+                  ),
+                ),
+              ),
               controller.typingUsers.isNotEmpty
-                  ? Align(
-                      alignment: Alignment.bottomLeft,
-                      child: TypeIndicator(
-                        bubbleAlignment: BubbleRtlAlignment.right,
-                        showIndicator: controller.typingUsers.isNotEmpty,
-                        options: TypingIndicatorOptions(
-                          animationSpeed: const Duration(milliseconds: 800),
-                          typingUsers: controller.typingUsers,
-                          typingMode: TypingIndicatorMode.text,
+                  ? Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: TypeIndicator(
+                          bubbleAlignment: BubbleRtlAlignment.right,
+                          showIndicator: controller.typingUsers.isNotEmpty,
+                          options: TypingIndicatorOptions(
+                            animationSpeed: const Duration(milliseconds: 800),
+                            typingUsers: controller.typingUsers,
+                            typingMode: TypingIndicatorMode.text,
+                          ),
                         ),
                       ),
                     )
