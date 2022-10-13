@@ -32,6 +32,10 @@ impl RoomMessage {
         self.inner.event_id.to_string()
     }
 
+    pub fn room_id(&self) -> String {
+        self.room.room_id().to_string()
+    }
+
     pub fn body(&self) -> String {
         self.fallback.clone()
     }

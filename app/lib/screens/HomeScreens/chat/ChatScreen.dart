@@ -10,8 +10,9 @@ import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
-import 'package:effektio/widgets/EmptyMessagesPlaceholder.dart';
+import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
+import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8, FfiListMember, Member;
 import 'package:flutter/material.dart';
@@ -40,19 +41,22 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
-  ChatRoomController chatRoomController = Get.find<ChatRoomController>();
-  ChatListController chatListController = Get.find<ChatListController>();
+  ChatRoomController roomController = Get.find<ChatRoomController>();
+  ChatListController listController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    chatRoomController.reset(widget.room);
+    roomController.setCurrentRoom(widget.room);
+    widget.room.displayName().then((value) {
+      setState(() => roomName = value);
+    });
   }
 
   @override
   void dispose() {
-    chatRoomController.reset(null);
     super.dispose();
+    roomController.setCurrentRoom(null);
   }
 
   void _handleAttachmentPressed(BuildContext context) {
@@ -65,9 +69,9 @@ class _ChatScreenState extends State<ChatScreen> {
             height: 124,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
+              children: [
                 GestureDetector(
-                  onTap: () => chatRoomController.handleImageSelection(context),
+                  onTap: () => roomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -87,7 +91,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 const SizedBox(height: 10),
                 GestureDetector(
-                  onTap: () => chatRoomController.handleFileSelection(context),
+                  onTap: () => roomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
                       Padding(
@@ -197,49 +201,9 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                FutureBuilder<String>(
-                  future: widget.room
-                      .displayName()
-                      .then((value) => roomName = value),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<String> snapshot,
-                  ) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        snapshot.requireData,
-                        overflow: TextOverflow.clip,
-                        style: ChatTheme01.chatTitleStyle,
-                      );
-                    } else {
-                      return Text(AppLocalizations.of(context)!.loadingName);
-                    }
-                  },
-                ),
+                _buildRoomName(),
                 const SizedBox(height: 5),
-                FutureBuilder<FfiListMember>(
-                  future: widget.room.activeMembers(),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<FfiListMember> snapshot,
-                  ) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
-                        style: ChatTheme01.chatBodyStyle +
-                            AppCommonTheme.primaryColor,
-                      );
-                    } else {
-                      return const SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
-                        ),
-                      );
-                    }
-                  },
-                ),
+                _buildActiveMembers(),
               ],
             ),
             actions: [
@@ -287,8 +251,38 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget _buildRoomName() {
+    if (roomName.isEmpty) {
+      return Text(AppLocalizations.of(context)!.loadingName);
+    }
+    return Text(
+      roomName,
+      overflow: TextOverflow.clip,
+      style: ChatTheme01.chatTitleStyle,
+    );
+  }
+
+  Widget _buildActiveMembers() {
+    return FutureBuilder<FfiListMember>(
+      future: widget.room.activeMembers(),
+      builder: (BuildContext context, AsyncSnapshot<FfiListMember> snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
+            style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
+          );
+        }
+        return const SizedBox(
+          height: 15,
+          width: 15,
+          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+        );
+      },
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
-    if (chatRoomController.isLoading.isTrue) {
+    if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
           height: 15,
@@ -297,8 +291,9 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    int wasInvited = chatListController.invitations
-        .indexWhere((x) => x.roomId() == widget.room.getRoomId());
+    int wasInvited = listController.invitations.indexWhere((x) {
+      return x.roomId() == widget.room.getRoomId();
+    });
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
@@ -316,9 +311,6 @@ class _ChatScreenState extends State<ChatScreen> {
                   controller.sendButtonUpdate();
                 },
               ),
-              scrollController: ScrollController(
-                initialScrollOffset: 10,
-              ),
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
                 attachmentButtonAccessibilityLabel: '',
@@ -326,20 +318,16 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: chatRoomController.messages,
-              sendButtonVisibilityMode: wasInvited != -1
-                  ? SendButtonVisibilityMode.hidden
-                  : SendButtonVisibilityMode.editing,
+              messages: controller.messages,
+              typingIndicatorOptions: TypingIndicatorOptions(
+                customTypingIndicator: _buildTypingIndicator(),
+              ),
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),
               disableImageGallery: wasInvited != -1,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
-              //Whenever users starts typing on keyboard, this will trigger the function
-              onTextChanged: (text) async {
-                // await controller.room.typingNotice(true);
-              },
               showUserAvatars: true,
               onAttachmentPressed: () => _handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
@@ -347,7 +335,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached:
                   wasInvited != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              emptyState: const EmptyPlaceholder(),
+              emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
                 attachmentButtonIcon:
@@ -381,16 +369,31 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: InviteInfoWidget(
                       client: widget.client,
                       avatarColor: Colors.white,
-                      inviter:
-                          chatListController.invitations[wasInvited].sender(),
-                      groupId:
-                          chatListController.invitations[wasInvited].roomId(),
+                      inviter: listController.invitations[wasInvited].sender(),
+                      groupId: listController.invitations[wasInvited].roomId(),
                       groupName:
-                          chatListController.invitations[wasInvited].roomName(),
+                          listController.invitations[wasInvited].roomName(),
                     ),
                   )
                 : const SizedBox(),
           ],
+        );
+      },
+    );
+  }
+
+  Widget _buildTypingIndicator() {
+    return GetBuilder<ChatRoomController>(
+      id: 'typing indicator',
+      builder: (ChatRoomController controller) {
+        return TypeIndicator(
+          bubbleAlignment: BubbleRtlAlignment.right,
+          showIndicator: controller.typingUsers.isNotEmpty,
+          options: TypingIndicatorOptions(
+            animationSpeed: const Duration(milliseconds: 800),
+            typingUsers: controller.typingUsers,
+            typingMode: TypingIndicatorMode.text,
+          ),
         );
       },
     );

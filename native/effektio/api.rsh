@@ -94,6 +94,9 @@ object RoomMessage {
     /// Unique ID of this event
     fn event_id() -> string;
 
+    /// room ID of this event
+    fn room_id() -> string;
+
     /// The User, who sent that event
     fn sender() -> string;
 
@@ -168,7 +171,7 @@ object Conversation {
     /// Get the timeline for the room
     fn timeline() -> Future<Result<TimelineStream>>;
 
-    // the members currently in the room
+    /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
@@ -259,6 +262,7 @@ object Member {
 }
 
 object Account {
+    /// get user id of this account
     fn user_id() -> string;
 
     /// The display_name of the account

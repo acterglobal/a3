@@ -126,6 +126,28 @@ class EffektioChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
+    UnreadHeaderTheme unreadHeaderTheme = const UnreadHeaderTheme(
+      color: secondary,
+      textStyle: TextStyle(
+        color: neutral2,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        height: 1.333,
+      ),
+    ),
+    TypingIndicatorTheme typingIndicatorTheme = const TypingIndicatorTheme(
+      animatedCirclesColor: Color(0xFFFFFFFF),
+      animatedCircleSize: 8.0,
+      bubbleColor: Color(0xFF333540),
+      countAvatarColor: Color(0xFFDA88A1),
+      countTextColor: Color(0xFFFFFFFF),
+      bubbleBorder: BorderRadius.all(Radius.circular(27.0)),
+      multipleUserTextStyle: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: neutral2,
+      ),
+    ),
   }) : super(
           attachmentButtonIcon: attachmentButtonIcon,
           attachmentButtonMargin: attachmentButtonMargin,
@@ -180,5 +202,7 @@ class EffektioChatTheme extends ChatTheme {
           userAvatarNameColors: userAvatarNameColors,
           userAvatarTextStyle: userAvatarTextStyle,
           userNameTextStyle: userNameTextStyle,
+          unreadHeaderTheme: unreadHeaderTheme,
+          typingIndicatorTheme: typingIndicatorTheme,
         );
 }

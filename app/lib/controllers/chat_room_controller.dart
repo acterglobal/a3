@@ -27,6 +27,7 @@ import 'package:permission_handler/permission_handler.dart';
 class ChatRoomController extends GetxController {
   Client client;
   List<types.Message> messages = [];
+  List<types.User> typingUsers = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
   int _page = 0;
@@ -53,11 +54,18 @@ class ChatRoomController extends GetxController {
       }
     });
     _messageSubscription = client.messageEventRx()?.listen((event) {
+      // the latest message is dealt in convo receiver of ChatListController
+      // here manage only its message history
       if (_currentRoom != null) {
-        if (event.sender() != client.userId().toString()) {
-          _loadMessage(event);
+        // filter only message of this room
+        if (event.roomId() == _currentRoom!.getRoomId()) {
+          // filter only message from other not me
+          // it is processed in handleSendPressed
+          if (event.sender() != client.userId().toString()) {
+            _loadMessage(event);
+            update(['Chat']);
+          }
         }
-        update(['Chat']);
       }
     });
   }
@@ -71,8 +79,15 @@ class ChatRoomController extends GetxController {
   }
 
   //get the timeline of room
-  Future<void> reset(Conversation? convoRoom) async {
-    if (convoRoom != null) {
+  Future<void> setCurrentRoom(Conversation? convoRoom) async {
+    if (convoRoom == null) {
+      messages.clear();
+      typingUsers.clear();
+      _activeMembers.clear();
+      _stream = null;
+      _page = 0;
+      _currentRoom = null;
+    } else {
       _currentRoom = convoRoom;
       isLoading.value = true;
       _activeMembers = (await _currentRoom!.activeMembers()).toList();
@@ -83,12 +98,6 @@ class ChatRoomController extends GetxController {
         _loadMessage(message);
       }
       isLoading.value = false;
-    } else {
-      messages.clear();
-      _stream = null;
-      _page = 0;
-      _currentRoom = null;
-      _activeMembers.clear();
     }
   }
 
@@ -101,12 +110,12 @@ class ChatRoomController extends GetxController {
     types.TextMessage message,
     types.PreviewData previewData,
   ) {
-    final index = messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (messages[index] as types.TextMessage)
-        .copyWith(previewData: previewData);
+    final idx = messages.indexWhere((element) => element.id == message.id);
+    final updatedMessage =
+        (messages[idx] as types.TextMessage).copyWith(previewData: previewData);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      messages[index] = updatedMessage;
+      messages[idx] = updatedMessage;
       update(['Chat']);
     });
   }
@@ -396,6 +405,9 @@ class ChatRoomController extends GetxController {
   }
 
   Future<bool> typingNotice(bool typing) async {
+    if (_currentRoom == null) {
+      return Future.value(false);
+    }
     return await _currentRoom!.typingNotice(typing);
   }
 }

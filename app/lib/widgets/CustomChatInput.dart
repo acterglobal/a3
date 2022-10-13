@@ -9,17 +9,16 @@ import 'package:themed/themed.dart';
 
 class CustomChatInput extends StatelessWidget {
   final Function()? onButtonPressed;
-  final controller = Get.find<ChatRoomController>();
   final bool isChatScreen;
   final String roomName;
-  static const List<List<String>> attachmentNameList = [
+  static const List<List<String>> _attachmentNameList = [
     ['camera', 'Camera'],
     ['gif', 'GIF'],
     ['document', 'File'],
     ['location', 'Location'],
   ];
 
-  CustomChatInput({
+  const CustomChatInput({
     Key? key,
     required this.isChatScreen,
     this.onButtonPressed,
@@ -28,11 +27,11 @@ class CustomChatInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     return Column(
       children: [
         GetBuilder<ChatRoomController>(
-          builder: (control) {
+          builder: (ChatRoomController controller) {
             return Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 15),
@@ -157,12 +156,11 @@ class CustomChatInput extends StatelessWidget {
             );
           },
         ),
-        EmojiPickerWidget(controller: controller, size: _size),
+        EmojiPickerWidget(size: size),
         AttachmentWidget(
-          controller: controller,
-          attachmentNameList: attachmentNameList,
+          attachmentNameList: _attachmentNameList,
           roomName: roomName,
-          size: _size,
+          size: size,
         ),
       ],
     );
@@ -170,14 +168,13 @@ class CustomChatInput extends StatelessWidget {
 }
 
 class AttachmentWidget extends StatelessWidget {
-  final ChatRoomController controller;
   final List<List<String>> attachmentNameList;
   final String roomName;
   final Size size;
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
 
-  const AttachmentWidget({
+  AttachmentWidget({
     Key? key,
-    required this.controller,
     required this.attachmentNameList,
     required this.roomName,
     required this.size,
@@ -187,7 +184,7 @@ class AttachmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !controller.isAttachmentVisible.value,
+        offstage: !_roomController.isAttachmentVisible.value,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           width: double.infinity,
@@ -235,8 +232,9 @@ class AttachmentWidget extends StatelessWidget {
                           onTap: () {
                             switch (item[0]) {
                               case 'camera':
-                                controller.isAttachmentVisible.value = false;
-                                controller.handleMultipleImageSelection(
+                                _roomController.isAttachmentVisible.value =
+                                    false;
+                                _roomController.handleMultipleImageSelection(
                                   context,
                                   roomName,
                                 );
@@ -245,7 +243,7 @@ class AttachmentWidget extends StatelessWidget {
                                 //gif handle
                                 break;
                               case 'document':
-                                controller.handleFileSelection(context);
+                                _roomController.handleFileSelection(context);
                                 break;
                               case 'location':
                                 //location handle
@@ -289,34 +287,30 @@ class AttachmentWidget extends StatelessWidget {
 }
 
 class EmojiPickerWidget extends StatelessWidget {
-  final ChatRoomController controller;
-  final Size size;
+  EmojiPickerWidget({Key? key, required this.size}) : super(key: key);
 
-  const EmojiPickerWidget({
-    Key? key,
-    required this.controller,
-    required this.size,
-  }) : super(key: key);
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
+  final Size size;
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !controller.isEmojiVisible.value,
+        offstage: !_roomController.isEmojiVisible.value,
         child: SizedBox(
           height: size.height * 0.3,
           child: EmojiPicker(
             onEmojiSelected: (category, emoji) {
-              controller.textEditingController.text += emoji.emoji;
-              controller.sendButtonUpdate();
+              _roomController.textEditingController.text += emoji.emoji;
+              _roomController.sendButtonUpdate();
             },
             onBackspacePressed: () {
-              controller.textEditingController.text = controller
+              _roomController.textEditingController.text = _roomController
                   .textEditingController.text.characters
                   .skipLast(1)
                   .string;
-              if (controller.textEditingController.text.isEmpty) {
-                controller.sendButtonUpdate();
+              if (_roomController.textEditingController.text.isEmpty) {
+                _roomController.sendButtonUpdate();
               }
             },
             config: Config(

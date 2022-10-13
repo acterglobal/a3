@@ -168,10 +168,17 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: ChatListItem(
-                    client: widget.client,
-                    room: item.conversation,
-                    latestMessage: item.latestMessage,
+                  child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (ChatListController listController) {
+                      return ChatListItem(
+                        key: Key(item.conversation.getRoomId()),
+                        room: item.conversation,
+                        latestMessage: item.latestMessage,
+                        client: widget.client,
+                        typingUsers: item.typingUsers,
+                      );
+                    },
                   ),
                 ),
               );
@@ -182,10 +189,17 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: ChatListItem(
-                  client: widget.client,
-                  room: item.conversation,
-                  latestMessage: item.latestMessage,
+                child: GetBuilder<ChatListController>(
+                  id: item.conversation.getRoomId(),
+                  builder: (ChatListController listController) {
+                    return ChatListItem(
+                      key: Key(item.conversation.getRoomId()),
+                      room: item.conversation,
+                      latestMessage: item.latestMessage,
+                      client: widget.client,
+                      typingUsers: item.typingUsers,
+                    );
+                  },
                 ),
               );
             },
@@ -205,10 +219,17 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: ChatListItem(
-                    client: widget.client,
-                    room: item.conversation,
-                    latestMessage: item.latestMessage,
+                  child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (ChatListController listController) {
+                      return ChatListItem(
+                        key: Key(item.conversation.getRoomId()),
+                        room: item.conversation,
+                        latestMessage: item.latestMessage,
+                        client: widget.client,
+                        typingUsers: item.typingUsers,
+                      );
+                    },
                   ),
                 ),
               );

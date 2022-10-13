@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
@@ -9,13 +11,14 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Invitation,
         RoomMessage,
         TypingEvent;
-import 'package:flutter/foundation.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
 //Helper class.
 class JoinedRoom {
   Conversation conversation;
   LatestMessage? latestMessage;
+  List<types.User> typingUsers = [];
 
   JoinedRoom({
     required this.conversation,
@@ -52,6 +55,7 @@ class ChatListController extends GetxController {
     super.onInit();
     if (!client.isGuest()) {
       _convosSubscription = client.conversationsRx().listen((event) {
+        // process the latest message here
         _updateList(event.toList());
       });
       _invitesSubscription = client.invitationsRx().listen((event) {
@@ -60,11 +64,38 @@ class ChatListController extends GetxController {
       });
       _typingSubscription = client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
-        List<String> userIds = [];
-        for (var userId in event.userIds()) {
-          userIds.add(userId.toDartString());
+        int idx = joinedRooms.indexWhere((x) {
+          return x.conversation.getRoomId() == roomId;
+        });
+        if (idx == -1) {
+          return;
         }
-        debugPrint('typing event ' + roomId + ': ' + userIds.join(', '));
+        List<types.User> typingUsers = [];
+        for (var userId in event.userIds()) {
+          String uid = userId.toDartString();
+          if (uid == client.userId().toString()) {
+            // filter out my typing
+            continue;
+          }
+          var user = types.User(
+            id: uid,
+            firstName: getNameFromId(uid),
+          );
+          typingUsers.add(user);
+        }
+        // will not ignore empty list
+        // because empty list means that peer stopped typing
+        var roomController = Get.find<ChatRoomController>();
+        String? currentRoomId = roomController.currentRoomId();
+        if (currentRoomId == null) {
+          // we are in chat list page
+          joinedRooms[idx].typingUsers = typingUsers;
+          update([roomId]);
+        } else if (roomId == currentRoomId) {
+          // we are in chat room page
+          roomController.typingUsers = typingUsers;
+          roomController.update(['typing indicator']);
+        }
       });
     }
   }
@@ -83,33 +114,27 @@ class ChatListController extends GetxController {
     }
     List<JoinedRoom> newItems = [];
     for (Conversation convo in convos) {
+      JoinedRoom newItem = JoinedRoom(conversation: convo);
       String roomId = convo.getRoomId();
-      int oldIndex = joinedRooms.indexWhere((x) {
+      int idx = joinedRooms.indexWhere((x) {
         return x.conversation.getRoomId() == roomId;
       });
       RoomMessage? msg = convo.latestMessage();
       if (msg == null) {
         // prevent latest message from deleting
-        if (oldIndex == -1) {
-          JoinedRoom newItem = JoinedRoom(conversation: convo);
-          newItems.add(newItem);
-        } else {
-          JoinedRoom newItem = JoinedRoom(
-            conversation: convo,
-            latestMessage: joinedRooms[oldIndex].latestMessage,
-          );
-          newItems.add(newItem);
+        if (idx != -1) {
+          newItem.latestMessage = joinedRooms[idx].latestMessage;
         }
-        continue;
-      }
-      JoinedRoom newItem = JoinedRoom(
-        conversation: convo,
-        latestMessage: LatestMessage(
+      } else {
+        newItem.latestMessage = LatestMessage(
           sender: msg.sender(),
           body: msg.body(),
           originServerTs: msg.originServerTs(),
-        ),
-      );
+        );
+      }
+      if (idx != -1) {
+        newItem.typingUsers = joinedRooms[idx].typingUsers;
+      }
       newItems.add(newItem);
     }
     joinedRooms = newItems;
@@ -120,21 +145,5 @@ class ChatListController extends GetxController {
     JoinedRoom item = joinedRooms.removeAt(from);
     joinedRooms.insert(to, item);
     update(['chatlist']);
-  }
-
-  Future<void> acceptInvitation(String roomId) async {
-    await client.acceptInvitation(roomId);
-    // remove item from invited list
-    // int index = invitations.indexWhere((x) => x.roomId() == roomId);
-    // invitations.removeAt(index);
-    // update(['chatlist']);
-  }
-
-  Future<void> rejectInvitation(String roomId) async {
-    await client.rejectInvitation(roomId);
-    // remove item from invited list
-    // int index = invitations.indexWhere((x) => x.roomId() == roomId);
-    // invitations.removeAt(index);
-    // update(['chatlist']);
   }
 }
