@@ -3,17 +3,24 @@ import 'dart:async';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiListConversation, RoomMessage, TypingEvent;
+    show
+        Client,
+        Conversation,
+        FfiListConversation,
+        FfiListInvitation,
+        Invitation,
+        RoomMessage,
+        TypingEvent;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
 //Helper class.
-class RoomItem {
+class JoinedRoom {
   Conversation conversation;
   LatestMessage? latestMessage;
   List<types.User> typingUsers = [];
 
-  RoomItem({
+  JoinedRoom({
     required this.conversation,
     this.latestMessage,
   });
@@ -34,9 +41,11 @@ class LatestMessage {
 
 class ChatListController extends GetxController {
   Client client;
-  List<RoomItem> roomItems = [];
+  List<JoinedRoom> joinedRooms = [];
+  List<Invitation> invitations = [];
   bool initialLoaded = false;
   StreamSubscription<FfiListConversation>? _convosSubscription;
+  StreamSubscription<FfiListInvitation>? _invitesSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
 
   ChatListController({required this.client}) : super();
@@ -49,9 +58,13 @@ class ChatListController extends GetxController {
         // process the latest message here
         _updateList(event.toList());
       });
+      _invitesSubscription = client.invitationsRx().listen((event) {
+        invitations = event.toList();
+        update(['invited_list']);
+      });
       _typingSubscription = client.typingEventRx()?.listen((event) {
         String roomId = event.roomId();
-        int idx = roomItems.indexWhere((x) {
+        int idx = joinedRooms.indexWhere((x) {
           return x.conversation.getRoomId() == roomId;
         });
         if (idx == -1) {
@@ -76,7 +89,7 @@ class ChatListController extends GetxController {
         String? currentRoomId = roomController.currentRoomId();
         if (currentRoomId == null) {
           // we are in chat list page
-          roomItems[idx].typingUsers = typingUsers;
+          joinedRooms[idx].typingUsers = typingUsers;
           update([roomId]);
         } else if (roomId == currentRoomId) {
           // we are in chat room page
@@ -90,6 +103,7 @@ class ChatListController extends GetxController {
   @override
   void onClose() {
     _convosSubscription?.cancel();
+    _invitesSubscription?.cancel();
     _typingSubscription?.cancel();
     super.onClose();
   }
@@ -98,18 +112,18 @@ class ChatListController extends GetxController {
     if (!initialLoaded) {
       initialLoaded = true;
     }
-    List<RoomItem> newItems = [];
+    List<JoinedRoom> newItems = [];
     for (Conversation convo in convos) {
-      RoomItem newItem = RoomItem(conversation: convo);
+      JoinedRoom newItem = JoinedRoom(conversation: convo);
       String roomId = convo.getRoomId();
-      int idx = roomItems.indexWhere((x) {
+      int idx = joinedRooms.indexWhere((x) {
         return x.conversation.getRoomId() == roomId;
       });
       RoomMessage? msg = convo.latestMessage();
       if (msg == null) {
         // prevent latest message from deleting
         if (idx != -1) {
-          newItem.latestMessage = roomItems[idx].latestMessage;
+          newItem.latestMessage = joinedRooms[idx].latestMessage;
         }
       } else {
         newItem.latestMessage = LatestMessage(
@@ -119,20 +133,17 @@ class ChatListController extends GetxController {
         );
       }
       if (idx != -1) {
-        newItem.typingUsers = roomItems[idx].typingUsers;
+        newItem.typingUsers = joinedRooms[idx].typingUsers;
       }
       newItems.add(newItem);
     }
-    roomItems = newItems;
-    if (!initialLoaded) {
-      initialLoaded = true;
-    }
+    joinedRooms = newItems;
     update(['chatlist']);
   }
 
   void moveItem(int from, int to) {
-    RoomItem item = roomItems.removeAt(from);
-    roomItems.insert(to, item);
+    JoinedRoom item = joinedRooms.removeAt(from);
+    joinedRooms.insert(to, item);
     update(['chatlist']);
   }
 }

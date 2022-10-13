@@ -369,7 +369,7 @@ class ChatRoomController extends GetxController {
         if (isLoading.isFalse) {
           update(['Chat']);
         }
-        _currentRoom!.imageBinary(eventId).then((data) async {
+        _currentRoom!.imageBinary(eventId).then((data) {
           int idx = messages.indexWhere((x) => x.id == eventId);
           if (idx != -1) {
             messages[idx] = messages[idx].copyWith(

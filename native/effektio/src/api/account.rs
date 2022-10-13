@@ -3,9 +3,10 @@ use matrix_sdk::{media::MediaFormat, Account as MatrixAccount};
 
 use super::{api::FfiBuffer, RUNTIME};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Account {
     account: MatrixAccount,
+    user_id: String,
 }
 
 impl std::ops::Deref for Account {
@@ -16,8 +17,12 @@ impl std::ops::Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: MatrixAccount) -> Self {
-        Account { account }
+    pub fn new(account: MatrixAccount, user_id: String) -> Self {
+        Account { account, user_id }
+    }
+
+    pub fn user_id(&self) -> String {
+        self.user_id.clone()
     }
 
     pub async fn display_name(&self) -> Result<String> {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
@@ -92,7 +92,7 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> _client;
   int tabIndex = 0;
   late TabController _tabController;
-  CrossSigning? crossSigning;
+  CrossSigning? _crossSigning;
   bool isLoading = false;
 
   @override
@@ -110,7 +110,7 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   void dispose() {
     super.dispose();
-    crossSigning?.dispose();
+    _crossSigning?.dispose();
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
@@ -123,7 +123,7 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
-      crossSigning = CrossSigning(client: client);
+      _crossSigning = CrossSigning(client: client);
       Get.put(ChatListController(client: client));
       Get.put(ChatRoomController(client: client));
       Get.put(ReceiptController(client: client));

@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
-use log::debug;
+use log::{debug, error, info};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -13,7 +13,7 @@ use matrix_sdk::{
         },
         EventId, UInt, UserId,
     },
-    Client as MatrixClient,
+    Client as MatrixClient, RoomType,
 };
 use pulldown_cmark::{
     html,
@@ -23,8 +23,11 @@ use pulldown_cmark::{
     Options, Parser, Tag,
 };
 use std::{fs::File, io::Write, path::PathBuf};
+use tokio::time::{sleep, Duration};
 
-use super::{api::FfiBuffer, message::RoomMessage, stream::TimelineStream, RUNTIME};
+use super::{
+    account::Account, api::FfiBuffer, message::RoomMessage, stream::TimelineStream, RUNTIME,
+};
 
 pub struct Member {
     pub(crate) member: matrix_sdk::room::RoomMember,
@@ -103,12 +106,14 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(r.active_members()
+                let members = r
+                    .active_members()
                     .await
                     .context("No members")?
                     .into_iter()
                     .map(|member| Member { member })
-                    .collect())
+                    .collect();
+                Ok(members)
             })
             .await?
     }
@@ -117,12 +122,14 @@ impl Room {
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
-                Ok(r.active_members_no_sync()
+                let members = r
+                    .active_members_no_sync()
                     .await
                     .context("No members")?
                     .into_iter()
                     .map(|member| Member { member })
-                    .collect())
+                    .collect();
+                Ok(members)
             })
             .await?
     }
@@ -147,12 +154,9 @@ impl Room {
                     .timeline()
                     .await
                     .context("Failed acquiring timeline streams")?;
-                Ok(TimelineStream::new(
-                    Box::pin(forward),
-                    Box::pin(backward),
-                    client,
-                    room,
-                ))
+                let stream =
+                    TimelineStream::new(Box::pin(forward), Box::pin(backward), client, room);
+                Ok(stream)
             })
             .await?
     }
@@ -259,6 +263,89 @@ impl Room {
                     .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
                 Ok(r.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub fn room_type(&self) -> String {
+        match self.room.room_type() {
+            RoomType::Joined => "joined".to_owned(),
+            RoomType::Left => "left".to_owned(),
+            RoomType::Invited => "invited".to_owned(),
+        }
+    }
+
+    pub async fn invite_user(&self, user_id: String) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let user = <&UserId>::try_from(user_id.as_str()).unwrap();
+                room.invite_user_by_id(user).await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn join(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Left(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't join a room we are not left")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                room.join().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn leave(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't leave a room we are not joined")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                room.leave().await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn get_invitees(&self) -> Result<Vec<Account>> {
+        let my_client = self.client.clone();
+        let room = if let MatrixRoom::Invited(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't get a room we are not invited")
+        };
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let invited = my_client
+                    .store()
+                    .get_invited_user_ids(room.room_id())
+                    .await
+                    .unwrap();
+                let mut accounts: Vec<Account> = vec![];
+                for user_id in invited.iter() {
+                    let other_client = MatrixClient::builder()
+                        .server_name(user_id.server_name())
+                        .build()
+                        .await
+                        .unwrap();
+                    accounts.push(Account::new(other_client.account(), user_id.to_string()));
+                }
+                Ok(accounts)
             })
             .await?
     }

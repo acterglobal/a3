@@ -14,17 +14,17 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
+  final Client client;
   final Conversation room;
   final LatestMessage? latestMessage;
   final List<types.User> typingUsers;
-  final Client client;
 
   const ChatListItem({
     Key? key,
+    required this.client,
     required this.room,
     this.latestMessage,
     required this.typingUsers,
-    required this.client,
   }) : super(key: key);
 
   @override
@@ -53,8 +53,8 @@ class _ChatListItemState extends State<ChatListItem> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChatScreen(
-                  room: widget.room,
                   client: widget.client,
+                  room: widget.room,
                 ),
               ),
             );

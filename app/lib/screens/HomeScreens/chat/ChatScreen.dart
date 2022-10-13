@@ -1,11 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -27,13 +26,13 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Conversation room;
   final Client client;
+  final Conversation room;
 
   const ChatScreen({
     Key? key,
-    required this.room,
     required this.client,
+    required this.room,
   }) : super(key: key);
 
   @override
@@ -42,14 +41,12 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   String roomName = '';
-  bool roomState = false;
-  final Random random = Random();
-  final ChatRoomController roomController = Get.find<ChatRoomController>();
+  ChatRoomController roomController = Get.find<ChatRoomController>();
+  ChatListController listController = Get.find<ChatListController>();
 
   @override
   void initState() {
     super.initState();
-    roomState = random.nextBool();
     roomController.setCurrentRoom(widget.room);
     widget.room.displayName().then((value) {
       setState(() => roomName = value);
@@ -120,23 +117,23 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<FfiBufferUint8> _userAvatar(String uid) async {
-    Member member = await widget.room.getMember(uid);
+  Future<FfiBufferUint8> _userAvatar(String userId) async {
+    Member member = await widget.room.getMember(userId);
     return member.avatar();
   }
 
-  Widget _avatarBuilder(String uid) {
+  Widget _avatarBuilder(String userId) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
         child: CustomAvatar(
-          avatar: _userAvatar(uid),
+          avatar: _userAvatar(userId),
           displayName: null,
           radius: 15,
           isGroup: false,
-          stringName: getNameFromId(uid) ?? '',
+          stringName: getNameFromId(userId) ?? '',
         ),
       ),
     );
@@ -290,12 +287,13 @@ class _ChatScreenState extends State<ChatScreen> {
         child: SizedBox(
           height: 15,
           width: 15,
-          child: CircularProgressIndicator(
-            color: AppCommonTheme.primaryColor,
-          ),
+          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
         ),
       );
     }
+    int wasInvited = listController.invitations.indexWhere((x) {
+      return x.roomId() == widget.room.getRoomId();
+    });
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
       builder: (ChatRoomController controller) {
@@ -326,7 +324,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),
-              disableImageGallery: roomState ? true : false,
+              disableImageGallery: wasInvited != -1,
               //custom avatar builder
               avatarBuilder: _avatarBuilder,
               imageMessageBuilder: _imageMessageBuilder,
@@ -334,7 +332,8 @@ class _ChatScreenState extends State<ChatScreen> {
               onAttachmentPressed: () => _handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
-              onEndReached: roomState ? null : controller.handleEndReached,
+              onEndReached:
+                  wasInvited != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
@@ -346,7 +345,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
-            roomState
+            wasInvited != -1
                 ? LayoutBuilder(
                     builder: (context, constraints) {
                       return Container(
@@ -364,13 +363,16 @@ class _ChatScreenState extends State<ChatScreen> {
                     },
                   )
                 : const SizedBox(),
-            roomState
+            wasInvited != -1
                 ? Padding(
                     padding: const EdgeInsets.only(top: 40),
                     child: InviteInfoWidget(
+                      client: widget.client,
                       avatarColor: Colors.white,
-                      inviter: inviters[random.nextInt(inviters.length)],
-                      groupName: roomName,
+                      inviter: listController.invitations[wasInvited].sender(),
+                      groupId: listController.invitations[wasInvited].roomId(),
+                      groupName:
+                          listController.invitations[wasInvited].roomName(),
                     ),
                   )
                 : const SizedBox(),

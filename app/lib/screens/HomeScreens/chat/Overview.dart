@@ -1,7 +1,5 @@
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
@@ -25,16 +23,6 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-  late int countInvites;
-  final Random _random = Random();
-
-  @override
-  void initState() {
-    super.initState();
-    //setting random invites
-    countInvites = _random.nextInt(5) + 1;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,29 +67,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      alignment: Alignment.topLeft,
-                      padding: const EdgeInsets.only(left: 18),
-                      child: Text(
-                        AppLocalizations.of(context)!.invites,
-                        style: AppCommonTheme.appBarTitleStyle
-                            .copyWith(fontSize: 16),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    widget.client.isGuest()
-                        ? const SizedBox()
-                        : GetBuilder<ChatListController>(
-                            id: 'chatlist',
-                            builder: (ChatListController controller) {
-                              return _buildJoinedList(context, controller);
-                            },
-                          ),
-                  ],
-                ),
+                _buildList(context),
               ],
             ),
           ),
@@ -110,126 +76,169 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Widget _buildInvitedItem(BuildContext context, int index) {
-    return InviteInfoWidget(
-      avatarColor: Colors.white,
-      inviter: inviters[_random.nextInt(inviters.length)],
-      groupName: groups[_random.nextInt(groups.length)],
+  Widget _buildListHeader(BuildContext context) {
+    return GetBuilder<ChatListController>(
+      id: 'invited_list',
+      builder: (ChatListController controller) {
+        if (controller.invitations.isEmpty) {
+          return const SizedBox();
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.invitedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: controller.invitations.length,
+              itemBuilder: (BuildContext context, int index) {
+                var event = controller.invitations[index];
+                return InviteInfoWidget(
+                  client: widget.client,
+                  avatarColor: Colors.white,
+                  inviter: event.sender(),
+                  groupId: event.roomId(),
+                  groupName: event.roomName(),
+                );
+              },
+            ),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.joinedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildJoinedList(BuildContext context, ChatListController controller) {
-    if (controller.initialLoaded) {
-      return ImplicitlyAnimatedReorderableList<RoomItem>(
-        header: ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: countInvites,
-          itemBuilder: _buildInvitedItem,
-        ),
-        items: controller.roomItems,
-        areItemsTheSame: (a, b) =>
-            a.conversation.getRoomId() == b.conversation.getRoomId(),
-        // Remember to update the underlying data when the list has been reordered.
-        onReorderFinished: (item, from, to, newItems) =>
-            controller.moveItem(from, to),
-        itemBuilder: (context, itemAnimation, item, index) => Reorderable(
-          key: UniqueKey(),
-          builder: (context, dragAnimation, inDrag) {
-            final t = dragAnimation.value;
-            final elevation = lerpDouble(0, 8, t);
-            final color =
-                Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
-            return SizeFadeTransition(
-              sizeFraction: 0.7,
-              curve: Curves.easeInOut,
-              animation: itemAnimation,
-              child: Material(
-                color: color,
-                elevation: elevation ?? 0.0,
-                type: MaterialType.transparency,
-                child: GetBuilder<ChatListController>(
-                  id: item.conversation.getRoomId(),
-                  builder: (ChatListController listController) {
-                    return ChatListItem(
-                      key: Key(item.conversation.getRoomId()),
-                      room: item.conversation,
-                      latestMessage: item.latestMessage,
-                      client: widget.client,
-                      typingUsers: item.typingUsers,
-                    );
-                  },
-                ),
-              ),
-            );
-          },
-        ),
-        removeItemBuilder: (context, animation, item) => Reorderable(
-          key: UniqueKey(),
-          builder: (context, animation, inDrag) {
-            return FadeTransition(
-              opacity: animation,
-              child: GetBuilder<ChatListController>(
-                id: item.conversation.getRoomId(),
-                builder: (ChatListController listController) {
-                  return ChatListItem(
-                    key: Key(item.conversation.getRoomId()),
-                    room: item.conversation,
-                    latestMessage: item.latestMessage,
-                    client: widget.client,
-                    typingUsers: item.typingUsers,
-                  );
-                },
-              ),
-            );
-          },
-        ),
-        updateItemBuilder: (context, itemAnimation, item) => Reorderable(
-          key: UniqueKey(),
-          builder: (context, dragAnimation, inDrag) {
-            final t = dragAnimation.value;
-            final elevation = lerpDouble(0, 8, t);
-            final color =
-                Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
-            return SizeFadeTransition(
-              sizeFraction: 0.7,
-              curve: Curves.easeInOut,
-              animation: itemAnimation,
-              child: Material(
-                color: color,
-                elevation: elevation ?? 0.0,
-                type: MaterialType.transparency,
-                child: GetBuilder<ChatListController>(
-                  id: item.conversation.getRoomId(),
-                  builder: (ChatListController listController) {
-                    return ChatListItem(
-                      key: Key(item.conversation.getRoomId()),
-                      room: item.conversation,
-                      latestMessage: item.latestMessage,
-                      client: widget.client,
-                      typingUsers: item.typingUsers,
-                    );
-                  },
-                ),
-              ),
-            );
-          },
-        ),
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
-      );
-    } else {
-      return Center(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          color: AppCommonTheme.backgroundColor,
-          child: Text(
-            AppLocalizations.of(context)!.loadingConvo,
-            style: ChatTheme01.emptyMsgTitle,
-          ),
-        ),
-      );
+  Widget _buildList(BuildContext context) {
+    if (widget.client.isGuest()) {
+      return const SizedBox();
     }
+    return GetBuilder<ChatListController>(
+      id: 'chatlist',
+      builder: (ChatListController controller) {
+        if (!controller.initialLoaded) {
+          return Center(
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              color: AppCommonTheme.backgroundColor,
+              child: Text(
+                AppLocalizations.of(context)!.loadingConvo,
+                style: ChatTheme01.emptyMsgTitle,
+              ),
+            ),
+          );
+        }
+        return ImplicitlyAnimatedReorderableList<JoinedRoom>(
+          header: _buildListHeader(context),
+          items: controller.joinedRooms,
+          areItemsTheSame: (a, b) =>
+              a.conversation.getRoomId() == b.conversation.getRoomId(),
+          // Remember to update the underlying data when the list has been reordered.
+          onReorderFinished: (item, from, to, newItems) =>
+              controller.moveItem(from, to),
+          itemBuilder: (context, itemAnimation, item, index) => Reorderable(
+            key: UniqueKey(),
+            builder: (context, dragAnimation, inDrag) {
+              final t = dragAnimation.value;
+              final elevation = lerpDouble(0, 8, t);
+              final color =
+                  Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
+              return SizeFadeTransition(
+                sizeFraction: 0.7,
+                curve: Curves.easeInOut,
+                animation: itemAnimation,
+                child: Material(
+                  color: color,
+                  elevation: elevation ?? 0.0,
+                  type: MaterialType.transparency,
+                  child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (ChatListController listController) {
+                      return ChatListItem(
+                        key: Key(item.conversation.getRoomId()),
+                        room: item.conversation,
+                        latestMessage: item.latestMessage,
+                        client: widget.client,
+                        typingUsers: item.typingUsers,
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+          removeItemBuilder: (context, animation, item) => Reorderable(
+            key: UniqueKey(),
+            builder: (context, animation, inDrag) {
+              return FadeTransition(
+                opacity: animation,
+                child: GetBuilder<ChatListController>(
+                  id: item.conversation.getRoomId(),
+                  builder: (ChatListController listController) {
+                    return ChatListItem(
+                      key: Key(item.conversation.getRoomId()),
+                      room: item.conversation,
+                      latestMessage: item.latestMessage,
+                      client: widget.client,
+                      typingUsers: item.typingUsers,
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          updateItemBuilder: (context, itemAnimation, item) => Reorderable(
+            key: UniqueKey(),
+            builder: (context, dragAnimation, inDrag) {
+              final t = dragAnimation.value;
+              final elevation = lerpDouble(0, 8, t);
+              final color =
+                  Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
+              return SizeFadeTransition(
+                sizeFraction: 0.7,
+                curve: Curves.easeInOut,
+                animation: itemAnimation,
+                child: Material(
+                  color: color,
+                  elevation: elevation ?? 0.0,
+                  type: MaterialType.transparency,
+                  child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (ChatListController listController) {
+                      return ChatListItem(
+                        key: Key(item.conversation.getRoomId()),
+                        room: item.conversation,
+                        latestMessage: item.latestMessage,
+                        client: widget.client,
+                        typingUsers: item.typingUsers,
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
+        );
+      },
+    );
   }
 }

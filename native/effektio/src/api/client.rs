@@ -8,6 +8,7 @@ use effektio_core::{
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
+
 use futures::{stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
@@ -28,6 +29,7 @@ use super::{
     conversation::{Conversation, ConversationController},
     device::DeviceController,
     group::Group,
+    invitation::InvitationController,
     receipt::ReceiptController,
     room::Room,
     typing::TypingController,
@@ -51,6 +53,7 @@ pub struct ClientState {
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
+    pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
     pub(crate) device_controller: DeviceController,
     pub(crate) typing_controller: TypingController,
@@ -65,24 +68,23 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn divide_groups_from_common(
+pub(crate) async fn divide_rooms_from_common(
     client: MatrixClient,
 ) -> (Vec<Group>, Vec<Conversation>) {
-    let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
+    let (groups, convos, _) = stream::iter(client.clone().joined_rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut conversations, client), room| {
+            async move |(mut groups, mut convos, client), room| {
                 let r = Room {
-                    room: room.clone(),
+                    room: room.into(),
                     client: client.clone(),
                 };
                 if r.is_effektio_group().await {
                     groups.push(Group { inner: r });
                 } else {
-                    conversations.push(Conversation::new(r));
+                    convos.push(Conversation::new(r));
                 }
-
-                (groups, conversations, client)
+                (groups, convos, client)
             },
         )
         .await;
@@ -110,6 +112,7 @@ impl Client {
         Client {
             client,
             state: Arc::new(RwLock::new(state)),
+            invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
             device_controller: DeviceController::new(),
             typing_controller: TypingController::new(),
@@ -121,6 +124,7 @@ impl Client {
     pub fn start_sync(&self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
+        let invitation_controller = self.invitation_controller.clone();
         let mut verification_controller = self.verification_controller.clone();
         let mut device_controller = self.device_controller.clone();
         self.typing_controller.setup(&client);
@@ -136,13 +140,16 @@ impl Client {
         RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
+
+            invitation_controller.setup(&client).await;
             let mut verification_controller = verification_controller.clone();
             let mut device_controller = device_controller.clone();
             conversation_controller.setup(&client).await;
 
+            // fetch the events that received when offline
             client
                 .clone()
-                .sync_with_callback(SyncSettings::new(), move |response| {
+                .sync_with_callback(SyncSettings::new(), |response| {
                     let client = client.clone();
                     let state = state.clone();
                     let mut verification_controller = verification_controller.clone();
@@ -164,11 +171,10 @@ impl Client {
 
                         let _ = first_synced_arc.send(true);
                         if !(*state).read().has_first_synced {
-                            (*state).write().has_first_synced = true
+                            (*state).write().has_first_synced = true;
                         }
                         if (*state).read().should_stop_syncing {
                             (*state).write().is_syncing = false;
-                            // the lock is unlocked here when `s` goes out of scope.
                             return LoopCtrl::Break;
                         } else if !(*state).read().is_syncing {
                             (*state).write().is_syncing = true;
@@ -213,7 +219,7 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let (_, conversations) = divide_groups_from_common(c).await;
+                let (_, conversations) = divide_rooms_from_common(c).await;
                 Ok(conversations)
             })
             .await?
@@ -253,7 +259,8 @@ impl Client {
     }
 
     pub fn account(&self) -> Result<Account> {
-        Ok(Account::new(self.client.account()))
+        let user_id = self.client.user_id().unwrap();
+        Ok(Account::new(self.client.account(), user_id.to_string()))
     }
 
     pub async fn display_name(&self) -> Result<String> {

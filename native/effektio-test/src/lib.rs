@@ -1,7 +1,9 @@
 // #[cfg(test)]
 // mod auth;
+// #[cfg(test)]
+// mod formatted_body;
 #[cfg(test)]
-mod formatted_body;
+mod invitation;
 // #[cfg(test)]
 // mod news;
 // #[cfg(test)]

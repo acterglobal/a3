@@ -16,6 +16,7 @@ mod client;
 mod conversation;
 mod device;
 mod group;
+mod invitation;
 mod message;
 mod news;
 mod receipt;
@@ -33,6 +34,7 @@ pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
+pub use invitation::Invitation;
 pub use message::{FileDescription, ImageDescription, RoomMessage};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
@@ -43,8 +45,10 @@ pub use verification::{VerificationEmoji, VerificationEvent};
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
 
-pub type UserId = effektio_core::ruma::OwnedUserId;
+pub type DeviceId = effektio_core::ruma::OwnedDeviceId;
 pub type EventId = effektio_core::ruma::OwnedEventId;
+pub type RoomId = effektio_core::ruma::OwnedRoomId;
+pub type UserId = effektio_core::ruma::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");

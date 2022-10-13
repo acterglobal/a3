@@ -1,4 +1,3 @@
-
 /// Initialize logging
 fn init_logging(filter: Option<string>) -> Result<()>;
 
@@ -66,6 +65,18 @@ object Faq {
     fn likes_count() -> u32;
     /// the number of comments on this item
     fn comments_count() -> u32;
+}
+
+object DeviceId {
+    fn to_string() -> string;
+}
+
+object EventId {
+    fn to_string() -> string;
+}
+
+object RoomId {
+    fn to_string() -> string;
 }
 
 object UserId {
@@ -184,9 +195,25 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
+    /// get the user status on this room
+    fn room_type() -> string;
+
+    /// join this room
+    fn join() -> Future<Result<bool>>;
+
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
+
+    /// get the users that were invited to this room
+    fn get_invitees() -> Future<Result<Vec<Account>>>;
+
     /// Send a text message in MarkDown format to the room
     fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
 
+    /// send the image message to this room
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// decrypted image file data
@@ -194,6 +221,7 @@ object Conversation {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// send the file message to this room
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
 
     /// save file in specified path
@@ -234,6 +262,9 @@ object Member {
 }
 
 object Account {
+    /// get user id of this account
+    fn user_id() -> string;
+
     /// The display_name of the account
     fn display_name() -> Future<Result<string>>;
 
@@ -312,6 +343,18 @@ object Client {
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
+    /// Create room
+    fn create_room() -> Future<Result<string>>;
+
+    /// Get the invitation event stream
+    fn invitations_rx() -> Stream<Vec<Invitation>>;
+
+    /// accept invitation about me to this room
+    fn accept_invitation(room_id: string) -> Future<Result<bool>>;
+
+    /// reject invitation about me to this room
+    fn reject_invitation(room_id: string) -> Future<Result<bool>>;
+
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
@@ -332,6 +375,20 @@ object Client {
 
     /// Return the message event receiver
     fn message_event_rx() -> Option<Stream<RoomMessage>>;
+}
+
+object Invitation {
+    /// get the timestamp of this invitation
+    fn origin_server_ts() -> Option<u64>;
+
+    /// get the room id of this invitation
+    fn room_id() -> string;
+
+    /// get the room name of this invitation
+    fn room_name() -> string;
+
+    /// get the user id of this invitation sender
+    fn sender() -> string;
 }
 
 object VerificationEvent {
