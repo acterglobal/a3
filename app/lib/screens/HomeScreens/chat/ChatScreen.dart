@@ -55,8 +55,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     roomController.setCurrentRoom(null);
+    super.dispose();
   }
 
   void handleAttachmentPressed(BuildContext context) {

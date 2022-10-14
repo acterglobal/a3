@@ -41,9 +41,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
 
   @override
   void dispose() {
-    super.dispose();
     notesController.dispose();
     subtitleController.dispose();
+    super.dispose();
   }
 
   @override

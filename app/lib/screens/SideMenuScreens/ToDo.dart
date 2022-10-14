@@ -24,8 +24,8 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
   @override
   void dispose() {
-    super.dispose();
     Get.delete<ToDoController>();
+    super.dispose();
   }
 
   @override

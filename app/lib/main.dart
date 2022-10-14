@@ -106,11 +106,11 @@ class _EffektioHomeState extends State<EffektioHome>
 
   @override
   void dispose() {
-    super.dispose();
     crossSigning?.dispose();
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
+    super.dispose();
   }
 
   Future<Client> makeClient() async {
