@@ -26,11 +26,11 @@ class VerifEvent {
 
 class CrossSigning {
   Client client;
+  bool acceptingRequest = false;
+  bool waitForMatch = false;
   late StreamSubscription<DeviceChangedEvent>? _deviceSubscription;
   late StreamSubscription<VerificationEvent>? _verifSubscription;
   final Map<String, VerifEvent> _eventMap = {};
-  bool acceptingRequest = false;
-  bool waitForMatch = false;
 
   CrossSigning({required this.client}) {
     _installDeviceChangedEvent();
@@ -179,30 +179,39 @@ class CrossSigning {
           height: MediaQuery.of(context).size.height * 0.15,
         ),
         const SizedBox(height: 50),
-        acceptingRequest
-            ? const SizedBox(
-                width: 100,
-                height: 100,
-                child: CircularProgressIndicator(
-                  color: CrossSigningSheetTheme.loadingIndicatorColor,
-                ),
-              )
-            : elevatedButton(
-                AppLocalizations.of(context)!.acceptRequest,
-                AppCommonTheme.greenButtonColor,
-                () async {
-                  setState(() => acceptingRequest = true);
-                  // accept verification request from other device
-                  await event.acceptVerificationRequest();
-                  // go to onReady status
-                  Get.back();
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    _onKeyVerificationReady(event, true);
-                  });
-                },
-                CrossSigningSheetTheme.buttonTextStyle,
-              ),
+        _buildBodyOnRequest(context, event, setState),
       ],
+    );
+  }
+
+  Widget _buildBodyOnRequest(
+    BuildContext context,
+    VerificationEvent event,
+    Function setState,
+  ) {
+    if (acceptingRequest) {
+      return const SizedBox(
+        width: 100,
+        height: 100,
+        child: CircularProgressIndicator(
+          color: CrossSigningSheetTheme.loadingIndicatorColor,
+        ),
+      );
+    }
+    return elevatedButton(
+      AppLocalizations.of(context)!.acceptRequest,
+      AppCommonTheme.greenButtonColor,
+      () async {
+        setState(() => acceptingRequest = true);
+        // accept verification request from other device
+        await event.acceptVerificationRequest();
+        // go to onReady status
+        Get.back();
+        Future.delayed(const Duration(milliseconds: 500), () {
+          _onKeyVerificationReady(event, true);
+        });
+      },
+      CrossSigningSheetTheme.buttonTextStyle,
     );
   }
 
@@ -650,10 +659,6 @@ class CrossSigning {
   ) {
     List<int> emojiCodes = emoji.map((e) => e.symbol()).toList();
     List<String> emojiDescriptions = emoji.map((e) => e.description()).toList();
-    String waitingFor = sprintf(
-      AppLocalizations.of(context)!.verificationRequestWaitingFor,
-      [event.sender()],
-    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -734,61 +739,74 @@ class CrossSigning {
           ),
         ),
         const SizedBox(height: 5),
-        waitForMatch
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    waitingFor,
-                    style: CrossSigningSheetTheme.secondaryTextStyle,
-                  ),
-                ),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(left: 20),
-                    width: MediaQuery.of(context).size.width * 0.48,
-                    child: elevatedButton(
-                      AppLocalizations.of(context)!.verificationSasDoNotMatch,
-                      CrossSigningSheetTheme.redButtonColor,
-                      () async {
-                        // mismatch sas verification
-                        await event.mismatchSasVerification();
-                        // go to onCancel status
-                        Get.back();
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          _onKeyVerificationCancel(event, true);
-                        });
-                      },
-                      CrossSigningSheetTheme.buttonTextStyle,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Container(
-                    padding: const EdgeInsets.only(right: 20),
-                    width: MediaQuery.of(context).size.width * 0.48,
-                    child: elevatedButton(
-                      AppLocalizations.of(context)!.verificationSasMatch,
-                      CrossSigningSheetTheme.greenButtonColor,
-                      () async {
-                        setState(() => waitForMatch = true);
-                        // confirm sas verification
-                        await event.confirmSasVerification();
-                        // close dialog
-                        setState(() => waitForMatch = false);
-                        // go to onMac status
-                        Get.back();
-                        Future.delayed(const Duration(milliseconds: 500), () {
-                          _onKeyVerificationMac(event);
-                        });
-                      },
-                      CrossSigningSheetTheme.buttonTextStyle,
-                    ),
-                  ),
-                ],
-              ),
+        _buildBodyOnKey(context, event, setState),
+      ],
+    );
+  }
+
+  Widget _buildBodyOnKey(
+    BuildContext context,
+    VerificationEvent event,
+    Function setState,
+  ) {
+    if (waitForMatch) {
+      String waitingFor = sprintf(
+        AppLocalizations.of(context)!.verificationRequestWaitingFor,
+        [event.sender()],
+      );
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Text(
+            waitingFor,
+            style: CrossSigningSheetTheme.secondaryTextStyle,
+          ),
+        ),
+      );
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.only(left: 20),
+          width: MediaQuery.of(context).size.width * 0.48,
+          child: elevatedButton(
+            AppLocalizations.of(context)!.verificationSasDoNotMatch,
+            CrossSigningSheetTheme.redButtonColor,
+            () async {
+              // mismatch sas verification
+              await event.mismatchSasVerification();
+              // go to onCancel status
+              Get.back();
+              Future.delayed(const Duration(milliseconds: 500), () {
+                _onKeyVerificationCancel(event, true);
+              });
+            },
+            CrossSigningSheetTheme.buttonTextStyle,
+          ),
+        ),
+        const SizedBox(width: 5),
+        Container(
+          padding: const EdgeInsets.only(right: 20),
+          width: MediaQuery.of(context).size.width * 0.48,
+          child: elevatedButton(
+            AppLocalizations.of(context)!.verificationSasMatch,
+            CrossSigningSheetTheme.greenButtonColor,
+            () async {
+              setState(() => waitForMatch = true);
+              // confirm sas verification
+              await event.confirmSasVerification();
+              // close dialog
+              setState(() => waitForMatch = false);
+              // go to onMac status
+              Get.back();
+              Future.delayed(const Duration(milliseconds: 500), () {
+                _onKeyVerificationMac(event);
+              });
+            },
+            CrossSigningSheetTheme.buttonTextStyle,
+          ),
+        ),
       ],
     );
   }

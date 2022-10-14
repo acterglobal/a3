@@ -31,7 +31,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
   bool emojiShowing = false;
   bool isKeyBoardOpen = false;
 
-  void _onEmojiSelected(Emoji emoji) {
+  void onEmojiSelected(Emoji emoji) {
     commentController
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
@@ -39,7 +39,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       );
   }
 
-  void _onBackspacePressed() {
+  void onBackspacePressed() {
     commentController
       ..text = commentController.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
@@ -87,7 +87,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
       widget.news.fgColor(),
       AppCommonTheme.primaryColor,
     );
-
     TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
       fontSize: 13,
       color: fgColor,
@@ -107,19 +106,19 @@ class _NewsSideBarState extends State<NewsSideBar> {
             index: widget.index,
           ),
         ),
-        _sideBarItem(
+        buildSideBarItem(
           'comment',
           widget.news.commentsCount().toString(),
           fgColor,
           style,
         ),
-        _sideBarItem('reply', '76', fgColor, style),
-        _profileImageButton(fgColor),
+        buildSideBarItem('reply', '76', fgColor, style),
+        buildProfileImage(fgColor),
       ],
     );
   }
 
-  Widget _profileImageButton(Color color) {
+  Widget buildProfileImage(Color borderColor) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Stack(
@@ -133,9 +132,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
             width: 45,
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
-                border: Border.all(
-                  color: color,
-                ),
+                border: Border.all(color: borderColor),
                 borderRadius: BorderRadius.circular(25),
                 image: DecorationImage(
                   image: imageProvider,
@@ -155,7 +152,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
     );
   }
 
-  Widget _sideBarItem(
+  Widget buildSideBarItem(
     String iconName,
     String label,
     Color? color,
@@ -170,7 +167,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       child: Padding(
         padding: const EdgeInsets.only(right: 15),
         child: Column(
-          children: <Widget>[
+          children: [
             SvgPicture.asset(
               'assets/images/$iconName.svg',
               color: color,
@@ -247,7 +244,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: _profileImageButton(Colors.black),
+                              child: buildProfileImage(Colors.black),
                             ),
                             Expanded(
                               child: Container(
@@ -311,9 +308,9 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           height: 250,
                           child: EmojiPicker(
                             onEmojiSelected: (Category category, Emoji emoji) {
-                              _onEmojiSelected(emoji);
+                              onEmojiSelected(emoji);
                             },
-                            onBackspacePressed: _onBackspacePressed,
+                            onBackspacePressed: onBackspacePressed,
                             config: Config(
                               columns: 7,
                               emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),

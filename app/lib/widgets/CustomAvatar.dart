@@ -35,61 +35,53 @@ class CustomAvatar extends StatelessWidget {
               color: AppCommonTheme.primaryColor,
             ),
           );
-        } else {
-          if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
-            return CircleAvatar(
-              backgroundImage: MemoryImage(
-                Uint8List.fromList(snapshot.requireData),
-              ),
-              radius: radius,
-            );
-          } else {
-            if (isGroup) {
-              return CircleAvatar(
-                radius: radius,
-                backgroundColor: Colors.grey[700],
-                child: SvgPicture.asset('assets/images/people.svg'),
-              );
-            } else {
-              if (stringName.isNotEmpty) {
-                return TextAvatar(
-                  fontSize: 12,
-                  numberLetters: 2,
-                  shape: Shape.Circular,
-                  upperCase: true,
-                  text: stringName,
-                  size: radius,
-                );
-              } else {
-                return FutureBuilder<String>(
-                  future: displayName,
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<String> snapshot,
-                  ) {
-                    if (snapshot.hasData) {
-                      return TextAvatar(
-                        numberLetters: 2,
-                        shape: Shape.Circular,
-                        upperCase: true,
-                        text: snapshot.data ?? 'e',
-                        size: radius,
-                      );
-                    } else {
-                      return const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
-                        ),
-                      );
-                    }
-                  },
-                );
-              }
-            }
-          }
         }
+        if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
+          return CircleAvatar(
+            backgroundImage: MemoryImage(
+              Uint8List.fromList(snapshot.requireData),
+            ),
+            radius: radius,
+          );
+        }
+        if (isGroup) {
+          return CircleAvatar(
+            radius: radius,
+            backgroundColor: Colors.grey[700],
+            child: SvgPicture.asset('assets/images/people.svg'),
+          );
+        }
+        if (stringName.isNotEmpty) {
+          return TextAvatar(
+            fontSize: 12,
+            numberLetters: 2,
+            shape: Shape.Circular,
+            upperCase: true,
+            text: stringName,
+            size: radius,
+          );
+        }
+        return FutureBuilder<String>(
+          future: displayName,
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if (snapshot.hasData) {
+              return TextAvatar(
+                numberLetters: 2,
+                shape: Shape.Circular,
+                upperCase: true,
+                text: snapshot.data ?? 'e',
+                size: radius,
+              );
+            }
+            return const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                color: AppCommonTheme.primaryColor,
+              ),
+            );
+          },
+        );
       },
     );
   }

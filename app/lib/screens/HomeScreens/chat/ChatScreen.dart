@@ -59,7 +59,7 @@ class _ChatScreenState extends State<ChatScreen> {
     roomController.setCurrentRoom(null);
   }
 
-  void _handleAttachmentPressed(BuildContext context) {
+  void handleAttachmentPressed(BuildContext context) {
     showModalBottomSheet<void>(
       backgroundColor: Colors.transparent,
       context: context,
@@ -117,19 +117,19 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<FfiBufferUint8> _userAvatar(String userId) async {
+  Future<FfiBufferUint8> userAvatar(String userId) async {
     Member member = await widget.room.getMember(userId);
     return member.avatar();
   }
 
-  Widget _avatarBuilder(String userId) {
+  Widget avatarBuilder(String userId) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
         child: CustomAvatar(
-          avatar: _userAvatar(userId),
+          avatar: userAvatar(userId),
           displayName: null,
           radius: 15,
           isGroup: false,
@@ -139,7 +139,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _imageMessageBuilder(
+  Widget imageMessageBuilder(
     types.ImageMessage imageMessage, {
     required int messageWidth,
   }) {
@@ -189,9 +189,7 @@ class _ChatScreenState extends State<ChatScreen> {
             centerTitle: true,
             toolbarHeight: 70,
             leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
+              onPressed: () => Navigator.pop(context),
               icon: SvgPicture.asset(
                 'assets/images/back_button.svg',
                 color: AppCommonTheme.svgIconColor,
@@ -200,10 +198,10 @@ class _ChatScreenState extends State<ChatScreen> {
             title: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                _buildRoomName(),
+              children: [
+                buildRoomName(),
                 const SizedBox(height: 5),
-                _buildActiveMembers(),
+                buildActiveMembers(),
               ],
             ),
             actions: [
@@ -243,7 +241,7 @@ class _ChatScreenState extends State<ChatScreen> {
           body: Obx(
             () => SafeArea(
               bottom: false,
-              child: _buildBody(context),
+              child: buildBody(context),
             ),
           ),
         );
@@ -251,7 +249,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildRoomName() {
+  Widget buildRoomName() {
     if (roomName.isEmpty) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
@@ -262,7 +260,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildActiveMembers() {
+  Widget buildActiveMembers() {
     return FutureBuilder<FfiListMember>(
       future: widget.room.activeMembers(),
       builder: (BuildContext context, AsyncSnapshot<FfiListMember> snapshot) {
@@ -281,7 +279,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
+  Widget buildBody(BuildContext context) {
     if (roomController.isLoading.isTrue) {
       return const Center(
         child: SizedBox(
@@ -291,7 +289,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    int wasInvited = listController.invitations.indexWhere((x) {
+    int invitedIndex = listController.invitations.indexWhere((x) {
       return x.roomId() == widget.room.getRoomId();
     });
     return GetBuilder<ChatRoomController>(
@@ -320,20 +318,21 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               messages: controller.messages,
               typingIndicatorOptions: TypingIndicatorOptions(
-                customTypingIndicator: _buildTypingIndicator(),
+                customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),
-              disableImageGallery: wasInvited != -1,
+              // if invited, disable image gallery
+              disableImageGallery: invitedIndex != -1,
               //custom avatar builder
-              avatarBuilder: _avatarBuilder,
-              imageMessageBuilder: _imageMessageBuilder,
+              avatarBuilder: avatarBuilder,
+              imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
-              onAttachmentPressed: () => _handleAttachmentPressed(context),
+              onAttachmentPressed: () => handleAttachmentPressed(context),
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached:
-                  wasInvited != -1 ? null : controller.handleEndReached,
+                  invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
@@ -345,44 +344,15 @@ class _ChatScreenState extends State<ChatScreen> {
                 deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
-            wasInvited != -1
-                ? LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Container(
-                        alignment: Alignment.topLeft,
-                        padding: const EdgeInsets.fromLTRB(10, 10, 0, 20),
-                        color: AppCommonTheme.backgroundColor,
-                        height: constraints.maxHeight * 0.25,
-                        width: double.infinity,
-                        child: Text(
-                          AppLocalizations.of(context)!.invitationText1,
-                          style: AppCommonTheme.appBarTitleStyle
-                              .copyWith(fontSize: 14),
-                        ),
-                      );
-                    },
-                  )
-                : const SizedBox(),
-            wasInvited != -1
-                ? Padding(
-                    padding: const EdgeInsets.only(top: 40),
-                    child: InviteInfoWidget(
-                      client: widget.client,
-                      avatarColor: Colors.white,
-                      inviter: listController.invitations[wasInvited].sender(),
-                      groupId: listController.invitations[wasInvited].roomId(),
-                      groupName:
-                          listController.invitations[wasInvited].roomName(),
-                    ),
-                  )
-                : const SizedBox(),
+            buildInvitationTitle(invitedIndex),
+            buildInvitationInfo(invitedIndex),
           ],
         );
       },
     );
   }
 
-  Widget _buildTypingIndicator() {
+  Widget buildTypingIndicator() {
     return GetBuilder<ChatRoomController>(
       id: 'typing indicator',
       builder: (ChatRoomController controller) {
@@ -396,6 +366,43 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget buildInvitationTitle(int wasInvited) {
+    if (wasInvited == -1) {
+      return const SizedBox();
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.fromLTRB(10, 10, 0, 20),
+          color: AppCommonTheme.backgroundColor,
+          height: constraints.maxHeight * 0.25,
+          width: double.infinity,
+          child: Text(
+            AppLocalizations.of(context)!.invitationText1,
+            style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 14),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildInvitationInfo(int invitedIndex) {
+    if (invitedIndex == -1) {
+      return const SizedBox();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 40),
+      child: InviteInfoWidget(
+        client: widget.client,
+        avatarColor: Colors.white,
+        inviter: listController.invitations[invitedIndex].sender(),
+        groupId: listController.invitations[invitedIndex].roomId(),
+        groupName: listController.invitations[invitedIndex].roomName(),
+      ),
     );
   }
 }

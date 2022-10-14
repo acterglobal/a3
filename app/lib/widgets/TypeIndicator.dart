@@ -56,188 +56,191 @@ class TypeIndicator extends StatefulWidget {
 class _TypeIndicatorState extends State<TypeIndicator>
     with TickerProviderStateMixin {
   late double stackingWidth;
-  late AnimationController _appearanceController;
-  late AnimationController _animatedCirclesController;
-  late Animation<double> _indicatorSpaceAnimation;
-  late Animation<Offset> _firstCircleOffsetAnimation;
-  late Animation<Offset> _secondCircleOffsetAnimation;
-  late Animation<Offset> _thirdCircleOffsetAnimation;
+  late AnimationController appearanceController;
+  late AnimationController bubblesController;
+  late Animation<double> indicatorSpaceAnimation;
+  late Animation<Offset> firstBubbleOffsetAnimation;
+  late Animation<Offset> secondBubbleOffsetAnimation;
+  late Animation<Offset> thirdBubbleOffsetAnimation;
 
   @override
   void initState() {
     super.initState();
-    _appearanceController = AnimationController(
+    appearanceController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
 
-    _indicatorSpaceAnimation = CurvedAnimation(
-      parent: _appearanceController,
+    indicatorSpaceAnimation = CurvedAnimation(
+      parent: appearanceController,
       curve: const Interval(0.0, 1.0, curve: Curves.easeOut),
       reverseCurve: const Interval(0.0, 1.0, curve: Curves.easeOut),
     ).drive(
-      Tween<double>(
-        begin: 0.0,
-        end: 60.0,
-      ),
+      Tween<double>(begin: 0.0, end: 60.0),
     );
 
-    _animatedCirclesController = AnimationController(
+    bubblesController = AnimationController(
       vsync: this,
       lowerBound: 0.0,
       upperBound: 1.0,
       duration: widget.options.animationSpeed,
     )..repeat();
 
-    _firstCircleOffsetAnimation = _circleOffset(
+    firstBubbleOffsetAnimation = getBubbleOffsetAnimation(
       Offset.zero,
       const Offset(0.0, -0.7),
       const Interval(0.0, 0.33, curve: Curves.linear),
     );
-    _secondCircleOffsetAnimation = _circleOffset(
+    secondBubbleOffsetAnimation = getBubbleOffsetAnimation(
       Offset.zero,
       const Offset(0.0, -0.7),
       const Interval(0.28, 0.66, curve: Curves.linear),
     );
-    _thirdCircleOffsetAnimation = _circleOffset(
+    thirdBubbleOffsetAnimation = getBubbleOffsetAnimation(
       Offset.zero,
       const Offset(0.0, -0.7),
       const Interval(0.58, 0.99, curve: Curves.linear),
     );
 
     if (widget.showIndicator) {
-      _appearanceController.forward();
+      appearanceController.forward();
     }
   }
 
   @override
   void didUpdateWidget(TypeIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if (widget.showIndicator != oldWidget.showIndicator) {
       if (widget.showIndicator) {
-        _appearanceController.forward();
+        appearanceController.forward();
       } else {
-        _appearanceController.reverse();
+        appearanceController.reverse();
       }
     }
   }
 
   @override
   void dispose() {
-    _appearanceController.dispose();
-    _animatedCirclesController.dispose();
+    appearanceController.dispose();
+    bubblesController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _indicatorSpaceAnimation,
-        builder: (context, child) => SizedBox(
-          height: _indicatorSpaceAnimation.value,
-          child: child,
-        ),
-        child: Row(
-          mainAxisAlignment: widget.bubbleAlignment == BubbleRtlAlignment.right
-              ? MainAxisAlignment.start
-              : MainAxisAlignment.end,
-          children: <Widget>[
-            widget.bubbleAlignment == BubbleRtlAlignment.left
-                ? Container(
-                    margin: const EdgeInsets.only(right: 12),
-                    child: TypingWidget(
-                      widget: widget,
-                      context: context,
-                      mode: widget.options.typingMode,
-                    ),
-                  )
-                : const SizedBox(),
-            Container(
-              margin: const EdgeInsets.all(8.0),
-              padding: const EdgeInsets.only(top: 12.0),
-              height: 28.0,
-              width: 56.0,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(27.0)),
-                color: Color(0xFF333540),
-              ),
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 3.0,
-                children: <Widget>[
-                  AnimatedCircles(
-                    circlesColor: const Color(0xFFFFFFFF),
-                    animationOffset: _firstCircleOffsetAnimation,
-                  ),
-                  AnimatedCircles(
-                    circlesColor: const Color(0xFFFFFFFF),
-                    animationOffset: _secondCircleOffsetAnimation,
-                  ),
-                  AnimatedCircles(
-                    circlesColor: const Color(0xFFFFFFFF),
-                    animationOffset: _thirdCircleOffsetAnimation,
-                  ),
-                ],
-              ),
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: indicatorSpaceAnimation,
+      builder: (context, child) => SizedBox(
+        height: indicatorSpaceAnimation.value,
+        child: child,
+      ),
+      child: Row(
+        mainAxisAlignment: widget.bubbleAlignment == BubbleRtlAlignment.right
+            ? MainAxisAlignment.start
+            : MainAxisAlignment.end,
+        children: [
+          buildStart(),
+          Container(
+            margin: const EdgeInsets.all(8),
+            padding: const EdgeInsets.only(top: 12),
+            height: 28,
+            width: 56,
+            decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(27)),
+              color: Color(0xFF333540),
             ),
-            widget.bubbleAlignment == BubbleRtlAlignment.right
-                ? Container(
-                    margin: const EdgeInsets.only(left: 12),
-                    child: TypingWidget(
-                      widget: widget,
-                      context: context,
-                      mode: widget.options.typingMode,
-                    ),
-                  )
-                : const SizedBox(),
-          ],
-        ),
-      );
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 3,
+              children: [
+                AnimatedBubble(
+                  color: const Color(0xFFFFFFFF),
+                  animationOffset: firstBubbleOffsetAnimation,
+                ),
+                AnimatedBubble(
+                  color: const Color(0xFFFFFFFF),
+                  animationOffset: secondBubbleOffsetAnimation,
+                ),
+                AnimatedBubble(
+                  color: const Color(0xFFFFFFFF),
+                  animationOffset: thirdBubbleOffsetAnimation,
+                ),
+              ],
+            ),
+          ),
+          buildEnd(),
+        ],
+      ),
+    );
+  }
+
+  Widget buildStart() {
+    if (widget.bubbleAlignment != BubbleRtlAlignment.left) {
+      return const SizedBox();
+    }
+    return Container(
+      margin: const EdgeInsets.only(right: 12),
+      child: TypingWidget(
+        widget: widget,
+        context: context,
+        mode: widget.options.typingMode,
+      ),
+    );
+  }
+
+  Widget buildEnd() {
+    if (widget.bubbleAlignment != BubbleRtlAlignment.right) {
+      return const SizedBox();
+    }
+    return Container(
+      margin: const EdgeInsets.only(left: 12),
+      child: TypingWidget(
+        widget: widget,
+        context: context,
+        mode: widget.options.typingMode,
+      ),
+    );
+  }
 
   /// Handler for circles offset.
-  Animation<Offset> _circleOffset(
-    Offset? start,
+  Animation<Offset> getBubbleOffsetAnimation(
+    Offset? begin,
     Offset? end,
     Interval animationInterval,
-  ) =>
-      TweenSequence<Offset>(
-        <TweenSequenceItem<Offset>>[
-          TweenSequenceItem<Offset>(
-            tween: Tween<Offset>(
-              begin: start,
-              end: end,
-            ),
-            weight: 50.0,
-          ),
-          TweenSequenceItem<Offset>(
-            tween: Tween<Offset>(
-              begin: end,
-              end: start,
-            ),
-            weight: 50.0,
-          ),
-        ],
-      ).animate(
-        CurvedAnimation(
-          parent: _animatedCirclesController,
-          curve: animationInterval,
-          reverseCurve: animationInterval,
+  ) {
+    return TweenSequence<Offset>(
+      <TweenSequenceItem<Offset>>[
+        TweenSequenceItem<Offset>(
+          tween: Tween<Offset>(begin: begin, end: end),
+          weight: 50.0,
         ),
-      );
+        TweenSequenceItem<Offset>(
+          tween: Tween<Offset>(begin: end, end: begin),
+          weight: 50.0,
+        ),
+      ],
+    ).animate(
+      CurvedAnimation(
+        parent: bubblesController,
+        curve: animationInterval,
+        reverseCurve: animationInterval,
+      ),
+    );
+  }
 }
 
 /// Typing Widget.
 class TypingWidget extends StatelessWidget {
+  final TypeIndicator widget;
+  final BuildContext context;
+  final TypingIndicatorMode mode;
+
   const TypingWidget({
     Key? key,
     required this.widget,
     required this.context,
     required this.mode,
   }) : super(key: key);
-
-  final TypeIndicator widget;
-  final BuildContext context;
-  final TypingIndicatorMode mode;
 
   @override
   Widget build(BuildContext context) {
@@ -248,7 +251,7 @@ class TypingWidget extends StatelessWidget {
     if (mode == TypingIndicatorMode.text) {
       return SizedBox(
         child: Text(
-          _multiUserTextBuilder(widget.options.typingUsers),
+          _getUserPlural(widget.options.typingUsers),
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w500,
@@ -261,7 +264,7 @@ class TypingWidget extends StatelessWidget {
         width: sWidth,
         child: AvatarHandler(
           context: context,
-          author: widget.options.typingUsers,
+          authors: widget.options.typingUsers,
         ),
       );
     } else {
@@ -271,12 +274,12 @@ class TypingWidget extends StatelessWidget {
             width: sWidth,
             child: AvatarHandler(
               context: context,
-              author: widget.options.typingUsers,
+              authors: widget.options.typingUsers,
             ),
           ),
           const SizedBox(width: 10),
           Text(
-            _multiUserTextBuilder(widget.options.typingUsers),
+            _getUserPlural(widget.options.typingUsers),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w500,
@@ -288,58 +291,58 @@ class TypingWidget extends StatelessWidget {
     }
   }
 
-  /// Handler for multi user typing text.
-  String _multiUserTextBuilder(List<types.User> author) {
-    if (author.isEmpty) {
-      return '';
-    } else if (author.length == 1) {
-      return '${author.first.firstName} is typing...';
-    } else if (author.length == 2) {
-      return '${author.first.firstName} and ${author[1].firstName} is typing...';
-    } else {
-      return '${author.first.firstName} and ${author.length - 1} others are typing...';
-    }
-  }
-
   /// Used to specify width of stacking avatars based on number of authors.
-  double _getStackingWidth(List<types.User> author, double indicatorWidth) {
-    if (author.length == 1) {
+  double _getStackingWidth(List<types.User> authors, double indicatorWidth) {
+    if (authors.length == 1) {
       return indicatorWidth * 0.06;
-    } else if (author.length == 2) {
+    } else if (authors.length == 2) {
       return indicatorWidth * 0.11;
     } else {
       return indicatorWidth * 0.15;
+    }
+  }
+
+  /// Handler for multi user typing text.
+  String _getUserPlural(List<types.User> authors) {
+    if (authors.isEmpty) {
+      return '';
+    } else if (authors.length == 1) {
+      return '${authors[0].firstName} is typing...';
+    } else if (authors.length == 2) {
+      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
+    } else {
+      return '${authors[0].firstName} and ${authors.length - 1} others are typing...';
     }
   }
 }
 
 /// Multi Avatar Handler Widget.
 class AvatarHandler extends StatelessWidget {
+  final BuildContext context;
+  final List<types.User> authors;
+
   const AvatarHandler({
     Key? key,
     required this.context,
-    required this.author,
+    required this.authors,
   }) : super(key: key);
-
-  final BuildContext context;
-  final List<types.User> author;
 
   @override
   Widget build(BuildContext context) {
-    if (author.isEmpty) {
+    if (authors.isEmpty) {
       return const SizedBox();
-    } else if (author.length == 1) {
+    } else if (authors.length == 1) {
       return Align(
         alignment: Alignment.centerLeft,
-        child: TypingAvatar(context: context, author: author.first),
+        child: TypingAvatar(context: context, author: authors[0]),
       );
-    } else if (author.length == 2) {
+    } else if (authors.length == 2) {
       return Stack(
-        children: <Widget>[
-          TypingAvatar(context: context, author: author.first),
+        children: [
+          TypingAvatar(context: context, author: authors[0]),
           Positioned(
             left: 16,
-            child: TypingAvatar(context: context, author: author[1]),
+            child: TypingAvatar(context: context, author: authors[1]),
           ),
         ],
       );
@@ -347,10 +350,10 @@ class AvatarHandler extends StatelessWidget {
       return SizedBox(
         child: Stack(
           children: <Widget>[
-            TypingAvatar(context: context, author: author.first),
+            TypingAvatar(context: context, author: authors[0]),
             Positioned(
               left: 16,
-              child: TypingAvatar(context: context, author: author[1]),
+              child: TypingAvatar(context: context, author: authors[1]),
             ),
             Positioned(
               left: 32,
@@ -358,10 +361,8 @@ class AvatarHandler extends StatelessWidget {
                 radius: 13,
                 backgroundColor: const Color(0xFFDA88A1),
                 child: Text(
-                  '${author.length - 2}',
-                  style: const TextStyle(
-                    color: Color(0xFFFFFFFF),
-                  ),
+                  '${authors.length - 2}',
+                  style: const TextStyle(color: Color(0xFFFFFFFF)),
                   textAlign: TextAlign.center,
                   textScaleFactor: 0.7,
                 ),
@@ -376,63 +377,68 @@ class AvatarHandler extends StatelessWidget {
 
 // Typing avatar Widget.
 class TypingAvatar extends StatelessWidget {
+  final BuildContext context;
+  final types.User author;
+
   const TypingAvatar({
     Key? key,
     required this.context,
     required this.author,
   }) : super(key: key);
 
-  final BuildContext context;
-  final types.User author;
-
   @override
   Widget build(BuildContext context) {
-    final color = getUserAvatarNameColor(
-      author,
-      colors,
-    );
-    final hasImage = author.imageUrl != null;
-    final initials = getUserInitials(author);
-
     return CircleAvatar(
-      backgroundColor: color,
-      backgroundImage: hasImage ? NetworkImage(author.imageUrl!) : null,
+      backgroundColor: getUserAvatarNameColor(author, colors),
+      backgroundImage: _buildImage(),
       radius: 13,
-      child: !hasImage
-          ? Text(
-              initials,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: neutral2,
-              ),
-              textScaleFactor: 0.7,
-            )
-          : null,
+      child: _buildInitials(),
+    );
+  }
+
+  ImageProvider<Object>? _buildImage() {
+    if (author.imageUrl == null) {
+      return null;
+    }
+    return NetworkImage(author.imageUrl!);
+  }
+
+  Widget? _buildInitials() {
+    if (author.imageUrl != null) {
+      return null;
+    }
+    return Text(
+      getUserInitials(author),
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+        color: neutral2,
+      ),
+      textScaleFactor: 0.7,
     );
   }
 }
 
 /// Animated Circles Widget.
-class AnimatedCircles extends StatelessWidget {
-  const AnimatedCircles({
+class AnimatedBubble extends StatelessWidget {
+  final Color color;
+  final Animation<Offset> animationOffset;
+
+  const AnimatedBubble({
     Key? key,
-    required this.circlesColor,
+    required this.color,
     required this.animationOffset,
   }) : super(key: key);
 
-  final Color circlesColor;
-  final Animation<Offset> animationOffset;
   @override
-  Widget build(BuildContext context) => SlideTransition(
-        position: animationOffset,
-        child: Container(
-          height: 8.0,
-          width: 8.0,
-          decoration: BoxDecoration(
-            color: circlesColor,
-            shape: BoxShape.circle,
-          ),
-        ),
-      );
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: animationOffset,
+      child: Container(
+        height: 8.0,
+        width: 8.0,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+    );
+  }
 }

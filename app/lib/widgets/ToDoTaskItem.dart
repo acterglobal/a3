@@ -35,7 +35,7 @@ class ToDoTaskItem extends StatefulWidget {
 class _ToDoTaskItemState extends State<ToDoTaskItem> {
   final ToDoController todoController = ToDoController.instance;
   bool isAllDay = false;
-  late List<ImageProvider<Object>> _avatars;
+  late List<ImageProvider<Object>> avatars;
   final int countPeople = Random().nextInt(10);
   final int messageCount = Random().nextInt(100);
   int id = Random().nextInt(70);
@@ -49,11 +49,9 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   @override
   void initState() {
     super.initState();
-    _avatars = _getMockAvatars(countPeople);
+    avatars = getMockAvatars(countPeople);
     if (widget.dateTime.contains('All Day')) {
-      setState(() {
-        isAllDay = true;
-      });
+      isAllDay = true;
     }
   }
 
@@ -66,7 +64,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
           MaterialPageRoute(
             builder: (context) => ToDoTaskEditor(
               item: widget,
-              avatars: _avatars,
+              avatars: avatars,
             ),
           ),
         );
@@ -175,8 +173,8 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                       child: AvatarStack(
                         borderWidth: 0,
                         settings: settings,
-                        avatars: _avatars,
-                        infoWidgetBuilder: _infoAvatar,
+                        avatars: avatars,
+                        infoWidgetBuilder: avatarBuilder,
                         width: 28,
                         height: 28,
                       ),
@@ -191,7 +189,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
     );
   }
 
-  Widget _infoAvatar(int count) {
+  Widget avatarBuilder(int count) {
     return CircleAvatar(
       radius: 28,
       backgroundColor: ToDoTheme.infoAvatarColor,
@@ -199,7 +197,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
     );
   }
 
-  List<ImageProvider<Object>> _getMockAvatars(int count) {
+  List<ImageProvider<Object>> getMockAvatars(int count) {
     return List.generate(count, (index) {
       int id = Random().nextInt(70);
       return NetworkImage('https://i.pravatar.cc/100?img = ${id.toString()}');
