@@ -49,13 +49,14 @@ class PagedNotifier<PageKeyType, ItemType>
           nextPageKey: nextPageKeyBuilder(records, page, limit),
           previousPageKeys: {...state.previousPageKeys, page}.toList());
       return records;
-    } catch (e) {
+    } catch (e, stacktrace) {
       if (mounted) {
         state = state.copyWith(
             error: errorBuilder != null
                 ? errorBuilder!(e)
                 : 'Si è verificato un\'errore. Per favore riprovare.');
         debugPrint(e.toString());
+        debugPrint(stacktrace.toString());
       }
     }
     return null;
