@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cached_memory_image/provider/cached_memory_image_provider.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -38,8 +39,9 @@ class CustomAvatar extends StatelessWidget {
         }
         if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
           return CircleAvatar(
-            backgroundImage: MemoryImage(
-              Uint8List.fromList(snapshot.requireData),
+            backgroundImage: CachedMemoryImageProvider(
+              UniqueKey().toString(),
+              bytes: Uint8List.fromList(snapshot.requireData),
             ),
             radius: radius,
           );

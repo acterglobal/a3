@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/NewsSideBar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -77,7 +78,12 @@ class NewsItem extends StatelessWidget {
     if (image == null) {
       return null;
     }
-    return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
+    // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
+    return CachedMemoryImage(
+      uniqueKey: UniqueKey().toString(),
+      bytes: Uint8List.fromList(image),
+      fit: BoxFit.cover,
+    );
   }
 
   Widget _buildTitle(ui.Color backgroundColor, ui.Color foregroundColor) {
