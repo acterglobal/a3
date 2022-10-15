@@ -23,6 +23,7 @@ class _SideDrawerState extends State<SideDrawer> {
   @override
   void initState() {
     super.initState();
+
     if (!widget.client.isGuest()) {
       displayName = getDisplayName();
       avatar = getAvatar();
@@ -34,7 +35,7 @@ class _SideDrawerState extends State<SideDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final _size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
     return Drawer(
       backgroundColor: AppCommonTheme.backgroundColor,
       child: ScrollConfiguration(
@@ -44,7 +45,7 @@ class _SideDrawerState extends State<SideDrawer> {
             children: [
               const SizedBox(height: 20),
               buildHeader(),
-              SizedBox(height: _size.height * 0.04),
+              SizedBox(height: size.height * 0.04),
               buildTodoItem(),
               buildGalleryItem(),
               buildEventItem(),

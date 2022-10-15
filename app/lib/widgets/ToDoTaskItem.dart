@@ -49,6 +49,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   @override
   void initState() {
     super.initState();
+
     avatars = getMockAvatars(countPeople);
     if (widget.dateTime.contains('All Day')) {
       isAllDay = true;

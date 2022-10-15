@@ -34,6 +34,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
   @override
   void initState() {
     super.initState();
+
     lastUpdated = GetTimeAgo.parse(widget.item.lastUpdated!).obs;
     notesController.text = widget.item.notes ?? 'Add Notes';
     subtitleController.text = widget.item.subtitle;
@@ -43,6 +44,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
   void dispose() {
     notesController.dispose();
     subtitleController.dispose();
+
     super.dispose();
   }
 
@@ -75,9 +77,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
-            children: <Widget>[
+            children: [
               Row(
-                children: <Widget>[
+                children: [
                   Container(
                     width: 18,
                     height: 18,
@@ -126,7 +128,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                 ),
               ),
               Row(
-                children: <Widget>[
+                children: [
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.only(left: 10),
@@ -134,7 +136,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         borderWidth: 0,
                         settings: settings,
                         avatars: widget.avatars,
-                        infoWidgetBuilder: _infoAvatar,
+                        infoWidgetBuilder: infoAvatarBuilder,
                         width: 28,
                         height: 28,
                       ),
@@ -145,8 +147,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ToDoTaskAssignScreen(avatars: widget.avatars),
+                        builder: (BuildContext context) {
+                          return ToDoTaskAssignScreen(avatars: widget.avatars);
+                        },
                       ),
                     ),
                     child: const Text(
@@ -168,8 +171,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
               InkWell(
                 onTap: () => showBottomSheet('Remind Me'),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  padding: const EdgeInsets.all(10),
                   child: Row(
                     children: <Widget>[
                       SvgPicture.asset(
@@ -182,8 +184,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           'Remind Me',
-                          style: ToDoTheme.calendarTextStyle
-                              .copyWith(color: ToDoTheme.calendarColor),
+                          style: ToDoTheme.calendarTextStyle.copyWith(
+                            color: ToDoTheme.calendarColor,
+                          ),
                         ),
                       ),
                     ],
@@ -193,8 +196,10 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
               InkWell(
                 onTap: () => showBottomSheet('Add Due Date'),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 20,
+                  ),
                   child: Row(
                     children: <Widget>[
                       SvgPicture.asset(
@@ -207,8 +212,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Text(
                           'Add Due Date',
-                          style: ToDoTheme.calendarTextStyle
-                              .copyWith(color: ToDoTheme.calendarColor),
+                          style: ToDoTheme.calendarTextStyle.copyWith(
+                            color: ToDoTheme.calendarColor,
+                          ),
                         ),
                       ),
                     ],
@@ -225,8 +231,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                 ),
               ),
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.all(10),
                 child: Row(
                   children: <Widget>[
                     SvgPicture.asset(
@@ -269,8 +274,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         controller.updateNotes(widget.item, notesController);
                       },
                       controller: notesController,
-                      style: ToDoTheme.taskTitleTextStyle
-                          .copyWith(fontWeight: FontWeight.w500),
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                       cursorColor: ToDoTheme.primaryTextColor,
                       decoration: const InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -312,9 +318,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
       context: context,
       backgroundColor: ToDoTheme.bottomSheetColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(15),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       isDismissible: false,
       builder: (BuildContext context) {
@@ -330,8 +334,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                       onPressed: () {},
                       child: Text(
                         'Remove',
-                        style: ToDoTheme.taskSubtitleTextStyle
-                            .copyWith(color: ToDoTheme.removeColor),
+                        style: ToDoTheme.taskSubtitleTextStyle.copyWith(
+                          color: ToDoTheme.removeColor,
+                        ),
                       ),
                     ),
                   ),
@@ -351,8 +356,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Done',
-                        style: ToDoTheme.taskSubtitleTextStyle
-                            .copyWith(color: ToDoTheme.floatingABColor),
+                        style: ToDoTheme.taskSubtitleTextStyle.copyWith(
+                          color: ToDoTheme.floatingABColor,
+                        ),
                       ),
                     ),
                   ),
@@ -379,8 +385,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                     ),
                     title: Text(
                       'Later Today',
-                      style: ToDoTheme.taskTitleTextStyle
-                          .copyWith(fontWeight: FontWeight.w500),
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
@@ -393,8 +400,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                     ),
                     title: Text(
                       'Tomorrow',
-                      style: ToDoTheme.taskTitleTextStyle
-                          .copyWith(fontWeight: FontWeight.w500),
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
@@ -407,8 +415,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                     ),
                     title: Text(
                       'Next Week',
-                      style: ToDoTheme.taskTitleTextStyle
-                          .copyWith(fontWeight: FontWeight.w500),
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ),
@@ -440,9 +449,11 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
     );
   }
 
-  Widget _infoAvatar(int count) => CircleAvatar(
-        radius: 28,
-        backgroundColor: ToDoTheme.infoAvatarColor,
-        child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
-      );
+  Widget infoAvatarBuilder(int count) {
+    return CircleAvatar(
+      radius: 28,
+      backgroundColor: ToDoTheme.infoAvatarColor,
+      child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
+    );
+  }
 }

@@ -17,39 +17,36 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreentate extends State<SignupScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final SignUpController signUpController = Get.put(SignUpController());
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     Get.delete<SignUpController>();
+
     super.dispose();
   }
 
-  Future<bool> _signUpValidate() async {
-    bool isRegistered = false;
-    await signUpController.signUpSubmitted().then((value) {
-      if (value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.loginSuccess),
-            backgroundColor: AuthTheme.authSuccess,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-        isRegistered = true;
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.loginFailed),
-            backgroundColor: AuthTheme.authFailed,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-        isRegistered = false;
-      }
-    });
+  Future<bool> validateSignUp() async {
+    bool isRegistered = await signUpController.signUpSubmitted();
+    if (isRegistered) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginSuccess),
+          backgroundColor: AuthTheme.authSuccess,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginFailed),
+          backgroundColor: AuthTheme.authFailed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
     return isRegistered;
   }
 
@@ -60,7 +57,7 @@ class _SignupScreentate extends State<SignupScreen> {
         child: GetBuilder<SignUpController>(
           builder: (SignUpController controller) {
             return Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -146,25 +143,8 @@ class _SignupScreentate extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  controller.isSubmitting
-                      ? const CircularProgressIndicator(
-                          color: AppCommonTheme.primaryColor,
-                        )
-                      : CustomOnbaordingButton(
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              await _signUpValidate().then((value) {
-                                if (value) {
-                                  Navigator.pushReplacementNamed(context, '/');
-                                }
-                              });
-                            }
-                          },
-                          title: AppLocalizations.of(context)!.signUp,
-                        ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  buildActionButton(controller),
+                  const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -196,6 +176,24 @@ class _SignupScreentate extends State<SignupScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Widget buildActionButton(SignUpController controller) {
+    if (controller.isSubmitting) {
+      return const CircularProgressIndicator(
+        color: AppCommonTheme.primaryColor,
+      );
+    }
+    return CustomOnbaordingButton(
+      onPressed: () async {
+        if (formKey.currentState!.validate()) {
+          if (await validateSignUp()) {
+            Navigator.pushReplacementNamed(context, '/');
+          }
+        }
+      },
+      title: AppLocalizations.of(context)!.signUp,
     );
   }
 }

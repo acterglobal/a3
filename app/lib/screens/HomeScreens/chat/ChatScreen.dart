@@ -47,6 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
     roomController.setCurrentRoom(widget.room);
     widget.room.displayName().then((value) {
       setState(() => roomName = value);
@@ -56,6 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     roomController.setCurrentRoom(null);
+
     super.dispose();
   }
 
@@ -154,27 +156,26 @@ class _ChatScreenState extends State<ChatScreen> {
             color: AppCommonTheme.primaryColor,
           ),
         );
-      } else {
-        return CachedMemoryImage(
-          uniqueKey: UniqueKey().toString(),
-          bytes: kTransparentImage,
-          width: messageWidth.toDouble(),
-        );
       }
-    } else if (isURL(imageMessage.uri)) {
+      return CachedMemoryImage(
+        uniqueKey: UniqueKey().toString(),
+        bytes: kTransparentImage,
+        width: messageWidth.toDouble(),
+      );
+    }
+    if (isURL(imageMessage.uri)) {
       // remote url
       return CachedNetworkImage(
         imageUrl: imageMessage.uri,
         width: messageWidth.toDouble(),
       );
-    } else {
-      // local path
-      // the image that just sent is displayed from local not remote
-      return Image.file(
-        File(imageMessage.uri),
-        width: messageWidth.toDouble(),
-      );
     }
+    // local path
+    // the image that just sent is displayed from local not remote
+    return Image.file(
+      File(imageMessage.uri),
+      width: messageWidth.toDouble(),
+    );
   }
 
   @override
@@ -205,37 +206,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
             actions: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatProfileScreen(
-                        room: widget.room,
-                        isGroup: true,
-                        isAdmin: true,
-                      ),
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: SizedBox(
-                    height: 45,
-                    width: 45,
-                    child: FittedBox(
-                      fit: BoxFit.contain,
-                      child: CustomAvatar(
-                        avatar: widget.room.avatar(),
-                        displayName: widget.room.displayName(),
-                        radius: 20,
-                        isGroup: true,
-                        stringName: '',
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              buildProfileAction(),
             ],
           ),
           body: Obx(
@@ -246,6 +217,40 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget buildProfileAction() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatProfileScreen(
+              room: widget.room,
+              isGroup: true,
+              isAdmin: true,
+            ),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: SizedBox(
+          height: 45,
+          width: 45,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: CustomAvatar(
+              avatar: widget.room.avatar(),
+              displayName: widget.room.displayName(),
+              radius: 20,
+              isGroup: true,
+              stringName: '',
+            ),
+          ),
+        ),
+      ),
     );
   }
 

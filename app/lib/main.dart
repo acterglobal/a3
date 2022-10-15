@@ -97,6 +97,7 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   void initState() {
     super.initState();
+
     client = makeClient();
     tabController = TabController(length: 5, vsync: this);
     tabController.addListener(() {
@@ -110,6 +111,7 @@ class _EffektioHomeState extends State<EffektioHome>
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
+
     super.dispose();
   }
 

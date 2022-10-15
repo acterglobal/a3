@@ -33,13 +33,6 @@ String getUserInitials(types.User user) {
 }
 
 class TypeIndicator extends StatefulWidget {
-  const TypeIndicator({
-    Key? key,
-    required this.bubbleAlignment,
-    this.options = const TypingIndicatorOptions(),
-    required this.showIndicator,
-  }) : super(key: key);
-
   /// See [Message.bubbleRtlAlignment].
   final BubbleRtlAlignment bubbleAlignment;
 
@@ -49,13 +42,19 @@ class TypeIndicator extends StatefulWidget {
   /// Used to hide indicator when the [options.typingUsers] is empty.
   final bool showIndicator;
 
+  const TypeIndicator({
+    Key? key,
+    required this.bubbleAlignment,
+    this.options = const TypingIndicatorOptions(),
+    required this.showIndicator,
+  }) : super(key: key);
+
   @override
   State<TypeIndicator> createState() => _TypeIndicatorState();
 }
 
 class _TypeIndicatorState extends State<TypeIndicator>
     with TickerProviderStateMixin {
-  late double stackingWidth;
   late AnimationController appearanceController;
   late AnimationController bubblesController;
   late Animation<double> indicatorSpaceAnimation;
@@ -66,6 +65,7 @@ class _TypeIndicatorState extends State<TypeIndicator>
   @override
   void initState() {
     super.initState();
+
     appearanceController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -123,6 +123,7 @@ class _TypeIndicatorState extends State<TypeIndicator>
   void dispose() {
     appearanceController.dispose();
     bubblesController.dispose();
+
     super.dispose();
   }
 
@@ -182,7 +183,6 @@ class _TypeIndicatorState extends State<TypeIndicator>
       margin: const EdgeInsets.only(right: 12),
       child: TypingWidget(
         widget: widget,
-        context: context,
         mode: widget.options.typingMode,
       ),
     );
@@ -196,7 +196,6 @@ class _TypeIndicatorState extends State<TypeIndicator>
       margin: const EdgeInsets.only(left: 12),
       child: TypingWidget(
         widget: widget,
-        context: context,
         mode: widget.options.typingMode,
       ),
     );
@@ -232,13 +231,11 @@ class _TypeIndicatorState extends State<TypeIndicator>
 /// Typing Widget.
 class TypingWidget extends StatelessWidget {
   final TypeIndicator widget;
-  final BuildContext context;
   final TypingIndicatorMode mode;
 
   const TypingWidget({
     Key? key,
     required this.widget,
-    required this.context,
     required this.mode,
   }) : super(key: key);
 
@@ -262,20 +259,14 @@ class TypingWidget extends StatelessWidget {
     } else if (mode == TypingIndicatorMode.avatar) {
       return SizedBox(
         width: sWidth,
-        child: AvatarHandler(
-          context: context,
-          authors: widget.options.typingUsers,
-        ),
+        child: AvatarHandler(authors: widget.options.typingUsers),
       );
     } else {
       return Row(
         children: <Widget>[
           SizedBox(
             width: sWidth,
-            child: AvatarHandler(
-              context: context,
-              authors: widget.options.typingUsers,
-            ),
+            child: AvatarHandler(authors: widget.options.typingUsers),
           ),
           const SizedBox(width: 10),
           Text(
@@ -318,14 +309,9 @@ class TypingWidget extends StatelessWidget {
 
 /// Multi Avatar Handler Widget.
 class AvatarHandler extends StatelessWidget {
-  final BuildContext context;
   final List<types.User> authors;
 
-  const AvatarHandler({
-    Key? key,
-    required this.context,
-    required this.authors,
-  }) : super(key: key);
+  const AvatarHandler({Key? key, required this.authors}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -334,15 +320,15 @@ class AvatarHandler extends StatelessWidget {
     } else if (authors.length == 1) {
       return Align(
         alignment: Alignment.centerLeft,
-        child: TypingAvatar(context: context, author: authors[0]),
+        child: TypingAvatar(author: authors[0]),
       );
     } else if (authors.length == 2) {
       return Stack(
         children: [
-          TypingAvatar(context: context, author: authors[0]),
+          TypingAvatar(author: authors[0]),
           Positioned(
             left: 16,
-            child: TypingAvatar(context: context, author: authors[1]),
+            child: TypingAvatar(author: authors[1]),
           ),
         ],
       );
@@ -350,10 +336,10 @@ class AvatarHandler extends StatelessWidget {
       return SizedBox(
         child: Stack(
           children: <Widget>[
-            TypingAvatar(context: context, author: authors[0]),
+            TypingAvatar(author: authors[0]),
             Positioned(
               left: 16,
-              child: TypingAvatar(context: context, author: authors[1]),
+              child: TypingAvatar(author: authors[1]),
             ),
             Positioned(
               left: 32,
@@ -377,14 +363,9 @@ class AvatarHandler extends StatelessWidget {
 
 // Typing avatar Widget.
 class TypingAvatar extends StatelessWidget {
-  final BuildContext context;
   final types.User author;
 
-  const TypingAvatar({
-    Key? key,
-    required this.context,
-    required this.author,
-  }) : super(key: key);
+  const TypingAvatar({Key? key, required this.author}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

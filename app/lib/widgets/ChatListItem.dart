@@ -37,6 +37,7 @@ class _ChatListItemState extends State<ChatListItem> {
   @override
   void initState() {
     super.initState();
+
     displayName = getDisplayName();
   }
 
@@ -74,12 +75,11 @@ class _ChatListItemState extends State<ChatListItem> {
                   snapshot.requireData,
                   style: ChatTheme01.chatTitleStyle,
                 );
-              } else {
-                return Text(
-                  AppLocalizations.of(context)!.loadingName,
-                  style: ChatTheme01.chatTitleStyle,
-                );
               }
+              return Text(
+                AppLocalizations.of(context)!.loadingName,
+                style: ChatTheme01.chatTitleStyle,
+              );
             },
           ),
           subtitle: buildSubtitle(context),

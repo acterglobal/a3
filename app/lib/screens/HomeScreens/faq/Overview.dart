@@ -5,9 +5,9 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class FaqOverviewScreen extends StatelessWidget {
-  const FaqOverviewScreen({Key? key, required this.client}) : super(key: key);
-
   final Client client;
+
+  const FaqOverviewScreen({Key? key, required this.client}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

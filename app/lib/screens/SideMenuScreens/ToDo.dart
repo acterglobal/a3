@@ -19,12 +19,14 @@ class _ToDoScreenState extends State<ToDoScreen> {
   @override
   void initState() {
     super.initState();
+
     todoController.init();
   }
 
   @override
   void dispose() {
     Get.delete<ToDoController>();
+
     super.dispose();
   }
 
@@ -78,11 +80,8 @@ class _ToDoScreenState extends State<ToDoScreen> {
                   child: Wrap(
                     direction: Axis.horizontal,
                     spacing: 5.0,
-                    children: List.generate(buttonText.length, (index) {
-                      return radioButton(
-                        text: buttonText[index],
-                        index: index,
-                      );
+                    children: List.generate(buttonText.length, (int index) {
+                      return radioButton(text: buttonText[index], index: index);
                     }),
                   ),
                 ),
@@ -90,8 +89,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: todoController.todoList!.length,
-                  itemBuilder: (context, index) =>
-                      todoController.todoList![index],
+                  itemBuilder: (BuildContext context, int index) {
+                    return todoController.todoList![index];
+                  },
                 ),
               ],
             ),

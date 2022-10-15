@@ -137,10 +137,6 @@ class CrossSigning {
     String flowId,
     Function setState,
   ) {
-    String notifContent = sprintf(
-      AppLocalizations.of(context)!.sasIncomingReqNotifContent,
-      [event.sender()],
-    );
     return Column(
       children: [
         Row(
@@ -171,7 +167,13 @@ class CrossSigning {
           ],
         ),
         const SizedBox(height: 10),
-        Text(notifContent, style: CrossSigningSheetTheme.secondaryTextStyle),
+        Text(
+          sprintf(
+            AppLocalizations.of(context)!.sasIncomingReqNotifContent,
+            [event.sender()],
+          ),
+          style: CrossSigningSheetTheme.secondaryTextStyle,
+        ),
         const SizedBox(height: 50),
         SvgPicture.asset(
           'assets/images/lock.svg',
@@ -589,10 +591,6 @@ class CrossSigning {
     VerificationEvent event,
     String flowId,
   ) {
-    String waitingFor = sprintf(
-      AppLocalizations.of(context)!.verificationRequestWaitingFor,
-      [event.sender()],
-    );
     return Column(
       children: [
         Row(
@@ -623,7 +621,13 @@ class CrossSigning {
             ),
           ),
         ),
-        Text(waitingFor, style: CrossSigningSheetTheme.secondaryTextStyle),
+        Text(
+          sprintf(
+            AppLocalizations.of(context)!.verificationRequestWaitingFor,
+            [event.sender()],
+          ),
+          style: CrossSigningSheetTheme.secondaryTextStyle,
+        ),
       ],
     );
   }
@@ -750,15 +754,14 @@ class CrossSigning {
     Function setState,
   ) {
     if (waitForMatch) {
-      String waitingFor = sprintf(
-        AppLocalizations.of(context)!.verificationRequestWaitingFor,
-        [event.sender()],
-      );
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Text(
-            waitingFor,
+            sprintf(
+              AppLocalizations.of(context)!.verificationRequestWaitingFor,
+              [event.sender()],
+            ),
             style: CrossSigningSheetTheme.secondaryTextStyle,
           ),
         ),

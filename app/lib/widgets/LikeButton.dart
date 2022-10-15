@@ -29,6 +29,8 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
 
   @override
   void initState() {
+    super.initState();
+
     controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -101,8 +103,6 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     ).animate(
       CurvedAnimation(parent: controller, curve: const Interval(0, 0.7)),
     );
-
-    super.initState();
   }
 
   Widget buildSmallHeart() {

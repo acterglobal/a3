@@ -15,39 +15,36 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final loginController = Get.put(LoginController());
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     Get.delete<LoginController>();
+
     super.dispose();
   }
 
-  Future<bool> _loginValidate() async {
-    bool isLoggedIn = false;
-    await loginController.loginSubmitted().then((value) {
-      if (value) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.loginSuccess),
-            backgroundColor: AuthTheme.authSuccess,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-        isLoggedIn = true;
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.loginFailed),
-            backgroundColor: AuthTheme.authFailed,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-        isLoggedIn = false;
-      }
-    });
+  Future<bool> validateLogin() async {
+    bool isLoggedIn = await loginController.loginSubmitted();
+    if (isLoggedIn) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginSuccess),
+          backgroundColor: AuthTheme.authSuccess,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginFailed),
+          backgroundColor: AuthTheme.authFailed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
     return isLoggedIn;
   }
 
@@ -58,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: GetBuilder<LoginController>(
           builder: (LoginController controller) {
             return Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -113,12 +110,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       : CustomOnbaordingButton(
                           onPressed: () async {
                             controller.isSubmitting = true;
-                            if (_formKey.currentState!.validate()) {
-                              await _loginValidate().then((value) {
-                                if (value) {
-                                  Navigator.pushReplacementNamed(context, '/');
-                                }
-                              });
+                            if (formKey.currentState!.validate()) {
+                              if (await validateLogin()) {
+                                Navigator.pushReplacementNamed(context, '/');
+                              }
                             }
                           },
                           title: AppLocalizations.of(context)!.login,

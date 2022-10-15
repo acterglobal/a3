@@ -49,8 +49,10 @@ class InviteInfoWidget extends StatelessWidget {
   Widget _buildTitle() {
     return Text(
       inviter,
-      style: AppCommonTheme.appBarTitleStyle
-          .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+      style: AppCommonTheme.appBarTitleStyle.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 
@@ -66,8 +68,10 @@ class InviteInfoWidget extends StatelessWidget {
         children: <TextSpan>[
           TextSpan(
             text: groupName,
-            style: AppCommonTheme.appBarTitleStyle
-                .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+            style: AppCommonTheme.appBarTitleStyle.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -83,8 +87,10 @@ class InviteInfoWidget extends StatelessWidget {
         () async {
           await client.acceptInvitation(groupId);
         },
-        AppCommonTheme.appBarTitleStyle
-            .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+        AppCommonTheme.appBarTitleStyle.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -98,8 +104,10 @@ class InviteInfoWidget extends StatelessWidget {
         () async {
           await client.rejectInvitation(groupId);
         },
-        AppCommonTheme.appBarTitleStyle
-            .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
+        AppCommonTheme.appBarTitleStyle.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
