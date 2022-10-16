@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
@@ -119,6 +121,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<FfiBufferUint8> _userAvatar(String userId) async {
     Member member = await widget.room.getMember(userId);
+
     return member.avatar();
   }
 
@@ -304,13 +307,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 isChatScreen: true,
                 roomName: roomName,
                 onButtonPressed: () async {
-                  await controller.handleSendPressed(
-                    controller.textEditingController.text,
-                  );
-                  controller.textEditingController.clear();
+                  String _text =
+                      controller.mentionKey.currentState!.controller!.text;
+                  controller.messageTextMap.forEach((key, value) {
+                    _text = _text.replaceAll(key, value);
+                  });
+                  await controller.handleSendPressed(_text);
+                  controller.messageTextMap.clear();
+                  controller.mentionKey.currentState!.controller!.clear();
                   controller.sendButtonUpdate();
                 },
               ),
+              textMessageBuilder: _textMessageBuilder,
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
                 attachmentButtonAccessibilityLabel: '',
@@ -396,6 +404,29 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _textMessageBuilder(
+    types.TextMessage p1, {
+    required int messageWidth,
+    required bool showName,
+  }) {
+    return Container(
+      width: sqrt(
+            p1.metadata!['messageLength'],
+          ) *
+          38.5,
+      padding: const EdgeInsets.all(8),
+      constraints: const BoxConstraints(minWidth: 57),
+      child: Html(
+        // ignore: prefer_single_quotes, unnecessary_string_interpolations
+        data: """${p1.text}""",
+        style: {
+          'body': Style(color: Colors.white),
+          'a': Style(textDecoration: TextDecoration.none)
+        },
+      ),
     );
   }
 }

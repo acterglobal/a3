@@ -17,6 +17,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -36,10 +37,14 @@ class ChatRoomController extends GetxController {
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
   FocusNode focusNode = FocusNode();
-  TextEditingController textEditingController = TextEditingController();
+  GlobalKey<FlutterMentionsState> mentionKey =
+      GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
   List<Member> _activeMembers = [];
+  List<Map<String, dynamic>> roomMembers = [];
+  String messageText = '';
+  Map<String, String> messageTextMap = {};
   StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatRoomController({required this.client}) : super();
@@ -72,7 +77,6 @@ class ChatRoomController extends GetxController {
 
   @override
   void onClose() {
-    textEditingController.dispose();
     focusNode.removeListener(() {});
     _messageSubscription?.cancel();
     super.onClose();
@@ -98,6 +102,7 @@ class ChatRoomController extends GetxController {
         _loadMessage(message);
       }
       isLoading.value = false;
+      _getRoomMembers();
     }
   }
 
@@ -125,7 +130,7 @@ class ChatRoomController extends GetxController {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    var eventId = await _currentRoom!.sendPlainMessage(message);
+    var eventId = await _currentRoom!.sendFormattedMessage(message);
     final textMessage = types.TextMessage(
       author: types.User(id: client.userId().toString()),
       createdAt: DateTime.now().millisecondsSinceEpoch,
@@ -133,6 +138,9 @@ class ChatRoomController extends GetxController {
       text: message,
       status: types.Status.sent,
       showStatus: true,
+       metadata: {
+        'messageLength': message.length,
+      },
     );
     messages.insert(0, textMessage);
     update(['Chat']);
@@ -389,7 +397,10 @@ class ChatRoomController extends GetxController {
         author: author,
         createdAt: createdAt,
         id: eventId,
-        text: message.body(),
+        text: message.formattedBody() ?? message.body(),
+        metadata: {
+          'messageLength': message.body().length,
+        },
       );
       _insertMessage(m);
       if (isLoading.isFalse) {
@@ -400,9 +411,27 @@ class ChatRoomController extends GetxController {
   }
 
   void sendButtonUpdate() {
-    isSendButtonVisible = textEditingController.text.trim().isNotEmpty;
+    isSendButtonVisible =
+        mentionKey.currentState!.controller!.text.trim().isNotEmpty;
     update();
   }
+
+  void _getRoomMembers() {
+    _currentRoom!.activeMembers().then((memberList) {
+      roomMembers = memberList
+          .toList()
+          .map(
+            (member) => {
+              'avatar': member,
+              'display': member.displayName(),
+              'link': member.userId(),
+            },
+          )
+          .where((member) => member['link'] != client.userId().toString())
+          .toList();
+    });
+  }
+  
 
   Future<bool> typingNotice(bool typing) async {
     if (_currentRoom == null) {
