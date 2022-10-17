@@ -5,10 +5,12 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 
 class ToDoTaskAssignScreen extends StatelessWidget {
-  const ToDoTaskAssignScreen({Key? key, required this.avatars})
-      : super(key: key);
-
   final List<ImageProvider<Object>> avatars;
+
+  const ToDoTaskAssignScreen({
+    Key? key,
+    required this.avatars,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class ToDoTaskAssignScreen extends StatelessWidget {
       body: ScrollConfiguration(
         behavior: const ScrollBehavior().copyWith(overscroll: false),
         child: Column(
-          children: <Widget>[
+          children: [
             Container(
               margin: const EdgeInsets.all(20),
               child: Row(
@@ -70,8 +72,10 @@ class ToDoTaskAssignScreen extends StatelessWidget {
                   radius: 20,
                   backgroundImage: avatars[index],
                 ),
-                title:
-                    const Text('John Doe', style: ToDoTheme.roleNameTextStyle),
+                title: const Text(
+                  'John Doe',
+                  style: ToDoTheme.roleNameTextStyle,
+                ),
                 trailing: Text(
                   taskRole[Random().nextInt(taskRole.length)],
                   style: ToDoTheme.roleTextStyle,

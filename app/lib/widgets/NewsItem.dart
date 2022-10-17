@@ -1,5 +1,7 @@
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
+import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/NewsSideBar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -22,7 +24,6 @@ class NewsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var image = news.image();
     var bgColor = convertColor(news.bgColor(), AppCommonTheme.backgroundColor);
     var fgColor = convertColor(news.fgColor(), AppCommonTheme.primaryColor);
 
@@ -33,9 +34,7 @@ class NewsItem extends StatelessWidget {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: image != null
-              ? Image.memory(Uint8List.fromList(image), fit: BoxFit.cover)
-              : null,
+          child: _buildImage(),
           clipBehavior: Clip.none,
         ),
         Row(
@@ -50,43 +49,9 @@ class NewsItem extends StatelessWidget {
                   child: Column(
                     children: <Widget>[
                       const Spacer(),
-                      Text(
-                        'Lorem Ipsum is simply dummy text of the printing and',
-                        style: GoogleFonts.roboto(
-                          color: fgColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: bgColor,
-                              offset: const Offset(2, 2),
-                              blurRadius: 5,
-                            ),
-                          ],
-                        ),
-                      ),
+                      _buildTitle(bgColor, fgColor),
                       const SizedBox(height: 10),
-                      ExpandableText(
-                        news.text() ?? '',
-                        maxLines: 2,
-                        expandText: '',
-                        expandOnTextTap: true,
-                        collapseOnTextTap: true,
-                        animation: true,
-                        linkColor: fgColor,
-                        style: GoogleFonts.roboto(
-                          color: fgColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          shadows: [
-                            Shadow(
-                              color: bgColor,
-                              offset: const Offset(1, 1),
-                              blurRadius: 3,
-                            ),
-                          ],
-                        ),
-                      ),
+                      _buildSubtitle(bgColor, fgColor),
                       const SizedBox(height: 10),
                     ],
                   ),
@@ -98,17 +63,68 @@ class NewsItem extends StatelessWidget {
               child: SizedBox(
                 height: MediaQuery.of(context).size.height / 2.5,
                 child: InkWell(
-                  child: NewsSideBar(
-                    client: client,
-                    news: news,
-                    index: index,
-                  ),
+                  child: NewsSideBar(client: client, news: news, index: index),
                 ),
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  Widget? _buildImage() {
+    var image = news.image();
+    if (image == null) {
+      return null;
+    }
+    // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
+    return CachedMemoryImage(
+      uniqueKey: UniqueKey().toString(),
+      bytes: Uint8List.fromList(image),
+      fit: BoxFit.cover,
+    );
+  }
+
+  Widget _buildTitle(ui.Color backgroundColor, ui.Color foregroundColor) {
+    return Text(
+      'Lorem Ipsum is simply dummy text of the printing and',
+      style: GoogleFonts.roboto(
+        color: foregroundColor,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        shadows: [
+          Shadow(
+            color: backgroundColor,
+            offset: const Offset(2, 2),
+            blurRadius: 5,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubtitle(ui.Color backgroundColor, ui.Color foregroundColor) {
+    return ExpandableText(
+      news.text() ?? '',
+      maxLines: 2,
+      expandText: '',
+      expandOnTextTap: true,
+      collapseOnTextTap: true,
+      animation: true,
+      linkColor: foregroundColor,
+      style: GoogleFonts.roboto(
+        color: foregroundColor,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        shadows: [
+          Shadow(
+            color: backgroundColor,
+            offset: const Offset(1, 1),
+            blurRadius: 3,
+          ),
+        ],
+      ),
     );
   }
 }

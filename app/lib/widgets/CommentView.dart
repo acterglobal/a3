@@ -5,16 +5,16 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CommentView extends StatefulWidget {
+  final String name;
+  final Color titleColor;
+  final String comment;
+
   const CommentView({
     Key? key,
     required this.name,
     required this.titleColor,
     required this.comment,
   }) : super(key: key);
-
-  final String name;
-  final Color titleColor;
-  final String comment;
 
   @override
   CommentViewState createState() => CommentViewState();
@@ -103,31 +103,7 @@ class CommentViewState extends State<CommentView> {
               ),
               Column(
                 children: [
-                  if (liked == false)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          liked = true;
-                          likeCount = likeCount + 1;
-                        });
-                      },
-                      child: SvgPicture.asset(
-                        'assets/images/heart.svg',
-                        color: Colors.white,
-                        width: 24,
-                        height: 24,
-                      ),
-                    )
-                  else
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          liked = false;
-                          likeCount = likeCount - 1;
-                        });
-                      },
-                      child: const Icon(Icons.favorite, color: Colors.red),
-                    ),
+                  buildActionButton(),
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: Text(
@@ -175,6 +151,34 @@ class CommentViewState extends State<CommentView> {
           ),
         )
       ],
+    );
+  }
+
+  Widget buildActionButton() {
+    if (liked) {
+      return GestureDetector(
+        onTap: () {
+          setState(() {
+            liked = false;
+            likeCount = likeCount - 1;
+          });
+        },
+        child: const Icon(Icons.favorite, color: Colors.red),
+      );
+    }
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          liked = true;
+          likeCount = likeCount + 1;
+        });
+      },
+      child: SvgPicture.asset(
+        'assets/images/heart.svg',
+        color: Colors.white,
+        width: 24,
+        height: 24,
+      ),
     );
   }
 }

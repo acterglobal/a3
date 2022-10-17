@@ -23,7 +23,7 @@ class FaqListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) {
+            builder: (BuildContext context) {
               return FaqItemScreen(client: client, faq: faq);
             },
           ),
@@ -31,7 +31,7 @@ class FaqListItem extends StatelessWidget {
       },
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          padding: const EdgeInsets.all(8),
           child: Column(
             children: [
               Padding(
@@ -137,29 +137,7 @@ class FaqListItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
                   height: 40,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: faq.tags().length,
-                    itemBuilder: (context, index) {
-                      var color = faq.tags().elementAt(index).color();
-                      var colorToShow = 0;
-                      if (color != null) {
-                        var colorList = color.rgbaU8();
-                        colorToShow = hexOfRGBA(
-                          colorList.elementAt(0),
-                          colorList.elementAt(1),
-                          colorList.elementAt(2),
-                          opacity: 0.7,
-                        );
-                      }
-
-                      return TagListItem(
-                        tagTitle: faq.tags().elementAt(index).title(),
-                        tagColor:
-                            colorToShow > 0 ? Color(colorToShow) : Colors.white,
-                      );
-                    },
-                  ),
+                  child: _buildTagList(),
                 ),
               )
             ],
@@ -173,6 +151,30 @@ class FaqListItem extends StatelessWidget {
           borderSide: const BorderSide(color: Colors.white),
         ),
       ),
+    );
+  }
+
+  Widget _buildTagList() {
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: faq.tags().length,
+      itemBuilder: (context, index) {
+        var color = faq.tags().elementAt(index).color();
+        var colorToShow = 0;
+        if (color != null) {
+          var colorList = color.rgbaU8();
+          colorToShow = hexOfRGBA(
+            colorList.elementAt(0),
+            colorList.elementAt(1),
+            colorList.elementAt(2),
+            opacity: 0.7,
+          );
+        }
+        return TagListItem(
+          tagTitle: faq.tags().elementAt(index).title(),
+          tagColor: colorToShow > 0 ? Color(colorToShow) : Colors.white,
+        );
+      },
     );
   }
 }

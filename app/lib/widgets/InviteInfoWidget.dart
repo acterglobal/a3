@@ -30,60 +30,80 @@ class InviteInfoWidget extends StatelessWidget {
         children: <Widget>[
           ListTile(
             leading: CircleAvatar(backgroundColor: avatarColor),
-            title: Text(
-              inviter,
-              style: AppCommonTheme.appBarTitleStyle
-                  .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-            ),
-            subtitle: RichText(
-              text: TextSpan(
-                text: AppLocalizations.of(context)!.invitationText2,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: AppCommonTheme.dividerColor,
-                ),
-                children: <TextSpan>[
-                  TextSpan(
-                    text: groupName,
-                    style: AppCommonTheme.appBarTitleStyle
-                        .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
+            title: _buildTitle(),
+            subtitle: _buildSubtitle(context),
           ),
           const Divider(color: AppCommonTheme.dividerColor, indent: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.46,
-                child: elevatedButton(
-                  AppLocalizations.of(context)!.accept,
-                  AppCommonTheme.greenButtonColor,
-                  () async {
-                    await client.acceptInvitation(groupId);
-                  },
-                  AppCommonTheme.appBarTitleStyle
-                      .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.46,
-                child: elevatedButton(
-                  AppLocalizations.of(context)!.decline,
-                  AppCommonTheme.primaryColor,
-                  () async {
-                    await client.rejectInvitation(groupId);
-                  },
-                  AppCommonTheme.appBarTitleStyle
-                      .copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ),
+            children: [
+              _buildAcceptButton(context),
+              _buildRejectButton(context),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTitle() {
+    return Text(
+      inviter,
+      style: AppCommonTheme.appBarTitleStyle.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  Widget _buildSubtitle(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: AppLocalizations.of(context)!.invitationText2,
+        style: AppCommonTheme.appBarTitleStyle.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: AppCommonTheme.dividerColor,
+        ),
+        children: <TextSpan>[
+          TextSpan(
+            text: groupName,
+            style: AppCommonTheme.appBarTitleStyle.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAcceptButton(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.46,
+      child: elevatedButton(
+        AppLocalizations.of(context)!.accept,
+        AppCommonTheme.greenButtonColor,
+        () async => await client.acceptInvitation(groupId),
+        AppCommonTheme.appBarTitleStyle.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRejectButton(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.46,
+      child: elevatedButton(
+        AppLocalizations.of(context)!.decline,
+        AppCommonTheme.primaryColor,
+        () async => await client.rejectInvitation(groupId),
+        AppCommonTheme.appBarTitleStyle.copyWith(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

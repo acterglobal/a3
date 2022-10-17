@@ -92,31 +92,30 @@ class EffektioHome extends StatefulWidget {
 
 class _EffektioHomeState extends State<EffektioHome>
     with SingleTickerProviderStateMixin {
-  late Future<Client> _client;
+  late Future<Client> client;
   int tabIndex = 0;
-  late TabController _tabController;
-  CrossSigning? _crossSigning;
-  bool isLoading = false;
+  late TabController tabController;
+  CrossSigning? crossSigning;
 
   @override
   void initState() {
     super.initState();
-    _client = makeClient();
-    _tabController = TabController(length: 5, vsync: this);
-    _tabController.addListener(() {
-      setState(() {
-        tabIndex = _tabController.index;
-      });
+
+    client = makeClient();
+    tabController = TabController(length: 5, vsync: this);
+    tabController.addListener(() {
+      setState(() => tabIndex = tabController.index);
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
-    _crossSigning?.dispose();
+    crossSigning?.dispose();
     Get.delete<ChatListController>();
     Get.delete<ChatRoomController>();
     Get.delete<ReceiptController>();
+
+    super.dispose();
   }
 
   Future<Client> makeClient() async {
@@ -126,7 +125,7 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
-      _crossSigning = CrossSigning(client: client);
+      crossSigning = CrossSigning(client: client);
       Get.put(ChatListController(client: client));
       Get.put(ChatRoomController(client: client));
       Get.put(ReceiptController(client: client));
@@ -134,8 +133,11 @@ class _EffektioHomeState extends State<EffektioHome>
     return client;
   }
 
-  Widget homeScreen(BuildContext context, Client client) {
-    List<String?> _titles = <String?>[
+  PreferredSizeWidget? buildAppBar() {
+    if (tabIndex <= 3) {
+      return null;
+    }
+    List<String?> titles = <String?>[
       null,
       'FAQ',
       null,
@@ -143,46 +145,104 @@ class _EffektioHomeState extends State<EffektioHome>
       'Chat',
       'Notifications'
     ];
+    return AppBar(
+      title: navBarTitle(titles[tabIndex] ?? ''),
+      centerTitle: true,
+      primary: true,
+      elevation: 1,
+      leading: Builder(
+        builder: (BuildContext context) {
+          return IconButton(
+            icon: Container(
+              margin: const EdgeInsets.only(bottom: 10, left: 10),
+              child: Image.asset('assets/images/hamburger.png'),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          );
+        },
+      ),
+      actions: [
+        IconButton(
+          icon: Container(
+            margin: const EdgeInsets.only(bottom: 10, right: 10),
+            child: const Icon(Icons.search),
+          ),
+          onPressed: () {},
+        )
+      ],
+    );
+  }
 
+  Widget buildNewsFeedTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 0
+            ? SvgPicture.asset('assets/images/newsfeed_bold.svg')
+            : SvgPicture.asset('assets/images/newsfeed_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildMenuTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 1
+            ? SvgPicture.asset('assets/images/menu_bold.svg')
+            : SvgPicture.asset('assets/images/menu_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildPlusTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 2
+            ? SvgPicture.asset(
+                'assets/images/add.svg',
+                color: AppCommonTheme.primaryColor,
+              )
+            : SvgPicture.asset('assets/images/add.svg'),
+      ),
+    );
+  }
+
+  Widget buildChatTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 3
+            ? SvgPicture.asset('assets/images/chat_bold.svg')
+            : SvgPicture.asset('assets/images/chat_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildNotificationTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 4
+            ? SvgPicture.asset('assets/images/notification_bold.svg')
+            : SvgPicture.asset('assets/images/notification_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildHomeScreen(BuildContext context, Client client) {
     return DefaultTabController(
       length: 5,
       key: const Key('bottom-bar'),
       child: SafeArea(
         child: Scaffold(
-          appBar: tabIndex <= 3
-              ? null
-              : AppBar(
-                  title: navBarTitle(_titles[tabIndex] ?? ''),
-                  centerTitle: true,
-                  primary: true,
-                  elevation: 1,
-                  leading: Builder(
-                    builder: (BuildContext context) {
-                      return IconButton(
-                        icon: Container(
-                          margin: const EdgeInsets.only(bottom: 10, left: 10),
-                          child: Image.asset('assets/images/hamburger.png'),
-                        ),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        tooltip: MaterialLocalizations.of(context)
-                            .openAppDrawerTooltip,
-                      );
-                    },
-                  ),
-                  actions: [
-                    IconButton(
-                      icon: Container(
-                        margin: const EdgeInsets.only(bottom: 10, right: 10),
-                        child: const Icon(Icons.search),
-                      ),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
+          appBar: buildAppBar(),
           body: TabBarView(
-            controller: _tabController,
+            controller: tabController,
             children: [
               NewsScreen(client: client),
               FaqOverviewScreen(client: client),
@@ -191,13 +251,11 @@ class _EffektioHomeState extends State<EffektioHome>
               const NotificationScreen(),
             ],
           ),
-          drawer: SideDrawer(
-            client: client,
-          ),
+          drawer: SideDrawer(client: client),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,
             unselectedLabelColor: AppCommonTheme.svgIconColor,
-            controller: _tabController,
+            controller: tabController,
             indicator: const MaterialIndicator(
               height: 5,
               bottomLeftRadius: 8,
@@ -209,51 +267,11 @@ class _EffektioHomeState extends State<EffektioHome>
               color: AppCommonTheme.primaryColor,
             ),
             tabs: [
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 0
-                      ? SvgPicture.asset('assets/images/newsfeed_bold.svg')
-                      : SvgPicture.asset('assets/images/newsfeed_linear.svg'),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 1
-                      ? SvgPicture.asset('assets/images/menu_bold.svg')
-                      : SvgPicture.asset('assets/images/menu_linear.svg'),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 2
-                      ? SvgPicture.asset(
-                          'assets/images/add.svg',
-                          color: AppCommonTheme.primaryColor,
-                        )
-                      : SvgPicture.asset('assets/images/add.svg'),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 3
-                      ? SvgPicture.asset('assets/images/chat_bold.svg')
-                      : SvgPicture.asset('assets/images/chat_linear.svg'),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 4
-                      ? SvgPicture.asset('assets/images/notification_bold.svg')
-                      : SvgPicture.asset(
-                          'assets/images/notification_linear.svg',
-                        ),
-                ),
-              ),
+              buildNewsFeedTab(),
+              buildMenuTab(),
+              buildPlusTab(),
+              buildChatTab(),
+              buildNotificationTab(),
             ],
           ),
         ),
@@ -264,10 +282,10 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Client>(
-      future: _client, // a previously-obtained Future<String> or null
+      future: client, // a previously-obtained Future<String> or null
       builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
         if (snapshot.hasData) {
-          return homeScreen(context, snapshot.requireData);
+          return buildHomeScreen(context, snapshot.requireData);
         } else if (snapshot.hasError) {
           return SizedBox(
             height: 40,

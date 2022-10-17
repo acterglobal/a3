@@ -28,9 +28,9 @@ var isCheckVisible = false;
 Color? tagColor;
 
 class HtmlEditorExample extends StatefulWidget {
-  const HtmlEditorExample({Key? key, required this.title}) : super(key: key);
-
   final String title;
+
+  const HtmlEditorExample({Key? key, required this.title}) : super(key: key);
 
   @override
   _HtmlEditorExampleState createState() => _HtmlEditorExampleState();
@@ -40,12 +40,12 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
   String result = '';
   OverlayEntry? entry;
   TextEditingController tagTitleController = TextEditingController();
-
   final HtmlEditorController controller = HtmlEditorController();
 
   @override
   void initState() {
     super.initState();
+
     if (_tagList.isNotEmpty) {
       _tagList.clear();
       _tagColorList.clear();
@@ -72,10 +72,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Icon(
-                Icons.close,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.close, color: Colors.white),
             ),
             title: Text(widget.title),
             centerTitle: true,
@@ -128,8 +125,10 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                 ) {
                   return true;
                 },
-                mediaUploadInterceptor:
-                    (PlatformFile file, InsertFileType type) async {
+                mediaUploadInterceptor: (
+                  PlatformFile file,
+                  InsertFileType type,
+                ) async {
                   return true;
                 },
               ),
@@ -192,10 +191,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       'Tags',
                       style: TextStyle(color: Colors.white),
                     ),
-                    icon: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
+                    icon: const Icon(Icons.add, color: Colors.white),
                   ),
                   if (_tagList.isNotEmpty)
                     Expanded(
@@ -223,7 +219,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
 
   void showBottomSheet() {
     Color? primaryColor = Colors.grey;
-    int? indexing;
     selectedIndexList.clear();
 
     showModalBottomSheet(
@@ -282,63 +277,17 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 20,
-                        ),
-                        itemCount: 8,
-                        itemBuilder: (BuildContext content, index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                tagColor = arr[index];
-                              });
-
-                              setSheetState(() {
-                                indexing = index;
-
-                                if (!selectedIndexList.contains(index)) {
-                                  selectedIndexList.clear();
-                                  selectedIndexList.add(index);
-                                } else {
-                                  selectedIndexList.clear();
-                                }
-                              });
-                            },
-                            child: Container(
-                              height: 80,
-                              width: 80,
-                              child: Visibility(
-                                visible: selectedIndexList.contains(index)
-                                    ? true
-                                    : false,
-                                child: const Icon(
-                                  Icons.done,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                color: arr[index],
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      child: buildGrid(setSheetState),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20),
                     child: ElevatedButton(
-                      onPressed: () => {
-                        setState(() {
-                          debugPrint(indexing.toString());
-                          debugPrint(_tagColorList.length.toString());
-                          debugPrint(tagColor.toString());
-                          if (tagTitleController.text.isNotEmpty) {
+                      onPressed: () {
+                        debugPrint(_tagColorList.length.toString());
+                        debugPrint(tagColor.toString());
+                        if (tagTitleController.text.isNotEmpty) {
+                          setState(() {
                             _tagList.add(tagTitleController.text.toString());
                             _tagColorList.add(
                               tagColor == null ? Colors.white : tagColor!,
@@ -346,29 +295,29 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                             debugPrint(_tagColorList.length.toString());
                             Navigator.of(context).pop();
                             tagTitleController.clear();
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                behavior: SnackBarBehavior.floating,
-                                margin: EdgeInsets.only(bottom: 420),
-                                backgroundColor: Colors.black87,
-                                duration: Duration(seconds: 2),
-                                content: SizedBox(
-                                  height: 20,
-                                  child: Center(
-                                    child: Text(
-                                      'Please fill the title of Tag',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                      ),
+                          });
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(bottom: 420),
+                              backgroundColor: Colors.black87,
+                              duration: Duration(seconds: 2),
+                              content: SizedBox(
+                                height: 20,
+                                child: Center(
+                                  child: Text(
+                                    'Please fill the title of Tag',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ),
                               ),
-                            );
-                          }
-                        })
+                            ),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppCommonTheme.primaryColor,
@@ -384,6 +333,44 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  Widget buildGrid(StateSetter setSheetState) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 20,
+      ),
+      itemCount: 8,
+      itemBuilder: (BuildContext content, index) {
+        return GestureDetector(
+          onTap: () {
+            setState(() => tagColor = arr[index]);
+            setSheetState(() {
+              if (!selectedIndexList.contains(index)) {
+                selectedIndexList.clear();
+                selectedIndexList.add(index);
+              } else {
+                selectedIndexList.clear();
+              }
+            });
+          },
+          child: Container(
+            height: 80,
+            width: 80,
+            child: Visibility(
+              visible: selectedIndexList.contains(index) ? true : false,
+              child: const Icon(Icons.done, color: Colors.white),
+            ),
+            decoration: BoxDecoration(
+              color: arr[index],
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
         );
       },
     );

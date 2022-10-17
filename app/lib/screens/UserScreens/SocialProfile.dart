@@ -14,7 +14,7 @@ class SocialProfileScreen extends StatefulWidget {
 class _SocialProfileScreenState extends State<SocialProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final _client = ModalRoute.of(context)!.settings.arguments as Client;
+    final client = ModalRoute.of(context)!.settings.arguments as Client;
     return Scaffold(
       appBar: AppBar(
         title: navBarTitle('Social Profile'),
@@ -45,9 +45,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                 color: AppCommonTheme.svgIconColor,
               ),
             ),
-            onPressed: () {
-              setState(() {});
-            },
+            onPressed: () {},
           )
         ],
       ),
@@ -91,8 +89,8 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                             ),
                           ),
                           child: CustomAvatar(
-                            avatar: _client.avatar(),
-                            displayName: _client.displayName(),
+                            avatar: client.avatar(),
+                            displayName: client.displayName(),
                             isGroup: false,
                             stringName: '',
                             radius: 60,

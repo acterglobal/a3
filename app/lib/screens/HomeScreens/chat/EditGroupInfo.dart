@@ -29,6 +29,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
   @override
   void initState() {
     super.initState();
+
     nameController.text = widget.name;
     descController.text = widget.description;
   }

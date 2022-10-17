@@ -25,7 +25,7 @@ class _AddToDoScreenState extends State<AddToDoScreen> {
         child: Padding(
           padding: const EdgeInsets.only(top: 25),
           child: Column(
-            children: <Widget>[
+            children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

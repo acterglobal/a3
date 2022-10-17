@@ -41,28 +41,27 @@ class ReceiptController extends GetxController {
   void onInit() {
     super.onInit();
 
-    if (!client.isGuest()) {
-      _eventReceiver = client.receiptEventRx()?.listen((event) {
-        String roomId = event.roomId();
-        bool changed = false;
-        for (var record in event.receiptRecords()) {
-          String seenBy = record.seenBy();
-          if (seenBy != client.userId().toString()) {
-            var room = _getRoom(roomId);
-            room.updateUser(seenBy, record.eventId(), record.ts());
-            changed = true;
-          }
+    _eventReceiver = client.receiptEventRx()?.listen((event) {
+      String roomId = event.roomId();
+      bool changed = false;
+      for (var record in event.receiptRecords()) {
+        String seenBy = record.seenBy();
+        if (seenBy != client.userId().toString()) {
+          var room = _getRoom(roomId);
+          room.updateUser(seenBy, record.eventId(), record.ts());
+          changed = true;
         }
-        if (changed) {
-          update(['Chat']);
-        }
-      });
-    }
+      }
+      if (changed) {
+        update(['Chat']);
+      }
+    });
   }
 
   @override
   void onClose() {
     _eventReceiver?.cancel();
+
     super.onClose();
   }
 

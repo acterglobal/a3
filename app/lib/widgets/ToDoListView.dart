@@ -40,37 +40,13 @@ class _ToDoListViewState extends State<ToDoListView> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                todoController.initialExpand.value
-                    ? SizedBox(
-                        child: Text(
-                          widget.subtitle,
-                          style: ToDoTheme.listSubtitleTextStyle
-                              .copyWith(color: ToDoTheme.calendarColor),
-                        ),
-                      )
-                    : SizedBox(
-                        height: 40,
-                        child: Text(
-                          widget.subtitle,
-                          style: ToDoTheme.listSubtitleTextStyle
-                              .copyWith(color: ToDoTheme.calendarColor),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                !todoController.initialExpand.value
-                    ? const Divider(
-                        color: ToDoTheme.listDividerColor,
-                        indent: 0,
-                        endIndent: 0,
-                        thickness: 1,
-                      )
-                    : const SizedBox(),
+                buildSubtitle(),
+                buildDivider(),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
+                    children: [
                       SvgPicture.asset(
                         'assets/images/heart.svg',
                         color: ToDoTheme.primaryTextColor,
@@ -183,25 +159,64 @@ class _ToDoListViewState extends State<ToDoListView> {
                       ),
                     ),
                     onPressed: () {},
-                    child: const Text(
-                      '+ Add Task',
-                    ),
+                    child: const Text('+ Add Task'),
                   ),
                 ),
               ],
             ),
-            todoController.expandBtn.value
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: todoController.completedTasks,
-                    ),
-                  )
-                : const SizedBox(),
+            buildCompletedTasks(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildSubtitle() {
+    if (todoController.initialExpand.value) {
+      return SizedBox(
+        child: Text(
+          widget.subtitle,
+          style: ToDoTheme.listSubtitleTextStyle.copyWith(
+            color: ToDoTheme.calendarColor,
+          ),
+        ),
+      );
+    }
+    return SizedBox(
+      height: 40,
+      child: Text(
+        widget.subtitle,
+        style: ToDoTheme.listSubtitleTextStyle.copyWith(
+          color: ToDoTheme.calendarColor,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Widget buildDivider() {
+    if (todoController.initialExpand.value) {
+      return const SizedBox();
+    }
+    return const Divider(
+      color: ToDoTheme.listDividerColor,
+      indent: 0,
+      endIndent: 0,
+      thickness: 1,
+    );
+  }
+
+  Widget buildCompletedTasks() {
+    if (!todoController.expandBtn.value) {
+      return const SizedBox();
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: ListView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: todoController.completedTasks,
       ),
     );
   }

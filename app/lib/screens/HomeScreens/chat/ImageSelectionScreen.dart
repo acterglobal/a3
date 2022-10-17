@@ -10,14 +10,14 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class ImageSelection extends StatefulWidget {
+  final List imageList;
+  final String roomName;
+
   const ImageSelection({
     Key? key,
     required this.imageList,
     required this.roomName,
   }) : super(key: key);
-
-  final List imageList;
-  final String roomName;
 
   @override
   State<ImageSelection> createState() => _ImageSelectionState();
@@ -26,7 +26,7 @@ class ImageSelection extends StatefulWidget {
 class _ImageSelectionState extends State<ImageSelection> {
   ChatRoomController controller = Get.find<ChatRoomController>();
   int selectedIndex = 0;
-  final PageController _pageController = PageController(initialPage: 0);
+  final PageController pageController = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -40,22 +40,16 @@ class _ImageSelectionState extends State<ImageSelection> {
               scrollPhysics: const BouncingScrollPhysics(),
               builder: ((context, index) {
                 return PhotoViewGalleryPageOptions(
-                  imageProvider: FileImage(
-                    File(
-                      widget.imageList[index].path,
-                    ),
-                  ),
+                  imageProvider: FileImage(File(widget.imageList[index].path)),
                   initialScale: PhotoViewComputedScale.contained * 0.8,
                 );
               }),
               backgroundDecoration: const BoxDecoration(
                 color: AppCommonTheme.backgroundColor,
               ),
-              pageController: _pageController,
+              pageController: pageController,
               onPageChanged: (int i) {
-                setState(() {
-                  selectedIndex = i;
-                });
+                setState(() => selectedIndex = i);
               },
             ),
           ),
@@ -69,66 +63,7 @@ class _ImageSelectionState extends State<ImageSelection> {
                   for (var item in widget.imageList)
                     Padding(
                       padding: const EdgeInsets.only(top: 10, left: 8),
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            selectedIndex = widget.imageList.indexOf(item);
-                            _pageController.jumpToPage(selectedIndex);
-                          });
-                        },
-                        child: Stack(
-                          children: [
-                            Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(3),
-                                image: DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: FileImage(
-                                    File(
-                                      item.path,
-                                    ),
-                                  ),
-                                ),
-                                color: AppCommonTheme.backgroundColor,
-                                border: selectedIndex ==
-                                        widget.imageList.indexOf(item)
-                                    ? Border.all(
-                                        color: ChatTheme01
-                                            .chatSelectedImageBorderColor,
-                                        width: 2,
-                                      )
-                                    : null,
-                              ),
-                            ),
-                            Positioned(
-                              right: 4,
-                              top: 4,
-                              child: InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    widget.imageList.removeAt(
-                                      widget.imageList.indexOf(item),
-                                    );
-                                  });
-                                  if (widget.imageList.isEmpty) {
-                                    Navigator.of(context).pop();
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  radius: 8,
-                                  backgroundColor:
-                                      AppCommonTheme.transparentColor,
-                                  child: SvgPicture.asset(
-                                    'assets/images/remove_selected_item.svg',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      child: buildImageItem(item),
                     ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -152,6 +87,64 @@ class _ImageSelectionState extends State<ImageSelection> {
           )
         ],
       ),
+    );
+  }
+
+  Widget buildImageItem(item) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          selectedIndex = widget.imageList.indexOf(item);
+          pageController.jumpToPage(selectedIndex);
+        });
+      },
+      child: Stack(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(3),
+              image: DecorationImage(
+                fit: BoxFit.fill,
+                image: FileImage(File(item.path)),
+              ),
+              color: AppCommonTheme.backgroundColor,
+              border: getItemBorder(item),
+            ),
+          ),
+          Positioned(
+            right: 4,
+            top: 4,
+            child: InkWell(
+              onTap: () {
+                int idx = widget.imageList.indexOf(item);
+                widget.imageList.removeAt(idx);
+                if (widget.imageList.isEmpty) {
+                  Navigator.of(context).pop();
+                }
+              },
+              child: CircleAvatar(
+                radius: 8,
+                backgroundColor: AppCommonTheme.transparentColor,
+                child: SvgPicture.asset(
+                  'assets/images/remove_selected_item.svg',
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  BoxBorder? getItemBorder(item) {
+    if (selectedIndex != widget.imageList.indexOf(item)) {
+      return null;
+    }
+    return Border.all(
+      color: ChatTheme01.chatSelectedImageBorderColor,
+      width: 2,
     );
   }
 }
