@@ -41,9 +41,7 @@ class ChatRoomController extends GetxController {
       GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  List<Member> _activeMembers = [];
-  List<Map<String, dynamic>> roomMembers = [];
-  String messageText = '';
+  List<Map<String, dynamic>> activeMembers = [];
   Map<String, String> messageTextMap = {};
   StreamSubscription<RoomMessage>? _messageSubscription;
 
@@ -90,14 +88,14 @@ class ChatRoomController extends GetxController {
     if (convoRoom == null) {
       messages.clear();
       typingUsers.clear();
-      _activeMembers.clear();
+      activeMembers.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
     } else {
       _currentRoom = convoRoom;
       isLoading.value = true;
-      _activeMembers = (await _currentRoom!.activeMembers()).toList();
+      activeMembers = await _getActiveMembers();
       _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
       var msgs = await _stream!.paginateBackwards(10);
@@ -105,12 +103,26 @@ class ChatRoomController extends GetxController {
         _loadMessage(message);
       }
       isLoading.value = false;
-      _getRoomMembers();
     }
   }
 
   String? currentRoomId() {
     return _currentRoom?.getRoomId();
+  }
+
+  Future<List<Map<String, dynamic>>> _getActiveMembers() async {
+    List<Member> members = (await _currentRoom!.activeMembers())
+        .where((x) => x.userId() != client.userId().toString())
+        .toList();
+    List<Map<String, dynamic>> records = [];
+    for (Member member in members) {
+      records.add({
+        'avatar': member.avatar(),
+        'display': member.displayName(),
+        'link': member.userId(),
+      });
+    }
+    return records;
   }
 
   //preview message link
@@ -141,7 +153,7 @@ class ChatRoomController extends GetxController {
       text: message,
       status: types.Status.sent,
       showStatus: true,
-       metadata: {
+      metadata: {
         'messageLength': message.length,
       },
     );
@@ -324,7 +336,7 @@ class ChatRoomController extends GetxController {
     var msg = (m.author.id == client.userId().toString())
         ? m.copyWith(
             showStatus: true,
-            status: seenByList.length < _activeMembers.length
+            status: seenByList.length < activeMembers.length
                 ? types.Status.delivered
                 : types.Status.seen,
           )
@@ -418,23 +430,6 @@ class ChatRoomController extends GetxController {
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
     update();
   }
-
-  void _getRoomMembers() {
-    _currentRoom!.activeMembers().then((memberList) {
-      roomMembers = memberList
-          .toList()
-          .map(
-            (member) => {
-              'avatar': member,
-              'display': member.displayName(),
-              'link': member.userId(),
-            },
-          )
-          .where((member) => member['link'] != client.userId().toString())
-          .toList();
-    });
-  }
-  
 
   Future<bool> typingNotice(bool typing) async {
     if (_currentRoom == null) {

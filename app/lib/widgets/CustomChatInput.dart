@@ -114,13 +114,10 @@ class CustomChatInput extends StatelessWidget {
     return FlutterMentions(
       key: controller.mentionKey,
       suggestionPosition: SuggestionPosition.Top,
-      onMentionAdd: (user) {
-        controller.messageTextMap.addAll({
-          '@${user['display']}':
-              '[${user['display']}](https://matrix.to/#/${user['link']})'
-        });
+      onMentionAdd: (Map<String, dynamic> roomMember) {
+        _handleMentionAdd(controller, roomMember);
       },
-      onChanged: (value) async {
+      onChanged: (String value) async {
         controller.sendButtonUpdate();
         await controller.typingNotice(true);
       },
@@ -159,9 +156,9 @@ class CustomChatInput extends StatelessWidget {
         Mention(
           trigger: '@',
           style: const TextStyle(color: AppCommonTheme.primaryColor),
-          data: controller.roomMembers,
+          data: controller.activeMembers,
           matchAll: false,
-          suggestionBuilder: (data) {
+          suggestionBuilder: (Map<String, dynamic> roomMember) {
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 10),
               color: AppCommonTheme.backgroundColorLight,
@@ -172,13 +169,13 @@ class CustomChatInput extends StatelessWidget {
                   height: 35,
                   child: CustomAvatar(
                     radius: 20,
-                    avatar: data['avatar'].avatar(),
+                    avatar: roomMember['avatar'],
                     isGroup: false,
-                    stringName: data['display'],
+                    stringName: roomMember['display'],
                   ),
                 ),
                 title: Text(
-                  data['display'],
+                  roomMember['display'],
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
@@ -187,6 +184,17 @@ class CustomChatInput extends StatelessWidget {
         )
       ],
     );
+  }
+
+  void _handleMentionAdd(
+    ChatRoomController controller,
+    Map<String, dynamic> roomMember,
+  ) {
+    String userId = roomMember['link'];
+    String displayName = roomMember['display'];
+    controller.messageTextMap.addAll({
+      '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
+    });
   }
 
   Widget _buildSendButton() {
@@ -342,22 +350,8 @@ class EmojiPickerWidget extends StatelessWidget {
         child: SizedBox(
           height: size.height * 0.3,
           child: EmojiPicker(
-            onEmojiSelected: (category, emoji) {
-              _roomController.mentionKey.currentState!.controller!.text +=
-                  emoji.emoji;
-              _roomController.sendButtonUpdate();
-            },
-            onBackspacePressed: () {
-              _roomController.mentionKey.currentState!.controller!.text =
-                  _roomController
-                      .mentionKey.currentState!.controller!.text.characters
-                      .skipLast(1)
-                      .string;
-              if (_roomController
-                  .mentionKey.currentState!.controller!.text.isEmpty) {
-                _roomController.sendButtonUpdate();
-              }
-            },
+            onEmojiSelected: _handleEmojiSelected,
+            onBackspacePressed: _handleBackspacePressed,
             config: Config(
               columns: 7,
               verticalSpacing: 0,
@@ -383,5 +377,20 @@ class EmojiPickerWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleEmojiSelected(Category category, Emoji emoji) {
+    _roomController.mentionKey.currentState!.controller!.text += emoji.emoji;
+    _roomController.sendButtonUpdate();
+  }
+
+  void _handleBackspacePressed() {
+    _roomController.mentionKey.currentState!.controller!.text = _roomController
+        .mentionKey.currentState!.controller!.text.characters
+        .skipLast(1)
+        .string;
+    if (_roomController.mentionKey.currentState!.controller!.text.isEmpty) {
+      _roomController.sendButtonUpdate();
+    }
   }
 }
