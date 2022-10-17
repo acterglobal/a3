@@ -38,12 +38,12 @@ class _ImageSelectionState extends State<ImageSelection> {
             child: PhotoViewGallery.builder(
               itemCount: widget.imageList.length,
               scrollPhysics: const BouncingScrollPhysics(),
-              builder: ((context, index) {
+              builder: (context, index) {
                 return PhotoViewGalleryPageOptions(
                   imageProvider: FileImage(File(widget.imageList[index].path)),
                   initialScale: PhotoViewComputedScale.contained * 0.8,
                 );
-              }),
+              },
               backgroundDecoration: const BoxDecoration(
                 color: AppCommonTheme.backgroundColor,
               ),

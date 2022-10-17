@@ -110,10 +110,10 @@ class CustomChatInput extends StatelessWidget {
 
   Widget _buildTextEditor(BuildContext context, ChatRoomController controller) {
     return TextField(
-      onChanged: ((value) async {
+      onChanged: (value) async {
         controller.sendButtonUpdate();
         await controller.typingNotice(true);
-      }),
+      },
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,
