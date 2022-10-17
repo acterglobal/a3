@@ -131,16 +131,18 @@ class _ChatListItemState extends State<ChatListItem> {
         parse: [
           MatchText(
             pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
-            style: ChatTheme01.latestChatStyle
-                .copyWith(fontWeight: FontWeight.bold),
+            style: ChatTheme01.latestChatStyle.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
             },
           ),
           MatchText(
             pattern: '_(.*?)_',
-            style: ChatTheme01.latestChatStyle
-                .copyWith(fontStyle: FontStyle.italic),
+            style: ChatTheme01.latestChatStyle.copyWith(
+              fontStyle: FontStyle.italic,
+            ),
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('_', '')};
             },
@@ -165,13 +167,15 @@ class _ChatListItemState extends State<ChatListItem> {
           ),
           MatchText(
             pattern: regexEmail,
-            style: ChatTheme01.latestChatStyle
-                .copyWith(decoration: TextDecoration.underline),
+            style: ChatTheme01.latestChatStyle.copyWith(
+              decoration: TextDecoration.underline,
+            ),
           ),
           MatchText(
             pattern: regexLink,
-            style: ChatTheme01.latestChatStyle
-                .copyWith(decoration: TextDecoration.underline),
+            style: ChatTheme01.latestChatStyle.copyWith(
+              decoration: TextDecoration.underline,
+            ),
           ),
         ],
       ),
