@@ -159,11 +159,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
     TextStyle style,
   ) {
     return GestureDetector(
-      onTap: (() {
+      onTap: () {
         if (iconName == 'comment') {
           showBottomSheet();
         }
-      }),
+      },
       child: Padding(
         padding: const EdgeInsets.only(right: 15),
         child: Column(

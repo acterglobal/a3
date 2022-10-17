@@ -238,9 +238,9 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
 
   Widget buildMuteButton() {
     return GestureDetector(
-      onTap: (() {
+      onTap: () {
         showMuteBottomSheet();
-      }),
+      },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         color: AppCommonTheme.darkShade,
@@ -262,11 +262,11 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
 
   Widget buildSearchButton() {
     return GestureDetector(
-      onTap: (() {
+      onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Search Clicked')),
         );
-      }),
+      },
       child: Card(
         color: AppCommonTheme.darkShade,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -288,11 +288,11 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
 
   Widget buildGalleryButton() {
     return GestureDetector(
-      onTap: (() {
+      onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Gallery tapped')),
         );
-      }),
+      },
       child: Card(
         color: AppCommonTheme.darkShade,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
