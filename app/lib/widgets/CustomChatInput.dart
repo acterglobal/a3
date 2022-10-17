@@ -120,10 +120,10 @@ class CustomChatInput extends StatelessWidget {
               '[${user['display']}](https://matrix.to/#/${user['link']})'
         });
       },
-      onChanged: ((value) async {
+      onChanged: (value) async {
         controller.sendButtonUpdate();
         await controller.typingNotice(true);
-      }),
+      },
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,

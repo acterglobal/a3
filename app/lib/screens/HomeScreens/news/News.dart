@@ -78,9 +78,9 @@ class _NewsScreenState extends State<NewsScreen>
               onPageChanged: (int page) {},
               scrollDirection: Axis.vertical,
               itemBuilder: (context, index) => InkWell(
-                onDoubleTap: (() {
+                onDoubleTap: () {
                   LikeAnimation.run(index);
-                }),
+                },
                 child: NewsItem(
                   client: widget.client,
                   news: snapshot.requireData[index],
