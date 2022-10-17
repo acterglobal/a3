@@ -99,7 +99,7 @@ class ToDoController extends GetxController {
   }
 
   void updateNotes(ToDoTaskItem item, TextEditingController textController) {
-    var _dateTime = DateTime.now();
+    var dateTime = DateTime.now();
     ToDoTaskItem newItem = ToDoTaskItem(
       title: item.title,
       isCompleted: item.isCompleted,
@@ -107,7 +107,7 @@ class ToDoController extends GetxController {
       dateTime: item.dateTime,
       subtitle: item.subtitle,
       notes: textController.text,
-      lastUpdated: _dateTime,
+      lastUpdated: dateTime,
     );
     update(['notes']);
     if (newItem.isCompleted) {
@@ -120,7 +120,7 @@ class ToDoController extends GetxController {
   }
 
   void updateSubtitle(ToDoTaskItem item, TextEditingController textController) {
-    var _dateTime = DateTime.now();
+    var dateTime = DateTime.now();
     ToDoTaskItem newItem = ToDoTaskItem(
       title: item.title,
       isCompleted: item.isCompleted,
@@ -128,7 +128,7 @@ class ToDoController extends GetxController {
       dateTime: item.dateTime,
       subtitle: textController.text,
       notes: item.notes,
-      lastUpdated: _dateTime,
+      lastUpdated: dateTime,
     );
     update(['subtitle']);
     if (newItem.isCompleted) {

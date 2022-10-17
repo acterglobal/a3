@@ -33,12 +33,13 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
   @override
   void initState() {
     super.initState();
+
     commentShowing = false;
     editFaqTitle = false;
     faqController.text = widget.faq.title();
   }
 
-  void _onEmojiSelected(Emoji emoji) {
+  void onEmojiSelected(Emoji emoji) {
     _controller
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
@@ -46,7 +47,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
       );
   }
 
-  void _onBackspacePressed() {
+  void onBackspacePressed() {
     _controller
       ..text = _controller.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
@@ -101,14 +102,12 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         padding: const EdgeInsets.only(right: 8),
                         child: ElevatedButton(
                           onPressed: () {
-                            setState(() {
-                              editFaqTitle = false;
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(faqController.text.toString()),
-                                ),
-                              );
-                            });
+                            setState(() => editFaqTitle = false);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(faqController.text.toString()),
+                              ),
+                            );
                           },
                           child: const Text('Save'),
                         ),
@@ -135,10 +134,8 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         Align(
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
-                            onTap: () => {
-                              setState(() {
-                                editFaqTitle = true;
-                              })
+                            onTap: () {
+                              setState(() => editFaqTitle = true);
                             },
                             child: const Icon(Icons.edit, color: Colors.white),
                           ),
@@ -164,9 +161,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.asset(
-                              'assets/images/asakerImage.png',
-                            ),
+                            Image.asset('assets/images/asakerImage.png'),
                             const Padding(
                               padding: EdgeInsets.only(left: 8),
                               child: Text(
@@ -200,8 +195,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    commentShowing =
-                                        commentShowing ? false : true;
+                                    commentShowing = !commentShowing;
                                   });
                                 },
                                 child: Row(
@@ -389,9 +383,9 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                       height: 250,
                       child: EmojiPicker(
                         onEmojiSelected: (Category category, Emoji emoji) {
-                          _onEmojiSelected(emoji);
+                          onEmojiSelected(emoji);
                         },
-                        onBackspacePressed: _onBackspacePressed,
+                        onBackspacePressed: onBackspacePressed,
                         config: Config(
                           columns: 7,
                           emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),

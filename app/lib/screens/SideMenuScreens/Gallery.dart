@@ -23,7 +23,7 @@ class GalleryScreen extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 15,
           mainAxisSpacing: 15,
-          children: List.generate(9, (index) {
+          children: List.generate(9, (int index) {
             return Center(
               child: galleryImagesView(images[index]),
             );

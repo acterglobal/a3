@@ -4,7 +4,8 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show Client, Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -58,7 +59,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+              children: [
                 Container(
                   margin: const EdgeInsets.only(left: 18),
                   child: Text(
@@ -67,7 +68,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                _buildList(context),
+                buildList(context),
               ],
             ),
           ),
@@ -76,7 +77,7 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Widget _buildListHeader(BuildContext context) {
+  Widget buildListHeader(BuildContext context) {
     return GetBuilder<ChatListController>(
       id: 'invited_list',
       builder: (ChatListController controller) {
@@ -100,14 +101,7 @@ class _ChatOverviewState extends State<ChatOverview> {
               shrinkWrap: true,
               itemCount: controller.invitations.length,
               itemBuilder: (BuildContext context, int index) {
-                var event = controller.invitations[index];
-                return InviteInfoWidget(
-                  client: widget.client,
-                  avatarColor: Colors.white,
-                  inviter: event.sender(),
-                  groupId: event.roomId(),
-                  groupName: event.roomName(),
-                );
+                return buildInvitedItem(controller.invitations[index]);
               },
             ),
             Container(
@@ -125,7 +119,7 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Widget _buildList(BuildContext context) {
+  Widget buildList(BuildContext context) {
     if (widget.client.isGuest()) {
       return const SizedBox();
     }
@@ -146,7 +140,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           );
         }
         return ImplicitlyAnimatedReorderableList<JoinedRoom>(
-          header: _buildListHeader(context),
+          header: buildListHeader(context),
           items: controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
@@ -158,8 +152,11 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, dragAnimation, inDrag) {
               final t = dragAnimation.value;
               final elevation = lerpDouble(0, 8, t);
-              final color =
-                  Color.lerp(Colors.white, Colors.white.withOpacity(0.8), t);
+              final color = Color.lerp(
+                Colors.white,
+                Colors.white.withOpacity(0.8),
+                t,
+              );
               return SizeFadeTransition(
                 sizeFraction: 0.7,
                 curve: Curves.easeInOut,
@@ -171,13 +168,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   child: GetBuilder<ChatListController>(
                     id: item.conversation.getRoomId(),
                     builder: (ChatListController listController) {
-                      return ChatListItem(
-                        key: Key(item.conversation.getRoomId()),
-                        room: item.conversation,
-                        latestMessage: item.latestMessage,
-                        client: widget.client,
-                        typingUsers: item.typingUsers,
-                      );
+                      return buildJoinedItem(item);
                     },
                   ),
                 ),
@@ -192,13 +183,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 child: GetBuilder<ChatListController>(
                   id: item.conversation.getRoomId(),
                   builder: (ChatListController listController) {
-                    return ChatListItem(
-                      key: Key(item.conversation.getRoomId()),
-                      room: item.conversation,
-                      latestMessage: item.latestMessage,
-                      client: widget.client,
-                      typingUsers: item.typingUsers,
-                    );
+                    return buildJoinedItem(item);
                   },
                 ),
               );
@@ -222,13 +207,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   child: GetBuilder<ChatListController>(
                     id: item.conversation.getRoomId(),
                     builder: (ChatListController listController) {
-                      return ChatListItem(
-                        key: Key(item.conversation.getRoomId()),
-                        room: item.conversation,
-                        latestMessage: item.latestMessage,
-                        client: widget.client,
-                        typingUsers: item.typingUsers,
-                      );
+                      return buildJoinedItem(item);
                     },
                   ),
                 ),
@@ -239,6 +218,26 @@ class _ChatOverviewState extends State<ChatOverview> {
           shrinkWrap: true,
         );
       },
+    );
+  }
+
+  Widget buildInvitedItem(Invitation item) {
+    return InviteInfoWidget(
+      client: widget.client,
+      avatarColor: Colors.white,
+      inviter: item.sender(),
+      groupId: item.roomId(),
+      groupName: item.roomName(),
+    );
+  }
+
+  Widget buildJoinedItem(JoinedRoom item) {
+    return ChatListItem(
+      key: Key(item.conversation.getRoomId()),
+      room: item.conversation,
+      latestMessage: item.latestMessage,
+      client: widget.client,
+      typingUsers: item.typingUsers,
     );
   }
 }

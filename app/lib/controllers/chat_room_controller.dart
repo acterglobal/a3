@@ -47,12 +47,14 @@ class ChatRoomController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
         isAttachmentVisible.value = false;
       }
     });
+
     _messageSubscription = client.messageEventRx()?.listen((event) {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
@@ -75,6 +77,7 @@ class ChatRoomController extends GetxController {
     textEditingController.dispose();
     focusNode.removeListener(() {});
     _messageSubscription?.cancel();
+
     super.onClose();
   }
 

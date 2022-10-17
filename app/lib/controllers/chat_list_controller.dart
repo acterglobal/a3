@@ -53,51 +53,52 @@ class ChatListController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (!client.isGuest()) {
-      _convosSubscription = client.conversationsRx().listen((event) {
-        // process the latest message here
-        _updateList(event.toList());
+
+    _convosSubscription = client.conversationsRx().listen((event) {
+      // process the latest message here
+      _updateList(event.toList());
+    });
+
+    _invitesSubscription = client.invitationsRx().listen((event) {
+      invitations = event.toList();
+      update(['invited_list']);
+    });
+
+    _typingSubscription = client.typingEventRx()?.listen((event) {
+      String roomId = event.roomId();
+      int idx = joinedRooms.indexWhere((x) {
+        return x.conversation.getRoomId() == roomId;
       });
-      _invitesSubscription = client.invitationsRx().listen((event) {
-        invitations = event.toList();
-        update(['invited_list']);
-      });
-      _typingSubscription = client.typingEventRx()?.listen((event) {
-        String roomId = event.roomId();
-        int idx = joinedRooms.indexWhere((x) {
-          return x.conversation.getRoomId() == roomId;
-        });
-        if (idx == -1) {
-          return;
+      if (idx == -1) {
+        return;
+      }
+      List<types.User> typingUsers = [];
+      for (var userId in event.userIds()) {
+        String uid = userId.toDartString();
+        if (uid == client.userId().toString()) {
+          // filter out my typing
+          continue;
         }
-        List<types.User> typingUsers = [];
-        for (var userId in event.userIds()) {
-          String uid = userId.toDartString();
-          if (uid == client.userId().toString()) {
-            // filter out my typing
-            continue;
-          }
-          var user = types.User(
-            id: uid,
-            firstName: getNameFromId(uid),
-          );
-          typingUsers.add(user);
-        }
-        // will not ignore empty list
-        // because empty list means that peer stopped typing
-        var roomController = Get.find<ChatRoomController>();
-        String? currentRoomId = roomController.currentRoomId();
-        if (currentRoomId == null) {
-          // we are in chat list page
-          joinedRooms[idx].typingUsers = typingUsers;
-          update([roomId]);
-        } else if (roomId == currentRoomId) {
-          // we are in chat room page
-          roomController.typingUsers = typingUsers;
-          roomController.update(['typing indicator']);
-        }
-      });
-    }
+        var user = types.User(
+          id: uid,
+          firstName: getNameFromId(uid),
+        );
+        typingUsers.add(user);
+      }
+      // will not ignore empty list
+      // because empty list means that peer stopped typing
+      var roomController = Get.find<ChatRoomController>();
+      String? currentRoomId = roomController.currentRoomId();
+      if (currentRoomId == null) {
+        // we are in chat list page
+        joinedRooms[idx].typingUsers = typingUsers;
+        update([roomId]);
+      } else if (roomId == currentRoomId) {
+        // we are in chat room page
+        roomController.typingUsers = typingUsers;
+        roomController.update(['typing indicator']);
+      }
+    });
   }
 
   @override
@@ -105,6 +106,7 @@ class ChatListController extends GetxController {
     _convosSubscription?.cancel();
     _invitesSubscription?.cancel();
     _typingSubscription?.cancel();
+
     super.onClose();
   }
 

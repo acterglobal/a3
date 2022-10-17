@@ -8,15 +8,16 @@ import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 
 class CustomChatInput extends StatelessWidget {
-  final Function()? onButtonPressed;
-  final bool isChatScreen;
-  final String roomName;
   static const List<List<String>> _attachmentNameList = [
     ['camera', 'Camera'],
     ['gif', 'GIF'],
     ['document', 'File'],
     ['location', 'Location'],
   ];
+
+  final Function()? onButtonPressed;
+  final bool isChatScreen;
+  final String roomName;
 
   const CustomChatInput({
     Key? key,
@@ -43,112 +44,21 @@ class CustomChatInput extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      isChatScreen
-                          ? Obx(
-                              () => InkWell(
-                                onTap: () {
-                                  controller.isEmojiVisible.value = false;
-                                  controller.isAttachmentVisible.value =
-                                      !controller.isAttachmentVisible.value;
-                                  controller.focusNode.unfocus();
-                                  controller.focusNode.canRequestFocus = true;
-                                },
-                                child: controller.isAttachmentVisible.value
-                                    ? Container(
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: AppCommonTheme.backgroundColor,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        child: SvgPicture.asset(
-                                          'assets/images/add_rotate.svg',
-                                          fit: BoxFit.none,
-                                        ),
-                                      )
-                                    : SvgPicture.asset(
-                                        'assets/images/add.svg',
-                                        fit: BoxFit.none,
-                                      ),
-                              ),
-                            )
-                          : const SizedBox(),
+                      _buildAttachmentButton(controller),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: TextField(
-                            onChanged: ((value) async {
-                              controller.sendButtonUpdate();
-                              await controller.typingNotice(true);
-                            }),
-                            maxLines: MediaQuery.of(context).orientation ==
-                                    Orientation.portrait
-                                ? 6
-                                : 2,
-                            minLines: 1,
-                            controller: controller.textEditingController,
-                            focusNode: controller.focusNode,
-                            style: const TextStyleRef(
-                              TextStyle(color: ChatTheme01.chatInputTextColor),
-                            ),
-                            decoration: InputDecoration(
-                              isCollapsed: true,
-                              suffixIcon: InkWell(
-                                onTap: () {
-                                  controller.isAttachmentVisible.value = false;
-                                  controller.isEmojiVisible.value =
-                                      !controller.isEmojiVisible.value;
-                                  controller.focusNode.unfocus();
-                                  controller.focusNode.canRequestFocus = true;
-                                },
-                                child: SvgPicture.asset(
-                                  'assets/images/emoji.svg',
-                                  fit: BoxFit.none,
-                                ),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: const BorderSide(
-                                  width: 0,
-                                  style: BorderStyle.none,
-                                ),
-                              ),
-                              filled: true,
-                              fillColor: AppCommonTheme.backgroundColor,
-                              hintText: isChatScreen
-                                  ? AppLocalizations.of(context)!.newMessage
-                                  : '${AppLocalizations.of(context)!.messageTo} $roomName',
-                              contentPadding: const EdgeInsets.all(15),
-                              hintStyle: ChatTheme01.chatInputPlaceholderStyle,
-                              hintMaxLines: 1,
-                            ),
-                          ),
+                          child: _buildTextEditor(context, controller),
                         ),
                       ),
                       if (controller.isSendButtonVisible || !isChatScreen)
-                        InkWell(
-                          onTap: onButtonPressed,
-                          child: SvgPicture.asset('assets/images/sendIcon.svg'),
-                        ),
+                        _buildSendButton(),
                       if (!controller.isSendButtonVisible && isChatScreen)
-                        InkWell(
-                          onTap: () {
-                            controller.handleMultipleImageSelection(
-                              context,
-                              roomName,
-                            );
-                          },
-                          child: SvgPicture.asset(
-                            'assets/images/camera.svg',
-                            fit: BoxFit.none,
-                          ),
-                        ),
-                      const SizedBox(width: 10),
+                        _buildImageButton(context, controller),
                       if (!controller.isSendButtonVisible && isChatScreen)
-                        SvgPicture.asset(
-                          'assets/images/microphone-2.svg',
-                          fit: BoxFit.none,
-                        ),
+                        const SizedBox(width: 10),
+                      if (!controller.isSendButtonVisible && isChatScreen)
+                        _buildAudioButton(),
                     ],
                   ),
                 ),
@@ -164,6 +74,102 @@ class CustomChatInput extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Widget _buildAttachmentButton(ChatRoomController controller) {
+    if (isChatScreen != true) {
+      return const SizedBox();
+    }
+    return Obx(
+      () => InkWell(
+        onTap: () {
+          controller.isEmojiVisible.value = false;
+          controller.isAttachmentVisible.value =
+              !controller.isAttachmentVisible.value;
+          controller.focusNode.unfocus();
+          controller.focusNode.canRequestFocus = true;
+        },
+        child: _buildAttachmentIcon(controller),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentIcon(ChatRoomController controller) {
+    if (controller.isAttachmentVisible.value != true) {
+      return SvgPicture.asset('assets/images/add.svg', fit: BoxFit.none);
+    }
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppCommonTheme.backgroundColor,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: SvgPicture.asset('assets/images/add_rotate.svg', fit: BoxFit.none),
+    );
+  }
+
+  Widget _buildTextEditor(BuildContext context, ChatRoomController controller) {
+    return TextField(
+      onChanged: ((value) async {
+        controller.sendButtonUpdate();
+        await controller.typingNotice(true);
+      }),
+      maxLines:
+          MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
+      minLines: 1,
+      controller: controller.textEditingController,
+      focusNode: controller.focusNode,
+      style: const TextStyleRef(
+        TextStyle(color: ChatTheme01.chatInputTextColor),
+      ),
+      decoration: InputDecoration(
+        isCollapsed: true,
+        suffixIcon: InkWell(
+          onTap: () {
+            controller.isAttachmentVisible.value = false;
+            controller.isEmojiVisible.value = !controller.isEmojiVisible.value;
+            controller.focusNode.unfocus();
+            controller.focusNode.canRequestFocus = true;
+          },
+          child: SvgPicture.asset('assets/images/emoji.svg', fit: BoxFit.none),
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+          borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+        ),
+        filled: true,
+        fillColor: AppCommonTheme.backgroundColor,
+        hintText: isChatScreen
+            ? AppLocalizations.of(context)!.newMessage
+            : '${AppLocalizations.of(context)!.messageTo} $roomName',
+        contentPadding: const EdgeInsets.all(15),
+        hintStyle: ChatTheme01.chatInputPlaceholderStyle,
+        hintMaxLines: 1,
+      ),
+    );
+  }
+
+  Widget _buildSendButton() {
+    return InkWell(
+      onTap: onButtonPressed,
+      child: SvgPicture.asset('assets/images/sendIcon.svg'),
+    );
+  }
+
+  Widget _buildImageButton(
+    BuildContext context,
+    ChatRoomController controller,
+  ) {
+    return InkWell(
+      onTap: () {
+        controller.handleMultipleImageSelection(context, roomName);
+      },
+      child: SvgPicture.asset('assets/images/camera.svg', fit: BoxFit.none),
+    );
+  }
+
+  Widget _buildAudioButton() {
+    return SvgPicture.asset('assets/images/microphone-2.svg', fit: BoxFit.none);
   }
 }
 
@@ -199,27 +205,7 @@ class AttachmentWidget extends StatelessWidget {
                   color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        AppLocalizations.of(context)!.grantAccessText,
-                        style: ChatTheme01.chatTitleStyle + FontWeight.w400,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: Text(AppLocalizations.of(context)!.settings),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          AppCommonTheme.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                child: _buildSettingButton(context),
               ),
               Expanded(
                 child: Container(
@@ -228,52 +214,7 @@ class AttachmentWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       for (List<String> item in attachmentNameList)
-                        InkWell(
-                          onTap: () {
-                            switch (item[0]) {
-                              case 'camera':
-                                _roomController.isAttachmentVisible.value =
-                                    false;
-                                _roomController.handleMultipleImageSelection(
-                                  context,
-                                  roomName,
-                                );
-                                break;
-                              case 'gif':
-                                //gif handle
-                                break;
-                              case 'document':
-                                _roomController.handleFileSelection(context);
-                                break;
-                              case 'location':
-                                //location handle
-                                break;
-                            }
-                          },
-                          child: Container(
-                            width: 85,
-                            decoration: BoxDecoration(
-                              color: AppCommonTheme.backgroundColor,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset(
-                                  'assets/images/${item[0]}.svg',
-                                  fit: BoxFit.none,
-                                ),
-                                const SizedBox(
-                                  height: 6,
-                                ),
-                                Text(
-                                  item[1],
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        _buildItem(context, item),
                     ],
                   ),
                 ),
@@ -284,13 +225,74 @@ class AttachmentWidget extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildSettingButton(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            AppLocalizations.of(context)!.grantAccessText,
+            style: ChatTheme01.chatTitleStyle + FontWeight.w400,
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {},
+          child: Text(AppLocalizations.of(context)!.settings),
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(
+              AppCommonTheme.primaryColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItem(BuildContext context, List<String> item) {
+    return InkWell(
+      onTap: () {
+        switch (item[0]) {
+          case 'camera':
+            _roomController.isAttachmentVisible.value = false;
+            _roomController.handleMultipleImageSelection(context, roomName);
+            break;
+          case 'gif':
+            //gif handle
+            break;
+          case 'document':
+            _roomController.handleFileSelection(context);
+            break;
+          case 'location':
+            //location handle
+            break;
+        }
+      },
+      child: Container(
+        width: 85,
+        decoration: BoxDecoration(
+          color: AppCommonTheme.backgroundColor,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset('assets/images/${item[0]}.svg', fit: BoxFit.none),
+            const SizedBox(height: 6),
+            Text(item[1], style: const TextStyle(color: Colors.white)),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class EmojiPickerWidget extends StatelessWidget {
-  EmojiPickerWidget({Key? key, required this.size}) : super(key: key);
-
-  final ChatRoomController _roomController = Get.find<ChatRoomController>();
   final Size size;
+  final ChatRoomController _roomController = Get.find<ChatRoomController>();
+
+  EmojiPickerWidget({Key? key, required this.size}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -20,11 +20,12 @@ class _NewsScreenState extends State<NewsScreen>
 
   @override
   void initState() {
+    super.initState();
+
     controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    super.initState();
   }
 
   @override

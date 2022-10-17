@@ -42,26 +42,31 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
                   ),
                 ),
               ),
-              controller.typingUsers.isNotEmpty
-                  ? Positioned.fill(
-                      child: Align(
-                        alignment: Alignment.bottomLeft,
-                        child: TypeIndicator(
-                          bubbleAlignment: BubbleRtlAlignment.right,
-                          showIndicator: controller.typingUsers.isNotEmpty,
-                          options: TypingIndicatorOptions(
-                            animationSpeed: const Duration(milliseconds: 800),
-                            typingUsers: controller.typingUsers,
-                            typingMode: TypingIndicatorMode.text,
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox(),
+              _buildTypingIndicator(controller),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTypingIndicator(ChatRoomController controller) {
+    if (controller.typingUsers.isEmpty) {
+      return const SizedBox();
+    }
+    return Positioned.fill(
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: TypeIndicator(
+          bubbleAlignment: BubbleRtlAlignment.right,
+          showIndicator: controller.typingUsers.isNotEmpty,
+          options: TypingIndicatorOptions(
+            animationSpeed: const Duration(milliseconds: 800),
+            typingUsers: controller.typingUsers,
+            typingMode: TypingIndicatorMode.text,
+          ),
+        ),
+      ),
     );
   }
 }

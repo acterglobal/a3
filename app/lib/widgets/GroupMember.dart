@@ -30,10 +30,7 @@ class GroupMember extends StatelessWidget {
         ),
         Visibility(
           visible: isAdmin,
-          child: const Text(
-            'Admin',
-            style: TextStyle(color: Colors.white),
-          ),
+          child: const Text('Admin', style: TextStyle(color: Colors.white)),
         )
       ],
     );

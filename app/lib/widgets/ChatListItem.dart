@@ -37,6 +37,7 @@ class _ChatListItemState extends State<ChatListItem> {
   @override
   void initState() {
     super.initState();
+
     displayName = getDisplayName();
   }
 
@@ -74,12 +75,11 @@ class _ChatListItemState extends State<ChatListItem> {
                   snapshot.requireData,
                   style: ChatTheme01.chatTitleStyle,
                 );
-              } else {
-                return Text(
-                  AppLocalizations.of(context)!.loadingName,
-                  style: ChatTheme01.chatTitleStyle,
-                );
               }
+              return Text(
+                AppLocalizations.of(context)!.loadingName,
+                style: ChatTheme01.chatTitleStyle,
+              );
             },
           ),
           subtitle: buildSubtitle(context),
@@ -99,91 +99,86 @@ class _ChatListItemState extends State<ChatListItem> {
 
   Widget buildSubtitle(BuildContext context) {
     if (widget.latestMessage == null) {
-      return widget.typingUsers.isEmpty
-          ? const SizedBox()
-          : Text(
-              _multiUserTextBuilder(widget.typingUsers),
-              style: ChatTheme01.latestChatStyle.copyWith(
-                fontStyle: FontStyle.italic,
-              ),
-            );
+      if (widget.typingUsers.isEmpty) {
+        return const SizedBox();
+      }
+      return Text(
+        getUserPlural(widget.typingUsers),
+        style: ChatTheme01.latestChatStyle.copyWith(
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+    if (widget.typingUsers.isEmpty != true) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          getUserPlural(widget.typingUsers),
+          style: ChatTheme01.latestChatStyle.copyWith(
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      );
     }
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: widget.typingUsers.isEmpty
-          ? ParsedText(
-              text:
-                  '${getNameFromId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
-              style: ChatTheme01.latestChatStyle,
-              regexOptions: const RegexOptions(multiLine: true, dotAll: true),
-              maxLines: 2,
-              parse: [
-                MatchText(
-                  pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
-                  style: ChatTheme01.latestChatStyle
-                      .copyWith(fontWeight: FontWeight.bold),
-                  renderText: ({
-                    required String str,
-                    required String pattern,
-                  }) {
-                    return {
-                      'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')
-                    };
-                  },
-                ),
-                MatchText(
-                  pattern: '_(.*?)_',
-                  style: ChatTheme01.latestChatStyle
-                      .copyWith(fontStyle: FontStyle.italic),
-                  renderText: ({
-                    required String str,
-                    required String pattern,
-                  }) {
-                    return {'display': str.replaceAll('_', '')};
-                  },
-                ),
-                MatchText(
-                  pattern: '~(.*?)~',
-                  style: ChatTheme01.latestChatStyle.copyWith(
-                    decoration: TextDecoration.lineThrough,
-                  ),
-                  renderText: ({
-                    required String str,
-                    required String pattern,
-                  }) {
-                    return {'display': str.replaceAll('~', '')};
-                  },
-                ),
-                MatchText(
-                  pattern: '`(.*?)`',
-                  style: ChatTheme01.latestChatStyle.copyWith(
-                    fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
-                  ),
-                  renderText: ({
-                    required String str,
-                    required String pattern,
-                  }) {
-                    return {'display': str.replaceAll('`', '')};
-                  },
-                ),
-                MatchText(
-                  pattern: regexEmail,
-                  style: ChatTheme01.latestChatStyle
-                      .copyWith(decoration: TextDecoration.underline),
-                ),
-                MatchText(
-                  pattern: regexLink,
-                  style: ChatTheme01.latestChatStyle
-                      .copyWith(decoration: TextDecoration.underline),
-                ),
-              ],
-            )
-          : Text(
-              _multiUserTextBuilder(widget.typingUsers),
-              style: ChatTheme01.latestChatStyle.copyWith(
-                fontStyle: FontStyle.italic,
-              ),
+      child: ParsedText(
+        text:
+            '${getNameFromId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
+        style: ChatTheme01.latestChatStyle,
+        regexOptions: const RegexOptions(multiLine: true, dotAll: true),
+        maxLines: 2,
+        parse: [
+          MatchText(
+            pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
+            style: ChatTheme01.latestChatStyle.copyWith(
+              fontWeight: FontWeight.bold,
             ),
+            renderText: ({required String str, required String pattern}) {
+              return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
+            },
+          ),
+          MatchText(
+            pattern: '_(.*?)_',
+            style: ChatTheme01.latestChatStyle.copyWith(
+              fontStyle: FontStyle.italic,
+            ),
+            renderText: ({required String str, required String pattern}) {
+              return {'display': str.replaceAll('_', '')};
+            },
+          ),
+          MatchText(
+            pattern: '~(.*?)~',
+            style: ChatTheme01.latestChatStyle.copyWith(
+              decoration: TextDecoration.lineThrough,
+            ),
+            renderText: ({required String str, required String pattern}) {
+              return {'display': str.replaceAll('~', '')};
+            },
+          ),
+          MatchText(
+            pattern: '`(.*?)`',
+            style: ChatTheme01.latestChatStyle.copyWith(
+              fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
+            ),
+            renderText: ({required String str, required String pattern}) {
+              return {'display': str.replaceAll('`', '')};
+            },
+          ),
+          MatchText(
+            pattern: regexEmail,
+            style: ChatTheme01.latestChatStyle.copyWith(
+              decoration: TextDecoration.underline,
+            ),
+          ),
+          MatchText(
+            pattern: regexLink,
+            style: ChatTheme01.latestChatStyle.copyWith(
+              decoration: TextDecoration.underline,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -202,15 +197,15 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  String _multiUserTextBuilder(List<types.User> author) {
-    if (author.isEmpty) {
+  String getUserPlural(List<types.User> authors) {
+    if (authors.isEmpty) {
       return '';
-    } else if (author.length == 1) {
-      return '${author.first.firstName} is typing...';
-    } else if (author.length == 2) {
-      return '${author.first.firstName} and ${author[1].firstName} is typing...';
+    } else if (authors.length == 1) {
+      return '${authors[0].firstName} is typing...';
+    } else if (authors.length == 2) {
+      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
     } else {
-      return '${author.first.firstName} and ${author.length - 1} others typing...';
+      return '${authors[0].firstName} and ${authors.length - 1} others typing...';
     }
   }
 }

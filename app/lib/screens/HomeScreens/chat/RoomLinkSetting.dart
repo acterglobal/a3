@@ -74,9 +74,8 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                       fontSize: 16,
                     ),
                   );
-                } else {
-                  return const Text('Loading Name');
                 }
+                return const Text('Loading Name');
               },
             ),
             Container(
