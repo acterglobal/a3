@@ -159,23 +159,12 @@ class _ToDoListViewState extends State<ToDoListView> {
                       ),
                     ),
                     onPressed: () {},
-                    child: const Text(
-                      '+ Add Task',
-                    ),
+                    child: const Text('+ Add Task'),
                   ),
                 ),
               ],
             ),
-            todoController.expandBtn.value
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: ListView(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: todoController.completedTasks,
-                    ),
-                  )
-                : const SizedBox(),
+            buildCompletedTasks(),
           ],
         ),
       ),
@@ -215,6 +204,20 @@ class _ToDoListViewState extends State<ToDoListView> {
       indent: 0,
       endIndent: 0,
       thickness: 1,
+    );
+  }
+
+  Widget buildCompletedTasks() {
+    if (!todoController.expandBtn.value) {
+      return const SizedBox();
+    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: ListView(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        children: todoController.completedTasks,
+      ),
     );
   }
 }
