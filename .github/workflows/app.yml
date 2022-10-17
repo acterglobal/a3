@@ -66,18 +66,8 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
-          name: release-apk-arm64
+          name: effektio-${{ github.sha }}-arm64.apk
           path: app/build/app/outputs/apk/release/app-release.apk
-
-      - name: Post artifacts links
-        uses: tonyhallett/artifacts-url-comments@v1.1.0
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-            prefix: "Here are the artifacts for this build:"
-            suffix: Enjoy
-            format: name
-            addTo: pull
 
   build-ios:
     runs-on: macos-latest
