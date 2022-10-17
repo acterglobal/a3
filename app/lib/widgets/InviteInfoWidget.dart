@@ -84,9 +84,7 @@ class InviteInfoWidget extends StatelessWidget {
       child: elevatedButton(
         AppLocalizations.of(context)!.accept,
         AppCommonTheme.greenButtonColor,
-        () async {
-          await client.acceptInvitation(groupId);
-        },
+        () async => await client.acceptInvitation(groupId),
         AppCommonTheme.appBarTitleStyle.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -101,9 +99,7 @@ class InviteInfoWidget extends StatelessWidget {
       child: elevatedButton(
         AppLocalizations.of(context)!.decline,
         AppCommonTheme.primaryColor,
-        () async {
-          await client.rejectInvitation(groupId);
-        },
+        () async => await client.rejectInvitation(groupId),
         AppCommonTheme.appBarTitleStyle.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.w500,
