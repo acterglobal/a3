@@ -1,11 +1,15 @@
-use super::{Client, ClientStateBuilder, CrossSigningEvent, SyncState, RUNTIME};
-use crate::platform;
 use anyhow::{bail, Context, Result};
 use assign::assign;
-use effektio_core::ruma::api::client::{account::register, uiaa};
-use effektio_core::RestoreToken;
-use futures::channel::mpsc::{channel, Receiver};
+use effektio_core::{
+    ruma::api::client::{account::register, uiaa},
+    RestoreToken,
+};
+use log::info;
 use matrix_sdk::Session;
+
+use crate::platform;
+
+use super::{Client, ClientStateBuilder, RUNTIME};
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
@@ -17,7 +21,8 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             let register = client.register(guest_registration).await?;
             let session = Session {
                 access_token: register.access_token.context("no access token given")?,
-                user_id: register.user_id,
+                user_id: register.user_id.clone(),
+                refresh_token: register.refresh_token.clone(),
                 device_id: register
                     .device_id
                     .clone()
@@ -31,6 +36,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                     .build()
                     .unwrap(),
             );
+            info!("Successfully created guest login: {:?}", register.user_id);
             Ok(c)
         })
         .await?
@@ -48,6 +54,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
+            let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
             let c = Client::new(
                 client,
@@ -56,6 +63,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
                     .build()
                     .unwrap(),
             );
+            info!("Successfully logged in {:?} with token.", user_id);
             Ok(c)
         })
         .await?
@@ -67,7 +75,8 @@ pub async fn login_new_client(
     password: String,
 ) -> Result<Client> {
     let user = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let mut config = platform::new_client_config(base_path, username)?.user_id(&user);
+    let mut config =
+        platform::new_client_config(base_path, username)?.server_name(user.server_name());
 
     match user.server_name().as_str() {
         "effektio.org" => {
@@ -94,6 +103,7 @@ pub async fn login_new_client(
                     .build()
                     .unwrap(),
             );
+            info!("Successfully logged in user: {:?}", user);
             Ok(c)
         })
         .await?
@@ -106,7 +116,8 @@ pub async fn register_with_registration_token(
     registration_token: String,
 ) -> Result<Client> {
     let user = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let config = platform::new_client_config(base_path, username.clone())?.user_id(&user);
+    let config =
+        platform::new_client_config(base_path, username.clone())?.server_name(user.server_name());
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -136,6 +147,7 @@ pub async fn register_with_registration_token(
                     .build()
                     .unwrap(),
             );
+            info!("Successfully registered user: {:?}", username);
             Ok(c)
         })
         .await?

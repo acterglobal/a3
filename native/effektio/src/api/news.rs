@@ -1,17 +1,17 @@
-use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
+use effektio_core::{events, models::News, ruma::OwnedEventId};
+
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_news;
-use effektio_core::{
-    events,
-    models::News,
-    ruma::{OwnedEventId, OwnedRoomId},
-};
 use futures_signals::signal::Mutable;
 use matrix_sdk::{room::Joined, Client as MatrixClient};
-use std::ffi::OsStr;
-use std::fs::File;
-use std::path::PathBuf; // FIXME: make these optional for wasm
+use std::{
+    ffi::OsStr,
+    fs::File,
+    path::PathBuf, // FIXME: make these optional for wasm
+};
+
+use super::{client::Client, group::Group, RUNTIME};
 
 impl Client {
     #[cfg(feature = "with-mocks")]
@@ -40,9 +40,9 @@ impl NewsDraft {
         // First we need to log in.
         RUNTIME
             .spawn(async move {
-                let mut image = File::open(p).context("Couldn't open file for reading")?;
+                let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let res = me.client.upload(&mime, &mut image).await?;
+                let res = me.client.media().upload(&mime, &image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
@@ -55,11 +55,7 @@ impl NewsDraft {
             .await?
     }
 
-    pub async fn set_colors(
-        &self,
-        foreground: Option<String>,
-        background: Option<String>,
-    ) -> Result<()> {
+    pub fn set_colors(&self, foreground: Option<String>, background: Option<String>) -> Result<()> {
         let mut inner = self.content.lock_mut();
         let colors = if foreground.is_none() && background.is_none() {
             None
@@ -73,7 +69,7 @@ impl NewsDraft {
         Ok(())
     }
 
-    pub async fn add_text(&self, text: String) -> Result<u32> {
+    pub fn add_text(&self, text: String) -> Result<u32> {
         let mut inner = self.content.lock_mut();
         let counter = inner.contents.len();
         inner.contents.push(events::NewsContentType::Text(
@@ -94,9 +90,9 @@ impl NewsDraft {
         // First we need to log in.
         RUNTIME
             .spawn(async move {
-                let mut image = File::open(p).context("Couldn't open file for reading")?;
+                let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let res = me.client.upload(&mime, &mut image).await?;
+                let res = me.client.media().upload(&mime, &image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
@@ -108,6 +104,7 @@ impl NewsDraft {
             })
             .await?
     }
+
     pub async fn send(&self) -> Result<OwnedEventId> {
         let me = self.clone();
         RUNTIME

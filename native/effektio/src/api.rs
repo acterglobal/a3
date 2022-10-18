@@ -1,13 +1,12 @@
 use anyhow::Result;
 use futures::Stream;
 use lazy_static::lazy_static;
-pub use ruma;
 use tokio::runtime;
 
 use crate::platform;
 
 lazy_static! {
-    static ref RUNTIME: runtime::Runtime =
+    pub static ref RUNTIME: runtime::Runtime =
         runtime::Runtime::new().expect("Can't start Tokio runtime");
 }
 
@@ -15,29 +14,41 @@ mod account;
 mod auth;
 mod client;
 mod conversation;
+mod device;
 mod group;
-mod messages;
+mod invitation;
+mod message;
 mod news;
+mod receipt;
 mod room;
 mod stream;
+mod typing;
+mod verification;
 
 pub use account::Account;
 pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
-pub use client::{Client, ClientStateBuilder, CrossSigningEvent, EmojiUnit, SyncState};
-pub use conversation::Conversation;
+pub use client::{Client, ClientStateBuilder, SyncState};
+pub use conversation::{Conversation, CreateConversationSettingsBuilder};
+pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
-pub use messages::{FileDescription, ImageDescription, RoomMessage};
+pub use invitation::Invitation;
+pub use message::{FileDescription, ImageDescription, RoomMessage};
+pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use stream::TimelineStream;
+pub use typing::TypingEvent;
+pub use verification::{VerificationEmoji, VerificationEvent};
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
 
-pub type UserId = effektio_core::ruma::OwnedUserId;
+pub type DeviceId = effektio_core::ruma::OwnedDeviceId;
 pub type EventId = effektio_core::ruma::OwnedEventId;
+pub type RoomId = effektio_core::ruma::OwnedRoomId;
+pub type UserId = effektio_core::ruma::OwnedUserId;
 
 #[cfg(all(not(doctest), feature = "dart"))]
 ffi_gen_macro::ffi_gen!("native/effektio/api.rsh");
