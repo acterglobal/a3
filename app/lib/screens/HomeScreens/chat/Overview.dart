@@ -106,7 +106,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             ),
             Container(
               alignment: Alignment.topLeft,
-              padding: const EdgeInsets.only(left: 18),
+              padding: const EdgeInsets.only(left: 18, top: 10),
               child: Text(
                 AppLocalizations.of(context)!.joinedRooms,
                 style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),

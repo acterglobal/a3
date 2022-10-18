@@ -1,8 +1,11 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 class InviteInfoWidget extends StatelessWidget {
   final Client client;
@@ -37,7 +40,7 @@ class InviteInfoWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildAcceptButton(context),
+              _buildAcceptButton(context, client),
               _buildRejectButton(context),
             ],
           ),
@@ -78,13 +81,32 @@ class InviteInfoWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAcceptButton(BuildContext context) {
+  Widget _buildAcceptButton(BuildContext context, Client client) {
+    final _chatListController = Get.find<ChatListController>();
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.46,
       child: elevatedButton(
         AppLocalizations.of(context)!.accept,
         AppCommonTheme.greenButtonColor,
-        () async => await client.acceptInvitation(groupId),
+        () async {
+          await client.acceptInvitation(groupId).then((value) {
+            if (value) {
+              for (var room in _chatListController.joinedRooms) {
+                if (room.conversation.getRoomId() == groupId) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatScreen(
+                        client: client,
+                        room: room.conversation,
+                      ),
+                    ),
+                  );
+                }
+              }
+            }
+          });
+        },
         AppCommonTheme.appBarTitleStyle.copyWith(
           fontSize: 14,
           fontWeight: FontWeight.w500,
