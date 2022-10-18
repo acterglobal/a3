@@ -1,7 +1,7 @@
 name: add artifact links to pull request and related issues
 on:
   workflow_run:
-    workflows: [app.yml]
+    workflows: [App]
     types: [completed]
 
 jobs:
