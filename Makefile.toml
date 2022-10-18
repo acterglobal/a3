@@ -304,17 +304,23 @@ description = "Build rust SDK for desktop"
 dependencies = [
     "ffigen",
     "desktop-build",
+    "desktop-build-release",
     "copy-desktop-lib",
 ]
 
 [tasks.desktop-build]
-description = "Build for desktop"
+private = true
+condition = { env_true = ["DEV"] }
 script_runner = "@duckscript"
-script = [
-    """
-    exec cargo build
-    """
-]
+command = "cargo"
+args = ["build", "--lib"]
+
+[tasks.desktop-build-release]
+private = true
+condition = { env_true = ["RELEASE"] }
+script_runner = "@duckscript"
+command = "cargo"
+args = ["build", "--lib", "--release",]
 
 [tasks.copy-desktop-lib]
 description = "Copy desktop library to plugin"
@@ -324,9 +330,12 @@ script = [
     os = os_family
 
     if eq ${os} "linux"
-        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/libeffektio.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/libeffektio.so
+        ls ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.so ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/linux/lib${CARGO_MAKE_CRATE_FS_NAME}.so
+    else if eq ${os} "macosx"
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.a ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/macosx/lib${CARGO_MAKE_CRATE_FS_NAME}.a
     else if eq ${os} "windows"
-        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/debug/effektio.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/effektio.dll
+        cp ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/${CARGO_MAKE_CRATE_FS_NAME}.dll ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}/windows/${CARGO_MAKE_CRATE_FS_NAME}.dll
     end
     """
 ]
