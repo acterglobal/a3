@@ -1,15 +1,11 @@
-// ignore_for_file: prefer_const_constructors, sized_box_for_whitespace, prefer_const_literals_to_create_immutables
-
-import 'package:effektio/common/widget/customAvatar.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
 
 class SocialProfileScreen extends StatefulWidget {
-  const SocialProfileScreen({
-    Key? key,
-  }) : super(key: key);
+  const SocialProfileScreen({Key? key}) : super(key: key);
 
   @override
   _SocialProfileScreenState createState() => _SocialProfileScreenState();
@@ -18,7 +14,7 @@ class SocialProfileScreen extends StatefulWidget {
 class _SocialProfileScreenState extends State<SocialProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    final _client = ModalRoute.of(context)!.settings.arguments as Client;
+    final client = ModalRoute.of(context)!.settings.arguments as Client;
     return Scaffold(
       appBar: AppBar(
         title: navBarTitle('Social Profile'),
@@ -49,9 +45,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                 color: AppCommonTheme.svgIconColor,
               ),
             ),
-            onPressed: () {
-              setState(() {});
-            },
+            onPressed: () {},
           )
         ],
       ),
@@ -61,7 +55,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
             Stack(
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.only(top: 15, left: 20, right: 20),
+                  margin: const EdgeInsets.fromLTRB(20, 15, 20, 0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(25),
                   ),
@@ -86,7 +80,7 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          margin: EdgeInsets.all(10),
+                          margin: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(60),
                             border: Border.all(
@@ -95,18 +89,18 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                             ),
                           ),
                           child: CustomAvatar(
-                            avatar: _client.avatar(),
-                            displayName: _client.displayName(),
+                            avatar: client.avatar(),
+                            displayName: client.displayName(),
                             isGroup: false,
                             stringName: '',
                             radius: 60,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'Harjeet kAUR',
                           style: SideMenuAndProfileTheme.profileNameStyle,
                         ),
-                        Text(
+                        const Text(
                           'Harjeet@gmail.com',
                           style: SideMenuAndProfileTheme.profileUserIdStyle,
                         )
@@ -116,40 +110,38 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                 )
               ],
             ),
-            SizedBox(
-              height: 25,
-            ),
+            const SizedBox(height: 25),
             DefaultTabController(
               length: 3,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  TabBar(
+                  const TabBar(
                     tabs: [
                       Tab(
                         child: Text(
                           'News',
-                          style: SideMenuAndProfileTheme.profileMenueStyle,
+                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'Feed',
-                          style: SideMenuAndProfileTheme.profileMenueStyle,
+                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                       Tab(
                         child: Text(
                           'More details',
-                          style: SideMenuAndProfileTheme.profileMenueStyle,
+                          style: SideMenuAndProfileTheme.profileMenuStyle,
                         ),
                       ),
                     ],
                     indicatorColor: AppCommonTheme.primaryColor,
                   ),
-                  Container(
+                  SizedBox(
                     height: MediaQuery.of(context).size.height - 100,
-                    child: TabBarView(
+                    child: const TabBarView(
                       physics: NeverScrollableScrollPhysics(),
                       children: [
                         Text(''),

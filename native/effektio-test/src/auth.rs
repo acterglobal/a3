@@ -3,7 +3,7 @@ use effektio::api::{guest_client, login_new_client, login_with_token};
 use tempfile::TempDir;
 
 #[tokio::test]
-async fn can_guest_login() -> Result<()> {
+async fn guest_can_login() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
     let _client = guest_client(
@@ -53,7 +53,7 @@ async fn kyra_can_restore() -> Result<()> {
     )
     .await?;
     let token = client.restore_token().await?;
-    let user_id = client.user_id().await?;
+    let user_id = client.user_id()?;
     drop(client);
 
     let client = login_with_token(
@@ -61,6 +61,6 @@ async fn kyra_can_restore() -> Result<()> {
         token,
     )
     .await?;
-    assert_eq!(client.user_id().await?, user_id);
+    assert_eq!(client.user_id()?, user_id);
     Ok(())
 }

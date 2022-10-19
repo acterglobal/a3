@@ -1,14 +1,12 @@
 use anyhow::{Context, Result};
-pub use matrix_sdk::ruma::{self, DeviceId, MxcUri, RoomId, ServerName};
 use matrix_sdk::{media::MediaFormat, Account as MatrixAccount};
-use std::io::Cursor;
-use url::Url;
 
-use super::{api, RUNTIME};
+use super::{api::FfiBuffer, RUNTIME};
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Account {
     account: MatrixAccount,
+    user_id: String,
 }
 
 impl std::ops::Deref for Account {
@@ -19,8 +17,12 @@ impl std::ops::Deref for Account {
 }
 
 impl Account {
-    pub fn new(account: MatrixAccount) -> Self {
-        Account { account }
+    pub fn new(account: MatrixAccount, user_id: String) -> Self {
+        Account { account, user_id }
+    }
+
+    pub fn user_id(&self) -> String {
+        self.user_id.clone()
     }
 
     pub async fn display_name(&self) -> Result<String> {
@@ -28,7 +30,7 @@ impl Account {
         RUNTIME
             .spawn(async move {
                 let display_name = l.get_display_name().await?.context("No User ID found")?;
-                Ok(display_name.as_str().to_string())
+                Ok(display_name)
             })
             .await?
     }
@@ -48,7 +50,7 @@ impl Account {
             .await?
     }
 
-    pub async fn avatar(&self) -> Result<api::FfiBuffer<u8>> {
+    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         let l = self.account.clone();
         RUNTIME
             .spawn(async move {
@@ -56,17 +58,16 @@ impl Account {
                     .get_avatar(MediaFormat::File)
                     .await?
                     .context("No avatar Url given")?;
-                Ok(api::FfiBuffer::new(data))
+                Ok(FfiBuffer::new(data))
             })
             .await?
     }
 
     pub async fn set_avatar(&self, c_type: String, data: Vec<u8>) -> Result<bool> {
         let l = self.account.clone();
-        let mut c = Cursor::new(data);
         RUNTIME
             .spawn(async move {
-                let new_url = l.upload_avatar(&c_type.parse()?, &mut c).await?;
+                let new_url = l.upload_avatar(&c_type.parse()?, &data).await?;
                 Ok(true)
             })
             .await?

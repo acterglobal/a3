@@ -1,22 +1,29 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'dart:async';
-import 'package:effektio/common/widget/CrossSigning.dart';
-import 'package:effektio/common/store/separatedThemes.dart';
-import 'package:effektio/common/store/appTheme.dart';
-import 'package:effektio/common/widget/AppCommon.dart';
-import 'package:effektio/common/widget/MaterialIndicator.dart';
-import 'package:effektio/common/widget/SideMenu.dart';
+
+import 'package:effektio/common/store/themes/AppTheme.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio/screens/faq/Overview.dart';
-import 'package:effektio/screens/HomeScreens/ChatList.dart';
-import 'package:effektio/screens/HomeScreens/News.dart';
 import 'package:effektio/screens/HomeScreens/Notification.dart';
+import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
+import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
+import 'package:effektio/screens/HomeScreens/news/News.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
+import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
+import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/CrossSigning.dart';
+import 'package:effektio/widgets/MaterialIndicator.dart';
+import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,23 +45,11 @@ Future<void> startApp() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(
-    Effektio(),
-  );
+  runApp(const Effektio());
 }
 
-class Effektio extends StatefulWidget {
+class Effektio extends StatelessWidget {
   const Effektio({Key? key}) : super(key: key);
-
-  @override
-  State<Effektio> createState() => _EffektioState();
-}
-
-class _EffektioState extends State<Effektio> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,18 +61,19 @@ class _EffektioState extends State<Effektio> {
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
         supportedLocales: ApplicationLocalizations.supportedLocales,
         // MaterialApp contains our top-level Navigator
         initialRoute: '/',
         routes: <String, WidgetBuilder>{
-          '/': (BuildContext context) => EffektioHome(),
+          '/': (BuildContext context) => const EffektioHome(),
           '/login': (BuildContext context) => const LoginScreen(),
           '/profile': (BuildContext context) => const SocialProfileScreen(),
           '/signup': (BuildContext context) => const SignupScreen(),
           '/gallery': (BuildContext context) => const GalleryScreen(),
+          '/todo': (BuildContext context) => const ToDoScreen(),
+          '/addTodo': (BuildContext context) => const AddToDoScreen(),
         },
       ),
     );
@@ -92,34 +88,53 @@ class EffektioHome extends StatefulWidget {
 }
 
 class _EffektioHomeState extends State<EffektioHome>
-    with TickerProviderStateMixin {
-  late Future<Client> _client;
+    with SingleTickerProviderStateMixin {
+  late Future<Client> client;
   int tabIndex = 0;
-  late TabController _tabController;
-  CrossSigning crossSigning = CrossSigning();
-  bool isLoading = false;
+  late TabController tabController;
+  CrossSigning? crossSigning;
+
   @override
   void initState() {
-    _client = makeClient();
-    _tabController = TabController(length: 5, vsync: this);
-    _tabController.addListener(() {
-      setState(() {
-        tabIndex = _tabController.index;
-      });
-    });
     super.initState();
+
+    client = makeClient();
+    tabController = TabController(length: 5, vsync: this);
+    tabController.addListener(() {
+      setState(() => tabIndex = tabController.index);
+    });
+  }
+
+  @override
+  void dispose() {
+    crossSigning?.dispose();
+    Get.delete<ChatListController>();
+    Get.delete<ChatRoomController>();
+    Get.delete<ReceiptController>();
+
+    super.dispose();
   }
 
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
+
+    SyncState _ = client.startSync();
     //Start listening for cross signing events
-    crossSigning.startCrossSigning(client);
+    if (!client.isGuest()) {
+      crossSigning = CrossSigning(client: client);
+      Get.put(ChatListController(client: client));
+      Get.put(ChatRoomController(client: client));
+      Get.put(ReceiptController(client: client));
+    }
     return client;
   }
 
-  Widget homeScreen(BuildContext context, Client client) {
-    List<String?> _titles = <String?>[
+  PreferredSizeWidget? buildAppBar() {
+    if (tabIndex <= 3) {
+      return null;
+    }
+    List<String?> titles = <String?>[
       null,
       'FAQ',
       null,
@@ -127,66 +142,118 @@ class _EffektioHomeState extends State<EffektioHome>
       'Chat',
       'Notifications'
     ];
+    return AppBar(
+      title: navBarTitle(titles[tabIndex] ?? ''),
+      centerTitle: true,
+      primary: true,
+      elevation: 1,
+      leading: Builder(
+        builder: (BuildContext context) {
+          return IconButton(
+            icon: Container(
+              margin: const EdgeInsets.only(bottom: 10, left: 10),
+              child: Image.asset('assets/images/hamburger.png'),
+            ),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+          );
+        },
+      ),
+      actions: [
+        IconButton(
+          icon: Container(
+            margin: const EdgeInsets.only(bottom: 10, right: 10),
+            child: const Icon(Icons.search),
+          ),
+          onPressed: () {},
+        )
+      ],
+    );
+  }
 
+  Widget buildNewsFeedTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 0
+            ? SvgPicture.asset('assets/images/newsfeed_bold.svg')
+            : SvgPicture.asset('assets/images/newsfeed_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildMenuTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 1
+            ? SvgPicture.asset('assets/images/menu_bold.svg')
+            : SvgPicture.asset('assets/images/menu_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildPlusTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 2
+            ? SvgPicture.asset(
+                'assets/images/add.svg',
+                color: AppCommonTheme.primaryColor,
+              )
+            : SvgPicture.asset('assets/images/add.svg'),
+      ),
+    );
+  }
+
+  Widget buildChatTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 3
+            ? SvgPicture.asset('assets/images/chat_bold.svg')
+            : SvgPicture.asset('assets/images/chat_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildNotificationTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Tab(
+        icon: tabIndex == 4
+            ? SvgPicture.asset('assets/images/notification_bold.svg')
+            : SvgPicture.asset('assets/images/notification_linear.svg'),
+      ),
+    );
+  }
+
+  Widget buildHomeScreen(BuildContext context, Client client) {
     return DefaultTabController(
       length: 5,
       key: const Key('bottom-bar'),
       child: SafeArea(
         child: Scaffold(
-          appBar: tabIndex <= 3
-              ? null
-              : AppBar(
-                  title: navBarTitle(_titles[tabIndex] ?? ''),
-                  centerTitle: true,
-                  primary: true,
-                  elevation: 1,
-                  leading: Builder(
-                    builder: (BuildContext context) {
-                      return IconButton(
-                        icon: Container(
-                          margin: const EdgeInsets.only(bottom: 10, left: 10),
-                          child: Image.asset('assets/images/hamburger.png'),
-                        ),
-                        onPressed: () {
-                          Scaffold.of(context).openDrawer();
-                        },
-                        tooltip: MaterialLocalizations.of(context)
-                            .openAppDrawerTooltip,
-                      );
-                    },
-                  ),
-                  actions: [
-                    IconButton(
-                      icon: Container(
-                        margin: const EdgeInsets.only(bottom: 10, right: 10),
-                        child: Icon(Icons.search),
-                      ),
-                      onPressed: () {},
-                    )
-                  ],
-                ),
+          appBar: buildAppBar(),
           body: TabBarView(
-            controller: _tabController,
+            controller: tabController,
             children: [
-              NewsScreen(
-                client: client,
-              ),
+              NewsScreen(client: client),
               FaqOverviewScreen(client: client),
-              NewsScreen(
-                client: client,
-              ),
-              ChatList(client: _client),
-              NotificationScreen(),
+              NewsScreen(client: client),
+              ChatOverview(client: client),
+              const NotificationScreen(),
             ],
           ),
-          drawer: SideDrawer(
-            client: _client,
-          ),
+          drawer: SideDrawer(client: client),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,
             unselectedLabelColor: AppCommonTheme.svgIconColor,
-            controller: _tabController,
-            indicator: MaterialIndicator(
+            controller: tabController,
+            indicator: const MaterialIndicator(
               height: 5,
               bottomLeftRadius: 8,
               bottomRightRadius: 8,
@@ -197,67 +264,11 @@ class _EffektioHomeState extends State<EffektioHome>
               color: AppCommonTheme.primaryColor,
             ),
             tabs: [
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 0
-                      ? SvgPicture.asset(
-                          'assets/images/newsfeed_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/newsfeed_linear.svg',
-                        ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 1
-                      ? SvgPicture.asset(
-                          'assets/images/menu_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/menu_linear.svg',
-                        ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 2
-                      ? SvgPicture.asset(
-                          'assets/images/add.svg',
-                          color: AppCommonTheme.primaryColor,
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/add.svg',
-                        ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 3
-                      ? SvgPicture.asset(
-                          'assets/images/chat_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/chat_linear.svg',
-                        ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 10),
-                child: Tab(
-                  icon: tabIndex == 4
-                      ? SvgPicture.asset(
-                          'assets/images/notification_bold.svg',
-                        )
-                      : SvgPicture.asset(
-                          'assets/images/notification_linear.svg',
-                        ),
-                ),
-              ),
+              buildNewsFeedTab(),
+              buildMenuTab(),
+              buildPlusTab(),
+              buildChatTab(),
+              buildNotificationTab(),
             ],
           ),
         ),
@@ -268,12 +279,18 @@ class _EffektioHomeState extends State<EffektioHome>
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Client>(
-      future: _client, // a previously-obtained Future<String> or null
+      future: client, // a previously-obtained Future<String> or null
       builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
         if (snapshot.hasData) {
-          return homeScreen(context, snapshot.requireData);
+          return buildHomeScreen(context, snapshot.requireData);
+        } else if (snapshot.hasError) {
+          return SizedBox(
+            height: 40,
+            width: 40,
+            child: Text('${snapshot.error}'),
+          );
         } else {
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: SizedBox(
                 height: 50,

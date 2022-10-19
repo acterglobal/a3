@@ -1,4 +1,3 @@
-
 /// Initialize logging
 fn init_logging(filter: Option<string>) -> Result<()>;
 
@@ -68,6 +67,18 @@ object Faq {
     fn comments_count() -> u32;
 }
 
+object DeviceId {
+    fn to_string() -> string;
+}
+
+object EventId {
+    fn to_string() -> string;
+}
+
+object RoomId {
+    fn to_string() -> string;
+}
+
 object UserId {
     // full name as string
     //fn as_str() -> string;
@@ -80,15 +91,20 @@ object UserId {
 
 /// A room Message metadata and content
 object RoomMessage {
-
     /// Unique ID of this event
     fn event_id() -> string;
+
+    /// room ID of this event
+    fn room_id() -> string;
 
     /// The User, who sent that event
     fn sender() -> string;
 
     /// the body of the massage - fallback string reprensentation
     fn body() -> string;
+
+    /// get html body
+    fn formatted_body() -> Option<string>;
 
     /// the server receiving timestamp
     fn origin_server_ts() -> u64;
@@ -155,11 +171,14 @@ object Conversation {
     /// Get the timeline for the room
     fn timeline() -> Future<Result<TimelineStream>>;
 
-    // the members currently in the room
-    fn get_member(user_id: UserId) -> Future<Result<Member>>;
+    /// get the room member by user id
+    fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// The last message sent to the room
-    fn latest_message() -> Future<Result<RoomMessage>>;
+    fn latest_message() -> Option<RoomMessage>;
+
+    /// the room id
+    fn get_room_id() -> string;
 
     /// Activate typing notice for this room
     /// The typing notice remains active for 4s. It can be deactivate at any
@@ -176,6 +195,25 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
+
+    /// get the user status on this room
+    fn room_type() -> string;
+
+    /// join this room
+    fn join() -> Future<Result<bool>>;
+
+    /// leave this room
+    fn leave() -> Future<Result<bool>>;
+
+    /// get the users that were invited to this room
+    fn get_invitees() -> Future<Result<Vec<Account>>>;
+
+    /// Send a text message in MarkDown format to the room
+    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
+
+    /// send the image message to this room
     fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// decrypted image file data
@@ -183,6 +221,7 @@ object Conversation {
     /// If this function belongs to message object, we may have to load too many message objects in ChatScreen
     fn image_binary(event_id: string) -> Future<Result<buffer<u8>>>;
 
+    /// send the file message to this room
     fn send_file_message(uri: string, name: string, mimetype: string, size: u32) -> Future<Result<string>>;
 
     /// save file in specified path
@@ -190,6 +229,9 @@ object Conversation {
 
     /// get the path that file was saved
     fn file_path(event_id: string) -> Future<Result<string>>;
+
+    /// initially called to get receipt status of room members
+    fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
 }
 
 object Group {
@@ -203,7 +245,7 @@ object Group {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    fn get_member(user: UserId) -> Future<Result<Member>>;
+    fn get_member(user: string) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -215,11 +257,14 @@ object Member {
     fn display_name() -> Option<string>;
 
     /// Full user_id
-    fn user_id() -> UserId;
+    fn user_id() -> string;
 
 }
 
 object Account {
+    /// get user id of this account
+    fn user_id() -> string;
+
     /// The display_name of the account
     fn display_name() -> Future<Result<string>>;
 
@@ -235,11 +280,8 @@ object Account {
 }
 
 object SyncState {
-    /// Get event handler of AnyToDeviceEvent
-    fn get_to_device_rx() -> Option<Stream<CrossSigningEvent>>;
-
-    /// Get event handler of AnySyncMessageLikeEvent
-    fn get_sync_msg_like_rx() -> Option<Stream<CrossSigningEvent>>;
+    /// Get event handler of first synchronization on every launch
+    fn first_synced_rx() -> Option<Stream<bool>>;
 }
 
 /// Main entry point for `effektio`.
@@ -265,14 +307,14 @@ object Client {
     fn logged_in() -> bool;
 
     /// return the account of the logged in user, if given
-    fn account() -> Future<Result<Account>>;
+    fn account() -> Result<Account>;
 
     // The device_id of the client
-    fn device_id() -> Future<Result<string>>;
+    fn device_id() -> Result<string>;
 
     /// The user_id of the client
     /// deprecated, please use account() instead.
-    fn user_id() -> Future<Result<UserId>>;
+    fn user_id() -> Result<UserId>;
 
     /// The display_name of the client
     /// deprecated, please use account() instead.
@@ -284,6 +326,9 @@ object Client {
 
     /// The conversations the user is involved in
     fn conversations() -> Future<Result<Vec<Conversation>>>;
+
+    /// The update event of conversations the user is involved in
+    fn conversations_rx() -> Stream<Vec<Conversation>>;
 
     /// The groups the user is part of
     fn groups() -> Future<Result<Vec<Group>>>;
@@ -298,44 +343,192 @@ object Client {
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
-    /// Accept the AnyToDeviceEvent::KeyVerificationRequest
-    fn accept_verification_request(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Create room
+    fn create_room() -> Future<Result<string>>;
 
-    /// Accept the AnyToDeviceEvent::KeyVerificationStart
-    fn accept_verification_start(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Get the invitation event stream
+    fn invitations_rx() -> Stream<Vec<Invitation>>;
 
-    fn get_verification_emoji(sender: string, event_id: string) -> Future<Result<Vec<EmojiUnit>>>;
+    /// accept invitation about me to this room
+    fn accept_invitation(room_id: string) -> Future<Result<bool>>;
 
-    /// Reply Correct to the AnyToDeviceEvent::KeyVerificationKey
-    fn confirm_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// reject invitation about me to this room
+    fn reject_invitation(room_id: string) -> Future<Result<bool>>;
 
-    /// Reply Wrong to the AnyToDeviceEvent::KeyVerificationKey
-    fn mismatch_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Whether the user already verified the device
+    fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
-    /// Cancel the AnyToDeviceEvent::KeyVerificationKey
-    fn cancel_verification_key(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Get the verification event receiver
+    fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
-    /// Review the AnyToDeviceEvent::KeyVerificationMac
-    fn review_verification_mac(sender: string, event_id: string) -> Future<Result<bool>>;
+    /// Return the event handler of device changed
+    fn device_changed_event_rx() -> Option<Stream<DeviceChangedEvent>>;
+
+    /// Return the event handler of device left
+    fn device_left_event_rx() -> Option<Stream<DeviceLeftEvent>>;
+
+    /// Return the typing event receiver
+    fn typing_event_rx() -> Option<Stream<TypingEvent>>;
+
+    /// Return the receipt event receiver
+    fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
+
+    /// Return the message event receiver
+    fn message_event_rx() -> Option<Stream<RoomMessage>>;
 }
 
-/// Deliver emoji verification event from rust to flutter
-object CrossSigningEvent {
-    /// Get event name
-    fn get_event_name() -> string;
+object Invitation {
+    /// get the timestamp of this invitation
+    fn origin_server_ts() -> Option<u64>;
 
-    /// Get transaction id or flow id
-    fn get_event_id() -> string;
+    /// get the room id of this invitation
+    fn room_id() -> string;
+
+    /// get the room name of this invitation
+    fn room_name() -> string;
+
+    /// get the user id of this invitation sender
+    fn sender() -> string;
+}
+
+object VerificationEvent {
+    /// Get event type
+    fn event_type() -> string;
+
+    /// Get flow id (EventId or TransactionId)
+    fn flow_id() -> string;
 
     /// Get user id of event sender
-    fn get_sender() -> string;
+    fn sender() -> string;
+
+    /// An error code for why the process/request was cancelled by the user.
+    fn cancel_code() -> Option<string>;
+
+    /// A description for why the process/request was cancelled by the user.
+    fn reason() -> Option<string>;
+
+    /// Bob accepts the verification request from Alice
+    fn accept_verification_request() -> Future<Result<bool>>;
+
+    /// Bob cancels the verification request from Alice
+    fn cancel_verification_request() -> Future<Result<bool>>;
+
+    /// Bob accepts the verification request from Alice with specified methods
+    fn accept_verification_request_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+
+    /// Alice starts the SAS verification
+    fn start_sas_verification() -> Future<Result<bool>>;
+
+    /// Whether verification request was launched from this device
+    fn was_triggered_from_this_device() -> Option<bool>;
+
+    /// Bob accepts the SAS verification
+    fn accept_sas_verification() -> Future<Result<bool>>;
+
+    /// Bob cancels the SAS verification
+    fn cancel_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice sends the verification key to Bob and vice versa
+    fn send_verification_key() -> Future<Result<bool>>;
+
+    /// Alice cancels the verification key from Bob and vice versa
+    fn cancel_verification_key() -> Future<Result<bool>>;
+
+    /// Alice gets the verification emoji from Bob and vice versa
+    fn get_verification_emoji() -> Future<Result<Vec<VerificationEmoji>>>;
+
+    /// Alice says to Bob that SAS verification matches and vice versa
+    fn confirm_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice says to Bob that SAS verification doesn't match and vice versa
+    fn mismatch_sas_verification() -> Future<Result<bool>>;
+
+    /// Alice and Bob reviews the AnyToDeviceEvent::KeyVerificationMac
+    fn review_verification_mac() -> Future<Result<bool>>;
 }
 
-/// Extend the return value of getVerificationEmoji function
-object EmojiUnit {
+object VerificationEmoji {
     /// binary representation of emoji unicode
-    fn get_symbol() -> u32;
+    fn symbol() -> u32;
 
     /// text description of emoji unicode
-    fn get_description() -> string;
+    fn description() -> string;
+}
+
+/// Deliver receipt event from rust to flutter
+object ReceiptEvent {
+    /// Get transaction id or flow id
+    fn room_id() -> string;
+
+    /// Get records
+    fn receipt_records() -> Vec<ReceiptRecord>;
+}
+
+/// Deliver receipt record from rust to flutter
+object ReceiptRecord {
+    /// Get id of event that this user read message from peer
+    fn event_id() -> string;
+
+    /// Get id of user that read this message
+    fn seen_by() -> string;
+
+    /// Get time that this user read message from peer
+    fn ts() -> Option<u64>;
+}
+
+/// Deliver devices changed event from rust to flutter
+object DeviceChangedEvent {
+    /// Get the device list, excluding verified ones
+    fn device_records(verified: bool) -> Future<Result<Vec<DeviceRecord>>>;
+
+    /// Request verification to any devices of user
+    fn request_verification_to_user() -> Future<Result<bool>>;
+
+    /// Request verification to specific device
+    fn request_verification_to_device(dev_id: string) -> Future<Result<bool>>;
+
+    /// Request verification to any devices of user with methods
+    fn request_verification_to_user_with_methods(methods: Vec<string>) -> Future<Result<bool>>;
+
+    /// Request verification to specific device with methods
+    fn request_verification_to_device_with_methods(dev_id: string, methods: Vec<string>) -> Future<Result<bool>>;
+}
+
+/// Deliver devices left event from rust to flutter
+object DeviceLeftEvent {
+    /// Get the device list, including deleted ones
+    fn device_records(deleted: bool) -> Future<Result<Vec<DeviceRecord>>>;
+}
+
+/// Provide various device infos
+object DeviceRecord {
+    /// whether this device was verified
+    fn verified() -> bool;
+
+    /// whether this device was deleted
+    fn deleted() -> bool;
+
+    /// get the id of this device user
+    fn user_id() -> string;
+
+    /// get the id of this device
+    fn device_id() -> string;
+
+    /// get the display name of this device
+    fn display_name() -> Option<string>;
+
+    /// last seen ip of this device
+    fn last_seen_ip() -> Option<string>;
+
+    /// last seen timestamp of this device
+    fn last_seen_ts() -> Option<u64>;
+}
+
+/// Deliver typing event from rust to flutter
+object TypingEvent {
+    /// Get transaction id or flow id
+    fn room_id() -> string;
+
+    /// Get list of user id
+    fn user_ids() -> Vec<string>;
 }
