@@ -1,0 +1,104 @@
+name: Nightly builds
+
+on:
+  workflow_dispatch:
+  pull_request:
+  schedule:
+   - cron: 0 4 * * *
+
+jobs:
+  check_date:
+    runs-on: ubuntu-latest
+    name: Check latest commit
+    outputs:
+      should_run: ${{ steps.should_run.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: print latest_commit
+        run: echo ${{ github.sha }}
+      - id: should_run
+        continue-on-error: true
+        name: check latest commit is less than a day
+        if: ${{ github.event_name == 'schedule' }}
+        run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) &amp;&amp; echo "::set-output name=should_run::false"
+
+  build:
+    strategy:
+      matrix:
+       include:
+          - name: Android Arm64
+            os: ubuntu-latest
+            cargo_make_setup: setup-android
+            cargo_make_args: android
+            with_ndk_version: r23c
+            flutter_build_args: "build apk --target-platform android-arm64 --release"
+            artifact_name: effektio-nightly-android-arm64-${{ github.sha }}.apk
+            artifact_path:  app/build/app/outputs/apk/release/app-release.apk
+          - name: Linux x64
+            os: ubuntu-latest
+            cargo_make_args: desktop
+            flutter_build_args: "build linux --release"
+            artifact_name: effektio-nightly-linux-x64-${{ github.sha }}.apk
+            artifact_path: app/build/linux/x64/release/bundle/effektio
+          - name: iOS
+            os: macos-latest
+            cargo_make_setup: setup-ios
+            cargo_make_args: ios
+            flutter_build_args: "build ios --no-codesign"
+            artifact_name: effektio-nightly-ios-${{ github.sha }}.ipa
+            artifact_path:  app/build/app/outputs/ipa/release/app-release.ipa
+          - name: Mac OSx 
+            os: macos-latest
+            cargo_make_args: desktop
+            flutter_build_args: "build macosx --release"
+            artifact_name: effektio-nightly-macosx-${{ github.sha }}.ipa
+            artifact_path: app/build/macos/Build/Products/Release/Effektio.app
+
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    needs: check_date
+    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - uses: Swatinem/rust-cache@v1
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        if: ${{ matrix.with_ndk_version }}
+        with:
+          ndk-version: ${{ matrix.with_ndk_version }}
+
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Setup
+        if: ${{ matrix.cargo_make_setup }}
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
+
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+
+      - run: flutter ${{ matrix.flutter_build_args }}
+        working-directory: ./app
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
