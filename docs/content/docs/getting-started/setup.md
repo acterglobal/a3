@@ -33,15 +33,25 @@ You also need to build the core SDK once first:
 
 ## Building for SDK
 
-Whenever the native SDK changed, you need to (re)build the artifacts. To do that you can use `cargo make android`
+Whenever the native SDK changed, you need to (re)build the artifacts. To do that you can use the one of following commands
+
+`cargo make android`
+
+`cargo make ios`
+
+`cargo make desktop`
 
 .Note: currently only android is fully supported. Plumbing for iOS is existing but not tested, Web, Linux, Mac, Windows and are platforms have not been configured yet.
 
 ## Running the App
 
-Once the SDK is rebuild, you can run the flutter as usual on your device or emulator per:
+Once the SDK is rebuilded, you can run the flutter as usual on your device or emulator per:
 
-F5 in VS Code or `flutter run` in `app`
+F5 in VS Code or `flutter run` in `app` directory
+
+If you want to run flutter as desktop in windows:
+
+`flutter run -d windows`
 
 ## Speed up Building
 
@@ -49,8 +59,13 @@ It takes a long time to execute full build.
 You can rebuild only changes of source files to save your building time meaningfully.
 
 `cargo make android-dev`
+It can reduce the size in architecture.
 This will build only `x86_64` of rust library.
 (build only rust) `682.6s` -> `120.31s`
+
+`cargo make --profile release android-dev`
+It can reduce the size by release mode.
+It can reduce the size to about a half, because size in release mode is smaller than one in debug mode.
 
 `flutter run --no-build`
 (only flutter changed) `85.0s` -> `42.6s`
