@@ -32,27 +32,39 @@ jobs:
             cargo_make_args: android
             with_ndk_version: r23c
             flutter_build_args: "build apk --target-platform android-arm64 --release"
-            artifact_name: effektio-nightly-android-arm64-${{ github.sha }}.apk
-            artifact_path:  app/build/app/outputs/apk/release/app-release.apk
+            artifact_prefix: effektio-nightly-android-arm64
+            artifact_path:  app/build/app/outputs/apk/release/
+            artifact_files: "app-release.apk"
           - name: Linux x64
             os: ubuntu-latest
+            apt_install: ninja-build libgtk-3-dev
             cargo_make_args: desktop
             flutter_build_args: "build linux --release"
-            artifact_name: effektio-nightly-linux-x64-${{ github.sha }}.apk
-            artifact_path: app/build/linux/x64/release/bundle/effektio
+            artifact_prefix: effektio-nightly-linux-x64
+            artifact_path: app/build/linux/x64/release/bundle/
+            artifact_files: "."
           - name: iOS
             os: macos-latest
             cargo_make_setup: setup-ios
             cargo_make_args: ios
             flutter_build_args: "build ios --no-codesign"
-            artifact_name: effektio-nightly-ios-${{ github.sha }}.ipa
-            artifact_path:  app/build/app/outputs/ipa/release/app-release.ipa
+            artifact_prefix: effektio-nightly-ios
+            artifact_path:  app/build/app/ios/iphoneos/
+            artifact_files: "."
           - name: Mac OSx 
             os: macos-latest
             cargo_make_args: desktop
             flutter_build_args: "build macosx --release"
-            artifact_name: effektio-nightly-macosx-${{ github.sha }}.ipa
-            artifact_path: app/build/macos/Build/Products/Release/Effektio.app
+            artifact_prefix: effektio-nightly-macosx
+            artifact_path: app/build/macos/Build/Products/Release/
+            artifact_files: "Effektio.app"
+          - name: Windows
+            os: windows-latest
+            cargo_make_args: desktop
+            flutter_build_args: "build windows --release"
+            artifact_prefix: effektio-nightly-windows
+            artifact_path: app/build/windows/runner/
+            artifact_files: "Release"
 
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -62,6 +74,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
+      - id: tag
+        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
@@ -69,6 +83,12 @@ jobs:
           toolchain: nightly
 
       - uses: Swatinem/rust-cache@v1
+
+      - name: Install extra deps
+        if: matrix.apt_install
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ${{ matrix.apt_install }}
 
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
@@ -97,8 +117,16 @@ jobs:
       - run: flutter ${{ matrix.flutter_build_args }}
         working-directory: ./app
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v1
+      - name: Rename file
+        working-directory: ${{ matrix.artifact_path }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact_path }}
+          draft: true
+          name: Nightly ${{ steps.tag.outputs.tag }}
+          prerelease: true
+          files: |
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2
+
