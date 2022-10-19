@@ -65,7 +65,7 @@ This will build only `x86_64` of rust library.
 
 `cargo make --profile release android-dev`
 It can reduce the size by release mode.
-It can reduce the size to one tenths, because size in release mode is smaller than one in debug mode.
+It can reduce the size to about a half, because size in release mode is smaller than one in debug mode.
 
 `flutter run --no-build`
 (only flutter changed) `85.0s` -> `42.6s`
