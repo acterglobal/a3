@@ -45,9 +45,13 @@ Whenever the native SDK changed, you need to (re)build the artifacts. To do that
 
 ## Running the App
 
-Once the SDK is rebuild, you can run the flutter as usual on your device or emulator per:
+Once the SDK is rebuilded, you can run the flutter as usual on your device or emulator per:
 
-F5 in VS Code or `flutter run` in `app`
+F5 in VS Code or `flutter run` in `app` directory
+
+If you want to run flutter as desktop in windows:
+
+`flutter run -d windows`
 
 ## Speed up Building
 
