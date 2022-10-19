@@ -1,0 +1,133 @@
+name: Nightly builds
+
+on:
+  workflow_dispatch:
+  pull_request:
+  schedule:
+   - cron: 0 4 * * *
+
+jobs:
+  check_date:
+    runs-on: ubuntu-latest
+    name: Check latest commit
+    outputs:
+      should_run: ${{ steps.should_run.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: print latest_commit
+        run: echo ${{ github.sha }}
+      - id: should_run
+        continue-on-error: true
+        name: check latest commit is less than a day
+        if: ${{ github.event_name == 'schedule' }}
+        run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) &amp;&amp; echo "::set-output name=should_run::false"
+
+  build:
+    strategy:
+      matrix:
+       include:
+          - name: Android Arm64
+            os: ubuntu-latest
+            cargo_make_setup: setup-android
+            cargo_make_args: android
+            with_ndk_version: r23c
+            flutter_build_args: "build apk --target-platform android-arm64 --release"
+            artifact_prefix: effektio-nightly-android-arm64
+            artifact_path:  app/build/app/outputs/apk/release/
+            artifact_files: "app-release.apk"
+          - name: Linux x64
+            os: ubuntu-latest
+            apt_install: ninja-build libgtk-3-dev
+            cargo_make_args: desktop
+            flutter_build_args: "build linux --release"
+            artifact_prefix: effektio-nightly-linux-x64
+            artifact_path: app/build/linux/x64/release/bundle/
+            artifact_files: lib/ data/ effektio
+          - name: iOS
+            os: macos-latest
+            cargo_make_setup: setup-ios
+            cargo_make_args: ios
+            flutter_build_args: "build ios --no-codesign"
+            artifact_prefix: effektio-nightly-ios
+            artifact_path:  app/build/app/ios/iphoneos/
+            artifact_files: "*"
+          - name: Mac OSx 
+            os: macos-latest
+            cargo_make_args: desktop
+            flutter_build_args: "build macos --release"
+            artifact_prefix: effektio-nightly-macosx
+            artifact_path: app/build/macos/Build/Products/Release/
+            artifact_files: "Effektio.app"
+          - name: Windows
+            os: windows-latest
+            cargo_make_args: desktop
+            flutter_build_args: "build windows --release"
+            artifact_prefix: effektio-nightly-windows
+            artifact_path: app/build/windows/runner/
+            artifact_files: "Release"
+
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    needs: check_date
+    if: ${{ needs.check_date.outputs.should_run != 'false' }}
+
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v2
+      - id: tag
+        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Install supported toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - uses: Swatinem/rust-cache@v1
+
+      - name: Install extra deps
+        if: matrix.apt_install
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ${{ matrix.apt_install }}
+
+      - uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        if: ${{ matrix.with_ndk_version }}
+        with:
+          ndk-version: ${{ matrix.with_ndk_version }}
+
+      - name: Install cargo-make
+        uses: davidB/rust-cargo-make@v1
+
+      - name: Rust Setup
+        if: ${{ matrix.cargo_make_setup }}
+        run: cargo make ${{ matrix.cargo_make_setup }}
+
+      - uses: subosito/flutter-action@v2
+        name: "Set up flutter"
+        with:
+          channel: 'stable'
+
+      - name: Build Rust Lib
+        run: cargo make --profile release ${{ matrix.cargo_make_args}}
+
+      - name: Ensure ffi-interface is up to date
+        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+
+      - run: flutter ${{ matrix.flutter_build_args }}
+        working-directory: ./app
+
+      - name: Rename file
+        working-directory: ${{ matrix.artifact_path }}
+        run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          name: Nightly ${{ steps.tag.outputs.tag }}
+          prerelease: true
+          files: |
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2
+
