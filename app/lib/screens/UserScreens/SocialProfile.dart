@@ -34,7 +34,6 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final client = ModalRoute.of(context)!.settings.arguments as Client;
     return Scaffold(
       appBar: AppBar(
         title: navBarTitle('Social Profile'),
