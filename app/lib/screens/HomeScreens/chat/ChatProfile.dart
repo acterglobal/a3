@@ -37,13 +37,13 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
   void initState() {
     super.initState();
 
-    widget.room.getProfile().then((roomProfile) {
+    widget.room.getProfile().then((value) {
       if (mounted) {
         setState(() {
-          if (roomProfile.hasAvatar()) {
-            avatar = roomProfile.getAvatar();
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
           }
-          chatName = roomProfile.getDisplayName();
+          chatName = value.getDisplayName();
         });
       }
     });

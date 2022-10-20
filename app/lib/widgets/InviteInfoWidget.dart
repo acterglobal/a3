@@ -33,13 +33,13 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
   void initState() {
     super.initState();
 
-    widget.invitation.getSenderProfile().then((userProfile) {
+    widget.invitation.getSenderProfile().then((value) {
       if (mounted) {
         setState(() {
-          if (userProfile.hasAvatar()) {
-            avatar = userProfile.getAvatar();
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
           }
-          displayName = userProfile.getDisplayName();
+          displayName = value.getDisplayName();
         });
       }
     });

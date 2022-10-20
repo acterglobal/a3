@@ -47,21 +47,6 @@ impl std::ops::Deref for Member {
 }
 
 impl Member {
-    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
-        let r = self.member.clone();
-        RUNTIME
-            .spawn(async move {
-                Ok(FfiBuffer::new(
-                    r.avatar(MediaFormat::File).await?.context("No avatar")?,
-                ))
-            })
-            .await?
-    }
-
-    pub fn display_name(&self) -> Option<String> {
-        self.member.display_name().map(|s| s.to_owned())
-    }
-
     pub async fn get_profile(&self) -> Result<UserProfile> {
         let client = self.client.clone();
         let user_id = self.member.user_id().to_owned();
@@ -101,24 +86,6 @@ impl Room {
                 Ok(Some(_))
             )
         }
-    }
-
-    pub async fn display_name(&self) -> Result<String> {
-        let r = self.room.clone();
-        RUNTIME
-            .spawn(async move { Ok(r.display_name().await?.to_string()) })
-            .await?
-    }
-
-    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
-        let r = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                Ok(FfiBuffer::new(
-                    r.avatar(MediaFormat::File).await?.context("No avatar")?,
-                ))
-            })
-            .await?
     }
 
     pub async fn get_profile(&self) -> Result<RoomProfile> {

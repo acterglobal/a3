@@ -159,12 +159,6 @@ object TimelineStream {
 }
 
 object Conversation {
-    /// Calculate the display name
-    fn display_name() -> Future<Result<string>>;
-
-    /// The avatar of the room
-    fn avatar() -> Future<Result<buffer<u8>>>;
-
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
 
@@ -238,12 +232,6 @@ object Conversation {
 }
 
 object Group {
-    /// Calculate the display name
-    fn display_name() -> Future<Result<string>>;
-
-    /// The avatar of the Group
-    fn avatar() -> Future<Result<buffer<u8>>>;
-
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
 
@@ -255,19 +243,11 @@ object Group {
 }
 
 object Member {
-
-    /// The avatar of the member
-    fn avatar() -> Future<Result<buffer<u8>>>;
-
-    /// Calculate the display name
-    fn display_name() -> Option<string>;
-
     /// get the user profile that contains avatar and display name
     fn get_profile() -> Future<Result<UserProfile>>;
 
     /// Full user_id
     fn user_id() -> string;
-
 }
 
 object Account {
@@ -324,14 +304,6 @@ object Client {
     /// The user_id of the client
     /// deprecated, please use account() instead.
     fn user_id() -> Result<UserId>;
-
-    /// The display_name of the client
-    /// deprecated, please use account() instead.
-    fn display_name() -> Future<Result<string>>;
-
-    /// The avatar of the client
-    /// deprecated, please use account() instead.
-    fn avatar() -> Future<Result<buffer<u8>>>;
 
     /// get the user profile that contains avatar and display name
     fn get_user_profile() -> Future<Result<UserProfile>>;

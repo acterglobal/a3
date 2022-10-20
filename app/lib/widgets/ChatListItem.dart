@@ -39,14 +39,13 @@ class _ChatListItemState extends State<ChatListItem> {
   void initState() {
     super.initState();
 
-    widget.room.getProfile().then((roomProfile) {
+    widget.room.getProfile().then((value) {
       if (mounted) {
         setState(() {
-          if (roomProfile.hasAvatar()) {
-            avatar = roomProfile.getAvatar();
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
           }
-          displayName = roomProfile.getDisplayName();
-          debugPrint('room list item: ' + displayName.toString());
+          displayName = value.getDisplayName();
         });
       }
     });

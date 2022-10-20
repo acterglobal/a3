@@ -52,13 +52,13 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     roomController.setCurrentRoom(widget.room);
-    widget.room.getProfile().then((roomProfile) {
+    widget.room.getProfile().then((value) {
       if (mounted) {
         setState(() {
-          if (roomProfile.hasAvatar()) {
-            roomAvatar = roomProfile.getAvatar();
+          if (value.hasAvatar()) {
+            roomAvatar = value.getAvatar();
           }
-          roomName = roomProfile.getDisplayName();
+          roomName = value.getDisplayName();
         });
       }
     });

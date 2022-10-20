@@ -20,13 +20,13 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
     super.initState();
 
     final client = ModalRoute.of(context)!.settings.arguments as Client;
-    client.getUserProfile().then((userProfile) {
+    client.getUserProfile().then((value) {
       if (mounted) {
         setState(() {
-          if (userProfile.hasAvatar()) {
-            avatar = userProfile.getAvatar();
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
           }
-          displayName = userProfile.getDisplayName();
+          displayName = value.getDisplayName();
         });
       }
     });

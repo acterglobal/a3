@@ -26,13 +26,13 @@ class _SideDrawerState extends State<SideDrawer> {
     super.initState();
 
     if (!widget.client.isGuest()) {
-      widget.client.getUserProfile().then((userProfile) {
+      widget.client.getUserProfile().then((value) {
         if (mounted) {
           setState(() {
-            if (userProfile.hasAvatar()) {
-              avatar = userProfile.getAvatar();
+            if (value.hasAvatar()) {
+              avatar = value.getAvatar();
             }
-            displayName = userProfile.getDisplayName();
+            displayName = value.getDisplayName();
           });
         }
       });

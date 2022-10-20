@@ -40,6 +40,16 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
   int? usesIndexing;
 
   Color? tagColor;
+  String? displayName;
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.room.getProfile().then((value) {
+      setState(() => displayName = value.getDisplayName());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,22 +72,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            FutureBuilder<String>(
-              future: widget.room.displayName(),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  return Text(
-                    '@' + snapshot.requireData,
-                    overflow: TextOverflow.clip,
-                    style: const TextStyle(
-                      color: AppCommonTheme.primaryColor,
-                      fontSize: 16,
-                    ),
-                  );
-                }
-                return const Text('Loading Name');
-              },
-            ),
+            buildName(),
             Container(
               margin: const EdgeInsets.only(top: 20, bottom: 10),
               child: const Text(
@@ -99,11 +94,9 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                     onTap: () {
                       setState(() {
                         timeIndexing = index;
+                        selectedTimeIndexList.clear();
                         if (!selectedTimeIndexList.contains(index)) {
-                          selectedTimeIndexList.clear();
                           selectedTimeIndexList.add(index);
-                        } else {
-                          selectedTimeIndexList.clear();
                         }
                       });
                     },
@@ -145,11 +138,9 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                   onTap: () {
                     setState(() {
                       usesIndexing = index;
+                      selectedUsesIndexList.clear();
                       if (!selectedUsesIndexList.contains(index)) {
-                        selectedUsesIndexList.clear();
                         selectedUsesIndexList.add(index);
-                      } else {
-                        selectedUsesIndexList.clear();
                       }
                     });
                   },
@@ -173,6 +164,17 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildName() {
+    if (displayName == null) {
+      return const Text('Loading Name');
+    }
+    return Text(
+      '!' + displayName!,
+      overflow: TextOverflow.clip,
+      style: const TextStyle(color: AppCommonTheme.primaryColor, fontSize: 16),
     );
   }
 }
