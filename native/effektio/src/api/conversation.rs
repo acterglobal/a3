@@ -31,7 +31,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
-    client::{divide_rooms_from_common, Client},
+    client::Client,
     message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
@@ -161,12 +161,6 @@ impl ConversationController {
     }
 
     pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = divide_rooms_from_common(client.clone()).await;
-        for convo in convos.iter() {
-            convo.load_latest_message();
-        }
-        self.conversations.lock_mut().clone_from(&convos);
-
         let me = self.clone();
         client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
@@ -189,6 +183,13 @@ impl ConversationController {
                 me.clone().process_room_member(ev, &room, &client);
             },
         );
+    }
+
+    pub fn load_rooms(&self, convos: &Vec<Conversation>) {
+        for convo in convos.iter() {
+            convo.load_latest_message();
+        }
+        self.conversations.lock_mut().clone_from(&convos);
     }
 
     fn process_room_message(
