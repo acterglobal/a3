@@ -1,12 +1,13 @@
-name: add artifact links to pull request and related issues
+name: Link Artifacts
 on:
   workflow_run:
-    workflows: [app.yml]
+    workflows: [App]
     types: [completed]
 
 jobs:
   artifacts-url-comments:
-    name: add artifact links to pull request and related issues job
+    name: Add links to artifacts in the given jobs
+    runs-on: ubuntu-latest
     steps:
       - name: Post artifacts links
         uses: tonyhallett/artifacts-url-comments@v1.1.0
