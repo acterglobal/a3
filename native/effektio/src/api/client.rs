@@ -30,6 +30,7 @@ use super::{
     device::DeviceController,
     group::Group,
     invitation::InvitationController,
+    profile::UserProfile,
     receipt::ReceiptController,
     room::Room,
     typing::TypingController,
@@ -284,6 +285,18 @@ impl Client {
 
     pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
         self.account()?.avatar().await
+    }
+
+    pub async fn get_user_profile(&self) -> Result<UserProfile> {
+        let client = self.client.clone();
+        let user_id = client.user_id().unwrap().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let mut user_profile = UserProfile::new(client, user_id);
+                user_profile.fetch().await;
+                Ok(user_profile)
+            })
+            .await?
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

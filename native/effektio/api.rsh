@@ -165,6 +165,9 @@ object Conversation {
     /// The avatar of the room
     fn avatar() -> Future<Result<buffer<u8>>>;
 
+    /// get the room profile that contains avatar and display name
+    fn get_profile() -> Future<Result<RoomProfile>>;
+
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
@@ -241,11 +244,14 @@ object Group {
     /// The avatar of the Group
     fn avatar() -> Future<Result<buffer<u8>>>;
 
+    /// get the room profile that contains avatar and display name
+    fn get_profile() -> Future<Result<RoomProfile>>;
+
     /// the members currently in the group
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     // the members currently in the room
-    fn get_member(user: string) -> Future<Result<Member>>;
+    fn get_member(user_id: string) -> Future<Result<Member>>;
 }
 
 object Member {
@@ -255,6 +261,9 @@ object Member {
 
     /// Calculate the display name
     fn display_name() -> Option<string>;
+
+    /// get the user profile that contains avatar and display name
+    fn get_profile() -> Future<Result<UserProfile>>;
 
     /// Full user_id
     fn user_id() -> string;
@@ -324,6 +333,9 @@ object Client {
     /// deprecated, please use account() instead.
     fn avatar() -> Future<Result<buffer<u8>>>;
 
+    /// get the user profile that contains avatar and display name
+    fn get_user_profile() -> Future<Result<UserProfile>>;
+
     /// The conversations the user is involved in
     fn conversations() -> Future<Result<Vec<Conversation>>>;
 
@@ -349,12 +361,6 @@ object Client {
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
-    /// accept invitation about me to this room
-    fn accept_invitation(room_id: string) -> Future<Result<bool>>;
-
-    /// reject invitation about me to this room
-    fn reject_invitation(room_id: string) -> Future<Result<bool>>;
-
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
@@ -377,6 +383,28 @@ object Client {
     fn message_event_rx() -> Option<Stream<RoomMessage>>;
 }
 
+object UserProfile {
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<buffer<u8>>>;
+
+    /// get the display name
+    fn get_display_name() -> Option<string>;
+}
+
+object RoomProfile {
+    /// whether to have avatar
+    fn has_avatar() -> bool;
+
+    /// get the binary data of avatar
+    fn get_avatar() -> Future<Result<buffer<u8>>>;
+
+    /// get the display name
+    fn get_display_name() -> Option<string>;
+}
+
 object Invitation {
     /// get the timestamp of this invitation
     fn origin_server_ts() -> Option<u64>;
@@ -389,6 +417,15 @@ object Invitation {
 
     /// get the user id of this invitation sender
     fn sender() -> string;
+
+    /// get the user profile that contains avatar and display name
+    fn get_sender_profile() -> Future<Result<UserProfile>>;
+
+    /// accept invitation about me to this room
+    fn accept() -> Future<Result<bool>>;
+
+    /// reject invitation about me to this room
+    fn reject() -> Future<Result<bool>>;
 }
 
 object VerificationEvent {

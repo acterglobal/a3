@@ -1,7 +1,7 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class SocialProfileScreen extends StatefulWidget {
@@ -12,6 +12,26 @@ class SocialProfileScreen extends StatefulWidget {
 }
 
 class _SocialProfileScreenState extends State<SocialProfileScreen> {
+  Future<FfiBufferUint8>? avatar;
+  String? displayName;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final client = ModalRoute.of(context)!.settings.arguments as Client;
+    client.getUserProfile().then((userProfile) {
+      if (mounted) {
+        setState(() {
+          if (userProfile.hasAvatar()) {
+            avatar = userProfile.getAvatar();
+          }
+          displayName = userProfile.getDisplayName();
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final client = ModalRoute.of(context)!.settings.arguments as Client;
@@ -89,10 +109,10 @@ class _SocialProfileScreenState extends State<SocialProfileScreen> {
                             ),
                           ),
                           child: CustomAvatar(
-                            avatar: client.avatar(),
-                            displayName: client.displayName(),
+                            avatar: avatar,
+                            displayName: displayName,
                             isGroup: false,
-                            stringName: '',
+                            stringName: ' ',
                             radius: 60,
                           ),
                         ),

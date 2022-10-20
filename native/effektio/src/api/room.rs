@@ -5,7 +5,7 @@ use log::{debug, error, info};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::Room as MatrixRoom,
+    room::{Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
@@ -26,11 +26,17 @@ use std::{fs::File, io::Write, path::PathBuf};
 use tokio::time::{sleep, Duration};
 
 use super::{
-    account::Account, api::FfiBuffer, message::RoomMessage, stream::TimelineStream, RUNTIME,
+    account::Account,
+    api::FfiBuffer,
+    message::RoomMessage,
+    profile::{RoomProfile, UserProfile},
+    stream::TimelineStream,
+    RUNTIME,
 };
 
 pub struct Member {
-    pub(crate) member: matrix_sdk::room::RoomMember,
+    pub(crate) client: MatrixClient,
+    pub(crate) member: RoomMember,
 }
 
 impl std::ops::Deref for Member {
@@ -51,8 +57,21 @@ impl Member {
             })
             .await?
     }
+
     pub fn display_name(&self) -> Option<String> {
         self.member.display_name().map(|s| s.to_owned())
+    }
+
+    pub async fn get_profile(&self) -> Result<UserProfile> {
+        let client = self.client.clone();
+        let user_id = self.member.user_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let mut user_profile = UserProfile::new(client, user_id);
+                user_profile.fetch().await;
+                Ok(user_profile)
+            })
+            .await?
     }
 
     pub fn user_id(&self) -> String {
@@ -102,7 +121,20 @@ impl Room {
             .await?
     }
 
+    pub async fn get_profile(&self) -> Result<RoomProfile> {
+        let client = self.client.clone();
+        let room_id = self.room_id().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let mut room_profile = RoomProfile::new(client, room_id);
+                room_profile.fetch().await;
+                Ok(room_profile)
+            })
+            .await?
+    }
+
     pub async fn active_members(&self) -> Result<Vec<Member>> {
+        let client = self.client.clone();
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -111,7 +143,7 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| Member { member })
+                    .map(|member| Member { client: client.clone(), member })
                     .collect();
                 Ok(members)
             })
@@ -119,6 +151,7 @@ impl Room {
     }
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
+        let client = self.client.clone();
         let r = self.room.clone();
         RUNTIME
             .spawn(async move {
@@ -127,7 +160,7 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| Member { member })
+                    .map(|member| Member { client: client.clone(), member })
                     .collect();
                 Ok(members)
             })
@@ -135,12 +168,13 @@ impl Room {
     }
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
+        let client = self.client.clone();
         let r = self.room.clone();
         let uid = UserId::parse(user_id)?;
         RUNTIME
             .spawn(async move {
                 let member = r.get_member(&uid).await?.context("User not found")?;
-                Ok(Member { member })
+                Ok(Member { client: client.clone(), member })
             })
             .await?
     }

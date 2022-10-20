@@ -223,20 +223,18 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   Widget buildInvitedItem(Invitation item) {
     return InviteInfoWidget(
-      client: widget.client,
+      userId: widget.client.userId().toString(),
+      invitation: item,
       avatarColor: Colors.white,
-      inviter: item.sender(),
-      groupId: item.roomId(),
-      groupName: item.roomName(),
     );
   }
 
   Widget buildJoinedItem(JoinedRoom item) {
     return ChatListItem(
       key: Key(item.conversation.getRoomId()),
+      userId: widget.client.userId().toString(),
       room: item.conversation,
       latestMessage: item.latestMessage,
-      client: widget.client,
       typingUsers: item.typingUsers,
     );
   }
