@@ -110,7 +110,10 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| Member { client: client.clone(), member })
+                    .map(|member| Member {
+                        client: client.clone(),
+                        member,
+                    })
                     .collect();
                 Ok(members)
             })
@@ -127,7 +130,10 @@ impl Room {
                     .await
                     .context("No members")?
                     .into_iter()
-                    .map(|member| Member { client: client.clone(), member })
+                    .map(|member| Member {
+                        client: client.clone(),
+                        member,
+                    })
                     .collect();
                 Ok(members)
             })
@@ -141,7 +147,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let member = r.get_member(&uid).await?.context("User not found")?;
-                Ok(Member { client: client.clone(), member })
+                Ok(Member {
+                    client: client.clone(),
+                    member,
+                })
             })
             .await?
     }

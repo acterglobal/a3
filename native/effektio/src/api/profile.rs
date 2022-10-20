@@ -4,8 +4,7 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     ruma::{
         api::client::profile::get_profile::v3::Request as GetProfileRequest,
-        events::room::MediaSource,
-        OwnedMxcUri, OwnedUserId, OwnedRoomId, RoomId, UserId,
+        events::room::MediaSource, OwnedMxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId,
     },
     Client,
 };

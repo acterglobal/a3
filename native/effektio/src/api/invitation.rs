@@ -61,7 +61,9 @@ impl Invitation {
     pub async fn accept(&self) -> Result<bool> {
         let client = self.client.clone().unwrap();
         let room_id = RoomId::parse(self.room_id.clone())?;
-        let room = client.get_invited_room(&room_id).context("Can't accept a room we are not invited")?;
+        let room = client
+            .get_invited_room(&room_id)
+            .context("Can't accept a room we are not invited")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
@@ -94,7 +96,9 @@ impl Invitation {
     pub async fn reject(&self) -> Result<bool> {
         let client = self.client.clone().unwrap();
         let room_id = RoomId::parse(self.room_id.clone())?;
-        let room = client.get_invited_room(&room_id).context("Can't accept a room we are not invited")?;
+        let room = client
+            .get_invited_room(&room_id)
+            .context("Can't accept a room we are not invited")?;
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
