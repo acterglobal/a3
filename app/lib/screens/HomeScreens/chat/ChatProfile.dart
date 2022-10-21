@@ -27,9 +27,18 @@ class ChatProfileScreen extends StatefulWidget {
 }
 
 class _ChatProfileScreenState extends State<ChatProfileScreen> {
-  String chatName = '';
+  String? chatName;
   String chatDesc =
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
+
+  @override
+  void initState() {
+    super.initState();
+
+    widget.room.displayName().then((value) {
+      setState(() => chatName = value);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +56,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
                       room: widget.room,
-                      name: chatName,
+                      name: chatName ?? '',
                       description: chatDesc,
                     ),
                   ),
@@ -114,20 +123,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                 ),
               ),
             ),
-            FutureBuilder<String>(
-              future: widget.room.displayName(),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.hasData) {
-                  setState(() => chatName = snapshot.requireData);
-                  return Text(
-                    snapshot.requireData,
-                    overflow: TextOverflow.clip,
-                    style: ChatTheme01.chatProfileTitleStyle,
-                  );
-                }
-                return const Text('Loading Name');
-              },
-            ),
+            if (chatName == null)
+              const Text('Loading Name')
+            else
+              Text(
+                chatName!,
+                overflow: TextOverflow.clip,
+                style: ChatTheme01.chatProfileTitleStyle,
+              ),
             Visibility(
               visible: widget.isGroup,
               child: const Padding(
