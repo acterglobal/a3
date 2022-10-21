@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:get/get.dart';
 
@@ -53,7 +54,8 @@ class ReceiptController extends GetxController {
         }
       }
       if (changed) {
-        update(['Chat']);
+        var roomController = Get.find<ChatRoomController>();
+        roomController.update(['Chat']);
       }
     });
   }
