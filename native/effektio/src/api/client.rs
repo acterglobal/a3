@@ -306,4 +306,14 @@ impl Client {
             })
             .await?
     }
+
+    pub async fn logout(&self) -> Result<bool> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let response = c.logout().await?;
+                Ok(true)
+            })
+            .await?
+    }
 }

@@ -1,6 +1,8 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
+    show EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -55,7 +57,7 @@ class _SideDrawerState extends State<SideDrawer> {
               buildSharedDocumentsItem(),
               buildFaqItem(),
               const SizedBox(height: 5),
-              buildLogoutItem(),
+              buildLogoutItem(context),
             ],
           ),
         ),
@@ -306,7 +308,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildLogoutItem() {
+  Widget buildLogoutItem(BuildContext context) {
     if (widget.client.isGuest()) {
       return const SizedBox();
     }
@@ -321,7 +323,9 @@ class _SideDrawerState extends State<SideDrawer> {
         AppLocalizations.of(context)!.logOut,
         style: SideMenuAndProfileTheme.signOutText,
       ),
-      onTap: () {
+      onTap: () async {
+        final sdk = await EffektioSdk.instance;
+        await sdk.logout();
         Navigator.pushReplacementNamed(context, '/login');
       },
     );

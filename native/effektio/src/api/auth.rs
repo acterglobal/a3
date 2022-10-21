@@ -18,12 +18,12 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let register = client.register(guest_registration).await?;
+            let response = client.register(guest_registration).await?;
             let session = Session {
-                access_token: register.access_token.context("no access token given")?,
-                user_id: register.user_id.clone(),
-                refresh_token: register.refresh_token.clone(),
-                device_id: register
+                access_token: response.access_token.context("no access token given")?,
+                user_id: response.user_id.clone(),
+                refresh_token: response.refresh_token.clone(),
+                device_id: response
                     .device_id
                     .clone()
                     .context("device id is given by server")?,
@@ -36,7 +36,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                     .build()
                     .unwrap(),
             );
-            info!("Successfully created guest login: {:?}", register.user_id);
+            info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
         })
         .await?
@@ -122,8 +122,8 @@ pub async fn register_with_registration_token(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client.register(register::v3::Request::new()).await {
-                if let Some(_response) = resp.uiaa_response() {
+            if let Err(err) = client.register(register::v3::Request::new()).await {
+                if let Some(response) = err.uiaa_response() {
                     // FIXME: do actually check the registration types...
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),
