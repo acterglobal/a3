@@ -343,9 +343,6 @@ object Client {
     /// Get the FAQs for the client
     fn faqs() -> Future<Result<Vec<Faq>>>;
 
-    /// Create room
-    fn create_room() -> Future<Result<string>>;
-
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
