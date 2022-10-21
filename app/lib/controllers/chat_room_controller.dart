@@ -100,6 +100,10 @@ class ChatRoomController extends GetxController {
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
+      // load receipt status of room
+      var receiptController = Get.find<ReceiptController>();
+      var receipts = (await _currentRoom!.userReceipts()).toList();
+      receiptController.loadRoom(_currentRoom!.getRoomId(), receipts);
       isLoading.value = false;
     }
   }

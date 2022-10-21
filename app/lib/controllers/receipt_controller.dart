@@ -74,6 +74,16 @@ class ReceiptController extends GetxController {
     return room;
   }
 
+  void loadRoom(String roomId, List<ReceiptRecord> records) {
+    var room = _getRoom(roomId);
+    for (var record in records) {
+      String seenBy = record.seenBy();
+      if (seenBy != client.userId().toString()) {
+        room.updateUser(seenBy, record.eventId(), record.ts());
+      }
+    }
+  }
+
   // this will be called via update(['Chat'])
   List<String> getSeenByList(String roomId, int ts) {
     List<String> userIds = [];
