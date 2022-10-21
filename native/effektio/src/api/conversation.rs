@@ -189,7 +189,7 @@ impl ConversationController {
         for convo in convos.iter() {
             convo.load_latest_message();
         }
-        self.conversations.lock_mut().clone_from(&convos);
+        self.conversations.lock_mut().clone_from(convos);
     }
 
     fn process_room_message(
