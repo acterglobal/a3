@@ -126,7 +126,7 @@ impl InvitationController {
             let room_id = room.room_id();
             let sender = ev.sender;
             let invitation = Invitation {
-                origin_server_ts: Some(since_the_epoch.as_secs()),
+                origin_server_ts: Some(since_the_epoch.as_millis() as u64),
                 room_id: room_id.to_string(),
                 room_name: room.display_name().await.unwrap().to_string(),
                 sender: sender.to_string(),

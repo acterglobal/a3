@@ -334,7 +334,7 @@ class ChatRoomController extends GetxController {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: getNameFromId(sender));
-    int createdAt = message.originServerTs() * 1000;
+    int createdAt = message.originServerTs(); // in miliseconds
     String eventId = message.eventId();
 
     if (msgtype == 'm.audio') {

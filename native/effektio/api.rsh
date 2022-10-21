@@ -106,7 +106,7 @@ object RoomMessage {
     /// get html body
     fn formatted_body() -> Option<string>;
 
-    /// the server receiving timestamp
+    /// the server receiving timestamp in miliseconds
     fn origin_server_ts() -> u64;
 
     /// the type of massage, like audio, text, image, file, etc
@@ -375,7 +375,7 @@ object Client {
 }
 
 object Invitation {
-    /// get the timestamp of this invitation
+    /// get the timestamp of this invitation in miliseconds
     fn origin_server_ts() -> Option<u64>;
 
     /// get the room id of this invitation
@@ -469,7 +469,7 @@ object ReceiptRecord {
     /// Get id of user that read this message
     fn seen_by() -> string;
 
-    /// Get time that this user read message from peer
+    /// Get time that this user read message from peer in miliseconds
     fn ts() -> Option<u64>;
 }
 
@@ -517,7 +517,7 @@ object DeviceRecord {
     /// last seen ip of this device
     fn last_seen_ip() -> Option<string>;
 
-    /// last seen timestamp of this device
+    /// last seen timestamp of this device in miliseconds
     fn last_seen_ts() -> Option<u64>;
 }
 

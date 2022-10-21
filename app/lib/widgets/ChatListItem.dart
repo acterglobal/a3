@@ -189,7 +189,7 @@ class _ChatListItemState extends State<ChatListItem> {
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs * 1000,
+          widget.latestMessage!.originServerTs,
           isUtc: true,
         ),
       ),
