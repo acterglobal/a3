@@ -154,6 +154,7 @@ impl Client {
                     let state = state.clone();
                     let mut verification_controller = verification_controller.clone();
                     let mut device_controller = device_controller.clone();
+                    let mut conversation_controller = conversation_controller.clone();
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -165,6 +166,10 @@ impl Client {
 
                         if !initial.load(Ordering::SeqCst) {
                             verification_controller.process_sync_events(&client, &response);
+                        } else {
+                            // divide_rooms_from_common must be called after first sync
+                            let (_, convos) = divide_rooms_from_common(client.clone()).await;
+                            conversation_controller.load_rooms(&convos);
                         }
 
                         initial.store(false, Ordering::SeqCst);
