@@ -375,8 +375,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
-            buildInvitationTitle(invitedIndex),
-            buildInvitationInfo(invitedIndex),
           ],
         );
       },
@@ -397,41 +395,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget buildInvitationTitle(int wasInvited) {
-    if (wasInvited == -1) {
-      return const SizedBox();
-    }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.fromLTRB(10, 10, 0, 20),
-          color: AppCommonTheme.backgroundColor,
-          height: constraints.maxHeight * 0.25,
-          width: double.infinity,
-          child: Text(
-            AppLocalizations.of(context)!.invitationText1,
-            style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 14),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget buildInvitationInfo(int invitedIndex) {
-    if (invitedIndex == -1) {
-      return const SizedBox();
-    }
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: InviteInfoWidget(
-        userId: widget.userId,
-        invitation: listController.invitations[invitedIndex],
-        avatarColor: Colors.white,
-      ),
     );
   }
 }
