@@ -30,6 +30,7 @@ use super::{
     device::DeviceController,
     group::Group,
     invitation::InvitationController,
+    profile::UserProfile,
     receipt::ReceiptController,
     room::Room,
     typing::TypingController,
@@ -278,27 +279,21 @@ impl Client {
         Ok(Account::new(self.client.account(), user_id.to_string()))
     }
 
-    pub async fn display_name(&self) -> Result<String> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let display_name = l
-                    .account()
-                    .get_display_name()
-                    .await?
-                    .context("No User ID found")?;
-                Ok(display_name)
-            })
-            .await?
-    }
-
     pub fn device_id(&self) -> Result<String> {
         let device_id = self.client.device_id().context("No Device ID found")?;
         Ok(device_id.to_string())
     }
 
-    pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
-        self.account()?.avatar().await
+    pub async fn get_user_profile(&self) -> Result<UserProfile> {
+        let client = self.client.clone();
+        let user_id = client.user_id().unwrap().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let mut user_profile = UserProfile::new(client, user_id);
+                user_profile.fetch().await;
+                Ok(user_profile)
+            })
+            .await?
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

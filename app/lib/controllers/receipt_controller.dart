@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:get/get.dart';
 
@@ -53,7 +54,8 @@ class ReceiptController extends GetxController {
         }
       }
       if (changed) {
-        update(['Chat']);
+        var roomController = Get.find<ChatRoomController>();
+        roomController.update(['Chat']);
       }
     });
   }
@@ -72,6 +74,16 @@ class ReceiptController extends GetxController {
     ReceiptRoom room = ReceiptRoom();
     _rooms[roomId] = room;
     return room;
+  }
+
+  void loadRoom(String roomId, List<ReceiptRecord> records) {
+    var room = _getRoom(roomId);
+    for (var record in records) {
+      String seenBy = record.seenBy();
+      if (seenBy != client.userId().toString()) {
+        room.updateUser(seenBy, record.eventId(), record.ts());
+      }
+    }
   }
 
   // this will be called via update(['Chat'])

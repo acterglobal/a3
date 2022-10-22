@@ -42,13 +42,17 @@ impl NewsDraft {
             .spawn(async move {
                 let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let res = me.client.media().upload(&mime, &image).await?;
+                let response = me.client.media().upload(&mime, &image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
 
                 inner.contents.push(events::NewsContentType::Image(
-                    events::ImageMessageEventContent::plain("".to_owned(), res.content_uri, None),
+                    events::ImageMessageEventContent::plain(
+                        "".to_owned(),
+                        response.content_uri,
+                        None,
+                    ),
                 ));
                 Ok(counter as u32)
             })
@@ -92,13 +96,17 @@ impl NewsDraft {
             .spawn(async move {
                 let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let res = me.client.media().upload(&mime, &image).await?;
+                let response = me.client.media().upload(&mime, &image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
 
                 inner.contents.push(events::NewsContentType::Image(
-                    events::ImageMessageEventContent::plain("".to_owned(), res.content_uri, None),
+                    events::ImageMessageEventContent::plain(
+                        "".to_owned(),
+                        response.content_uri,
+                        None,
+                    ),
                 ));
                 Ok(counter as u32)
             })

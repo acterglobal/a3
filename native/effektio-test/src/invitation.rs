@@ -1,5 +1,8 @@
 use anyhow::Result;
-use effektio::{login_new_client, matrix_sdk::ruma::user_id};
+use effektio::{
+    api::{login_new_client, CreateConversationSettingsBuilder},
+    matrix_sdk::ruma::user_id,
+};
 use futures::{pin_mut, StreamExt};
 use std::time::Duration;
 use tempfile::TempDir;
@@ -29,7 +32,9 @@ async fn load_pending_invitation() -> Result<()> {
 
     sleep(Duration::from_secs(3)).await;
 
-    // let room_id = sisko.create_room().await?;
+    // sisko creates room and invites kyra
+    // let settings = CreateConversationSettingsBuilder::default().build()?;
+    // let room_id = sisko.create_conversation(settings).await?;
     // println!("created room id: {}", room_id);
 
     // sleep(Duration::from_secs(3)).await;
