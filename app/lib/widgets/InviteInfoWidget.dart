@@ -60,7 +60,7 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
               displayName: displayName,
               radius: 20,
               isGroup: true,
-              stringName: parseUserId(widget.userId)!,
+              stringName: simplifyUserId(widget.userId)!,
             ),
             title: _buildTitle(),
             subtitle: _buildSubtitle(context),

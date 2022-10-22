@@ -82,7 +82,7 @@ class ChatListController extends GetxController {
         }
         var user = types.User(
           id: uid,
-          firstName: parseUserId(uid),
+          firstName: simplifyUserId(uid),
         );
         typingUsers.add(user);
       }

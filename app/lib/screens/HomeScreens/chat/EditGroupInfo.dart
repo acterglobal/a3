@@ -76,7 +76,7 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                         displayName: displayName,
                         radius: 20,
                         isGroup: true,
-                        stringName: parseRoomId(widget.room.getRoomId())!,
+                        stringName: simplifyRoomId(widget.room.getRoomId())!,
                       ),
                     ),
                   ),

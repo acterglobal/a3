@@ -73,7 +73,7 @@ class _ChatListItemState extends State<ChatListItem> {
             displayName: displayName,
             radius: 25,
             isGroup: true,
-            stringName: parseRoomId(widget.room.getRoomId())!,
+            stringName: simplifyRoomId(widget.room.getRoomId())!,
           ),
           title: buildTitle(context),
           subtitle: buildSubtitle(context),
@@ -131,7 +131,7 @@ class _ChatListItemState extends State<ChatListItem> {
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
         text:
-            '${parseUserId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
+            '${simplifyUserId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,
@@ -196,7 +196,7 @@ class _ChatListItemState extends State<ChatListItem> {
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs * 1000,
+          widget.latestMessage!.originServerTs,
           isUtc: true,
         ),
       ),

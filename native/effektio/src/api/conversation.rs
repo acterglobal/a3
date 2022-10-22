@@ -288,18 +288,17 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let initial_states = default_effektio_conversation_states();
-                let res = client
-                    .create_room(assign!(CreateRoomRequest::new(), {
-                        creation_content: Some(Raw::new(&CreationContent::new())?),
-                        initial_state: &initial_states,
-                        is_direct: true,
-                        invite: &settings.invites,
-                        room_alias_name: settings.alias.as_deref(),
-                        name: settings.name.as_ref().map(|x| x.as_ref()),
-                        visibility: Visibility::Private,
-                    }))
-                    .await?;
-                Ok(res.room_id().to_owned())
+                let request = assign!(CreateRoomRequest::new(), {
+                    creation_content: Some(Raw::new(&CreationContent::new())?),
+                    initial_state: &initial_states,
+                    is_direct: true,
+                    invite: &settings.invites,
+                    room_alias_name: settings.alias.as_deref(),
+                    name: settings.name.as_ref().map(|x| x.as_ref()),
+                    visibility: Visibility::Private,
+                });
+                let response = client.create_room(request).await?;
+                Ok(response.room_id().to_owned())
             })
             .await?
     }

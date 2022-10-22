@@ -56,13 +56,13 @@ impl<'de> Visitor<'de> for LabelsVisitor {
     {
         let mut me = Labels::default();
         while let Some(key) = seq.next_element::<String>()? {
-            if let Some((prefix, res)) = key.split_once(':') {
+            if let Some((prefix, result)) = key.split_once(':') {
                 match prefix {
                     // first has priority
-                    "m.type" if me.msgtype.is_none() => me.msgtype = Some(res.to_string()),
-                    "m.tag" => me.tags.push(res.to_string()),
-                    "m.section" => me.sections.push(res.to_string()),
-                    "m.cat" => me.categories.push(res.to_string()),
+                    "m.type" if me.msgtype.is_none() => me.msgtype = Some(result.to_string()),
+                    "m.tag" => me.tags.push(result.to_string()),
+                    "m.section" => me.sections.push(result.to_string()),
+                    "m.cat" => me.categories.push(result.to_string()),
                     _ => me.others.push(key),
                 }
             } else {

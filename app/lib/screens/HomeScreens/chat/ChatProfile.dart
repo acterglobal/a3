@@ -126,7 +126,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                       displayName: chatName,
                       radius: 20,
                       isGroup: true,
-                      stringName: parseRoomId(widget.room.getRoomId())!,
+                      stringName: simplifyRoomId(widget.room.getRoomId())!,
                     ),
                   ),
                 ),

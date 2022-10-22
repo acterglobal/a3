@@ -121,7 +121,7 @@ class _SideDrawerState extends State<SideDrawer> {
               avatar: avatar,
               displayName: displayName,
               isGroup: false,
-              stringName: parseUserId(widget.client.userId().toString())!,
+              stringName: simplifyUserId(widget.client.userId().toString())!,
             ),
           ),
           const SizedBox(width: 10),

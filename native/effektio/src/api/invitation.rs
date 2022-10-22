@@ -7,7 +7,6 @@ use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
     ruma::{
-        api::client::room::create_room::v3::Request as CreateRoomRequest,
         events::room::member::{
             MembershipState, OriginalSyncRoomMemberEvent, StrippedRoomMemberEvent,
         },
@@ -212,7 +211,7 @@ impl InvitationController {
             let sender = ev.sender;
             let invitation = Invitation {
                 client: Some(client.clone()),
-                origin_server_ts: Some(since_the_epoch.as_secs()),
+                origin_server_ts: Some(since_the_epoch.as_millis() as u64),
                 room_id: room_id.to_string(),
                 room_name: room.display_name().await.unwrap().to_string(),
                 sender: sender.to_string(),
@@ -266,12 +265,6 @@ impl InvitationController {
 }
 
 impl Client {
-    pub(crate) async fn create_room(&self) -> Result<String> {
-        let req = CreateRoomRequest::new();
-        let res = self.client.create_room(req).await?;
-        Ok(res.room_id().to_string())
-    }
-
     pub fn invitations_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Invitation>>> {
         self.invitation_controller
             .invitations

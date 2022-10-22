@@ -11,7 +11,7 @@ Widget navBarTitle(String title) {
   );
 }
 
-String? parseUserId(String name) {
+String? simplifyUserId(String name) {
   RegExp re = RegExp(r'^@(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w{2,3})+$');
   RegExpMatch? match = re.firstMatch(name);
   if (match != null) {
@@ -20,7 +20,7 @@ String? parseUserId(String name) {
   return null;
 }
 
-String? parseRoomId(String name) {
+String? simplifyRoomId(String name) {
   RegExp re = RegExp(r'^!(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w{2,3})+$');
   RegExpMatch? match = re.firstMatch(name);
   if (match != null) {

@@ -160,7 +160,7 @@ class _ChatScreenState extends State<ChatScreen> {
           displayName: userNames[userId],
           radius: 15,
           isGroup: false,
-          stringName: parseUserId(userId)!,
+          stringName: simplifyUserId(userId)!,
         ),
       ),
     );
@@ -271,7 +271,7 @@ class _ChatScreenState extends State<ChatScreen> {
               displayName: roomName,
               radius: 20,
               isGroup: true,
-              stringName: parseRoomId(widget.room.getRoomId())!,
+              stringName: simplifyRoomId(widget.room.getRoomId())!,
             ),
           ),
         ),
