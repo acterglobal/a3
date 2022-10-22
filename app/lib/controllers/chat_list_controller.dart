@@ -61,6 +61,7 @@ class ChatListController extends GetxController {
 
     _invitesSubscription = client.invitationsRx().listen((event) {
       invitations = event.toList();
+
       update(['invited_list']);
     });
 
@@ -81,7 +82,7 @@ class ChatListController extends GetxController {
         }
         var user = types.User(
           id: uid,
-          firstName: getNameFromId(uid),
+          firstName: parseUserId(uid),
         );
         typingUsers.add(user);
       }

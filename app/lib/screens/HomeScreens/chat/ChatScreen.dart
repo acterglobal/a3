@@ -11,10 +11,9 @@ import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
-import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiBufferUint8, FfiListMember, Member;
+    show Conversation, FfiBufferUint8, FfiListMember, UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -26,13 +25,13 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Client client;
   final Conversation room;
+  final String userId;
 
   const ChatScreen({
     Key? key,
-    required this.client,
     required this.room,
+    required this.userId,
   }) : super(key: key);
 
   @override
@@ -40,7 +39,10 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  String roomName = '';
+  Future<FfiBufferUint8>? roomAvatar;
+  String? roomName;
+  Map<String, Future<FfiBufferUint8>> userAvatars = {};
+  Map<String, String> userNames = {};
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
 
@@ -49,8 +51,36 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     roomController.setCurrentRoom(widget.room);
-    widget.room.displayName().then((value) {
-      setState(() => roomName = value);
+    widget.room.getProfile().then((value) {
+      if (mounted) {
+        setState(() {
+          if (value.hasAvatar()) {
+            roomAvatar = value.getAvatar();
+          }
+          roomName = value.getDisplayName();
+        });
+      }
+    });
+    widget.room.activeMembers().then((members) async {
+      Map<String, Future<FfiBufferUint8>> avatars = {};
+      Map<String, String> names = {};
+      for (var member in members) {
+        String userId = member.userId();
+        UserProfile userProfile = await member.getProfile();
+        if (userProfile.hasAvatar()) {
+          avatars[userId] = userProfile.getAvatar();
+        }
+        String? name = userProfile.getDisplayName();
+        if (name != null) {
+          names[userId] = name;
+        }
+      }
+      if (mounted) {
+        setState(() {
+          userAvatars = avatars;
+          userNames = names;
+        });
+      }
     });
   }
 
@@ -119,11 +149,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Future<FfiBufferUint8> userAvatar(String userId) async {
-    Member member = await widget.room.getMember(userId);
-    return member.avatar();
-  }
-
   Widget avatarBuilder(String userId) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
@@ -131,11 +156,11 @@ class _ChatScreenState extends State<ChatScreen> {
         height: 28,
         width: 28,
         child: CustomAvatar(
-          avatar: userAvatar(userId),
-          displayName: null,
+          avatar: userAvatars[userId],
+          displayName: userNames[userId],
           radius: 15,
           isGroup: false,
-          stringName: getNameFromId(userId) ?? '',
+          stringName: parseUserId(userId)!,
         ),
       ),
     );
@@ -200,7 +225,7 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildRoomName(),
+                buildRoomName(context),
                 const SizedBox(height: 5),
                 buildActiveMembers(),
               ],
@@ -242,11 +267,11 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              avatar: widget.room.avatar(),
-              displayName: widget.room.displayName(),
+              avatar: roomAvatar,
+              displayName: roomName,
               radius: 20,
               isGroup: true,
-              stringName: '',
+              stringName: parseRoomId(widget.room.getRoomId())!,
             ),
           ),
         ),
@@ -254,12 +279,12 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget buildRoomName() {
-    if (roomName.isEmpty) {
+  Widget buildRoomName(BuildContext context) {
+    if (roomName == null) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
     return Text(
-      roomName,
+      roomName!,
       overflow: TextOverflow.clip,
       style: ChatTheme01.chatTitleStyle,
     );
@@ -305,7 +330,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Chat(
               customBottomWidget: CustomChatInput(
                 isChatScreen: true,
-                roomName: roomName,
+                roomName: roomName ?? AppLocalizations.of(context)!.noName,
                 onButtonPressed: () async {
                   await controller.handleSendPressed(
                     controller.textEditingController.text,
@@ -326,7 +351,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (_) {},
-              user: types.User(id: widget.client.userId().toString()),
+              user: types.User(id: widget.userId),
               // if invited, disable image gallery
               disableImageGallery: invitedIndex != -1,
               //custom avatar builder
@@ -349,8 +374,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
-            buildInvitationTitle(invitedIndex),
-            buildInvitationInfo(invitedIndex),
           ],
         );
       },
@@ -371,43 +394,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget buildInvitationTitle(int wasInvited) {
-    if (wasInvited == -1) {
-      return const SizedBox();
-    }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          alignment: Alignment.topLeft,
-          padding: const EdgeInsets.fromLTRB(10, 10, 0, 20),
-          color: AppCommonTheme.backgroundColor,
-          height: constraints.maxHeight * 0.25,
-          width: double.infinity,
-          child: Text(
-            AppLocalizations.of(context)!.invitationText1,
-            style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 14),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget buildInvitationInfo(int invitedIndex) {
-    if (invitedIndex == -1) {
-      return const SizedBox();
-    }
-    return Padding(
-      padding: const EdgeInsets.only(top: 40),
-      child: InviteInfoWidget(
-        client: widget.client,
-        avatarColor: Colors.white,
-        inviter: listController.invitations[invitedIndex].sender(),
-        groupId: listController.invitations[invitedIndex].roomId(),
-        groupName: listController.invitations[invitedIndex].roomName(),
-      ),
     );
   }
 }

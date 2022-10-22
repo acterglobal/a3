@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,8 @@ class EditGroupInfoScreen extends StatefulWidget {
 }
 
 class _EditGroupInfoState extends State<EditGroupInfoScreen> {
+  Future<FfiBufferUint8>? avatar;
+  String? displayName;
   TextEditingController nameController = TextEditingController();
   TextEditingController descController = TextEditingController();
   ChatRoomController chatController = Get.find<ChatRoomController>();
@@ -32,6 +35,16 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
 
     nameController.text = widget.name;
     descController.text = widget.description;
+    widget.room.getProfile().then((value) {
+      if (mounted) {
+        setState(() {
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
+          }
+          displayName = value.getDisplayName();
+        });
+      }
+    });
   }
 
   @override
@@ -59,11 +72,11 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
-                        avatar: widget.room.avatar(),
-                        displayName: widget.room.displayName(),
+                        avatar: avatar,
+                        displayName: displayName,
                         radius: 20,
                         isGroup: true,
-                        stringName: '',
+                        stringName: parseRoomId(widget.room.getRoomId())!,
                       ),
                     ),
                   ),
