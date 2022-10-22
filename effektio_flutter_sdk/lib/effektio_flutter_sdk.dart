@@ -150,7 +150,7 @@ class EffektioSdk {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('sessions', []);
     // login as guest
-    // await _restore();
+    await _restore();
   }
 
   Future<ffi.Client> signUp(

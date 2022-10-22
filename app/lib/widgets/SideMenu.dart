@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show EffektioSdk;
@@ -7,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 
 class SideDrawer extends StatefulWidget {
@@ -324,6 +326,11 @@ class _SideDrawerState extends State<SideDrawer> {
         style: SideMenuAndProfileTheme.signOutText,
       ),
       onTap: () async {
+        if (Get.isRegistered<CrossSigning>()) {
+          var crossSigning = Get.find<CrossSigning>();
+          crossSigning.dispose();
+          Get.delete<CrossSigning>();
+        }
         final sdk = await EffektioSdk.instance;
         await sdk.logout();
         Navigator.pushReplacementNamed(context, '/login');

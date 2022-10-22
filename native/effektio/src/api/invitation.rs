@@ -4,7 +4,7 @@ use futures_signals::signal::{
 };
 use log::{error, info, warn};
 use matrix_sdk::{
-    event_handler::Ctx,
+    event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
     ruma::{
         api::client::room::create_room::v3::Request as CreateRoomRequest,
@@ -49,23 +49,27 @@ impl Invitation {
 #[derive(Clone)]
 pub(crate) struct InvitationController {
     invitations: Mutable<Vec<Invitation>>,
+    stripped_event_handle: Option<EventHandlerHandle>,
+    sync_event_handle: Option<EventHandlerHandle>,
 }
 
 impl InvitationController {
     pub fn new() -> Self {
         InvitationController {
             invitations: Default::default(),
+            stripped_event_handle: None,
+            sync_event_handle: None,
         }
     }
 
-    pub async fn setup(&self, client: &MatrixClient) {
+    pub async fn add_event_handler(&mut self, client: &MatrixClient) {
         let invitations = self.get_invitations(client).await;
         self.invitations.lock_mut().clone_from(&invitations);
-
         let me = self.clone();
+
         client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
-        client.add_event_handler(
+        let handle = client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
              room: MatrixRoom,
              Ctx(client): Ctx<MatrixClient>,
@@ -74,17 +78,32 @@ impl InvitationController {
                 me.clone().process_stripped_event(ev, room, &client).await;
             },
         );
+        self.stripped_event_handle = Some(handle);
+
         client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me);
-        client.add_event_handler(
+        let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
              room: MatrixRoom,
              Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<InvitationController>| async move {
+             Ctx(me): Ctx<InvitationController>,
+             handle: EventHandlerHandle| async move {
                 // user accepted or rejected invitation
                 me.clone().process_sync_event(ev, room, &client);
             },
         );
+        self.sync_event_handle = Some(handle);
+    }
+
+    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+        if let Some(handle) = self.stripped_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.stripped_event_handle = None;
+        }
+        if let Some(handle) = self.sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.sync_event_handle = None;
+        }
     }
 
     async fn get_invitations(&self, client: &MatrixClient) -> Vec<Invitation> {
