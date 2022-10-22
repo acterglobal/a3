@@ -14,14 +14,14 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
-  final Client client;
+  final String userId;
   final Conversation room;
   final LatestMessage? latestMessage;
   final List<types.User> typingUsers;
 
   const ChatListItem({
     Key? key,
-    required this.client,
+    required this.userId,
     required this.room,
     this.latestMessage,
     required this.typingUsers,
@@ -32,16 +32,24 @@ class ChatListItem extends StatefulWidget {
 }
 
 class _ChatListItemState extends State<ChatListItem> {
-  late Future<String> displayName;
+  Future<FfiBufferUint8>? avatar;
+  String? displayName;
 
   @override
   void initState() {
     super.initState();
 
-    displayName = getDisplayName();
+    widget.room.getProfile().then((value) {
+      if (mounted) {
+        setState(() {
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
+          }
+          displayName = value.getDisplayName();
+        });
+      }
+    });
   }
-
-  Future<String> getDisplayName() async => await widget.room.displayName();
 
   @override
   Widget build(BuildContext context) {
@@ -54,34 +62,20 @@ class _ChatListItemState extends State<ChatListItem> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChatScreen(
-                  client: widget.client,
+                  userId: widget.userId,
                   room: widget.room,
                 ),
               ),
             );
           },
           leading: CustomAvatar(
-            avatar: widget.room.avatar(),
+            avatar: avatar,
             displayName: displayName,
             radius: 25,
             isGroup: true,
-            stringName: '',
+            stringName: simplifyRoomId(widget.room.getRoomId())!,
           ),
-          title: FutureBuilder<String>(
-            future: displayName,
-            builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                  snapshot.requireData,
-                  style: ChatTheme01.chatTitleStyle,
-                );
-              }
-              return Text(
-                AppLocalizations.of(context)!.loadingName,
-                style: ChatTheme01.chatTitleStyle,
-              );
-            },
-          ),
+          title: buildTitle(context),
           subtitle: buildSubtitle(context),
           trailing: buildTrailing(context),
         ),
@@ -94,6 +88,19 @@ class _ChatListItemState extends State<ChatListItem> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget buildTitle(BuildContext context) {
+    if (displayName == null) {
+      return Text(
+        AppLocalizations.of(context)!.loadingName,
+        style: ChatTheme01.chatTitleStyle,
+      );
+    }
+    return Text(
+      displayName!,
+      style: ChatTheme01.chatTitleStyle,
     );
   }
 
@@ -124,7 +131,7 @@ class _ChatListItemState extends State<ChatListItem> {
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
         text:
-            '${getNameFromId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
+            '${simplifyUserId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,

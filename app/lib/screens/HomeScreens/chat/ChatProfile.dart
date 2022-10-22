@@ -3,6 +3,7 @@ import 'package:effektio/screens/HomeScreens/chat/EditGroupInfo.dart';
 import 'package:effektio/screens/HomeScreens/chat/GroupLinkScreen.dart';
 import 'package:effektio/screens/HomeScreens/chat/ReqAndInvites.dart';
 import 'package:effektio/screens/HomeScreens/chat/RoomLinkSetting.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/GroupMember.dart';
 import 'package:effektio/widgets/InviteListView.dart';
@@ -27,6 +28,7 @@ class ChatProfileScreen extends StatefulWidget {
 }
 
 class _ChatProfileScreenState extends State<ChatProfileScreen> {
+  Future<FfiBufferUint8>? avatar;
   String? chatName;
   String chatDesc =
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
@@ -35,9 +37,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
   void initState() {
     super.initState();
 
-    widget.room.displayName().then((value) {
+    widget.room.getProfile().then((value) {
       if (mounted) {
-        setState(() => chatName = value);
+        setState(() {
+          if (value.hasAvatar()) {
+            avatar = value.getAvatar();
+          }
+          chatName = value.getDisplayName();
+        });
       }
     });
   }
@@ -58,7 +65,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
                       room: widget.room,
-                      name: chatName ?? '',
+                      name: chatName ?? AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),
@@ -115,11 +122,11 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: CustomAvatar(
-                      avatar: widget.room.avatar(),
-                      displayName: widget.room.displayName(),
+                      avatar: avatar,
+                      displayName: chatName,
                       radius: 20,
                       isGroup: true,
-                      stringName: '',
+                      stringName: simplifyRoomId(widget.room.getRoomId())!,
                     ),
                   ),
                 ),

@@ -100,6 +100,10 @@ class ChatRoomController extends GetxController {
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
+      // load receipt status of room
+      var receiptController = Get.find<ReceiptController>();
+      var receipts = (await _currentRoom!.userReceipts()).toList();
+      receiptController.loadRoom(_currentRoom!.getRoomId(), receipts);
       isLoading.value = false;
     }
   }
@@ -333,7 +337,7 @@ class ChatRoomController extends GetxController {
   void _loadMessage(RoomMessage message) {
     String msgtype = message.msgtype();
     String sender = message.sender();
-    var author = types.User(id: sender, firstName: getNameFromId(sender));
+    var author = types.User(id: sender, firstName: simplifyUserId(sender));
     int createdAt = message.originServerTs(); // in miliseconds
     String eventId = message.eventId();
 
