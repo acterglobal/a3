@@ -125,7 +125,7 @@ impl Client {
     }
 
     pub fn start_sync(&mut self) -> SyncState {
-        let mut connected = self.connected.clone();
+        let mut connected = self.connected;
         let client = self.client.clone();
         let state = self.state.clone();
         let mut invitation_controller = self.invitation_controller.clone();
@@ -142,7 +142,7 @@ impl Client {
         let sync_state = SyncState::new(first_synced_rx);
 
         RUNTIME.spawn(async move {
-            let mut connected = connected.clone();
+            let mut connected = connected;
             let client = client.clone();
             let state = state.clone();
 
@@ -155,7 +155,7 @@ impl Client {
             client
                 .clone()
                 .sync_with_callback(SyncSettings::new(), |response| {
-                    let mut connected = connected.clone();
+                    let mut connected = connected;
                     let client = client.clone();
                     let state = state.clone();
                     let mut verification_controller = verification_controller.clone();

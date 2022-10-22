@@ -145,7 +145,7 @@ class EffektioSdk {
   Future<void> logout() async {
     // remove current client from list
     await _clients[0].logout();
-    ffi.Client client = _clients.removeAt(0);
+    _clients.removeAt(0);
     // reset session
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('sessions', []);
