@@ -50,7 +50,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
     roomController.setCurrentRoom(widget.room);
     widget.room.displayName().then((value) {
-      setState(() => roomName = value);
+      if (mounted) {
+        setState(() => roomName = value);
+      }
     });
   }
 

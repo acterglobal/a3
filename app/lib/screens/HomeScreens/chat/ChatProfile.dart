@@ -36,7 +36,9 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     super.initState();
 
     widget.room.displayName().then((value) {
-      setState(() => chatName = value);
+      if (mounted) {
+        setState(() => chatName = value);
+      }
     });
   }
 
