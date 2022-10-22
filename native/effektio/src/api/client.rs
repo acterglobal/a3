@@ -319,10 +319,12 @@ impl Client {
 
     pub async fn logout(&mut self) -> Result<bool> {
         self.connected = false;
-        self.invitation_controller.remove_event_handler(&self.client);
+        self.invitation_controller
+            .remove_event_handler(&self.client);
         self.typing_controller.remove_event_handler(&self.client);
         self.receipt_controller.remove_event_handler(&self.client);
-        self.conversation_controller.remove_event_handler(&self.client);
+        self.conversation_controller
+            .remove_event_handler(&self.client);
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
