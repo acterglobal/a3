@@ -42,7 +42,7 @@ jobs:
             flutter_build_args: "build linux --release"
             artifact_prefix: effektio-nightly-linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            artifact_files: "."
+            artifact_files: lib/ data/ effektio
           - name: iOS
             os: macos-latest
             cargo_make_setup: setup-ios
@@ -50,11 +50,11 @@ jobs:
             flutter_build_args: "build ios --no-codesign"
             artifact_prefix: effektio-nightly-ios
             artifact_path:  app/build/app/ios/iphoneos/
-            artifact_files: "."
+            artifact_files: "*"
           - name: Mac OSx 
             os: macos-latest
             cargo_make_args: desktop
-            flutter_build_args: "build macosx --release"
+            flutter_build_args: "build macos --release"
             artifact_prefix: effektio-nightly-macosx
             artifact_path: app/build/macos/Build/Products/Release/
             artifact_files: "Effektio.app"
@@ -76,6 +76,7 @@ jobs:
       - uses: actions/checkout@v2
       - id: tag
         run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
