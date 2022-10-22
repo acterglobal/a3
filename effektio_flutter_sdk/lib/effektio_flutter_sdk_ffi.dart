@@ -8130,7 +8130,7 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// the server receiving timestamp in miliseconds
+  /// the server receiving timestamp in milliseconds
   int originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -9980,7 +9980,7 @@ class Invitation {
 
   Invitation._(this._api, this._box);
 
-  /// get the timestamp of this invitation in miliseconds
+  /// get the timestamp of this invitation in milliseconds
   int? originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -10595,7 +10595,7 @@ class ReceiptRecord {
     return tmp2;
   }
 
-  /// Get time that this user read message from peer in miliseconds
+  /// Get time that this user read message from peer in milliseconds
   int? ts() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -10919,7 +10919,7 @@ class DeviceRecord {
     return tmp2;
   }
 
-  /// last seen timestamp of this device in miliseconds
+  /// last seen timestamp of this device in milliseconds
   int? lastSeenTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
