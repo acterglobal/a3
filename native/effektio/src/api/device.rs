@@ -229,7 +229,7 @@ impl DeviceRecord {
     }
 
     pub fn last_seen_ts(&self) -> Option<u64> {
-        self.last_seen_ts.map(|x| x.as_secs().into())
+        self.last_seen_ts.map(|x| x.get().into())
     }
 }
 

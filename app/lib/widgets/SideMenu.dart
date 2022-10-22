@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
@@ -17,21 +18,26 @@ class SideDrawer extends StatefulWidget {
 }
 
 class _SideDrawerState extends State<SideDrawer> {
-  late Future<String> displayName;
-  late Future<FfiBufferUint8> avatar;
+  Future<FfiBufferUint8>? avatar;
+  String? displayName;
 
   @override
   void initState() {
     super.initState();
 
     if (!widget.client.isGuest()) {
-      displayName = getDisplayName();
-      avatar = getAvatar();
+      widget.client.getUserProfile().then((value) {
+        if (mounted) {
+          setState(() {
+            if (value.hasAvatar()) {
+              avatar = value.getAvatar();
+            }
+            displayName = value.getDisplayName();
+          });
+        }
+      });
     }
   }
-
-  Future<String> getDisplayName() async => await widget.client.displayName();
-  Future<FfiBufferUint8> getAvatar() async => await widget.client.avatar();
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +121,7 @@ class _SideDrawerState extends State<SideDrawer> {
               avatar: avatar,
               displayName: displayName,
               isGroup: false,
-              stringName: '',
+              stringName: simplifyUserId(widget.client.userId().toString())!,
             ),
           ),
           const SizedBox(width: 10),
@@ -132,31 +138,16 @@ class _SideDrawerState extends State<SideDrawer> {
   }
 
   Widget buildDisplayName() {
-    return FutureBuilder<String>(
-      future: displayName, // a previously-obtained Future<String> or null
-      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${snapshot.error} occurred',
-                style: const TextStyle(fontSize: 18),
-              ),
-            );
-          }
-          if (snapshot.hasData) {
-            return Text(
-              snapshot.data ?? AppLocalizations.of(context)!.noName,
-              style: SideMenuAndProfileTheme.sideMenuProfileStyle,
-            );
-          }
-        }
-        return const SizedBox(
-          height: 20,
-          width: 20,
-          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
-        );
-      },
+    if (displayName == null) {
+      return const SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+      );
+    }
+    return Text(
+      displayName!,
+      style: SideMenuAndProfileTheme.sideMenuProfileStyle,
     );
   }
 

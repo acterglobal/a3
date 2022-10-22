@@ -63,6 +63,12 @@ jobs:
       - run: flutter build apk --target-platform android-arm64 --release
         working-directory: ./app
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: effektio-${{ github.sha }}-arm64.apk
+          path: app/build/app/outputs/apk/release/app-release.apk
+
   build-ios:
     runs-on: macos-latest
     name: Build iOS

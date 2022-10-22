@@ -58,10 +58,10 @@ impl PostNews {
             };
             let image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-            let res = client.media().upload(&mime, &image).await?;
+            let response = client.media().upload(&mime, &image).await?;
 
             contents.push(events::NewsContentType::Image(
-                events::ImageMessageEventContent::plain("".to_owned(), res.content_uri, None),
+                events::ImageMessageEventContent::plain("".to_owned(), response.content_uri, None),
             ));
         }
 

@@ -3,7 +3,7 @@ use derive_builder::Builder;
 use effektio_core::{
     ruma::{
         api::client::room::{
-            create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
+            create_room::v3::{CreationContent, Request as CreateRoomRequest},
             Visibility,
         },
         assign,
@@ -58,8 +58,7 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let initial_states = default_effektio_group_states();
-
-                Ok(c.create_room(assign!(CreateRoomRequest::new(), {
+                let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
                         room_type: Some(RoomType::Space)
                     }))?),
@@ -69,10 +68,9 @@ impl Client {
                     room_alias_name: settings.alias.as_deref(),
                     name: settings.name.as_ref().map(|x| x.as_ref()),
                     visibility: settings.visibility,
-                }))
-                .await?
-                .room_id()
-                .to_owned())
+                });
+                let response = c.create_room(request).await?;
+                Ok(response.room_id().to_owned())
             })
             .await?
     }

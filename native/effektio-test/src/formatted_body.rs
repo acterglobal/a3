@@ -22,13 +22,10 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // sisko creates room and invites kyra
-    let sisko_kyra_dm_id = sisko
-        .create_conversation(
-            CreateConversationSettingsBuilder::default()
-                .invites(vec!["@kyra:ds9.effektio.org".to_owned().try_into()?])
-                .build()?,
-        )
-        .await?;
+    let settings = CreateConversationSettingsBuilder::default()
+        .invites(vec!["@kyra:ds9.effektio.org".to_owned().try_into()?])
+        .build()?;
+    let sisko_kyra_dm_id = sisko.create_conversation(settings).await?;
 
     // initialize kyra's client
     let tmp_dir = TempDir::new()?;

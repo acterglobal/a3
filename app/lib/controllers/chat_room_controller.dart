@@ -12,7 +12,8 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         ImageDescription,
         Member,
         RoomMessage,
-        TimelineStream;
+        TimelineStream,
+        UserProfile;
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -102,6 +103,10 @@ class ChatRoomController extends GetxController {
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
+      // load receipt status of room
+      var receiptController = Get.find<ReceiptController>();
+      var receipts = (await _currentRoom!.userReceipts()).toList();
+      receiptController.loadRoom(_currentRoom!.getRoomId(), receipts);
       isLoading.value = false;
     }
   }
@@ -116,9 +121,10 @@ class ChatRoomController extends GetxController {
         .toList();
     List<Map<String, dynamic>> records = [];
     for (Member member in members) {
+      UserProfile profile = await member.getProfile();
       records.add({
-        'avatar': member.avatar(),
-        'display': member.displayName(),
+        'avatar': profile.getAvatar(),
+        'display': profile.getDisplayName(),
         'link': member.userId(),
       });
     }
@@ -353,8 +359,8 @@ class ChatRoomController extends GetxController {
   void _loadMessage(RoomMessage message) {
     String msgtype = message.msgtype();
     String sender = message.sender();
-    var author = types.User(id: sender, firstName: getNameFromId(sender));
-    int createdAt = message.originServerTs() * 1000;
+    var author = types.User(id: sender, firstName: simplifyUserId(sender));
+    int createdAt = message.originServerTs(); // in milliseconds
     String eventId = message.eventId();
 
     if (msgtype == 'm.audio') {
