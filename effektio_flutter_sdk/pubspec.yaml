@@ -1,7 +1,8 @@
 name: effektio_flutter_sdk
 description: A new flutter plugin project.
 version: 0.0.1
-homepage: 'https://flutter.effektio.org/'
+homepage: 'https://doc.effektio.org/'
+publish_to: "none"
 
 environment:
   sdk: ">=2.16.0-134.1.beta <3.0.0"
@@ -25,7 +26,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  ffigen: ^4.1.2
+  build_runner:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -52,13 +53,6 @@ flutter:
         pluginClass: EffektioFlutterSdkPlugin
       macos:
         pluginClass: EffektioFlutterSdkPlugin
-ffigen:
-  output: 'lib/effektio-ffi.dart'
-  name: EffektioFFI
-  description: "Bindings for Effektio Core SDK"
-  headers:
-    entry-points:
-      - '../native/effektio/binding.h'
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

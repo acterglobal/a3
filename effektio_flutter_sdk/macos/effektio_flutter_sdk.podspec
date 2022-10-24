@@ -13,13 +13,13 @@ A new flutter plugin project.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Your Company' => 'email@example.com' }
   s.source           = { :path => '.' }
-  s.source_files     = 'Classes/**/*'
+  s.source_files = 'Classes/**/*'
+  s.public_header_files = 'Classes/**/*.h'
   s.dependency 'FlutterMacOS'
 
-  s.platform = :osx, '12.0'
+  s.platform = :osx, '12'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.swift_version = '5.0'
-  s.preserve_paths = 'libeffektio.dylib'
-
+  # s.static_framework = true
   s.vendored_libraries = 'libeffektio.dylib'
 end
