@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:developer';
 import 'dart:ffi';
 import 'dart:io';
+
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -149,6 +150,17 @@ class EffektioSdk {
     _clients.add(client);
     await _persistSessions();
     return client;
+  }
+
+  Future<void> logout() async {
+    // remove current client from list
+    await _clients[0].logout();
+    _clients.removeAt(0);
+    // reset session
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('sessions', []);
+    // login as guest
+    await _restore();
   }
 
   Future<ffi.Client> signUp(
