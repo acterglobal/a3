@@ -52,7 +52,7 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
 
 SPEC CHECKSUMS:
-  effektio_flutter_sdk: ce48c904844e582007960dcb7056d30e6082ac19
+  effektio_flutter_sdk: 191a2ecd4dcad90d41a5a9c98543c09ce3ca06c8
   emoji_picker_flutter: 533634326b1c5de9a181ba14b9758e6dfe967a20
   FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
