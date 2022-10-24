@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{bail, Context, Result};
 use futures_signals::signal::{
     Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
 };
@@ -7,21 +7,21 @@ use matrix_sdk::{
     event_handler::Ctx,
     room::Room as MatrixRoom,
     ruma::{
-        api::client::room::create_room::v3::Request as CreateRoomRequest,
         events::room::member::{
             MembershipState, OriginalSyncRoomMemberEvent, StrippedRoomMemberEvent,
         },
-        RoomId,
+        RoomId, UserId,
     },
     Client as MatrixClient,
 };
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 
-use super::{client::Client, RUNTIME};
+use super::{client::Client, profile::UserProfile, RUNTIME};
 
 #[derive(Default, Clone, Debug)]
 pub struct Invitation {
+    client: Option<MatrixClient>,
     origin_server_ts: Option<u64>,
     room_id: String,
     room_name: String,
@@ -43,6 +43,88 @@ impl Invitation {
 
     pub fn sender(&self) -> String {
         self.sender.clone()
+    }
+
+    pub async fn get_sender_profile(&self) -> Result<UserProfile> {
+        let client = self.client.clone().unwrap();
+        let user_id = UserId::parse(self.sender.clone())?;
+        RUNTIME
+            .spawn(async move {
+                let mut user_profile = UserProfile::new(client, user_id);
+                user_profile.fetch().await;
+                Ok(user_profile)
+            })
+            .await?
+    }
+
+    pub async fn accept(&self) -> Result<bool> {
+        let client = self.client.clone().unwrap();
+        let room_id = RoomId::parse(self.room_id.clone())?;
+        let room = client
+            .get_invited_room(&room_id)
+            .context("Can't accept a room we are not invited")?;
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let mut delay = 2;
+                while let Err(err) = room.accept_invitation().await {
+                    // retry autojoin due to synapse sending invites, before the
+                    // invited user can join for more information see
+                    // https://github.com/matrix-org/synapse/issues/4345
+                    error!(
+                        "Failed to accept room {} ({:?}), retrying in {}s",
+                        room.room_id(),
+                        err,
+                        delay,
+                    );
+
+                    sleep(Duration::from_secs(delay)).await;
+                    delay *= 2;
+
+                    if delay > 3600 {
+                        error!("Can't accept room {} ({:?})", room.room_id(), err);
+                        break;
+                    }
+                }
+                info!("Successfully accepted room {}", room.room_id());
+                Ok(delay <= 3600)
+            })
+            .await?
+    }
+
+    pub async fn reject(&self) -> Result<bool> {
+        let client = self.client.clone().unwrap();
+        let room_id = RoomId::parse(self.room_id.clone())?;
+        let room = client
+            .get_invited_room(&room_id)
+            .context("Can't accept a room we are not invited")?;
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let mut delay = 2;
+                while let Err(err) = room.reject_invitation().await {
+                    // retry autojoin due to synapse sending invites, before the
+                    // invited user can join for more information see
+                    // https://github.com/matrix-org/synapse/issues/4345
+                    error!(
+                        "Failed to reject room {} ({:?}), retrying in {}s",
+                        room.room_id(),
+                        err,
+                        delay,
+                    );
+
+                    sleep(Duration::from_secs(delay)).await;
+                    delay *= 2;
+
+                    if delay > 3600 {
+                        error!("Can't reject room {} ({:?})", room.room_id(), err);
+                        break;
+                    }
+                }
+                info!("Successfully rejected room {}", room.room_id());
+                Ok(delay <= 3600)
+            })
+            .await?
     }
 }
 
@@ -92,6 +174,7 @@ impl InvitationController {
         for room in client.invited_rooms().iter() {
             let details = room.invite_details().await.unwrap();
             let invitation = Invitation {
+                client: Some(client.clone()),
                 origin_server_ts: None,
                 room_id: room.room_id().to_string(),
                 room_name: room.display_name().await.unwrap().to_string(),
@@ -127,7 +210,8 @@ impl InvitationController {
             let room_id = room.room_id();
             let sender = ev.sender;
             let invitation = Invitation {
-                origin_server_ts: Some(since_the_epoch.as_secs()),
+                client: Some(client.clone()),
+                origin_server_ts: Some(since_the_epoch.as_millis() as u64),
                 room_id: room_id.to_string(),
                 room_name: room.display_name().await.unwrap().to_string(),
                 sender: sender.to_string(),
@@ -181,92 +265,10 @@ impl InvitationController {
 }
 
 impl Client {
-    pub(crate) async fn create_room(&self) -> Result<String> {
-        let req = CreateRoomRequest::new();
-        let res = self.client.create_room(req).await?;
-        Ok(res.room_id().to_string())
-    }
-
     pub fn invitations_rx(&self) -> SignalStream<MutableSignalCloned<Vec<Invitation>>> {
         self.invitation_controller
             .invitations
             .signal_cloned()
             .to_stream()
-    }
-
-    pub async fn accept_invitation(&self, room_id: String) -> Result<bool> {
-        let room_id = RoomId::parse(room_id)?;
-        match self.client.get_invited_room(&room_id) {
-            Some(room) => {
-                // any variable in self can't be called directly in spawn
-                RUNTIME
-                    .spawn(async move {
-                        let mut delay = 2;
-                        while let Err(err) = room.accept_invitation().await {
-                            // retry autojoin due to synapse sending invites, before the
-                            // invited user can join for more information see
-                            // https://github.com/matrix-org/synapse/issues/4345
-                            error!(
-                                "Failed to accept room {} ({:?}), retrying in {}s",
-                                room.room_id(),
-                                err,
-                                delay,
-                            );
-
-                            sleep(Duration::from_secs(delay)).await;
-                            delay *= 2;
-
-                            if delay > 3600 {
-                                error!("Can't accept room {} ({:?})", room.room_id(), err);
-                                break;
-                            }
-                        }
-                        info!("Successfully accepted room {}", room.room_id());
-                        Ok(delay <= 3600)
-                    })
-                    .await?
-            }
-            None => {
-                bail!("Can't accept a room we are not invited")
-            }
-        }
-    }
-
-    pub async fn reject_invitation(&self, room_id: String) -> Result<bool> {
-        let room_id = RoomId::parse(room_id)?;
-        match self.client.get_invited_room(&room_id) {
-            Some(room) => {
-                // any variable in self can't be called directly in spawn
-                RUNTIME
-                    .spawn(async move {
-                        let mut delay = 2;
-                        while let Err(err) = room.reject_invitation().await {
-                            // retry autojoin due to synapse sending invites, before the
-                            // invited user can join for more information see
-                            // https://github.com/matrix-org/synapse/issues/4345
-                            error!(
-                                "Failed to reject room {} ({:?}), retrying in {}s",
-                                room.room_id(),
-                                err,
-                                delay,
-                            );
-
-                            sleep(Duration::from_secs(delay)).await;
-                            delay *= 2;
-
-                            if delay > 3600 {
-                                error!("Can't reject room {} ({:?})", room.room_id(), err);
-                                break;
-                            }
-                        }
-                        info!("Successfully rejected room {}", room.room_id());
-                        Ok(delay <= 3600)
-                    })
-                    .await?
-            }
-            None => {
-                bail!("Can't reject a room we are not invited")
-            }
-        }
     }
 }
