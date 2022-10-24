@@ -14,19 +14,19 @@ DEV = false
 LIB_OUT_DIR = "release"
 
 [tasks.setup-android]
-description = "set up the system for android"
+# set up the system for android
 script = [
     "cargo install cargo-ndk",
 ]
 
 [tasks.setup-ios]
-description = "set up the system for iOS"
+# set up the system for iOS
 script = [
     "cargo install cargo-lipo",
 ]
 
 [tasks.setup]
-description = "set up the system"
+# set up the system
 dependencies = [
     "setup-android",
     "setup-ios",
@@ -45,13 +45,13 @@ dependencies = [
 ]
 
 [tasks.init]
-description = "initalise everything"
+# initalise everything
 dependencies = [
     "flutter-get",
 ]
 
 [tasks.flutter-get]
-description = "update flutter dependencies"
+# update flutter dependencies
 script_runner = "@duckscript"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
@@ -73,8 +73,7 @@ args = ["check", "-p", "effektio"]
 disabled = true
 
 [tasks.android-dev]
-description = "development android x86_64 emulator"
-category = "Build"
+# development android x86_64 emulator
 dependencies = [
     "ffigen",
     "pre-android",
@@ -86,8 +85,7 @@ dependencies = [
 
 
 [tasks.android-ci]
-description = "development android i686 emulator"
-category = "Build"
+# development android i686 emulator
 dependencies = [
     "ffigen",
     "pre-android",
@@ -98,8 +96,7 @@ dependencies = [
 ]
 
 [tasks.android-arm]
-description = "build android ARM64 for actual device"
-category = "Build"
+# build android ARM64 for actual device
 dependencies = [
     "pre-android",
     "android-aarch64",
@@ -110,33 +107,28 @@ dependencies = [
 
 
 [tasks.build]
-description = "Runs the rust compiler."
-category = "Build"
+# Runs the rust compiler.
 dependencies = ["android"]
 command = "cargo"
 args = ["build", "-p", "effektio", "--release"]
 
 [tasks.build.mac]
-description = "Runs the rust compiler."
-category = "Build"
+# Runs the rust compiler.
 dependencies = ["android", "ios"]
 
 [tasks.ios]
-description = "build iOS targets"
-category = "Build"
+# build iOS targets
 dependencies = ["ios-build", "ios-release", "post-ios"]
 
 [tasks.ios-build]
 condition = { platforms = ["mac"], env_true = ["DEV"] }
-description = "Build ios targets."
-category = "Build"
+# Build ios targets.
 command = "cargo"
 args = ["lipo", "--targets", "aarch64-apple-ios-sim"]
 
 [tasks.ios-release]
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }
-description = "Build ios targets."
-category = "Build"
+# Build ios targets.
 command = "cargo"
 args = ["lipo", "--release"]
 
@@ -152,8 +144,7 @@ script = [
 ]
 
 [tasks.android]
-description = "Build android targets."
-category = "Build"
+# Build android targets.
 dependencies = [
     "pre-android",
     "android-aarch64",
@@ -296,11 +287,12 @@ dependencies = ["ffigen"]
 # TODO: non linux desktops
 # TODO: release build
 [tasks.desktop]
-description = "Build rust SDK for desktop"
+# Build rust SDK for desktop
 dependencies = [
     "ffigen",
     "desktop-build",
     "desktop-build-release",
+    "desktop-build-release-mac",
     "copy-desktop-lib",
 ]
 
@@ -313,13 +305,30 @@ args = ["build", "--lib"]
 
 [tasks.desktop-build-release]
 private = true
-condition = { env_true = ["RELEASE"] }
+condition = { env_true = ["RELEASE"], platforms = ["windows", "linux"] }
 script_runner = "@duckscript"
 command = "cargo"
-args = ["build", "--lib", "--release",]
+args = ["build", "--lib", "--release"]
+
+[tasks.desktop-build-release-mac]
+private = true
+condition = { platforms = ["mac"], env_true = ["RELEASE"] }
+script_runner = "bash"
+script = [
+    """
+    cargo build --lib --target x86_64-apple-darwin --release
+    cargo build --lib --target aarch64-apple-darwin --release
+
+    lipo -create \
+    -output ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \
+    ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+"""
+]
+
 
 [tasks.copy-desktop-lib]
-description = "Copy desktop library to plugin"
+# Copy desktop library to plugin
 script_runner = "@duckscript"
 script = [
     """
