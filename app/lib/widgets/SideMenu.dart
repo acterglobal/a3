@@ -324,7 +324,7 @@ class _SideDrawerState extends State<SideDrawer> {
         }
         final sdk = await EffektioSdk.instance;
         await sdk.logout();
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/');
       },
     );
   }
