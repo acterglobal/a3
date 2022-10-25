@@ -120,7 +120,7 @@ jobs:
         working-directory: ./app
 
       - name: Package Tar file
-        if: !matrix.zip
+        if: ${{ !matrix.zip }}
         working-directory: ${{ matrix.artifact_path }}
         run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
 
