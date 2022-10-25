@@ -61,6 +61,7 @@ jobs:
           - name: Windows
             os: windows-latest
             cargo_make_args: desktop
+            zip: true
             flutter_build_args: "build windows --release"
             artifact_prefix: effektio-nightly-windows
             artifact_path: app/build/windows/runner/
@@ -93,7 +94,7 @@ jobs:
 
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
-        if: ${{ matrix.with_ndk_version }}
+        if: matrix.with_ndk_version
         with:
           ndk-version: ${{ matrix.with_ndk_version }}
 
@@ -101,7 +102,7 @@ jobs:
         uses: davidB/rust-cargo-make@v1
 
       - name: Rust Setup
-        if: ${{ matrix.cargo_make_setup }}
+        if: matrix.cargo_make_setup
         run: cargo make ${{ matrix.cargo_make_setup }}
 
       - uses: subosito/flutter-action@v2
@@ -118,9 +119,16 @@ jobs:
       - run: flutter ${{ matrix.flutter_build_args }}
         working-directory: ./app
 
-      - name: Rename file
+      - name: Package Tar file
+        if: !matrix.zip
         working-directory: ${{ matrix.artifact_path }}
         run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
+
+      - name: Package Zip file
+        if: matrix.zip
+        working-directory: ${{ matrix.artifact_path }}
+        run: zip -r "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
+
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -129,5 +137,5 @@ jobs:
           name: Nightly ${{ steps.tag.outputs.tag }}
           prerelease: true
           files: |
-            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2
+            ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
 
