@@ -38,10 +38,6 @@ class _CustomAvatarState extends State<CustomAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    return loadingWidget();
-  }
-
-  Widget loadingWidget() {
     return FutureBuilder<List<int>>(
       future: getAvatar(),
       builder: (context, snapshot) {
@@ -73,13 +69,13 @@ class _CustomAvatarState extends State<CustomAvatar> {
             child: SvgPicture.asset('assets/images/people.svg'),
           );
         } else {
-          return _buildTextAvatar();
+          return buildTextAvatar();
         }
       },
     );
   }
 
-  Widget _buildTextAvatar() {
+  Widget buildTextAvatar() {
     if (widget.displayName != null) {
       return TextAvatar(
         numberLetters: 2,
