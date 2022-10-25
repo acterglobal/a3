@@ -37,9 +37,9 @@ jobs:
       - name: version
         run: flutter --version
 
-      - working-directory: effektio_flutter_sdk
+      - working-directory: app/packages/rust_sdk
         run: flutter analyze
-        name: lint effektio_flutter_sdk
+        name: lint app/packages/rust_sdk
 
       - working-directory: app
         run: |

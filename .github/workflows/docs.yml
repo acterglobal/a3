@@ -62,7 +62,7 @@ jobs:
 
       - name: Build Dart SDK
         run: flutter pub global run dartdoc --output ../docs/static/api/main/dart-sdk/
-        working-directory: effektio_flutter_sdk
+        working-directory: app/packages/rust_sdk
 
 #       ---- Finalisation for github pages
 
