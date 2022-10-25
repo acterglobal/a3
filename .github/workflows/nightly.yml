@@ -47,10 +47,10 @@ jobs:
             os: macos-latest
             cargo_make_setup: setup-ios
             cargo_make_args: ios
-            flutter_build_args: "build ios --no-codesign"
+            flutter_build_args: "build ipa --release --no-codesign"
             artifact_prefix: effektio-nightly-ios
-            artifact_path:  app/build/app/ios/iphoneos/
-            artifact_files: "*"
+            artifact_path:  app/build/ios/archive/
+            artifact_files: Runner.xcarchive
           - name: Mac OSx 
             os: macos-latest
             cargo_make_args: desktop
@@ -61,7 +61,6 @@ jobs:
           - name: Windows
             os: windows-latest
             cargo_make_args: desktop
-            zip: true
             flutter_build_args: "build windows --release"
             artifact_prefix: effektio-nightly-windows
             artifact_path: app/build/windows/runner/
@@ -84,7 +83,20 @@ jobs:
         with:
           toolchain: nightly
 
-      - uses: Swatinem/rust-cache@v1
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v2
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-nightly-${{matrix.artifact_prefix}}-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - name: Install extra deps
         if: matrix.apt_install
@@ -99,6 +111,7 @@ jobs:
           ndk-version: ${{ matrix.with_ndk_version }}
 
       - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
 
       - name: Rust Setup
@@ -120,15 +133,15 @@ jobs:
         working-directory: ./app
 
       - name: Package Tar file
-        if: ${{ !matrix.zip }}
+        if: matrix.os != 'windows-latest'
         working-directory: ${{ matrix.artifact_path }}
         run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
 
       - name: Package Zip file
-        if: matrix.zip
+        if: matrix.os == 'windows-latest'
         working-directory: ${{ matrix.artifact_path }}
-        run: zip -r "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
-
+        run: |
+          7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
