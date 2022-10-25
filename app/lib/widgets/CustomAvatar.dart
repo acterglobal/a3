@@ -7,7 +7,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class CustomAvatar extends StatelessWidget {
+class CustomAvatar extends StatefulWidget {
   final Future<FfiBufferUint8>? avatar;
   final String? displayName;
   final double radius;
@@ -24,51 +24,69 @@ class CustomAvatar extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CustomAvatar> createState() => _CustomAvatarState();
+}
+
+class _CustomAvatarState extends State<CustomAvatar> {
+  Future<List<int>>? getAvatar() async {
+    if (widget.avatar != null) {
+      List<int> bodyBytes = await widget.avatar!.then((fb) => fb.asTypedList());
+      return bodyBytes;
+    }
+    return [];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (avatar != null) {
-      return FutureBuilder<List<int>>(
-        future: avatar!.then((fb) => fb.asTypedList()),
-        builder: (BuildContext context, AsyncSnapshot<List<int>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                color: AppCommonTheme.primaryColor,
-              ),
-            );
-          }
-          if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
-            return CircleAvatar(
-              backgroundImage: CachedMemoryImageProvider(
-                UniqueKey().toString(),
-                bytes: Uint8List.fromList(snapshot.requireData),
-              ),
-              radius: radius,
-            );
-          }
+    return loadingWidget();
+  }
+
+  Widget loadingWidget() {
+    return FutureBuilder<List<int>>(
+      future: getAvatar(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          const SizedBox(
+            height: 20,
+            width: 20,
+            child: CircularProgressIndicator(
+              color: AppCommonTheme.primaryColor,
+            ),
+          );
+        }
+        if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
+          return CircleAvatar(
+            backgroundImage: CachedMemoryImageProvider(
+              UniqueKey().toString(),
+              bytes: Uint8List.fromList(snapshot.requireData),
+            ),
+            radius: widget.radius,
+          );
+        } else if (snapshot.hasError) {
+          debugPrint('${snapshot.error}');
+          return const Text('❌', style: TextStyle(fontSize: 14.0));
+        }
+        if (widget.isGroup) {
+          return CircleAvatar(
+            radius: widget.radius,
+            backgroundColor: Colors.grey[700],
+            child: SvgPicture.asset('assets/images/people.svg'),
+          );
+        } else {
           return _buildTextAvatar();
-        },
-      );
-    }
-    if (isGroup) {
-      return CircleAvatar(
-        radius: radius,
-        backgroundColor: Colors.grey[700],
-        child: SvgPicture.asset('assets/images/people.svg'),
-      );
-    }
-    return _buildTextAvatar();
+        }
+      },
+    );
   }
 
   Widget _buildTextAvatar() {
-    if (displayName != null) {
+    if (widget.displayName != null) {
       return TextAvatar(
         numberLetters: 2,
         shape: Shape.Circular,
         upperCase: true,
-        text: displayName,
-        size: radius,
+        text: widget.displayName,
+        size: widget.radius,
       );
     }
     return TextAvatar(
@@ -76,8 +94,8 @@ class CustomAvatar extends StatelessWidget {
       numberLetters: 2,
       shape: Shape.Circular,
       upperCase: true,
-      text: stringName,
-      size: radius,
+      text: widget.stringName,
+      size: widget.radius,
     );
   }
 }
