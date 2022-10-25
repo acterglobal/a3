@@ -11,12 +11,11 @@ import 'package:effektio/widgets/InviteListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:get/get.dart';
 
 class ChatProfileScreen extends StatelessWidget {
   final Conversation room;
   final ChatRoomController roomController;
-  final Map<String, String> memberNames;
-  final Map<String, Future<FfiBufferUint8>?> memberAvatars;
   final bool isGroup;
   final bool isAdmin;
 
@@ -26,14 +25,10 @@ class ChatProfileScreen extends StatelessWidget {
     required this.isGroup,
     required this.isAdmin,
     required this.roomController,
-    required this.memberNames,
-    required this.memberAvatars,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Names: $memberNames');
-    debugPrint('Avatars: $memberAvatars');
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
     return Scaffold(
@@ -626,12 +621,18 @@ class ChatProfileScreen extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
+          String userId = roomController.activeMembers[index].userId();
           return Padding(
             padding: const EdgeInsets.all(12),
-            child: GroupMember(
-              name: memberNames.values.elementAt(index),
-              isAdmin: true,
-              avatar: memberAvatars.values.elementAt(index),
+            child: GetBuilder<ChatRoomController>(
+              id: 'user-profile-$userId',
+              builder: (_) {
+                return GroupMember(
+                  name: roomController.getUserName(userId),
+                  isAdmin: true,
+                  avatar: roomController.getUserAvatar(userId),
+                );
+              },
             ),
           );
         },

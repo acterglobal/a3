@@ -13,7 +13,8 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         ImageDescription,
         Member,
         RoomMessage,
-        TimelineStream;
+        TimelineStream,
+        UserProfile;
 import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,8 @@ class ChatRoomController extends GetxController {
   StreamSubscription<RoomMessage>? _messageSubscription;
   Future<FfiBufferUint8>? roomAvatar;
   String? roomName;
-  Map<String, Future<FfiBufferUint8>?> membersInfo = {};
+  final Map<String, Future<FfiBufferUint8>> _userAvatars = {};
+  final Map<String, String> _userNames = {};
 
   ChatRoomController({required this.client}) : super();
 
@@ -91,6 +93,8 @@ class ChatRoomController extends GetxController {
       messages.clear();
       typingUsers.clear();
       activeMembers.clear();
+      _userAvatars.clear();
+      _userNames.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
@@ -105,6 +109,8 @@ class ChatRoomController extends GetxController {
       update(['room-profile']);
       isLoading.value = true;
       activeMembers = (await _currentRoom!.activeMembers()).toList();
+      update(['active-members']);
+      _fetchUserProfiles();
       _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
       var msgs = await _stream!.paginateBackwards(10);
@@ -121,6 +127,40 @@ class ChatRoomController extends GetxController {
 
   String? currentRoomId() {
     return _currentRoom?.getRoomId();
+  }
+
+  Future<void> _fetchUserProfiles() async {
+    Map<String, Future<FfiBufferUint8>> avatars = {};
+    Map<String, String> names = {};
+    List<String> ids = [];
+    for (int i = 0; i < activeMembers.length; i++) {
+      String userId = activeMembers[i].userId();
+      ids.add('user-profile-$userId');
+      UserProfile profile = await activeMembers[i].getProfile();
+      if (profile.hasAvatar()) {
+        avatars[userId] = profile.getAvatar();
+      }
+      String? name = profile.getDisplayName();
+      if (name != null) {
+        names[userId] = name;
+      }
+      if (i % 3 == 0 || i == activeMembers.length - 1) {
+        _userAvatars.addAll(avatars);
+        _userNames.addAll(names);
+        update(ids);
+        avatars.clear();
+        names.clear();
+        ids.clear();
+      }
+    }
+  }
+
+  Future<FfiBufferUint8>? getUserAvatar(String userId) {
+    return _userAvatars.containsKey(userId) ? _userAvatars[userId] : null;
+  }
+
+  String? getUserName(String userId) {
+    return _userNames.containsKey(userId) ? _userNames[userId] : null;
   }
 
   //preview message link

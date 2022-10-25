@@ -38,10 +38,6 @@ class _CustomAvatarState extends State<CustomAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    return loadingWidget();
-  }
-
-  Widget loadingWidget() {
     return FutureBuilder<List<int>>(
       future: getAvatar(),
       builder: (context, snapshot) {
@@ -76,14 +72,14 @@ class _CustomAvatarState extends State<CustomAvatar> {
           return SizedBox(
             height: widget.radius * 2,
             width: widget.radius * 2,
-            child: _buildTextAvatar(),
+            child: buildTextAvatar(),
           );
         }
       },
     );
   }
 
-  Widget _buildTextAvatar() {
+  Widget buildTextAvatar() {
     if (widget.displayName != null) {
       return TextAvatar(
         numberLetters: 2,

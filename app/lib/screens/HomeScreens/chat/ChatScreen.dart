@@ -39,8 +39,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  Map<String, Future<FfiBufferUint8>?> userAvatars = {};
-  Map<String, String> userNames = {};
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
 
@@ -49,29 +47,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     roomController.setCurrentRoom(widget.room);
-    widget.room.activeMembers().then((members) async {
-      Map<String, Future<FfiBufferUint8>?> avatars = {};
-      Map<String, String> names = {};
-      for (var member in members) {
-        String userId = member.userId();
-        UserProfile userProfile = await member.getProfile();
-        if (userProfile.hasAvatar()) {
-          avatars[userId] = userProfile.getAvatar();
-        } else {
-          avatars[userId] = null;
-        }
-        String? name = userProfile.getDisplayName();
-        if (name != null) {
-          names[userId] = name;
-        }
-      }
-      if (mounted) {
-        setState(() {
-          userAvatars = avatars;
-          userNames = names;
-        });
-      }
-    });
   }
 
   @override
@@ -145,12 +120,17 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SizedBox(
         height: 28,
         width: 28,
-        child: CustomAvatar(
-          avatar: userAvatars[userId],
-          displayName: userNames[userId],
-          radius: 15,
-          isGroup: false,
-          stringName: simplifyUserId(userId)!,
+        child: GetBuilder<ChatRoomController>(
+          id: 'user-profile-$userId',
+          builder: (_) {
+            return CustomAvatar(
+              avatar: roomController.getUserAvatar(userId),
+              displayName: roomController.getUserName(userId),
+              radius: 15,
+              isGroup: false,
+              stringName: simplifyUserId(userId)!,
+            );
+          },
         ),
       ),
     );
@@ -222,7 +202,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   },
                 ),
                 const SizedBox(height: 5),
-                buildActiveMembers(),
+                GetBuilder<ChatRoomController>(
+                  id: 'active-members',
+                  builder: (_) {
+                    return buildActiveMembers(context);
+                  },
+                ),
               ],
             ),
             actions: [
@@ -254,8 +239,6 @@ class _ChatScreenState extends State<ChatScreen> {
             builder: (context) => ChatProfileScreen(
               room: widget.room,
               roomController: roomController,
-              memberAvatars: userAvatars,
-              memberNames: userNames,
               isGroup: true,
               isAdmin: true,
             ),
@@ -293,22 +276,17 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget buildActiveMembers() {
-    return FutureBuilder<FfiListMember>(
-      future: widget.room.activeMembers(),
-      builder: (BuildContext context, AsyncSnapshot<FfiListMember> snapshot) {
-        if (snapshot.hasData) {
-          return Text(
-            '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
-            style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
-          );
-        }
-        return const SizedBox(
-          height: 15,
-          width: 15,
-          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
-        );
-      },
+  Widget buildActiveMembers(BuildContext context) {
+    if (roomController.activeMembers.isEmpty) {
+      return const SizedBox(
+        height: 15,
+        width: 15,
+        child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+      );
+    }
+    return Text(
+      '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+      style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
     );
   }
 
