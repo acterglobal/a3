@@ -189,14 +189,17 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget buildTrailing(BuildContext context) {
+  Widget? buildTrailing(BuildContext context) {
     if (widget.latestMessage == null) {
-      return const SizedBox();
+      return null;
+    }
+    if (widget.latestMessage!.originServerTs == null) {
+      return null;
     }
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs,
+          widget.latestMessage!.originServerTs!,
           isUtc: true,
         ),
       ),

@@ -5,8 +5,9 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     pin_mut, StreamExt,
 };
-use futures_signals::signal::{
-    Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
+use futures_signals::{
+    signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream},
+    signal_vec::{SignalVecExt, VecDiff},
 };
 use log::{error, info, warn};
 use matrix_sdk::{
@@ -32,7 +33,7 @@ use std::sync::Arc;
 
 use super::{
     client::Client,
-    message::{sync_event_to_message, RoomMessage},
+    message::{sync_event_to_message, timeline_item_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
     RUNTIME,
@@ -54,55 +55,93 @@ impl Conversation {
 
     pub(crate) fn load_latest_message(&self) {
         let room = self.room.clone();
+        let timeline = room.timeline();
+        let mut stream = timeline.signal().to_stream();
         let me = self.clone();
 
         // FIXME: hold this handler!
         RUNTIME.spawn(async move {
-            let (forward, backward) = room
-                .timeline()
-                .await
-                .context("Failed acquiring timeline streams")
-                .unwrap();
-
-            pin_mut!(backward);
-            // try to find the last message in the past.
-            loop {
-                match backward.next().await {
-                    Some(Ok(ev)) => {
-                        info!("conversation timeline backward");
-                        if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                            me.set_latest_message(msg);
+            while let Some(diff) = stream.next().await {
+                match (diff) {
+                    VecDiff::Replace { values } => {
+                        info!("conversation timeline replace");
+                    }
+                    VecDiff::InsertAt { index, value } => {
+                        info!("conversation timeline insert_at");
+                    }
+                    VecDiff::UpdateAt { index, value } => {
+                        info!("conversation timeline update_at");
+                    }
+                    VecDiff::Push { value } => {
+                        info!("conversation timeline push");
+                        if let Some(inner) = timeline_item_to_message(value, room.clone()) {
+                            me.set_latest_message(inner);
                             break;
                         }
                     }
-                    Some(Err(e)) => {
-                        error!("Error fetching messages {:}", e);
-                        break;
+                    VecDiff::RemoveAt { index } => {
+                        info!("conversation timeline remove_at");
                     }
-                    None => {
-                        warn!("No old messages found");
-                        break;
+                    VecDiff::Move {
+                        old_index,
+                        new_index,
+                    } => {
+                        info!("conversation timeline move");
+                    }
+                    VecDiff::Pop {} => {
+                        info!("conversation timeline pop");
+                    }
+                    VecDiff::Clear {} => {
+                        info!("conversation timeline clear");
                     }
                 }
             }
 
-            pin_mut!(forward);
-            // now continue to poll for incoming messages
-            loop {
-                match forward.next().await {
-                    Some(ev) => {
-                        info!("conversation timeline forward");
-                        if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                            me.set_latest_message(msg);
-                            break;
-                        }
-                    }
-                    None => {
-                        warn!("Messages stream stopped");
-                        break;
-                    }
-                }
-            }
+            // let (forward, backward) = room
+            //     .timeline()
+            //     .await
+            //     .context("Failed acquiring timeline streams")
+            //     .unwrap();
+
+            // pin_mut!(backward);
+            // // try to find the last message in the past.
+            // loop {
+            //     match backward.next().await {
+            //         Some(Ok(ev)) => {
+            //             info!("conversation timeline backward");
+            //             if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+            //                 me.set_latest_message(msg);
+            //                 break;
+            //             }
+            //         }
+            //         Some(Err(e)) => {
+            //             error!("Error fetching messages {:}", e);
+            //             break;
+            //         }
+            //         None => {
+            //             warn!("No old messages found");
+            //             break;
+            //         }
+            //     }
+            // }
+
+            // pin_mut!(forward);
+            // // now continue to poll for incoming messages
+            // loop {
+            //     match forward.next().await {
+            //         Some(ev) => {
+            //             info!("conversation timeline forward");
+            //             if let Some(msg) = sync_event_to_message(ev, room.clone()) {
+            //                 me.set_latest_message(msg);
+            //                 break;
+            //             }
+            //         }
+            //         None => {
+            //             warn!("Messages stream stopped");
+            //             break;
+            //         }
+            //     }
+            // }
         });
     }
 
@@ -209,7 +248,7 @@ impl ConversationController {
                     room: room.clone(),
                 });
                 let fallback = ev.content.body().to_string();
-                let msg = RoomMessage::new(ev, room.clone(), fallback);
+                let msg = RoomMessage::from_original(&ev, room.clone());
                 convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
@@ -298,7 +337,7 @@ impl Client {
                     visibility: Visibility::Private,
                 });
                 let response = client.create_room(request).await?;
-                Ok(response.room_id().to_owned())
+                Ok(response.room_id)
             })
             .await?
     }

@@ -30,12 +30,12 @@ class JoinedRoom {
 class LatestMessage {
   String sender;
   String body;
-  int originServerTs;
+  int? originServerTs;
 
   LatestMessage({
     required this.sender,
     required this.body,
-    required this.originServerTs,
+    this.originServerTs,
   });
 }
 
@@ -61,7 +61,6 @@ class ChatListController extends GetxController {
 
     _invitesSubscription = client.invitationsRx().listen((event) {
       invitations = event.toList();
-
       update(['invited_list']);
     });
 

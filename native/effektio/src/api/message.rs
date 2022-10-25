@@ -1,100 +1,192 @@
+use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
-    room::Room,
+    room::{
+        timeline::{EventTimelineItem, TimelineItem, TimelineItemContent},
+        Room,
+    },
     ruma::events::{
         room::message::{MessageFormat, MessageType, RoomMessageEventContent},
         AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
 };
+use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 pub struct RoomMessage {
-    inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
-    room: Room,
-    fallback: String,
+    event_id: String,
+    room_id: String,
+    body: String,
+    formatted_body: Option<String>,
+    sender: String,
+    origin_server_ts: Option<u64>,
+    msgtype: String,
+    image_description: Option<ImageDescription>,
+    file_description: Option<FileDescription>,
 }
 
 impl RoomMessage {
-    pub(crate) fn new(
-        inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
-        room: Room,
-        fallback: String,
+    fn new(
+        event_id: String,
+        room_id: String,
+        body: String,
+        formatted_body: Option<String>,
+        sender: String,
+        origin_server_ts: Option<u64>,
+        msgtype: String,
+        image_description: Option<ImageDescription>,
+        file_description: Option<FileDescription>,
     ) -> Self {
         RoomMessage {
-            inner,
-            room,
-            fallback,
+            event_id,
+            room_id,
+            body,
+            formatted_body,
+            sender,
+            origin_server_ts,
+            msgtype,
+            image_description,
+            file_description,
         }
     }
 
-    pub fn event_id(&self) -> String {
-        self.inner.event_id.to_string()
-    }
-
-    pub fn room_id(&self) -> String {
-        self.room.room_id().to_string()
-    }
-
-    pub fn body(&self) -> String {
-        self.fallback.clone()
-    }
-
-    pub fn formatted_body(&self) -> Option<String> {
-        let m = self.inner.clone();
-        if let MessageType::Text(content) = m.content.msgtype {
-            if let Some(formatted_body) = content.formatted {
-                if formatted_body.format == MessageFormat::Html {
-                    return Some(formatted_body.body);
+    pub(crate) fn from_original(
+        event: &OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
+        room: Room,
+    ) -> Self {
+        let mut formatted_body: Option<String> = None;
+        if let MessageType::Text(content) = &event.content.msgtype {
+            if let Some(formatted) = &content.formatted {
+                if formatted.format == MessageFormat::Html {
+                    formatted_body = Some(formatted.body.clone());
                 }
             }
         }
-        None
-    }
-
-    pub fn sender(&self) -> String {
-        self.inner.sender.to_string()
-    }
-
-    pub fn origin_server_ts(&self) -> u64 {
-        self.inner.origin_server_ts.get().into()
-    }
-
-    pub fn msgtype(&self) -> String {
-        self.inner.content.msgtype().to_string()
-    }
-
-    pub fn image_description(&self) -> Option<ImageDescription> {
-        if let MessageType::Image(content) = &self.inner.content.msgtype {
+        let mut image_description: Option<ImageDescription> = None;
+        if let MessageType::Image(content) = &event.content.msgtype {
             let info = content.info.as_ref().unwrap();
-            let description = ImageDescription {
+            image_description = Some(ImageDescription {
                 name: content.body.clone(),
                 mimetype: info.mimetype.clone(),
                 size: info.size.map(u64::from),
                 width: info.width.map(u64::from),
                 height: info.height.map(u64::from),
-            };
-            Some(description)
-        } else {
-            None
+            });
         }
-    }
-
-    pub fn file_description(&self) -> Option<FileDescription> {
-        if let MessageType::File(content) = &self.inner.content.msgtype {
+        let mut file_description: Option<FileDescription> = None;
+        if let MessageType::File(content) = &event.content.msgtype {
             let info = content.info.as_ref().unwrap();
-            let description = FileDescription {
+            file_description = Some(FileDescription {
                 name: content.body.clone(),
                 mimetype: info.mimetype.clone(),
                 size: info.size.map(u64::from),
-            };
-            Some(description)
-        } else {
-            None
+            });
         }
+        RoomMessage::new(
+            event.event_id.to_string(),
+            room.room_id().to_string(),
+            event.content.body().to_string(),
+            formatted_body,
+            event.sender.to_string(),
+            Some(event.origin_server_ts.get().into()),
+            event.content.msgtype().to_string(),
+            image_description,
+            file_description,
+        )
+    }
+
+    pub(crate) fn from_timeline(
+        event: &EventTimelineItem,
+        room: Room,
+        body: String,
+        msgtype: String,
+    ) -> Self {
+        let event_id = match event.event_id() {
+            Some(id) => id.to_string(),
+            None => format!("{:?}", event.key()).to_string(),
+        };
+        let mut formatted_body: Option<String> = None;
+        let mut image_description: Option<ImageDescription> = None;
+        let mut file_description: Option<FileDescription> = None;
+        if let TimelineItemContent::Message(msg) = event.content() {
+            if let MessageType::Text(content) = msg.msgtype() {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        formatted_body = Some(formatted.body.clone());
+                    }
+                }
+            }
+            if let MessageType::Image(content) = msg.msgtype() {
+                let info = content.info.as_ref().unwrap();
+                image_description = Some(ImageDescription {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                });
+            }
+            if let MessageType::File(content) = msg.msgtype() {
+                let info = content.info.as_ref().unwrap();
+                file_description = Some(FileDescription {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                });
+            }
+        }
+        RoomMessage::new(
+            event_id,
+            room.room_id().to_string(),
+            body,
+            formatted_body,
+            event.sender().to_string(),
+            event.origin_server_ts().map(|x| x.get().into()),
+            msgtype,
+            image_description,
+            file_description,
+        )
+    }
+
+    pub fn event_id(&self) -> String {
+        self.event_id.clone()
+    }
+
+    pub fn room_id(&self) -> String {
+        self.room_id.clone()
+    }
+
+    pub fn body(&self) -> String {
+        self.body.clone()
+    }
+
+    pub fn formatted_body(&self) -> Option<String> {
+        self.formatted_body.clone()
+    }
+
+    pub fn sender(&self) -> String {
+        self.sender.clone()
+    }
+
+    pub fn origin_server_ts(&self) -> Option<u64> {
+        self.origin_server_ts.clone()
+    }
+
+    pub fn msgtype(&self) -> String {
+        self.msgtype.clone()
+    }
+
+    pub fn image_description(&self) -> Option<ImageDescription> {
+        self.image_description.clone()
+    }
+
+    pub fn file_description(&self) -> Option<FileDescription> {
+        self.file_description.clone()
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct ImageDescription {
     name: String,
     mimetype: Option<String>,
@@ -125,6 +217,7 @@ impl ImageDescription {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct FileDescription {
     name: String,
     mimetype: Option<String>,
@@ -150,12 +243,34 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
         SyncMessageLikeEvent::Original(m),
     ))) = ev.event.deserialize()
     {
-        Some(RoomMessage {
-            fallback: m.content.body().to_string(),
-            room,
-            inner: m,
-        })
+        Some(RoomMessage::from_original(&m, room))
     } else {
         None
     }
+}
+
+pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> Option<RoomMessage> {
+    if let Some(event) = item.as_event() {
+        if let TimelineItemContent::Message(msg) = event.content() {
+            let fallback = match &msg.msgtype() {
+                MessageType::Audio(audio) => audio.body.clone(),
+                MessageType::Emote(emote) => emote.body.clone(),
+                MessageType::File(file) => file.body.clone(),
+                MessageType::Image(image) => image.body.clone(),
+                MessageType::Location(location) => location.body.clone(),
+                MessageType::Notice(notice) => notice.body.clone(),
+                MessageType::ServerNotice(service_notice) => service_notice.body.clone(),
+                MessageType::Text(text) => text.body.clone(),
+                MessageType::Video(video) => video.body.clone(),
+                _ => "Unknown".to_string(),
+            };
+            return Some(RoomMessage::from_timeline(
+                event,
+                room,
+                fallback,
+                msg.msgtype().msgtype().to_string(),
+            ));
+        }
+    }
+    None
 }
