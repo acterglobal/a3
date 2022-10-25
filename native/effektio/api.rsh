@@ -333,6 +333,9 @@ object Client {
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
+    /// log out this client
+    fn logout() -> Future<Result<bool>>;
+
     /// Get the verification event receiver
     fn verification_event_rx() -> Option<Stream<VerificationEvent>>;
 
