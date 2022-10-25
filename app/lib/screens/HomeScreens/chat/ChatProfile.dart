@@ -1,4 +1,5 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/EditGroupInfo.dart';
 import 'package:effektio/screens/HomeScreens/chat/GroupLinkScreen.dart';
 import 'package:effektio/screens/HomeScreens/chat/ReqAndInvites.dart';
@@ -11,8 +12,11 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class ChatProfileScreen extends StatefulWidget {
+class ChatProfileScreen extends StatelessWidget {
   final Conversation room;
+  final ChatRoomController roomController;
+  final Map<String, String> memberNames;
+  final Map<String, Future<FfiBufferUint8>?> memberAvatars;
   final bool isGroup;
   final bool isAdmin;
 
@@ -21,75 +25,27 @@ class ChatProfileScreen extends StatefulWidget {
     required this.room,
     required this.isGroup,
     required this.isAdmin,
+    required this.roomController,
+    required this.memberNames,
+    required this.memberAvatars,
   }) : super(key: key);
 
   @override
-  _ChatProfileScreenState createState() => _ChatProfileScreenState();
-}
-
-class _ChatProfileScreenState extends State<ChatProfileScreen> {
-  Future<FfiBufferUint8>? avatar;
-  String? chatName;
-  String chatDesc =
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
-
-  @override
-  void initState() {
-    super.initState();
-
-    widget.room.getProfile().then((value) {
-      if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            avatar = value.getAvatar();
-          }
-          chatName = value.getDisplayName();
-        });
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    debugPrint('Names: $memberNames');
+    debugPrint('Avatars: $memberAvatars');
+    String chatDesc =
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: AppCommonTheme.backgroundColor,
         actions: <Widget>[
           Visibility(
-            visible: widget.isAdmin,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditGroupInfoScreen(
-                      room: widget.room,
-                      name: chatName ?? AppLocalizations.of(context)!.noName,
-                      description: chatDesc,
-                    ),
-                  ),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(right: 8),
-                child: Center(
-                  child: Text(
-                    'Edit',
-                    style: TextStyle(
-                      color: AppCommonTheme.primaryColor,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Visibility(
-            visible: !widget.isAdmin,
+            visible: isAdmin,
             child: PopupMenuButton<int>(
               color: AppCommonTheme.darkShade,
-              onSelected: (item) => handleItemClick(item),
+              onSelected: (item) => handleItemClick(item, context),
               itemBuilder: (context) => [
                 PopupMenuItem<int>(
                   value: 0,
@@ -101,7 +57,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                         style: TextStyle(color: AppCommonTheme.primaryColor),
                       ),
                       SizedBox(width: 50),
-                      Icon(Icons.report, color: AppCommonTheme.primaryColor)
+                      Icon(
+                        Icons.report_outlined,
+                        color: AppCommonTheme.primaryColor,
+                      )
                     ],
                   ),
                 ),
@@ -113,46 +72,91 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 38, bottom: 12),
-                child: SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: FittedBox(
-                    fit: BoxFit.contain,
-                    child: CustomAvatar(
-                      avatar: avatar,
-                      displayName: chatName,
-                      radius: 20,
-                      isGroup: true,
-                      stringName: simplifyRoomId(widget.room.getRoomId())!,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditGroupInfoScreen(
+                      room: room,
+                      name: roomController.roomName ??
+                          AppLocalizations.of(context)!.noName,
+                      description: chatDesc,
+                    ),
+                  ),
+                );
+              },
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 38, bottom: 12),
+                  child: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: FittedBox(
+                      fit: BoxFit.contain,
+                      child: CustomAvatar(
+                        avatar: roomController.roomAvatar,
+                        displayName: roomController.roomName,
+                        radius: 20,
+                        isGroup: true,
+                        stringName: simplifyRoomId(room.getRoomId())!,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-            if (chatName == null)
+            if (roomController.roomName == null)
               const Text('Loading Name')
             else
-              Text(
-                chatName!,
-                overflow: TextOverflow.clip,
-                style: ChatTheme01.chatProfileTitleStyle,
-              ),
-            Visibility(
-              visible: widget.isGroup,
-              child: const Padding(
-                padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditGroupInfoScreen(
+                        room: room,
+                        name: roomController.roomName ??
+                            AppLocalizations.of(context)!.noName,
+                        description: chatDesc,
+                      ),
+                    ),
+                  );
+                },
                 child: Text(
-                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.',
-                  style: TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
+                  roomController.roomName!,
+                  overflow: TextOverflow.clip,
+                  style: ChatTheme01.chatProfileTitleStyle,
+                ),
+              ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditGroupInfoScreen(
+                      room: room,
+                      name: roomController.roomName ??
+                          AppLocalizations.of(context)!.noName,
+                      description: chatDesc,
+                    ),
+                  ),
+                );
+              },
+              child: Visibility(
+                visible: isGroup,
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
+                  child: Text(
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.',
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
             ),
             Visibility(
-              visible: !widget.isGroup,
+              visible: !isGroup,
               child: const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 20),
                 child: Text(
@@ -165,13 +169,13 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildMuteButton(),
-                buildSearchButton(),
-                buildGalleryButton()
+                buildMuteButton(context),
+                buildSearchButton(context),
+                buildGalleryButton(context)
               ],
             ),
             Visibility(
-              visible: widget.isGroup,
+              visible: isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Card(
@@ -186,7 +190,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                     ),
                     child: Column(
                       children: [
-                        buildRequestsAndInvites(),
+                        buildRequestsAndInvites(context),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
@@ -194,7 +198,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
-                        buildGroupLinkSwitch(),
+                        buildGroupLinkSwitch(context),
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 12),
                           child: Divider(
@@ -202,7 +206,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                             color: AppCommonTheme.dividerColor,
                           ),
                         ),
-                        buildCreateRoomInviteButton(),
+                        buildCreateRoomInviteButton(context),
                       ],
                     ),
                   ),
@@ -210,37 +214,37 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
               ),
             ),
             Visibility(
-              visible: !widget.isGroup,
+              visible: !isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: buildGroupLabel(),
               ),
             ),
             Visibility(
-              visible: !widget.isGroup,
+              visible: !isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: buildBlockButton(),
               ),
             ),
             Visibility(
-              visible: widget.isGroup,
+              visible: isGroup,
               child: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.all(16),
-                child: buildActiveMembersLabel(),
+                child: buildActiveMembersLabel(context),
               ),
             ),
             Visibility(
-              visible: widget.isGroup,
+              visible: isGroup,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                 child: buildMemberList(),
               ),
             ),
             Visibility(
-              visible: widget.isGroup,
-              child: buildLeaveButton(),
+              visible: isGroup,
+              child: buildLeaveButton(context),
             )
           ],
         ),
@@ -248,10 +252,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildMuteButton() {
+  Widget buildMuteButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showMuteBottomSheet();
+        showMuteBottomSheet(context);
       },
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -272,7 +276,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildSearchButton() {
+  Widget buildSearchButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -298,7 +302,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildGalleryButton() {
+  Widget buildGalleryButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -324,7 +328,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildRequestsAndInvites() {
+  Widget buildRequestsAndInvites(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -354,7 +358,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildGroupLinkSwitch() {
+  Widget buildGroupLinkSwitch(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -381,10 +385,10 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildCreateRoomInviteButton() {
+  Widget buildCreateRoomInviteButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        showInviteBottomSheet();
+        showInviteBottomSheet(context);
       },
       child: Container(
         alignment: Alignment.centerLeft,
@@ -397,7 +401,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  void showInviteBottomSheet() {
+  void showInviteBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor: AppCommonTheme.backgroundColor,
@@ -479,7 +483,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => RoomLinkSettingsScreen(
-                                    room: widget.room,
+                                    room: room,
                                   ),
                                 ),
                               );
@@ -602,26 +606,14 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  Widget buildActiveMembersLabel() {
-    return FutureBuilder<FfiListMember>(
-      future: widget.room.activeMembers(),
-      builder: (BuildContext context, AsyncSnapshot<FfiListMember> snapshot) {
-        if (snapshot.hasData) {
-          return Text(
-            '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-            ),
-          );
-        }
-        return const SizedBox(
-          height: 15,
-          width: 15,
-          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
-        );
-      },
+  Widget buildActiveMembersLabel(BuildContext context) {
+    return Text(
+      '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16.0,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 
@@ -630,20 +622,24 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
       color: AppCommonTheme.darkShade,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListView.builder(
-        itemCount: 10,
+        itemCount: roomController.activeMembers.length,
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          return const Padding(
-            padding: EdgeInsets.all(12),
-            child: GroupMember(name: 'Ronaldo', isAdmin: true),
+          return Padding(
+            padding: const EdgeInsets.all(12),
+            child: GroupMember(
+              name: memberNames.values.elementAt(index),
+              isAdmin: true,
+              avatar: memberAvatars.values.elementAt(index),
+            ),
           );
         },
       ),
     );
   }
 
-  Widget buildLeaveButton() {
+  Widget buildLeaveButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
         const snackBar = SnackBar(
@@ -672,13 +668,13 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  void handleItemClick(int item) {
+  void handleItemClick(int item, BuildContext context) {
     if (item == 0) {
-      showReportBottomSheet();
+      showReportBottomSheet(context);
     }
   }
 
-  void showReportBottomSheet() {
+  void showReportBottomSheet(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: AppCommonTheme.backgroundColor,
       context: context,
@@ -827,7 +823,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
     );
   }
 
-  void showMuteBottomSheet() {
+  void showMuteBottomSheet(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: AppCommonTheme.backgroundColor,
       context: context,

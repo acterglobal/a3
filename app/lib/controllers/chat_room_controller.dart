@@ -8,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
         Conversation,
+        FfiBufferUint8,
         FileDescription,
         ImageDescription,
         Member,
@@ -39,8 +40,11 @@ class ChatRoomController extends GetxController {
   TextEditingController textEditingController = TextEditingController();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  List<Member> _activeMembers = [];
+  List<Member> activeMembers = [];
   StreamSubscription<RoomMessage>? _messageSubscription;
+  Future<FfiBufferUint8>? roomAvatar;
+  String? roomName;
+  Map<String, Future<FfiBufferUint8>?> membersInfo = {};
 
   ChatRoomController({required this.client}) : super();
 
@@ -86,14 +90,21 @@ class ChatRoomController extends GetxController {
     if (convoRoom == null) {
       messages.clear();
       typingUsers.clear();
-      _activeMembers.clear();
+      activeMembers.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
     } else {
       _currentRoom = convoRoom;
+      await _currentRoom!.getProfile().then((value) {
+        if (value.hasAvatar()) {
+          roomAvatar = value.getAvatar();
+        }
+        roomName = value.getDisplayName();
+      });
+      update(['room-profile']);
       isLoading.value = true;
-      _activeMembers = (await _currentRoom!.activeMembers()).toList();
+      activeMembers = (await _currentRoom!.activeMembers()).toList();
       _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
       var msgs = await _stream!.paginateBackwards(10);
@@ -320,7 +331,7 @@ class ChatRoomController extends GetxController {
     var msg = (m.author.id == client.userId().toString())
         ? m.copyWith(
             showStatus: true,
-            status: seenByList.length < _activeMembers.length
+            status: seenByList.length < activeMembers.length
                 ? types.Status.delivered
                 : types.Status.seen,
           )
@@ -337,7 +348,10 @@ class ChatRoomController extends GetxController {
   void _loadMessage(RoomMessage message) {
     String msgtype = message.msgtype();
     String sender = message.sender();
-    var author = types.User(id: sender, firstName: simplifyUserId(sender));
+    var author = types.User(
+      id: sender,
+      firstName: simplifyUserId(sender),
+    );
     int createdAt = message.originServerTs(); // in milliseconds
     String eventId = message.eventId();
 

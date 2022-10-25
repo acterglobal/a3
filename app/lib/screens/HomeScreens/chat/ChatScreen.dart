@@ -39,9 +39,7 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  Future<FfiBufferUint8>? roomAvatar;
-  String? roomName;
-  Map<String, Future<FfiBufferUint8>> userAvatars = {};
+  Map<String, Future<FfiBufferUint8>?> userAvatars = {};
   Map<String, String> userNames = {};
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
@@ -51,24 +49,16 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     roomController.setCurrentRoom(widget.room);
-    widget.room.getProfile().then((value) {
-      if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            roomAvatar = value.getAvatar();
-          }
-          roomName = value.getDisplayName();
-        });
-      }
-    });
     widget.room.activeMembers().then((members) async {
-      Map<String, Future<FfiBufferUint8>> avatars = {};
+      Map<String, Future<FfiBufferUint8>?> avatars = {};
       Map<String, String> names = {};
       for (var member in members) {
         String userId = member.userId();
         UserProfile userProfile = await member.getProfile();
         if (userProfile.hasAvatar()) {
           avatars[userId] = userProfile.getAvatar();
+        } else {
+          avatars[userId] = null;
         }
         String? name = userProfile.getDisplayName();
         if (name != null) {
@@ -225,13 +215,23 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildRoomName(context),
+                GetBuilder<ChatRoomController>(
+                  id: 'room-profile',
+                  builder: (_) {
+                    return buildRoomName(context);
+                  },
+                ),
                 const SizedBox(height: 5),
                 buildActiveMembers(),
               ],
             ),
             actions: [
-              buildProfileAction(),
+              GetBuilder<ChatRoomController>(
+                id: 'room-profile',
+                builder: (_) {
+                  return buildProfileAction();
+                },
+              ),
             ],
           ),
           body: Obx(
@@ -253,6 +253,9 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialPageRoute(
             builder: (context) => ChatProfileScreen(
               room: widget.room,
+              roomController: roomController,
+              memberAvatars: userAvatars,
+              memberNames: userNames,
               isGroup: true,
               isAdmin: true,
             ),
@@ -267,8 +270,8 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              avatar: roomAvatar,
-              displayName: roomName,
+              avatar: roomController.roomAvatar,
+              displayName: roomController.roomName,
               radius: 20,
               isGroup: true,
               stringName: simplifyRoomId(widget.room.getRoomId())!,
@@ -280,11 +283,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget buildRoomName(BuildContext context) {
-    if (roomName == null) {
+    if (roomController.roomName == null) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
     return Text(
-      roomName!,
+      roomController.roomName!,
       overflow: TextOverflow.clip,
       style: ChatTheme01.chatTitleStyle,
     );
@@ -330,7 +333,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Chat(
               customBottomWidget: CustomChatInput(
                 isChatScreen: true,
-                roomName: roomName ?? AppLocalizations.of(context)!.noName,
+                roomName: roomController.roomName ??
+                    AppLocalizations.of(context)!.noName,
                 onButtonPressed: () async {
                   await controller.handleSendPressed(
                     controller.textEditingController.text,

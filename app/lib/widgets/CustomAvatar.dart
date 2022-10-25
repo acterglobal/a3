@@ -73,7 +73,11 @@ class _CustomAvatarState extends State<CustomAvatar> {
             child: SvgPicture.asset('assets/images/people.svg'),
           );
         } else {
-          return _buildTextAvatar();
+          return SizedBox(
+            height: widget.radius * 2,
+            width: widget.radius * 2,
+            child: _buildTextAvatar(),
+          );
         }
       },
     );
@@ -86,7 +90,6 @@ class _CustomAvatarState extends State<CustomAvatar> {
         shape: Shape.Circular,
         upperCase: true,
         text: widget.displayName,
-        size: widget.radius,
       );
     }
     return TextAvatar(
@@ -95,7 +98,6 @@ class _CustomAvatarState extends State<CustomAvatar> {
       shape: Shape.Circular,
       upperCase: true,
       text: widget.stringName,
-      size: widget.radius,
     );
   }
 }
