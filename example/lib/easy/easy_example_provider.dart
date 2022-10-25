@@ -11,7 +11,8 @@ class Post {
 class EasyExampleNotifier extends PagedNotifier<int, Post> {
   EasyExampleNotifier()
       : super(
-          load: (page, limit) => Future.delayed(const Duration(seconds: 2), () {
+          load: (page, limit) =>
+              Future.delayed(const Duration(milliseconds: 500), () {
             // This simulates a network call to an api that returns paginated posts
             return List.generate(
                 20,
