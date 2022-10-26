@@ -98,6 +98,8 @@ class ChatRoomController extends GetxController {
       _stream = null;
       _page = 0;
       _currentRoom = null;
+      roomAvatar = null;
+      roomName = null;
     } else {
       _currentRoom = convoRoom;
       await _currentRoom!.getProfile().then((value) {
