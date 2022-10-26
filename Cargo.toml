@@ -7,4 +7,7 @@ default-members = ["native/effektio"]
 
 [profile.release]
 panic = 'unwind'
+opt-level = 2
+lto = true
 codegen-units = 1
+strip = true  # Automatically strip symbols from the binary.
