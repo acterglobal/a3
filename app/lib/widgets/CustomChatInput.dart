@@ -44,7 +44,7 @@ class CustomChatInput extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _buildAttachmentButton(controller),
+                      if (isChatScreen) _buildAttachmentButton(controller),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -77,9 +77,6 @@ class CustomChatInput extends StatelessWidget {
   }
 
   Widget _buildAttachmentButton(ChatRoomController controller) {
-    if (isChatScreen != true) {
-      return const SizedBox();
-    }
     return Obx(
       () => InkWell(
         onTap: () {

@@ -104,10 +104,10 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget buildSubtitle(BuildContext context) {
+  Widget? buildSubtitle(BuildContext context) {
     if (widget.latestMessage == null) {
       if (widget.typingUsers.isEmpty) {
-        return const SizedBox();
+        return null;
       }
       return Text(
         getUserPlural(widget.typingUsers),
@@ -189,9 +189,9 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget buildTrailing(BuildContext context) {
+  Widget? buildTrailing(BuildContext context) {
     if (widget.latestMessage == null) {
-      return const SizedBox();
+      return null;
     }
     return Text(
       DateFormat.Hm().format(

@@ -41,7 +41,7 @@ class _ToDoListViewState extends State<ToDoListView> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 buildSubtitle(),
-                buildDivider(),
+                if (!todoController.initialExpand.value) buildDivider(),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Row(
@@ -98,7 +98,6 @@ class _ToDoListViewState extends State<ToDoListView> {
           ),
           onExpansionChanged: (val) => todoController.toggleExpand(),
           initiallyExpanded: false,
-          trailing: const SizedBox(),
           children: [
             ListView(
               shrinkWrap: true,
@@ -164,7 +163,7 @@ class _ToDoListViewState extends State<ToDoListView> {
                 ),
               ],
             ),
-            buildCompletedTasks(),
+            if (todoController.expandBtn.value) buildCompletedTasks(),
           ],
         ),
       ),
@@ -196,9 +195,6 @@ class _ToDoListViewState extends State<ToDoListView> {
   }
 
   Widget buildDivider() {
-    if (todoController.initialExpand.value) {
-      return const SizedBox();
-    }
     return const Divider(
       color: ToDoTheme.listDividerColor,
       indent: 0,
@@ -208,9 +204,6 @@ class _ToDoListViewState extends State<ToDoListView> {
   }
 
   Widget buildCompletedTasks() {
-    if (!todoController.expandBtn.value) {
-      return const SizedBox();
-    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: ListView(

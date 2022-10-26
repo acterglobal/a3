@@ -206,8 +206,6 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                         },
                       ),
                     )
-                  else
-                    const SizedBox()
                 ],
               ),
             ),

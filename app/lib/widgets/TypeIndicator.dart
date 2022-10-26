@@ -140,7 +140,7 @@ class _TypeIndicatorState extends State<TypeIndicator>
             ? MainAxisAlignment.start
             : MainAxisAlignment.end,
         children: [
-          buildStart(),
+          if (widget.bubbleAlignment == BubbleRtlAlignment.left) buildStart(),
           Container(
             margin: const EdgeInsets.all(8),
             padding: const EdgeInsets.only(top: 12),
@@ -169,16 +169,13 @@ class _TypeIndicatorState extends State<TypeIndicator>
               ],
             ),
           ),
-          buildEnd(),
+          if (widget.bubbleAlignment == BubbleRtlAlignment.right) buildEnd(),
         ],
       ),
     );
   }
 
   Widget buildStart() {
-    if (widget.bubbleAlignment != BubbleRtlAlignment.left) {
-      return const SizedBox();
-    }
     return Container(
       margin: const EdgeInsets.only(right: 12),
       child: TypingWidget(
@@ -189,9 +186,6 @@ class _TypeIndicatorState extends State<TypeIndicator>
   }
 
   Widget buildEnd() {
-    if (widget.bubbleAlignment != BubbleRtlAlignment.right) {
-      return const SizedBox();
-    }
     return Container(
       margin: const EdgeInsets.only(left: 12),
       child: TypingWidget(
