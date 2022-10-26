@@ -2,9 +2,8 @@ name: Nightly builds
 
 on:
   workflow_dispatch:
-  pull_request:
   schedule:
-   - cron: 0 4 * * *
+   - cron: 0 3 * * *
 
 jobs:
   check_date:
@@ -159,6 +158,14 @@ jobs:
     needs:
       - build
     steps:
+      - uses: actions/checkout@v2
+      - id: tag
+        run: echo "tag=`date +%F`" >> $GITHUB_OUTPUT
+        shell: bash
+      - name: Tag for nightly release
+        run: |
+          git tag nightly-${{ steps.tag.outputs.tag }}
+          git push origin nightly-${{ steps.tag.outputs.tag }}
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
@@ -170,7 +177,7 @@ jobs:
 
   report-issue:
     runs-on: ubuntu-latest
-    name: Publish
+    name: Report issue
     if: ${{ failure() }}
     needs:
       - build
