@@ -29,7 +29,7 @@ jobs:
           - name: Android Arm64
             os: ubuntu-latest
             cargo_make_setup: setup-android
-            cargo_make_args: android
+            cargo_make_args: android-arm
             with_ndk_version: r23c
             flutter_build_args: "build apk --target-platform android-arm64 --release"
             artifact_prefix: effektio-nightly-android-arm64
@@ -148,7 +148,42 @@ jobs:
         with:
           draft: true
           name: Nightly ${{ steps.tag.outputs.tag }}
+          tag_name: nightly-${{ steps.tag.outputs.tag }}
           prerelease: true
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
 
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish
+    needs:
+      - build
+    steps:
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          # publish this nightly release now
+          draft: false
+          name: Nightly ${{ steps.tag.outputs.tag }}
+          tag_name: nightly-${{ steps.tag.outputs.tag }}
+          prerelease: true
+
+  report-issue:
+    runs-on: ubuntu-latest
+    name: Publish
+    if: ${{ failure() }}
+    needs:
+      - build
+    steps:
+      - name: Create Issue on Failed workflow
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: Nightly build failed
+          body: |
+            ### Nightly build failed
+            Workflow name - `${{ github.workflow }}`
+            Job -           `${{ github.job }}`
+            status -        `${{ job.status }}`
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          assignees: gnunicorn
