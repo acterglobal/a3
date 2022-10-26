@@ -627,11 +627,17 @@ class ChatProfileScreen extends StatelessWidget {
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (_) {
-                return GroupMember(
-                  name: roomController.getUserName(userId),
-                  isAdmin: true,
-                  avatar: roomController.getUserAvatar(userId),
-                );
+                return (roomController.getUserName(userId) == null)
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      )
+                    : GroupMember(
+                        name: roomController.getUserName(userId),
+                        isAdmin: true,
+                        avatar: roomController.getUserAvatar(userId),
+                      );
               },
             ),
           );
