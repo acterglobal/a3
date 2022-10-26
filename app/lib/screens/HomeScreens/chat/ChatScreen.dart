@@ -332,17 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
               customBottomWidget: CustomChatInput(
                 isChatScreen: true,
                 roomName: roomName,
-                onButtonPressed: () async {
-                  String _text =
-                      controller.mentionKey.currentState!.controller!.text;
-                  controller.messageTextMap.forEach((key, value) {
-                    _text = _text.replaceAll(key, value);
-                  });
-                  await controller.handleSendPressed(_text);
-                  controller.messageTextMap.clear();
-                  controller.mentionKey.currentState!.controller!.clear();
-                  controller.sendButtonUpdate();
-                },
+                onButtonPressed: () => onSendButtonPressed(controller),
               ),
               textMessageBuilder: textMessageBuilder,
               l10n: ChatL10nEn(
@@ -440,5 +430,26 @@ class _ChatScreenState extends State<ChatScreen> {
         groupName: listController.invitations[invitedIndex].roomName(),
       ),
     );
+  }
+
+  void onSendButtonPressed(ChatRoomController controller) async {
+    String markdownText = controller.mentionKey.currentState!.controller!.text;
+    String htmlText = controller.mentionKey.currentState!.controller!.text;
+    int messageLength = markdownText.length;
+
+    controller.messageTextMapMarkDown.forEach((key, value) {
+      markdownText = markdownText.replaceAll(key, value);
+    });
+    controller.messageTextMapHtml.forEach((key, value) {
+      htmlText = htmlText.replaceAll(key, value);
+    });
+    await controller.handleSendPressed(
+      markdownText,
+      htmlText,
+      messageLength,
+    );
+    controller.messageTextMapMarkDown.clear();
+    controller.mentionKey.currentState!.controller!.clear();
+    controller.sendButtonUpdate();
   }
 }

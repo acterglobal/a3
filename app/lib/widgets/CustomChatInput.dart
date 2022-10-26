@@ -192,8 +192,12 @@ class CustomChatInput extends StatelessWidget {
   ) {
     String userId = roomMember['link'];
     String displayName = roomMember['display'];
-    controller.messageTextMap.addAll({
+    controller.messageTextMapMarkDown.addAll({
       '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
+    });
+
+    controller.messageTextMapHtml.addAll({
+      '@$displayName': '<a href="https://matrix.to/#/$userId">$displayName</a>',
     });
   }
 

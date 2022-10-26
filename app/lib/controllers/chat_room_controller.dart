@@ -42,7 +42,8 @@ class ChatRoomController extends GetxController {
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
   List<Map<String, dynamic>> activeMembers = [];
-  Map<String, String> messageTextMap = {};
+  Map<String, String> messageTextMapMarkDown = {};
+  Map<String, String> messageTextMapHtml = {};
   StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatRoomController({required this.client}) : super();
@@ -141,20 +142,20 @@ class ChatRoomController extends GetxController {
   }
 
   //push messages in conversation
-  Future<void> handleSendPressed(String message) async {
+  Future<void> handleSendPressed(String markdownMessage,String htmlMessage, int messageLength) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    var eventId = await _currentRoom!.sendFormattedMessage(message);
+    var eventId = await _currentRoom!.sendFormattedMessage(markdownMessage);
     final textMessage = types.TextMessage(
       author: types.User(id: client.userId().toString()),
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: eventId,
-      text: message,
+      text: htmlMessage,
       status: types.Status.sent,
       showStatus: true,
       metadata: {
-        'messageLength': message.length,
+        'messageLength': messageLength,
       },
     );
     messages.insert(0, textMessage);
