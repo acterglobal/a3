@@ -29,6 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -53,28 +54,30 @@ class Effektio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Themed(
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.theme,
-        title: 'Effektio',
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: ApplicationLocalizations.supportedLocales,
-        // MaterialApp contains our top-level Navigator
-        initialRoute: '/',
-        routes: <String, WidgetBuilder>{
-          '/': (BuildContext context) => const EffektioHome(),
-          '/login': (BuildContext context) => const LoginScreen(),
-          '/profile': (BuildContext context) => const SocialProfileScreen(),
-          '/signup': (BuildContext context) => const SignupScreen(),
-          '/gallery': (BuildContext context) => const GalleryScreen(),
-          '/todo': (BuildContext context) => const ToDoScreen(),
-          '/addTodo': (BuildContext context) => const AddToDoScreen(),
-        },
+    return Portal(
+      child: Themed(
+        child: GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.theme,
+          title: 'Effektio',
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: ApplicationLocalizations.supportedLocales,
+          // MaterialApp contains our top-level Navigator
+          initialRoute: '/',
+          routes: <String, WidgetBuilder>{
+            '/': (BuildContext context) => const EffektioHome(),
+            '/login': (BuildContext context) => const LoginScreen(),
+            '/profile': (BuildContext context) => const SocialProfileScreen(),
+            '/signup': (BuildContext context) => const SignupScreen(),
+            '/gallery': (BuildContext context) => const GalleryScreen(),
+            '/todo': (BuildContext context) => const ToDoScreen(),
+            '/addTodo': (BuildContext context) => const AddToDoScreen(),
+          },
+        ),
       ),
     );
   }
