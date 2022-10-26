@@ -1,6 +1,6 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'effektio_flutter_sdk_method_channel.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_method_channel.dart';
 
 abstract class EffektioFlutterSdkPlatform extends PlatformInterface {
   /// Constructs a EffektioFlutterSdkPlatform.
@@ -8,7 +8,8 @@ abstract class EffektioFlutterSdkPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static EffektioFlutterSdkPlatform _instance = MethodChannelEffektioFlutterSdk();
+  static EffektioFlutterSdkPlatform _instance =
+      MethodChannelEffektioFlutterSdk();
 
   /// The default instance of [EffektioFlutterSdkPlatform] to use.
   ///

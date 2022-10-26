@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:developer';
 import 'dart:ffi';
 import 'dart:io';
 
@@ -56,29 +55,20 @@ class EffektioSdk {
   Future<void> _restore() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-    log("storing data at $appDocPath");
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList('sessions') ?? []);
-    log("sessions found: $sessions");
     bool loggedIn = false;
     for (var token in sessions) {
-      log("trying to login $token");
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
-      log("login successful");
       _clients.add(client);
       loggedIn = client.loggedIn();
     }
 
     if (_clients.isEmpty) {
-      log("still empty, attempting default");
       ffi.Client client = await _api.guestClient(appDocPath, defaultServer);
-      log("next");
       _clients.add(client);
-      log("after");
       loggedIn = client.loggedIn();
-      log("then");
       await _persistSessions();
-      log("yay");
     }
     debugPrint('Restored $_clients: $loggedIn');
   }

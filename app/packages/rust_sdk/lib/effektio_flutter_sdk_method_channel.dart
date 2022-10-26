@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-import 'effektio_flutter_sdk_platform_interface.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_platform_interface.dart';
 
 /// An implementation of [EffektioFlutterSdkPlatform] that uses method channels.
 class MethodChannelEffektioFlutterSdk extends EffektioFlutterSdkPlatform {
@@ -11,7 +11,8 @@ class MethodChannelEffektioFlutterSdk extends EffektioFlutterSdkPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 }
