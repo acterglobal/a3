@@ -27,6 +27,7 @@ pub struct RoomMessage {
 }
 
 impl RoomMessage {
+    #[allow(clippy::too_many_arguments)]
     fn new(
         event_id: String,
         room_id: String,
@@ -104,7 +105,7 @@ impl RoomMessage {
     ) -> Self {
         let event_id = match event.event_id() {
             Some(id) => id.to_string(),
-            None => format!("{:?}", event.key()).to_string(),
+            None => format!("{:?}", event.key()),
         };
         let mut formatted_body: Option<String> = None;
         let mut image_description: Option<ImageDescription> = None;
@@ -170,7 +171,7 @@ impl RoomMessage {
     }
 
     pub fn origin_server_ts(&self) -> Option<u64> {
-        self.origin_server_ts.clone()
+        self.origin_server_ts
     }
 
     pub fn msgtype(&self) -> String {
