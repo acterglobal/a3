@@ -123,11 +123,14 @@ class ChatRoomController extends GetxController {
     List<Map<String, dynamic>> records = [];
     for (Member member in members) {
       UserProfile profile = await member.getProfile();
-      records.add({
-        'avatar': profile.getAvatar(),
+      Map<String, dynamic> record = {
         'display': profile.getDisplayName(),
         'link': member.userId(),
-      });
+      };
+      if (profile.hasAvatar()) {
+        record['avatar'] = profile.getAvatar();
+      }
+      records.add(record);
     }
     return records;
   }
@@ -148,7 +151,11 @@ class ChatRoomController extends GetxController {
   }
 
   //push messages in conversation
-  Future<void> handleSendPressed(String markdownMessage,String htmlMessage, int messageLength) async {
+  Future<void> handleSendPressed(
+    String markdownMessage,
+    String htmlMessage,
+    int messageLength,
+  ) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
