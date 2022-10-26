@@ -4,7 +4,7 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
-    event_handler::Ctx,
+    event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
     ruma::{
         events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
@@ -41,6 +41,7 @@ impl TypingEvent {
 pub(crate) struct TypingController {
     event_tx: Sender<TypingEvent>,
     event_rx: Arc<Mutex<Option<Receiver<TypingEvent>>>>,
+    event_handle: Option<EventHandlerHandle>,
 }
 
 impl TypingController {
@@ -49,19 +50,28 @@ impl TypingController {
         TypingController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
+            event_handle: None,
         }
     }
 
-    pub fn setup(&self, client: &MatrixClient) {
+    pub fn add_event_handler(&mut self, client: &MatrixClient) {
         let me = self.clone();
         client.add_event_handler_context(me);
-        client.add_event_handler(
+        let handle = client.add_event_handler(
             |ev: SyncEphemeralRoomEvent<TypingEventContent>,
              room: MatrixRoom,
              Ctx(me): Ctx<TypingController>| async move {
                 me.clone().process_ephemeral_event(ev, &room);
             },
         );
+        self.event_handle = Some(handle);
+    }
+
+    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+        if let Some(handle) = self.event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.event_handle = None;
+        }
     }
 
     fn process_ephemeral_event(

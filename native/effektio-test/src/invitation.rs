@@ -13,7 +13,7 @@ async fn load_pending_invitation() -> Result<()> {
     let _ = env_logger::try_init();
 
     let tmp_dir = TempDir::new()?;
-    let sisko = login_new_client(
+    let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@sisko:ds9.effektio.org".to_owned(),
         "sisko".to_owned(),
@@ -22,7 +22,7 @@ async fn load_pending_invitation() -> Result<()> {
     let sisko_syncer = sisko.start_sync();
 
     let tmp_dir = TempDir::new()?;
-    let kyra = login_new_client(
+    let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@kyra:ds9.effektio.org".to_owned(),
         "kyra".to_owned(),
