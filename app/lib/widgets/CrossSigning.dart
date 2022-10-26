@@ -31,6 +31,7 @@ class CrossSigning {
   late StreamSubscription<DeviceChangedEvent>? _deviceSubscription;
   late StreamSubscription<VerificationEvent>? _verifSubscription;
   final Map<String, VerifEvent> _eventMap = {};
+  bool _mounted = true;
 
   CrossSigning({required this.client}) {
     _installDeviceChangedEvent();
@@ -38,6 +39,7 @@ class CrossSigning {
   }
 
   void dispose() {
+    _mounted = false;
     _deviceSubscription?.cancel();
     _verifSubscription?.cancel();
   }
@@ -204,7 +206,9 @@ class CrossSigning {
       AppLocalizations.of(context)!.acceptRequest,
       AppCommonTheme.greenButtonColor,
       () async {
-        setState(() => acceptingRequest = true);
+        if (_mounted) {
+          setState(() => acceptingRequest = true);
+        }
         // accept verification request from other device
         await event.acceptVerificationRequest();
         // go to onReady status
@@ -796,11 +800,15 @@ class CrossSigning {
             AppLocalizations.of(context)!.verificationSasMatch,
             CrossSigningSheetTheme.greenButtonColor,
             () async {
-              setState(() => waitForMatch = true);
+              if (_mounted) {
+                setState(() => waitForMatch = true);
+              }
               // confirm sas verification
               await event.confirmSasVerification();
               // close dialog
-              setState(() => waitForMatch = false);
+              if (_mounted) {
+                setState(() => waitForMatch = false);
+              }
               // go to onMac status
               Get.back();
               Future.delayed(const Duration(milliseconds: 500), () {

@@ -57,7 +57,7 @@ impl RoomMessage {
     }
 
     pub fn origin_server_ts(&self) -> u64 {
-        self.inner.origin_server_ts.as_secs().into()
+        self.inner.origin_server_ts.get().into()
     }
 
     pub fn msgtype(&self) -> String {
