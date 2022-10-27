@@ -149,29 +149,26 @@ impl InvitationController {
         self.invitations.lock_mut().clone_from(&invitations);
         let me = self.clone();
 
-        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(client): Ctx<MatrixClient>,
+             c: MatrixClient,
              Ctx(me): Ctx<InvitationController>| async move {
                 // user got invitation
-                me.clone().process_stripped_event(ev, room, &client).await;
+                me.clone().process_stripped_event(ev, room, &c).await;
             },
         );
         self.stripped_event_handle = Some(handle);
 
-        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<InvitationController>,
-             handle: EventHandlerHandle| async move {
+             c: MatrixClient,
+             Ctx(me): Ctx<InvitationController>| async move {
                 // user accepted or rejected invitation
-                me.clone().process_sync_event(ev, room, &client);
+                me.clone().process_sync_event(ev, room, &c);
             },
         );
         self.sync_event_handle = Some(handle);

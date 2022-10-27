@@ -206,29 +206,25 @@ impl ConversationController {
     pub async fn add_event_handler(&mut self, client: &MatrixClient) {
         let me = self.clone();
 
-        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMessageEvent,
              room: MatrixRoom,
-             Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<ConversationController>,
-             handle: EventHandlerHandle| async move {
-                me.clone().process_room_message(ev, &room, &client);
+             c: MatrixClient,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_message(ev, &room, &c);
             },
         );
         self.message_event_handle = Some(handle);
 
-        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<ConversationController>,
-             handle: EventHandlerHandle| async move {
+             c: MatrixClient,
+             Ctx(me): Ctx<ConversationController>| async move {
                 // user accepted invitation or left room
-                me.clone().process_room_member(ev, &room, &client);
+                me.clone().process_room_member(ev, &room, &c);
             },
         );
         self.member_event_handle = Some(handle);
@@ -264,7 +260,7 @@ impl ConversationController {
             let room_id = room.room_id();
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
                 info!("existing convo index: {}", idx);
-                let convo = Conversation::new(Room {
+                    let convo = Conversation::new(Room {
                     client: client.clone(),
                     room: room.clone(),
                 });

@@ -113,8 +113,7 @@ impl ReceiptController {
         let handle = client.add_event_handler(
             |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
              room: MatrixRoom,
-             Ctx(me): Ctx<ReceiptController>,
-             handle: EventHandlerHandle| async move {
+             Ctx(me): Ctx<ReceiptController>| async move {
                 me.clone().process_ephemeral_event(ev, &room);
             },
         );
