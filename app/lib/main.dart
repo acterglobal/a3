@@ -64,6 +64,7 @@ class Effektio extends StatelessWidget {
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: ApplicationLocalizations.supportedLocales,
           // MaterialApp contains our top-level Navigator
