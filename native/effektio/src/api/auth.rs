@@ -9,34 +9,36 @@ use matrix_sdk::Session;
 
 use crate::platform;
 
-use super::{Client, ClientStateBuilder, RUNTIME};
+use super::{
+    client::{Client, ClientStateBuilder},
+    RUNTIME,
+};
 
 pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
-    let mut guest_registration = register::v3::Request::new();
-    guest_registration.kind = register::RegistrationKind::Guest;
+    let mut request = register::v3::Request::new();
+    request.kind = register::RegistrationKind::Guest;
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let register = client.register(guest_registration).await?;
+            let response = client.register(request).await?;
+            let device_id = response
+                .device_id
+                .clone()
+                .context("device id is given by server")?;
             let session = Session {
-                access_token: register.access_token.context("no access token given")?,
-                user_id: register.user_id.clone(),
-                refresh_token: register.refresh_token.clone(),
-                device_id: register
-                    .device_id
-                    .clone()
-                    .context("device id is given by server")?,
+                access_token: response.access_token.context("no access token given")?,
+                user_id: response.user_id.clone(),
+                refresh_token: response.refresh_token.clone(),
+                device_id,
             };
             client.restore_login(session).await?;
-            let c = Client::new(
-                client,
-                ClientStateBuilder::default()
-                    .is_guest(true)
-                    .build()
-                    .unwrap(),
-            );
-            info!("Successfully created guest login: {:?}", register.user_id);
+            let state = ClientStateBuilder::default()
+                .is_guest(true)
+                .build()
+                .unwrap();
+            let c = Client::new(client, state);
+            info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
         })
         .await?
@@ -56,13 +58,11 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             let client = config.build().await?;
             let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
-            let c = Client::new(
-                client,
-                ClientStateBuilder::default()
-                    .is_guest(is_guest)
-                    .build()
-                    .unwrap(),
-            );
+            let state = ClientStateBuilder::default()
+                .is_guest(is_guest)
+                .build()
+                .unwrap();
+            let c = Client::new(client, state);
             info!("Successfully logged in {:?} with token.", user_id);
             Ok(c)
         })
@@ -74,19 +74,19 @@ pub async fn login_new_client(
     username: String,
     password: String,
 ) -> Result<Client> {
-    let user = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
+    let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
     let mut config =
-        platform::new_client_config(base_path, username)?.server_name(user.server_name());
+        platform::new_client_config(base_path, username)?.server_name(user_id.server_name());
 
-    match user.server_name().as_str() {
+    match user_id.server_name().as_str() {
         "effektio.org" => {
             // effektio.org has problems with the .well-known-setup at the moment
             config = config.homeserver_url("https://matrix.effektio.org");
         }
         "ds9.effektio.org" => {
             // this is our local CI test environment
-            config =
-                config.homeserver_url(option_env!("HOMESERVER").unwrap_or("http://localhost:8118"));
+            let url = option_env!("HOMESERVER").unwrap_or("http://localhost:8118");
+            config = config.homeserver_url(url);
         }
         _ => {}
     };
@@ -95,15 +95,13 @@ pub async fn login_new_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            client.login_username(&user, &password).send().await?;
-            let c = Client::new(
-                client,
-                ClientStateBuilder::default()
-                    .is_guest(false)
-                    .build()
-                    .unwrap(),
-            );
-            info!("Successfully logged in user: {:?}", user);
+            client.login_username(&user_id, &password).send().await?;
+            let state = ClientStateBuilder::default()
+                .is_guest(false)
+                .build()
+                .unwrap();
+            let c = Client::new(client, state);
+            info!("Successfully logged in user: {:?}", user_id);
             Ok(c)
         })
         .await?
@@ -115,15 +113,15 @@ pub async fn register_with_registration_token(
     password: String,
     registration_token: String,
 ) -> Result<Client> {
-    let user = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let config =
-        platform::new_client_config(base_path, username.clone())?.server_name(user.server_name());
+    let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
+    let config = platform::new_client_config(base_path, username.clone())?
+        .server_name(user_id.server_name());
     // First we need to log in.
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            if let Err(resp) = client.register(register::v3::Request::new()).await {
-                if let Some(_response) = resp.uiaa_response() {
+            if let Err(err) = client.register(register::v3::Request::new()).await {
+                if let Some(response) = err.uiaa_response() {
                     // FIXME: do actually check the registration types...
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),
@@ -139,14 +137,11 @@ pub async fn register_with_registration_token(
             } else {
                 bail!("Server is not set up to allow registration.");
             }
-
-            let c = Client::new(
-                client,
-                ClientStateBuilder::default()
-                    .is_guest(false)
-                    .build()
-                    .unwrap(),
-            );
+            let state = ClientStateBuilder::default()
+                .is_guest(false)
+                .build()
+                .unwrap();
+            let c = Client::new(client, state);
             info!("Successfully registered user: {:?}", username);
             Ok(c)
         })

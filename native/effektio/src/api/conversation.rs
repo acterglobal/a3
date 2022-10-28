@@ -10,7 +10,7 @@ use futures_signals::signal::{
 };
 use log::{error, info, warn};
 use matrix_sdk::{
-    event_handler::Ctx,
+    event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
     ruma::{
         api::client::room::{
@@ -31,7 +31,7 @@ use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
-    client::{divide_rooms_from_common, Client},
+    client::Client,
     message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
@@ -148,6 +148,8 @@ pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
     event_tx: Sender<RoomMessage>,
     event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
+    message_event_handle: Option<EventHandlerHandle>,
+    member_event_handle: Option<EventHandlerHandle>,
 }
 
 impl ConversationController {
@@ -157,38 +159,58 @@ impl ConversationController {
             conversations: Default::default(),
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
+            message_event_handle: None,
+            member_event_handle: None,
         }
     }
 
-    pub async fn setup(&self, client: &MatrixClient) {
-        let (_, convos) = divide_rooms_from_common(client.clone()).await;
-        for convo in convos.iter() {
-            convo.load_latest_message();
-        }
-        self.conversations.lock_mut().clone_from(&convos);
-
+    pub async fn add_event_handler(&mut self, client: &MatrixClient) {
         let me = self.clone();
+
         client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
-        client.add_event_handler(
+        let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMessageEvent,
              room: MatrixRoom,
              Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<ConversationController>| async move {
+             Ctx(me): Ctx<ConversationController>,
+             handle: EventHandlerHandle| async move {
                 me.clone().process_room_message(ev, &room, &client);
             },
         );
+        self.message_event_handle = Some(handle);
+
         client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me);
-        client.add_event_handler(
+        let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
              room: MatrixRoom,
              Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<ConversationController>| async move {
+             Ctx(me): Ctx<ConversationController>,
+             handle: EventHandlerHandle| async move {
                 // user accepted invitation or left room
                 me.clone().process_room_member(ev, &room, &client);
             },
         );
+        self.member_event_handle = Some(handle);
+    }
+
+    pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+        if let Some(handle) = self.message_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.message_event_handle = None;
+        }
+        if let Some(handle) = self.member_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.member_event_handle = None;
+        }
+    }
+
+    pub fn load_rooms(&self, convos: &Vec<Conversation>) {
+        for convo in convos.iter() {
+            convo.load_latest_message();
+        }
+        self.conversations.lock_mut().clone_from(convos);
     }
 
     fn process_room_message(
@@ -287,18 +309,17 @@ impl Client {
         RUNTIME
             .spawn(async move {
                 let initial_states = default_effektio_conversation_states();
-                let res = client
-                    .create_room(assign!(CreateRoomRequest::new(), {
-                        creation_content: Some(Raw::new(&CreationContent::new())?),
-                        initial_state: &initial_states,
-                        is_direct: true,
-                        invite: &settings.invites,
-                        room_alias_name: settings.alias.as_deref(),
-                        name: settings.name.as_ref().map(|x| x.as_ref()),
-                        visibility: Visibility::Private,
-                    }))
-                    .await?;
-                Ok(res.room_id().to_owned())
+                let request = assign!(CreateRoomRequest::new(), {
+                    creation_content: Some(Raw::new(&CreationContent::new())?),
+                    initial_state: &initial_states,
+                    is_direct: true,
+                    invite: &settings.invites,
+                    room_alias_name: settings.alias.as_deref(),
+                    name: settings.name.as_ref().map(|x| x.as_ref()),
+                    visibility: Visibility::Private,
+                });
+                let response = client.create_room(request).await?;
+                Ok(response.room_id().to_owned())
             })
             .await?
     }

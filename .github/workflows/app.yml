@@ -27,11 +27,25 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install supported toolchain
+        id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
 
-      - uses: Swatinem/rust-cache@v1
+      - name: Cache Cargo
+        id: cache-cargo
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo
+          key: ${{ runner.os }}-cargo-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
+
+      - name: Cache Rust
+        uses: actions/cache@v2
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-native-android-${{ steps.rust_toolchain.outputs.rustc_hash }}-${{ hashFiles('./Cargo.toml') }}
 
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
@@ -40,25 +54,24 @@ jobs:
           add-to-path: false
 
       - name: Install cargo-make
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
         uses: davidB/rust-cargo-make@v1
-
-      - name: Rust Android Setup
-        run: cargo make setup-android
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - uses: subosito/flutter-action@v2
         name: "Set up flutter"
         with:
           channel: 'stable'
 
-      - name: Build Android FFI
-        run: cargo make --profile release android-arm
+      - name: Rust Android Setup
+        if: steps.cache-cargo.outputs.cache-hit != 'true'
+        run: |
+          cargo make setup-android
+          cargo make --profile release android-arm
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
 
       - run: flutter build apk --target-platform android-arm64 --release
         working-directory: ./app
@@ -90,7 +103,7 @@ jobs:
       - name: Build iOS FFI
         run: cargo make --profile release ios
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
       - name: Build ios package
         run: flutter build ios --no-codesign
         working-directory: ./app

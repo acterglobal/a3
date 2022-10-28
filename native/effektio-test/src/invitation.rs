@@ -1,5 +1,8 @@
 use anyhow::Result;
-use effektio::{login_new_client, matrix_sdk::ruma::user_id};
+use effektio::{
+    api::{login_new_client, CreateConversationSettingsBuilder},
+    matrix_sdk::ruma::user_id,
+};
 use futures::{pin_mut, StreamExt};
 use std::time::Duration;
 use tempfile::TempDir;
@@ -10,7 +13,7 @@ async fn load_pending_invitation() -> Result<()> {
     let _ = env_logger::try_init();
 
     let tmp_dir = TempDir::new()?;
-    let sisko = login_new_client(
+    let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@sisko:ds9.effektio.org".to_owned(),
         "sisko".to_owned(),
@@ -19,7 +22,7 @@ async fn load_pending_invitation() -> Result<()> {
     let sisko_syncer = sisko.start_sync();
 
     let tmp_dir = TempDir::new()?;
-    let kyra = login_new_client(
+    let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_owned(),
         "@kyra:ds9.effektio.org".to_owned(),
         "kyra".to_owned(),
@@ -29,7 +32,9 @@ async fn load_pending_invitation() -> Result<()> {
 
     sleep(Duration::from_secs(3)).await;
 
-    // let room_id = sisko.create_room().await?;
+    // sisko creates room and invites kyra
+    // let settings = CreateConversationSettingsBuilder::default().build()?;
+    // let room_id = sisko.create_conversation(settings).await?;
     // println!("created room id: {}", room_id);
 
     // sleep(Duration::from_secs(3)).await;

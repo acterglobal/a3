@@ -116,7 +116,7 @@ jobs:
         run: cargo make --profile release ios
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
 
       - uses: futureware-tech/simulator-action@v1
         with:
