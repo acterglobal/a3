@@ -17,7 +17,7 @@ jobs:
 
   rust:
     runs-on: ubuntu-latest
-    name: Rust Integration Tests
+    name: Rust
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -56,7 +56,7 @@ jobs:
 
   flutter-desktop:
     runs-on: ubuntu-latest
-    name: Rust Integration Tests
+    name: Flutter Desktop
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
@@ -104,7 +104,7 @@ jobs:
 
   flutter-ios:
     runs-on: macos-latest
-    name: Flutter Integration Tests on iOS
+    name: iOS
     if: github.ref == 'refs/heads/main'
     continue-on-error: true
     steps:
@@ -160,7 +160,7 @@ jobs:
 
   flutter-android:
     runs-on: macos-latest
-    name: Flutter Integration Tests on android
+    name: Android
     if: github.ref == 'refs/heads/main'
     continue-on-error: true
     steps:
