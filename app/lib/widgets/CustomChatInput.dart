@@ -1,8 +1,10 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
@@ -86,12 +88,12 @@ class CustomChatInput extends StatelessWidget {
           controller.focusNode.unfocus();
           controller.focusNode.canRequestFocus = true;
         },
-        child: _buildAttachmentIcon(controller),
+        child: _buildPlusIcon(controller),
       ),
     );
   }
 
-  Widget _buildAttachmentIcon(ChatRoomController controller) {
+  Widget _buildPlusIcon(ChatRoomController controller) {
     if (controller.isAttachmentVisible.value != true) {
       return SvgPicture.asset('assets/images/add.svg', fit: BoxFit.none);
     }
@@ -106,15 +108,19 @@ class CustomChatInput extends StatelessWidget {
   }
 
   Widget _buildTextEditor(BuildContext context, ChatRoomController controller) {
-    return TextField(
-      onChanged: (value) async {
+    return FlutterMentions(
+      key: controller.mentionKey,
+      suggestionPosition: SuggestionPosition.Top,
+      onMentionAdd: (Map<String, dynamic> roomMember) {
+        _handleMentionAdd(controller, roomMember);
+      },
+      onChanged: (String value) async {
         controller.sendButtonUpdate();
         await controller.typingNotice(true);
       },
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
       minLines: 1,
-      controller: controller.textEditingController,
       focusNode: controller.focusNode,
       style: const TextStyleRef(
         TextStyle(color: ChatTheme01.chatInputTextColor),
@@ -143,7 +149,53 @@ class CustomChatInput extends StatelessWidget {
         hintStyle: ChatTheme01.chatInputPlaceholderStyle,
         hintMaxLines: 1,
       ),
+      mentions: [
+        Mention(
+          trigger: '@',
+          style: const TextStyle(color: AppCommonTheme.primaryColor),
+          data: controller.activeMembers,
+          matchAll: false,
+          suggestionBuilder: (Map<String, dynamic> roomMember) {
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              color: AppCommonTheme.backgroundColorLight,
+              child: ListTile(
+                contentPadding: const EdgeInsets.only(left: 50),
+                leading: SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: CustomAvatar(
+                    radius: 20,
+                    avatar: roomMember['avatar'],
+                    isGroup: false,
+                    stringName: roomMember['display'],
+                  ),
+                ),
+                title: Text(
+                  roomMember['display'],
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            );
+          },
+        )
+      ],
     );
+  }
+
+  void _handleMentionAdd(
+    ChatRoomController controller,
+    Map<String, dynamic> roomMember,
+  ) {
+    String userId = roomMember['link'];
+    String displayName = roomMember['display'];
+    controller.messageTextMapMarkDown.addAll({
+      '@$displayName': '[$displayName](https://matrix.to/#/$userId)',
+    });
+
+    controller.messageTextMapHtml.addAll({
+      '@$displayName': '<a href="https://matrix.to/#/$userId">$displayName</a>',
+    });
   }
 
   Widget _buildSendButton() {
@@ -299,19 +351,8 @@ class EmojiPickerWidget extends StatelessWidget {
         child: SizedBox(
           height: size.height * 0.3,
           child: EmojiPicker(
-            onEmojiSelected: (category, emoji) {
-              _roomController.textEditingController.text += emoji.emoji;
-              _roomController.sendButtonUpdate();
-            },
-            onBackspacePressed: () {
-              _roomController.textEditingController.text = _roomController
-                  .textEditingController.text.characters
-                  .skipLast(1)
-                  .string;
-              if (_roomController.textEditingController.text.isEmpty) {
-                _roomController.sendButtonUpdate();
-              }
-            },
+            onEmojiSelected: _handleEmojiSelected,
+            onBackspacePressed: _handleBackspacePressed,
             config: Config(
               columns: 7,
               verticalSpacing: 0,
@@ -337,5 +378,20 @@ class EmojiPickerWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleEmojiSelected(Category category, Emoji emoji) {
+    _roomController.mentionKey.currentState!.controller!.text += emoji.emoji;
+    _roomController.sendButtonUpdate();
+  }
+
+  void _handleBackspacePressed() {
+    _roomController.mentionKey.currentState!.controller!.text = _roomController
+        .mentionKey.currentState!.controller!.text.characters
+        .skipLast(1)
+        .string;
+    if (_roomController.mentionKey.currentState!.controller!.text.isEmpty) {
+      _roomController.sendButtonUpdate();
+    }
   }
 }

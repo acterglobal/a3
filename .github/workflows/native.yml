@@ -99,4 +99,4 @@ jobs:
       - name: "Build FFI interface"
         run: cargo make ffigen
       - name: "Check file is no different"
-        run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart

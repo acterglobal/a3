@@ -144,7 +144,7 @@ packages:
   effektio_flutter_sdk:
     dependency: "direct main"
     description:
-      path: "../effektio_flutter_sdk"
+      path: "packages/rust_sdk"
       relative: true
     source: path
     version: "0.0.1"
@@ -161,7 +161,7 @@ packages:
       name: equatable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.5"
   expandable_text:
     dependency: "direct main"
     description:
@@ -222,7 +222,7 @@ packages:
       name: flutter_blurhash
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.0"
+    version: "0.6.6"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -236,16 +236,16 @@ packages:
       name: flutter_chat_types
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.5"
+    version: "3.5.0"
   flutter_chat_ui:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: e54f85703f7f27b725bb0923178653da1aec2275
+      resolved-ref: "3e0fb14a577eddf081dde34c2a27fe547e713b11"
       url: "https://github.com/effektio/flyer-flutter_chat_ui.git"
     source: git
-    version: "1.6.4"
+    version: "1.6.5"
   flutter_colorpicker:
     dependency: "direct main"
     description:
@@ -258,6 +258,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_html:
+    dependency: "direct main"
+    description:
+      name: flutter_html
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0-alpha.6"
   flutter_inappwebview:
     dependency: transitive
     description:
@@ -299,7 +306,7 @@ packages:
       name: flutter_link_previewer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.0"
   flutter_linkify:
     dependency: transitive
     description:
@@ -326,6 +333,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  flutter_mentions:
+    dependency: "direct main"
+    description:
+      name: flutter_mentions
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   flutter_parsed_text:
     dependency: "direct main"
     description:
@@ -340,6 +354,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  flutter_portal:
+    dependency: transitive
+    description:
+      name: flutter_portal
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.0"
   flutter_rust_bridge:
     dependency: transitive
     description:
@@ -396,7 +417,7 @@ packages:
       name: get_time_ago
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.5"
+    version: "1.1.6"
   google_fonts:
     dependency: "direct main"
     description:
@@ -424,7 +445,7 @@ packages:
       name: http
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.13.4"
+    version: "0.13.5"
   http_parser:
     dependency: transitive
     description:
@@ -520,7 +541,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.6.0"
+    version: "4.7.0"
   linkify:
     dependency: transitive
     description:
@@ -570,13 +591,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
+  numerus:
+    dependency: transitive
+    description:
+      name: numerus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   octo_image:
     dependency: transitive
     description:
       name: octo_image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.1"
   open_file:
     dependency: "direct main"
     description:
@@ -604,14 +632,14 @@ packages:
       name: path_drawing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   path_parsing:
     dependency: transitive
     description:
       name: path_parsing
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   path_provider:
     dependency: "direct main"
     description:
@@ -751,7 +779,7 @@ packages:
       name: rxdart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.27.5"
+    version: "0.27.3"
   scroll_to_index:
     dependency: transitive
     description:
@@ -833,21 +861,21 @@ packages:
       name: sprintf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.0.0"
+    version: "6.0.2"
   sqflite:
     dependency: transitive
     description:
       name: sqflite
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.3"
+    version: "2.0.2"
   sqflite_common:
     dependency: transitive
     description:
       name: sqflite_common
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.1+1"
+    version: "2.2.1"
   stack_trace:
     dependency: transitive
     description:
@@ -931,7 +959,7 @@ packages:
       name: url_launcher
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.1.5"
+    version: "6.1.6"
   url_launcher_android:
     dependency: transitive
     description:
