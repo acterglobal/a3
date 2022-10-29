@@ -267,7 +267,6 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                   endIndent: 20,
                   color: Colors.grey,
                 ),
-                const SizedBox(),
               ],
             ),
           ),

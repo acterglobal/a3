@@ -68,7 +68,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                buildList(context),
+                if (!widget.client.isGuest()) buildList(context),
               ],
             ),
           ),
@@ -120,9 +120,6 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget buildList(BuildContext context) {
-    if (widget.client.isGuest()) {
-      return const SizedBox();
-    }
     return GetBuilder<ChatListController>(
       id: 'chatlist',
       builder: (ChatListController controller) {

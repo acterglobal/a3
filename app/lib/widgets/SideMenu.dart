@@ -65,7 +65,7 @@ class _SideDrawerState extends State<SideDrawer> {
               buildSharedDocumentsItem(),
               buildFaqItem(),
               const SizedBox(height: 5),
-              buildLogoutItem(context),
+              if (!widget.client.isGuest()) buildLogoutItem(context),
             ],
           ),
         ),
@@ -302,9 +302,6 @@ class _SideDrawerState extends State<SideDrawer> {
   }
 
   Widget buildLogoutItem(BuildContext context) {
-    if (widget.client.isGuest()) {
-      return const SizedBox();
-    }
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/logout.svg',

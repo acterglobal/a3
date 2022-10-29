@@ -1,21 +1,23 @@
 use anyhow::{bail, Context, Result};
 use clap::Parser;
+use effektio_core::{
+    events::{NewsContentType, NewsEventDevContent},
+    ruma::{
+        api::client::filter::RoomEventFilter,
+        events::{room::MediaSource, MessageLikeEvent},
+        RoomId,
+    },
+};
+use log::{info, warn};
 
 use crate::config::{LoginConfig, ENV_ROOM};
-use effektio_core::events;
-use effektio_core::ruma;
-
-use crate::ruma::api::client::filter::RoomEventFilter;
-use crate::ruma::events::room::MediaSource;
-
-use log::{info, warn};
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
 pub struct FetchNews {
     /// The room you want to post the news to
     #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
-    pub room: Box<ruma::RoomId>,
+    pub room: Box<RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,
 }
@@ -42,10 +44,10 @@ impl FetchNews {
         for entry in messages.chunk {
             let event = match entry
                 .event
-                .deserialize_as::<ruma::events::MessageLikeEvent<events::NewsEventDevContent>>()
+                .deserialize_as::<MessageLikeEvent<NewsEventDevContent>>()
             {
-                Ok(ruma::events::MessageLikeEvent::Original(o)) => o,
-                Ok(ruma::events::MessageLikeEvent::Redacted(_)) => {
+                Ok(MessageLikeEvent::Original(o)) => o,
+                Ok(MessageLikeEvent::Redacted(_)) => {
                     // FIXME: what do we do with redactions
                     continue;
                 }
@@ -77,15 +79,15 @@ impl FetchNews {
             ]));
             for content in news.contents {
                 let (key, content) = match content {
-                    events::NewsContentType::Image(image) => match image.source {
+                    NewsContentType::Image(image) => match image.source {
                         MediaSource::Plain(url) => ("image", url.to_string()),
                         MediaSource::Encrypted(_) => ("image", "<encrypted>".to_owned()),
                     },
-                    events::NewsContentType::Video(video) => match video.source {
+                    NewsContentType::Video(video) => match video.source {
                         MediaSource::Plain(url) => ("video", url.to_string()),
                         MediaSource::Encrypted(_) => ("video", "<encrypted>".to_owned()),
                     },
-                    events::NewsContentType::Text(text) => ("text", text.body),
+                    NewsContentType::Text(text) => ("text", text.body),
                     _ => ("unknown", "n/a".to_owned()),
                 };
                 table.add_row(term_table::row::Row::new(vec![
