@@ -85,16 +85,21 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                let request = client
+                if let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, flow_id.as_str())
                     .await
-                    .expect("Could not get request object");
-                request
-                    .accept()
-                    .await
-                    .expect("Can't accept verification request");
-                Ok(true)
+                {
+                    request
+                        .accept()
+                        .await
+                        .expect("Can't accept verification request");
+                    Ok(true)
+                } else {
+                    // request may be timed out
+                    info!("Could not get verification request");
+                    Ok(false)
+                }
             })
             .await?
     }
@@ -105,16 +110,21 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                let request = client
+                if let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, flow_id.as_str())
                     .await
-                    .expect("Could not get request object");
-                request
-                    .cancel()
-                    .await
-                    .expect("Can't cancel verification request");
-                Ok(true)
+                {
+                    request
+                        .cancel()
+                        .await
+                        .expect("Can't cancel verification request");
+                    Ok(true)
+                } else {
+                    // request may be timed out
+                    info!("Could not get verification request");
+                    Ok(false)
+                }
             })
             .await?
     }
@@ -130,16 +140,21 @@ impl VerificationEvent {
             (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                let request = client
+                if let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, flow_id.as_str())
                     .await
-                    .expect("Could not get request object");
-                request
-                    .accept_with_methods(_methods)
-                    .await
-                    .expect("Can't accept verification request");
-                Ok(true)
+                {
+                    request
+                        .accept_with_methods(_methods)
+                        .await
+                        .expect("Can't accept verification request");
+                    Ok(true)
+                } else {
+                    // request may be timed out
+                    info!("Could not get verification request");
+                    Ok(false)
+                }
             })
             .await?
     }
@@ -150,16 +165,21 @@ impl VerificationEvent {
         let flow_id = self.flow_id.clone();
         RUNTIME
             .spawn(async move {
-                let request = client
+                if let Some(request) = client
                     .encryption()
                     .get_verification_request(&sender, flow_id.as_str())
                     .await
-                    .expect("Could not get request object");
-                let sas_verification = request
-                    .start_sas()
-                    .await
-                    .expect("Can't accept verification request");
-                Ok(sas_verification.is_some())
+                {
+                    let sas_verification = request
+                        .start_sas()
+                        .await
+                        .expect("Can't accept verification request");
+                    Ok(sas_verification.is_some())
+                } else {
+                    // request may be timed out
+                    info!("Could not get verification request");
+                    Ok(false)
+                }
             })
             .await?
     }
@@ -186,6 +206,8 @@ impl VerificationEvent {
                     sas.accept().await.unwrap();
                     Ok(true)
                 } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
                     Ok(false)
                 }
             })
@@ -206,6 +228,8 @@ impl VerificationEvent {
                     sas.cancel().await.unwrap();
                     Ok(true)
                 } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
                     Ok(false)
                 }
             })
@@ -238,6 +262,8 @@ impl VerificationEvent {
                     sas.cancel().await.unwrap();
                     Ok(true)
                 } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
                     Ok(false)
                 }
             })
@@ -263,10 +289,15 @@ impl VerificationEvent {
                                 description: e.description.to_string(),
                             })
                             .collect::<Vec<_>>();
-                        return Ok(sequence);
+                        Ok(sequence)
+                    } else {
+                        Ok(vec![])
                     }
+                } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
+                    Ok(vec![])
                 }
-                Ok(vec![])
             })
             .await?
     }
@@ -285,6 +316,8 @@ impl VerificationEvent {
                     sas.confirm().await.unwrap();
                     Ok(sas.is_done())
                 } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
                     Ok(false)
                 }
             })
@@ -305,6 +338,8 @@ impl VerificationEvent {
                     sas.mismatch().await.unwrap();
                     Ok(true)
                 } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
                     Ok(false)
                 }
             })
@@ -324,6 +359,8 @@ impl VerificationEvent {
                 {
                     Ok(sas.is_done())
                 } else {
+                    // request may be timed out
+                    info!("Could not get verification object");
                     Ok(false)
                 }
             })
