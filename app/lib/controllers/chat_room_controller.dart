@@ -19,6 +19,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -38,15 +39,16 @@ class ChatRoomController extends GetxController {
   RxBool isEmojiVisible = false.obs;
   RxBool isAttachmentVisible = false.obs;
   FocusNode focusNode = FocusNode();
-  TextEditingController textEditingController = TextEditingController();
+  GlobalKey<FlutterMentionsState> mentionKey =
+      GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  List<Member> activeMembers = [];
+  List<Map<String, dynamic>> activeMembers = [];
+  Map<String, String> messageTextMapMarkDown = {};
+  Map<String, String> messageTextMapHtml = {};
   StreamSubscription<RoomMessage>? _messageSubscription;
   Future<FfiBufferUint8>? roomAvatar;
   String? roomName;
-  final Map<String, Future<FfiBufferUint8>> _userAvatars = {};
-  final Map<String, String> _userNames = {};
 
   ChatRoomController({required this.client}) : super();
 
@@ -80,7 +82,6 @@ class ChatRoomController extends GetxController {
 
   @override
   void onClose() {
-    textEditingController.dispose();
     focusNode.removeListener(() {});
     _messageSubscription?.cancel();
 
@@ -93,8 +94,6 @@ class ChatRoomController extends GetxController {
       messages.clear();
       typingUsers.clear();
       activeMembers.clear();
-      _userAvatars.clear();
-      _userNames.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
@@ -110,9 +109,8 @@ class ChatRoomController extends GetxController {
       });
       update(['room-profile']);
       isLoading.value = true;
-      activeMembers = (await _currentRoom!.activeMembers()).toList();
+      activeMembers = await _getActiveMembers();
       update(['active-members']);
-      _fetchUserProfiles();
       _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
       var msgs = await _stream!.paginateBackwards(10);
@@ -131,38 +129,47 @@ class ChatRoomController extends GetxController {
     return _currentRoom?.getRoomId();
   }
 
-  Future<void> _fetchUserProfiles() async {
-    Map<String, Future<FfiBufferUint8>> avatars = {};
-    Map<String, String> names = {};
-    List<String> ids = [];
-    for (int i = 0; i < activeMembers.length; i++) {
-      String userId = activeMembers[i].userId();
-      ids.add('user-profile-$userId');
-      UserProfile profile = await activeMembers[i].getProfile();
+  Future<List<Map<String, dynamic>>> _getActiveMembers() async {
+    List<Member> members = (await _currentRoom!.activeMembers())
+        .where((x) => x.userId() != client.userId().toString())
+        .toList();
+    List<Map<String, dynamic>> records = [];
+    for (Member member in members) {
+      UserProfile profile = await member.getProfile();
+      Map<String, dynamic> record = {
+        'display': profile.getDisplayName(),
+        'link': member.userId(),
+      };
       if (profile.hasAvatar()) {
-        avatars[userId] = profile.getAvatar();
+        record['avatar'] = profile.getAvatar();
       }
-      String? name = profile.getDisplayName();
-      if (name != null) {
-        names[userId] = name;
-      }
-      if (i % 3 == 0 || i == activeMembers.length - 1) {
-        _userAvatars.addAll(avatars);
-        _userNames.addAll(names);
-        update(ids);
-        avatars.clear();
-        names.clear();
-        ids.clear();
-      }
+      records.add(record);
     }
+    return records;
   }
 
   Future<FfiBufferUint8>? getUserAvatar(String userId) {
-    return _userAvatars.containsKey(userId) ? _userAvatars[userId] : null;
+    Future<FfiBufferUint8>? avatar;
+    for (var e in activeMembers) {
+      if (e['link'] == userId) {
+        avatar = e['avatar'];
+      } else {
+        avatar = null;
+      }
+    }
+    return avatar;
   }
 
   String? getUserName(String userId) {
-    return _userNames.containsKey(userId) ? _userNames[userId] : null;
+    String? username;
+    for (var e in activeMembers) {
+      if (e['link'] == userId) {
+        username = e['display'];
+      } else {
+        username = null;
+      }
+    }
+    return username;
   }
 
   //preview message link
@@ -181,18 +188,25 @@ class ChatRoomController extends GetxController {
   }
 
   //push messages in conversation
-  Future<void> handleSendPressed(String message) async {
+  Future<void> handleSendPressed(
+    String markdownMessage,
+    String htmlMessage,
+    int messageLength,
+  ) async {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    var eventId = await _currentRoom!.sendPlainMessage(message);
+    var eventId = await _currentRoom!.sendFormattedMessage(markdownMessage);
     final textMessage = types.TextMessage(
       author: types.User(id: client.userId().toString()),
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: eventId,
-      text: message,
+      text: htmlMessage,
       status: types.Status.sent,
       showStatus: true,
+      metadata: {
+        'messageLength': messageLength,
+      },
     );
     messages.insert(0, textMessage);
     update(['Chat']);
@@ -452,7 +466,10 @@ class ChatRoomController extends GetxController {
         author: author,
         createdAt: createdAt,
         id: eventId,
-        text: message.body(),
+        text: message.formattedBody() ?? message.body(),
+        metadata: {
+          'messageLength': message.body().length,
+        },
       );
       _insertMessage(m);
       if (isLoading.isFalse) {
@@ -463,7 +480,8 @@ class ChatRoomController extends GetxController {
   }
 
   void sendButtonUpdate() {
-    isSendButtonVisible = textEditingController.text.trim().isNotEmpty;
+    isSendButtonVisible =
+        mentionKey.currentState!.controller!.text.trim().isNotEmpty;
     update();
   }
 

@@ -6,7 +6,7 @@ target
 .local
 .DS_Store
 
-effektio_flutter_sdk/ios/libeffektio.a
+app/packages/rust_sdk/**/libeffektio.a
 native/effektio/src/api_generated.rs
 native/effektio/bindings.h
 native/effektio/bindings.dart

@@ -3,8 +3,6 @@
 use anyhow::Result;
 use clap::Parser;
 
-use effektio_core::ruma;
-
 mod action;
 mod config;
 

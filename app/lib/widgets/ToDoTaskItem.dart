@@ -92,13 +92,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                             : ToDoTheme.inactiveCheckColor,
                         shape: BoxShape.circle,
                       ),
-                      child: widget.isCompleted
-                          ? const Icon(
-                              Icons.done_outlined,
-                              color: ToDoTheme.inactiveCheckColor,
-                              size: 10,
-                            )
-                          : const SizedBox(),
+                      child: checkBuilder(),
                     ),
                   ),
                   Expanded(
@@ -195,6 +189,17 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
       radius: 28,
       backgroundColor: ToDoTheme.infoAvatarColor,
       child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
+    );
+  }
+
+  Widget? checkBuilder() {
+    if (!widget.isCompleted) {
+      return null;
+    }
+    return const Icon(
+      Icons.done_outlined,
+      color: ToDoTheme.inactiveCheckColor,
+      size: 10,
     );
   }
 

@@ -621,22 +621,22 @@ class ChatProfileScreen extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId = roomController.activeMembers[index].userId();
+          String userId = roomController.activeMembers[index]['link'];
           return Padding(
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (_) {
-                return (roomController.getUserName(userId) == null)
+                return (roomController.activeMembers[index]['link'] == null)
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: AppCommonTheme.primaryColor,
                         ),
                       )
                     : GroupMember(
-                        name: roomController.getUserName(userId),
+                        name: roomController.activeMembers[index]['display'],
                         isAdmin: true,
-                        avatar: roomController.getUserAvatar(userId),
+                        avatar: roomController.activeMembers[index]['avatar'],
                       );
               },
             ),
