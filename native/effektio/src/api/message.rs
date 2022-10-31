@@ -1,26 +1,22 @@
+use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::Room,
     ruma::events::{
-        room::message::{MessageFormat, MessageType, RoomMessageEventContent},
-        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
-        SyncMessageLikeEvent,
+        room::message::{MessageFormat, MessageType, OriginalSyncRoomMessageEvent},
+        AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
     },
 };
 
 #[derive(Clone, Debug)]
 pub struct RoomMessage {
-    inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
+    inner: OriginalSyncRoomMessageEvent,
     room: Room,
     fallback: String,
 }
 
 impl RoomMessage {
-    pub(crate) fn new(
-        inner: OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
-        room: Room,
-        fallback: String,
-    ) -> Self {
+    pub(crate) fn new(inner: OriginalSyncRoomMessageEvent, room: Room, fallback: String) -> Self {
         RoomMessage {
             inner,
             room,
@@ -146,16 +142,21 @@ impl FileDescription {
 }
 
 pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option<RoomMessage> {
-    if let Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
-        SyncMessageLikeEvent::Original(m),
-    ))) = ev.event.deserialize()
-    {
-        Some(RoomMessage {
-            fallback: m.content.body().to_string(),
-            room,
-            inner: m,
-        })
-    } else {
-        None
+    info!("sync event to message: {:?}", ev);
+    if let Ok(AnySyncTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
+        match evt {
+            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {}
+            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
+                info!("sync event to message okay");
+                return Some(RoomMessage {
+                    fallback: m.content.body().to_string(),
+                    room,
+                    inner: m,
+                });
+            }
+            _ => {}
+        }
     }
+    info!("sync event to message none");
+    None
 }

@@ -11,6 +11,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Invitation,
         RoomMessage,
         TypingEvent;
+import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
@@ -54,9 +55,51 @@ class ChatListController extends GetxController {
   void onInit() {
     super.onInit();
 
-    _convosSubscription = client.conversationsRx().listen((event) {
-      // process the latest message here
-      _updateList(event.toList());
+    _convosSubscription = client.conversationsRx().listen((event) async {
+      debugPrint('convo list updated');
+      if (!initialLoaded) {
+        initialLoaded = true; // used for rendering
+      }
+      List<JoinedRoom> newItems = [];
+      List<String> ids = [];
+      for (Conversation convo in event.toList()) {
+        String roomId = convo.getRoomId();
+        int pos = joinedRooms.indexWhere((x) {
+          return x.conversation.getRoomId() == roomId;
+        });
+        if (pos == -1) {
+          debugPrint('new convo');
+          JoinedRoom newItem = JoinedRoom(conversation: convo);
+          bool fetched = await convo.fetchLatestMessage();
+          if (fetched) {
+            debugPrint('fetched latest');
+            RoomMessage? msg = convo.latestMessage();
+            if (msg != null) {
+              newItem.latestMessage = LatestMessage(
+                sender: msg.sender(),
+                body: msg.body(),
+                originServerTs: msg.originServerTs(),
+              );
+            }
+          }
+          // list should be redrawn totally
+          ids.clear();
+          ids.add('chatlist');
+          newItems.add(newItem);
+        } else {
+          debugPrint('existing convo');
+          JoinedRoom newItem = JoinedRoom(conversation: convo);
+          newItem.latestMessage = joinedRooms[pos].latestMessage;
+          newItem.typingUsers = joinedRooms[pos].typingUsers;
+          // this item should be redrawn partially
+          if (!ids.contains('chatlist')) {
+            ids.add('chatroom-$roomId-subtitle');
+          }
+          newItems.add(newItem);
+        }
+      }
+      joinedRooms = newItems;
+      update(ids);
     });
 
     _invitesSubscription = client.invitationsRx().listen((event) {
@@ -93,7 +136,7 @@ class ChatListController extends GetxController {
       if (currentRoomId == null) {
         // we are in chat list page
         joinedRooms[idx].typingUsers = typingUsers;
-        update([roomId]);
+        update(['chatroom-$roomId-subtitle']);
       } else if (roomId == currentRoomId) {
         // we are in chat room page
         roomController.typingUsers = typingUsers;
@@ -109,39 +152,6 @@ class ChatListController extends GetxController {
     _typingSubscription?.cancel();
 
     super.onClose();
-  }
-
-  void _updateList(List<Conversation> convos) {
-    if (!initialLoaded) {
-      initialLoaded = true;
-    }
-    List<JoinedRoom> newItems = [];
-    for (Conversation convo in convos) {
-      JoinedRoom newItem = JoinedRoom(conversation: convo);
-      String roomId = convo.getRoomId();
-      int idx = joinedRooms.indexWhere((x) {
-        return x.conversation.getRoomId() == roomId;
-      });
-      RoomMessage? msg = convo.latestMessage();
-      if (msg == null) {
-        // prevent latest message from deleting
-        if (idx != -1) {
-          newItem.latestMessage = joinedRooms[idx].latestMessage;
-        }
-      } else {
-        newItem.latestMessage = LatestMessage(
-          sender: msg.sender(),
-          body: msg.body(),
-          originServerTs: msg.originServerTs(),
-        );
-      }
-      if (idx != -1) {
-        newItem.typingUsers = joinedRooms[idx].typingUsers;
-      }
-      newItems.add(newItem);
-    }
-    joinedRooms = newItems;
-    update(['chatlist']);
   }
 
   void moveItem(int from, int to) {

@@ -214,17 +214,25 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     if (isURL(imageMessage.uri)) {
+      debugPrint('remote image url: ${imageMessage.uri}');
       // remote url
       return CachedNetworkImage(
         imageUrl: imageMessage.uri,
         width: messageWidth.toDouble(),
+        errorWidget: (context, url, error) => const Text(
+          'Could not load image',
+        ),
       );
     }
+    debugPrint('local image url: ${imageMessage.uri}');
     // local path
     // the image that just sent is displayed from local not remote
     return Image.file(
       File(imageMessage.uri),
       width: messageWidth.toDouble(),
+      errorBuilder: (context, error, stackTrace) => const Text(
+        'Could not load image',
+      ),
     );
   }
 
@@ -416,6 +424,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
     );
   }
+
   void onSendButtonPressed(ChatRoomController controller) async {
     String markdownText = controller.mentionKey.currentState!.controller!.text;
     String htmlText = controller.mentionKey.currentState!.controller!.text;

@@ -11,6 +11,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
@@ -76,7 +77,10 @@ class _ChatListItemState extends State<ChatListItem> {
             stringName: simplifyRoomId(widget.room.getRoomId())!,
           ),
           title: buildTitle(context),
-          subtitle: buildSubtitle(context),
+          subtitle: GetBuilder<ChatListController>(
+            id: 'chatroom-${widget.room.getRoomId()}-subtitle',
+            builder: (controller) => buildSubtitle(context),
+          ),
           trailing: buildTrailing(context),
         ),
         const Padding(
@@ -104,10 +108,10 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget? buildSubtitle(BuildContext context) {
+  Widget buildSubtitle(BuildContext context) {
     if (widget.latestMessage == null) {
       if (widget.typingUsers.isEmpty) {
-        return null;
+        return const SizedBox();
       }
       return Text(
         getUserPlural(widget.typingUsers),

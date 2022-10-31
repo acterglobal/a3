@@ -60,7 +60,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.messageEventRx()?.listen((event) {
+    _messageSubscription = client.incomingMessageRx()?.listen((event) {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom != null) {

@@ -7,9 +7,7 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
     ruma::{
-        events::room::member::{
-            MembershipState, OriginalSyncRoomMemberEvent, StrippedRoomMemberEvent,
-        },
+        events::room::member::{MembershipState, StrippedRoomMemberEvent, SyncRoomMemberEvent},
         RoomId, UserId,
     },
     Client as MatrixClient,
@@ -144,34 +142,29 @@ impl InvitationController {
         }
     }
 
-    pub async fn add_event_handler(&mut self, client: &MatrixClient) {
-        let invitations = self.get_invitations(client).await;
-        self.invitations.lock_mut().clone_from(&invitations);
+    pub fn add_event_handler(&mut self, client: &MatrixClient) {
         let me = self.clone();
 
-        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: StrippedRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(client): Ctx<MatrixClient>,
+             c: MatrixClient,
              Ctx(me): Ctx<InvitationController>| async move {
                 // user got invitation
-                me.clone().process_stripped_event(ev, room, &client).await;
+                me.clone().process_stripped_event(ev, room, &c).await;
             },
         );
         self.stripped_event_handle = Some(handle);
 
-        client.add_event_handler_context(client.clone());
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
-            |ev: OriginalSyncRoomMemberEvent,
+            |ev: SyncRoomMemberEvent,
              room: MatrixRoom,
-             Ctx(client): Ctx<MatrixClient>,
-             Ctx(me): Ctx<InvitationController>,
-             handle: EventHandlerHandle| async move {
+             c: MatrixClient,
+             Ctx(me): Ctx<InvitationController>| async move {
                 // user accepted or rejected invitation
-                me.clone().process_sync_event(ev, room, &client);
+                me.clone().process_sync_event(ev, room, &c);
             },
         );
         self.sync_event_handle = Some(handle);
@@ -188,7 +181,7 @@ impl InvitationController {
         }
     }
 
-    async fn get_invitations(&self, client: &MatrixClient) -> Vec<Invitation> {
+    pub async fn load_invitations(&self, client: &MatrixClient) {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
             let details = room.invite_details().await.unwrap();
@@ -201,7 +194,7 @@ impl InvitationController {
             };
             invitations.push(invitation);
         }
-        invitations
+        self.invitations.lock_mut().clone_from(&invitations);
     }
 
     async fn process_stripped_event(
@@ -216,7 +209,7 @@ impl InvitationController {
             return;
         }
 
-        info!("invitation - stripped room member event: {:?}", ev);
+        info!("stripped room member event: {:?}", ev);
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
@@ -236,10 +229,10 @@ impl InvitationController {
                 sender: sender.to_string(),
             };
             let mut invitations = self.invitations.lock_mut();
-            let idx = invitations
+            if let None = invitations
                 .iter()
-                .position(|x| x.room_id == *room_id && x.sender == *sender);
-            if idx.is_none() {
+                .position(|x| x.room_id == *room_id && x.sender == *sender)
+            {
                 invitations.insert(0, invitation);
             }
         }
@@ -247,37 +240,37 @@ impl InvitationController {
 
     fn process_sync_event(
         &mut self,
-        ev: OriginalSyncRoomMemberEvent,
+        ev: SyncRoomMemberEvent,
         room: MatrixRoom,
         client: &MatrixClient,
     ) {
-        // filter only event for me
-        let user_id = client.user_id().expect("You seem to be not logged in");
-        if ev.state_key != *user_id {
-            return;
-        }
+        if let Some(evt) = ev.as_original() {
+            // filter only event for me
+            let user_id = client.user_id().expect("You seem to be not logged in");
+            if evt.clone().state_key != *user_id {
+                return;
+            }
 
-        let evt = ev.clone();
-        // info!("invitation - original sync room member event: {:?}", ev);
-        if let Some(prev_content) = ev.unsigned.prev_content {
-            let mut invitations = self.invitations.lock_mut();
-            match (prev_content.membership, ev.content.membership) {
-                (MembershipState::Invite, MembershipState::Join) => {
-                    info!("invitation - original sync room member event: {:?}", evt);
-                    // remove this invitation from list
-                    let room_id = room.room_id().to_string();
-                    if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
-                        invitations.remove(idx);
+            // info!("original sync room member event: {:?}", ev);
+            if let Some(prev_content) = evt.clone().unsigned.prev_content {
+                let mut invitations = self.invitations.lock_mut();
+                match (prev_content.membership, evt.clone().content.membership) {
+                    (MembershipState::Invite, MembershipState::Join) => {
+                        // remove this invitation from list
+                        let room_id = room.room_id().to_string();
+                        if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                            invitations.remove(idx);
+                        }
                     }
-                }
-                (MembershipState::Invite, MembershipState::Leave) => {
-                    // remove this invitation from list
-                    let room_id = room.room_id().to_string();
-                    if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
-                        invitations.remove(idx);
+                    (MembershipState::Invite, MembershipState::Leave) => {
+                        // remove this invitation from list
+                        let room_id = room.room_id().to_string();
+                        if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {
+                            invitations.remove(idx);
+                        }
                     }
+                    _ => {}
                 }
-                _ => {}
             }
         }
     }

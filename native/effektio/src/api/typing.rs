@@ -6,10 +6,7 @@ use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
-    ruma::{
-        events::{typing::TypingEventContent, SyncEphemeralRoomEvent},
-        OwnedRoomId, OwnedUserId,
-    },
+    ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId},
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
@@ -58,9 +55,7 @@ impl TypingController {
         let me = self.clone();
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
-            |ev: SyncEphemeralRoomEvent<TypingEventContent>,
-             room: MatrixRoom,
-             Ctx(me): Ctx<TypingController>| async move {
+            |ev: SyncTypingEvent, room: MatrixRoom, Ctx(me): Ctx<TypingController>| async move {
                 me.clone().process_ephemeral_event(ev, &room);
             },
         );
@@ -74,11 +69,7 @@ impl TypingController {
         }
     }
 
-    fn process_ephemeral_event(
-        &mut self,
-        ev: SyncEphemeralRoomEvent<TypingEventContent>,
-        room: &MatrixRoom,
-    ) {
+    fn process_ephemeral_event(&mut self, ev: SyncTypingEvent, room: &MatrixRoom) {
         info!("typing: {:?}", ev.content.user_ids);
         let room_id = room.room_id().to_owned();
         let msg = TypingEvent::new(room_id.clone(), ev.content.user_ids);
