@@ -119,37 +119,51 @@ class _NewsSideBarState extends State<NewsSideBar> {
   }
 
   Widget buildProfileImage(Color borderColor) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.bottomCenter,
-        children: [
-          CachedNetworkImage(
-            imageUrl:
-                'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-            height: 45,
-            width: 45,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: borderColor),
-                borderRadius: BorderRadius.circular(25),
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.red,
-                    BlendMode.colorBurn,
-                  ),
-                ),
+    return GestureDetector(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Profile Action not yet implemented'),
+              duration: const Duration(milliseconds: 1500),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
               ),
             ),
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.bottomCenter,
+            children: [
+              CachedNetworkImage(
+                imageUrl:
+                    'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+                height: 45,
+                width: 45,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: borderColor),
+                    borderRadius: BorderRadius.circular(25),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      colorFilter: const ColorFilter.mode(
+                        Colors.red,
+                        BlendMode.colorBurn,
+                      ),
+                    ),
+                  ),
+                ),
+                placeholder: (context, url) =>
+                    const CircularProgressIndicator(),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget buildSideBarItem(
@@ -162,6 +176,17 @@ class _NewsSideBarState extends State<NewsSideBar> {
       onTap: () {
         if (iconName == 'comment') {
           showBottomSheet();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('News Action not yet implemented'),
+              duration: const Duration(milliseconds: 1500),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+          );
         }
       },
       child: Padding(
