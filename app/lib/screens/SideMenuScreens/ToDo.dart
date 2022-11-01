@@ -2,7 +2,6 @@ import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
@@ -38,7 +37,16 @@ class _ToDoScreenState extends State<ToDoScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: ToDoTheme.floatingABColor,
         onPressed: () {
-          Navigator.pushNamed(context, '/addTodo');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Add Task-List Action not yet implemented'),
+              duration: const Duration(milliseconds: 1500),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+            ),
+          );
         },
         child: const Icon(Icons.add_outlined, size: 25),
       ),
@@ -50,26 +58,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(Icons.arrow_back),
-                      color: ToDoTheme.primaryTextColor,
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {},
-                      icon: SvgPicture.asset('assets/images/notification.svg'),
-                      color: ToDoTheme.primaryTextColor,
-                    ),
-                  ],
-                ),
                 const Padding(
-                  padding: EdgeInsets.only(left: 12, top: 10),
-                  child: Text('Todo List', style: ToDoTheme.titleTextStyle),
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text('Tasks', style: ToDoTheme.titleTextStyle),
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 12, top: 10),
@@ -106,6 +97,17 @@ class _ToDoScreenState extends State<ToDoScreen> {
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
         todoController.updateIndex(index);
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Task filters not yet implemented'),
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5.0),
+            ),
+          ),
+        );
       },
       child: GetBuilder<ToDoController>(
         id: 'radiobtn',
