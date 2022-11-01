@@ -410,3 +410,30 @@ class ToDoTheme {
     ),
   );
 }
+
+class PinsTheme {
+  // Color Scheme.
+  static const backgroundGradientColor = ColorRef(Color(0xFF242632));
+  static const backgroundGradient2Color = ColorRef(Color(0x885C2A80));
+  static const primaryTextColor = Color.fromARGB(255, 255, 255, 255);
+
+  // Text Scheme.
+  // Background Scheme.
+  static const pinsDecoration = BoxDecoration(
+    gradient: LinearGradient(
+      begin: FractionalOffset(0.5, 0.3),
+      end: Alignment.topCenter,
+      colors: [
+        PinsTheme.backgroundGradientColor,
+        PinsTheme.backgroundGradient2Color
+      ],
+    ),
+  );
+
+  // Text Scheme.
+  static const titleTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 25,
+    fontWeight: FontWeight.w700,
+  );
+}
