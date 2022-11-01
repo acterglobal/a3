@@ -34,7 +34,7 @@ class FaqOverviewScreen extends StatelessWidget {
             appBar: AppBar(
               backgroundColor: AppCommonTheme.backgroundColor,
               title: const Text(
-                'Faq',
+                'Pins',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
               centerTitle: true,
@@ -49,7 +49,7 @@ class FaqOverviewScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const HtmlEditorExample(
-                          title: 'Create FAQ',
+                          title: 'Create Pin',
                         ),
                       ),
                     );
