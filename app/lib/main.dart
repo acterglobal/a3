@@ -103,7 +103,7 @@ class _EffektioHomeState extends State<EffektioHome>
     super.initState();
 
     client = makeClient();
-    tabController = TabController(length: 5, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     tabController.addListener(() {
       setState(() => tabIndex = tabController.index);
     });
