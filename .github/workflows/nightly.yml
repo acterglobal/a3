@@ -10,17 +10,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Check latest commit
     outputs:
-      should_run: ${{ steps.should_run.outputs.should_run }}
+      should_run: ${{ steps.check-new-commits.outputs.has-new-commits }}
     steps:
       - uses: actions/checkout@v2
-      - name: print latest_commit
-        run: echo ${{ github.sha }}
-      - id: should_run
-        continue-on-error: true
-        name: check latest commit is less than a day
-        if: ${{ github.event_name == 'schedule' }}
-        run: test -z $(git rev-list  --after="24 hours"  ${{ github.sha }}) &amp;&amp; echo "::set-output name=should_run::false"
-
+      - name: Check for new commits today
+        id: check-new-commits
+        uses: adriangl/check-new-commits-action@v1
+        with:
+          seconds: 86400 # One day in seconds
   build:
     strategy:
       matrix:
@@ -51,7 +48,7 @@ jobs:
             artifact_path:  app/build/ios/archive/
             artifact_files: Runner.xcarchive
           - name: Mac OSx 
-            os: macos-latest
+            os: macos-12
             cargo_make_args: desktop
             flutter_build_args: "build macos --release"
             artifact_prefix: effektio-nightly-macosx
@@ -78,6 +75,7 @@ jobs:
         shell: bash
 
       - name: Install supported toolchain
+        id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
@@ -155,6 +153,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     name: Publish
+    if: ${{ github.event.schedule }}
     needs:
       - build
     steps:
@@ -167,13 +166,20 @@ jobs:
           git tag nightly-${{ steps.tag.outputs.tag }}
           git push origin nightly-${{ steps.tag.outputs.tag }}
       - name: Release
+        id: create_release
         uses: softprops/action-gh-release@v1
         with:
           # publish this nightly release now
-          draft: false
+          draft: true
           name: Nightly ${{ steps.tag.outputs.tag }}
           tag_name: nightly-${{ steps.tag.outputs.tag }}
           prerelease: true
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}
+
 
   report-issue:
     runs-on: ubuntu-latest
@@ -181,6 +187,7 @@ jobs:
     if: ${{ failure() }}
     needs:
       - build
+      - publish
     steps:
       - name: Create Issue on Failed workflow
         uses: dacbd/create-issue-action@main
