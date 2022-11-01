@@ -6,7 +6,7 @@ import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio/screens/HomeScreens/Notification.dart';
+// import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
@@ -16,7 +16,7 @@ import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio/widgets/AppCommon.dart';
+// import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
 import 'package:effektio/widgets/SideMenu.dart';
@@ -142,14 +142,7 @@ class _EffektioHomeState extends State<EffektioHome>
     if (tabIndex <= 3) {
       return null;
     }
-    List<String?> titles = <String?>[
-      null,
-      'Pins',
-      'Tasks',
-      'Chat',
-    ];
     return AppBar(
-      // title: navBarTitle(titles[tabIndex] ?? ''),
       centerTitle: true,
       primary: true,
       elevation: 1,
@@ -193,14 +186,14 @@ class _EffektioHomeState extends State<EffektioHome>
   Widget buildPinsTab() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      child: Tab(icon: Icon(FlutterIcons.pin_ent)),
+      child: const Tab(icon: Icon(FlutterIcons.pin_ent)),
     );
   }
 
   Widget buildTasksTab() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      child: Tab(
+      child: const Tab(
         icon: Icon(FlutterIcons.tasks_faw5s),
       ),
     );
