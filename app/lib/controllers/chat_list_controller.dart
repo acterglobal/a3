@@ -111,7 +111,7 @@ class ChatListController extends GetxController {
       if (currentRoomId == null) {
         // we are in chat list page
         joinedRooms[idx].typingUsers = typingUsers;
-        update(['chatlist']);
+        update([roomId]);
       } else if (roomId == currentRoomId) {
         // we are in chat room page
         roomController.typingUsers = typingUsers;

@@ -162,7 +162,12 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: buildJoinedItem(item),
+                  child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (_) {
+                      return buildJoinedItem(item);
+                    },
+                  ),
                 ),
               );
             },
@@ -172,7 +177,11 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: buildJoinedItem(item),
+                child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (_) {
+                      return buildJoinedItem(item);
+                    }),
               );
             },
           ),
@@ -191,7 +200,12 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: buildJoinedItem(item),
+                  child: GetBuilder<ChatListController>(
+                    id: item.conversation.getRoomId(),
+                    builder: (_) {
+                      return buildJoinedItem(item);
+                    },
+                  ),
                 ),
               );
             },
