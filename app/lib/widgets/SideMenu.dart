@@ -1,5 +1,5 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+// import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
@@ -8,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
@@ -57,13 +58,13 @@ class _SideDrawerState extends State<SideDrawer> {
               buildHeader(),
               SizedBox(height: size.height * 0.04),
               buildTodoItem(),
+              buildPinsItem(),
               buildGalleryItem(),
               buildEventItem(),
               buildSharedResourcesItem(),
               buildPollsItem(),
               buildGroupBudgetingItem(),
               buildSharedDocumentsItem(),
-              buildPinsItem(),
               const SizedBox(height: 5),
               if (!widget.client.isGuest()) buildLogoutItem(context),
             ],
@@ -114,7 +115,10 @@ class _SideDrawerState extends State<SideDrawer> {
     }
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/profile', arguments: widget.client);
+        showNotYetImplementedMsg(
+          context,
+          'Profile View not implemented yet',
+        );
       },
       child: Row(
         children: [
@@ -204,13 +208,18 @@ class _SideDrawerState extends State<SideDrawer> {
         'assets/images/event.svg',
         width: 25,
         height: 25,
-        color: Colors.teal[700],
+        color: Colors.teal[900],
       ),
       title: Text(
         AppLocalizations.of(context)!.events,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
       ),
-      onTap: () {},
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Events is not implemented yet',
+        );
+      },
     );
   }
 
@@ -220,13 +229,18 @@ class _SideDrawerState extends State<SideDrawer> {
         'assets/images/shared_resources.svg',
         width: 25,
         height: 25,
-        color: Colors.teal[700],
+        color: Colors.teal[900],
       ),
       title: Text(
         AppLocalizations.of(context)!.sharedResource,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
       ),
-      onTap: () => {},
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Shared Resources is not implemented yet',
+        );
+      },
     );
   }
 
@@ -236,13 +250,18 @@ class _SideDrawerState extends State<SideDrawer> {
         'assets/images/polls.svg',
         width: 25,
         height: 25,
-        color: Colors.teal[700],
+        color: Colors.teal[900],
       ),
       title: Text(
         AppLocalizations.of(context)!.pollsVotes,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
       ),
-      onTap: () => {},
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Polls are not implemented yet',
+        );
+      },
     );
   }
 
@@ -252,18 +271,16 @@ class _SideDrawerState extends State<SideDrawer> {
         'assets/images/group_budgeting.svg',
         width: 25,
         height: 25,
-        color: Colors.teal[700],
+        color: Colors.teal[900],
       ),
       title: Text(
         AppLocalizations.of(context)!.groupBudgeting,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
       ),
       onTap: () {
-        Navigator.push(
+        showNotYetImplementedMsg(
           context,
-          MaterialPageRoute(
-            builder: (context) => const SocialProfileScreen(),
-          ),
+          'Co-Budgeting is not implemented yet',
         );
       },
     );
@@ -275,29 +292,37 @@ class _SideDrawerState extends State<SideDrawer> {
         'assets/images/shared_documents.svg',
         width: 25,
         height: 25,
-        color: Colors.teal[700],
+        color: Colors.teal[900],
       ),
       title: Text(
         AppLocalizations.of(context)!.sharedDocuments,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
       ),
-      onTap: () {},
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Shared Docs is not implemented yet',
+        );
+      },
     );
   }
 
   Widget buildPinsItem() {
     return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/faq.svg',
-        width: 25,
-        height: 25,
+      leading: Icon(
+        FlutterIcons.pin_ent,
         color: Colors.teal[700],
       ),
       title: Text(
         AppLocalizations.of(context)!.pins,
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
-      onTap: () {},
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Pins from Sidebar is not implemented yet',
+        );
+      },
     );
   }
 
