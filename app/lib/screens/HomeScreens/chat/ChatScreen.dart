@@ -379,6 +379,12 @@ class _ChatScreenState extends State<ChatScreen> {
               imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
+              onAvatarTap: (userId) {
+                showNotYetImplementedMsg(
+                  context,
+                  'Chat Profile view is not implemented yet',
+                );
+              },
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached:
@@ -416,6 +422,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
     );
   }
+
   void onSendButtonPressed(ChatRoomController controller) async {
     String markdownText = controller.mentionKey.currentState!.controller!.text;
     String htmlText = controller.mentionKey.currentState!.controller!.text;
