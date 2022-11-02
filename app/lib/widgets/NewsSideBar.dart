@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CommentView.dart';
 import 'package:effektio/widgets/LikeButton.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -121,16 +122,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
   Widget buildProfileImage(Color borderColor) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Profile Action not yet implemented'),
-            duration: const Duration(milliseconds: 1500),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-          ),
-        );
+        showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
       },
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
@@ -177,16 +169,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
         if (iconName == 'comment') {
           showBottomSheet();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('News Action not yet implemented'),
-              duration: const Duration(milliseconds: 1500),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-          );
+          showNotYetImplementedMsg(context, 'News Action not yet implemented');
         }
       },
       child: Padding(
@@ -315,11 +298,10 @@ class _NewsSideBarState extends State<NewsSideBar> {
                             ),
                             IconButton(
                               onPressed: () {
-                                const snackBar = SnackBar(
-                                  content: Text('Send icon tapped'),
+                                showNotYetImplementedMsg(
+                                  context,
+                                  'Send not yet implemented',
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
                               },
                               icon: const Icon(Icons.send, color: Colors.pink),
                             ),

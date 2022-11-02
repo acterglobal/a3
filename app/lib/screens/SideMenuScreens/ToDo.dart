@@ -2,6 +2,7 @@ import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
@@ -37,15 +38,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: ToDoTheme.floatingABColor,
         onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('Add Task-List Action not yet implemented'),
-              duration: const Duration(milliseconds: 1500),
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
+          showNotYetImplementedMsg(
+            context,
+            'Add Task-List Action not yet implemented',
           );
         },
         child: const Icon(Icons.add_outlined, size: 25),
@@ -97,17 +92,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
         todoController.updateIndex(index);
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Task filters not yet implemented'),
-            duration: const Duration(milliseconds: 1500),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5.0),
-            ),
-          ),
-        );
+        showNotYetImplementedMsg(context, 'Task filters not yet implemented');
       },
       child: GetBuilder<ToDoController>(
         id: 'radiobtn',
