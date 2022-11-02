@@ -17,7 +17,7 @@ import 'package:intl/intl.dart';
 class ChatListItem extends StatefulWidget {
   final String userId;
   final Conversation room;
-  final LatestMessage? latestMessage;
+  final RoomMessage? latestMessage;
   final List<types.User> typingUsers;
 
   const ChatListItem({
@@ -54,6 +54,7 @@ class _ChatListItemState extends State<ChatListItem> {
 
   @override
   Widget build(BuildContext context) {
+    String roomId = widget.room.getRoomId();
     // ToDo: UnreadCounter
     return Column(
       children: <Widget>[
@@ -74,11 +75,11 @@ class _ChatListItemState extends State<ChatListItem> {
             displayName: displayName,
             radius: 25,
             isGroup: true,
-            stringName: simplifyRoomId(widget.room.getRoomId())!,
+            stringName: simplifyRoomId(roomId)!,
           ),
           title: buildTitle(context),
           subtitle: GetBuilder<ChatListController>(
-            id: 'chatroom-${widget.room.getRoomId()}-subtitle',
+            id: 'chatroom-$roomId-subtitle',
             builder: (controller) => buildSubtitle(context),
           ),
           trailing: buildTrailing(context),
@@ -109,18 +110,7 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget buildSubtitle(BuildContext context) {
-    if (widget.latestMessage == null) {
-      if (widget.typingUsers.isEmpty) {
-        return const SizedBox();
-      }
-      return Text(
-        getUserPlural(widget.typingUsers),
-        style: ChatTheme01.latestChatStyle.copyWith(
-          fontStyle: FontStyle.italic,
-        ),
-      );
-    }
-    if (widget.typingUsers.isEmpty != true) {
+    if (widget.typingUsers.isNotEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
@@ -131,11 +121,15 @@ class _ChatListItemState extends State<ChatListItem> {
         ),
       );
     }
+    if (widget.latestMessage == null) {
+      return const SizedBox();
+    }
+    String sender = widget.latestMessage!.sender();
+    String body = widget.latestMessage!.body();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
-        text:
-            '${simplifyUserId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
+        text: '${simplifyUserId(sender)}: $body',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,
@@ -200,7 +194,7 @@ class _ChatListItemState extends State<ChatListItem> {
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs,
+          widget.latestMessage!.originServerTs(),
           isUtc: true,
         ),
       ),

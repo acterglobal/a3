@@ -162,12 +162,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: GetBuilder<ChatListController>(
-                    id: item.conversation.getRoomId(),
-                    builder: (ChatListController listController) {
-                      return buildJoinedItem(item);
-                    },
-                  ),
+                  child: buildJoinedItem(item),
                 ),
               );
             },
@@ -177,12 +172,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: GetBuilder<ChatListController>(
-                  id: item.conversation.getRoomId(),
-                  builder: (ChatListController listController) {
-                    return buildJoinedItem(item);
-                  },
-                ),
+                child: buildJoinedItem(item),
               );
             },
           ),
@@ -201,12 +191,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: GetBuilder<ChatListController>(
-                    id: item.conversation.getRoomId(),
-                    builder: (ChatListController listController) {
-                      return buildJoinedItem(item);
-                    },
-                  ),
+                  child: buildJoinedItem(item),
                 ),
               );
             },
@@ -231,7 +216,6 @@ class _ChatOverviewState extends State<ChatOverview> {
       key: Key(item.conversation.getRoomId()),
       userId: widget.client.userId().toString(),
       room: item.conversation,
-      latestMessage: item.latestMessage,
       typingUsers: item.typingUsers,
     );
   }

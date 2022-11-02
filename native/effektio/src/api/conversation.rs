@@ -10,8 +10,9 @@ use futures_signals::signal::{
 };
 use log::{error, info, warn};
 use matrix_sdk::{
+    deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room as MatrixRoom,
+    room::{MessagesOptions, Room as MatrixRoom},
     ruma::{
         api::client::room::{
             create_room::v3::{CreationContent, Request as CreateRoomRequest},
@@ -58,51 +59,17 @@ impl Conversation {
 
         RUNTIME
             .spawn(async move {
-                let (forward, backward) = room
-                    .timeline()
-                    .await
-                    .context("Failed acquiring timeline streams")
-                    .unwrap();
-
-                pin_mut!(backward);
-                // try to find the last message in the past.
-                loop {
-                    info!("conversation backward: {:?}", room);
-                    match backward.next().await {
-                        Some(Ok(ev)) => {
-                            if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                                me.set_latest_message(msg);
-                                return Ok(true);
-                            }
-                        }
-                        Some(Err(e)) => {
-                            error!("Error fetching messages {:}", e);
-                            break;
-                        }
-                        None => {
-                            warn!("No old messages found");
-                            break;
+                let options = MessagesOptions::backward();
+                if let Ok(messages) = room.messages(options).await {
+                    let events: Vec<SyncTimelineEvent> = messages.chunk.into_iter().map(SyncTimelineEvent::from).collect();
+                    for event in events {
+                        if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
+                            info!("latest message: {:?}", msg);
+                            me.set_latest_message(msg);
+                            return Ok(true);
                         }
                     }
                 }
-
-                // pin_mut!(forward);
-                // // now continue to poll for incoming messages
-                // loop {
-                //     match forward.next().await {
-                //         Some(ev) => {
-                //             if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-                //                 me.set_latest_message(msg);
-                //                 return Ok(true);
-                //             }
-                //         }
-                //         None => {
-                //             warn!("Messages stream stopped");
-                //             break;
-                //         }
-                //     }
-                // }
-
                 Ok(false)
             })
             .await?
