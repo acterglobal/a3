@@ -214,7 +214,6 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     if (isURL(imageMessage.uri)) {
-      debugPrint('remote image url: ${imageMessage.uri}');
       // remote url
       return CachedNetworkImage(
         imageUrl: imageMessage.uri,
@@ -224,7 +223,6 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
     }
-    debugPrint('local image url: ${imageMessage.uri}');
     // local path
     // the image that just sent is displayed from local not remote
     return Image.file(

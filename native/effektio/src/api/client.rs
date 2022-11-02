@@ -11,7 +11,6 @@ use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
-use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     ruma::{device_id, OwnedUserId, RoomId},
@@ -177,7 +176,7 @@ impl Client {
                         } else {
                             // divide_rooms_from_common must be called after first sync
                             let (_, convos) = divide_rooms_from_common(client.clone()).await;
-                            conversation_controller.load_rooms(&convos);
+                            conversation_controller.load_rooms(&convos).await;
                             // load invitations after first sync
                             invitation_controller.load_invitations(&client).await;
                         }

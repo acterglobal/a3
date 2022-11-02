@@ -98,16 +98,25 @@ class ChatRoomController extends GetxController {
       _currentRoom = convoRoom;
       isLoading.value = true;
       activeMembers = await _getActiveMembers();
+      if (_currentRoom == null) {
+        return; // user may close chat screen before long loading completed
+      }
       _stream = await _currentRoom!.timeline();
       // i am fetching messages from remote
+      if (_currentRoom == null) {
+        return; // user may close chat screen before long loading completed
+      }
       var msgs = await _stream!.paginateBackwards(10);
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
       // load receipt status of room
       var receiptController = Get.find<ReceiptController>();
-      var receipts = (await _currentRoom!.userReceipts()).toList();
-      receiptController.loadRoom(_currentRoom!.getRoomId(), receipts);
+      var receipts = (await convoRoom.userReceipts()).toList();
+      if (_currentRoom == null) {
+        return; // user may close chat screen before long loading completed
+      }
+      receiptController.loadRoom(convoRoom.getRoomId(), receipts);
       isLoading.value = false;
     }
   }

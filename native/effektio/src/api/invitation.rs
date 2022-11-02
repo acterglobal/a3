@@ -251,7 +251,6 @@ impl InvitationController {
                 return;
             }
 
-            // info!("original sync room member event: {:?}", ev);
             if let Some(prev_content) = evt.clone().unsigned.prev_content {
                 let mut invitations = self.invitations.lock_mut();
                 match (prev_content.membership, evt.clone().content.membership) {

@@ -24,7 +24,7 @@ use matrix_sdk::{
             message::OriginalSyncRoomMessageEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId,
+        OwnedRoomId, OwnedUserId, RoomId,
     },
     Client as MatrixClient,
 };
@@ -53,31 +53,26 @@ impl Conversation {
         }
     }
 
-    pub async fn fetch_latest_message(&mut self) -> Result<bool> {
+    async fn fetch_latest_message(&mut self) {
         let room = self.room.clone();
-        let mut me = self.clone();
-
-        RUNTIME
-            .spawn(async move {
-                let options = MessagesOptions::backward();
-                if let Ok(messages) = room.messages(options).await {
-                    let events: Vec<SyncTimelineEvent> = messages.chunk.into_iter().map(SyncTimelineEvent::from).collect();
-                    for event in events {
-                        if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
-                            info!("latest message: {:?}", msg);
-                            me.set_latest_message(msg);
-                            return Ok(true);
-                        }
-                    }
+        let options = MessagesOptions::backward();
+        if let Ok(messages) = room.messages(options).await {
+            let events: Vec<SyncTimelineEvent> = messages
+                .chunk
+                .into_iter()
+                .map(SyncTimelineEvent::from)
+                .collect();
+            for event in events {
+                if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
+                    self.set_latest_message(msg);
+                    return;
                 }
-                Ok(false)
-            })
-            .await?
+            }
+        }
     }
 
     fn set_latest_message(&mut self, msg: RoomMessage) {
         self.latest_message = Some(msg);
-        info!("updated latest message: {:?}", self);
     }
 
     pub fn latest_message(&self) -> Option<RoomMessage> {
@@ -144,7 +139,6 @@ impl ConversationController {
              room: MatrixRoom,
              c: MatrixClient,
              Ctx(me): Ctx<ConversationController>| async move {
-                info!("sync room message event handler");
                 me.clone().process_room_message(ev, &room, &c);
             },
         );
@@ -174,8 +168,14 @@ impl ConversationController {
         }
     }
 
-    pub fn load_rooms(&mut self, convos: &Vec<Conversation>) {
-        self.conversations.lock_mut().clone_from(&convos);
+    pub async fn load_rooms(&mut self, convos: &Vec<Conversation>) {
+        let mut conversations: Vec<Conversation> = vec![];
+        for convo in convos {
+            let mut conversation = convo.clone();
+            conversation.fetch_latest_message().await;
+            conversations.push(conversation);
+        }
+        self.conversations.lock_mut().clone_from(&conversations);
     }
 
     fn process_room_message(
@@ -189,7 +189,6 @@ impl ConversationController {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                info!("existing convo index: {}", idx);
                 let mut convo = Conversation::new(Room {
                     client: client.clone(),
                     room: room.clone(),
@@ -219,7 +218,6 @@ impl ConversationController {
         }
 
         let evt = ev.clone();
-        // info!("conversation - original sync room member event: {:?}", ev);
         let mut conversations = self.conversations.lock_mut();
         if let Some(prev_content) = ev.unsigned.prev_content {
             match (prev_content.membership, ev.content.membership) {
@@ -231,7 +229,6 @@ impl ConversationController {
                         .iter()
                         .position(|x| x.room_id() == room.room_id())
                     {
-                        info!("conversation - original sync room member event: {:?}", evt);
                         // add new room
                         let conversation = Conversation::new(Room {
                             client: client.clone(),

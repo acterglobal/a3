@@ -171,9 +171,6 @@ object Conversation {
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
-    /// Fetch the latest message
-    fn fetch_latest_message() -> Future<Result<bool>>;
-
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
 

@@ -147,7 +147,6 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
         match evt {
             AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {}
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
-                info!("sync event to message okay");
                 return Some(RoomMessage {
                     fallback: m.content.body().to_string(),
                     room,
@@ -157,6 +156,5 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
             _ => {}
         }
     }
-    info!("sync event to message none");
     None
 }

@@ -11,7 +11,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Invitation,
         RoomMessage,
         TypingEvent;
-import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
@@ -43,7 +42,6 @@ class ChatListController extends GetxController {
     super.onInit();
 
     _convosSubscription = client.conversationsRx().listen((event) {
-      debugPrint('convo list updated');
       if (!initialLoaded) {
         initialLoaded = true; // used for rendering
       }
@@ -55,20 +53,8 @@ class ChatListController extends GetxController {
         });
         JoinedRoom newItem = JoinedRoom(conversation: convo);
         if (pos == -1) {
-          debugPrint('new convo');
-          // Future.delayed(const Duration(milliseconds: 500), () async {
-          //   bool fetched = await convo.fetchLatestMessage();
-          //   if (fetched) {
-          //     debugPrint('fetched latest');
-          //     RoomMessage? msg = convo.latestMessage();
-          //     if (msg != null) {
-          //       newItem.latestMessage = msg;
-          //       update(['chatroom-$roomId-subtitle']);
-          //     }
-          //   }
-          // });
+          newItem.latestMessage = convo.latestMessage();
         } else {
-          debugPrint('existing convo');
           newItem.latestMessage = joinedRooms[pos].latestMessage;
           newItem.typingUsers = joinedRooms[pos].typingUsers;
         }
@@ -111,7 +97,7 @@ class ChatListController extends GetxController {
       if (currentRoomId == null) {
         // we are in chat list page
         joinedRooms[idx].typingUsers = typingUsers;
-        update([roomId]);
+        update(['chatroom-$roomId']);
       } else if (roomId == currentRoomId) {
         // we are in chat room page
         roomController.typingUsers = typingUsers;
