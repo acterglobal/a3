@@ -229,9 +229,10 @@ impl InvitationController {
                 sender: sender.to_string(),
             };
             let mut invitations = self.invitations.lock_mut();
-            if let None = invitations
+            if invitations
                 .iter()
                 .position(|x| x.room_id == *room_id && x.sender == *sender)
+                .is_none()
             {
                 invitations.insert(0, invitation);
             }
