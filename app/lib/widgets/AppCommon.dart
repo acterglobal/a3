@@ -11,6 +11,20 @@ Widget navBarTitle(String title) {
   );
 }
 
+void showNotYetImplementedMsg(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).clearSnackBars();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      duration: const Duration(milliseconds: 1500),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5.0),
+      ),
+    ),
+  );
+}
+
 String? simplifyUserId(String name) {
   RegExp re = RegExp(r'^@(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w{2,3})+$');
   RegExpMatch? match = re.firstMatch(name);

@@ -56,7 +56,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Create FAQ',
+      title: 'Create Pin',
       theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
       home: GestureDetector(
@@ -105,7 +105,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
             child: HtmlEditor(
               controller: controller,
               htmlEditorOptions: const HtmlEditorOptions(
-                hint: 'Write about the FAQ',
+                hint: 'What\'s the Pin about?',
                 shouldEnsureVisible: true,
               ),
               htmlToolbarOptions: HtmlToolbarOptions(

@@ -87,7 +87,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           controller: faqController,
                           style: const m_colors.TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                            labelText: 'Faq title',
+                            labelText: 'Pin title',
                             labelStyle: TextStyle(color: Colors.white),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
