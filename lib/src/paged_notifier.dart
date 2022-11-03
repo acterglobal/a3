@@ -54,7 +54,7 @@ class PagedNotifier<PageKeyType, ItemType>
         state = state.copyWith(
             error: errorBuilder != null
                 ? errorBuilder!(e)
-                : 'Si è verificato un\'errore. Per favore riprovare.');
+                : 'An error occurred. Please try again.');
         debugPrint(e.toString());
       }
     }
