@@ -21,7 +21,7 @@ class PagedNotifier<PageKeyType, ItemType>
   final NextPageKeyBuilder<PageKeyType, ItemType> nextPageKeyBuilder;
 
   /// A builder for providing a custom error string
-  final String? Function(dynamic error)? errorBuilder;
+  final dynamic Function(dynamic error)? errorBuilder;
 
   PagedNotifier(
       {required LoadFunction<PageKeyType, ItemType> load,
@@ -54,7 +54,7 @@ class PagedNotifier<PageKeyType, ItemType>
         state = state.copyWith(
             error: errorBuilder != null
                 ? errorBuilder!(e)
-                : 'Si è verificato un\'errore. Per favore riprovare.');
+                : 'An error occurred. Please try again.');
         debugPrint(e.toString());
       }
     }
