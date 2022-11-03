@@ -8,6 +8,7 @@ class AppTheme {
   static ThemeData get theme {
     return ThemeData(
       textTheme: GoogleFonts.robotoTextTheme(),
+      useMaterial3: true,
       scaffoldBackgroundColor: AppCommonTheme.backgroundColor,
       dividerTheme: const DividerThemeData(
         indent: 75,

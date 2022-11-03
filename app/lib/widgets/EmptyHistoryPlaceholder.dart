@@ -42,7 +42,8 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
                   ),
                 ),
               ),
-              _buildTypingIndicator(controller),
+              if (controller.typingUsers.isNotEmpty)
+                _buildTypingIndicator(controller),
             ],
           ),
         );
@@ -51,9 +52,6 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
   }
 
   Widget _buildTypingIndicator(ChatRoomController controller) {
-    if (controller.typingUsers.isEmpty) {
-      return const SizedBox();
-    }
     return Positioned.fill(
       child: Align(
         alignment: Alignment.bottomLeft,

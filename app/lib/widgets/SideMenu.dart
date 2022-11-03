@@ -63,9 +63,9 @@ class _SideDrawerState extends State<SideDrawer> {
               buildPollsItem(),
               buildGroupBudgetingItem(),
               buildSharedDocumentsItem(),
-              buildFaqItem(),
+              buildPinsItem(),
               const SizedBox(height: 5),
-              buildLogoutItem(context),
+              if (!widget.client.isGuest()) buildLogoutItem(context),
             ],
           ),
         ),
@@ -285,7 +285,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildFaqItem() {
+  Widget buildPinsItem() {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/faq.svg',
@@ -294,7 +294,7 @@ class _SideDrawerState extends State<SideDrawer> {
         color: Colors.teal[700],
       ),
       title: Text(
-        AppLocalizations.of(context)!.faqs,
+        AppLocalizations.of(context)!.pins,
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
       onTap: () {},
@@ -302,9 +302,6 @@ class _SideDrawerState extends State<SideDrawer> {
   }
 
   Widget buildLogoutItem(BuildContext context) {
-    if (widget.client.isGuest()) {
-      return const SizedBox();
-    }
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/logout.svg',
