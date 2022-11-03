@@ -81,7 +81,7 @@ jobs:
         id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
 
       - name: Cache Cargo
         id: cache-cargo
