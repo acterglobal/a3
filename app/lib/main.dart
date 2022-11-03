@@ -6,7 +6,7 @@ import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio/screens/HomeScreens/Notification.dart';
+// import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
@@ -16,7 +16,7 @@ import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio/widgets/AppCommon.dart';
+// import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
 import 'package:effektio/widgets/SideMenu.dart';
@@ -33,6 +33,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:themed/themed.dart';
 
 void main() async {
@@ -102,7 +103,7 @@ class _EffektioHomeState extends State<EffektioHome>
     super.initState();
 
     client = makeClient();
-    tabController = TabController(length: 5, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     tabController.addListener(() {
       setState(() => tabIndex = tabController.index);
     });
@@ -141,16 +142,7 @@ class _EffektioHomeState extends State<EffektioHome>
     if (tabIndex <= 3) {
       return null;
     }
-    List<String?> titles = <String?>[
-      null,
-      'FAQ',
-      null,
-      null,
-      'Chat',
-      'Notifications'
-    ];
     return AppBar(
-      title: navBarTitle(titles[tabIndex] ?? ''),
       centerTitle: true,
       primary: true,
       elevation: 1,
@@ -191,13 +183,18 @@ class _EffektioHomeState extends State<EffektioHome>
     );
   }
 
-  Widget buildMenuTab() {
+  Widget buildPinsTab() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      child: Tab(
-        icon: tabIndex == 1
-            ? SvgPicture.asset('assets/images/menu_bold.svg')
-            : SvgPicture.asset('assets/images/menu_linear.svg'),
+      child: const Tab(icon: Icon(FlutterIcons.pin_ent)),
+    );
+  }
+
+  Widget buildTasksTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: const Tab(
+        icon: Icon(FlutterIcons.tasks_faw5s),
       ),
     );
   }
@@ -240,7 +237,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
   Widget buildHomeScreen(BuildContext context, Client client) {
     return DefaultTabController(
-      length: 5,
+      length: 4,
       key: const Key('bottom-bar'),
       child: SafeArea(
         child: Scaffold(
@@ -250,9 +247,8 @@ class _EffektioHomeState extends State<EffektioHome>
             children: [
               NewsScreen(client: client),
               FaqOverviewScreen(client: client),
-              NewsScreen(client: client),
+              const ToDoScreen(),
               ChatOverview(client: client),
-              const NotificationScreen(),
             ],
           ),
           drawer: SideDrawer(client: client),
@@ -272,10 +268,9 @@ class _EffektioHomeState extends State<EffektioHome>
             ),
             tabs: [
               buildNewsFeedTab(),
-              buildMenuTab(),
-              buildPlusTab(),
+              buildPinsTab(),
+              buildTasksTab(),
               buildChatTab(),
-              buildNotificationTab(),
             ],
           ),
         ),
