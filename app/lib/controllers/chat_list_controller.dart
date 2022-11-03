@@ -11,6 +11,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Invitation,
         RoomMessage,
         TypingEvent;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
@@ -55,6 +56,7 @@ class ChatListController extends GetxController {
     super.onInit();
 
     _convosSubscription = client.conversationsRx().listen((event) {
+      debugPrint('1234567890');
       // process the latest message here
       _updateList(event.toList());
     });
@@ -115,6 +117,7 @@ class ChatListController extends GetxController {
       initialLoaded = true;
     }
     List<JoinedRoom> newItems = [];
+    debugPrint('convos length: ${convos.length}');
     for (Conversation convo in convos) {
       JoinedRoom newItem = JoinedRoom(conversation: convo);
       String roomId = convo.getRoomId();
@@ -123,11 +126,12 @@ class ChatListController extends GetxController {
       });
       RoomMessage? msg = convo.latestMessage();
       if (msg == null) {
-        // prevent latest message from deleting
-        if (idx != -1) {
+        // keep old message
+        if (idx != -1 && joinedRooms[idx].latestMessage != null) {
           newItem.latestMessage = joinedRooms[idx].latestMessage;
         }
       } else {
+        debugPrint('set latest message');
         newItem.latestMessage = LatestMessage(
           sender: msg.sender(),
           body: msg.body(),

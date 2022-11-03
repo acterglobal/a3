@@ -1,5 +1,5 @@
 use anyhow::Result;
-use futures::StreamExt;
+use futures::{pin_mut, StreamExt};
 use futures_signals::signal_vec::{SignalVecExt, VecDiff};
 use js_int::UInt;
 use log::info;
@@ -25,49 +25,69 @@ impl TimelineStream {
     pub async fn paginate_backwards(&self, mut count: u32) -> Result<Vec<RoomMessage>> {
         let room = self.room.clone();
         let timeline = Arc::new(self.room.timeline());
-        let mut stream = timeline.signal().to_stream();
 
         RUNTIME
             .spawn(async move {
+                let mut stream = timeline.signal().to_stream();
+                pin_mut!(stream);
                 let mut messages: Vec<RoomMessage> = Vec::new();
                 let outcome = timeline.paginate_backwards(UInt::from(count)).await?;
-                info!("stream backward outcome: {:?}", outcome);
-                while count > 0 {
-                    info!("stream backward timeline");
+
+                loop {
+                    info!("stream backward timeline loop");
                     if let Some(diff) = stream.next().await {
                         match (diff) {
                             VecDiff::Replace { values } => {
                                 info!("stream backward timeline replace");
+                                messages.clear();
+                                for value in values {
+                                    if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                        messages.push(msg);
+                                    }
+                                }
                             }
                             VecDiff::InsertAt { index, value } => {
                                 info!("stream backward timeline insert_at");
+                                if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    messages.insert(index, msg);
+                                }
                             }
                             VecDiff::UpdateAt { index, value } => {
                                 info!("stream backward timeline update_at");
+                                if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    messages[index] = msg;
+                                }
                             }
                             VecDiff::Push { value } => {
                                 info!("stream backward timeline push");
-                                if let Some(inner) = timeline_item_to_message(value, room.clone()) {
-                                    messages.push(inner);
-                                    count -= 1;
+                                if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    messages.push(msg);
                                 }
                             }
                             VecDiff::RemoveAt { index } => {
                                 info!("stream backward timeline remove_at");
+                                messages.remove(index);
                             }
                             VecDiff::Move {
                                 old_index,
                                 new_index,
                             } => {
                                 info!("stream backward timeline move");
+                                let msg = messages.remove(old_index);
+                                messages.insert(new_index, msg);
                             }
                             VecDiff::Pop {} => {
                                 info!("stream backward timeline pop");
+                                messages.pop();
                             }
                             VecDiff::Clear {} => {
                                 info!("stream backward timeline clear");
+                                messages.clear();
                             }
                         }
+                    } else {
+                        // reach limit count
+                        break;
                     }
                 }
                 Ok(messages)

@@ -213,7 +213,7 @@ impl InvitationController {
             return;
         }
 
-        info!("invitation - stripped room member event: {:?}", ev);
+        info!("stripped room member event: {:?}", ev);
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
@@ -255,12 +255,11 @@ impl InvitationController {
         }
 
         let evt = ev.clone();
-        // info!("invitation - original sync room member event: {:?}", ev);
         if let Some(prev_content) = ev.unsigned.prev_content {
             let mut invitations = self.invitations.lock_mut();
             match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
-                    info!("invitation - original sync room member event: {:?}", evt);
+                    info!("original sync room member event: {:?}", evt);
                     // remove this invitation from list
                     let room_id = room.room_id().to_string();
                     if let Some(idx) = invitations.iter().position(|x| x.room_id == room_id) {

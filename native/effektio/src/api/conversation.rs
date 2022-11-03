@@ -9,6 +9,7 @@ use futures_signals::{
     signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream},
     signal_vec::{SignalVecExt, VecDiff},
 };
+use js_int::uint;
 use log::{error, info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
@@ -42,7 +43,7 @@ use super::{
 #[derive(Clone, Debug)]
 pub struct Conversation {
     inner: Room,
-    latest_message: Mutable<Option<RoomMessage>>,
+    latest_message: Option<RoomMessage>,
 }
 
 impl Conversation {
@@ -55,102 +56,75 @@ impl Conversation {
 
     pub(crate) fn load_latest_message(&self) {
         let room = self.room.clone();
-        let timeline = room.timeline();
-        let mut stream = timeline.signal().to_stream();
-        let me = self.clone();
+        let mut me = self.clone();
 
         // FIXME: hold this handler!
         RUNTIME.spawn(async move {
+            let timeline = room.timeline();
+            let outcome = timeline.paginate_backwards(uint!(10)).await.unwrap();
+            let mut stream = timeline.signal().to_stream();
+
             while let Some(diff) = stream.next().await {
                 match (diff) {
                     VecDiff::Replace { values } => {
                         info!("conversation timeline replace");
+                        let value = values.last().unwrap().clone();
+                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                            me.set_latest_message(msg);
+                        }
+                        break;
                     }
                     VecDiff::InsertAt { index, value } => {
                         info!("conversation timeline insert_at");
+                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                            me.set_latest_message(msg);
+                        }
+                        break;
                     }
                     VecDiff::UpdateAt { index, value } => {
                         info!("conversation timeline update_at");
+                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                            me.set_latest_message(msg);
+                        }
+                        break;
                     }
                     VecDiff::Push { value } => {
                         info!("conversation timeline push");
-                        if let Some(inner) = timeline_item_to_message(value, room.clone()) {
-                            me.set_latest_message(inner);
-                            break;
+                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                            me.set_latest_message(msg);
                         }
+                        break;
                     }
                     VecDiff::RemoveAt { index } => {
                         info!("conversation timeline remove_at");
+                        break;
                     }
                     VecDiff::Move {
                         old_index,
                         new_index,
                     } => {
                         info!("conversation timeline move");
+                        break;
                     }
                     VecDiff::Pop {} => {
                         info!("conversation timeline pop");
+                        break;
                     }
                     VecDiff::Clear {} => {
                         info!("conversation timeline clear");
+                        break;
                     }
                 }
             }
-
-            // let (forward, backward) = room
-            //     .timeline()
-            //     .await
-            //     .context("Failed acquiring timeline streams")
-            //     .unwrap();
-
-            // pin_mut!(backward);
-            // // try to find the last message in the past.
-            // loop {
-            //     match backward.next().await {
-            //         Some(Ok(ev)) => {
-            //             info!("conversation timeline backward");
-            //             if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-            //                 me.set_latest_message(msg);
-            //                 break;
-            //             }
-            //         }
-            //         Some(Err(e)) => {
-            //             error!("Error fetching messages {:}", e);
-            //             break;
-            //         }
-            //         None => {
-            //             warn!("No old messages found");
-            //             break;
-            //         }
-            //     }
-            // }
-
-            // pin_mut!(forward);
-            // // now continue to poll for incoming messages
-            // loop {
-            //     match forward.next().await {
-            //         Some(ev) => {
-            //             info!("conversation timeline forward");
-            //             if let Some(msg) = sync_event_to_message(ev, room.clone()) {
-            //                 me.set_latest_message(msg);
-            //                 break;
-            //             }
-            //         }
-            //         None => {
-            //             warn!("Messages stream stopped");
-            //             break;
-            //         }
-            //     }
-            // }
         });
     }
 
-    pub(crate) fn set_latest_message(&self, msg: RoomMessage) {
-        self.latest_message.set(Some(msg));
+    pub(crate) fn set_latest_message(&mut self, msg: RoomMessage) {
+        self.latest_message = Some(msg);
     }
 
     pub fn latest_message(&self) -> Option<RoomMessage> {
-        self.latest_message.lock_mut().take()
+        self.latest_message.clone()
     }
 
     pub fn get_room_id(&self) -> String {
@@ -241,13 +215,19 @@ impl ConversationController {
         }
     }
 
-    pub fn load_rooms(&self, convos: &Vec<Conversation>) {
-        for convo in convos.iter() {
-            convo.load_latest_message();
+    pub fn load_rooms(&self, new_convos: &Vec<Conversation>) {
+        let mut convos = self.conversations.lock_mut();
+        for convo in new_convos.iter() {
+            let room_id = convo.room_id();
+            // exlcude room that was synced via OriginalSyncRoomMessageEvent
+            if let None = convos.iter().position(|x| x.room_id() == room_id) {
+                convo.load_latest_message();
+                convos.insert(0, convo.clone());
+            }
         }
-        self.conversations.lock_mut().clone_from(convos);
     }
 
+    // this callback is called prior to load_rooms
     fn process_room_message(
         &mut self,
         ev: OriginalSyncRoomMessageEvent,
@@ -255,24 +235,25 @@ impl ConversationController {
         client: &MatrixClient,
     ) {
         info!("original sync room message event: {:?}", ev);
-        if let MatrixRoom::Joined(joined) = room {
-            let mut convos = self.conversations.lock_mut();
-            let room_id = room.room_id();
-            if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                info!("existing convo index: {}", idx);
-                    let convo = Conversation::new(Room {
-                    client: client.clone(),
-                    room: room.clone(),
-                });
-                let fallback = ev.content.body().to_string();
-                let msg = RoomMessage::from_original(&ev, room.clone());
-                convo.set_latest_message(msg.clone());
-                convos.remove(idx);
-                convos.insert(0, convo);
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
-                }
+        let mut convos = self.conversations.lock_mut();
+        let room_id = room.room_id();
+
+        let mut convo = Conversation::new(Room {
+            client: client.clone(),
+            room: room.clone(),
+        });
+        let msg = RoomMessage::from_original(&ev, room.clone());
+        convo.set_latest_message(msg.clone());
+
+        if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+            info!("existing convo index: {}", idx);
+            convos.remove(idx);
+            convos.insert(0, convo);
+            if let Err(e) = self.event_tx.try_send(msg) {
+                warn!("Dropping ephemeral event for {}: {}", room_id, e);
             }
+        } else {
+            convos.insert(0, convo);
         }
     }
 
@@ -289,8 +270,8 @@ impl ConversationController {
         }
 
         let evt = ev.clone();
-        // info!("conversation - original sync room member event: {:?}", ev);
         let mut conversations = self.conversations.lock_mut();
+
         if let Some(prev_content) = ev.unsigned.prev_content {
             match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
@@ -301,7 +282,7 @@ impl ConversationController {
                         .iter()
                         .position(|x| x.room_id() == room.room_id());
                     if idx.is_none() {
-                        info!("conversation - original sync room member event: {:?}", evt);
+                        info!("original sync room member event: {:?}", evt);
                         // add new room
                         let conversation = Conversation::new(Room {
                             client: client.clone(),

@@ -265,6 +265,7 @@ pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> O
                 MessageType::Video(video) => video.body.clone(),
                 _ => "Unknown".to_string(),
             };
+            info!("timeline fallback: {:?}", fallback);
             return Some(RoomMessage::from_timeline(
                 event,
                 room,
