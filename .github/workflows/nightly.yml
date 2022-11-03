@@ -123,6 +123,9 @@ jobs:
         with:
           channel: 'stable'
 
+      - name: Flutter info
+        run: flutter doctor -v
+
       - name: Flutter config
         if: matrix.flutter_config
         run: flutter config ${{ matrix.flutter_config }}
