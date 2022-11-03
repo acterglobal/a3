@@ -57,17 +57,7 @@ class _ChatListItemState extends State<ChatListItem> {
     return Column(
       children: <Widget>[
         ListTile(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                  userId: widget.userId,
-                  room: widget.room,
-                ),
-              ),
-            );
-          },
+          onTap: () => handleTap(context),
           leading: CustomAvatar(
             avatar: avatar,
             displayName: displayName,
@@ -88,6 +78,18 @@ class _ChatListItemState extends State<ChatListItem> {
           ),
         ),
       ],
+    );
+  }
+
+  void handleTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreen(
+          userId: widget.userId,
+          room: widget.room,
+        ),
+      ),
     );
   }
 
@@ -116,7 +118,7 @@ class _ChatListItemState extends State<ChatListItem> {
         ),
       );
     }
-    if (widget.typingUsers.isEmpty != true) {
+    if (widget.typingUsers.isNotEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
@@ -144,6 +146,7 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: '_(.*?)_',
@@ -153,6 +156,7 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('_', '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: '~(.*?)~',
@@ -162,6 +166,7 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('~', '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: '`(.*?)`',
@@ -171,18 +176,21 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('`', '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: regexEmail,
             style: ChatTheme01.latestChatStyle.copyWith(
               decoration: TextDecoration.underline,
             ),
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: regexLink,
             style: ChatTheme01.latestChatStyle.copyWith(
               decoration: TextDecoration.underline,
             ),
+            onTap: (String value) => handleTap(context),
           ),
         ],
       ),
