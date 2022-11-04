@@ -7,7 +7,8 @@ use matrix_sdk::{
     },
     ruma::events::{
         room::message::{MessageFormat, MessageType, RoomMessageEventContent},
-        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent, SyncMessageLikeEvent,
+        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
+        SyncMessageLikeEvent,
     },
 };
 use std::sync::Arc;

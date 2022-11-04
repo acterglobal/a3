@@ -42,7 +42,8 @@ impl TimelineStream {
                                 info!("stream backward timeline replace");
                                 messages.clear();
                                 for value in values {
-                                    if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    if let Some(msg) = timeline_item_to_message(value, room.clone())
+                                    {
                                         messages.push(msg);
                                     }
                                 }
