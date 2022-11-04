@@ -7,8 +7,15 @@ import 'package:flutter/material.dart';
 
 class NewsScreen extends StatefulWidget {
   final Client client;
+  final String? displayName;
+  final Future<FfiBufferUint8>? displayAvatar;
 
-  const NewsScreen({Key? key, required this.client}) : super(key: key);
+  const NewsScreen({
+    Key? key,
+    required this.client,
+    this.displayName,
+    this.displayAvatar,
+  }) : super(key: key);
 
   @override
   _NewsScreenState createState() => _NewsScreenState();
@@ -72,7 +79,12 @@ class _NewsScreenState extends State<NewsScreen>
                 },
               ),
             ),
-            drawer: SideDrawer(client: widget.client),
+            drawer: SideDrawer(
+              isGuest: widget.client.isGuest(),
+              userId: widget.client.userId().toString(),
+              displayName: widget.displayName,
+              displayAvatar: widget.displayAvatar,
+            ),
             body: PageView.builder(
               itemCount: snapshot.requireData.length,
               onPageChanged: (int page) {},

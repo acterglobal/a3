@@ -8,7 +8,7 @@ use matrix_sdk::{
     room::Room as MatrixRoom,
     ruma::{
         events::{
-            receipt::{ReceiptEventContent, ReceiptType},
+            receipt::{ReceiptEventContent, ReceiptType, SyncReceiptEvent},
             SyncEphemeralRoomEvent,
         },
         MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
@@ -111,10 +111,7 @@ impl ReceiptController {
         let me = self.clone();
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
-            |ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
-             room: MatrixRoom,
-             Ctx(me): Ctx<ReceiptController>,
-             handle: EventHandlerHandle| async move {
+            |ev: SyncReceiptEvent, room: MatrixRoom, Ctx(me): Ctx<ReceiptController>| async move {
                 me.clone().process_ephemeral_event(ev, &room);
             },
         );
@@ -128,11 +125,7 @@ impl ReceiptController {
         }
     }
 
-    fn process_ephemeral_event(
-        &mut self,
-        ev: SyncEphemeralRoomEvent<ReceiptEventContent>,
-        room: &MatrixRoom,
-    ) {
+    fn process_ephemeral_event(&mut self, ev: SyncReceiptEvent, room: &MatrixRoom) {
         info!("receipt: {:?}", ev.content);
         let room_id = room.room_id();
         let mut msg = ReceiptEvent::new(room_id.to_owned());
