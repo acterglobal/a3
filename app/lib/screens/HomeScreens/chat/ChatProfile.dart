@@ -15,7 +15,8 @@ import 'package:get/get.dart';
 
 class ChatProfileScreen extends StatelessWidget {
   final Conversation room;
-  final ChatRoomController roomController;
+  final String? roomName;
+  final Future<FfiBufferUint8>? roomAvatar;
   final bool isGroup;
   final bool isAdmin;
 
@@ -24,11 +25,13 @@ class ChatProfileScreen extends StatelessWidget {
     required this.room,
     required this.isGroup,
     required this.isAdmin,
-    required this.roomController,
+    this.roomName,
+    this.roomAvatar,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final ChatRoomController roomController = Get.find<ChatRoomController>();
     String chatDesc =
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec aliquam ex. Nam bibendum scelerisque placerat.';
     return Scaffold(
@@ -74,8 +77,7 @@ class ChatProfileScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
                       room: room,
-                      name: roomController.roomName ??
-                          AppLocalizations.of(context)!.noName,
+                      name: roomName ?? AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),
@@ -90,8 +92,8 @@ class ChatProfileScreen extends StatelessWidget {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
-                        avatar: roomController.roomAvatar,
-                        displayName: roomController.roomName,
+                        avatar: roomAvatar,
+                        displayName: roomName,
                         radius: 20,
                         isGroup: true,
                         stringName: simplifyRoomId(room.getRoomId())!,
@@ -101,7 +103,7 @@ class ChatProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            if (roomController.roomName == null)
+            if (roomName == null)
               const Text('Loading Name')
             else
               GestureDetector(
@@ -111,15 +113,14 @@ class ChatProfileScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => EditGroupInfoScreen(
                         room: room,
-                        name: roomController.roomName ??
-                            AppLocalizations.of(context)!.noName,
+                        name: roomName ?? AppLocalizations.of(context)!.noName,
                         description: chatDesc,
                       ),
                     ),
                   );
                 },
                 child: Text(
-                  roomController.roomName!,
+                  roomName!,
                   overflow: TextOverflow.clip,
                   style: ChatTheme01.chatProfileTitleStyle,
                 ),
@@ -131,8 +132,7 @@ class ChatProfileScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => EditGroupInfoScreen(
                       room: room,
-                      name: roomController.roomName ??
-                          AppLocalizations.of(context)!.noName,
+                      name: roomName ?? AppLocalizations.of(context)!.noName,
                       description: chatDesc,
                     ),
                   ),
@@ -227,14 +227,14 @@ class ChatProfileScreen extends StatelessWidget {
               child: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.all(16),
-                child: buildActiveMembersLabel(context),
+                child: buildActiveMembersLabel(context, roomController),
               ),
             ),
             Visibility(
               visible: isGroup,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                child: buildMemberList(),
+                child: buildMemberList(roomController),
               ),
             ),
             Visibility(
@@ -601,7 +601,10 @@ class ChatProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildActiveMembersLabel(BuildContext context) {
+  Widget buildActiveMembersLabel(
+    BuildContext context,
+    ChatRoomController roomController,
+  ) {
     return Text(
       '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
       style: const TextStyle(
@@ -612,7 +615,7 @@ class ChatProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget buildMemberList() {
+  Widget buildMemberList(ChatRoomController roomController) {
     return Card(
       color: AppCommonTheme.darkShade,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -621,22 +624,22 @@ class ChatProfileScreen extends StatelessWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
-          String userId = roomController.activeMembers[index]['link'];
+          String userId = roomController.activeMembers[index].userId();
           return Padding(
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
               builder: (_) {
-                return (roomController.activeMembers[index]['link'] == null)
+                return (roomController.getUserName(userId) == null)
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: AppCommonTheme.primaryColor,
                         ),
                       )
                     : GroupMember(
-                        name: roomController.activeMembers[index]['display'],
+                        name: roomController.getUserName(userId),
                         isAdmin: true,
-                        avatar: roomController.activeMembers[index]['avatar'],
+                        avatar: roomController.getUserAvatar(userId),
                       );
               },
             ),

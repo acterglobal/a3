@@ -14,7 +14,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation;
+    show Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -27,6 +27,8 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Future<FfiBufferUint8>? roomAvatar;
+  final String? roomName;
   final Conversation room;
   final String userId;
 
@@ -34,6 +36,8 @@ class ChatScreen extends StatefulWidget {
     Key? key,
     required this.room,
     required this.userId,
+    this.roomAvatar,
+    this.roomName,
   }) : super(key: key);
 
   @override
@@ -269,7 +273,8 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialPageRoute(
             builder: (context) => ChatProfileScreen(
               room: widget.room,
-              roomController: roomController,
+              roomName: widget.roomName,
+              roomAvatar: widget.roomAvatar,
               isGroup: true,
               isAdmin: true,
             ),
@@ -284,8 +289,8 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              avatar: roomController.roomAvatar,
-              displayName: roomController.roomName,
+              avatar: widget.roomAvatar,
+              displayName: widget.roomName,
               radius: 20,
               isGroup: true,
               stringName: simplifyRoomId(widget.room.getRoomId())!,
@@ -297,11 +302,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget buildRoomName(BuildContext context) {
-    if (roomController.roomName == null) {
+    if (widget.roomName == null) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
     return Text(
-      roomController.roomName!,
+      widget.roomName!,
       overflow: TextOverflow.clip,
       style: ChatTheme01.chatTitleStyle,
     );
@@ -343,7 +348,7 @@ class _ChatScreenState extends State<ChatScreen> {
               customBottomWidget: CustomChatInput(
                 isChatScreen: true,
                 roomName:
-                    controller.roomName ?? AppLocalizations.of(context)!.noName,
+                    widget.roomName ?? AppLocalizations.of(context)!.noName,
                 onButtonPressed: () => onSendButtonPressed(controller),
               ),
               textMessageBuilder: textMessageBuilder,
