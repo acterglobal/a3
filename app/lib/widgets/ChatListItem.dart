@@ -11,12 +11,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
   final String userId;
   final Conversation room;
-  final LatestMessage? latestMessage;
+  final RoomMessage? latestMessage;
   final List<types.User> typingUsers;
 
   const ChatListItem({
@@ -53,6 +54,7 @@ class _ChatListItemState extends State<ChatListItem> {
 
   @override
   Widget build(BuildContext context) {
+    String roomId = widget.room.getRoomId();
     // ToDo: UnreadCounter
     return Column(
       children: <Widget>[
@@ -63,10 +65,13 @@ class _ChatListItemState extends State<ChatListItem> {
             displayName: displayName,
             radius: 25,
             isGroup: true,
-            stringName: simplifyRoomId(widget.room.getRoomId())!,
+            stringName: simplifyRoomId(roomId)!,
           ),
           title: buildTitle(context),
-          subtitle: buildSubtitle(context),
+          subtitle: GetBuilder<ChatListController>(
+            id: 'chatroom-$roomId-subtitle',
+            builder: (controller) => buildSubtitle(context),
+          ),
           trailing: buildTrailing(context),
         ),
         const Padding(
@@ -106,18 +111,7 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget? buildSubtitle(BuildContext context) {
-    if (widget.latestMessage == null) {
-      if (widget.typingUsers.isEmpty) {
-        return null;
-      }
-      return Text(
-        getUserPlural(widget.typingUsers),
-        style: ChatTheme01.latestChatStyle.copyWith(
-          fontStyle: FontStyle.italic,
-        ),
-      );
-    }
+  Widget buildSubtitle(BuildContext context) {
     if (widget.typingUsers.isNotEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -129,11 +123,15 @@ class _ChatListItemState extends State<ChatListItem> {
         ),
       );
     }
+    if (widget.latestMessage == null) {
+      return const SizedBox();
+    }
+    String sender = widget.latestMessage!.sender();
+    String body = widget.latestMessage!.body();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
-        text:
-            '${simplifyUserId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
+        text: '${simplifyUserId(sender)}: $body',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,
@@ -201,15 +199,13 @@ class _ChatListItemState extends State<ChatListItem> {
     if (widget.latestMessage == null) {
       return null;
     }
-    if (widget.latestMessage!.originServerTs == null) {
+    int? ts = widget.latestMessage!.originServerTs();
+    if (ts == null) {
       return null;
     }
     return Text(
       DateFormat.Hm().format(
-        DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs!,
-          isUtc: true,
-        ),
+        DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
       ),
       style: ChatTheme01.latestChatDateStyle,
     );

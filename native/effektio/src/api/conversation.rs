@@ -12,8 +12,9 @@ use futures_signals::{
 use js_int::uint;
 use log::{error, info, warn};
 use matrix_sdk::{
+    deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
-    room::Room as MatrixRoom,
+    room::{MessagesOptions, Room as MatrixRoom},
     ruma::{
         api::client::room::{
             create_room::v3::{CreationContent, Request as CreateRoomRequest},
@@ -25,7 +26,7 @@ use matrix_sdk::{
             message::OriginalSyncRoomMessageEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId,
+        OwnedRoomId, OwnedUserId, RoomId,
     },
     Client as MatrixClient,
 };
@@ -54,72 +55,25 @@ impl Conversation {
         }
     }
 
-    pub(crate) fn load_latest_message(&self) {
+    async fn fetch_latest_message(&mut self) {
         let room = self.room.clone();
-        let mut me = self.clone();
-
-        // FIXME: hold this handler!
-        RUNTIME.spawn(async move {
-            let timeline = room.timeline();
-            let outcome = timeline.paginate_backwards(uint!(10)).await.unwrap();
-            let mut stream = timeline.signal().to_stream();
-
-            while let Some(diff) = stream.next().await {
-                match (diff) {
-                    VecDiff::Replace { values } => {
-                        info!("conversation timeline replace");
-                        let value = values.last().unwrap().clone();
-                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
-                            me.set_latest_message(msg);
-                        }
-                        break;
-                    }
-                    VecDiff::InsertAt { index, value } => {
-                        info!("conversation timeline insert_at");
-                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
-                            me.set_latest_message(msg);
-                        }
-                        break;
-                    }
-                    VecDiff::UpdateAt { index, value } => {
-                        info!("conversation timeline update_at");
-                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
-                            me.set_latest_message(msg);
-                        }
-                        break;
-                    }
-                    VecDiff::Push { value } => {
-                        info!("conversation timeline push");
-                        if let Some(msg) = timeline_item_to_message(value, room.clone()) {
-                            me.set_latest_message(msg);
-                        }
-                        break;
-                    }
-                    VecDiff::RemoveAt { index } => {
-                        info!("conversation timeline remove_at");
-                        break;
-                    }
-                    VecDiff::Move {
-                        old_index,
-                        new_index,
-                    } => {
-                        info!("conversation timeline move");
-                        break;
-                    }
-                    VecDiff::Pop {} => {
-                        info!("conversation timeline pop");
-                        break;
-                    }
-                    VecDiff::Clear {} => {
-                        info!("conversation timeline clear");
-                        break;
-                    }
+        let options = MessagesOptions::backward();
+        if let Ok(messages) = room.messages(options).await {
+            let events: Vec<SyncTimelineEvent> = messages
+                .chunk
+                .into_iter()
+                .map(SyncTimelineEvent::from)
+                .collect();
+            for event in events {
+                if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
+                    self.set_latest_message(msg);
+                    return;
                 }
             }
-        });
+        }
     }
 
-    pub(crate) fn set_latest_message(&mut self, msg: RoomMessage) {
+    fn set_latest_message(&mut self, msg: RoomMessage) {
         self.latest_message = Some(msg);
     }
 
@@ -159,25 +113,26 @@ impl std::ops::Deref for Conversation {
 #[derive(Clone)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
-    event_tx: Sender<RoomMessage>,
-    event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
+    incoming_event_tx: Sender<RoomMessage>,
+    incoming_event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
 }
 
 impl ConversationController {
     pub fn new() -> Self {
-        let (tx, rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
+        let (incoming_tx, incoming_rx) = channel::<RoomMessage>(10); // dropping after more than 10 items queued
         ConversationController {
             conversations: Default::default(),
-            event_tx: tx,
-            event_rx: Arc::new(Mutex::new(Some(rx))),
+            incoming_event_tx: incoming_tx,
+            incoming_event_rx: Arc::new(Mutex::new(Some(incoming_rx))),
             message_event_handle: None,
             member_event_handle: None,
         }
     }
 
-    pub async fn add_event_handler(&mut self, client: &MatrixClient) {
+    pub fn add_event_handler(&mut self, client: &MatrixClient) {
+        info!("sync room message event handler");
         let me = self.clone();
 
         client.add_event_handler_context(me.clone());
@@ -215,16 +170,14 @@ impl ConversationController {
         }
     }
 
-    pub fn load_rooms(&self, new_convos: &Vec<Conversation>) {
-        let mut convos = self.conversations.lock_mut();
-        for convo in new_convos.iter() {
-            let room_id = convo.room_id();
-            // exlcude room that was synced via OriginalSyncRoomMessageEvent
-            if let None = convos.iter().position(|x| x.room_id() == room_id) {
-                convo.load_latest_message();
-                convos.insert(0, convo.clone());
-            }
+    pub async fn load_rooms(&mut self, convos: &Vec<Conversation>) {
+        let mut conversations: Vec<Conversation> = vec![];
+        for convo in convos {
+            let mut conversation = convo.clone();
+            conversation.fetch_latest_message().await;
+            conversations.push(conversation);
         }
+        self.conversations.lock_mut().clone_from(&conversations);
     }
 
     // this callback is called prior to load_rooms
@@ -235,25 +188,26 @@ impl ConversationController {
         client: &MatrixClient,
     ) {
         info!("original sync room message event: {:?}", ev);
-        let mut convos = self.conversations.lock_mut();
-        let room_id = room.room_id();
+        if let MatrixRoom::Joined(joined) = room {
+            let mut convos = self.conversations.lock_mut();
+            let room_id = room.room_id();
 
-        let mut convo = Conversation::new(Room {
-            client: client.clone(),
-            room: room.clone(),
-        });
-        let msg = RoomMessage::from_original(&ev, room.clone());
-        convo.set_latest_message(msg.clone());
+            let mut convo = Conversation::new(Room {
+                client: client.clone(),
+                room: room.clone(),
+            });
+            let msg = RoomMessage::from_original(&ev, room.clone());
+            convo.set_latest_message(msg.clone());
 
-        if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-            info!("existing convo index: {}", idx);
-            convos.remove(idx);
-            convos.insert(0, convo);
-            if let Err(e) = self.event_tx.try_send(msg) {
-                warn!("Dropping ephemeral event for {}: {}", room_id, e);
+            if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                convos.remove(idx);
+                convos.insert(0, convo);
+                if let Err(e) = self.incoming_event_tx.try_send(msg) {
+                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                }
+            } else {
+                convos.insert(0, convo);
             }
-        } else {
-            convos.insert(0, convo);
         }
     }
 
@@ -278,11 +232,7 @@ impl ConversationController {
                     // when user accepted invitation, this event is called twice
                     // i don't know that reason
                     // anyway i prevent this event from being called twice
-                    let idx = conversations
-                        .iter()
-                        .position(|x| x.room_id() == room.room_id());
-                    if idx.is_none() {
-                        info!("original sync room member event: {:?}", evt);
+                    if !conversations.iter().any(|x| x.room_id() == room.room_id()) {
                         // add new room
                         let conversation = Conversation::new(Room {
                             client: client.clone(),
@@ -364,7 +314,7 @@ impl Client {
             .to_stream()
     }
 
-    pub fn message_event_rx(&self) -> Option<Receiver<RoomMessage>> {
-        self.conversation_controller.event_rx.lock().take()
+    pub fn incoming_message_rx(&self) -> Option<Receiver<RoomMessage>> {
+        self.conversation_controller.incoming_event_rx.lock().take()
     }
 }

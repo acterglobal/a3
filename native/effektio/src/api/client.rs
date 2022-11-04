@@ -11,7 +11,6 @@ use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
-use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     ruma::{device_id, OwnedUserId, RoomId},
@@ -125,11 +124,15 @@ impl Client {
     pub fn start_sync(&mut self) -> SyncState {
         let client = self.client.clone();
         let state = self.state.clone();
+
+        self.invitation_controller.add_event_handler(&client);
+        self.typing_controller.add_event_handler(&client);
+        self.receipt_controller.add_event_handler(&client);
+        self.conversation_controller.add_event_handler(&client);
+
         let mut invitation_controller = self.invitation_controller.clone();
         let mut verification_controller = self.verification_controller.clone();
         let mut device_controller = self.device_controller.clone();
-        self.typing_controller.add_event_handler(&client);
-        self.receipt_controller.add_event_handler(&client);
         let mut conversation_controller = self.conversation_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(false);
@@ -142,10 +145,10 @@ impl Client {
             let client = client.clone();
             let state = state.clone();
 
-            invitation_controller.add_event_handler(&client).await;
+            let mut invitation_controller = invitation_controller.clone();
             let mut verification_controller = verification_controller.clone();
             let mut device_controller = device_controller.clone();
-            conversation_controller.add_event_handler(&client).await;
+            let mut conversation_controller = conversation_controller.clone();
 
             // fetch the events that received when offline
             client
@@ -153,9 +156,12 @@ impl Client {
                 .sync_with_callback(SyncSettings::new(), |response| {
                     let client = client.clone();
                     let state = state.clone();
+
+                    let mut invitation_controller = invitation_controller.clone();
                     let mut verification_controller = verification_controller.clone();
                     let mut device_controller = device_controller.clone();
                     let mut conversation_controller = conversation_controller.clone();
+
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -170,7 +176,9 @@ impl Client {
                         } else {
                             // divide_rooms_from_common must be called after first sync
                             let (_, convos) = divide_rooms_from_common(client.clone()).await;
-                            conversation_controller.load_rooms(&convos);
+                            conversation_controller.load_rooms(&convos).await;
+                            // load invitations after first sync
+                            invitation_controller.load_invitations(&client).await;
                         }
 
                         initial.store(false, Ordering::SeqCst);

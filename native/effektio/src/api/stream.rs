@@ -33,9 +33,10 @@ impl TimelineStream {
                 let mut messages: Vec<RoomMessage> = Vec::new();
                 let outcome = timeline.paginate_backwards(UInt::from(count)).await?;
 
-                loop {
+                while count > 0 {
                     info!("stream backward timeline loop");
                     if let Some(diff) = stream.next().await {
+                        count -= 1;
                         match (diff) {
                             VecDiff::Replace { values } => {
                                 info!("stream backward timeline replace");

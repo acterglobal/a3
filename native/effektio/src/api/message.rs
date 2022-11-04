@@ -7,8 +7,7 @@ use matrix_sdk::{
     },
     ruma::events::{
         room::message::{MessageFormat, MessageType, RoomMessageEventContent},
-        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
-        SyncMessageLikeEvent,
+        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent, SyncMessageLikeEvent,
     },
 };
 use std::sync::Arc;
@@ -240,14 +239,17 @@ impl FileDescription {
 }
 
 pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option<RoomMessage> {
-    if let Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
-        SyncMessageLikeEvent::Original(m),
-    ))) = ev.event.deserialize()
-    {
-        Some(RoomMessage::from_original(&m, room))
-    } else {
-        None
+    info!("sync event to message: {:?}", ev);
+    if let Ok(AnySyncTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
+        match evt {
+            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {}
+            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
+                return Some(RoomMessage::from_original(&m, room));
+            }
+            _ => {}
+        }
     }
+    None
 }
 
 pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> Option<RoomMessage> {

@@ -174,10 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
     required bool showName,
   }) {
     return Container(
-      width: sqrt(
-            p1.metadata!['messageLength'],
-          ) *
-          38.5,
+      width: sqrt(p1.metadata!['messageLength']) * 38.5,
       padding: const EdgeInsets.all(8),
       constraints: const BoxConstraints(minWidth: 57),
       child: Html(
@@ -218,6 +215,9 @@ class _ChatScreenState extends State<ChatScreen> {
       return CachedNetworkImage(
         imageUrl: imageMessage.uri,
         width: messageWidth.toDouble(),
+        errorWidget: (context, url, error) => const Text(
+          'Could not load image',
+        ),
       );
     }
     // local path
@@ -225,6 +225,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Image.file(
       File(imageMessage.uri),
       width: messageWidth.toDouble(),
+      errorBuilder: (context, error, stackTrace) => const Text(
+        'Could not load image',
+      ),
     );
   }
 
@@ -416,6 +419,7 @@ class _ChatScreenState extends State<ChatScreen> {
       },
     );
   }
+
   void onSendButtonPressed(ChatRoomController controller) async {
     String markdownText = controller.mentionKey.currentState!.controller!.text;
     String htmlText = controller.mentionKey.currentState!.controller!.text;
