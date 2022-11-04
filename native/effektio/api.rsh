@@ -351,8 +351,8 @@ object Client {
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
-    /// Return the message event receiver
-    fn message_event_rx() -> Option<Stream<RoomMessage>>;
+    /// Return the message receiver
+    fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 }
 
 object UserProfile {

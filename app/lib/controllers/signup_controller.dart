@@ -8,7 +8,7 @@ class SignUpController extends GetxController {
   TextEditingController token = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
   TextEditingController name = TextEditingController();
-  String isException = '';
+  String errorText = '';
   bool isSubmitting = false;
 
   Future<Client> signUp(
@@ -41,7 +41,7 @@ class SignUpController extends GetxController {
       update();
       return true;
     } catch (e) {
-      isException = e.toString();
+      errorText = e.toString();
       isSubmitting = false;
       update();
       return false;

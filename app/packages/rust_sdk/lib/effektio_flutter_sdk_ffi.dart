@@ -3982,7 +3982,7 @@ class Api {
     return tmp9;
   }
 
-  RoomMessage? __clientMessageEventRxStreamPoll(
+  RoomMessage? __clientIncomingMessageRxStreamPoll(
     int boxed,
     int postCobject,
     int port,
@@ -4000,7 +4000,7 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     tmp7 = tmp6;
-    final tmp8 = _clientMessageEventRxStreamPoll(
+    final tmp8 = _clientIncomingMessageRxStreamPoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5257,14 +5257,14 @@ class Api {
       _ClientReceiptEventRxReturn Function(
     int,
   )>();
-  late final _clientMessageEventRxPtr = _lookup<
+  late final _clientIncomingMessageRxPtr = _lookup<
       ffi.NativeFunction<
-          _ClientMessageEventRxReturn Function(
+          _ClientIncomingMessageRxReturn Function(
     ffi.Int64,
-  )>>("__Client_message_event_rx");
+  )>>("__Client_incoming_message_rx");
 
-  late final _clientMessageEventRx = _clientMessageEventRxPtr.asFunction<
-      _ClientMessageEventRxReturn Function(
+  late final _clientIncomingMessageRx = _clientIncomingMessageRxPtr.asFunction<
+      _ClientIncomingMessageRxReturn Function(
     int,
   )>();
   late final _userProfileHasAvatarPtr = _lookup<
@@ -6957,18 +6957,18 @@ class Api {
     int,
     int,
   )>();
-  late final _clientMessageEventRxStreamPollPtr = _lookup<
+  late final _clientIncomingMessageRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientMessageEventRxStreamPollReturn Function(
+          _ClientIncomingMessageRxStreamPollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_message_event_rx_stream_poll");
+  )>>("__Client_incoming_message_rx_stream_poll");
 
-  late final _clientMessageEventRxStreamPoll =
-      _clientMessageEventRxStreamPollPtr.asFunction<
-          _ClientMessageEventRxStreamPollReturn Function(
+  late final _clientIncomingMessageRxStreamPoll =
+      _clientIncomingMessageRxStreamPollPtr.asFunction<
+          _ClientIncomingMessageRxStreamPollReturn Function(
     int,
     int,
     int,
@@ -9904,11 +9904,11 @@ class Client {
     return tmp2;
   }
 
-  /// Return the message event receiver
-  Stream<RoomMessage>? messageEventRx() {
+  /// Return the message receiver
+  Stream<RoomMessage>? incomingMessageRx() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientMessageEventRx(
+    final tmp1 = _api._clientIncomingMessageRx(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9917,9 +9917,11 @@ class Client {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "__Client_message_event_rx_stream_drop");
+    final tmp4_1 =
+        _Box(_api, tmp4_0, "__Client_incoming_message_rx_stream_drop");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = _nativeStream(tmp4_1, _api.__clientMessageEventRxStreamPoll);
+    final tmp2 =
+        _nativeStream(tmp4_1, _api.__clientIncomingMessageRxStreamPoll);
     return tmp2;
   }
 
@@ -11474,7 +11476,7 @@ class _ClientReceiptEventRxReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientMessageEventRxReturn extends ffi.Struct {
+class _ClientIncomingMessageRxReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -12755,7 +12757,7 @@ class _ClientReceiptEventRxStreamPollReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _ClientMessageEventRxStreamPollReturn extends ffi.Struct {
+class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

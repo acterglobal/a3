@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
-use log::{debug, error, info};
+use log::info;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -15,15 +15,7 @@ use matrix_sdk::{
     },
     Client as MatrixClient, RoomType,
 };
-use pulldown_cmark::{
-    html,
-    Event::{
-        Code, End, FootnoteReference, HardBreak, Html, Rule, SoftBreak, Start, TaskListMarker, Text,
-    },
-    Options, Parser, Tag,
-};
 use std::{fs::File, io::Write, path::PathBuf};
-use tokio::time::{sleep, Duration};
 
 use super::{
     account::Account,
@@ -227,14 +219,12 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
-        let body = markdown_to_plain(&markdown);
-        let html_body = markdown_to_html(&markdown);
         RUNTIME
             .spawn(async move {
                 let r = room
                     .send(
                         AnyMessageLikeEventContent::RoomMessage(
-                            RoomMessageEventContent::text_html(body, html_body),
+                            RoomMessageEventContent::text_markdown(markdown),
                         ),
                         None,
                     )
@@ -524,103 +514,4 @@ impl std::ops::Deref for Room {
     fn deref(&self) -> &MatrixRoom {
         &self.room
     }
-}
-
-fn markdown_to_html(markdown: &String) -> String {
-    // Set up options and parser. Strikethroughs are not part of the CommonMark standard
-    // and we therefore must enable it explicitly.
-    let mut options = Options::empty();
-    options.insert(Options::ENABLE_STRIKETHROUGH);
-    let parser = Parser::new_ext(markdown.as_str(), options);
-
-    // Write to String buffer.
-    let mut html_output = String::with_capacity(markdown.len() * 3 / 2);
-    html::push_html(&mut html_output, parser);
-
-    html_output
-}
-
-fn markdown_to_plain(markdown: &str) -> String {
-    // GFM tables and tasks lists are not enabled.
-    let mut options = Options::empty();
-    options.insert(Options::ENABLE_STRIKETHROUGH);
-
-    let parser = Parser::new_ext(markdown, options);
-    let mut buffer = String::new();
-
-    // For each event we push into the buffer to produce the 'stripped' version.
-    for event in parser {
-        debug!("{:?}", event);
-        match event {
-            // The start and end events don't contain the text inside the tag. That's handled by the `Event::Text` arm.
-            Start(tag) => start_tag(&tag, &mut buffer),
-            End(tag) => end_tag(&tag, &mut buffer),
-            Text(text) => {
-                debug!("Pushing {}", &text);
-                buffer.push_str(&text);
-            }
-            Code(code) => buffer.push_str(&code),
-            Html(_) => (),
-            FootnoteReference(_) => (),
-            TaskListMarker(_) => (),
-            SoftBreak | HardBreak => fresh_line(&mut buffer),
-            Rule => fresh_line(&mut buffer),
-        }
-    }
-    buffer
-}
-
-fn start_tag(tag: &Tag, buffer: &mut String) {
-    match tag {
-        Tag::CodeBlock(_info) => fresh_hard_break(buffer),
-        Tag::List(_number) => fresh_line(buffer),
-        Tag::Link(_link_type, _dest, title) | Tag::Image(_link_type, _dest, title) => {
-            if !title.is_empty() {
-                buffer.push_str(title);
-            }
-        }
-        Tag::Paragraph => (),
-        Tag::Heading(_, _, _) => (),
-        Tag::Table(_alignments) => (),
-        Tag::TableHead => (),
-        Tag::TableRow => (),
-        Tag::TableCell => (),
-        Tag::BlockQuote => (),
-        Tag::Item => (),
-        Tag::Emphasis => (),
-        Tag::Strong => (),
-        Tag::FootnoteDefinition(_) => (),
-        Tag::Strikethrough => (),
-    }
-}
-
-fn end_tag(tag: &Tag, buffer: &mut String) {
-    match tag {
-        Tag::Paragraph => (),
-        Tag::Table(_) => fresh_line(buffer),
-        Tag::TableHead => fresh_line(buffer),
-        Tag::TableRow => fresh_line(buffer),
-        Tag::Heading(_, _, _) => fresh_line(buffer),
-        Tag::Emphasis => (),
-        Tag::TableCell => (),
-        Tag::Strong => (),
-        Tag::Link(_, _, _) => (),
-        Tag::BlockQuote => fresh_line(buffer),
-        Tag::CodeBlock(_) => fresh_line(buffer),
-        Tag::List(_) => (),
-        Tag::Item => fresh_line(buffer),
-        Tag::Image(_, _, _) => (), // shouldn't happen, handled in start
-        Tag::FootnoteDefinition(_) => (),
-        Tag::Strikethrough => (),
-    }
-}
-
-fn fresh_line(buffer: &mut String) {
-    debug!("Pushing \\n");
-    buffer.push('\n');
-}
-
-fn fresh_hard_break(buffer: &mut String) {
-    debug!("Pushing \\n\\n");
-    buffer.push_str("\n\n");
 }
