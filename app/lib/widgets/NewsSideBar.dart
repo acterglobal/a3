@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CommentView.dart';
 import 'package:effektio/widgets/LikeButton.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -119,35 +120,40 @@ class _NewsSideBarState extends State<NewsSideBar> {
   }
 
   Widget buildProfileImage(Color borderColor) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.bottomCenter,
-        children: [
-          CachedNetworkImage(
-            imageUrl:
-                'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-            height: 45,
-            width: 45,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: borderColor),
-                borderRadius: BorderRadius.circular(25),
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                  colorFilter: const ColorFilter.mode(
-                    Colors.red,
-                    BlendMode.colorBurn,
+    return GestureDetector(
+      onTap: () {
+        showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
+      },
+      child: Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.bottomCenter,
+          children: [
+            CachedNetworkImage(
+              imageUrl:
+                  'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+              height: 45,
+              width: 45,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: borderColor),
+                  borderRadius: BorderRadius.circular(25),
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.red,
+                      BlendMode.colorBurn,
+                    ),
                   ),
                 ),
               ),
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
-            placeholder: (context, url) => const CircularProgressIndicator(),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -162,6 +168,8 @@ class _NewsSideBarState extends State<NewsSideBar> {
       onTap: () {
         if (iconName == 'comment') {
           showBottomSheet();
+        } else {
+          showNotYetImplementedMsg(context, 'News Action not yet implemented');
         }
       },
       child: Padding(
@@ -290,11 +298,10 @@ class _NewsSideBarState extends State<NewsSideBar> {
                             ),
                             IconButton(
                               onPressed: () {
-                                const snackBar = SnackBar(
-                                  content: Text('Send icon tapped'),
+                                showNotYetImplementedMsg(
+                                  context,
+                                  'Send not yet implemented',
                                 );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackBar);
                               },
                               icon: const Icon(Icons.send, color: Colors.pink),
                             ),

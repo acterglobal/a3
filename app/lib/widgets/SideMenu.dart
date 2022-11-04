@@ -1,6 +1,5 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
@@ -12,36 +11,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 
-class SideDrawer extends StatefulWidget {
-  final Client client;
+class SideDrawer extends StatelessWidget {
+  final bool isGuest;
+  final String? displayName;
+  final String userId;
+  final Future<FfiBufferUint8>? displayAvatar;
 
-  const SideDrawer({Key? key, required this.client}) : super(key: key);
-
-  @override
-  State<SideDrawer> createState() => _SideDrawerState();
-}
-
-class _SideDrawerState extends State<SideDrawer> {
-  Future<FfiBufferUint8>? avatar;
-  String? displayName;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (!widget.client.isGuest()) {
-      widget.client.getUserProfile().then((value) {
-        if (mounted) {
-          setState(() {
-            if (value.hasAvatar()) {
-              avatar = value.getAvatar();
-            }
-            displayName = value.getDisplayName();
-          });
-        }
-      });
-    }
-  }
+  const SideDrawer({
+    Key? key,
+    required this.isGuest,
+    required this.userId,
+    this.displayName,
+    this.displayAvatar,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +36,18 @@ class _SideDrawerState extends State<SideDrawer> {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              buildHeader(),
+              buildHeader(context),
               SizedBox(height: size.height * 0.04),
-              buildTodoItem(),
-              buildGalleryItem(),
-              buildEventItem(),
-              buildSharedResourcesItem(),
-              buildPollsItem(),
-              buildGroupBudgetingItem(),
-              buildSharedDocumentsItem(),
-              buildFaqItem(),
+              buildTodoItem(context),
+              buildGalleryItem(context),
+              buildEventItem(context),
+              buildSharedResourcesItem(context),
+              buildPollsItem(context),
+              buildGroupBudgetingItem(context),
+              buildSharedDocumentsItem(context),
+              buildPinsItem(context),
               const SizedBox(height: 5),
-              buildLogoutItem(context),
+              if (!isGuest) buildLogoutItem(context),
             ],
           ),
         ),
@@ -73,8 +55,8 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildHeader() {
-    if (widget.client.isGuest()) {
+  Widget buildHeader(BuildContext context) {
+    if (isGuest) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -114,7 +96,7 @@ class _SideDrawerState extends State<SideDrawer> {
     }
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/profile', arguments: widget.client);
+        Navigator.pushNamed(context, '/profile');
       },
       child: Row(
         children: [
@@ -122,10 +104,10 @@ class _SideDrawerState extends State<SideDrawer> {
             margin: const EdgeInsets.all(10),
             child: CustomAvatar(
               radius: 24,
-              avatar: avatar,
+              avatar: displayAvatar,
               displayName: displayName,
               isGroup: false,
-              stringName: simplifyUserId(widget.client.userId().toString())!,
+              stringName: displayName!,
             ),
           ),
           const SizedBox(width: 10),
@@ -157,12 +139,12 @@ class _SideDrawerState extends State<SideDrawer> {
 
   Widget buildUserId() {
     return Text(
-      widget.client.userId().toString(),
+      userId,
       style: SideMenuAndProfileTheme.sideMenuProfileStyle + const FontSize(14),
     );
   }
 
-  Widget buildTodoItem() {
+  Widget buildTodoItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/task.svg',
@@ -180,7 +162,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildGalleryItem() {
+  Widget buildGalleryItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/gallery.svg',
@@ -198,7 +180,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildEventItem() {
+  Widget buildEventItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/event.svg',
@@ -214,7 +196,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildSharedResourcesItem() {
+  Widget buildSharedResourcesItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/shared_resources.svg',
@@ -230,7 +212,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildPollsItem() {
+  Widget buildPollsItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/polls.svg',
@@ -246,7 +228,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildGroupBudgetingItem() {
+  Widget buildGroupBudgetingItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/group_budgeting.svg',
@@ -269,7 +251,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildSharedDocumentsItem() {
+  Widget buildSharedDocumentsItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/shared_documents.svg',
@@ -285,7 +267,7 @@ class _SideDrawerState extends State<SideDrawer> {
     );
   }
 
-  Widget buildFaqItem() {
+  Widget buildPinsItem(BuildContext context) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/faq.svg',
@@ -294,7 +276,7 @@ class _SideDrawerState extends State<SideDrawer> {
         color: Colors.teal[700],
       ),
       title: Text(
-        AppLocalizations.of(context)!.faqs,
+        AppLocalizations.of(context)!.pins,
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
       onTap: () {},
@@ -302,9 +284,6 @@ class _SideDrawerState extends State<SideDrawer> {
   }
 
   Widget buildLogoutItem(BuildContext context) {
-    if (widget.client.isGuest()) {
-      return const SizedBox();
-    }
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/logout.svg',
@@ -324,7 +303,7 @@ class _SideDrawerState extends State<SideDrawer> {
         }
         final sdk = await EffektioSdk.instance;
         await sdk.logout();
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, '/');
       },
     );
   }

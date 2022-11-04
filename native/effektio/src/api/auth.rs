@@ -62,8 +62,12 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
                 .is_guest(is_guest)
                 .build()
                 .unwrap();
-            let c = Client::new(client, state);
-            info!("Successfully logged in {:?} with token.", user_id);
+            let c = Client::new(client.clone(), state);
+            info!(
+                "Successfully logged in user {:?}, device {:?} with token.",
+                user_id,
+                client.device_id(),
+            );
             Ok(c)
         })
         .await?
@@ -100,8 +104,12 @@ pub async fn login_new_client(
                 .is_guest(false)
                 .build()
                 .unwrap();
-            let c = Client::new(client, state);
-            info!("Successfully logged in user: {:?}", user_id);
+            let c = Client::new(client.clone(), state);
+            info!(
+                "Successfully logged in user {:?}, device {:?}",
+                user_id,
+                client.device_id(),
+            );
             Ok(c)
         })
         .await?
@@ -141,8 +149,12 @@ pub async fn register_with_registration_token(
                 .is_guest(false)
                 .build()
                 .unwrap();
-            let c = Client::new(client, state);
-            info!("Successfully registered user: {:?}", username);
+            let c = Client::new(client.clone(), state);
+            info!(
+                "Successfully registered user {:?}, device {:?}",
+                username,
+                client.device_id(),
+            );
             Ok(c)
         })
         .await?

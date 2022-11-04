@@ -68,7 +68,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                buildList(context),
+                if (!widget.client.isGuest()) buildList(context),
               ],
             ),
           ),
@@ -120,9 +120,6 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget buildList(BuildContext context) {
-    if (widget.client.isGuest()) {
-      return const SizedBox();
-    }
     return GetBuilder<ChatListController>(
       id: 'chatlist',
       builder: (ChatListController controller) {
@@ -165,12 +162,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: GetBuilder<ChatListController>(
-                    id: item.conversation.getRoomId(),
-                    builder: (ChatListController listController) {
-                      return buildJoinedItem(item);
-                    },
-                  ),
+                  child: buildJoinedItem(item),
                 ),
               );
             },
@@ -180,12 +172,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: GetBuilder<ChatListController>(
-                  id: item.conversation.getRoomId(),
-                  builder: (ChatListController listController) {
-                    return buildJoinedItem(item);
-                  },
-                ),
+                child: buildJoinedItem(item),
               );
             },
           ),
@@ -204,12 +191,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: GetBuilder<ChatListController>(
-                    id: item.conversation.getRoomId(),
-                    builder: (ChatListController listController) {
-                      return buildJoinedItem(item);
-                    },
-                  ),
+                  child: buildJoinedItem(item),
                 ),
               );
             },
@@ -230,12 +212,17 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget buildJoinedItem(JoinedRoom item) {
-    return ChatListItem(
-      key: Key(item.conversation.getRoomId()),
-      userId: widget.client.userId().toString(),
-      room: item.conversation,
-      latestMessage: item.latestMessage,
-      typingUsers: item.typingUsers,
+    // we should be able to update only changed room items
+    // so we use GetBuilder to render item
+    return GetBuilder<ChatListController>(
+      id: 'chatroom-${item.conversation.getRoomId()}',
+      builder: (controller) => ChatListItem(
+        key: Key(item.conversation.getRoomId()),
+        userId: widget.client.userId().toString(),
+        room: item.conversation,
+        latestMessage: item.latestMessage,
+        typingUsers: item.typingUsers,
+      ),
     );
   }
 }

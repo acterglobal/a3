@@ -6,7 +6,7 @@ import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio/screens/HomeScreens/Notification.dart';
+// import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
@@ -16,22 +16,24 @@ import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio/widgets/AppCommon.dart';
+// import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
 import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState;
+    show FfiBufferUint8, SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:themed/themed.dart';
 
 void main() async {
@@ -53,28 +55,31 @@ class Effektio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Themed(
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.theme,
-        title: 'Effektio',
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: ApplicationLocalizations.supportedLocales,
-        // MaterialApp contains our top-level Navigator
-        initialRoute: '/',
-        routes: <String, WidgetBuilder>{
-          '/': (BuildContext context) => const EffektioHome(),
-          '/login': (BuildContext context) => const LoginScreen(),
-          '/profile': (BuildContext context) => const SocialProfileScreen(),
-          '/signup': (BuildContext context) => const SignupScreen(),
-          '/gallery': (BuildContext context) => const GalleryScreen(),
-          '/todo': (BuildContext context) => const ToDoScreen(),
-          '/addTodo': (BuildContext context) => const AddToDoScreen(),
-        },
+    return Portal(
+      child: Themed(
+        child: GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.theme,
+          title: 'Effektio',
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: ApplicationLocalizations.supportedLocales,
+          // MaterialApp contains our top-level Navigator
+          initialRoute: '/',
+          routes: <String, WidgetBuilder>{
+            '/': (BuildContext context) => const EffektioHome(),
+            '/login': (BuildContext context) => const LoginScreen(),
+            '/profile': (BuildContext context) => const SocialProfileScreen(),
+            '/signup': (BuildContext context) => const SignupScreen(),
+            '/gallery': (BuildContext context) => const GalleryScreen(),
+            '/todo': (BuildContext context) => const ToDoScreen(),
+            '/addTodo': (BuildContext context) => const AddToDoScreen(),
+          },
+        ),
       ),
     );
   }
@@ -92,13 +97,15 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> client;
   int tabIndex = 0;
   late TabController tabController;
+  String? displayName;
+  Future<FfiBufferUint8>? displayAvatar;
 
   @override
   void initState() {
     super.initState();
 
     client = makeClient();
-    tabController = TabController(length: 5, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     tabController.addListener(() {
       setState(() => tabIndex = tabController.index);
     });
@@ -125,6 +132,16 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
+      await client.getUserProfile().then((value) {
+        if (mounted) {
+          setState(() {
+            if (value.hasAvatar()) {
+              displayAvatar = value.getAvatar();
+            }
+            displayName = value.getDisplayName();
+          });
+        }
+      });
       Get.put(CrossSigning(client: client));
       Get.put(ChatListController(client: client));
       Get.put(ChatRoomController(client: client));
@@ -137,16 +154,7 @@ class _EffektioHomeState extends State<EffektioHome>
     if (tabIndex <= 3) {
       return null;
     }
-    List<String?> titles = <String?>[
-      null,
-      'FAQ',
-      null,
-      null,
-      'Chat',
-      'Notifications'
-    ];
     return AppBar(
-      title: navBarTitle(titles[tabIndex] ?? ''),
       centerTitle: true,
       primary: true,
       elevation: 1,
@@ -187,13 +195,18 @@ class _EffektioHomeState extends State<EffektioHome>
     );
   }
 
-  Widget buildMenuTab() {
+  Widget buildPinsTab() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      child: Tab(
-        icon: tabIndex == 1
-            ? SvgPicture.asset('assets/images/menu_bold.svg')
-            : SvgPicture.asset('assets/images/menu_linear.svg'),
+      child: const Tab(icon: Icon(FlutterIcons.pin_ent)),
+    );
+  }
+
+  Widget buildTasksTab() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: const Tab(
+        icon: Icon(FlutterIcons.tasks_faw5s),
       ),
     );
   }
@@ -236,7 +249,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
   Widget buildHomeScreen(BuildContext context, Client client) {
     return DefaultTabController(
-      length: 5,
+      length: 4,
       key: const Key('bottom-bar'),
       child: SafeArea(
         child: Scaffold(
@@ -244,14 +257,22 @@ class _EffektioHomeState extends State<EffektioHome>
           body: TabBarView(
             controller: tabController,
             children: [
-              NewsScreen(client: client),
+              NewsScreen(
+                client: client,
+                displayName: displayName,
+                displayAvatar: displayAvatar,
+              ),
               FaqOverviewScreen(client: client),
-              NewsScreen(client: client),
+              const ToDoScreen(),
               ChatOverview(client: client),
-              const NotificationScreen(),
             ],
           ),
-          drawer: SideDrawer(client: client),
+          drawer: SideDrawer(
+            isGuest: client.isGuest(),
+            userId: client.userId().toString(),
+            displayName: displayName,
+            displayAvatar: displayAvatar,
+          ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,
             unselectedLabelColor: AppCommonTheme.svgIconColor,
@@ -268,10 +289,9 @@ class _EffektioHomeState extends State<EffektioHome>
             ),
             tabs: [
               buildNewsFeedTab(),
-              buildMenuTab(),
-              buildPlusTab(),
+              buildPinsTab(),
+              buildTasksTab(),
               buildChatTab(),
-              buildNotificationTab(),
             ],
           ),
         ),
