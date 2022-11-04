@@ -158,9 +158,9 @@ class ChatRoomController extends GetxController {
         _userAvatars.addAll(avatars);
         _userNames.addAll(names);
         mentionList.addAll(mentionRecords);
+        mentionRecords.clear();
         update(['chat-input']);
         update(ids);
-        mentionRecords.clear();
         avatars.clear();
         names.clear();
         ids.clear();
