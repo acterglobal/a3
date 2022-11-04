@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class LoginController extends GetxController {
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
-  String isException = '';
+  String errorText = '';
   bool isSubmitting = false;
 
   Future<Client> login(String username, String password) async {
@@ -28,7 +28,7 @@ class LoginController extends GetxController {
       update();
       return true;
     } catch (e) {
-      isException = e.toString();
+      errorText = e.toString();
       isSubmitting = false;
       update();
       return false;
