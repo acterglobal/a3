@@ -11,7 +11,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Invitation,
         RoomMessage,
         TypingEvent;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
