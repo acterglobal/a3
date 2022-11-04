@@ -95,28 +95,25 @@ class _NewsSideBarState extends State<NewsSideBar> {
         Shadow(color: bgColor, offset: const Offset(2, 2), blurRadius: 5),
       ],
     );
-    return SizedBox(
-      height: MediaQuery.of(context).size.height,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          LikeButton(
-            likeCount: widget.news.likesCount().toString(),
-            style: style,
-            color: fgColor,
-            index: widget.index,
-          ),
-          buildSideBarItem(
-            'comment',
-            widget.news.commentsCount().toString(),
-            fgColor,
-            style,
-          ),
-          buildSideBarItem('reply', '76', fgColor, style),
-          buildProfileImage(fgColor),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        LikeButton(
+          likeCount: widget.news.likesCount().toString(),
+          style: style,
+          color: fgColor,
+          index: widget.index,
+        ),
+        buildSideBarItem(
+          'comment',
+          widget.news.commentsCount().toString(),
+          fgColor,
+          style,
+        ),
+        buildSideBarItem('reply', '76', fgColor, style),
+        buildProfileImage(fgColor),
+      ],
     );
   }
 
