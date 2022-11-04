@@ -14,7 +14,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8, FfiListMember, UserProfile;
+    show Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -27,6 +27,8 @@ import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
+  final Future<FfiBufferUint8>? roomAvatar;
+  final String? roomName;
   final Conversation room;
   final String userId;
 
@@ -34,6 +36,8 @@ class ChatScreen extends StatefulWidget {
     Key? key,
     required this.room,
     required this.userId,
+    this.roomAvatar,
+    this.roomName,
   }) : super(key: key);
 
   @override
@@ -41,10 +45,6 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  Future<FfiBufferUint8>? roomAvatar;
-  String? roomName;
-  Map<String, Future<FfiBufferUint8>> userAvatars = {};
-  Map<String, String> userNames = {};
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
 
@@ -53,37 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     roomController.setCurrentRoom(widget.room);
-    widget.room.getProfile().then((value) {
-      if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            roomAvatar = value.getAvatar();
-          }
-          roomName = value.getDisplayName();
-        });
-      }
-    });
-    widget.room.activeMembers().then((members) async {
-      Map<String, Future<FfiBufferUint8>> avatars = {};
-      Map<String, String> names = {};
-      for (var member in members) {
-        String userId = member.userId();
-        UserProfile userProfile = await member.getProfile();
-        if (userProfile.hasAvatar()) {
-          avatars[userId] = userProfile.getAvatar();
-        }
-        String? name = userProfile.getDisplayName();
-        if (name != null) {
-          names[userId] = name;
-        }
-      }
-      if (mounted) {
-        setState(() {
-          userAvatars = avatars;
-          userNames = names;
-        });
-      }
-    });
   }
 
   @override
@@ -157,12 +126,17 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SizedBox(
         height: 28,
         width: 28,
-        child: CustomAvatar(
-          avatar: userAvatars[userId],
-          displayName: userNames[userId],
-          radius: 15,
-          isGroup: false,
-          stringName: simplifyUserId(userId)!,
+        child: GetBuilder<ChatRoomController>(
+          id: 'user-profile-$userId',
+          builder: (_) {
+            return CustomAvatar(
+              avatar: roomController.getUserAvatar(userId),
+              displayName: roomController.getUserName(userId),
+              radius: 15,
+              isGroup: false,
+              stringName: simplifyUserId(userId)!,
+            );
+          },
         ),
       ),
     );
@@ -256,13 +230,28 @@ class _ChatScreenState extends State<ChatScreen> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                buildRoomName(context),
+                GetBuilder<ChatRoomController>(
+                  id: 'room-profile',
+                  builder: (_) {
+                    return buildRoomName(context);
+                  },
+                ),
                 const SizedBox(height: 5),
-                buildActiveMembers(),
+                GetBuilder<ChatRoomController>(
+                  id: 'active-members',
+                  builder: (_) {
+                    return buildActiveMembers(context);
+                  },
+                ),
               ],
             ),
             actions: [
-              buildProfileAction(),
+              GetBuilder<ChatRoomController>(
+                id: 'room-profile',
+                builder: (_) {
+                  return buildProfileAction();
+                },
+              ),
             ],
           ),
           body: Obx(
@@ -284,6 +273,8 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialPageRoute(
             builder: (context) => ChatProfileScreen(
               room: widget.room,
+              roomName: widget.roomName,
+              roomAvatar: widget.roomAvatar,
               isGroup: true,
               isAdmin: true,
             ),
@@ -298,8 +289,8 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              avatar: roomAvatar,
-              displayName: roomName,
+              avatar: widget.roomAvatar,
+              displayName: widget.roomName,
               radius: 20,
               isGroup: true,
               stringName: simplifyRoomId(widget.room.getRoomId())!,
@@ -311,32 +302,27 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget buildRoomName(BuildContext context) {
-    if (roomName == null) {
+    if (widget.roomName == null) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
     return Text(
-      roomName!,
+      widget.roomName!,
       overflow: TextOverflow.clip,
       style: ChatTheme01.chatTitleStyle,
     );
   }
 
-  Widget buildActiveMembers() {
-    return FutureBuilder<FfiListMember>(
-      future: widget.room.activeMembers(),
-      builder: (BuildContext context, AsyncSnapshot<FfiListMember> snapshot) {
-        if (snapshot.hasData) {
-          return Text(
-            '${snapshot.requireData.length} ${AppLocalizations.of(context)!.members}',
-            style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
-          );
-        }
-        return const SizedBox(
-          height: 15,
-          width: 15,
-          child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
-        );
-      },
+  Widget buildActiveMembers(BuildContext context) {
+    if (roomController.activeMembers.isEmpty) {
+      return const SizedBox(
+        height: 15,
+        width: 15,
+        child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
+      );
+    }
+    return Text(
+      '${roomController.activeMembers.length} ${AppLocalizations.of(context)!.members}',
+      style: ChatTheme01.chatBodyStyle + AppCommonTheme.primaryColor,
     );
   }
 
@@ -361,7 +347,8 @@ class _ChatScreenState extends State<ChatScreen> {
             Chat(
               customBottomWidget: CustomChatInput(
                 isChatScreen: true,
-                roomName: roomName ?? AppLocalizations.of(context)!.noName,
+                roomName:
+                    widget.roomName ?? AppLocalizations.of(context)!.noName,
                 onButtonPressed: () => onSendButtonPressed(controller),
               ),
               textMessageBuilder: textMessageBuilder,
