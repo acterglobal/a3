@@ -34,6 +34,7 @@ class CustomChatInput extends StatelessWidget {
     return Column(
       children: [
         GetBuilder<ChatRoomController>(
+          id: 'chat-input',
           builder: (ChatRoomController controller) {
             return Container(
               width: double.infinity,

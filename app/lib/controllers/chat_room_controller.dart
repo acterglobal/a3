@@ -95,6 +95,7 @@ class ChatRoomController extends GetxController {
       messages.clear();
       typingUsers.clear();
       activeMembers.clear();
+      mentionList.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
@@ -136,26 +137,30 @@ class ChatRoomController extends GetxController {
     Map<String, Future<FfiBufferUint8>> avatars = {};
     Map<String, String> names = {};
     List<String> ids = [];
+    List<Map<String, dynamic>> mentionRecords = [];
     for (int i = 0; i < activeMembers.length; i++) {
       String userId = activeMembers[i].userId();
       ids.add('user-profile-$userId');
       UserProfile profile = await activeMembers[i].getProfile();
-      Map<String, dynamic> mentionRecord = {};
+      Map<String, dynamic> record = {};
       if (profile.hasAvatar()) {
         avatars[userId] = profile.getAvatar();
-        mentionRecord['avatar'] = avatars[userId];
+        record['avatar'] = avatars[userId];
       }
       String? name = profile.getDisplayName();
-      mentionRecord['display'] = name;
-      mentionRecord['link'] = userId;
+      record['display'] = name;
+      record['link'] = userId;
       if (name != null) {
         names[userId] = name;
       }
+      mentionRecords.add(record);
       if (i % 3 == 0 || i == activeMembers.length - 1) {
         _userAvatars.addAll(avatars);
         _userNames.addAll(names);
-        mentionList.add(mentionRecord);
+        mentionList.addAll(mentionRecords);
+        update(['chat-input']);
         update(ids);
+        mentionRecords.clear();
         avatars.clear();
         names.clear();
         ids.clear();
@@ -481,7 +486,7 @@ class ChatRoomController extends GetxController {
   void sendButtonUpdate() {
     isSendButtonVisible =
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
-    update();
+    update(['chat-input']);
   }
 
   Future<bool> typingNotice(bool typing) async {
