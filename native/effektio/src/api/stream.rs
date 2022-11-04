@@ -1,6 +1,7 @@
 use anyhow::Result;
 use core::pin::Pin;
 use futures::{lock::Mutex, pin_mut, StreamExt};
+use log::info;
 use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room, Client};
 use std::sync::Arc;
 
@@ -42,6 +43,7 @@ impl TimelineStream {
     pub async fn paginate_backwards(&self, mut count: u64) -> Result<Vec<RoomMessage>> {
         let backward = self.backward.clone();
         let room = self.room.clone();
+        info!("stream back: {:?}", room.clone());
         RUNTIME
             .spawn(async move {
                 let mut messages: Vec<RoomMessage> = Vec::new();
@@ -50,8 +52,8 @@ impl TimelineStream {
 
                 while count > 0 {
                     match stream.next().await {
-                        Some(Ok(e)) => {
-                            if let Some(inner) = sync_event_to_message(e, room.clone()) {
+                        Some(Ok(ev)) => {
+                            if let Some(inner) = sync_event_to_message(ev, room.clone()) {
                                 messages.push(inner);
                                 count -= 1;
                             }
@@ -79,12 +81,12 @@ impl TimelineStream {
                 let stream = forward.lock().await;
                 pin_mut!(stream);
                 loop {
-                    if let Some(e) = stream
+                    if let Some(msg) = stream
                         .next()
                         .await
-                        .and_then(|e| sync_event_to_message(e, room.clone()))
+                        .and_then(|ev| sync_event_to_message(ev, room.clone()))
                     {
-                        return Ok(e);
+                        return Ok(msg);
                     }
                 }
             })

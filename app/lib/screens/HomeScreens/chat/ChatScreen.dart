@@ -218,6 +218,9 @@ class _ChatScreenState extends State<ChatScreen> {
       return CachedNetworkImage(
         imageUrl: imageMessage.uri,
         width: messageWidth.toDouble(),
+        errorWidget: (context, url, error) => const Text(
+          'Could not load image',
+        ),
       );
     }
     // local path
@@ -225,6 +228,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return Image.file(
       File(imageMessage.uri),
       width: messageWidth.toDouble(),
+      errorBuilder: (context, error, stackTrace) => const Text(
+        'Could not load image',
+      ),
     );
   }
 

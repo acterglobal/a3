@@ -11,12 +11,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
   final String userId;
   final Conversation room;
-  final LatestMessage? latestMessage;
+  final RoomMessage? latestMessage;
   final List<types.User> typingUsers;
 
   const ChatListItem({
@@ -53,30 +54,24 @@ class _ChatListItemState extends State<ChatListItem> {
 
   @override
   Widget build(BuildContext context) {
+    String roomId = widget.room.getRoomId();
     // ToDo: UnreadCounter
     return Column(
       children: <Widget>[
         ListTile(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ChatScreen(
-                  userId: widget.userId,
-                  room: widget.room,
-                ),
-              ),
-            );
-          },
+          onTap: () => handleTap(context),
           leading: CustomAvatar(
             avatar: avatar,
             displayName: displayName,
             radius: 25,
             isGroup: true,
-            stringName: simplifyRoomId(widget.room.getRoomId())!,
+            stringName: simplifyRoomId(roomId)!,
           ),
           title: buildTitle(context),
-          subtitle: buildSubtitle(context),
+          subtitle: GetBuilder<ChatListController>(
+            id: 'chatroom-$roomId-subtitle',
+            builder: (controller) => buildSubtitle(context),
+          ),
           trailing: buildTrailing(context),
         ),
         const Padding(
@@ -88,6 +83,18 @@ class _ChatListItemState extends State<ChatListItem> {
           ),
         ),
       ],
+    );
+  }
+
+  void handleTap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreen(
+          userId: widget.userId,
+          room: widget.room,
+        ),
+      ),
     );
   }
 
@@ -104,19 +111,8 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget? buildSubtitle(BuildContext context) {
-    if (widget.latestMessage == null) {
-      if (widget.typingUsers.isEmpty) {
-        return null;
-      }
-      return Text(
-        getUserPlural(widget.typingUsers),
-        style: ChatTheme01.latestChatStyle.copyWith(
-          fontStyle: FontStyle.italic,
-        ),
-      );
-    }
-    if (widget.typingUsers.isEmpty != true) {
+  Widget buildSubtitle(BuildContext context) {
+    if (widget.typingUsers.isNotEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
@@ -127,11 +123,15 @@ class _ChatListItemState extends State<ChatListItem> {
         ),
       );
     }
+    if (widget.latestMessage == null) {
+      return const SizedBox();
+    }
+    String sender = widget.latestMessage!.sender();
+    String body = widget.latestMessage!.body();
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
-        text:
-            '${simplifyUserId(widget.latestMessage!.sender)}: ${widget.latestMessage!.body}',
+        text: '${simplifyUserId(sender)}: $body',
         style: ChatTheme01.latestChatStyle,
         regexOptions: const RegexOptions(multiLine: true, dotAll: true),
         maxLines: 2,
@@ -144,6 +144,7 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: '_(.*?)_',
@@ -153,6 +154,7 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('_', '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: '~(.*?)~',
@@ -162,6 +164,7 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('~', '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: '`(.*?)`',
@@ -171,18 +174,21 @@ class _ChatListItemState extends State<ChatListItem> {
             renderText: ({required String str, required String pattern}) {
               return {'display': str.replaceAll('`', '')};
             },
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: regexEmail,
             style: ChatTheme01.latestChatStyle.copyWith(
               decoration: TextDecoration.underline,
             ),
+            onTap: (String value) => handleTap(context),
           ),
           MatchText(
             pattern: regexLink,
             style: ChatTheme01.latestChatStyle.copyWith(
               decoration: TextDecoration.underline,
             ),
+            onTap: (String value) => handleTap(context),
           ),
         ],
       ),
@@ -196,7 +202,7 @@ class _ChatListItemState extends State<ChatListItem> {
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs,
+          widget.latestMessage!.originServerTs(),
           isUtc: true,
         ),
       ),
