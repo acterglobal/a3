@@ -107,12 +107,16 @@ class ChatRoomController extends GetxController {
       update(['active-members']);
       _fetchUserProfiles();
       if (_currentRoom == null) {
-        return; // user may close chat screen before long loading completed
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
       }
-      _stream = await _currentRoom!.timeline();
+      _stream = _currentRoom!.timeline();
       // i am fetching messages from remote
       if (_currentRoom == null) {
-        return; // user may close chat screen before long loading completed
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
       }
       var msgs = await _stream!.paginateBackwards(10);
       for (RoomMessage message in msgs) {
@@ -122,7 +126,9 @@ class ChatRoomController extends GetxController {
       var receiptController = Get.find<ReceiptController>();
       var receipts = (await convoRoom.userReceipts()).toList();
       if (_currentRoom == null) {
-        return; // user may close chat screen before long loading completed
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
       }
       receiptController.loadRoom(convoRoom.getRoomId(), receipts);
       isLoading.value = false;
@@ -408,11 +414,8 @@ class ChatRoomController extends GetxController {
   void _loadMessage(RoomMessage message) {
     String msgtype = message.msgtype();
     String sender = message.sender();
-    var author = types.User(
-      id: sender,
-      firstName: simplifyUserId(sender),
-    );
-    int createdAt = message.originServerTs(); // in milliseconds
+    var author = types.User(id: sender, firstName: simplifyUserId(sender));
+    int? createdAt = message.originServerTs(); // in milliseconds
     String eventId = message.eventId();
 
     if (msgtype == 'm.audio') {

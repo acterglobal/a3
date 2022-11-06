@@ -147,20 +147,11 @@ impl Room {
             .await?
     }
 
-    pub async fn timeline(&self) -> Result<TimelineStream> {
+    pub fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
         let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let (forward, backward) = room
-                    .timeline()
-                    .await
-                    .context("Failed acquiring timeline streams")?;
-                let stream =
-                    TimelineStream::new(Box::pin(forward), Box::pin(backward), client, room);
-                Ok(stream)
-            })
-            .await?
+        let stream = TimelineStream::new(client, room);
+        Ok(stream)
     }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {

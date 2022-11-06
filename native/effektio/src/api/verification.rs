@@ -705,8 +705,7 @@ impl VerificationController {
 
     pub fn process_to_device_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
         for evt in response
-            .to_device
-            .events
+            .to_device_events
             .clone()
             .into_iter()
             .filter_map(|e| e.deserialize().ok())

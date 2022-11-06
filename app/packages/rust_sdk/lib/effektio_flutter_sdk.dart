@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 export './effektio_flutter_sdk_ffi.dart' show Client;
 
 // class EffektioClient extends ChangeNotifier {

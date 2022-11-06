@@ -5,9 +5,11 @@ use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     pin_mut, StreamExt,
 };
-use futures_signals::signal::{
-    Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
+use futures_signals::{
+    signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream},
+    signal_vec::{SignalVecExt, VecDiff},
 };
+use js_int::uint;
 use log::{error, info, warn};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
@@ -33,7 +35,7 @@ use std::sync::Arc;
 
 use super::{
     client::Client,
-    message::{sync_event_to_message, RoomMessage},
+    message::{sync_event_to_message, timeline_item_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
     RUNTIME,
@@ -178,6 +180,7 @@ impl ConversationController {
         self.conversations.lock_mut().clone_from(&conversations);
     }
 
+    // this callback is called prior to load_rooms
     fn process_room_message(
         &mut self,
         ev: OriginalSyncRoomMessageEvent,
@@ -188,19 +191,22 @@ impl ConversationController {
         if let MatrixRoom::Joined(joined) = room {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
+
+            let mut convo = Conversation::new(Room {
+                client: client.clone(),
+                room: room.clone(),
+            });
+            let msg = RoomMessage::from_original(&ev, room.clone());
+            convo.set_latest_message(msg.clone());
+
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
-                let mut convo = Conversation::new(Room {
-                    client: client.clone(),
-                    room: room.clone(),
-                });
-                let fallback = ev.content.body().to_string();
-                let msg = RoomMessage::new(ev, room.clone(), fallback);
-                convo.set_latest_message(msg.clone());
                 convos.remove(idx);
                 convos.insert(0, convo);
                 if let Err(e) = self.incoming_event_tx.try_send(msg) {
                     warn!("Dropping ephemeral event for {}: {}", room_id, e);
                 }
+            } else {
+                convos.insert(0, convo);
             }
         }
     }
@@ -219,6 +225,7 @@ impl ConversationController {
 
         let evt = ev.clone();
         let mut conversations = self.conversations.lock_mut();
+
         if let Some(prev_content) = ev.unsigned.prev_content {
             match (prev_content.membership, ev.content.membership) {
                 (MembershipState::Invite, MembershipState::Join) => {
@@ -278,7 +285,7 @@ impl Client {
                     visibility: Visibility::Private,
                 });
                 let response = client.create_room(request).await?;
-                Ok(response.room_id().to_owned())
+                Ok(response.room_id)
             })
             .await?
     }

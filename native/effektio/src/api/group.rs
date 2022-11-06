@@ -70,7 +70,7 @@ impl Client {
                     visibility: settings.visibility,
                 });
                 let response = c.create_room(request).await?;
-                Ok(response.room_id().to_owned())
+                Ok(response.room_id)
             })
             .await?
     }

@@ -65,7 +65,6 @@ class ChatListController extends GetxController {
 
     _invitesSubscription = client.invitationsRx().listen((event) {
       invitations = event.toList();
-
       update(['invited_list']);
     });
 
