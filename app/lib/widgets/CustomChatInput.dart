@@ -34,6 +34,7 @@ class CustomChatInput extends StatelessWidget {
     return Column(
       children: [
         GetBuilder<ChatRoomController>(
+          id: 'chat-input',
           builder: (ChatRoomController controller) {
             return Container(
               width: double.infinity,
@@ -153,7 +154,7 @@ class CustomChatInput extends StatelessWidget {
         Mention(
           trigger: '@',
           style: const TextStyle(color: AppCommonTheme.primaryColor),
-          data: controller.activeMembers,
+          data: controller.mentionList,
           matchAll: false,
           suggestionBuilder: (Map<String, dynamic> roomMember) {
             return Container(

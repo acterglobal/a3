@@ -94,6 +94,8 @@ class _ChatListItemState extends State<ChatListItem> {
         builder: (context) => ChatScreen(
           userId: widget.userId,
           room: widget.room,
+          roomName: displayName,
+          roomAvatar: avatar,
         ),
       ),
     );
