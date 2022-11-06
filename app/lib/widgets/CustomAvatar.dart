@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAvatar extends StatefulWidget {
+  final String uniqueKey;
   final Future<FfiBufferUint8>? avatar;
   final String? displayName;
   final double radius;
@@ -16,6 +17,7 @@ class CustomAvatar extends StatefulWidget {
 
   const CustomAvatar({
     Key? key,
+    required this.uniqueKey,
     this.avatar,
     this.displayName,
     required this.radius,
@@ -52,7 +54,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
         if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
           return CircleAvatar(
             backgroundImage: CachedMemoryImageProvider(
-              UniqueKey().toString(),
+              widget.uniqueKey,
               bytes: snapshot.requireData,
             ),
             radius: widget.radius,

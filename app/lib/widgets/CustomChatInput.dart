@@ -165,6 +165,7 @@ class CustomChatInput extends StatelessWidget {
                   width: 35,
                   height: 35,
                   child: CustomAvatar(
+                    uniqueKey: roomMember['link'],
                     radius: 20,
                     avatar: roomMember['avatar'],
                     isGroup: false,

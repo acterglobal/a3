@@ -158,6 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
         height: 28,
         width: 28,
         child: CustomAvatar(
+          uniqueKey: userId,
           avatar: userAvatars[userId],
           displayName: userNames[userId],
           radius: 15,
@@ -208,7 +209,7 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
       return CachedMemoryImage(
-        uniqueKey: UniqueKey().toString(),
+        uniqueKey: imageMessage.id,
         bytes: kTransparentImage,
         width: messageWidth.toDouble(),
       );
@@ -298,6 +299,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
+              uniqueKey: widget.room.getRoomId(),
               avatar: roomAvatar,
               displayName: roomName,
               radius: 20,

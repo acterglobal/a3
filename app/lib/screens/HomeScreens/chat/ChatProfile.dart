@@ -122,6 +122,7 @@ class _ChatProfileScreenState extends State<ChatProfileScreen> {
                   child: FittedBox(
                     fit: BoxFit.contain,
                     child: CustomAvatar(
+                      uniqueKey: widget.room.getRoomId(),
                       avatar: avatar,
                       displayName: chatName,
                       radius: 20,
