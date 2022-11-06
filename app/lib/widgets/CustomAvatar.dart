@@ -28,17 +28,16 @@ class CustomAvatar extends StatefulWidget {
 }
 
 class _CustomAvatarState extends State<CustomAvatar> {
-  Future<List<int>>? getAvatar() async {
+  Future<Uint8List>? getAvatar() async {
     if (widget.avatar != null) {
-      List<int> bodyBytes = await widget.avatar!.then((fb) => fb.asTypedList());
-      return bodyBytes;
+      return (await widget.avatar!).asTypedList();
     }
-    return [];
+    return Uint8List(0);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<int>>(
+    return FutureBuilder<Uint8List>(
       future: getAvatar(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -54,7 +53,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
           return CircleAvatar(
             backgroundImage: CachedMemoryImageProvider(
               UniqueKey().toString(),
-              bytes: Uint8List.fromList(snapshot.requireData),
+              bytes: snapshot.requireData,
             ),
             radius: widget.radius,
           );
