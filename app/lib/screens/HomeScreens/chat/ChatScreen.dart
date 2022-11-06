@@ -148,10 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
     required bool showName,
   }) {
     return Container(
-      width: sqrt(
-            p1.metadata!['messageLength'],
-          ) *
-          38.5,
+      width: sqrt(p1.metadata!['messageLength']) * 38.5,
       padding: const EdgeInsets.all(8),
       constraints: const BoxConstraints(minWidth: 57),
       child: Html(
