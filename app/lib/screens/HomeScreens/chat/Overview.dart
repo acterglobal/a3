@@ -145,7 +145,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           onReorderFinished: (item, from, to, newItems) =>
               controller.moveItem(from, to),
           itemBuilder: (context, itemAnimation, item, index) => Reorderable(
-            key: UniqueKey(),
+            key: ValueKey(item),
             builder: (context, dragAnimation, inDrag) {
               final t = dragAnimation.value;
               final elevation = lerpDouble(0, 8, t);
@@ -168,7 +168,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             },
           ),
           removeItemBuilder: (context, animation, item) => Reorderable(
-            key: UniqueKey(),
+            key: ValueKey(item),
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
@@ -177,7 +177,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             },
           ),
           updateItemBuilder: (context, itemAnimation, item) => Reorderable(
-            key: UniqueKey(),
+            key: ValueKey(item),
             builder: (context, dragAnimation, inDrag) {
               final t = dragAnimation.value;
               final elevation = lerpDouble(0, 8, t);
