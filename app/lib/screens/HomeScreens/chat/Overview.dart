@@ -205,7 +205,7 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   Widget buildInvitedItem(Invitation item) {
     return InviteInfoWidget(
-      userId: widget.client.userId().toString(),
+      client: widget.client,
       invitation: item,
       avatarColor: Colors.white,
     );
@@ -218,7 +218,7 @@ class _ChatOverviewState extends State<ChatOverview> {
       id: 'chatroom-${item.conversation.getRoomId()}',
       builder: (controller) => ChatListItem(
         key: Key(item.conversation.getRoomId()),
-        userId: widget.client.userId().toString(),
+        client: widget.client,
         room: item.conversation,
         latestMessage: item.latestMessage,
         typingUsers: item.typingUsers,
