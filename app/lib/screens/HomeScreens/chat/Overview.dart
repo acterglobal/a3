@@ -10,7 +10,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
@@ -93,11 +93,20 @@ class _ChatOverviewState extends State<ChatOverview> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!widget.client.isGuest()) buildList(context),
+                if (widget.client.isGuest()) empty else buildList(context),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Positioned get empty {
+    return Positioned.fill(
+      child: Align(
+        alignment: const Alignment(0.0, -0.25),
+        child: SvgPicture.asset('assets/images/empty_messages.svg'),
       ),
     );
   }
