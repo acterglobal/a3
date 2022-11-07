@@ -48,7 +48,7 @@ impl Invitation {
         let user_id = UserId::parse(self.sender.clone())?;
         RUNTIME
             .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id);
+                let mut user_profile = UserProfile::new(client, user_id, None, None);
                 user_profile.fetch().await;
                 Ok(user_profile)
             })

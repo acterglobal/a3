@@ -20,12 +20,17 @@ pub struct UserProfile {
 }
 
 impl UserProfile {
-    pub(crate) fn new(client: Client, user_id: OwnedUserId) -> Self {
+    pub(crate) fn new(
+        client: Client,
+        user_id: OwnedUserId,
+        avatar_url: Option<OwnedMxcUri>,
+        display_name: Option<String>,
+    ) -> Self {
         UserProfile {
             client,
             user_id,
-            avatar_url: None,
-            display_name: None,
+            avatar_url,
+            display_name,
         }
     }
 

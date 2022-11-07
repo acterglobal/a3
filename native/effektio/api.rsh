@@ -165,11 +165,11 @@ object Conversation {
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
-    /// Get the timeline for the room
-    fn timeline() -> Result<TimelineStream>;
-
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// Get the timeline for the room
+    fn timeline() -> Result<TimelineStream>;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;

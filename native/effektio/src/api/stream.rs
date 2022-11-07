@@ -34,7 +34,7 @@ impl TimelineStream {
                 let outcome = timeline.paginate_backwards(UInt::from(count)).await?;
 
                 while count > 0 {
-                    info!("stream backward timeline loop");
+                    info!("stream backward timeline loop: {:?}", count);
                     if let Some(diff) = stream.next().await {
                         count -= 1;
                         match (diff) {
