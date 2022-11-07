@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAvatar extends StatefulWidget {
+  final String uniqueKey;
   final Future<FfiBufferUint8>? avatar;
   final String? displayName;
   final double radius;
@@ -16,6 +17,7 @@ class CustomAvatar extends StatefulWidget {
 
   const CustomAvatar({
     Key? key,
+    required this.uniqueKey,
     this.avatar,
     this.displayName,
     required this.radius,
@@ -28,17 +30,16 @@ class CustomAvatar extends StatefulWidget {
 }
 
 class _CustomAvatarState extends State<CustomAvatar> {
-  Future<List<int>>? getAvatar() async {
+  Future<Uint8List>? getAvatar() async {
     if (widget.avatar != null) {
-      List<int> bodyBytes = await widget.avatar!.then((fb) => fb.asTypedList());
-      return bodyBytes;
+      return (await widget.avatar!).asTypedList();
     }
-    return [];
+    return Uint8List(0);
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<int>>(
+    return FutureBuilder<Uint8List>(
       future: getAvatar(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,8 +54,8 @@ class _CustomAvatarState extends State<CustomAvatar> {
         if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
           return CircleAvatar(
             backgroundImage: CachedMemoryImageProvider(
-              UniqueKey().toString(),
-              bytes: Uint8List.fromList(snapshot.requireData),
+              widget.uniqueKey,
+              bytes: snapshot.requireData,
             ),
             radius: widget.radius,
           );

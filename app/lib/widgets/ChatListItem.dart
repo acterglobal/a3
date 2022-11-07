@@ -61,6 +61,7 @@ class _ChatListItemState extends State<ChatListItem> {
         ListTile(
           onTap: () => handleTap(context),
           leading: CustomAvatar(
+            uniqueKey: roomId,
             avatar: avatar,
             displayName: displayName,
             radius: 25,

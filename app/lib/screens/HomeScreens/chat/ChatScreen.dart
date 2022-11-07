@@ -126,17 +126,13 @@ class _ChatScreenState extends State<ChatScreen> {
       child: SizedBox(
         height: 28,
         width: 28,
-        child: GetBuilder<ChatRoomController>(
-          id: 'user-profile-$userId',
-          builder: (_) {
-            return CustomAvatar(
-              avatar: roomController.getUserAvatar(userId),
-              displayName: roomController.getUserName(userId),
-              radius: 15,
-              isGroup: false,
-              stringName: simplifyUserId(userId)!,
-            );
-          },
+        child: CustomAvatar(
+          uniqueKey: userId,
+          avatar: roomController.getUserAvatar(userId),
+          displayName: roomController.getUserName(userId),
+          radius: 15,
+          isGroup: false,
+          stringName: simplifyUserId(userId)!,
         ),
       ),
     );
@@ -179,7 +175,7 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
       return CachedMemoryImage(
-        uniqueKey: UniqueKey().toString(),
+        uniqueKey: imageMessage.id,
         bytes: kTransparentImage,
         width: messageWidth.toDouble(),
       );
@@ -286,6 +282,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
+              uniqueKey: widget.room.getRoomId(),
               avatar: widget.roomAvatar,
               displayName: widget.roomName,
               radius: 20,

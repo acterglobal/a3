@@ -92,6 +92,7 @@ class ChatProfileScreen extends StatelessWidget {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
+                        uniqueKey: room.getRoomId(),
                         avatar: roomAvatar,
                         displayName: roomName,
                         radius: 20,
@@ -637,6 +638,7 @@ class ChatProfileScreen extends StatelessWidget {
                         ),
                       )
                     : GroupMember(
+                        userId: userId,
                         name: roomController.getUserName(userId),
                         isAdmin: true,
                         avatar: roomController.getUserAvatar(userId),

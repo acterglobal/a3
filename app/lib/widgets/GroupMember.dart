@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class GroupMember extends StatelessWidget {
+  final String userId;
   final String? name;
   final bool isAdmin;
   final Future<FfiBufferUint8>? avatar;
 
   const GroupMember({
     Key? key,
+    required this.userId,
     this.name,
     required this.isAdmin,
     this.avatar,
@@ -21,6 +23,7 @@ class GroupMember extends StatelessWidget {
       direction: Axis.horizontal,
       children: [
         CustomAvatar(
+          uniqueKey: userId,
           radius: 16,
           isGroup: false,
           stringName: name ?? ' ',
