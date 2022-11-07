@@ -61,6 +61,7 @@ class _ChatListItemState extends State<ChatListItem> {
         ListTile(
           onTap: () => handleTap(context),
           leading: CustomAvatar(
+            uniqueKey: roomId,
             avatar: avatar,
             displayName: displayName,
             radius: 25,
@@ -93,6 +94,8 @@ class _ChatListItemState extends State<ChatListItem> {
         builder: (context) => ChatScreen(
           userId: widget.userId,
           room: widget.room,
+          roomName: displayName,
+          roomAvatar: avatar,
         ),
       ),
     );
@@ -199,12 +202,13 @@ class _ChatListItemState extends State<ChatListItem> {
     if (widget.latestMessage == null) {
       return null;
     }
+    int? ts = widget.latestMessage!.originServerTs();
+    if (ts == null) {
+      return null;
+    }
     return Text(
       DateFormat.Hm().format(
-        DateTime.fromMillisecondsSinceEpoch(
-          widget.latestMessage!.originServerTs(),
-          isUtc: true,
-        ),
+        DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
       ),
       style: ChatTheme01.latestChatDateStyle,
     );

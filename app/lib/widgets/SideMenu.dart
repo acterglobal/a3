@@ -107,6 +107,7 @@ class SideDrawer extends StatelessWidget {
           Container(
             margin: const EdgeInsets.all(10),
             child: CustomAvatar(
+              uniqueKey: userId,
               radius: 24,
               avatar: displayAvatar,
               displayName: displayName,

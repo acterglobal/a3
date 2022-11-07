@@ -312,13 +312,13 @@ impl Client {
 
     pub async fn logout(&mut self) -> Result<bool> {
         (*self.state).write().should_stop_syncing = true;
-        self.invitation_controller
-            .remove_event_handler(&self.client);
-        self.typing_controller.remove_event_handler(&self.client);
-        self.receipt_controller.remove_event_handler(&self.client);
-        self.conversation_controller
-            .remove_event_handler(&self.client);
         let c = self.client.clone();
+
+        self.invitation_controller.remove_event_handler(&c);
+        self.typing_controller.remove_event_handler(&c);
+        self.receipt_controller.remove_event_handler(&c);
+        self.conversation_controller.remove_event_handler(&c);
+
         RUNTIME
             .spawn(async move {
                 let response = c.logout().await?;

@@ -56,6 +56,7 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
           ListTile(
             // leading: CircleAvatar(backgroundColor: avatarColor),
             leading: CustomAvatar(
+              uniqueKey: widget.userId,
               avatar: avatar,
               displayName: displayName,
               radius: 20,

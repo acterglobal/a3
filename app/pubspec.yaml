@@ -79,14 +79,23 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  flutter_launcher_icons: ^0.9.2
+  icons_launcher: ^2.0.5
   flutter_lints: ^1.0.4
 
 
-flutter_icons:
-  android: true
-  ios: true
+icons_launcher:
   image_path: "assets/icon/logo.png"
+  platforms:
+    android:
+      enable: true
+    ios:
+      enable: true
+    macos:
+      enable: true
+    windows:
+      enable: true
+    linux:
+      enable: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

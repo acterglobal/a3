@@ -80,7 +80,7 @@ class NewsItem extends StatelessWidget {
     }
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
     return CachedMemoryImage(
-      uniqueKey: UniqueKey().toString(),
+      uniqueKey: 'news-item-$index',
       bytes: Uint8List.fromList(image),
       fit: BoxFit.cover,
     );
