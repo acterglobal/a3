@@ -318,11 +318,7 @@ impl Client {
                             continue;
                         }
                         // exclude user that already selected
-                        if profiles
-                            .iter()
-                            .find(|x| x.user_id() == member.user_id())
-                            .is_some()
-                        {
+                        if profiles.iter().any(|x| x.user_id() == member.user_id()) {
                             continue;
                         }
                         let user_profile = UserProfile::new(
