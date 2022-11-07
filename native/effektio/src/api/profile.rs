@@ -45,6 +45,10 @@ impl UserProfile {
         Ok(())
     }
 
+    pub fn user_id(&self) -> OwnedUserId {
+        self.user_id.clone()
+    }
+
     pub fn has_avatar(&self) -> bool {
         self.avatar_url.is_some()
     }

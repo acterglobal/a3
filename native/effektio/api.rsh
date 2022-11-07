@@ -330,6 +330,9 @@ object Client {
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
+    /// the users out of room
+    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
@@ -356,6 +359,9 @@ object Client {
 }
 
 object UserProfile {
+    /// get user id
+    fn user_id() -> UserId;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 

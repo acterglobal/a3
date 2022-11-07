@@ -131,6 +131,18 @@ class ChatRoomController extends GetxController {
         return;
       }
       receiptController.loadRoom(convoRoom.getRoomId(), receipts);
+      if (_currentRoom == null) {
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
+      }
+      String roomId = convoRoom.getRoomId();
+      var users = (await client.suggestedUsersToInvite(roomId)).toList();
+      var res = [];
+      for (var user in users) {
+        res.add(user.userId().toString());
+      }
+      debugPrint('suggestedUsersToInvite: $res');
       isLoading.value = false;
     }
   }
