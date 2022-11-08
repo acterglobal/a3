@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDoTaskEditor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,6 +12,7 @@ class ToDoTaskItem extends StatefulWidget {
   final String title;
   final bool hasMessage;
   final bool isCompleted;
+  final Function toggleCompletion;
   final String dateTime;
   final String subtitle;
   final String? notes;
@@ -23,6 +23,7 @@ class ToDoTaskItem extends StatefulWidget {
     required this.title,
     this.isCompleted = false,
     this.hasMessage = false,
+    required this.toggleCompletion,
     required this.dateTime,
     required this.subtitle,
     required this.notes,
@@ -34,7 +35,6 @@ class ToDoTaskItem extends StatefulWidget {
 }
 
 class _ToDoTaskItemState extends State<ToDoTaskItem> {
-  final ToDoController todoController = ToDoController.instance;
   bool isAllDay = false;
   late List<ImageProvider<Object>> avatars;
   final int countPeople = Random().nextInt(10);
@@ -60,7 +60,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onLongPress: () {
+      onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -84,7 +84,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      if (todoController.toggleCheck(widget)) {
+                      if (widget.toggleCompletion(widget)) {
                         ScaffoldMessenger.of(context).clearSnackBars();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -94,8 +94,10 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                             action: SnackBarAction(
                               label: 'Undo',
                               onPressed: () {
-                                showNotYetImplementedMsg(context,
-                                    "Undo of tasks is not yet implemented");
+                                showNotYetImplementedMsg(
+                                  context,
+                                  'Undo of tasks is not yet implemented',
+                                );
                               },
                             ),
                             duration: const Duration(milliseconds: 2000),

@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,9 +8,11 @@ import 'package:get/get.dart';
 class ToDoListView extends StatefulWidget {
   final String title;
   final String subtitle;
+  final int idx;
 
   const ToDoListView({
     Key? key,
+    required this.idx,
     required this.title,
     required this.subtitle,
   }) : super(key: key);
@@ -20,6 +23,28 @@ class ToDoListView extends StatefulWidget {
 
 class _ToDoListViewState extends State<ToDoListView> {
   ToDoController todoController = ToDoController.instance;
+  late List<ToDoTaskItem> completedTasks;
+  late List<ToDoTaskItem> pendingTasks;
+
+  @override
+  void initState() {
+    super.initState();
+    completedTasks =
+        todoController.tasks[widget.idx].where((w) => w.isCompleted).toList();
+    pendingTasks =
+        todoController.tasks[widget.idx].where((w) => !w.isCompleted).toList();
+
+    todoController.tasks[widget.idx].listen(
+      (p0) => setState(() {
+        completedTasks = todoController.tasks[widget.idx]
+            .where((w) => w.isCompleted)
+            .toList();
+        pendingTasks = todoController.tasks[widget.idx]
+            .where((w) => !w.isCompleted)
+            .toList();
+      }),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +80,7 @@ class _ToDoListViewState extends State<ToDoListView> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Text(
-                          '${todoController.pendingTasks.length}',
+                          '${pendingTasks.length}',
                           style: ToDoTheme.calendarTextStyle,
                         ),
                       ),
@@ -67,7 +92,7 @@ class _ToDoListViewState extends State<ToDoListView> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: Text(
-                          '${todoController.completedTasks.length}',
+                          '${completedTasks.length}',
                           style: ToDoTheme.calendarTextStyle,
                         ),
                       ),
@@ -118,7 +143,7 @@ class _ToDoListViewState extends State<ToDoListView> {
             ListView(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              children: todoController.pendingTasks,
+              children: pendingTasks,
             ),
             Row(
               children: <Widget>[
@@ -144,7 +169,7 @@ class _ToDoListViewState extends State<ToDoListView> {
                     child: Row(
                       children: <Widget>[
                         Text(
-                          'Completed (${todoController.completedTasks.length})',
+                          'Completed (${completedTasks.length})',
                           style: ToDoTheme.buttonTextStyle,
                           softWrap: false,
                         ),
@@ -179,7 +204,15 @@ class _ToDoListViewState extends State<ToDoListView> {
                 ),
               ],
             ),
-            if (todoController.expandBtn.value) buildCompletedTasks(),
+            if (todoController.expandBtn.value)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: completedTasks,
+                ),
+              ),
           ],
         ),
       ),
@@ -216,17 +249,6 @@ class _ToDoListViewState extends State<ToDoListView> {
       indent: 0,
       endIndent: 0,
       thickness: 1,
-    );
-  }
-
-  Widget buildCompletedTasks() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: ListView(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        children: todoController.completedTasks,
-      ),
     );
   }
 }
