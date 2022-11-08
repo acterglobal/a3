@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:bubble/bubble.dart';
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
@@ -17,6 +18,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -25,6 +27,10 @@ import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+import '../../../common/constants.dart';
+import '../../../widgets/EmojiReactionListItem.dart';
+import '../../../widgets/emoji_row.dart';
 
 class ChatScreen extends StatefulWidget {
   final Future<FfiBufferUint8>? roomAvatar;
@@ -44,10 +50,17 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenState extends State<ChatScreen>
+    with SingleTickerProviderStateMixin {
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
-
+  String id = '';
+  String authId = '';
+  String? currentid;
+  late MessageType messagetype;
+  bool isEmojiContainerVisible = false;
+  var messageindex;
+  late final tabBarController = TabController(length: 3, vsync: this);
   @override
   void initState() {
     super.initState();
@@ -363,6 +376,7 @@ class _ChatScreenState extends State<ChatScreen> {
               disableImageGallery: invitedIndex != -1,
               //custom avatar builder
               avatarBuilder: avatarBuilder,
+              bubbleBuilder: bubbleBuilder,
               imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
@@ -423,5 +437,340 @@ class _ChatScreenState extends State<ChatScreen> {
     controller.messageTextMapMarkDown.clear();
     controller.mentionKey.currentState!.controller!.clear();
     controller.sendButtonUpdate();
+  }
+
+  Widget bubbleBuilder(
+    Widget child, {
+    required types.Message message,
+    nextMessageInGroup,
+  }) {
+    for (var element in roomController.messages) {
+      id = element.id;
+      authId = widget.userId;
+      messagetype = element.type;
+    }
+
+    return GestureDetector(
+      child: Column(
+        children: [
+          const SizedBox(height: 6),
+          Stack(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    isEmojiContainerVisible = false;
+                  });
+                },
+                child: SizedBox(
+                  child: Column(
+                    crossAxisAlignment: authId != message.author.id
+                        ? CrossAxisAlignment.start
+                        : CrossAxisAlignment.end,
+                    children: [
+                      Visibility(
+                        visible:
+                            currentid == message.id && isEmojiContainerVisible
+                                ? true
+                                : false,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          margin: authId != message.author.id
+                              ? const EdgeInsets.only(bottom: 8.0, left: 8.0)
+                              : const EdgeInsets.only(bottom: 8.0, right: 8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(
+                              Radius.circular(30.0),
+                            ),
+                            color: AppCommonTheme.backgroundColor,
+                            border: Border.all(
+                              color: AppCommonTheme.dividerColor,
+                              width: 2.0,
+                            ),
+                          ),
+                          child: EmojiRow(
+                            onEmojiTap: (String value) {
+                              setState(() {
+                                isEmojiContainerVisible = false;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('$value tapped'),
+                                  backgroundColor: AuthTheme.authSuccess,
+                                  duration: const Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      GestureDetector(
+                        child: Row(
+                          textDirection: authId != message.author.id
+                              ? TextDirection.ltr
+                              : TextDirection.rtl,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Flexible(
+                              child: Stack(
+                                children: [
+                                  Bubble(
+                                    child: child,
+                                    color: authId != message.author.id ||
+                                            messagetype ==
+                                                types.MessageType.image
+                                        ? AppCommonTheme.backgroundColorLight
+                                        : AppCommonTheme.primaryColor,
+                                    margin: nextMessageInGroup
+                                        ? const BubbleEdges.symmetric(
+                                            horizontal: 2,
+                                          )
+                                        : null,
+                                    radius: const Radius.circular(12),
+                                    nip: nextMessageInGroup
+                                        ? BubbleNip.no
+                                        : authId != message.author.id
+                                            ? BubbleNip.leftBottom
+                                            : BubbleNip.rightBottom,
+                                  ),
+                                  authId != message.author.id
+                                      ? Positioned(
+                                          bottom: 0,
+                                          right: 0,
+                                          child: Container(
+                                            width: 100,
+                                            height: 16,
+                                            alignment: Alignment.topRight,
+                                            child: ListView.separated(
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount: 2,
+                                              itemBuilder: (_, index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    showBottomSheet();
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                      4.0,
+                                                    ),
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: AppCommonTheme
+                                                          .dividerColor,
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                        Radius.circular(8),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      children: const [
+                                                        Text(
+                                                          heart,
+                                                          style: TextStyle(
+                                                            fontSize: 8,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 2.0,
+                                                        ),
+                                                        Text(
+                                                          '+12',
+                                                          style: TextStyle(
+                                                            fontSize: 8,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              separatorBuilder: (
+                                                BuildContext context,
+                                                int index,
+                                              ) {
+                                                return const SizedBox(
+                                                  width: 4,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        )
+                                      : Positioned(
+                                          bottom: 0,
+                                          left: 0,
+                                          child: Container(
+                                            width: 100,
+                                            height: 16,
+                                            alignment: Alignment.topLeft,
+                                            child: ListView.separated(
+                                              shrinkWrap: true,
+                                              scrollDirection: Axis.horizontal,
+                                              itemCount: 2,
+                                              itemBuilder: (_, index) {
+                                                return GestureDetector(
+                                                  onTap: () {
+                                                    showBottomSheet();
+                                                  },
+                                                  child: Container(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                      4.0,
+                                                    ),
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                      color: AppCommonTheme
+                                                          .dividerColor,
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                        Radius.circular(8),
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      children: const [
+                                                        Text(
+                                                          faceWithTears,
+                                                          style: TextStyle(
+                                                            fontSize: 8,
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 2.0,
+                                                        ),
+                                                        Text(
+                                                          '+12',
+                                                          style: TextStyle(
+                                                            fontSize: 8,
+                                                          ),
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              separatorBuilder: (
+                                                BuildContext context,
+                                                int index,
+                                              ) {
+                                                return const SizedBox(
+                                                  width: 4,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        onLongPress: () {
+                          setState(() {
+                            messageindex = roomController.messages.indexWhere(
+                              (element) => element.id == message.id,
+                            );
+
+                            currentid =
+                                roomController.messages[messageindex].id;
+
+                            if (currentid == message.id) {
+                              isEmojiContainerVisible =
+                                  !isEmojiContainerVisible;
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+      onTap: () {
+        if (isEmojiContainerVisible) {
+          setState(() {
+            isEmojiContainerVisible = false;
+          });
+        }
+      },
+    );
+  }
+
+  void showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Scaffold(
+              backgroundColor: AppCommonTheme.backgroundColorLight,
+              body: Column(
+                children: [
+                  SizedBox(
+                    height: 50,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: TabBar(
+                        controller: tabBarController,
+                        indicator: const BoxDecoration(
+                          color: AppCommonTheme.backgroundColor,
+                          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                        ),
+                        tabs: const [
+                          Tab(
+                            text: ('All 15'),
+                          ),
+                          Tab(
+                            text: ('$heart +11'),
+                          ),
+                          Tab(
+                            text: ('$faceWithTears +3'),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TabBarView(
+                        controller: tabBarController,
+                        children: [
+                          buildReactionListing(astonishedFace),
+                          buildReactionListing(heart),
+                          buildReactionListing(faceWithTears),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget buildReactionListing(String emoji) {
+    return Expanded(
+      child: ListView.separated(
+        itemCount: 10,
+        itemBuilder: (_, index) {
+          return EmojiReactionListItem(emoji: emoji);
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(
+            height: 12,
+          );
+        },
+      ),
+    );
   }
 }
