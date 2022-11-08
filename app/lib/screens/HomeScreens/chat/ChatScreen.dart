@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:bubble/bubble.dart';
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
@@ -12,8 +13,10 @@ import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
+import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
+import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
@@ -27,10 +30,6 @@ import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
 import 'package:transparent_image/transparent_image.dart';
-
-import '../../../common/constants.dart';
-import '../../../widgets/EmojiReactionListItem.dart';
-import '../../../widgets/emoji_row.dart';
 
 class ChatScreen extends StatefulWidget {
   final Future<FfiBufferUint8>? roomAvatar;
@@ -59,7 +58,7 @@ class _ChatScreenState extends State<ChatScreen>
   String? currentid;
   late MessageType messagetype;
   bool isEmojiContainerVisible = false;
-  var messageindex;
+  static var messageIndex = 0;
   late final tabBarController = TabController(length: 3, vsync: this);
   @override
   void initState() {
@@ -667,12 +666,12 @@ class _ChatScreenState extends State<ChatScreen>
                         ),
                         onLongPress: () {
                           setState(() {
-                            messageindex = roomController.messages.indexWhere(
+                            messageIndex = roomController.messages.indexWhere(
                               (element) => element.id == message.id,
                             );
 
                             currentid =
-                                roomController.messages[messageindex].id;
+                                roomController.messages[messageIndex].id;
 
                             if (currentid == message.id) {
                               isEmojiContainerVisible =
