@@ -39,14 +39,15 @@ class SideDrawer extends StatelessWidget {
               const SizedBox(height: 20),
               buildHeader(context),
               SizedBox(height: size.height * 0.04),
+              buildPinsItem(context),
               buildTodoItem(context),
-              buildGalleryItem(context),
+              buildVaultsItem(context),
               buildEventItem(context),
               buildSharedResourcesItem(context),
               buildPollsItem(context),
               buildGroupBudgetingItem(context),
               buildSharedDocumentsItem(context),
-              buildPinsItem(context),
+              buildGalleryItem(context),
               const SizedBox(height: 5),
               if (!isGuest) buildLogoutItem(context),
             ],
@@ -264,6 +265,25 @@ class SideDrawer extends StatelessWidget {
         showNotYetImplementedMsg(
           context,
           'Co-Budgeting is not implemented yet',
+        );
+      },
+    );
+  }
+
+  Widget buildVaultsItem(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        FlutterIcons.safe_mco,
+        color: Colors.teal[700],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.vault,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Vault is not implemented yet',
         );
       },
     );
