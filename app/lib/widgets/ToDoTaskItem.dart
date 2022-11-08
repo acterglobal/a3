@@ -7,6 +7,7 @@ import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDoTaskEditor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 
 class ToDoTaskItem extends StatefulWidget {
   final String title;
@@ -82,7 +83,46 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
               child: Row(
                 children: <Widget>[
                   GestureDetector(
-                    onTap: () => todoController.toggleCheck(widget),
+                    onTap: () {
+                      if (todoController.toggleCheck(widget)) {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "You've checked off '${widget.title}'",
+                            ),
+                            action: SnackBarAction(
+                              label: 'Undo',
+                              onPressed: () {
+                                showNotYetImplementedMsg(context,
+                                    "Undo of tasks is not yet implemented");
+                              },
+                            ),
+                            duration: const Duration(milliseconds: 2000),
+                            backgroundColor: AppCommonTheme.primaryColor,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).clearSnackBars();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              "You've reopened '${widget.title}'",
+                            ),
+                            duration: const Duration(milliseconds: 2000),
+                            backgroundColor: AppCommonTheme.secondaryColor,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                          ),
+                        );
+                      }
+                    },
                     child: Container(
                       height: 18,
                       width: 18,

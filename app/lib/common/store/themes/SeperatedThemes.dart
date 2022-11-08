@@ -3,6 +3,8 @@ import 'package:themed/themed.dart';
 
 class AppCommonTheme {
   static const primaryColor = ColorRef(Color(0xffEC2758));
+  static const secondaryColor = ColorRef(Color(0xff23AFC2));
+  static const tertiaryColor = ColorRef(Color(0xff5C2A80));
   static const backgroundColor = ColorRef(Color.fromRGBO(36, 38, 50, 1));
   static const backgroundColorLight = ColorRef(Color(0xff333540), id: 'CIBC');
   static const svgIconColor = ColorRef(Colors.white, id: 'NavBar');

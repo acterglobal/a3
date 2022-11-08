@@ -70,7 +70,7 @@ class ToDoController extends GetxController {
     expandBtn.value = !expandBtn.value;
   }
 
-  void toggleCheck(ToDoTaskItem item) {
+  bool toggleCheck(ToDoTaskItem item) {
     if (item.isCompleted == true) {
       ToDoTaskItem newItem = ToDoTaskItem(
         title: item.title,
@@ -83,7 +83,8 @@ class ToDoController extends GetxController {
       );
       pendingTasks.add(newItem);
       completedTasks.remove(item);
-    } else if (item.isCompleted == false) {
+      return false;
+    } else {
       ToDoTaskItem newItem = ToDoTaskItem(
         title: item.title,
         isCompleted: true,
@@ -95,6 +96,7 @@ class ToDoController extends GetxController {
       );
       completedTasks.add(newItem);
       pendingTasks.remove(item);
+      return true;
     }
   }
 
