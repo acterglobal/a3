@@ -26,6 +26,8 @@ class AppCommonTheme {
 
 class SideMenuAndProfileTheme {
   static const sideMenuTextColor = ColorRef(Color.fromRGBO(196, 196, 196, 1));
+  static const sideMenuTextColorDisabled =
+      ColorRef(Color.fromRGBO(196, 196, 196, 0.4));
   static const sideMenuProfileTextColor =
       ColorRef(Color.fromRGBO(229, 229, 229, 1));
   static const profileBodyTextColor = ColorRef(Colors.white, id: 'PBT');
@@ -40,6 +42,13 @@ class SideMenuAndProfileTheme {
     ),
   );
 
+  static const sideMenuStyleDisabled = TextStyleRef(
+    TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+      color: sideMenuTextColorDisabled,
+    ),
+  );
   static const sideMenuProfileStyle = TextStyleRef(
     TextStyle(
       fontSize: 18,
