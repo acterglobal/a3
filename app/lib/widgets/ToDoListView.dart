@@ -1,7 +1,7 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class ToDoListView extends StatefulWidget {
@@ -47,11 +47,34 @@ class _ToDoListViewState extends State<ToDoListView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SvgPicture.asset(
-                        'assets/images/heart.svg',
+                      const Icon(
+                        FlutterIcons.tasks_faw5s,
                         color: ToDoTheme.primaryTextColor,
-                        height: 12.61,
-                        width: 14.17,
+                        size: 20.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(
+                          '${todoController.pendingTasks.length}',
+                          style: ToDoTheme.calendarTextStyle,
+                        ),
+                      ),
+                      const Icon(
+                        FlutterIcons.check_evi,
+                        color: ToDoTheme.primaryTextColor,
+                        size: 20.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: Text(
+                          '${todoController.completedTasks.length}',
+                          style: ToDoTheme.calendarTextStyle,
+                        ),
+                      ),
+                      const Spacer(),
+                      const Icon(
+                        FlutterIcons.heart_evi,
+                        color: ToDoTheme.primaryTextColor,
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -61,10 +84,9 @@ class _ToDoListViewState extends State<ToDoListView> {
                         ),
                       ),
                       const SizedBox(width: 5),
-                      SvgPicture.asset(
-                        'assets/images/message.svg',
-                        height: 12,
-                        width: 12,
+                      const Icon(
+                        FlutterIcons.comment_evi,
+                        color: ToDoTheme.primaryTextColor,
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -73,11 +95,9 @@ class _ToDoListViewState extends State<ToDoListView> {
                           style: ToDoTheme.calendarTextStyle,
                         ),
                       ),
-                      const Spacer(),
-                      SvgPicture.asset(
-                        'assets/images/bookmark.svg',
-                        height: 12,
-                        width: 12,
+                      const Icon(
+                        FlutterIcons.bookmark_outline_mco,
+                        color: ToDoTheme.primaryTextColor,
                       ),
                     ],
                   ),
@@ -89,15 +109,11 @@ class _ToDoListViewState extends State<ToDoListView> {
                   indent: 0,
                   endIndent: 0,
                 ),
-                Text(
-                  'Active Tasks: ${todoController.pendingTasks.length}',
-                  style: ToDoTheme.activeTasksTextStyle,
-                ),
               ],
             ),
           ),
           onExpansionChanged: (val) => todoController.toggleExpand(),
-          initiallyExpanded: false,
+          initiallyExpanded: true,
           children: [
             ListView(
               shrinkWrap: true,

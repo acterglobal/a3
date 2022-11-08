@@ -18,7 +18,7 @@ class ToDoController extends GetxController {
   late int taskCount;
   late int likeCount;
   late int messageCount;
-  RxBool initialExpand = false.obs;
+  RxBool initialExpand = true.obs;
   RxBool expandBtn = false.obs;
   int selectedValueIndex = 0;
   Random random = Random();
@@ -40,12 +40,30 @@ class ToDoController extends GetxController {
         lastUpdated: DateTime.now(),
       );
     });
-    todoList = List.generate(listCount, (index) {
-      return ToDoListView(
-        title: titleTasks[random.nextInt(titleTasks.length)],
-        subtitle: loremPara2,
-      );
-    });
+    todoList = [
+      const ToDoListView(
+        title: 'Groceries',
+        subtitle: 'General shopping list',
+      ),
+      const ToDoListView(
+        title: 'Uncle Jack\'s 65th Birthday party',
+        subtitle: 'Things to do for organizing the birthday party no the 17th.',
+      ),
+      const ToDoListView(
+        title: '25th Anniversary of Club Sporting',
+        subtitle:
+            'Party on the 3rd, 4pm @ Club House. All unassigned tasks are up for grabs - take it and do it. Sync-Call every tuesday and thursday at 6pm.',
+      ),
+      const ToDoListView(
+        title: 'Errands',
+        subtitle: 'General family errands',
+      ),
+      const ToDoListView(
+        title: 'Kids & School',
+        subtitle:
+            'Everything around the kids and school, that needs to be done, listed here',
+      ),
+    ];
     for (var t in tasksList!) {
       if (t.isCompleted == true) {
         completedTasks.add(t);
