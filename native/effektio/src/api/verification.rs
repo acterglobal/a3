@@ -6,13 +6,27 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     config::SyncSettings,
-    deserialized_responses::SyncResponse,
     encryption::verification::{Verification, VerificationRequest},
+    event_handler::{Ctx, EventHandlerHandle},
     ruma::{
         events::{
-            key::verification::{cancel::CancelCode, VerificationMethod},
-            room::message::MessageType,
-            AnySyncMessageLikeEvent, AnySyncTimelineEvent, AnyToDeviceEvent, SyncMessageLikeEvent,
+            key::verification::{
+                accept::{
+                    OriginalSyncKeyVerificationAcceptEvent, ToDeviceKeyVerificationAcceptEvent,
+                },
+                cancel::{
+                    CancelCode, OriginalSyncKeyVerificationCancelEvent,
+                    ToDeviceKeyVerificationCancelEvent,
+                },
+                done::{OriginalSyncKeyVerificationDoneEvent, ToDeviceKeyVerificationDoneEvent},
+                key::{OriginalSyncKeyVerificationKeyEvent, ToDeviceKeyVerificationKeyEvent},
+                mac::{OriginalSyncKeyVerificationMacEvent, ToDeviceKeyVerificationMacEvent},
+                ready::{OriginalSyncKeyVerificationReadyEvent, ToDeviceKeyVerificationReadyEvent},
+                request::ToDeviceKeyVerificationRequestEvent,
+                start::{OriginalSyncKeyVerificationStartEvent, ToDeviceKeyVerificationStartEvent},
+                VerificationMethod,
+            },
+            room::message::{MessageType, OriginalSyncRoomMessageEvent},
         },
         OwnedDeviceId, OwnedUserId, UserId,
     },
@@ -388,6 +402,22 @@ impl VerificationEmoji {
 pub(crate) struct VerificationController {
     event_tx: Sender<VerificationEvent>,
     event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,
+    request_sync_event_handle: Option<EventHandlerHandle>,
+    request_to_device_event_handle: Option<EventHandlerHandle>,
+    ready_sync_event_handle: Option<EventHandlerHandle>,
+    ready_to_device_event_handle: Option<EventHandlerHandle>,
+    start_sync_event_handle: Option<EventHandlerHandle>,
+    start_to_device_event_handle: Option<EventHandlerHandle>,
+    accept_sync_event_handle: Option<EventHandlerHandle>,
+    accept_to_device_event_handle: Option<EventHandlerHandle>,
+    cancel_sync_event_handle: Option<EventHandlerHandle>,
+    cancel_to_device_event_handle: Option<EventHandlerHandle>,
+    key_sync_event_handle: Option<EventHandlerHandle>,
+    key_to_device_event_handle: Option<EventHandlerHandle>,
+    mac_sync_event_handle: Option<EventHandlerHandle>,
+    mac_to_device_event_handle: Option<EventHandlerHandle>,
+    done_sync_event_handle: Option<EventHandlerHandle>,
+    done_to_device_event_handle: Option<EventHandlerHandle>,
 }
 
 impl VerificationController {
@@ -396,321 +426,492 @@ impl VerificationController {
         VerificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
+            request_sync_event_handle: None,
+            request_to_device_event_handle: None,
+            ready_sync_event_handle: None,
+            ready_to_device_event_handle: None,
+            start_sync_event_handle: None,
+            start_to_device_event_handle: None,
+            accept_sync_event_handle: None,
+            accept_to_device_event_handle: None,
+            cancel_sync_event_handle: None,
+            cancel_to_device_event_handle: None,
+            key_sync_event_handle: None,
+            key_to_device_event_handle: None,
+            mac_sync_event_handle: None,
+            mac_to_device_event_handle: None,
+            done_sync_event_handle: None,
+            done_to_device_event_handle: None,
         }
     }
 
-    fn handle_sync_event(&mut self, client: &MatrixClient, evt: &AnySyncMessageLikeEvent) {
-        match evt {
-            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(ev)) => {
+    pub fn add_sync_event_handler(&mut self, client: &MatrixClient) {
+        let me = self.clone();
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncRoomMessageEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
                 if let MessageType::VerificationRequest(_) = &ev.content.msgtype {
-                    let dev_id = client.device_id().expect("guest user cannot get device id");
-                    info!("{} got {}", dev_id.to_string(), evt.event_type());
+                    let dev_id = c
+                        .device_id()
+                        .expect("guest user cannot get device id")
+                        .to_string();
+                    info!("{} got m.key.verification.request", dev_id);
                     let flow_id = ev.event_id.to_string();
                     let msg = VerificationEvent::new(
-                        client,
-                        evt.event_type().to_string(),
+                        &c,
+                        "m.key.verification.request".to_string(),
                         flow_id.clone(),
                         ev.sender.clone(),
                         None,
                         None,
                         None,
                     );
-                    if let Err(e) = self.event_tx.try_send(msg) {
-                        warn!("Dropping event for {}: {}", flow_id, e);
+                    if let Err(e) = me.event_tx.try_send(msg) {
+                        warn!("Dropping transaction for {}: {}", flow_id, e);
                     }
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationReady(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.request_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationReadyEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.ready", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.ready".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationStart(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.ready_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationStartEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.start", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.start".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationAccept(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.start_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationAcceptEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.accept", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.accept".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationCancel(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.accept_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationCancelEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.cancel", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.cancel".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     Some(ev.content.code.clone()),
                     Some(ev.content.reason.clone()),
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationKey(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.cancel_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationKeyEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.key", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.key".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationMac(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.key_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationMacEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.mac", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.mac".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnySyncMessageLikeEvent::KeyVerificationDone(SyncMessageLikeEvent::Original(ev)) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.mac_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me);
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationDoneEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.done", dev_id.to_string());
                 let flow_id = ev.content.relates_to.event_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.done".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
-                    warn!("Dropping event for {}: {}", flow_id, e);
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            _ => {}
+            },
+        );
+        self.done_sync_event_handle = Some(handle);
+    }
+
+    pub fn remove_sync_event_handler(&mut self, client: &MatrixClient) {
+        if let Some(handle) = self.request_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.request_sync_event_handle = None;
+        }
+        if let Some(handle) = self.ready_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.ready_sync_event_handle = None;
+        }
+        if let Some(handle) = self.start_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.start_sync_event_handle = None;
+        }
+        if let Some(handle) = self.accept_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.accept_sync_event_handle = None;
+        }
+        if let Some(handle) = self.cancel_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.cancel_sync_event_handle = None;
+        }
+        if let Some(handle) = self.key_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.key_sync_event_handle = None;
+        }
+        if let Some(handle) = self.mac_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.mac_sync_event_handle = None;
+        }
+        if let Some(handle) = self.done_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.done_sync_event_handle = None;
         }
     }
 
-    pub fn process_sync_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
-        for (room_id, room_info) in response.rooms.join.iter() {
-            for event in room_info
-                .timeline
-                .events
-                .iter()
-                .filter_map(|ev| ev.event.deserialize().ok())
-            {
-                if let AnySyncTimelineEvent::MessageLike(ref evt) = event {
-                    self.handle_sync_event(client, evt);
-                }
-            }
-        }
-    }
+    pub fn add_to_device_event_handler(&mut self, client: &MatrixClient) {
+        let me = self.clone();
 
-    fn handle_to_device_event(&mut self, client: &MatrixClient, evt: &AnyToDeviceEvent) {
-        match evt {
-            AnyToDeviceEvent::KeyVerificationRequest(ref ev) => {
-                let dev_id = client
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationRequestEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c
                     .device_id()
                     .expect("guest user cannot get device id")
                     .to_string();
-                info!("{} got {}", dev_id, evt.event_type());
+                info!("{} got m.key.verification.request", dev_id);
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.request".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationReady(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.request_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationReadyEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.ready", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.ready".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationStart(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.ready_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationStartEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.start", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.start".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationAccept(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.start_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationAcceptEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.accept", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.accept".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationCancel(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.accept_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationCancelEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.cancel", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.cancel".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     Some(ev.content.code.clone()),
                     Some(ev.content.reason.clone()),
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationKey(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.cancel_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationKeyEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.key", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.key".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationMac(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.key_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationMacEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.mac", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.mac".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            AnyToDeviceEvent::KeyVerificationDone(ref ev) => {
-                let dev_id = client.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), evt.event_type());
+            },
+        );
+        self.mac_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me);
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationDoneEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.done", dev_id.to_string());
                 let flow_id = ev.content.transaction_id.to_string();
                 let msg = VerificationEvent::new(
-                    client,
-                    evt.event_type().to_string(),
+                    &c,
+                    "m.key.verification.done".to_string(),
                     flow_id.clone(),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
-                if let Err(e) = self.event_tx.try_send(msg) {
+                if let Err(e) = me.event_tx.try_send(msg) {
                     warn!("Dropping transaction for {}: {}", flow_id, e);
                 }
-            }
-            _ => {}
-        }
+            },
+        );
+        self.done_to_device_event_handle = Some(handle);
     }
 
-    pub fn process_to_device_events(&mut self, client: &MatrixClient, response: &SyncResponse) {
-        for evt in response
-            .to_device_events
-            .clone()
-            .into_iter()
-            .filter_map(|e| e.deserialize().ok())
-        {
-            self.handle_to_device_event(client, &evt);
+    pub fn remove_to_device_event_handler(&mut self, client: &MatrixClient) {
+        if let Some(handle) = self.request_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.request_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.ready_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.ready_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.start_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.start_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.accept_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.accept_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.cancel_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.cancel_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.key_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.key_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.mac_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.mac_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.done_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.done_to_device_event_handle = None;
         }
     }
 }
