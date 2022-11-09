@@ -2,16 +2,16 @@
 fn init_logging(filter: Option<string>) -> Result<()>;
 
 /// Create a new client for homeserver at url with storage at data_path
-fn login_new_client(basepath: string, username: string, password: string) -> Future<Result<Client>>;
+fn login_new_client(basepath: string, username: string, password: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the restore token
 fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Client>>;
 
 /// Create a new client anonymous client connecting to the homeserver
-fn guest_client(basepath: string, homeserver: string) -> Future<Result<Client>>;
+fn guest_client(basepath: string, homeserver: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// Create a new client from the restore token
-fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string) -> Future<Result<Client>>;
+fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
