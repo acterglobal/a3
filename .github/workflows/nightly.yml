@@ -136,7 +136,7 @@ jobs:
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
 
-      - run: flutter ${{ matrix.flutter_build_args }}
+      - run: flutter ${{ matrix.flutter_build_args }} --dart-define=VERSION_NAME=Nightly
         working-directory: ./app
 
       - name: Package Tar file

@@ -113,7 +113,7 @@ class EffektioSdk {
   }
 
   static String get deviceName {
-    return 'Effektio ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')} ${Platform.operatingSystem} (${Platform.operatingSystemVersion}) on ${Platform.localHostname}';
+    return 'Effektio ${Platform.operatingSystem} ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')}  (${Platform.operatingSystemVersion}) on ${Platform.localHostname}';
   }
 
   static Future<EffektioSdk> get instance async {
