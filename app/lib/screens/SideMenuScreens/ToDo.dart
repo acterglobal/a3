@@ -59,7 +59,10 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 12, top: 10),
-                  child: Text(loremPara1, style: ToDoTheme.subtitleTextStyle),
+                  child: Text(
+                    'Find all tasks currently open task and ToDo-Lists of your communities here',
+                    style: ToDoTheme.subtitleTextStyle,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 12, top: 15),
