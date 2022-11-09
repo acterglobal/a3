@@ -66,7 +66,8 @@ class EffektioSdk {
     }
 
     if (_clients.isEmpty) {
-      ffi.Client client = await _api.guestClient(appDocPath, defaultServer);
+      ffi.Client client =
+          await _api.guestClient(appDocPath, defaultServer, deviceName);
       _clients.add(client);
       loggedIn = client.loggedIn();
       await _persistSessions();
@@ -111,6 +112,10 @@ class EffektioSdk {
     }
   }
 
+  static String get deviceName {
+    return 'Effektio ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')} ${Platform.operatingSystem} (${Platform.operatingSystemVersion}) on ${Platform.localHostname}';
+  }
+
   static Future<EffektioSdk> get instance async {
     if (_instance == null) {
       final api = Platform.isAndroid
@@ -133,7 +138,8 @@ class EffektioSdk {
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-    final client = await _api.loginNewClient(appDocPath, username, password);
+    final client =
+        await _api.loginNewClient(appDocPath, username, password, deviceName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       _clients.removeAt(0);
@@ -174,6 +180,7 @@ class EffektioSdk {
       username,
       password,
       token,
+      deviceName,
     );
     final account = client.account();
     await account.setDisplayName(displayName);
