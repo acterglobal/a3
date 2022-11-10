@@ -35,8 +35,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             client.restore_login(session).await?;
             let state = ClientStateBuilder::default()
                 .is_guest(true)
-                .build()
-                .unwrap();
+                .build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -60,8 +59,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             client.restore_login(session).await?;
             let state = ClientStateBuilder::default()
                 .is_guest(is_guest)
-                .build()
-                .unwrap();
+                .build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
@@ -102,8 +100,7 @@ pub async fn login_new_client(
             client.login_username(&user_id, &password).send().await?;
             let state = ClientStateBuilder::default()
                 .is_guest(false)
-                .build()
-                .unwrap();
+                .build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?}",
@@ -147,8 +144,7 @@ pub async fn register_with_registration_token(
             }
             let state = ClientStateBuilder::default()
                 .is_guest(false)
-                .build()
-                .unwrap();
+                .build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully registered user {:?}, device {:?}",

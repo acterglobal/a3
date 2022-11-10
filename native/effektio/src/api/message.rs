@@ -66,23 +66,25 @@ impl RoomMessage {
         }
         let mut image_description: Option<ImageDescription> = None;
         if let MessageType::Image(content) = &event.content.msgtype {
-            let info = content.info.as_ref().unwrap();
-            image_description = Some(ImageDescription {
-                name: content.body.clone(),
-                mimetype: info.mimetype.clone(),
-                size: info.size.map(u64::from),
-                width: info.width.map(u64::from),
-                height: info.height.map(u64::from),
-            });
+            if let Some(info) = content.info.as_ref() {
+                image_description = Some(ImageDescription {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                    width: info.width.map(u64::from),
+                    height: info.height.map(u64::from),
+                });
+            }
         }
         let mut file_description: Option<FileDescription> = None;
         if let MessageType::File(content) = &event.content.msgtype {
-            let info = content.info.as_ref().unwrap();
-            file_description = Some(FileDescription {
-                name: content.body.clone(),
-                mimetype: info.mimetype.clone(),
-                size: info.size.map(u64::from),
-            });
+            if let Some(info) = content.info.as_ref() {
+                file_description = Some(FileDescription {
+                    name: content.body.clone(),
+                    mimetype: info.mimetype.clone(),
+                    size: info.size.map(u64::from),
+                });
+            }
         }
         RoomMessage::new(
             event.event_id.to_string(),
@@ -119,22 +121,24 @@ impl RoomMessage {
                 }
             }
             if let MessageType::Image(content) = msg.msgtype() {
-                let info = content.info.as_ref().unwrap();
-                image_description = Some(ImageDescription {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                });
+                if let Some(info) = content.info.as_ref() {
+                    image_description = Some(ImageDescription {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        width: info.width.map(u64::from),
+                        height: info.height.map(u64::from),
+                    });
+                }
             }
             if let MessageType::File(content) = msg.msgtype() {
-                let info = content.info.as_ref().unwrap();
-                file_description = Some(FileDescription {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                });
+                if let Some(info) = content.info.as_ref() {
+                    file_description = Some(FileDescription {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                    });
+                }
             }
         }
         RoomMessage::new(
