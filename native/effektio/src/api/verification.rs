@@ -55,6 +55,7 @@ pub struct VerificationEvent {
 }
 
 impl VerificationEvent {
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn new(
         client: &MatrixClient,
         event_type: String,
@@ -84,10 +85,8 @@ impl VerificationEvent {
     pub fn flow_id(&self) -> Option<String> {
         if let Some(event_id) = &self.event_id {
             Some(event_id.to_string())
-        } else if let Some(txn_id) = &self.txn_id {
-            Some(txn_id.to_string())
         } else {
-            None
+            self.txn_id.as_ref().map(|x| x.to_string())
         }
     }
 
@@ -779,7 +778,7 @@ impl VerificationController {
         );
         self.mac_sync_event_handle = Some(handle);
 
-        client.add_event_handler_context(me.clone());
+        client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationDoneEvent,
              c: MatrixClient,
@@ -1021,7 +1020,7 @@ impl VerificationController {
         );
         self.mac_to_device_event_handle = Some(handle);
 
-        client.add_event_handler_context(me.clone());
+        client.add_event_handler_context(me);
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationDoneEvent,
              c: MatrixClient,
