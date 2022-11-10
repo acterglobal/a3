@@ -284,7 +284,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.accept().await.unwrap();
+                        sas.accept().await?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -293,7 +293,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.accept().await.unwrap();
+                        sas.accept().await?;
                         return Ok(true);
                     }
                 }
@@ -317,7 +317,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.cancel().await.unwrap();
+                        sas.cancel().await?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -326,7 +326,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.cancel().await.unwrap();
+                        sas.cancel().await?;
                         return Ok(true);
                     }
                 }
@@ -361,7 +361,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.cancel().await.unwrap();
+                        sas.cancel().await?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -370,7 +370,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.cancel().await.unwrap();
+                        sas.cancel().await?;
                         return Ok(true);
                     }
                 }
@@ -447,7 +447,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.confirm().await.unwrap();
+                        sas.confirm().await?;
                         return Ok(sas.is_done());
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -456,7 +456,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.confirm().await.unwrap();
+                        sas.confirm().await?;
                         return Ok(sas.is_done());
                     }
                 }
@@ -480,7 +480,7 @@ impl VerificationEvent {
                         .get_verification(&sender, event_id.as_str())
                         .await
                     {
-                        sas.mismatch().await.unwrap();
+                        sas.mismatch().await?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -489,7 +489,7 @@ impl VerificationEvent {
                         .get_verification(&sender, txn_id.as_str())
                         .await
                     {
-                        sas.mismatch().await.unwrap();
+                        sas.mismatch().await?;
                         return Ok(true);
                     }
                 }
