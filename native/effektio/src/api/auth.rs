@@ -33,9 +33,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                 device_id,
             };
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(true)
-                .build()?;
+            let state = ClientStateBuilder::default().is_guest(true).build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -57,9 +55,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             let client = config.build().await?;
             let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(is_guest)
-                .build()?;
+            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
@@ -98,9 +94,7 @@ pub async fn login_new_client(
         .spawn(async move {
             let client = config.build().await?;
             client.login_username(&user_id, &password).send().await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()?;
+            let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?}",
@@ -142,9 +136,7 @@ pub async fn register_with_registration_token(
             } else {
                 bail!("Server is not set up to allow registration.");
             }
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()?;
+            let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully registered user {:?}, device {:?}",
