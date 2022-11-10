@@ -132,7 +132,10 @@ impl Client {
 
         self.verification_controller
             .add_to_device_event_handler(&client);
-        self.verification_controller.add_sync_event_handler(&client);
+        // sync event is the event that my device was off so it may be timed out possibly
+        // in fact, when user opens app, he sees old verification popup sometimes
+        // in order to avoid this issue, comment out sync event
+        // self.verification_controller.add_sync_event_handler(&client);
 
         let mut invitation_controller = self.invitation_controller.clone();
         let mut device_controller = self.device_controller.clone();
