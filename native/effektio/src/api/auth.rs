@@ -38,10 +38,7 @@ pub async fn guest_client(
                 device_id,
             };
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(true)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(true).build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -63,10 +60,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             let client = config.build().await?;
             let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(is_guest)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
@@ -112,10 +106,7 @@ pub async fn login_new_client(
                 login_builder = login_builder.initial_device_display_name(name.as_str())
             };
             login_builder.send().await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?}",
@@ -159,10 +150,7 @@ pub async fn register_with_registration_token(
             } else {
                 bail!("Server is not set up to allow registration.");
             }
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully registered user {:?}, device {:?}",
