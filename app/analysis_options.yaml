@@ -7,7 +7,3 @@ linter:
     always_declare_return_types: true
     always_use_package_imports: true
     file_names: false
-
-analyzer:
-  errors:
-    unused_import: warning
