@@ -1,8 +1,8 @@
-import 'package:effektio/common/store/MockData.dart';
+import 'package:effektio/common/store/MockData.dart' as mock;
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
-import 'package:flutter/material.dart';
 import 'package:effektio/widgets/AppCommon.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
@@ -60,7 +60,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 const Padding(
                   padding: EdgeInsets.only(left: 12, top: 10),
                   child: Text(
-                    'Find all tasks currently open task and ToDo-Lists of your communities here',
+                    mock.loremPara1,
                     style: ToDoTheme.subtitleTextStyle,
                   ),
                 ),

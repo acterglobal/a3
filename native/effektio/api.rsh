@@ -405,7 +405,7 @@ object VerificationEvent {
     fn event_type() -> string;
 
     /// Get flow id (EventId or TransactionId)
-    fn flow_id() -> string;
+    fn flow_id() -> Option<string>;
 
     /// Get user id of event sender
     fn sender() -> string;
