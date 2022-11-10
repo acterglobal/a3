@@ -8,6 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
         Conversation,
+        FfiBufferUint8,
         FileDescription,
         ImageDescription,
         Member,
@@ -42,9 +43,12 @@ class ChatRoomController extends GetxController {
       GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
   final List<XFile> _imageFileList = [];
-  List<Map<String, dynamic>> activeMembers = [];
+  List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
   Map<String, String> messageTextMapHtml = {};
+  final Map<String, Future<FfiBufferUint8>> _userAvatars = {};
+  final Map<String, String> _userNames = {};
+  List<Map<String, dynamic>> mentionList = [];
   StreamSubscription<RoomMessage>? _messageSubscription;
 
   ChatRoomController({required this.client}) : super();
@@ -60,7 +64,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.messageEventRx()?.listen((event) {
+    _messageSubscription = client.incomingMessageRx()?.listen((event) {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom != null) {
@@ -91,23 +95,42 @@ class ChatRoomController extends GetxController {
       messages.clear();
       typingUsers.clear();
       activeMembers.clear();
+      mentionList.clear();
       _stream = null;
       _page = 0;
       _currentRoom = null;
     } else {
       _currentRoom = convoRoom;
+      update(['room-profile']);
       isLoading.value = true;
-      activeMembers = await _getActiveMembers();
-      _stream = await _currentRoom!.timeline();
+      activeMembers = (await _currentRoom!.activeMembers()).toList();
+      update(['active-members']);
+      _fetchUserProfiles();
+      if (_currentRoom == null) {
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
+      }
+      _stream = _currentRoom!.timeline();
       // i am fetching messages from remote
+      if (_currentRoom == null) {
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
+      }
       var msgs = await _stream!.paginateBackwards(10);
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
       // load receipt status of room
       var receiptController = Get.find<ReceiptController>();
-      var receipts = (await _currentRoom!.userReceipts()).toList();
-      receiptController.loadRoom(_currentRoom!.getRoomId(), receipts);
+      var receipts = (await convoRoom.userReceipts()).toList();
+      if (_currentRoom == null) {
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
+      }
+      receiptController.loadRoom(convoRoom.getRoomId(), receipts);
       isLoading.value = false;
     }
   }
@@ -116,23 +139,47 @@ class ChatRoomController extends GetxController {
     return _currentRoom?.getRoomId();
   }
 
-  Future<List<Map<String, dynamic>>> _getActiveMembers() async {
-    List<Member> members = (await _currentRoom!.activeMembers())
-        .where((x) => x.userId() != client.userId().toString())
-        .toList();
-    List<Map<String, dynamic>> records = [];
-    for (Member member in members) {
-      UserProfile profile = await member.getProfile();
-      Map<String, dynamic> record = {
-        'display': profile.getDisplayName(),
-        'link': member.userId(),
-      };
+  Future<void> _fetchUserProfiles() async {
+    Map<String, Future<FfiBufferUint8>> avatars = {};
+    Map<String, String> names = {};
+    List<String> ids = [];
+    List<Map<String, dynamic>> mentionRecords = [];
+    for (int i = 0; i < activeMembers.length; i++) {
+      String userId = activeMembers[i].userId();
+      ids.add('user-profile-$userId');
+      UserProfile profile = await activeMembers[i].getProfile();
+      Map<String, dynamic> record = {};
       if (profile.hasAvatar()) {
-        record['avatar'] = profile.getAvatar();
+        avatars[userId] = profile.getAvatar();
+        record['avatar'] = avatars[userId];
       }
-      records.add(record);
+      String? name = profile.getDisplayName();
+      record['display'] = name;
+      record['link'] = userId;
+      if (name != null) {
+        names[userId] = name;
+      }
+      mentionRecords.add(record);
+      if (i % 3 == 0 || i == activeMembers.length - 1) {
+        _userAvatars.addAll(avatars);
+        _userNames.addAll(names);
+        mentionList.addAll(mentionRecords);
+        mentionRecords.clear();
+        update(['chat-input']);
+        update(ids);
+        avatars.clear();
+        names.clear();
+        ids.clear();
+      }
     }
-    return records;
+  }
+
+  Future<FfiBufferUint8>? getUserAvatar(String userId) {
+    return _userAvatars.containsKey(userId) ? _userAvatars[userId] : null;
+  }
+
+  String? getUserName(String userId) {
+    return _userNames.containsKey(userId) ? _userNames[userId] : null;
   }
 
   //preview message link
@@ -368,7 +415,7 @@ class ChatRoomController extends GetxController {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
-    int createdAt = message.originServerTs(); // in milliseconds
+    int? createdAt = message.originServerTs(); // in milliseconds
     String eventId = message.eventId();
 
     if (msgtype == 'm.audio') {
@@ -442,7 +489,7 @@ class ChatRoomController extends GetxController {
   void sendButtonUpdate() {
     isSendButtonVisible =
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
-    update();
+    update(['chat-input']);
   }
 
   Future<bool> typingNotice(bool typing) async {

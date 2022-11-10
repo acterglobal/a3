@@ -24,6 +24,7 @@
     "pollsVotes":"Polls & Votes",
     "groupBudgeting":"Group Budgeting",
     "sharedDocuments":"Shared Documents",
+    "vault": "Vault & Secrets",
     "pins":"Pins",
     "logOut":"Logout",
     "login":"Login",

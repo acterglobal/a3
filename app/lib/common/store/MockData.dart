@@ -22,6 +22,7 @@ final List<Image> newsFeeds = [
     fit: BoxFit.cover,
   ),
 ];
+
 final List<String> inviters = [
   'Ben',
   'Amita',

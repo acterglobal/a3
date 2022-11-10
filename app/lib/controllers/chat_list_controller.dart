@@ -17,25 +17,12 @@ import 'package:get/get.dart';
 //Helper class.
 class JoinedRoom {
   Conversation conversation;
-  LatestMessage? latestMessage;
+  RoomMessage? latestMessage;
   List<types.User> typingUsers = [];
 
   JoinedRoom({
     required this.conversation,
     this.latestMessage,
-  });
-}
-
-//Helper class.
-class LatestMessage {
-  String sender;
-  String body;
-  int originServerTs;
-
-  LatestMessage({
-    required this.sender,
-    required this.body,
-    required this.originServerTs,
   });
 }
 
@@ -55,13 +42,29 @@ class ChatListController extends GetxController {
     super.onInit();
 
     _convosSubscription = client.conversationsRx().listen((event) {
-      // process the latest message here
-      _updateList(event.toList());
+      if (!initialLoaded) {
+        initialLoaded = true; // used for rendering
+      }
+      joinedRooms.clear();
+      for (Conversation convo in event.toList()) {
+        String roomId = convo.getRoomId();
+        int pos = joinedRooms.indexWhere((x) {
+          return x.conversation.getRoomId() == roomId;
+        });
+        JoinedRoom newItem = JoinedRoom(conversation: convo);
+        if (pos == -1) {
+          newItem.latestMessage = convo.latestMessage();
+        } else {
+          newItem.latestMessage = joinedRooms[pos].latestMessage;
+          newItem.typingUsers = joinedRooms[pos].typingUsers;
+        }
+        joinedRooms.add(newItem);
+      }
+      update(['chatlist']);
     });
 
     _invitesSubscription = client.invitationsRx().listen((event) {
       invitations = event.toList();
-
       update(['invited_list']);
     });
 
@@ -93,7 +96,7 @@ class ChatListController extends GetxController {
       if (currentRoomId == null) {
         // we are in chat list page
         joinedRooms[idx].typingUsers = typingUsers;
-        update([roomId]);
+        update(['chatroom-$roomId']);
       } else if (roomId == currentRoomId) {
         // we are in chat room page
         roomController.typingUsers = typingUsers;
@@ -109,39 +112,6 @@ class ChatListController extends GetxController {
     _typingSubscription?.cancel();
 
     super.onClose();
-  }
-
-  void _updateList(List<Conversation> convos) {
-    if (!initialLoaded) {
-      initialLoaded = true;
-    }
-    List<JoinedRoom> newItems = [];
-    for (Conversation convo in convos) {
-      JoinedRoom newItem = JoinedRoom(conversation: convo);
-      String roomId = convo.getRoomId();
-      int idx = joinedRooms.indexWhere((x) {
-        return x.conversation.getRoomId() == roomId;
-      });
-      RoomMessage? msg = convo.latestMessage();
-      if (msg == null) {
-        // prevent latest message from deleting
-        if (idx != -1) {
-          newItem.latestMessage = joinedRooms[idx].latestMessage;
-        }
-      } else {
-        newItem.latestMessage = LatestMessage(
-          sender: msg.sender(),
-          body: msg.body(),
-          originServerTs: msg.originServerTs(),
-        );
-      }
-      if (idx != -1) {
-        newItem.typingUsers = joinedRooms[idx].typingUsers;
-      }
-      newItems.add(newItem);
-    }
-    joinedRooms = newItems;
-    update(['chatlist']);
   }
 
   void moveItem(int from, int to) {

@@ -1,90 +1,143 @@
 use anyhow::Result;
-use core::pin::Pin;
-use futures::{lock::Mutex, pin_mut, StreamExt};
-use matrix_sdk::{deserialized_responses::SyncTimelineEvent, room::Room, Client};
+use futures::{pin_mut, StreamExt};
+use futures_signals::signal_vec::{SignalVecExt, VecDiff};
+use js_int::UInt;
+use log::info;
+use matrix_sdk::{room::Room, Client};
 use std::sync::Arc;
 
 use super::{
-    message::{sync_event_to_message, RoomMessage},
+    message::{timeline_item_to_message, RoomMessage},
     RUNTIME,
 };
-
-type BackwardMsgStream =
-    Pin<Box<dyn futures::Stream<Item = Result<SyncTimelineEvent, matrix_sdk::Error>> + Send>>;
-type ForwardMsgStream = Pin<Box<dyn futures::Stream<Item = SyncTimelineEvent> + Send>>;
 
 #[derive(Clone)]
 pub struct TimelineStream {
     client: Client,
     room: Room,
-    backward: Arc<Mutex<BackwardMsgStream>>,
-    forward: Arc<Mutex<ForwardMsgStream>>,
 }
 
-unsafe impl Send for TimelineStream {}
-unsafe impl Sync for TimelineStream {}
-
 impl TimelineStream {
-    pub fn new(
-        forward: ForwardMsgStream,
-        backward: BackwardMsgStream,
-        client: Client,
-        room: Room,
-    ) -> Self {
-        TimelineStream {
-            forward: Arc::new(Mutex::new(forward)),
-            backward: Arc::new(Mutex::new(backward)),
-            client,
-            room,
-        }
+    pub fn new(client: Client, room: Room) -> Self {
+        TimelineStream { client, room }
     }
 
-    pub async fn paginate_backwards(&self, mut count: u64) -> Result<Vec<RoomMessage>> {
-        let backward = self.backward.clone();
+    pub async fn paginate_backwards(&self, mut count: u32) -> Result<Vec<RoomMessage>> {
         let room = self.room.clone();
+        let timeline = Arc::new(self.room.timeline());
+
         RUNTIME
             .spawn(async move {
-                let mut messages: Vec<RoomMessage> = Vec::new();
-                let stream = backward.lock().await;
+                let mut stream = timeline.signal().to_stream();
                 pin_mut!(stream);
+                let mut messages: Vec<RoomMessage> = Vec::new();
+                let outcome = timeline.paginate_backwards(UInt::from(count)).await?;
 
                 while count > 0 {
-                    match stream.next().await {
-                        Some(Ok(e)) => {
-                            if let Some(inner) = sync_event_to_message(e, room.clone()) {
-                                messages.push(inner);
-                                count -= 1;
+                    info!("stream backward timeline loop");
+                    if let Some(diff) = stream.next().await {
+                        count -= 1;
+                        match (diff) {
+                            VecDiff::Replace { values } => {
+                                info!("stream backward timeline replace");
+                                messages.clear();
+                                for value in values {
+                                    if let Some(msg) = timeline_item_to_message(value, room.clone())
+                                    {
+                                        messages.push(msg);
+                                    }
+                                }
+                            }
+                            VecDiff::InsertAt { index, value } => {
+                                info!("stream backward timeline insert_at");
+                                if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    messages.insert(index, msg);
+                                }
+                            }
+                            VecDiff::UpdateAt { index, value } => {
+                                info!("stream backward timeline update_at");
+                                if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    messages[index] = msg;
+                                }
+                            }
+                            VecDiff::Push { value } => {
+                                info!("stream backward timeline push");
+                                if let Some(msg) = timeline_item_to_message(value, room.clone()) {
+                                    messages.push(msg);
+                                }
+                            }
+                            VecDiff::RemoveAt { index } => {
+                                info!("stream backward timeline remove_at");
+                                messages.remove(index);
+                            }
+                            VecDiff::Move {
+                                old_index,
+                                new_index,
+                            } => {
+                                info!("stream backward timeline move");
+                                let msg = messages.remove(old_index);
+                                messages.insert(new_index, msg);
+                            }
+                            VecDiff::Pop {} => {
+                                info!("stream backward timeline pop");
+                                messages.pop();
+                            }
+                            VecDiff::Clear {} => {
+                                info!("stream backward timeline clear");
+                                messages.clear();
                             }
                         }
-                        None => {
-                            // end of stream
-                            break;
-                        }
-                        _ => {
-                            // error cases, skipping
-                        }
+                    } else {
+                        // reach limit count
+                        break;
                     }
                 }
-
                 Ok(messages)
             })
             .await?
     }
 
     pub async fn next(&self) -> Result<RoomMessage> {
-        let forward = self.forward.clone();
         let room = self.room.clone();
+        let timeline = self.room.timeline();
+        let mut stream = timeline.signal().to_stream();
+
         RUNTIME
             .spawn(async move {
-                let stream = forward.lock().await;
-                pin_mut!(stream);
                 loop {
-                    if let Some(e) = stream
-                        .next()
-                        .await
-                        .and_then(|e| sync_event_to_message(e, room.clone()))
-                    {
-                        return Ok(e);
+                    if let Some(diff) = stream.next().await {
+                        match (diff) {
+                            VecDiff::Replace { values } => {
+                                info!("stream forward timeline replace");
+                            }
+                            VecDiff::InsertAt { index, value } => {
+                                info!("stream forward timeline insert_at");
+                            }
+                            VecDiff::UpdateAt { index, value } => {
+                                info!("stream forward timeline update_at");
+                            }
+                            VecDiff::Push { value } => {
+                                info!("stream forward timeline push");
+                                if let Some(inner) = timeline_item_to_message(value, room.clone()) {
+                                    return Ok(inner);
+                                }
+                            }
+                            VecDiff::RemoveAt { index } => {
+                                info!("stream forward timeline remove_at");
+                            }
+                            VecDiff::Move {
+                                old_index,
+                                new_index,
+                            } => {
+                                info!("stream forward timeline move");
+                            }
+                            VecDiff::Pop {} => {
+                                info!("stream forward timeline pop");
+                            }
+                            VecDiff::Clear {} => {
+                                info!("stream forward timeline clear");
+                            }
+                        }
                     }
                 }
             })

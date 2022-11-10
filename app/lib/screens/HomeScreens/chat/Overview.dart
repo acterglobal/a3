@@ -2,17 +2,19 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
-import 'package:themed/themed.dart';
+// import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
   final Client client;
@@ -31,27 +33,58 @@ class _ChatOverviewState extends State<ChatOverview> {
         physics: const BouncingScrollPhysics(),
         slivers: [
           SliverAppBar(
+            pinned: false,
+            snap: false,
+            floating: true,
             leading: TextButton(
               onPressed: () {},
               child: Container(
                 margin: const EdgeInsets.only(right: 15),
                 child: Text(
-                  AppLocalizations.of(context)!.select,
-                  style:
-                      ChatTheme01.chatTitleStyle + AppCommonTheme.primaryColor,
+                  AppLocalizations.of(context)!.chat,
+                  style: AppCommonTheme.appBarTitleStyle,
                 ),
               ),
             ),
             leadingWidth: 100,
             actions: [
               IconButton(
-                onPressed: () {},
-                padding: const EdgeInsets.only(right: 10),
-                icon: SvgPicture.asset(
-                  'assets/images/edit.svg',
+                onPressed: () {
+                  showNotYetImplementedMsg(
+                    context,
+                    'Chat Search is not implemented yet',
+                  );
+                },
+                padding: const EdgeInsets.only(right: 10, left: 5),
+                icon: const Icon(
+                  FlutterIcons.search1_ant,
                   color: AppCommonTheme.svgIconColor,
-                  width: 20,
-                  height: 20,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  showNotYetImplementedMsg(
+                    context,
+                    'Multiselect is not implemented yet',
+                  );
+                },
+                padding: const EdgeInsets.only(right: 10, left: 5),
+                icon: const Icon(
+                  FlutterIcons.select_mco,
+                  color: AppCommonTheme.svgIconColor,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  showNotYetImplementedMsg(
+                    context,
+                    'Starting a new chat is not implemented yet',
+                  );
+                },
+                padding: const EdgeInsets.only(right: 10, left: 10),
+                icon: const Icon(
+                  FlutterIcons.md_add_ion,
+                  color: AppCommonTheme.svgIconColor,
                 ),
               ),
             ],
@@ -60,19 +93,20 @@ class _ChatOverviewState extends State<ChatOverview> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 18),
-                  child: Text(
-                    AppLocalizations.of(context)!.chat,
-                    style: AppCommonTheme.appBarTitleStyle,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                if (!widget.client.isGuest()) buildList(context),
+                if (widget.client.isGuest()) empty else buildList(context),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Positioned get empty {
+    return Positioned.fill(
+      child: Align(
+        alignment: const Alignment(0.0, -0.25),
+        child: SvgPicture.asset('assets/images/empty_messages.svg'),
       ),
     );
   }
@@ -145,7 +179,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           onReorderFinished: (item, from, to, newItems) =>
               controller.moveItem(from, to),
           itemBuilder: (context, itemAnimation, item, index) => Reorderable(
-            key: UniqueKey(),
+            key: ValueKey(item),
             builder: (context, dragAnimation, inDrag) {
               final t = dragAnimation.value;
               final elevation = lerpDouble(0, 8, t);
@@ -162,32 +196,22 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: GetBuilder<ChatListController>(
-                    id: item.conversation.getRoomId(),
-                    builder: (ChatListController listController) {
-                      return buildJoinedItem(item);
-                    },
-                  ),
+                  child: buildJoinedItem(item),
                 ),
               );
             },
           ),
           removeItemBuilder: (context, animation, item) => Reorderable(
-            key: UniqueKey(),
+            key: ValueKey(item),
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: GetBuilder<ChatListController>(
-                  id: item.conversation.getRoomId(),
-                  builder: (ChatListController listController) {
-                    return buildJoinedItem(item);
-                  },
-                ),
+                child: buildJoinedItem(item),
               );
             },
           ),
           updateItemBuilder: (context, itemAnimation, item) => Reorderable(
-            key: UniqueKey(),
+            key: ValueKey(item),
             builder: (context, dragAnimation, inDrag) {
               final t = dragAnimation.value;
               final elevation = lerpDouble(0, 8, t);
@@ -201,12 +225,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: GetBuilder<ChatListController>(
-                    id: item.conversation.getRoomId(),
-                    builder: (ChatListController listController) {
-                      return buildJoinedItem(item);
-                    },
-                  ),
+                  child: buildJoinedItem(item),
                 ),
               );
             },
@@ -227,12 +246,17 @@ class _ChatOverviewState extends State<ChatOverview> {
   }
 
   Widget buildJoinedItem(JoinedRoom item) {
-    return ChatListItem(
-      key: Key(item.conversation.getRoomId()),
-      userId: widget.client.userId().toString(),
-      room: item.conversation,
-      latestMessage: item.latestMessage,
-      typingUsers: item.typingUsers,
+    // we should be able to update only changed room items
+    // so we use GetBuilder to render item
+    return GetBuilder<ChatListController>(
+      id: 'chatroom-${item.conversation.getRoomId()}',
+      builder: (controller) => ChatListItem(
+        key: Key(item.conversation.getRoomId()),
+        userId: widget.client.userId().toString(),
+        room: item.conversation,
+        latestMessage: item.latestMessage,
+        typingUsers: item.typingUsers,
+      ),
     );
   }
 }

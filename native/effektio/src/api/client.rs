@@ -11,7 +11,6 @@ use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
-use log::info;
 use matrix_sdk::{
     config::SyncSettings,
     ruma::{device_id, OwnedUserId, RoomId},
@@ -52,7 +51,6 @@ pub struct ClientState {
 
 #[derive(Clone)]
 pub struct Client {
-    connected: bool,
     pub(crate) client: MatrixClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
@@ -112,7 +110,6 @@ impl SyncState {
 impl Client {
     pub fn new(client: MatrixClient, state: ClientState) -> Self {
         Client {
-            connected: false,
             client,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
@@ -125,14 +122,23 @@ impl Client {
     }
 
     pub fn start_sync(&mut self) -> SyncState {
-        let mut connected = self.connected;
         let client = self.client.clone();
         let state = self.state.clone();
-        let mut invitation_controller = self.invitation_controller.clone();
-        let mut verification_controller = self.verification_controller.clone();
-        let mut device_controller = self.device_controller.clone();
+
+        self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
         self.receipt_controller.add_event_handler(&client);
+        self.conversation_controller.add_event_handler(&client);
+
+        self.verification_controller
+            .add_to_device_event_handler(&client);
+        // sync event is the event that my device was off so it may be timed out possibly
+        // in fact, when user opens app, he sees old verification popup sometimes
+        // in order to avoid this issue, comment out sync event
+        // self.verification_controller.add_sync_event_handler(&client);
+
+        let mut invitation_controller = self.invitation_controller.clone();
+        let mut device_controller = self.device_controller.clone();
         let mut conversation_controller = self.conversation_controller.clone();
 
         let (first_synced_tx, first_synced_rx) = channel(false);
@@ -142,25 +148,24 @@ impl Client {
         let sync_state = SyncState::new(first_synced_rx);
 
         RUNTIME.spawn(async move {
-            let mut connected = connected;
             let client = client.clone();
             let state = state.clone();
 
-            invitation_controller.add_event_handler(&client).await;
-            let mut verification_controller = verification_controller.clone();
+            let mut invitation_controller = invitation_controller.clone();
             let mut device_controller = device_controller.clone();
-            conversation_controller.add_event_handler(&client).await;
+            let mut conversation_controller = conversation_controller.clone();
 
             // fetch the events that received when offline
             client
                 .clone()
                 .sync_with_callback(SyncSettings::new(), |response| {
-                    let mut connected = connected;
                     let client = client.clone();
                     let state = state.clone();
-                    let mut verification_controller = verification_controller.clone();
+
+                    let mut invitation_controller = invitation_controller.clone();
                     let mut device_controller = device_controller.clone();
                     let mut conversation_controller = conversation_controller.clone();
+
                     let first_synced_arc = first_synced_arc.clone();
                     let initial_arc = initial_arc.clone();
 
@@ -170,13 +175,12 @@ impl Client {
 
                         device_controller.process_device_lists(&client, &response);
 
-                        if !initial.load(Ordering::SeqCst) {
-                            verification_controller.process_sync_events(&client, &response);
-                        } else {
-                            connected = true;
+                        if initial.load(Ordering::SeqCst) {
                             // divide_rooms_from_common must be called after first sync
                             let (_, convos) = divide_rooms_from_common(client.clone()).await;
-                            conversation_controller.load_rooms(&convos);
+                            conversation_controller.load_rooms(&convos).await;
+                            // load invitations after first sync
+                            invitation_controller.load_invitations(&client).await;
                         }
 
                         initial.store(false, Ordering::SeqCst);
@@ -192,12 +196,7 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        verification_controller.process_to_device_events(&client, &response);
-                        if connected {
-                            LoopCtrl::Continue
-                        } else {
-                            LoopCtrl::Break
-                        }
+                        LoopCtrl::Continue
                     }
                 })
                 .await;
@@ -313,14 +312,17 @@ impl Client {
     }
 
     pub async fn logout(&mut self) -> Result<bool> {
-        self.connected = false;
-        self.invitation_controller
-            .remove_event_handler(&self.client);
-        self.typing_controller.remove_event_handler(&self.client);
-        self.receipt_controller.remove_event_handler(&self.client);
-        self.conversation_controller
-            .remove_event_handler(&self.client);
+        (*self.state).write().should_stop_syncing = true;
         let c = self.client.clone();
+
+        self.invitation_controller.remove_event_handler(&c);
+        self.verification_controller
+            .remove_to_device_event_handler(&c);
+        self.verification_controller.remove_sync_event_handler(&c);
+        self.typing_controller.remove_event_handler(&c);
+        self.receipt_controller.remove_event_handler(&c);
+        self.conversation_controller.remove_event_handler(&c);
+
         RUNTIME
             .spawn(async move {
                 let response = c.logout().await?;

@@ -16,6 +16,7 @@ import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 // import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
@@ -23,7 +24,7 @@ import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show SyncState;
+    show FfiBufferUint8, SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -97,6 +98,8 @@ class _EffektioHomeState extends State<EffektioHome>
   late Future<Client> client;
   int tabIndex = 0;
   late TabController tabController;
+  String? displayName;
+  Future<FfiBufferUint8>? displayAvatar;
 
   @override
   void initState() {
@@ -130,6 +133,16 @@ class _EffektioHomeState extends State<EffektioHome>
     SyncState _ = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
+      await client.getUserProfile().then((value) {
+        if (mounted) {
+          setState(() {
+            if (value.hasAvatar()) {
+              displayAvatar = value.getAvatar();
+            }
+            displayName = value.getDisplayName();
+          });
+        }
+      });
       Get.put(CrossSigning(client: client));
       Get.put(ChatListController(client: client));
       Get.put(ChatRoomController(client: client));
@@ -236,6 +249,17 @@ class _EffektioHomeState extends State<EffektioHome>
   }
 
   Widget buildHomeScreen(BuildContext context, Client client) {
+    tabController.addListener(
+      () => {
+        if (client.isGuest() && tabIndex == 3)
+          {
+            showNotYetImplementedMsg(
+              context,
+              'Chat for Guests is not implemented yet',
+            )
+          }
+      },
+    );
     return DefaultTabController(
       length: 4,
       key: const Key('bottom-bar'),
@@ -245,13 +269,22 @@ class _EffektioHomeState extends State<EffektioHome>
           body: TabBarView(
             controller: tabController,
             children: [
-              NewsScreen(client: client),
+              NewsScreen(
+                client: client,
+                displayName: displayName,
+                displayAvatar: displayAvatar,
+              ),
               FaqOverviewScreen(client: client),
               const ToDoScreen(),
               ChatOverview(client: client),
             ],
           ),
-          drawer: SideDrawer(client: client),
+          drawer: SideDrawer(
+            isGuest: client.isGuest(),
+            userId: client.userId().toString(),
+            displayName: displayName,
+            displayAvatar: displayAvatar,
+          ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,
             unselectedLabelColor: AppCommonTheme.svgIconColor,

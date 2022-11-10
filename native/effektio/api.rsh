@@ -107,7 +107,7 @@ object RoomMessage {
     fn formatted_body() -> Option<string>;
 
     /// the server receiving timestamp in milliseconds
-    fn origin_server_ts() -> u64;
+    fn origin_server_ts() -> Option<u64>;
 
     /// the type of massage, like audio, text, image, file, etc
     fn msgtype() -> string;
@@ -155,7 +155,7 @@ object TimelineStream {
     fn next() -> Future<Result<RoomMessage>>;
 
     /// Get the next count messages backwards,
-    fn paginate_backwards(count: u64) -> Future<Result<Vec<RoomMessage>>>;
+    fn paginate_backwards(count: u32) -> Future<Result<Vec<RoomMessage>>>;
 }
 
 object Conversation {
@@ -166,7 +166,7 @@ object Conversation {
     fn active_members() -> Future<Result<Vec<Member>>>;
 
     /// Get the timeline for the room
-    fn timeline() -> Future<Result<TimelineStream>>;
+    fn timeline() -> Result<TimelineStream>;
 
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
@@ -351,8 +351,8 @@ object Client {
     /// Return the receipt event receiver
     fn receipt_event_rx() -> Option<Stream<ReceiptEvent>>;
 
-    /// Return the message event receiver
-    fn message_event_rx() -> Option<Stream<RoomMessage>>;
+    /// Return the message receiver
+    fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
 }
 
 object UserProfile {
@@ -405,7 +405,7 @@ object VerificationEvent {
     fn event_type() -> string;
 
     /// Get flow id (EventId or TransactionId)
-    fn flow_id() -> string;
+    fn flow_id() -> Option<string>;
 
     /// Get user id of event sender
     fn sender() -> string;
