@@ -1,4 +1,4 @@
-import 'package:effektio/common/store/MockData.dart' as mock;
+import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -59,10 +59,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ),
                 const Padding(
                   padding: EdgeInsets.only(left: 12, top: 10),
-                  child: Text(
-                    mock.loremPara1,
-                    style: ToDoTheme.subtitleTextStyle,
-                  ),
+                  child: Text(loremPara1, style: ToDoTheme.subtitleTextStyle),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 12, top: 15),

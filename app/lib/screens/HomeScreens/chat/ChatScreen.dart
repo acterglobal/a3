@@ -366,6 +366,12 @@ class _ChatScreenState extends State<ChatScreen> {
               imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
+              onAvatarTap: (userId) {
+                showNotYetImplementedMsg(
+                  context,
+                  'Chat Profile view is not implemented yet',
+                );
+              },
               onPreviewDataFetched: controller.handlePreviewDataFetched,
               onMessageTap: controller.handleMessageTap,
               onEndReached:
