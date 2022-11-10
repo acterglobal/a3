@@ -1,6 +1,6 @@
-use crate::models::Tag;
 #[cfg(feature = "with-mocks")]
 use crate::models::color::mocks::ColorFaker;
+use crate::models::Tag;
 
 #[cfg(feature = "with-mocks")]
 use fake::{
@@ -51,8 +51,14 @@ impl Faq {
 
 #[cfg(feature = "with-mocks")]
 pub fn gen_mocks() -> Vec<Faq> {
-    let phone_numbers = Tag { title: "phone-numbers".to_string(), color: None };
-    let important = Tag { title: "important".to_string(), color: ColorFaker.fake() };
+    let phone_numbers = Tag {
+        title: "phone-numbers".to_string(),
+        color: None,
+    };
+    let important = Tag {
+        title: "important".to_string(),
+        color: ColorFaker.fake(),
+    };
     vec![
         Faq {
             title: "All Important Info about Uncle Jack's 65th Birthday".to_string(),
