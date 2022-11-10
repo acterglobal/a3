@@ -28,7 +28,7 @@ use matrix_sdk::{
             },
             room::message::{MessageType, OriginalSyncRoomMessageEvent},
         },
-        OwnedDeviceId, OwnedUserId, UserId,
+        OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
     },
     Client as MatrixClient,
 };
@@ -41,8 +41,10 @@ use super::{client::Client, RUNTIME};
 pub struct VerificationEvent {
     client: MatrixClient,
     event_type: String,
-    /// EventId for ToDevice event, TransactionId for sync message
-    flow_id: String,
+    /// for ToDevice event
+    event_id: Option<OwnedEventId>,
+    /// for sync message
+    txn_id: Option<OwnedTransactionId>,
     sender: OwnedUserId,
     /// for request/ready/start events
     launcher: Option<OwnedDeviceId>,
@@ -56,7 +58,8 @@ impl VerificationEvent {
     pub(crate) fn new(
         client: &MatrixClient,
         event_type: String,
-        flow_id: String,
+        event_id: Option<OwnedEventId>,
+        txn_id: Option<OwnedTransactionId>,
         sender: OwnedUserId,
         launcher: Option<OwnedDeviceId>,
         cancel_code: Option<CancelCode>,
@@ -65,7 +68,8 @@ impl VerificationEvent {
         VerificationEvent {
             client: client.clone(),
             event_type,
-            flow_id,
+            event_id,
+            txn_id,
             sender,
             launcher,
             cancel_code,
@@ -77,8 +81,14 @@ impl VerificationEvent {
         self.event_type.clone()
     }
 
-    pub fn flow_id(&self) -> String {
-        self.flow_id.clone()
+    pub fn flow_id(&self) -> Option<String> {
+        if let Some(event_id) = &self.event_id {
+            Some(event_id.to_string())
+        } else if let Some(txn_id) = &self.txn_id {
+            Some(txn_id.to_string())
+        } else {
+            None
+        }
     }
 
     pub fn sender(&self) -> String {
@@ -95,50 +105,78 @@ impl VerificationEvent {
 
     pub async fn accept_verification_request(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
-                    .encryption()
-                    .get_verification_request(&sender, flow_id.as_str())
-                    .await
-                {
-                    request
-                        .accept()
+                if let Some(event_id) = event_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, event_id)
                         .await
-                        .expect("Can't accept verification request");
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification request");
-                    Ok(false)
+                    {
+                        request
+                            .accept()
+                            .await
+                            .expect("Can't accept verification request");
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, txn_id)
+                        .await
+                    {
+                        request
+                            .accept()
+                            .await
+                            .expect("Can't accept verification request");
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification request");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn cancel_verification_request(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
-                    .encryption()
-                    .get_verification_request(&sender, flow_id.as_str())
-                    .await
-                {
-                    request
-                        .cancel()
+                if let Some(event_id) = event_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, event_id)
                         .await
-                        .expect("Can't cancel verification request");
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification request");
-                    Ok(false)
+                    {
+                        request
+                            .cancel()
+                            .await
+                            .expect("Can't cancel verification request");
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, txn_id)
+                        .await
+                    {
+                        request
+                            .cancel()
+                            .await
+                            .expect("Can't cancel verification request");
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification request");
+                Ok(false)
             })
             .await?
     }
@@ -148,52 +186,80 @@ impl VerificationEvent {
         methods: &mut Vec<String>,
     ) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
-        let _methods: Vec<VerificationMethod> =
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
+        let values: Vec<VerificationMethod> =
             (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
-                    .encryption()
-                    .get_verification_request(&sender, flow_id.as_str())
-                    .await
-                {
-                    request
-                        .accept_with_methods(_methods)
+                if let Some(event_id) = event_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, event_id)
                         .await
-                        .expect("Can't accept verification request");
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification request");
-                    Ok(false)
+                    {
+                        request
+                            .accept_with_methods(values)
+                            .await
+                            .expect("Can't accept verification request");
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, txn_id)
+                        .await
+                    {
+                        request
+                            .accept_with_methods(values)
+                            .await
+                            .expect("Can't accept verification request");
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification request");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn start_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(request) = client
-                    .encryption()
-                    .get_verification_request(&sender, flow_id.as_str())
-                    .await
-                {
-                    let sas_verification = request
-                        .start_sas()
+                if let Some(event_id) = event_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, event_id)
                         .await
-                        .expect("Can't accept verification request");
-                    Ok(sas_verification.is_some())
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification request");
-                    Ok(false)
+                    {
+                        let sas = request
+                            .start_sas()
+                            .await
+                            .expect("Can't accept verification request");
+                        return Ok(sas.is_some());
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(request) = client
+                        .encryption()
+                        .get_verification_request(&sender, txn_id)
+                        .await
+                    {
+                        let sas = request
+                            .start_sas()
+                            .await
+                            .expect("Can't accept verification request");
+                        return Ok(sas.is_some());
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification request");
+                Ok(false)
             })
             .await?
     }
@@ -208,52 +274,73 @@ impl VerificationEvent {
 
     pub async fn accept_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    sas.accept().await.unwrap();
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(false)
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        sas.accept().await.unwrap();
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        sas.accept().await.unwrap();
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn cancel_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    sas.cancel().await.unwrap();
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(false)
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        sas.cancel().await.unwrap();
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        sas.cancel().await.unwrap();
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn send_verification_key(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
         RUNTIME
             .spawn(async move {
                 client.sync_once(SyncSettings::default()).await?; // send_outgoing_requests is called there
@@ -264,119 +351,183 @@ impl VerificationEvent {
 
     pub async fn cancel_verification_key(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    sas.cancel().await.unwrap();
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(false)
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        sas.cancel().await.unwrap();
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        sas.cancel().await.unwrap();
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn get_verification_emoji(&self) -> Result<Vec<VerificationEmoji>> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    if let Some(items) = sas.emoji() {
-                        let sequence = items
-                            .iter()
-                            .map(|e| VerificationEmoji {
-                                symbol: e.symbol.chars().collect::<Vec<_>>()[0] as u32,
-                                description: e.description.to_string(),
-                            })
-                            .collect::<Vec<_>>();
-                        Ok(sequence)
-                    } else {
-                        Ok(vec![])
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        if let Some(items) = sas.emoji() {
+                            let sequence = items
+                                .iter()
+                                .map(|e| VerificationEmoji {
+                                    symbol: e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                                    description: e.description.to_string(),
+                                })
+                                .collect::<Vec<_>>();
+                            return Ok(sequence);
+                        } else {
+                            return Ok(vec![]);
+                        }
                     }
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(vec![])
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        if let Some(items) = sas.emoji() {
+                            let sequence = items
+                                .iter()
+                                .map(|e| VerificationEmoji {
+                                    symbol: e.symbol.chars().collect::<Vec<_>>()[0] as u32,
+                                    description: e.description.to_string(),
+                                })
+                                .collect::<Vec<_>>();
+                            return Ok(sequence);
+                        } else {
+                            return Ok(vec![]);
+                        }
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(vec![])
             })
             .await?
     }
 
     pub async fn confirm_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    sas.confirm().await.unwrap();
-                    Ok(sas.is_done())
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(false)
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        sas.confirm().await.unwrap();
+                        return Ok(sas.is_done());
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        sas.confirm().await.unwrap();
+                        return Ok(sas.is_done());
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn mismatch_sas_verification(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    sas.mismatch().await.unwrap();
-                    Ok(true)
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(false)
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        sas.mismatch().await.unwrap();
+                        return Ok(true);
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        sas.mismatch().await.unwrap();
+                        return Ok(true);
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(false)
             })
             .await?
     }
 
     pub async fn review_verification_mac(&self) -> Result<bool> {
         let client = self.client.clone();
-        let sender = UserId::parse(self.sender.clone()).expect("Couldn't parse the user id");
-        let flow_id = self.flow_id.clone();
+        let sender = self.sender.clone();
+        let event_id = self.event_id.clone();
+        let txn_id = self.txn_id.clone();
         RUNTIME
             .spawn(async move {
-                if let Some(Verification::SasV1(sas)) = client
-                    .encryption()
-                    .get_verification(&sender, flow_id.as_str())
-                    .await
-                {
-                    Ok(sas.is_done())
-                } else {
-                    // request may be timed out
-                    info!("Could not get verification object");
-                    Ok(false)
+                if let Some(event_id) = event_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, event_id.as_str())
+                        .await
+                    {
+                        return Ok(sas.is_done());
+                    }
+                } else if let Some(txn_id) = txn_id {
+                    if let Some(Verification::SasV1(sas)) = client
+                        .encryption()
+                        .get_verification(&sender, txn_id.as_str())
+                        .await
+                    {
+                        return Ok(sas.is_done());
+                    }
                 }
+                // request may be timed out
+                info!("Could not get verification object");
+                Ok(false)
             })
             .await?
     }
@@ -408,10 +559,10 @@ pub(crate) struct VerificationController {
     ready_to_device_event_handle: Option<EventHandlerHandle>,
     start_sync_event_handle: Option<EventHandlerHandle>,
     start_to_device_event_handle: Option<EventHandlerHandle>,
-    accept_sync_event_handle: Option<EventHandlerHandle>,
-    accept_to_device_event_handle: Option<EventHandlerHandle>,
     cancel_sync_event_handle: Option<EventHandlerHandle>,
     cancel_to_device_event_handle: Option<EventHandlerHandle>,
+    accept_sync_event_handle: Option<EventHandlerHandle>,
+    accept_to_device_event_handle: Option<EventHandlerHandle>,
     key_sync_event_handle: Option<EventHandlerHandle>,
     key_to_device_event_handle: Option<EventHandlerHandle>,
     mac_sync_event_handle: Option<EventHandlerHandle>,
@@ -432,10 +583,10 @@ impl VerificationController {
             ready_to_device_event_handle: None,
             start_sync_event_handle: None,
             start_to_device_event_handle: None,
-            accept_sync_event_handle: None,
-            accept_to_device_event_handle: None,
             cancel_sync_event_handle: None,
             cancel_to_device_event_handle: None,
+            accept_sync_event_handle: None,
+            accept_to_device_event_handle: None,
             key_sync_event_handle: None,
             key_to_device_event_handle: None,
             mac_sync_event_handle: None,
@@ -459,18 +610,19 @@ impl VerificationController {
                         .expect("guest user cannot get device id")
                         .to_string();
                     info!("{} got m.key.verification.request", dev_id);
-                    let flow_id = ev.event_id.to_string();
+                    let event_id = ev.event_id;
                     let msg = VerificationEvent::new(
                         &c,
                         "m.key.verification.request".to_string(),
-                        flow_id.clone(),
+                        Some(event_id.clone()),
+                        None,
                         ev.sender.clone(),
                         None,
                         None,
                         None,
                     );
                     if let Err(e) = me.event_tx.try_send(msg) {
-                        warn!("Dropping transaction for {}: {}", flow_id, e);
+                        warn!("Dropping event for {}: {}", event_id, e);
                     }
                 }
             },
@@ -484,18 +636,19 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.ready", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.ready".to_string(),
-                    flow_id.clone(),
+                    Some(event_id.clone()),
+                    None,
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -508,46 +661,23 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.start", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.start".to_string(),
-                    flow_id.clone(),
+                    Some(event_id.clone()),
+                    None,
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
         self.start_sync_event_handle = Some(handle);
-
-        client.add_event_handler_context(me.clone());
-        let handle = client.add_event_handler(
-            |ev: OriginalSyncKeyVerificationAcceptEvent,
-             c: MatrixClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.accept", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
-                let msg = VerificationEvent::new(
-                    &c,
-                    "m.key.verification.accept".to_string(),
-                    flow_id.clone(),
-                    ev.sender.clone(),
-                    None,
-                    None,
-                    None,
-                );
-                if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
-                }
-            },
-        );
-        self.accept_sync_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -556,22 +686,48 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.cancel", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.cancel".to_string(),
-                    flow_id.clone(),
+                    Some(event_id.clone()),
+                    None,
                     ev.sender.clone(),
                     None,
                     Some(ev.content.code.clone()),
                     Some(ev.content.reason.clone()),
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
         self.cancel_sync_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncKeyVerificationAcceptEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.accept", dev_id.to_string());
+                let event_id = ev.content.relates_to.event_id;
+                let msg = VerificationEvent::new(
+                    &c,
+                    "m.key.verification.accept".to_string(),
+                    Some(event_id.clone()),
+                    None,
+                    ev.sender.clone(),
+                    None,
+                    None,
+                    None,
+                );
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping event for {}: {}", event_id, e);
+                }
+            },
+        );
+        self.accept_sync_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -580,18 +736,19 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.key", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.key".to_string(),
-                    flow_id.clone(),
+                    Some(event_id.clone()),
+                    None,
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -604,42 +761,44 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.mac", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.mac".to_string(),
-                    flow_id.clone(),
+                    Some(event_id.clone()),
+                    None,
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
         self.mac_sync_event_handle = Some(handle);
 
-        client.add_event_handler_context(me);
+        client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationDoneEvent,
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.done", dev_id.to_string());
-                let flow_id = ev.content.relates_to.event_id.to_string();
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.done".to_string(),
-                    flow_id.clone(),
+                    Some(event_id.clone()),
+                    None,
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping event for {}: {}", event_id, e);
                 }
             },
         );
@@ -659,13 +818,13 @@ impl VerificationController {
             client.remove_event_handler(handle);
             self.start_sync_event_handle = None;
         }
-        if let Some(handle) = self.accept_sync_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.accept_sync_event_handle = None;
-        }
         if let Some(handle) = self.cancel_sync_event_handle.clone() {
             client.remove_event_handler(handle);
             self.cancel_sync_event_handle = None;
+        }
+        if let Some(handle) = self.accept_sync_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.accept_sync_event_handle = None;
         }
         if let Some(handle) = self.key_sync_event_handle.clone() {
             client.remove_event_handler(handle);
@@ -694,18 +853,19 @@ impl VerificationController {
                     .expect("guest user cannot get device id")
                     .to_string();
                 info!("{} got m.key.verification.request", dev_id);
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.request".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -718,18 +878,19 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.ready", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.ready".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -742,46 +903,23 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.start", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.start".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     Some(ev.content.from_device.clone()),
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
         self.start_to_device_event_handle = Some(handle);
-
-        client.add_event_handler_context(me.clone());
-        let handle = client.add_event_handler(
-            |ev: ToDeviceKeyVerificationAcceptEvent,
-             c: MatrixClient,
-             Ctx(mut me): Ctx<VerificationController>| async move {
-                let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.accept", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
-                let msg = VerificationEvent::new(
-                    &c,
-                    "m.key.verification.accept".to_string(),
-                    flow_id.clone(),
-                    ev.sender.clone(),
-                    None,
-                    None,
-                    None,
-                );
-                if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
-                }
-            },
-        );
-        self.accept_to_device_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -790,22 +928,48 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.cancel", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.cancel".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     None,
                     Some(ev.content.code.clone()),
                     Some(ev.content.reason.clone()),
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
         self.cancel_to_device_event_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceKeyVerificationAcceptEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got m.key.verification.accept", dev_id.to_string());
+                let txn_id = ev.content.transaction_id;
+                let msg = VerificationEvent::new(
+                    &c,
+                    "m.key.verification.accept".to_string(),
+                    None,
+                    Some(txn_id.clone()),
+                    ev.sender.clone(),
+                    None,
+                    None,
+                    None,
+                );
+                if let Err(e) = me.event_tx.try_send(msg) {
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
+                }
+            },
+        );
+        self.accept_to_device_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -814,18 +978,19 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.key", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.key".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -838,42 +1003,44 @@ impl VerificationController {
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.mac", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.mac".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
         self.mac_to_device_event_handle = Some(handle);
 
-        client.add_event_handler_context(me);
+        client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationDoneEvent,
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
                 info!("{} got m.key.verification.done", dev_id.to_string());
-                let flow_id = ev.content.transaction_id.to_string();
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
                     "m.key.verification.done".to_string(),
-                    flow_id.clone(),
+                    None,
+                    Some(txn_id.clone()),
                     ev.sender.clone(),
                     None,
                     None,
                     None,
                 );
                 if let Err(e) = me.event_tx.try_send(msg) {
-                    warn!("Dropping transaction for {}: {}", flow_id, e);
+                    warn!("Dropping transaction for {}: {}", txn_id, e);
                 }
             },
         );
@@ -893,13 +1060,13 @@ impl VerificationController {
             client.remove_event_handler(handle);
             self.start_to_device_event_handle = None;
         }
-        if let Some(handle) = self.accept_to_device_event_handle.clone() {
-            client.remove_event_handler(handle);
-            self.accept_to_device_event_handle = None;
-        }
         if let Some(handle) = self.cancel_to_device_event_handle.clone() {
             client.remove_event_handler(handle);
             self.cancel_to_device_event_handle = None;
+        }
+        if let Some(handle) = self.accept_to_device_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.accept_to_device_event_handle = None;
         }
         if let Some(handle) = self.key_to_device_event_handle.clone() {
             client.remove_event_handler(handle);
