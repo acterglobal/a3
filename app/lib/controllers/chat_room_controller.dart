@@ -118,7 +118,7 @@ class ChatRoomController extends GetxController {
         isLoading.value = false;
         return;
       }
-      var msgs = await _stream!.paginateBackwards(5);
+      var msgs = await _stream!.paginateBackwards(10);
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
