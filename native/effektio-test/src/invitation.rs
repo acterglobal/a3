@@ -39,7 +39,7 @@ async fn load_pending_invitation() -> Result<()> {
 
     // sleep(Duration::from_secs(3)).await;
 
-    // let room = sisko.get_joined_room(room_id.as_str().try_into().unwrap()).unwrap();
+    // let room = sisko.get_joined_room(room_id.as_str().try_into()?)?;
     // let kyra_id = user_id!("@kyra:ds9.effektio.org");
     // room.invite_user_by_id(kyra_id).await?;
 
