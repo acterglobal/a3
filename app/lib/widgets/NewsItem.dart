@@ -39,39 +39,42 @@ class NewsItem extends StatelessWidget {
           child: _buildImage(),
           clipBehavior: Clip.none,
         ),
-        LayoutBuilder(builder: (context, constraints) {
-          return SizedBox(
-            height: constraints.maxWidth >= 600
-                ? isDesktop
-                    ? MediaQuery.of(context).size.height * 0.5
-                    : MediaQuery.of(context).size.height * 0.7
-                : MediaQuery.of(context).size.height * 0.4,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Expanded(
-                  flex: 5,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: <Widget>[
-                        const Spacer(),
-                        _buildTitle(bgColor, fgColor),
-                        const SizedBox(height: 10),
-                        _buildSubtitle(bgColor, fgColor),
-                        const SizedBox(height: 10),
-                      ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return SizedBox(
+              height: constraints.maxWidth >= 600
+                  ? isDesktop
+                      ? MediaQuery.of(context).size.height * 0.5
+                      : MediaQuery.of(context).size.height * 0.7
+                  : MediaQuery.of(context).size.height * 0.4,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                    flex: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          const Spacer(),
+                          _buildTitle(bgColor, fgColor),
+                          const SizedBox(height: 10),
+                          _buildSubtitle(bgColor, fgColor),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: NewsSideBar(client: client, news: news, index: index),
-                ),
-              ],
-            ),
-          );
-        }),
+                  Expanded(
+                    flex: 1,
+                    child:
+                        NewsSideBar(client: client, news: news, index: index),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ],
     );
   }
