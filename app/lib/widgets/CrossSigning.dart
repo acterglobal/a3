@@ -34,8 +34,8 @@ class CrossSigning {
   bool _mounted = true;
 
   CrossSigning({required this.client}) {
-    _installDeviceEvent();
-    _installVerificationEvent();
+    // _installDeviceEvent();
+    // _installVerificationEvent();
   }
 
   void dispose() {

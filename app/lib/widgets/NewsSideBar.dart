@@ -97,7 +97,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
     );
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         LikeButton(
           likeCount: widget.news.likesCount().toString(),
@@ -122,36 +121,27 @@ class _NewsSideBarState extends State<NewsSideBar> {
       onTap: () {
         showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.bottomCenter,
-          children: [
-            CachedNetworkImage(
-              imageUrl:
-                  'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-              height: 45,
-              width: 45,
-              imageBuilder: (context, imageProvider) => Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: borderColor),
-                  borderRadius: BorderRadius.circular(25),
-                  image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                    colorFilter: const ColorFilter.mode(
-                      Colors.red,
-                      BlendMode.colorBurn,
-                    ),
-                  ),
-                ),
+      child: CachedNetworkImage(
+        imageUrl:
+            'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+        height: 45,
+        width: 45,
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor),
+            borderRadius: BorderRadius.circular(25),
+            image: DecorationImage(
+              image: imageProvider,
+              fit: BoxFit.cover,
+              colorFilter: const ColorFilter.mode(
+                Colors.red,
+                BlendMode.colorBurn,
               ),
-              placeholder: (context, url) => const CircularProgressIndicator(),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
-          ],
+          ),
         ),
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     );
   }
@@ -170,20 +160,17 @@ class _NewsSideBarState extends State<NewsSideBar> {
           showNotYetImplementedMsg(context, 'News Action not yet implemented');
         }
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 15),
-        child: Column(
-          children: [
-            SvgPicture.asset(
-              'assets/images/$iconName.svg',
-              color: color,
-              width: 35,
-              height: 35,
-            ),
-            const SizedBox(height: 5),
-            Text(label, style: style),
-          ],
-        ),
+      child: Column(
+        children: [
+          SvgPicture.asset(
+            'assets/images/$iconName.svg',
+            color: color,
+            width: 35,
+            height: 35,
+          ),
+          const SizedBox(height: 5),
+          Text(label, style: style),
+        ],
       ),
     );
   }
