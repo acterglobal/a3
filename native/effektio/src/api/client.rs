@@ -130,8 +130,14 @@ impl Client {
         self.receipt_controller.add_event_handler(&client);
         self.conversation_controller.add_event_handler(&client);
 
+        self.verification_controller
+            .add_to_device_event_handler(&client);
+        // sync event is the event that my device was off so it may be timed out possibly
+        // in fact, when user opens app, he sees old verification popup sometimes
+        // in order to avoid this issue, comment out sync event
+        // self.verification_controller.add_sync_event_handler(&client);
+
         let mut invitation_controller = self.invitation_controller.clone();
-        let mut verification_controller = self.verification_controller.clone();
         let mut device_controller = self.device_controller.clone();
         let mut conversation_controller = self.conversation_controller.clone();
 
@@ -146,7 +152,6 @@ impl Client {
             let state = state.clone();
 
             let mut invitation_controller = invitation_controller.clone();
-            let mut verification_controller = verification_controller.clone();
             let mut device_controller = device_controller.clone();
             let mut conversation_controller = conversation_controller.clone();
 
@@ -158,7 +163,6 @@ impl Client {
                     let state = state.clone();
 
                     let mut invitation_controller = invitation_controller.clone();
-                    let mut verification_controller = verification_controller.clone();
                     let mut device_controller = device_controller.clone();
                     let mut conversation_controller = conversation_controller.clone();
 
@@ -171,9 +175,7 @@ impl Client {
 
                         device_controller.process_device_lists(&client, &response);
 
-                        if !initial.load(Ordering::SeqCst) {
-                            verification_controller.process_sync_events(&client, &response);
-                        } else {
+                        if initial.load(Ordering::SeqCst) {
                             // divide_rooms_from_common must be called after first sync
                             let (_, convos) = divide_rooms_from_common(client.clone()).await;
                             conversation_controller.load_rooms(&convos).await;
@@ -194,7 +196,6 @@ impl Client {
                             (*state).write().is_syncing = true;
                         }
 
-                        verification_controller.process_to_device_events(&client, &response);
                         LoopCtrl::Continue
                     }
                 })
@@ -312,13 +313,16 @@ impl Client {
 
     pub async fn logout(&mut self) -> Result<bool> {
         (*self.state).write().should_stop_syncing = true;
-        self.invitation_controller
-            .remove_event_handler(&self.client);
-        self.typing_controller.remove_event_handler(&self.client);
-        self.receipt_controller.remove_event_handler(&self.client);
-        self.conversation_controller
-            .remove_event_handler(&self.client);
         let c = self.client.clone();
+
+        self.invitation_controller.remove_event_handler(&c);
+        self.verification_controller
+            .remove_to_device_event_handler(&c);
+        self.verification_controller.remove_sync_event_handler(&c);
+        self.typing_controller.remove_event_handler(&c);
+        self.receipt_controller.remove_event_handler(&c);
+        self.conversation_controller.remove_event_handler(&c);
+
         RUNTIME
             .spawn(async move {
                 let response = c.logout().await?;

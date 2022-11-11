@@ -3,6 +3,8 @@ import 'package:themed/themed.dart';
 
 class AppCommonTheme {
   static const primaryColor = ColorRef(Color(0xffEC2758));
+  static const secondaryColor = ColorRef(Color(0xff23AFC2));
+  static const tertiaryColor = ColorRef(Color(0xff5C2A80));
   static const backgroundColor = ColorRef(Color.fromRGBO(36, 38, 50, 1));
   static const backgroundColorLight = ColorRef(Color(0xff333540), id: 'CIBC');
   static const svgIconColor = ColorRef(Colors.white, id: 'NavBar');
@@ -26,6 +28,8 @@ class AppCommonTheme {
 
 class SideMenuAndProfileTheme {
   static const sideMenuTextColor = ColorRef(Color.fromRGBO(196, 196, 196, 1));
+  static const sideMenuTextColorDisabled =
+      ColorRef(Color.fromRGBO(196, 196, 196, 0.4));
   static const sideMenuProfileTextColor =
       ColorRef(Color.fromRGBO(229, 229, 229, 1));
   static const profileBodyTextColor = ColorRef(Colors.white, id: 'PBT');
@@ -40,6 +44,13 @@ class SideMenuAndProfileTheme {
     ),
   );
 
+  static const sideMenuStyleDisabled = TextStyleRef(
+    TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+      color: sideMenuTextColorDisabled,
+    ),
+  );
   static const sideMenuProfileStyle = TextStyleRef(
     TextStyle(
       fontSize: 18,

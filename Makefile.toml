@@ -319,6 +319,10 @@ script = [
     cargo build --lib --target x86_64-apple-darwin --release
     cargo build --lib --target aarch64-apple-darwin --release
 
+    # fix inner reference name
+    install_name_tool -id "@rpath/libeffektio.dylib" ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+    install_name_tool -id "@rpath/libeffektio.dylib" ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/x86_64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib
+
     lipo -create \
     -output ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/${LIB_OUT_DIR}/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \
     ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/target/aarch64-apple-darwin/release/lib${CARGO_MAKE_CRATE_FS_NAME}.dylib \

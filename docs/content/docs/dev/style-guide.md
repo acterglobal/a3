@@ -47,6 +47,34 @@ top = false
     - H5 Big Word: 20/25
     - H6 legal: 10/auto
 
+#### Icons
+
+We use clean, clear but slightly playful even childish Icons, to get away from a too steril style and keep things fun and social. Whenever possible we pick of [the vast library of existing icons](https://oblador.github.io/react-native-vector-icons/) that's already embedded in the app (via `flutter_icons_null_safety`, usage as in [flutter icons](https://pub.dev/packages/flutter_icons)).
+
+```dart
+// Import package
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:flutter/material.dart';
+
+// After 1.1.0, the FlutterIcons class is provided to access all Icons
+// Icon name in the original basis added icon set abbreviation name as suffix
+// Hereinafter referred to as the following
+//Ant Design Icons -> ant,
+//Entypo Icons -> ent,
+//Evil Icons -> evi,
+//Feather Icons -> fea,
+//Font Awesome Icons -> faw,
+//Foundation Icons -> fou,
+//Ionicons Icons -> ion,
+//Material Community Icons -> mco,
+//Material Icons -> mdi,
+//Octicons Icons -> oct,
+//Simple Line Icons -> sli,
+//Zocial Icons -> zoc,
+//Weather Icons -> wea
+Icon(FlutterIcons.stepforward_ant)
+Icon(FlutterIcons.html5_faw)
+```
 
 ### [Brandguide as PDF](/styles/Effektio-MVP-Design-Style.pdf)
 

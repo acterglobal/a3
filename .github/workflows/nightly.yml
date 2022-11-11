@@ -81,7 +81,7 @@ jobs:
         id: rust_toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: stable
 
       - name: Cache Cargo
         id: cache-cargo
@@ -122,6 +122,9 @@ jobs:
         name: "Set up flutter"
         with:
           channel: 'stable'
+
+      - name: Flutter info
+        run: flutter doctor -v
 
       - name: Flutter config
         if: matrix.flutter_config

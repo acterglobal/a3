@@ -147,20 +147,11 @@ impl Room {
             .await?
     }
 
-    pub async fn timeline(&self) -> Result<TimelineStream> {
+    pub fn timeline(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
         let client = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let (forward, backward) = room
-                    .timeline()
-                    .await
-                    .context("Failed acquiring timeline streams")?;
-                let stream =
-                    TimelineStream::new(Box::pin(forward), Box::pin(backward), client, room);
-                Ok(stream)
-            })
-            .await?
+        let stream = TimelineStream::new(client, room);
+        Ok(stream)
     }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
@@ -258,7 +249,7 @@ impl Room {
                     size: size.map(UInt::from),
                     blurhash: None,
                 }));
-                let mime_type: mime::Mime = mimetype.parse().unwrap();
+                let mime_type: mime::Mime = mimetype.parse()?;
                 let r = room
                     .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
@@ -284,8 +275,8 @@ impl Room {
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let user = <&UserId>::try_from(user_id.as_str()).unwrap();
-                room.invite_user_by_id(user).await?;
+                let uid = UserId::parse(user_id.as_str())?;
+                room.invite_user_by_id(&uid).await?;
                 Ok(true)
             })
             .await?
@@ -334,15 +325,13 @@ impl Room {
                 let invited = my_client
                     .store()
                     .get_invited_user_ids(room.room_id())
-                    .await
-                    .unwrap();
+                    .await?;
                 let mut accounts: Vec<Account> = vec![];
                 for user_id in invited.iter() {
                     let other_client = MatrixClient::builder()
                         .server_name(user_id.server_name())
                         .build()
-                        .await
-                        .unwrap();
+                        .await?;
                     accounts.push(Account::new(other_client.account(), user_id.to_string()));
                 }
                 Ok(accounts)
@@ -408,7 +397,7 @@ impl Room {
                 let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
                     size: Some(UInt::from(size)),
                 }));
-                let mime_type: mime::Mime = mimetype.parse().unwrap();
+                let mime_type: mime::Mime = mimetype.parse()?;
                 let r = room
                     .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
@@ -493,7 +482,7 @@ impl Room {
                         .concat();
                         let path = client.store().get_custom_value(&key).await?;
                         if let Some(value) = path {
-                            let text = std::str::from_utf8(&value).unwrap();
+                            let text = std::str::from_utf8(&value)?;
                             Ok(text.to_owned())
                         } else {
                             bail!("Couldn't get the path of saved file")

@@ -40,7 +40,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // kyra accepts invitation from sisko
-    let invited = kyra.get_invited_room(&sisko_kyra_dm_id).unwrap();
+    let invited = kyra.get_invited_room(&sisko_kyra_dm_id)?;
     let mut delay = 2;
     while let Err(e) = invited.accept_invitation().await {
         sleep(Duration::from_secs(delay)).await;
