@@ -42,6 +42,7 @@ class ChatRoomController extends GetxController {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
+  bool isEmojiContainerVisible = false;
   final List<XFile> _imageFileList = [];
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
@@ -50,6 +51,8 @@ class ChatRoomController extends GetxController {
   final Map<String, String> _userNames = {};
   List<Map<String, dynamic>> mentionList = [];
   StreamSubscription<RoomMessage>? _messageSubscription;
+  int emojiMessageIndex = 0;
+  String? emojiCurrentId;
 
   ChatRoomController({required this.client}) : super();
 
@@ -118,7 +121,7 @@ class ChatRoomController extends GetxController {
         isLoading.value = false;
         return;
       }
-      var msgs = await _stream!.paginateBackwards(10);
+      var msgs = await _stream!.paginateBackwards(5);
       for (RoomMessage message in msgs) {
         _loadMessage(message);
       }
@@ -379,7 +382,7 @@ class ChatRoomController extends GetxController {
 
   //Pagination Control
   Future<void> handleEndReached() async {
-    final msgs = await _stream!.paginateBackwards(10);
+    final msgs = await _stream!.paginateBackwards(5);
     // i am fetching messages from remote
     for (RoomMessage message in msgs) {
       _loadMessage(message);
@@ -497,5 +500,21 @@ class ChatRoomController extends GetxController {
       return Future.value(false);
     }
     return await _currentRoom!.typingNotice(typing);
+  }
+
+  void updateEmojiState(types.Message message) {
+    emojiMessageIndex = messages.indexWhere(
+      (element) => element.id == message.id,
+    );
+    emojiCurrentId = messages[emojiMessageIndex].id;
+    if (emojiCurrentId == message.id) {
+      isEmojiContainerVisible = !isEmojiContainerVisible;
+    }
+    update(['emoji-reaction']);
+  }
+
+  void toggleEmojiContainer() {
+    isEmojiContainerVisible = !isEmojiContainerVisible;
+    update(['emoji-reaction']);
   }
 }

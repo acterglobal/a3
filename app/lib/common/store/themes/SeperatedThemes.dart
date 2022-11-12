@@ -125,6 +125,7 @@ class ChatTheme01 {
   static const redText = ColorRef(Color(0xffFF4B4B));
   static const chatInputTextColor = ColorRef(Colors.white, id: 'CITXC');
   static const chatSelectedImageBorderColor = ColorRef(Color(0xff23AFC2));
+  static const chatEmojiContainerColor = ColorRef(Color(0xff242632));
 
   static const chatTitleStyle = TextStyleRef(
     TextStyle(
@@ -180,6 +181,14 @@ class ChatTheme01 {
       fontSize: 17,
       fontWeight: FontWeight.w500,
       color: chatBodyTextColor,
+    ),
+  );
+
+  static const emojiCountStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: chatListTextColor,
     ),
   );
 }
