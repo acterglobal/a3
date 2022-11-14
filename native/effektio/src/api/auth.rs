@@ -47,13 +47,12 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let config = platform::new_client_config(base_path, session.user_id.to_string())?
-        .homeserver_url(homeurl);
+    let user_id = session.user_id.to_string();
+    let config = platform::new_client_config(base_path, user_id.clone())?.homeserver_url(homeurl);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
             let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
             let c = Client::new(client.clone(), state);
