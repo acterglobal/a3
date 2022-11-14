@@ -29,22 +29,22 @@ class CrossSigning {
   bool acceptingRequest = false;
   bool waitForMatch = false;
   late StreamSubscription<DeviceChangedEvent>? _deviceSubscription;
-  late StreamSubscription<VerificationEvent>? _verifSubscription;
+  late StreamSubscription<VerificationEvent>? _verificationSubscription;
   final Map<String, VerifEvent> _eventMap = {};
   bool _mounted = true;
 
   CrossSigning({required this.client}) {
-    _installDeviceChangedEvent();
+    _installDeviceEvent();
     _installVerificationEvent();
   }
 
   void dispose() {
     _mounted = false;
     _deviceSubscription?.cancel();
-    _verifSubscription?.cancel();
+    _verificationSubscription?.cancel();
   }
 
-  void _installDeviceChangedEvent() {
+  void _installDeviceEvent() {
     _deviceSubscription = client.deviceChangedEventRx()?.listen((event) async {
       var records = await event.deviceRecords(false);
       for (var record in records) {
@@ -76,7 +76,7 @@ class CrossSigning {
   }
 
   void _installVerificationEvent() {
-    _verifSubscription = client.verificationEventRx()?.listen((event) {
+    _verificationSubscription = client.verificationEventRx()?.listen((event) {
       String eventType = event.eventType();
       debugPrint(eventType);
       switch (eventType) {
@@ -109,8 +109,8 @@ class CrossSigning {
   }
 
   void _onKeyVerificationRequest(VerificationEvent event) {
-    String flowId = event.flowId();
-    if (_eventMap.containsKey(flowId)) {
+    String? flowId = event.flowId();
+    if (flowId == null || _eventMap.containsKey(flowId)) {
       return;
     }
     // this case is bob side
@@ -222,7 +222,10 @@ class CrossSigning {
   }
 
   void _onKeyVerificationReady(VerificationEvent event, bool manual) {
-    String flowId = event.flowId();
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
     if (manual) {
       _eventMap[flowId]!.stage = 'm.key.verification.ready';
     } else {
@@ -345,9 +348,7 @@ class CrossSigning {
                 // start sas verification from this device
                 await event.startSasVerification();
                 // go to onStart status
-                Future.delayed(const Duration(milliseconds: 500), () {
-                  _onKeyVerificationStart(event);
-                });
+                _onKeyVerificationStart(event);
               },
             ),
           ],
@@ -360,7 +361,10 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String flowId = event.flowId();
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
     if (_eventMap[flowId]?.stage != 'm.key.verification.request' &&
         _eventMap[flowId]?.stage != 'm.key.verification.ready') {
       return;
@@ -414,9 +418,7 @@ class CrossSigning {
                   // cancel sas verification
                   await event.cancelSasVerification();
                   // go to onCancel status
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    _onKeyVerificationCancel(event, true);
-                  });
+                  _onKeyVerificationCancel(event, true);
                 },
                 color: Colors.white,
               ),
@@ -449,7 +451,10 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String flowId = event.flowId();
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
     _eventMap[flowId]?.stage = 'm.key.verification.cancel';
     Get.bottomSheet(
       StatefulBuilder(
@@ -575,7 +580,10 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String flowId = event.flowId();
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
     _eventMap[flowId]?.stage = 'm.key.verification.accept';
     Get.bottomSheet(
       StatefulBuilder(
@@ -640,7 +648,10 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String flowId = event.flowId();
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
     _eventMap[flowId]?.stage = 'm.key.verification.key';
     event.getVerificationEmoji().then((emoji) {
       Get.bottomSheet(
@@ -692,9 +703,7 @@ class CrossSigning {
                   // cancel key verification
                   await event.cancelVerificationKey();
                   // go to onCancel status
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    _onKeyVerificationCancel(event, true);
-                  });
+                  _onKeyVerificationCancel(event, true);
                 },
                 color: Colors.white,
               ),
@@ -785,9 +794,7 @@ class CrossSigning {
               await event.mismatchSasVerification();
               // go to onCancel status
               Get.back();
-              Future.delayed(const Duration(milliseconds: 500), () {
-                _onKeyVerificationCancel(event, true);
-              });
+              _onKeyVerificationCancel(event, true);
             },
             CrossSigningSheetTheme.buttonTextStyle,
           ),
@@ -811,9 +818,7 @@ class CrossSigning {
               }
               // go to onMac status
               Get.back();
-              Future.delayed(const Duration(milliseconds: 500), () {
-                _onKeyVerificationMac(event);
-              });
+              _onKeyVerificationMac(event);
             },
             CrossSigningSheetTheme.buttonTextStyle,
           ),
@@ -823,7 +828,11 @@ class CrossSigning {
   }
 
   void _onKeyVerificationMac(VerificationEvent event) {
-    _eventMap[event.flowId()]?.stage = 'm.key.verification.mac';
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
+    _eventMap[flowId]?.stage = 'm.key.verification.mac';
     Future.delayed(const Duration(milliseconds: 500), () async {
       await event.reviewVerificationMac();
     });
@@ -833,7 +842,10 @@ class CrossSigning {
     if (Get.isBottomSheetOpen == true) {
       Get.back();
     }
-    String flowId = event.flowId();
+    String? flowId = event.flowId();
+    if (flowId == null) {
+      return;
+    }
     _eventMap[flowId]?.stage = 'm.key.verification.done';
     Get.bottomSheet(
       StatefulBuilder(
