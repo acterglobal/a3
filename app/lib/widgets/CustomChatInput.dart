@@ -115,9 +115,9 @@ class CustomChatInput extends StatelessWidget {
       onMentionAdd: (Map<String, dynamic> roomMember) {
         _handleMentionAdd(controller, roomMember);
       },
-      onChanged: (String value) async {
+      onChanged: (String value) {
         controller.sendButtonUpdate();
-        await controller.typingNotice(true);
+        controller.typingNotice(true);
       },
       maxLines:
           MediaQuery.of(context).orientation == Orientation.portrait ? 6 : 2,
