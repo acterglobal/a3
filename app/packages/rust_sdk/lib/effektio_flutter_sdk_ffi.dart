@@ -4195,6 +4195,16 @@ class Api {
       _ColorRgbaU8Return Function(
     int,
   )>();
+  late final _newsIdPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsIdReturn Function(
+    ffi.Int64,
+  )>>("__News_id");
+
+  late final _newsId = _newsIdPtr.asFunction<
+      _NewsIdReturn Function(
+    int,
+  )>();
   late final _newsTextPtr = _lookup<
       ffi.NativeFunction<
           _NewsTextReturn Function(
@@ -7686,6 +7696,26 @@ class News {
 
   News._(this._api, this._box);
 
+  /// the id of this news
+  String id() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// get the text of the news item
   String? text() {
     var tmp0 = 0;
@@ -11148,6 +11178,15 @@ class _ColorRgbaU8Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint8()
   external int arg3;
+}
+
+class _NewsIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _NewsTextReturn extends ffi.Struct {
