@@ -11,8 +11,9 @@ class InviteMessageComponent extends StatelessWidget {
         color: AppCommonTheme.backgroundColorLight,
         borderRadius: BorderRadius.circular(20),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'NELLY HAS INVITED YOU TO JOIN',
@@ -39,12 +40,15 @@ class InviteMessageComponent extends StatelessWidget {
                     height: 3,
                   ),
                   const Text('6 Members', style: ChatTheme01.latestChatStyle),
-                  const Divider(
-                    color: Colors.grey,
-                    thickness: 2.0,
+                  const SizedBox(
+                    width: 250,
+                    child: Divider(
+                      color: Colors.grey,
+                      thickness: 0.6,
+                    ),
                   ),
                   SizedBox(
-                    width: 194,
+                    width: 250,
                     child: ElevatedButton(
                       onPressed: () {},
                       child: const Text(
