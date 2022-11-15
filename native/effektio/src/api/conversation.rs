@@ -22,6 +22,7 @@ use matrix_sdk::{
         },
         assign,
         events::room::{
+            encrypted::OriginalSyncRoomEncryptedEvent,
             member::{MembershipState, OriginalSyncRoomMemberEvent},
             message::OriginalSyncRoomMessageEvent,
         },
@@ -115,6 +116,7 @@ pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
     incoming_event_tx: Sender<RoomMessage>,
     incoming_event_rx: Arc<Mutex<Option<Receiver<RoomMessage>>>>,
+    encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
 }
@@ -126,6 +128,7 @@ impl ConversationController {
             conversations: Default::default(),
             incoming_event_tx: incoming_tx,
             incoming_event_rx: Arc::new(Mutex::new(Some(incoming_rx))),
+            encrypted_event_handle: None,
             message_event_handle: None,
             member_event_handle: None,
         }
@@ -134,6 +137,17 @@ impl ConversationController {
     pub fn add_event_handler(&mut self, client: &MatrixClient) {
         info!("sync room message event handler");
         let me = self.clone();
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncRoomEncryptedEvent,
+             room: MatrixRoom,
+             c: MatrixClient,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_encrypted(ev, &room, &c);
+            },
+        );
+        self.message_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -160,6 +174,10 @@ impl ConversationController {
     }
 
     pub fn remove_event_handler(&mut self, client: &MatrixClient) {
+        if let Some(handle) = self.encrypted_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.encrypted_event_handle = None;
+        }
         if let Some(handle) = self.message_event_handle.clone() {
             client.remove_event_handler(handle);
             self.message_event_handle = None;
@@ -178,6 +196,39 @@ impl ConversationController {
             conversations.push(conversation);
         }
         self.conversations.lock_mut().clone_from(&conversations);
+    }
+
+    // this callback is called prior to load_rooms
+    async fn process_room_encrypted(
+        &mut self,
+        ev: OriginalSyncRoomEncryptedEvent,
+        room: &MatrixRoom,
+        client: &MatrixClient,
+    ) {
+        info!("original sync room encrypted event: {:?}", ev);
+        if let MatrixRoom::Joined(joined) = room {
+            let mut convos = self.conversations.lock_mut();
+            let room_id = room.room_id();
+
+            let mut convo = Conversation::new(Room {
+                client: client.clone(),
+                room: room.clone(),
+            });
+            if let Ok(decrypted) = joined.decrypt_event(&Raw::new(&ev).unwrap()).await {
+                let msg = RoomMessage::from_timeline_event(&ev, &decrypted, room.clone());
+                convo.set_latest_message(msg.clone());
+
+                if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                    convos.remove(idx);
+                    convos.insert(0, convo);
+                    if let Err(e) = self.incoming_event_tx.try_send(msg) {
+                        warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                    }
+                } else {
+                    convos.insert(0, convo);
+                }
+            }
+        }
     }
 
     // this callback is called prior to load_rooms
