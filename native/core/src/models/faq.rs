@@ -88,7 +88,7 @@ pub fn gen_mocks() -> Vec<Faq> {
             title: "Car Insurance and accident info".to_string(),
             body: "Insurance: Allianz Santo Antonio, Parque Moserrate, Sintra<br>Phone number: 21 923 7300".to_string(),
             pinned: false,
-            tags: vec![phone_numbers.clone()],
+            tags: vec![phone_numbers],
             likes_count: 312,
             comments_count: 8,
         },
