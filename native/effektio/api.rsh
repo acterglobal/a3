@@ -286,6 +286,9 @@ object Client {
     /// Whether the client is registered as a guest account
     fn is_guest() -> bool;
 
+    /// Whether soft logout is enabled
+    fn is_soft_logout() -> bool;
+
     /// Whether the client has finished a first sync run
     fn has_first_synced() -> bool;
 

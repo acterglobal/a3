@@ -33,7 +33,10 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                 device_id,
             };
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default().is_guest(true).build()?;
+            let state = ClientStateBuilder::default()
+                .is_guest(true)
+                .is_soft_logout(true)
+                .build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -46,6 +49,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         session,
         homeurl,
         is_guest,
+        is_soft_logout,
     } = serde_json::from_str(&restore_token)?;
     let config = platform::new_client_config(base_path, session.user_id.to_string())?
         .homeserver_url(homeurl);
@@ -55,7 +59,10 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             let client = config.build().await?;
             let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
+            let state = ClientStateBuilder::default()
+                .is_guest(is_guest)
+                .is_soft_logout(is_soft_logout)
+                .build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
@@ -94,7 +101,10 @@ pub async fn login_new_client(
         .spawn(async move {
             let client = config.build().await?;
             client.login_username(&user_id, &password).send().await?;
-            let state = ClientStateBuilder::default().is_guest(false).build()?;
+            let state = ClientStateBuilder::default()
+                .is_guest(false)
+                .is_soft_logout(false)
+                .build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?}",
@@ -131,12 +141,15 @@ pub async fn register_with_registration_token(
                     });
                     client.register(request).await?;
                 } else {
-                    bail!("Server did not indicate how to  allow registration.");
+                    bail!("Server did not indicate how to allow registration.");
                 }
             } else {
                 bail!("Server is not set up to allow registration.");
             }
-            let state = ClientStateBuilder::default().is_guest(false).build()?;
+            let state = ClientStateBuilder::default()
+                .is_guest(false)
+                .is_soft_logout(false)
+                .build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully registered user {:?}, device {:?}",

@@ -32,7 +32,12 @@ class CustomAvatar extends StatefulWidget {
 class _CustomAvatarState extends State<CustomAvatar> {
   Future<Uint8List>? getAvatar() async {
     if (widget.avatar != null) {
-      return (await widget.avatar!).asTypedList();
+      try {
+        FfiBufferUint8 avatar = await widget.avatar!;
+        return avatar.asTypedList();
+      } catch (e) {
+        return Uint8List(0);
+      }
     }
     return Uint8List(0);
   }

@@ -11,4 +11,6 @@ pub struct RestoreToken {
     pub homeurl: Url,
     /// Session to hand to client
     pub session: Session,
+    /// Whether soft logout or not
+    pub is_soft_logout: bool,
 }
