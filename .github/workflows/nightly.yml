@@ -28,7 +28,7 @@ jobs:
             cargo_make_setup: setup-android
             cargo_make_args: android-arm
             with_ndk_version: r23c
-            flutter_build_args: "build apk --target-platform android-arm64"
+            flutter_build_args: "build apk --target-platform android-arm64 --dart-define=APPCENTER_ANDROID_KEY=${{secrets.EFFEKTIO_ANDROID_APP_SECRET}}"
             appcenter_cli: "distribute release --group Nightly --app effektio/Android-Nightly"
             artifact_prefix: effektio-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
@@ -46,7 +46,7 @@ jobs:
             os: macos-latest
             cargo_make_setup: setup-ios
             cargo_make_args: ios
-            flutter_build_args: "build ipa --no-codesign"
+            flutter_build_args: "build ipa --no-codesign --dart-define=APPCENTER_IOS_KEY=${{secrets.EFFEKTIO_IOS_APP_SECRET}}"
             artifact_prefix: effektio-nightly-ios
             artifact_path:  app/build/ios/archive/
             artifact_files: Runner.xcarchive
