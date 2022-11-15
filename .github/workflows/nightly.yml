@@ -19,6 +19,7 @@ jobs:
         with:
           seconds: 86400 # One day in seconds
   build:
+    environment: appcenter
     strategy:
       matrix:
        include:
@@ -28,6 +29,7 @@ jobs:
             cargo_make_args: android-arm
             with_ndk_version: r23c
             flutter_build_args: "build apk --target-platform android-arm64"
+            appcenter_cli: "distribute release --group Nightly --app effektio/Android-Nightly"
             artifact_prefix: effektio-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
             artifact_files: "app-release.apk"
@@ -139,19 +141,28 @@ jobs:
       - run: flutter ${{ matrix.flutter_build_args }} --dart-define=VERSION_NAME=Nightly+${{ steps.tag.outputs.tag }}
         working-directory: ./app
 
+      - name: Publish to appcenter
+        if: matrix.appcenter_cli
+        uses: grndvl1/appcenter-distribute-action@master
+        with:
+          args: ${{matrix.appcenter_cli}} -f ${{ matrix.artifact_path }}/${{ matrix.artifact_files }}
+        env:
+          APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_KEY }}
+
       - name: Package Tar file
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-latest' && !matrix.artifact_path
         working-directory: ${{ matrix.artifact_path }}
         run: tar -cvjf "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.tar.bz2" ${{ matrix.artifact_files }}
 
       - name: Package Zip file
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest'  && !matrix.artifact_path
         working-directory: ${{ matrix.artifact_path }}
         run: |
           7z a "${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.zip" ${{ matrix.artifact_files }}
 
       - name: Release
         uses: softprops/action-gh-release@v1
+        if: ${{ !matrix.artifact_path }}
         with:
           draft: true
           name: Nightly ${{ steps.tag.outputs.tag }}
