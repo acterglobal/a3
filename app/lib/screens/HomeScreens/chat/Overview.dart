@@ -91,7 +91,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           ),
           SliverToBoxAdapter(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (widget.client.isGuest()) empty else buildList(context),
               ],
@@ -102,13 +102,8 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Positioned get empty {
-    return Positioned.fill(
-      child: Align(
-        alignment: const Alignment(0.0, -0.25),
-        child: SvgPicture.asset('assets/images/empty_messages.svg'),
-      ),
-    );
+  SvgPicture get empty {
+    return SvgPicture.asset('assets/images/empty_messages.svg');
   }
 
   Widget buildListHeader(BuildContext context) {
