@@ -50,7 +50,49 @@ class CrossSigning {
       for (var record in records) {
         debugPrint('found device id: ' + record.deviceId());
       }
+
+      if (!_shouldShowNewDevicePopup()) {
+        return;
+      }
+      Get.generalDialog(
+        pageBuilder: (context, anim1, anim2) {
+          return Container(
+            width: MediaQuery.of(context).size.width,
+            color: Colors.white,
+            child: Card(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  ListTile(
+                    title: const Text('New device detected'),
+                    onTap: () async {
+                      await event.requestVerificationToUser();
+                      Get.back();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+
     });
+  }
+
+  bool _shouldShowNewDevicePopup() {
+    // between `m.key.verification.mac` event and `m.key.verification.done` event,
+    // device changed event occurs automatically.
+    // on this event, `New device` popup must not appear.
+    // thus skip this event.
+    bool result = true;
+    _eventMap.forEach((key, value) {
+      if (value.stage == 'm.key.verification.mac') {
+        result = false;
+        return;
+      }
+    });
+    return result;
   }
 
   void _installVerificationEvent() {

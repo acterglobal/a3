@@ -84,9 +84,10 @@ class NewsItem extends StatelessWidget {
     if (image == null) {
       return null;
     }
+    var id = news.id();
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
     return CachedMemoryImage(
-      uniqueKey: 'news-item-$index',
+      uniqueKey: 'news-item-$id',
       bytes: Uint8List.fromList(image),
       fit: BoxFit.cover,
     );
@@ -94,7 +95,7 @@ class NewsItem extends StatelessWidget {
 
   Widget _buildTitle(ui.Color backgroundColor, ui.Color foregroundColor) {
     return Text(
-      'Lorem Ipsum is simply dummy text of the printing and',
+      news.text() ?? '',
       style: GoogleFonts.roboto(
         color: foregroundColor,
         fontSize: 16,
