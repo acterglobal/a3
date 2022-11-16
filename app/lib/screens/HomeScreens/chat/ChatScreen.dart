@@ -132,19 +132,19 @@ class _ChatScreenState extends State<ChatScreen>
     );
   }
 
-  Widget avatarBuilder(String uid) {
+  Widget avatarBuilder(String userId) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
         child: CustomAvatar(
-          uniqueKey: uid,
-          avatar: roomController.getUserAvatar(uid),
-          displayName: roomController.getUserName(uid),
+          uniqueKey: userId,
+          avatar: roomController.getUserAvatar(userId),
+          displayName: roomController.getUserName(userId),
           radius: 15,
           isGroup: false,
-          stringName: simplifyUserId(uid)!,
+          stringName: simplifyUserId(userId)!,
         ),
       ),
     );
@@ -380,7 +380,7 @@ class _ChatScreenState extends State<ChatScreen>
               imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
-              onAvatarTap: (userId) {
+              onAvatarTap: (types.User user) {
                 showNotYetImplementedMsg(
                   context,
                   'Chat Profile view is not implemented yet',
@@ -452,7 +452,7 @@ class _ChatScreenState extends State<ChatScreen>
   }) {
     for (var element in roomController.messages) {
       id = element.id;
-      authId = widget.userId;
+      authId = widget.client.userId().toString();
       messagetype = element.type;
     }
 
