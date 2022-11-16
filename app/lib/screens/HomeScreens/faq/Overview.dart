@@ -1,28 +1,26 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/FaqController.dart';
 // import 'package:effektio/screens/HomeScreens/faq/Editor.dart';
 import 'package:effektio/widgets/FaqListItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class FaqOverviewScreen extends StatefulWidget {
   final Client client;
   const FaqOverviewScreen({Key? key, required this.client}) : super(key: key);
 
   @override
-  State<FaqOverviewScreen> createState() =>
-      _FaqOverviewScreenState(this.client);
+  State<FaqOverviewScreen> createState() => _FaqOverviewScreenState();
 }
 
 class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
-  final TextEditingController SearchController = TextEditingController();
-  final Client client;
-  _FaqOverviewScreenState(this.client);
-  List<Faq> searchdata = [];
-  bool searchvalue = false;
+  final faqController = Get.put(FaqController());
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<FfiListFaq>(
-      future: client.faqs(),
+      future: widget.client.faqs(),
       builder: (BuildContext context, AsyncSnapshot<FfiListFaq> snapshot) {
         if (!snapshot.hasData) {
           return Container(
@@ -54,65 +52,69 @@ class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(
-                          top: 5, bottom: 6, left: 10, right: 10),
+                        top: 5,
+                        bottom: 6,
+                        left: 10,
+                        right: 10,
+                      ),
                       child: TextField(
                         onChanged: (value) {
-                          setState(() {
-                            searchdata.clear();
-                            for (var element in snapshot.requireData) {
-                              for (var tagElement in element.tags()) {
-                                if (tagElement.title() ==
-                                    (value.toLowerCase().trim())) {
-                                  searchdata.add(element);
-                                }
-                              }
-                            }
-                          });
+                          faqController.searchedData(value, snapshot);
                         },
-                        controller: SearchController,
+                        controller: faqController.searchController,
                         style: ToDoTheme.taskTitleTextStyle.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
                         cursorColor: ToDoTheme.primaryTextColor,
                         decoration: InputDecoration(
-                            hintStyle: const TextStyle(
-                                color: Colors.white, fontSize: 13),
-                            suffixIcon: const Icon(
-                              Icons.search,
-                              color: Colors.white,
-                            ),
-                            contentPadding: const EdgeInsets.only(
-                                left: 12, bottom: 2, top: 2),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white),
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    const BorderSide(color: Colors.white),
-                                borderRadius: BorderRadius.circular(30.0))),
+                          hintStyle: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                          ),
+                          suffixIcon: const Icon(
+                            Icons.search,
+                            color: Colors.white,
+                          ),
+                          contentPadding: const EdgeInsets.only(
+                            left: 12,
+                            bottom: 2,
+                            top: 2,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.white),
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(8),
-                        shrinkWrap: true,
-                        itemCount: searchdata.isEmpty
-                            ? snapshot.requireData.length
-                            : searchdata.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return FaqListItem(
-                              client: client,
-                              faq: searchdata.isEmpty
+                    GetBuilder<FaqController>(
+                        builder: (FaqController controller) {
+                      return Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(8),
+                          shrinkWrap: true,
+                          itemCount: controller.searchData.isEmpty
+                              ? snapshot.requireData.length
+                              : controller.searchData.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return FaqListItem(
+                              client: widget.client,
+                              faq: controller.searchData.isEmpty
                                   ? snapshot.requireData[index]
-                                  : searchdata[index]);
-                        },
-                      ),
-                    ),
+                                  : controller.searchData[index],
+                            );
+                          },
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),
