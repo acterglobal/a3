@@ -140,7 +140,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                 style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
               ),
             ),
-            const SizedBox(height: 10)
+            const SizedBox(height: 10),
           ],
         );
       },
