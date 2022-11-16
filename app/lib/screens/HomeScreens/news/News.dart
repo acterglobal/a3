@@ -60,6 +60,7 @@ class _NewsScreenState extends State<NewsScreen>
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               elevation: 0,
+              backgroundColor: Colors.transparent,
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(
@@ -77,6 +78,58 @@ class _NewsScreenState extends State<NewsScreen>
                         MaterialLocalizations.of(context).openAppDrawerTooltip,
                   );
                 },
+              ),
+              centerTitle: true,
+              title: const ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'All',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      shadows: <Shadow>[
+                        Shadow(
+                          blurRadius: 1.0,
+                          color: Colors.black,
+                        ),
+                      ],
+                      fontWeight: FontWeight.w100,
+                    ),
+                  ),
+                  Text(
+                    'News',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      shadows: <Shadow>[
+                        Shadow(
+                          blurRadius: 5.0,
+                          color: Colors.white,
+                        ),
+                        Shadow(
+                          blurRadius: 3.0,
+                          color: Colors.black,
+                        ),
+                      ],
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  Text(
+                    'Stories',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      shadows: <Shadow>[
+                        Shadow(
+                          blurRadius: 1.0,
+                          color: Colors.black,
+                        ),
+                      ],
+                      fontWeight: FontWeight.w100,
+                    ),
+                  ),
+                ],
               ),
             ),
             drawer: SideDrawer(

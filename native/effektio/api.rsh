@@ -24,6 +24,8 @@ object Color {
 
 /// A news object
 object News {
+    /// the id of this news
+    fn id() -> string;
     /// get the text of the news item
     fn text() -> Option<string>;
     /// the tags on this item
