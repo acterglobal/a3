@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_appcenter_bundle/flutter_appcenter_bundle.dart';
+import 'package:app_center_plugin/app_center_plugin.dart';
 
 export './effektio_flutter_sdk_ffi.dart' show Client;
 
@@ -56,24 +56,17 @@ class EffektioSdk {
 
   Future<void> _restore() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      await AppCenter.startAsync(
-        appSecretAndroid: const String.fromEnvironment(
-          'APPCENTER_ANDROID_KEY',
-          defaultValue: 'DEV',
-        ),
-        appSecretIOS: const String.fromEnvironment(
-          'APPCENTER_IOS_KEY',
-          defaultValue: 'DEV',
-        ),
-        enableAnalytics: const String.fromEnvironment(
-          'VERSION_NAME',
-          defaultValue: 'DEV',
-        ).startsWith('Nightly'), // Defaults to true
-        enableCrashes: true, // Defaults to true
-        enableDistribute: true, // Defaults to false
-        usePrivateDistributeTrack: false, // Defaults to false
-        disableAutomaticCheckForUpdate: false, // Defaults to false
-      );
+      final secret = Platform.isAndroid
+          ? const String.fromEnvironment(
+              'APPCENTER_ANDROID_KEY',
+              defaultValue: 'DEV',
+            )
+          : const String.fromEnvironment(
+              'APPCENTER_IOS_KEY',
+              defaultValue: 'DEV',
+            );
+
+      await AppCenter.start(secret);
     }
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;

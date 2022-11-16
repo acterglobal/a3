@@ -21,7 +21,7 @@ dependencies:
   path_provider: "2.0.8"
   string_validator: ^0.3.0
   package_info: ^2.0.2
-  flutter_appcenter_bundle: "3.3.2"
+  app_center_plugin: "1.0.0"
 
 dev_dependencies:
   flutter_test:
