@@ -125,16 +125,24 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                         );
                       }
                     },
-                    child: Container(
-                      height: 18,
-                      width: 18,
-                      decoration: BoxDecoration(
-                        color: widget.isCompleted
-                            ? ToDoTheme.activeCheckColor
-                            : ToDoTheme.inactiveCheckColor,
-                        shape: BoxShape.circle,
+                    child: CircleAvatar(
+                      backgroundColor: AppCommonTheme.transparentColor,
+                      radius: 18,
+                      child: Container(
+                        height: 25,
+                        width: 25,
+                        decoration: BoxDecoration(
+                          color: widget.isCompleted
+                              ? ToDoTheme.activeCheckColor
+                              : ToDoTheme.inactiveCheckColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            width: 1.5,
+                            color: ToDoTheme.floatingABColor,
+                          ),
+                        ),
+                        child: checkBuilder(),
                       ),
-                      child: checkBuilder(),
                     ),
                   ),
                   Expanded(
