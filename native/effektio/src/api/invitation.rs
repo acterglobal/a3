@@ -185,20 +185,23 @@ impl InvitationController {
         }
     }
 
-    pub async fn load_invitations(&self, client: &MatrixClient) {
+    pub async fn load_invitations(&self, client: &MatrixClient) -> Result<()> {
         let mut invitations: Vec<Invitation> = vec![];
         for room in client.invited_rooms().iter() {
-            let details = room.invite_details().await.unwrap();
-            let invitation = Invitation {
-                client: Some(client.clone()),
-                origin_server_ts: None,
-                room_id: room.room_id().to_string(),
-                room_name: room.display_name().await.unwrap().to_string(),
-                sender: details.inviter.unwrap().user_id().to_string(),
-            };
-            invitations.push(invitation);
+            let details = room.invite_details().await?;
+            if let Some(inviter) = details.inviter {
+                let invitation = Invitation {
+                    client: Some(client.clone()),
+                    origin_server_ts: None,
+                    room_id: room.room_id().to_string(),
+                    room_name: room.display_name().await?.to_string(),
+                    sender: inviter.user_id().to_string(),
+                };
+                invitations.push(invitation);
+            }
         }
         self.invitations.lock_mut().clone_from(&invitations);
+        Ok(())
     }
 
     async fn process_stripped_event(
@@ -206,11 +209,11 @@ impl InvitationController {
         ev: StrippedRoomMemberEvent,
         room: MatrixRoom,
         client: &MatrixClient,
-    ) {
+    ) -> Result<()> {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
-            return;
+            return Ok(());
         }
 
         info!("stripped room member event: {:?}", ev);
@@ -229,7 +232,7 @@ impl InvitationController {
                 client: Some(client.clone()),
                 origin_server_ts: Some(since_the_epoch.as_millis() as u64),
                 room_id: room_id.to_string(),
-                room_name: room.display_name().await.unwrap().to_string(),
+                room_name: room.display_name().await?.to_string(),
                 sender: sender.to_string(),
             };
             let mut invitations = self.invitations.lock_mut();
@@ -240,6 +243,7 @@ impl InvitationController {
                 invitations.insert(0, invitation);
             }
         }
+        Ok(())
     }
 
     fn process_sync_event(

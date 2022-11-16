@@ -16,6 +16,7 @@ import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 // import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
@@ -248,6 +249,17 @@ class _EffektioHomeState extends State<EffektioHome>
   }
 
   Widget buildHomeScreen(BuildContext context, Client client) {
+    tabController.addListener(
+      () => {
+        if (client.isGuest() && tabIndex == 3)
+          {
+            showNotYetImplementedMsg(
+              context,
+              'Chat for Guests is not implemented yet',
+            )
+          }
+      },
+    );
     return DefaultTabController(
       length: 4,
       key: const Key('bottom-bar'),

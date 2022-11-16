@@ -22,6 +22,7 @@ final List<Image> newsFeeds = [
     fit: BoxFit.cover,
   ),
 ];
+
 final List<String> inviters = [
   'Ben',
   'Amita',
@@ -52,15 +53,6 @@ final List<String> images = [
 
 const String loremPara1 =
     'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint ';
-
-final List<String> titleTasks = [
-  'Web Application Design',
-  'Update Marvel Prototype',
-  'Design System Guidelines - Match between system and the real world. Recognition rather than recall.Web Applicatiopon Design',
-  'Lora Cook',
-  'Morgan (101 - 123)',
-  'Refactor Trix Toolbar Integration',
-];
 
 const String loremPara2 =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea.';

@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use assign::assign;
 use effektio_core::{
-    ruma::api::client::{account::register, uiaa},
+    ruma::api::client::{account::register, session::login, uiaa},
     RestoreToken,
 };
 use log::info;
@@ -11,16 +11,21 @@ use crate::platform;
 
 use super::{
     client::{Client, ClientStateBuilder},
-    RUNTIME,
+    device, RUNTIME,
 };
 
-pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> {
+pub async fn guest_client(
+    base_path: String,
+    homeurl: String,
+    device_name: Option<String>,
+) -> Result<Client> {
     let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
-    let mut request = register::v3::Request::new();
-    request.kind = register::RegistrationKind::Guest;
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
+            let mut request = register::v3::Request::new();
+            request.kind = register::RegistrationKind::Guest;
+            request.initial_device_display_name = device_name.as_deref();
             let response = client.register(request).await?;
             let device_id = response
                 .device_id
@@ -33,10 +38,7 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
                 device_id,
             };
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(true)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(true).build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
@@ -50,18 +52,14 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         homeurl,
         is_guest,
     } = serde_json::from_str(&restore_token)?;
-    let config = platform::new_client_config(base_path, session.user_id.to_string())?
-        .homeserver_url(homeurl);
+    let user_id = session.user_id.to_string();
+    let config = platform::new_client_config(base_path, user_id.clone())?.homeserver_url(homeurl);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            let user_id = session.user_id.to_string();
             client.restore_login(session).await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(is_guest)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
@@ -77,6 +75,7 @@ pub async fn login_new_client(
     base_path: String,
     username: String,
     password: String,
+    device_name: Option<String>,
 ) -> Result<Client> {
     let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
     let mut config =
@@ -99,11 +98,14 @@ pub async fn login_new_client(
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            client.login_username(&user_id, &password).send().await?;
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()
-                .unwrap();
+            let mut login_builder = client.login_username(&user_id, &password);
+            let name; // to capture the inner string for login-builder lifetime
+            if let Some(s) = device_name {
+                name = s;
+                login_builder = login_builder.initial_device_display_name(name.as_str())
+            };
+            login_builder.send().await?;
+            let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully logged in user {:?}, device {:?}",
@@ -120,6 +122,7 @@ pub async fn register_with_registration_token(
     username: String,
     password: String,
     registration_token: String,
+    device_name: Option<String>,
 ) -> Result<Client> {
     let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
     let config = platform::new_client_config(base_path, username.clone())?
@@ -134,6 +137,7 @@ pub async fn register_with_registration_token(
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),
                         password: Some(&password),
+                        initial_device_display_name: device_name.as_deref(),
                         auth: Some(uiaa::AuthData::RegistrationToken(
                             uiaa::RegistrationToken::new(&registration_token),
                         )),
@@ -145,10 +149,7 @@ pub async fn register_with_registration_token(
             } else {
                 bail!("Server is not set up to allow registration.");
             }
-            let state = ClientStateBuilder::default()
-                .is_guest(false)
-                .build()
-                .unwrap();
+            let state = ClientStateBuilder::default().is_guest(false).build()?;
             let c = Client::new(client.clone(), state);
             info!(
                 "Successfully registered user {:?}, device {:?}",
