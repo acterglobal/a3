@@ -96,25 +96,26 @@ class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
                       ),
                     ),
                     GetBuilder<FaqController>(
-                        builder: (FaqController controller) {
-                      return Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.all(8),
-                          shrinkWrap: true,
-                          itemCount: controller.searchData.isEmpty
-                              ? snapshot.requireData.length
-                              : controller.searchData.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return FaqListItem(
-                              client: widget.client,
-                              faq: controller.searchData.isEmpty
-                                  ? snapshot.requireData[index]
-                                  : controller.searchData[index],
-                            );
-                          },
-                        ),
-                      );
-                    }),
+                      builder: (FaqController controller) {
+                        return Expanded(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(8),
+                            shrinkWrap: true,
+                            itemCount: controller.searchData.isEmpty
+                                ? snapshot.requireData.length
+                                : controller.searchData.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return FaqListItem(
+                                client: widget.client,
+                                faq: controller.searchData.isEmpty
+                                    ? snapshot.requireData[index]
+                                    : controller.searchData[index],
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
