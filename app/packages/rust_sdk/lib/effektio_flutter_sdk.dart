@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:developer' as developer;
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/services.dart';
@@ -151,13 +152,21 @@ class EffektioSdk {
 
   Future<void> logout() async {
     // remove current client from list
-    await _clients[0].logout();
-    _clients.removeAt(0);
-    // reset session
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('sessions', []);
-    // login as guest
-    await _restore();
+    var client = _clients.removeAt(0);
+    await _persistSessions();
+    try {
+      await client.logout();
+    } catch (e) {
+      developer.log(
+        'Logout failed',
+        level: 900, // warning
+        error: e,
+      );
+    }
+    if (_clients.isEmpty) {
+      // login as guest
+      await _restore();
+    }
   }
 
   Future<ffi.Client> signUp(
