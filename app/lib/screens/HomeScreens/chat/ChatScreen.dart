@@ -120,19 +120,19 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget avatarBuilder(String userId) {
+  Widget avatarBuilder(String uid) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: SizedBox(
         height: 28,
         width: 28,
         child: CustomAvatar(
-          uniqueKey: userId,
-          avatar: roomController.getUserAvatar(userId),
-          displayName: roomController.getUserName(userId),
+          uniqueKey: uid,
+          avatar: roomController.getUserAvatar(uid),
+          displayName: roomController.getUserName(uid),
           radius: 15,
           isGroup: false,
-          stringName: simplifyUserId(userId)!,
+          stringName: simplifyUserId(uid)!,
         ),
       ),
     );
