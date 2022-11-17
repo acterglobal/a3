@@ -123,7 +123,8 @@ class ChatRoomController extends GetxController {
         isLoading.value = false;
         return;
       }
-      _diffSubscription = _currentRoom!.timeline().diffRx().listen((event) {
+      _stream = _currentRoom!.timeline();
+      _diffSubscription = _stream?.diffRx().listen((event) {
         switch (event.action()) {
           case 'Replace':
             for (RoomMessage msg in event.values()!.toList()) {
@@ -205,13 +206,6 @@ class ChatRoomController extends GetxController {
             break;
         }
       });
-      _stream = _currentRoom!.timeline();
-      // i am fetching messages from remote
-      if (_currentRoom == null) {
-        // user may close chat screen before long loading completed
-        isLoading.value = false;
-        return;
-      }
       bool hasMore = await _stream!.paginateBackwards(10);
       // load receipt status of room
       var receiptController = Get.find<ReceiptController>();
