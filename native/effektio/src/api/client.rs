@@ -43,8 +43,6 @@ pub struct ClientState {
     #[builder(default)]
     pub is_guest: bool,
     #[builder(default)]
-    pub is_soft_logout: bool,
-    #[builder(default)]
     pub has_first_synced: bool,
     #[builder(default)]
     pub is_syncing: bool,
@@ -201,23 +199,7 @@ impl Client {
                             let mut control = LoopCtrl::Continue;
                             if let Some(err) = result.err() {
                                 if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
-                                    if let ErrorKind::UnknownToken { soft_logout } = e.kind {
-                                        state.write().is_soft_logout = soft_logout;
-                                        if let Err(refresh_err) =
-                                            client.refresh_access_token().await
-                                        {
-                                            if let HttpError::RefreshToken(
-                                                RefreshTokenError::RefreshTokenRequired,
-                                            ) = refresh_err
-                                            {
-                                                // Refreshing access tokens is not supported by this `Session`, ignore.
-                                            } else {
-                                                control = LoopCtrl::Break;
-                                            }
-                                        } else {
-                                            control = LoopCtrl::Break;
-                                        }
-                                    }
+                                    control = LoopCtrl::Break;
                                 }
                             }
                             control
@@ -246,11 +228,6 @@ impl Client {
         self.state.read().is_guest
     }
 
-    /// Is soft logout enabled?
-    pub fn is_soft_logout(&self) -> bool {
-        self.state.read().is_soft_logout
-    }
-
     pub async fn restore_token(&self) -> Result<String> {
         let session = self.client.session().context("Missing session")?.clone();
         let homeurl = self.client.homeserver().await;
@@ -258,7 +235,6 @@ impl Client {
             session,
             homeurl,
             is_guest: self.state.read().is_guest,
-            is_soft_logout: self.state.read().is_soft_logout,
         })?)
     }
 

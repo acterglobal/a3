@@ -5090,16 +5090,6 @@ class Api {
       int Function(
     int,
   )>();
-  late final _clientIsSoftLogoutPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Uint8 Function(
-    ffi.Int64,
-  )>>("__Client_is_soft_logout");
-
-  late final _clientIsSoftLogout = _clientIsSoftLogoutPtr.asFunction<
-      int Function(
-    int,
-  )>();
   late final _clientHasFirstSyncedPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint8 Function(
@@ -9706,18 +9696,6 @@ class Client {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._clientIsGuest(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  /// Whether soft logout is enabled
-  bool isSoftLogout() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._clientIsSoftLogout(
       tmp0,
     );
     final tmp3 = tmp1;

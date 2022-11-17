@@ -35,7 +35,6 @@ pub async fn guest_client(base_path: String, homeurl: String) -> Result<Client> 
             client.restore_login(session).await?;
             let state = ClientStateBuilder::default()
                 .is_guest(true)
-                .is_soft_logout(true)
                 .build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
@@ -49,7 +48,6 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         session,
         homeurl,
         is_guest,
-        is_soft_logout,
     } = serde_json::from_str(&restore_token)?;
     let config = platform::new_client_config(base_path, session.user_id.to_string())?
         .homeserver_url(homeurl);
@@ -61,7 +59,6 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             client.restore_login(session).await?;
             let state = ClientStateBuilder::default()
                 .is_guest(is_guest)
-                .is_soft_logout(is_soft_logout)
                 .build()?;
             let c = Client::new(client.clone(), state);
             info!(
@@ -103,7 +100,6 @@ pub async fn login_new_client(
             client.login_username(&user_id, &password).send().await?;
             let state = ClientStateBuilder::default()
                 .is_guest(false)
-                .is_soft_logout(false)
                 .build()?;
             let c = Client::new(client.clone(), state);
             info!(
@@ -148,7 +144,6 @@ pub async fn register_with_registration_token(
             }
             let state = ClientStateBuilder::default()
                 .is_guest(false)
-                .is_soft_logout(false)
                 .build()?;
             let c = Client::new(client.clone(), state);
             info!(
