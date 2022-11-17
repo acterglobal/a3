@@ -70,15 +70,17 @@ impl TimelineDiff {
 pub struct TimelineStream {
     client: Client,
     room: Room,
+    timeline: Arc<Timeline>,
 }
 
 impl TimelineStream {
     pub fn new(client: Client, room: Room) -> Self {
-        TimelineStream { client, room }
+        let timeline = Arc::new(room.timeline());
+        TimelineStream { client, room, timeline }
     }
 
     pub fn diff_rx(&self) -> impl Stream<Item = TimelineDiff> {
-        let timeline = self.room.timeline();
+        let timeline = self.timeline.clone();
         let room = self.room.clone();
 
         let mut stream = timeline.signal().to_stream();
@@ -153,7 +155,7 @@ impl TimelineStream {
     }
 
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
-        let timeline = self.room.timeline();
+        let timeline = self.timeline.clone();
         RUNTIME
             .spawn(async move {
                 let outcome = timeline.paginate_backwards(UInt::from(count)).await?;
@@ -163,7 +165,7 @@ impl TimelineStream {
     }
 
     pub async fn next(&self) -> Result<RoomMessage> {
-        let timeline = self.room.timeline();
+        let timeline = self.timeline.clone();
         let room = self.room.clone();
 
         RUNTIME
