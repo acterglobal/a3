@@ -1,11 +1,15 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
+use futures_signals::{
+    signal::{MutableSignalCloned, SignalStream, SignalExt},
+    signal_vec::{MutableSignalVec, SignalVec, SignalVecExt, ToSignalCloned},
+};
 use log::info;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{Room as MatrixRoom, RoomMember},
+    room::{timeline::TimelineItem, Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
@@ -15,7 +19,7 @@ use matrix_sdk::{
     },
     Client as MatrixClient, RoomType,
 };
-use std::{fs::File, io::Write, path::PathBuf};
+use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
 use super::{
     account::Account,
@@ -153,6 +157,16 @@ impl Room {
         let stream = TimelineStream::new(client, room);
         Ok(stream)
     }
+
+    pub fn timeline_items_rx(&self) -> SignalStream<ToSignalCloned<impl SignalVec<Item = Arc<TimelineItem>>>> {
+        let room = self.room.clone();
+        room.timeline().signal().to_signal_cloned().to_stream()
+    }
+
+    // pub fn timeline_items_rx(&self) -> SignalStream<ToSignalCloned<MutableSignalVec<TimelineItem>>> {
+    //     let room = self.room.clone();
+    //     room.timeline().stream()
+    // }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {

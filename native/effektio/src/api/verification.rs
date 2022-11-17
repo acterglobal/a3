@@ -10,6 +10,7 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     ruma::{
         events::{
+            forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
             key::verification::{
                 accept::{
                     OriginalSyncKeyVerificationAcceptEvent, ToDeviceKeyVerificationAcceptEvent,
@@ -26,7 +27,17 @@ use matrix_sdk::{
                 start::{OriginalSyncKeyVerificationStartEvent, ToDeviceKeyVerificationStartEvent},
                 VerificationMethod,
             },
-            room::message::{MessageType, OriginalSyncRoomMessageEvent},
+            room::{
+                encrypted::{OriginalSyncRoomEncryptedEvent, ToDeviceRoomEncryptedEvent},
+                message::{MessageType, OriginalSyncRoomMessageEvent},
+            },
+            room_key::ToDeviceRoomKeyEvent,
+            room_key_request::ToDeviceRoomKeyRequestEvent,
+            secret::{
+                request::{RequestAction, ToDeviceSecretRequestEvent},
+                send::ToDeviceSecretSendEvent,
+            },
+            EventContent,
         },
         OwnedDeviceId, OwnedEventId, OwnedTransactionId, OwnedUserId,
     },
@@ -552,22 +563,29 @@ impl VerificationEmoji {
 pub(crate) struct VerificationController {
     event_tx: Sender<VerificationEvent>,
     event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,
-    request_sync_event_handle: Option<EventHandlerHandle>,
-    request_to_device_event_handle: Option<EventHandlerHandle>,
-    ready_sync_event_handle: Option<EventHandlerHandle>,
-    ready_to_device_event_handle: Option<EventHandlerHandle>,
-    start_sync_event_handle: Option<EventHandlerHandle>,
-    start_to_device_event_handle: Option<EventHandlerHandle>,
-    cancel_sync_event_handle: Option<EventHandlerHandle>,
-    cancel_to_device_event_handle: Option<EventHandlerHandle>,
-    accept_sync_event_handle: Option<EventHandlerHandle>,
-    accept_to_device_event_handle: Option<EventHandlerHandle>,
-    key_sync_event_handle: Option<EventHandlerHandle>,
-    key_to_device_event_handle: Option<EventHandlerHandle>,
-    mac_sync_event_handle: Option<EventHandlerHandle>,
-    mac_to_device_event_handle: Option<EventHandlerHandle>,
-    done_sync_event_handle: Option<EventHandlerHandle>,
-    done_to_device_event_handle: Option<EventHandlerHandle>,
+    sync_key_verification_request_handle: Option<EventHandlerHandle>,
+    sync_key_verification_ready_handle: Option<EventHandlerHandle>,
+    sync_key_verification_start_handle: Option<EventHandlerHandle>,
+    sync_key_verification_cancel_handle: Option<EventHandlerHandle>,
+    sync_key_verification_accept_handle: Option<EventHandlerHandle>,
+    sync_key_verification_key_handle: Option<EventHandlerHandle>,
+    sync_key_verification_mac_handle: Option<EventHandlerHandle>,
+    sync_key_verification_done_handle: Option<EventHandlerHandle>,
+    sync_room_encrypted_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_request_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_ready_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_start_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_cancel_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_accept_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_key_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_mac_handle: Option<EventHandlerHandle>,
+    to_device_key_verification_done_handle: Option<EventHandlerHandle>,
+    to_device_room_encrypted_handle: Option<EventHandlerHandle>,
+    to_device_room_key_handle: Option<EventHandlerHandle>,
+    to_device_room_key_request_handle: Option<EventHandlerHandle>,
+    to_device_forwarded_room_key_handle: Option<EventHandlerHandle>,
+    to_device_secret_send_handle: Option<EventHandlerHandle>,
+    to_device_secret_request_handle: Option<EventHandlerHandle>,
 }
 
 impl VerificationController {
@@ -576,22 +594,29 @@ impl VerificationController {
         VerificationController {
             event_tx: tx,
             event_rx: Arc::new(Mutex::new(Some(rx))),
-            request_sync_event_handle: None,
-            request_to_device_event_handle: None,
-            ready_sync_event_handle: None,
-            ready_to_device_event_handle: None,
-            start_sync_event_handle: None,
-            start_to_device_event_handle: None,
-            cancel_sync_event_handle: None,
-            cancel_to_device_event_handle: None,
-            accept_sync_event_handle: None,
-            accept_to_device_event_handle: None,
-            key_sync_event_handle: None,
-            key_to_device_event_handle: None,
-            mac_sync_event_handle: None,
-            mac_to_device_event_handle: None,
-            done_sync_event_handle: None,
-            done_to_device_event_handle: None,
+            sync_key_verification_request_handle: None,
+            sync_key_verification_ready_handle: None,
+            sync_key_verification_start_handle: None,
+            sync_key_verification_cancel_handle: None,
+            sync_key_verification_accept_handle: None,
+            sync_key_verification_key_handle: None,
+            sync_key_verification_mac_handle: None,
+            sync_key_verification_done_handle: None,
+            sync_room_encrypted_handle: None,
+            to_device_key_verification_request_handle: None,
+            to_device_key_verification_ready_handle: None,
+            to_device_key_verification_start_handle: None,
+            to_device_key_verification_cancel_handle: None,
+            to_device_key_verification_accept_handle: None,
+            to_device_key_verification_key_handle: None,
+            to_device_key_verification_mac_handle: None,
+            to_device_key_verification_done_handle: None,
+            to_device_room_encrypted_handle: None,
+            to_device_room_key_handle: None,
+            to_device_room_key_request_handle: None,
+            to_device_forwarded_room_key_handle: None,
+            to_device_secret_send_handle: None,
+            to_device_secret_request_handle: None,
         }
     }
 
@@ -608,11 +633,11 @@ impl VerificationController {
                         .device_id()
                         .expect("guest user cannot get device id")
                         .to_string();
-                    info!("{} got m.key.verification.request", dev_id);
+                    info!("{} got {}", dev_id, ev.content.event_type());
                     let event_id = ev.event_id;
                     let msg = VerificationEvent::new(
                         &c,
-                        "m.key.verification.request".to_string(),
+                        ev.content.event_type().to_string(),
                         Some(event_id.clone()),
                         None,
                         ev.sender.clone(),
@@ -626,7 +651,7 @@ impl VerificationController {
                 }
             },
         );
-        self.request_sync_event_handle = Some(handle);
+        self.sync_key_verification_request_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -634,11 +659,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.ready", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.ready".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -651,7 +676,7 @@ impl VerificationController {
                 }
             },
         );
-        self.ready_sync_event_handle = Some(handle);
+        self.sync_key_verification_ready_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -659,11 +684,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.start", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.start".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -676,7 +701,7 @@ impl VerificationController {
                 }
             },
         );
-        self.start_sync_event_handle = Some(handle);
+        self.sync_key_verification_start_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -684,11 +709,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.cancel", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.cancel".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -701,7 +726,7 @@ impl VerificationController {
                 }
             },
         );
-        self.cancel_sync_event_handle = Some(handle);
+        self.sync_key_verification_cancel_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -709,11 +734,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.accept", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.accept".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -726,7 +751,7 @@ impl VerificationController {
                 }
             },
         );
-        self.accept_sync_event_handle = Some(handle);
+        self.sync_key_verification_accept_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -734,11 +759,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.key", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.key".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -751,7 +776,7 @@ impl VerificationController {
                 }
             },
         );
-        self.key_sync_event_handle = Some(handle);
+        self.sync_key_verification_key_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -759,11 +784,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.mac", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.mac".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -776,19 +801,19 @@ impl VerificationController {
                 }
             },
         );
-        self.mac_sync_event_handle = Some(handle);
+        self.sync_key_verification_mac_handle = Some(handle);
 
-        client.add_event_handler_context(me);
+        client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncKeyVerificationDoneEvent,
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.done", dev_id.to_string());
-                let event_id = ev.content.relates_to.event_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_id = ev.clone().content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.done".to_string(),
+                    ev.content.event_type().to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -801,41 +826,56 @@ impl VerificationController {
                 }
             },
         );
-        self.done_sync_event_handle = Some(handle);
+        self.sync_key_verification_done_handle = Some(handle);
+
+        client.add_event_handler_context(me);
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncRoomEncryptedEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+            },
+        );
+        self.sync_room_encrypted_handle = Some(handle);
     }
 
     pub fn remove_sync_event_handler(&mut self, client: &MatrixClient) {
-        if let Some(handle) = self.request_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_request_handle.clone() {
             client.remove_event_handler(handle);
-            self.request_sync_event_handle = None;
+            self.sync_key_verification_request_handle = None;
         }
-        if let Some(handle) = self.ready_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_ready_handle.clone() {
             client.remove_event_handler(handle);
-            self.ready_sync_event_handle = None;
+            self.sync_key_verification_ready_handle = None;
         }
-        if let Some(handle) = self.start_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_start_handle.clone() {
             client.remove_event_handler(handle);
-            self.start_sync_event_handle = None;
+            self.sync_key_verification_start_handle = None;
         }
-        if let Some(handle) = self.cancel_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_cancel_handle.clone() {
             client.remove_event_handler(handle);
-            self.cancel_sync_event_handle = None;
+            self.sync_key_verification_cancel_handle = None;
         }
-        if let Some(handle) = self.accept_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_accept_handle.clone() {
             client.remove_event_handler(handle);
-            self.accept_sync_event_handle = None;
+            self.sync_key_verification_accept_handle = None;
         }
-        if let Some(handle) = self.key_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_key_handle.clone() {
             client.remove_event_handler(handle);
-            self.key_sync_event_handle = None;
+            self.sync_key_verification_key_handle = None;
         }
-        if let Some(handle) = self.mac_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_mac_handle.clone() {
             client.remove_event_handler(handle);
-            self.mac_sync_event_handle = None;
+            self.sync_key_verification_mac_handle = None;
         }
-        if let Some(handle) = self.done_sync_event_handle.clone() {
+        if let Some(handle) = self.sync_key_verification_done_handle.clone() {
             client.remove_event_handler(handle);
-            self.done_sync_event_handle = None;
+            self.sync_key_verification_done_handle = None;
+        }
+        if let Some(handle) = self.sync_room_encrypted_handle.clone() {
+            client.remove_event_handler(handle);
+            self.sync_room_encrypted_handle = None;
         }
     }
 
@@ -851,11 +891,11 @@ impl VerificationController {
                     .device_id()
                     .expect("guest user cannot get device id")
                     .to_string();
-                info!("{} got m.key.verification.request", dev_id);
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id, ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.request".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -868,7 +908,7 @@ impl VerificationController {
                 }
             },
         );
-        self.request_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_request_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -876,11 +916,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.ready", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.ready".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -893,7 +933,7 @@ impl VerificationController {
                 }
             },
         );
-        self.ready_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_ready_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -901,11 +941,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.start", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.start".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -918,7 +958,7 @@ impl VerificationController {
                 }
             },
         );
-        self.start_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_start_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -926,11 +966,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.cancel", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.cancel".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -943,7 +983,7 @@ impl VerificationController {
                 }
             },
         );
-        self.cancel_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_cancel_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -951,11 +991,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.accept", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.accept".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -968,7 +1008,7 @@ impl VerificationController {
                 }
             },
         );
-        self.accept_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_accept_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -976,11 +1016,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.key", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.key".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -993,7 +1033,7 @@ impl VerificationController {
                 }
             },
         );
-        self.key_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_key_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -1001,11 +1041,11 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.mac", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.mac".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -1018,19 +1058,19 @@ impl VerificationController {
                 }
             },
         );
-        self.mac_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_mac_handle = Some(handle);
 
-        client.add_event_handler_context(me);
+        client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: ToDeviceKeyVerificationDoneEvent,
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got m.key.verification.done", dev_id.to_string());
-                let txn_id = ev.content.transaction_id;
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let txn_id = ev.clone().content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    "m.key.verification.done".to_string(),
+                    ev.content.event_type().to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -1043,41 +1083,154 @@ impl VerificationController {
                 }
             },
         );
-        self.done_to_device_event_handle = Some(handle);
+        self.to_device_key_verification_done_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceRoomEncryptedEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+            },
+        );
+        self.to_device_room_encrypted_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceRoomKeyEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+            },
+        );
+        self.to_device_room_key_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceRoomKeyRequestEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+            },
+        );
+        self.to_device_room_key_request_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceForwardedRoomKeyEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+            },
+        );
+        self.to_device_forwarded_room_key_handle = Some(handle);
+
+        client.add_event_handler_context(me.clone());
+        let handle = client.add_event_handler(
+            |ev: ToDeviceSecretSendEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+            },
+        );
+        self.to_device_secret_send_handle = Some(handle);
+
+        client.add_event_handler_context(me);
+        let handle = client.add_event_handler(
+            |ev: ToDeviceSecretRequestEvent,
+             c: MatrixClient,
+             Ctx(mut me): Ctx<VerificationController>| async move {
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                info!("ToDeviceSecretRequestEvent: {:?}", ev);
+                let secret_name = match &ev.content.action {
+                    RequestAction::Request(s) => s,
+                    // We ignore cancellations here since there's nothing to serve.
+                    RequestAction::RequestCancellation => return,
+                    action => {
+                        warn!("Unknown secret request action");
+                        return;
+                    }
+                };
+                if let Ok(Some(device)) = c
+                    .encryption()
+                    .get_device(
+                        &ev.sender,
+                        &ev.content.requesting_device_id,
+                    )
+                    .await
+                {
+                    let user_id = c.user_id().expect("guest user cannot get user id");
+                    if device.user_id() == user_id {
+                        if device.is_verified() {}
+                    }
+                }
+            },
+        );
+        self.to_device_secret_request_handle = Some(handle);
     }
 
     pub fn remove_to_device_event_handler(&mut self, client: &MatrixClient) {
-        if let Some(handle) = self.request_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_request_handle.clone() {
             client.remove_event_handler(handle);
-            self.request_to_device_event_handle = None;
+            self.to_device_key_verification_request_handle = None;
         }
-        if let Some(handle) = self.ready_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_ready_handle.clone() {
             client.remove_event_handler(handle);
-            self.ready_to_device_event_handle = None;
+            self.to_device_key_verification_ready_handle = None;
         }
-        if let Some(handle) = self.start_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_start_handle.clone() {
             client.remove_event_handler(handle);
-            self.start_to_device_event_handle = None;
+            self.to_device_key_verification_start_handle = None;
         }
-        if let Some(handle) = self.cancel_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_cancel_handle.clone() {
             client.remove_event_handler(handle);
-            self.cancel_to_device_event_handle = None;
+            self.to_device_key_verification_cancel_handle = None;
         }
-        if let Some(handle) = self.accept_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_accept_handle.clone() {
             client.remove_event_handler(handle);
-            self.accept_to_device_event_handle = None;
+            self.to_device_key_verification_accept_handle = None;
         }
-        if let Some(handle) = self.key_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_key_handle.clone() {
             client.remove_event_handler(handle);
-            self.key_to_device_event_handle = None;
+            self.to_device_key_verification_key_handle = None;
         }
-        if let Some(handle) = self.mac_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_mac_handle.clone() {
             client.remove_event_handler(handle);
-            self.mac_to_device_event_handle = None;
+            self.to_device_key_verification_mac_handle = None;
         }
-        if let Some(handle) = self.done_to_device_event_handle.clone() {
+        if let Some(handle) = self.to_device_key_verification_done_handle.clone() {
             client.remove_event_handler(handle);
-            self.done_to_device_event_handle = None;
+            self.to_device_key_verification_done_handle = None;
+        }
+        if let Some(handle) = self.to_device_room_encrypted_handle.clone() {
+            client.remove_event_handler(handle);
+            self.to_device_room_encrypted_handle = None;
+        }
+        if let Some(handle) = self.to_device_room_key_handle.clone() {
+            client.remove_event_handler(handle);
+            self.to_device_room_key_handle = None;
+        }
+        if let Some(handle) = self.to_device_room_key_request_handle.clone() {
+            client.remove_event_handler(handle);
+            self.to_device_room_key_request_handle = None;
+        }
+        if let Some(handle) = self.to_device_forwarded_room_key_handle.clone() {
+            client.remove_event_handler(handle);
+            self.to_device_forwarded_room_key_handle = None;
+        }
+        if let Some(handle) = self.to_device_secret_send_handle.clone() {
+            client.remove_event_handler(handle);
+            self.to_device_secret_send_handle = None;
+        }
+        if let Some(handle) = self.to_device_secret_request_handle.clone() {
+            client.remove_event_handler(handle);
+            self.to_device_secret_request_handle = None;
         }
     }
 }

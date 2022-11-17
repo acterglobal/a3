@@ -149,13 +149,36 @@ object FileDescription {
     fn size() -> Option<u64>;
 }
 
+object TimelineDiff {
+    /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+    fn action() -> string;
+
+    /// for Replace
+    fn values() -> Option<Vec<RoomMessage>>;
+
+    /// for InsertAt/UpdateAt/RemoveAt
+    fn index() -> Option<usize>;
+
+    /// for InsertAt/UpdateAt/Push
+    fn value() -> Option<RoomMessage>;
+
+    /// for Move
+    fn new_index() -> Option<usize>;
+
+    /// for Move
+    fn old_index() -> Option<usize>;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
-    /// Fires whenever a new event arrived
+    /// Fires whenever new diff found
+    fn diff_rx() -> Stream<TimelineDiff>;
+
+    /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
     /// Get the next count messages backwards,
-    fn paginate_backwards(count: u32) -> Future<Result<Vec<RoomMessage>>>;
+    fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 }
 
 object Conversation {

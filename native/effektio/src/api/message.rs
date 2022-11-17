@@ -300,7 +300,7 @@ pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> O
                 MessageType::ServerNotice(service_notice) => service_notice.body.clone(),
                 MessageType::Text(text) => text.body.clone(),
                 MessageType::Video(video) => video.body.clone(),
-                _ => "Unknown".to_string(),
+                _ => "Unknown timeline item".to_string(),
             };
             info!("timeline fallback: {:?}", fallback);
             return Some(RoomMessage::from_timeline_item(
