@@ -288,7 +288,7 @@ impl Client {
         let user_id = client.user_id().unwrap().to_owned();
         RUNTIME
             .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id);
+                let mut user_profile = UserProfile::new(client, user_id, None, None);
                 user_profile.fetch().await;
                 Ok(user_profile)
             })

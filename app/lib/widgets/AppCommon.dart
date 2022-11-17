@@ -26,7 +26,7 @@ void showNotYetImplementedMsg(BuildContext context, String message) {
 }
 
 String? simplifyUserId(String name) {
-  RegExp re = RegExp(r'^@(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w{2,3})+$');
+  RegExp re = RegExp(r'^@(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w+)+$');
   RegExpMatch? match = re.firstMatch(name);
   if (match != null) {
     return match.group(1);
@@ -35,7 +35,7 @@ String? simplifyUserId(String name) {
 }
 
 String? simplifyRoomId(String name) {
-  RegExp re = RegExp(r'^!(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w{2,3})+$');
+  RegExp re = RegExp(r'^!(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w+)+$');
   RegExpMatch? match = re.firstMatch(name);
   if (match != null) {
     return match.group(1);
