@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/news_comment_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CommentView.dart';
 import 'package:effektio/widgets/LikeButton.dart';
@@ -10,6 +11,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class NewsSideBar extends StatefulWidget {
   final ffi.Client client;
@@ -28,55 +30,27 @@ class NewsSideBar extends StatefulWidget {
 }
 
 class _NewsSideBarState extends State<NewsSideBar> {
-  TextEditingController commentController = TextEditingController();
+  TextEditingController commentTextController = TextEditingController();
+  final newsCommentGlobalController = Get.put(NewsCommentController());
+
   bool emojiShowing = false;
   bool isKeyBoardOpen = false;
 
   void onEmojiSelected(Emoji emoji) {
-    commentController
+    commentTextController
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
-        TextPosition(offset: commentController.text.length),
+        TextPosition(offset: commentTextController.text.length),
       );
   }
 
   void onBackspacePressed() {
-    commentController
-      ..text = commentController.text.characters.skipLast(1).toString()
+    commentTextController
+      ..text = commentTextController.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
-        TextPosition(offset: commentController.text.length),
+        TextPosition(offset: commentTextController.text.length),
       );
   }
-
-  static const List<String> listPlayers = <String>[
-    'Cristiano Ronaldo',
-    'Lionel Messi',
-    'Neymar Jr.',
-    'Kevin De Bruyne',
-    'Robert Lewandowski',
-    'Kylian Mbappe',
-    'Virgil Van Dijk',
-    'Mohamed Salah',
-    'Sadio Mane',
-    'Sergio Ramos',
-    'Paul Pogba',
-    'Bruno Fernandes'
-  ];
-
-  static const List<MaterialColor> listColors = <MaterialColor>[
-    Colors.blue,
-    Colors.orange,
-    Colors.brown,
-    Colors.blueGrey,
-    Colors.deepPurple,
-    Colors.indigo,
-    Colors.green,
-    Colors.yellow,
-    Colors.lime,
-    Colors.teal,
-    Colors.red,
-    Colors.pink
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -133,10 +107,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
             image: DecorationImage(
               image: imageProvider,
               fit: BoxFit.cover,
-              colorFilter: const ColorFilter.mode(
-                Colors.red,
-                BlendMode.colorBurn,
-              ),
             ),
           ),
         ),
@@ -210,23 +180,26 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          controller: scrollController,
-                          itemCount: 10,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: CommentView(
-                                name: listPlayers[index],
-                                titleColor: listColors[index],
-                                comment: 'How they can do it',
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                      GetBuilder<NewsCommentController>(builder:
+                          (NewsCommentController newsCommentController) {
+                        return Expanded(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            controller: scrollController,
+                            itemCount: 10,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: CommentView(
+                                  commentModel:
+                                      newsCommentController.listComments[index],
+                                  postition: index,
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
                       Padding(
                         padding: EdgeInsets.only(
                           left: 8,
@@ -256,7 +229,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                                           color: Colors.white,
                                         ),
                                         cursorColor: Colors.grey,
-                                        controller: commentController,
+                                        controller: commentTextController,
                                         decoration: const InputDecoration(
                                           hintText: 'Add a comment',
                                           hintStyle: TextStyle(

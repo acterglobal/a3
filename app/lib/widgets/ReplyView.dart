@@ -1,16 +1,19 @@
+import 'package:effektio/controllers/news_comment_controller.dart';
+import 'package:effektio/models/CommentModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class ReplyView extends StatefulWidget {
-  final String name;
-  final Color titleColor;
-  final String reply;
+  final ReplyModel replyModel;
+  final int commentPos;
+  final int currentPos;
 
   const ReplyView({
     Key? key,
-    required this.name,
-    required this.titleColor,
-    required this.reply,
+    required this.replyModel,
+    required this.currentPos,
+    required this.commentPos,
   }) : super(key: key);
 
   @override
@@ -18,13 +21,12 @@ class ReplyView extends StatefulWidget {
 }
 
 class ReplyViewState extends State<ReplyView> {
-  bool liked = false;
-  int likeCount = 0;
+  final newsCommentController = Get.put(NewsCommentController());
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 50, top: 12),
+    return Container(
+      padding: const EdgeInsets.only(left: 32, top: 12),
       child: Flex(
         direction: Axis.horizontal,
         children: [
@@ -37,11 +39,12 @@ class ReplyViewState extends State<ReplyView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.name,
-                    style: TextStyle(color: widget.titleColor, fontSize: 16),
+                    widget.replyModel.name,
+                    style: TextStyle(
+                        color: widget.replyModel.titleColor, fontSize: 16),
                   ),
                   Text(
-                    widget.reply,
+                    widget.replyModel.reply,
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   Row(
@@ -53,7 +56,7 @@ class ReplyViewState extends State<ReplyView> {
                       Padding(
                         padding: const EdgeInsets.only(left: 8),
                         child: Text(
-                          likeCount.toString() + ' likes',
+                          widget.replyModel.likeCount.toString() + ' likes',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
@@ -66,31 +69,20 @@ class ReplyViewState extends State<ReplyView> {
               ),
             ),
           ),
-          if (liked == false)
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  liked = true;
-                  likeCount = likeCount + 1;
-                });
-              },
-              child: SvgPicture.asset(
-                'assets/images/heart.svg',
-                color: Colors.white,
-                width: 24,
-                height: 24,
-              ),
-            )
-          else
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  liked = false;
-                  likeCount = likeCount - 1;
-                });
-              },
-              child: const Icon(Icons.favorite, color: Colors.red),
-            ),
+          GestureDetector(
+            onTap: () {
+              newsCommentController.handleReplyLikeClick(
+                  widget.commentPos, widget.currentPos);
+            },
+            child: widget.replyModel.liked
+                ? const Icon(Icons.favorite, color: Colors.red)
+                : SvgPicture.asset(
+                    'assets/images/heart.svg',
+                    color: Colors.white,
+                    width: 24,
+                    height: 24,
+                  ),
+          ),
         ],
       ),
     );
