@@ -933,7 +933,7 @@ class CrossSigning {
             CrossSigningSheetTheme.buttonTextStyle,
           ),
         ),
-        const SizedBox(width: 5),
+        const Spacer(flex: 1),
         Container(
           padding: const EdgeInsets.only(right: 20),
           width: MediaQuery.of(context).size.width * 0.48,
