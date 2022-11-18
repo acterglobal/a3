@@ -1128,7 +1128,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListRoomMessage? __timelineStreamPaginateBackwardsFuturePoll(
+  bool? __timelineStreamPaginateBackwardsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1166,11 +1166,7 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListRoomMessage");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListRoomMessage._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -3765,6 +3761,42 @@ class Api {
     return tmp7;
   }
 
+  TimelineDiff? __timelineStreamDiffRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _timelineStreamDiffRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TimelineDiff");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = TimelineDiff._(this, tmp11_1);
+    return tmp9;
+  }
+
   bool? __syncStateFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
@@ -4626,6 +4658,76 @@ class Api {
       _FileDescriptionSizeReturn Function(
     int,
   )>();
+  late final _timelineDiffActionPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffActionReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_action");
+
+  late final _timelineDiffAction = _timelineDiffActionPtr.asFunction<
+      _TimelineDiffActionReturn Function(
+    int,
+  )>();
+  late final _timelineDiffValuesPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffValuesReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_values");
+
+  late final _timelineDiffValues = _timelineDiffValuesPtr.asFunction<
+      _TimelineDiffValuesReturn Function(
+    int,
+  )>();
+  late final _timelineDiffIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffIndexReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_index");
+
+  late final _timelineDiffIndex = _timelineDiffIndexPtr.asFunction<
+      _TimelineDiffIndexReturn Function(
+    int,
+  )>();
+  late final _timelineDiffValuePtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffValueReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_value");
+
+  late final _timelineDiffValue = _timelineDiffValuePtr.asFunction<
+      _TimelineDiffValueReturn Function(
+    int,
+  )>();
+  late final _timelineDiffNewIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffNewIndexReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_new_index");
+
+  late final _timelineDiffNewIndex = _timelineDiffNewIndexPtr.asFunction<
+      _TimelineDiffNewIndexReturn Function(
+    int,
+  )>();
+  late final _timelineDiffOldIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffOldIndexReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_old_index");
+
+  late final _timelineDiffOldIndex = _timelineDiffOldIndexPtr.asFunction<
+      _TimelineDiffOldIndexReturn Function(
+    int,
+  )>();
+  late final _timelineStreamDiffRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TimelineStream_diff_rx");
+
+  late final _timelineStreamDiffRx = _timelineStreamDiffRxPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _timelineStreamNextPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4640,7 +4742,7 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-    ffi.Uint32,
+    ffi.Uint16,
   )>>("__TimelineStream_paginate_backwards");
 
   late final _timelineStreamPaginateBackwards =
@@ -6952,6 +7054,23 @@ class Api {
     int,
     int,
   )>();
+  late final _timelineStreamDiffRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamDiffRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TimelineStream_diff_rx_stream_poll");
+
+  late final _timelineStreamDiffRxStreamPoll =
+      _timelineStreamDiffRxStreamPollPtr.asFunction<
+          _TimelineStreamDiffRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _syncStateFirstSyncedRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _SyncStateFirstSyncedRxStreamPollReturn Function(
@@ -8652,6 +8771,125 @@ class FileDescription {
   }
 }
 
+class TimelineDiff {
+  final Api _api;
+  final _Box _box;
+
+  TimelineDiff._(this._api, this._box);
+
+  /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+  String action() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffAction(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// for Replace
+  FfiListRoomMessage? values() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffValues(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListRoomMessage");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListRoomMessage._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// for InsertAt/UpdateAt/RemoveAt
+  int? index() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// for InsertAt/UpdateAt/Push
+  RoomMessage? value() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffValue(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomMessage._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// for Move
+  int? newIndex() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffNewIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// for Move
+  int? oldIndex() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffOldIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Timeline with Room Events
 class TimelineStream {
   final Api _api;
@@ -8659,7 +8897,22 @@ class TimelineStream {
 
   TimelineStream._(this._api, this._box);
 
-  /// Fires whenever a new event arrived
+  /// Fires whenever new diff found
+  Stream<TimelineDiff> diffRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineStreamDiffRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TimelineStream_diff_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__timelineStreamDiffRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Fires whenever new event arrived
   Future<RoomMessage> next() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -8675,7 +8928,7 @@ class TimelineStream {
   }
 
   /// Get the next count messages backwards,
-  Future<FfiListRoomMessage> paginateBackwards(
+  Future<bool> paginateBackwards(
     int count,
   ) {
     final tmp1 = count;
@@ -11634,6 +11887,50 @@ class _FileDescriptionSizeReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _TimelineDiffActionReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _TimelineDiffValuesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TimelineDiffIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _TimelineDiffValueReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TimelineDiffNewIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _TimelineDiffOldIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
 class _ConversationTimelineReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -12081,7 +12378,7 @@ class _TimelineStreamPaginateBackwardsFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Int64()
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -13000,6 +13297,13 @@ class _DeviceLeftEventDeviceRecordsFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _TimelineStreamDiffRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _SyncStateFirstSyncedRxStreamPollReturn extends ffi.Struct {

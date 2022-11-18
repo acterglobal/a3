@@ -144,7 +144,7 @@ pub async fn register_with_registration_token(
                     });
                     client.register(request).await?;
                 } else {
-                    bail!("Server did not indicate how to  allow registration.");
+                    bail!("Server did not indicate how to allow registration.");
                 }
             } else {
                 bail!("Server is not set up to allow registration.");
