@@ -198,7 +198,7 @@ impl ConversationController {
         self.conversations.lock_mut().clone_from(&conversations);
     }
 
-    // this callback is called prior to load_rooms
+    // reorder room list on OriginalSyncRoomEncryptedEvent
     async fn process_room_encrypted(
         &mut self,
         ev: OriginalSyncRoomEncryptedEvent,
@@ -231,7 +231,7 @@ impl ConversationController {
         }
     }
 
-    // this callback is called prior to load_rooms
+    // reorder room list on OriginalSyncRoomMessageEvent
     fn process_room_message(
         &mut self,
         ev: OriginalSyncRoomMessageEvent,
@@ -262,6 +262,7 @@ impl ConversationController {
         }
     }
 
+    // reorder room list on OriginalSyncRoomMemberEvent
     fn process_room_member(
         &self,
         ev: OriginalSyncRoomMemberEvent,

@@ -158,16 +158,6 @@ impl Room {
         Ok(stream)
     }
 
-    pub fn timeline_items_rx(&self) -> SignalStream<ToSignalCloned<impl SignalVec<Item = Arc<TimelineItem>>>> {
-        let room = self.room.clone();
-        room.timeline().signal().to_signal_cloned().to_stream()
-    }
-
-    // pub fn timeline_items_rx(&self) -> SignalStream<ToSignalCloned<MutableSignalVec<TimelineItem>>> {
-    //     let room = self.room.clone();
-    //     room.timeline().stream()
-    // }
-
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
