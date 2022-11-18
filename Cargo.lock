@@ -201,9 +201,9 @@ dependencies = [
 
 [[package]]
 name = "base64"
-version = "0.13.0"
+version = "0.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
+checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
 
 [[package]]
 name = "base64ct"
@@ -929,7 +929,7 @@ dependencies = [
  "matrix-sdk",
  "mime",
  "parking_lot 0.11.2",
- "ruma",
+ "ruma 0.7.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "sanitize-filename-reader-friendly",
  "serde",
  "serde_json",
@@ -1333,6 +1333,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
 
 [[package]]
+name = "gloo-utils"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40913a05c8297adca04392f707b1e73b12ba7b8eab7244a4961580b1fd34063c"
+dependencies = [
+ "js-sys",
+ "serde",
+ "serde_json",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
 name = "h2"
 version = "0.3.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1581,9 +1594,9 @@ checksum = "112c678d4050afce233f4f2852bb2eb519230b3cf12f33585275537d7e41578d"
 
 [[package]]
 name = "js-sys"
-version = "0.3.58"
+version = "0.3.60"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3fac17f7123a73ca62df411b1bf727ccc805daa070338fda671c86dac1bdc27"
+checksum = "49409df3e3bf0856b916e2ceaca09ee28e6871cf7d9ce97a692cacfdb2a25a47"
 dependencies = [
  "wasm-bindgen",
 ]
@@ -1605,6 +1618,28 @@ checksum = "68421373957a1593a767013698dbf206e2b221eefe97a44d98d18672ff38423c"
 dependencies = [
  "serde",
 ]
+
+[[package]]
+name = "konst"
+version = "0.2.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "330f0e13e6483b8c34885f7e6c9f19b1a7bd449c673fbb948a51c99d66ef74f4"
+dependencies = [
+ "konst_macro_rules",
+ "konst_proc_macros",
+]
+
+[[package]]
+name = "konst_macro_rules"
+version = "0.2.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4933f3f57a8e9d9da04db23fb153356ecaf00cbd14aee46279c33dc80925c37"
+
+[[package]]
+name = "konst_proc_macros"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "984e109462d46ad18314f10e392c286c3d47bce203088a09012de1015b45b737"
 
 [[package]]
 name = "lazy_static"
@@ -1679,7 +1714,7 @@ checksum = "a3e378b66a060d48947b590737b30a1be76706c8dd7b8ba0f2fe3989c68a853f"
 [[package]]
 name = "matrix-sdk"
 version = "0.6.2"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "anyhow",
  "anymap2",
@@ -1701,7 +1736,7 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "reqwest",
- "ruma",
+ "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
  "thiserror",
@@ -1715,7 +1750,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-base"
 version = "0.6.1"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1729,7 +1764,7 @@ dependencies = [
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
  "once_cell",
- "ruma",
+ "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
  "thiserror",
@@ -1740,13 +1775,13 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-common"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "async-lock",
  "futures-core",
  "futures-util",
  "instant",
- "ruma",
+ "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "tokio",
  "wasm-bindgen-futures",
@@ -1756,7 +1791,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-crypto"
 version = "0.6.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "aes",
  "async-trait",
@@ -1774,7 +1809,7 @@ dependencies = [
  "matrix-sdk-common",
  "pbkdf2",
  "rand 0.8.5",
- "ruma",
+ "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
  "sha2 0.10.2",
@@ -1788,7 +1823,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-indexeddb"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1796,12 +1831,13 @@ dependencies = [
  "dashmap",
  "derive_builder 0.11.2",
  "getrandom 0.2.7",
+ "gloo-utils",
  "indexed_db_futures",
  "js-sys",
  "matrix-sdk-base",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
- "ruma",
+ "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
  "thiserror",
@@ -1813,7 +1849,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-sled"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "async-stream",
  "async-trait",
@@ -1826,7 +1862,7 @@ dependencies = [
  "matrix-sdk-common",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
- "ruma",
+ "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
  "sled",
@@ -1838,7 +1874,7 @@ dependencies = [
 [[package]]
 name = "matrix-sdk-store-encryption"
 version = "0.2.0"
-source = "git+https://github.com/matrix-org/matrix-rust-sdk/#324411201eb3b68667f792fee515054496bb3aa4"
+source = "git+https://github.com/matrix-org/matrix-rust-sdk/#2ab697328fd435aa0d0532b32167c6fced23be23"
 dependencies = [
  "blake3",
  "chacha20poly1305",
@@ -2458,24 +2494,35 @@ dependencies = [
  "assign",
  "js_int",
  "js_option",
+ "ruma-common 0.10.5 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "ruma"
+version = "0.7.4"
+source = "git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf#ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+dependencies = [
+ "assign",
+ "js_int",
+ "js_option",
  "ruma-client-api",
- "ruma-common",
+ "ruma-common 0.10.5 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "ruma-federation-api",
 ]
 
 [[package]]
 name = "ruma-client-api"
 version = "0.15.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d1e72bc731b4dc8b569aa83915f13e419144b67110d858c65bb74aa05e2dc4b7"
+source = "git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf#ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
 dependencies = [
  "assign",
  "bytes",
  "http",
  "js_int",
+ "js_option",
  "maplit",
  "percent-encoding",
- "ruma-common",
+ "ruma-common 0.10.5 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
 ]
@@ -2489,6 +2536,29 @@ dependencies = [
  "base64",
  "bytes",
  "form_urlencoded",
+ "indexmap",
+ "itoa",
+ "js_int",
+ "js_option",
+ "percent-encoding",
+ "regex",
+ "ruma-identifiers-validation 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ruma-macros 0.10.5 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+ "serde_json",
+ "tracing",
+ "url",
+ "wildmatch",
+]
+
+[[package]]
+name = "ruma-common"
+version = "0.10.5"
+source = "git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf#ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+dependencies = [
+ "base64",
+ "bytes",
+ "form_urlencoded",
  "getrandom 0.2.7",
  "http",
  "indexmap",
@@ -2496,12 +2566,13 @@ dependencies = [
  "js-sys",
  "js_int",
  "js_option",
+ "konst",
  "percent-encoding",
  "pulldown-cmark",
  "rand 0.8.5",
  "regex",
- "ruma-identifiers-validation",
- "ruma-macros",
+ "ruma-identifiers-validation 0.9.0 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
+ "ruma-macros 0.10.5 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
  "thiserror",
@@ -2514,11 +2585,10 @@ dependencies = [
 [[package]]
 name = "ruma-federation-api"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f905d12f6144c7a754bd0339fa6893698c03d03a908abb20cc6eeb4ec7f9466"
+source = "git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf#ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
 dependencies = [
  "js_int",
- "ruma-common",
+ "ruma-common 0.10.5 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "serde_json",
 ]
@@ -2534,6 +2604,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ruma-identifiers-validation"
+version = "0.9.0"
+source = "git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf#ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+dependencies = [
+ "js_int",
+ "thiserror",
+]
+
+[[package]]
 name = "ruma-macros"
 version = "0.10.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2543,7 +2622,22 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "ruma-identifiers-validation",
+ "ruma-identifiers-validation 0.9.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde",
+ "syn",
+ "toml",
+]
+
+[[package]]
+name = "ruma-macros"
+version = "0.10.5"
+source = "git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf#ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+dependencies = [
+ "once_cell",
+ "proc-macro-crate",
+ "proc-macro2",
+ "quote",
+ "ruma-identifiers-validation 0.9.0 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "serde",
  "syn",
  "toml",
@@ -2615,9 +2709,9 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.144"
+version = "1.0.147"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f747710de3dcd43b88c9168773254e809d8ddbdf9653b84e2554ab219f17860"
+checksum = "d193d69bae983fc11a79df82342761dfbf28a99fc8d203dca4c3c1b590948965"
 dependencies = [
  "serde_derive",
 ]
@@ -2633,9 +2727,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.144"
+version = "1.0.147"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94ed3a816fb1d101812f83e789f888322c34e291f894f19590dc310963e87a00"
+checksum = "4f1d362ca8fc9c3e3a7484440752472d68a6caa98f1ab81d99b5dfe517cec852"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2644,9 +2738,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.82"
+version = "1.0.88"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82c2c1fdcd807d1098552c5b9a36e425e42e9fbd7c6a37a8425f390f781f7fa7"
+checksum = "8e8b3801309262e8184d9687fb697586833e939767aea0dda89f5a8e650e8bd7"
 dependencies = [
  "itoa",
  "ryu",
@@ -2886,18 +2980,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.31"
+version = "1.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd829fe32373d27f76265620b5309d0340cb8550f523c1dda251d6298069069a"
+checksum = "10deb33631e3c9018b9baf9dcbbc4f737320d2b576bac10f6aefa048fa407e3e"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.31"
+version = "1.0.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0396bc89e626244658bef819e22d0cc459e795a5ebe878e6ec336d1674a8d79a"
+checksum = "982d17546b47146b28f7c22e3d08465f6b8903d0ea13c1660d9d84a6e7adcdbb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3267,25 +3361,23 @@ checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-bindgen"
-version = "0.2.81"
+version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c53b543413a17a202f4be280a7e5c62a1c69345f5de525ee64f8cfdbc954994"
+checksum = "eaf9f5aceeec8be17c128b2e93e031fb8a4d469bb9c4ae2d7dc1888b26887268"
 dependencies = [
  "cfg-if",
- "serde",
- "serde_json",
  "wasm-bindgen-macro",
 ]
 
 [[package]]
 name = "wasm-bindgen-backend"
-version = "0.2.81"
+version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5491a68ab4500fa6b4d726bd67408630c3dbe9c4fe7bda16d5c82a1fd8c7340a"
+checksum = "4c8ffb332579b0557b52d268b91feab8df3615f265d5270fec2a8c95b17c1142"
 dependencies = [
  "bumpalo",
- "lazy_static",
  "log",
+ "once_cell",
  "proc-macro2",
  "quote",
  "syn",
@@ -3294,9 +3386,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-futures"
-version = "0.4.31"
+version = "0.4.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de9a9cec1733468a8c657e57fa2413d2ae2c0129b95e87c5b72b8ace4d13f31f"
+checksum = "23639446165ca5a5de86ae1d8896b737ae80319560fbaa4c2887b7da6e7ebd7d"
 dependencies = [
  "cfg-if",
  "js-sys",
@@ -3306,9 +3398,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro"
-version = "0.2.81"
+version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c441e177922bc58f1e12c022624b6216378e5febc2f0533e41ba443d505b80aa"
+checksum = "052be0f94026e6cbc75cdefc9bae13fd6052cdcaf532fa6c45e7ae33a1e6c810"
 dependencies = [
  "quote",
  "wasm-bindgen-macro-support",
@@ -3316,9 +3408,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-macro-support"
-version = "0.2.81"
+version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7d94ac45fcf608c1f45ef53e748d35660f168490c10b23704c7779ab8f5c3048"
+checksum = "07bc0c051dc5f23e307b13285f9d75df86bfdf816c5721e573dec1f9b8aa193c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3329,9 +3421,9 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-shared"
-version = "0.2.81"
+version = "0.2.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6a89911bd99e5f3659ec4acf9c4d93b0a90fe4a2a11f15328472058edc5261be"
+checksum = "1c38c045535d93ec4f0b4defec448e4291638ee608530863b1e2ba115d4fff7f"
 
 [[package]]
 name = "wasm-timer"

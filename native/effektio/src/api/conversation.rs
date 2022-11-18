@@ -331,7 +331,7 @@ impl Client {
                     visibility: Visibility::Private,
                 });
                 let response = client.create_room(request).await?;
-                Ok(response.room_id)
+                Ok(response.room_id().to_owned())
             })
             .await?
     }

@@ -5,12 +5,12 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
-    deserialized_responses::SyncResponse,
     encryption::identities::Device,
     ruma::{
-        api::client::sync::sync_events::v3::DeviceLists, device_id,
+        device_id,
         events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
     },
+    sync::SyncResponse,
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
