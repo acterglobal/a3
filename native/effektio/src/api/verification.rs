@@ -1159,10 +1159,7 @@ impl VerificationController {
                 };
                 if let Ok(Some(device)) = c
                     .encryption()
-                    .get_device(
-                        &ev.sender,
-                        &ev.content.requesting_device_id,
-                    )
+                    .get_device(&ev.sender, &ev.content.requesting_device_id)
                     .await
                 {
                     let user_id = c.user_id().expect("guest user cannot get user id");

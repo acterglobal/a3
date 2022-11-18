@@ -1,10 +1,6 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
-use futures_signals::{
-    signal::{MutableSignalCloned, SignalStream, SignalExt},
-    signal_vec::{MutableSignalVec, SignalVec, SignalVecExt, ToSignalCloned},
-};
 use log::info;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
