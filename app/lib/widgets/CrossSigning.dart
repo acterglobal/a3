@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -32,6 +33,7 @@ class CrossSigning {
   late StreamSubscription<VerificationEvent>? _verificationSubscription;
   final Map<String, VerifEvent> _eventMap = {};
   bool _mounted = true;
+  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   CrossSigning({required this.client}) {
     _installDeviceEvent();
@@ -76,7 +78,6 @@ class CrossSigning {
           );
         },
       );
-
     });
   }
 
@@ -164,7 +165,7 @@ class CrossSigning {
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          flex: 1,
+          flex: isDesktop ? 2 : 1,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
@@ -542,7 +543,7 @@ class CrossSigning {
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
-            flex: 1,
+            flex: isDesktop ? 2 : 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Row(
@@ -576,7 +577,7 @@ class CrossSigning {
             ),
           ),
           Flexible(
-            flex: 3,
+            flex: isDesktop ? 4 : 3,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5),
               child: Text(
@@ -612,7 +613,7 @@ class CrossSigning {
         mainAxisSize: MainAxisSize.min,
         children: [
           Flexible(
-            flex: 1,
+            flex: isDesktop ? 2 : 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 5),
               child: Row(
@@ -709,7 +710,7 @@ class CrossSigning {
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          flex: 1,
+          flex: isDesktop ? 2 : 1,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
@@ -795,10 +796,10 @@ class CrossSigning {
     List<String> emojiDescriptions = emoji.map((e) => e.description()).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.max,
       children: [
-        Flexible(
-          flex: 2,
+        Expanded(
+          flex: isDesktop ? 1 : 2,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
@@ -832,8 +833,8 @@ class CrossSigning {
             ),
           ),
         ),
-        Flexible(
-          flex: 2,
+        Expanded(
+          flex: isDesktop ? 1 : 2,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Text(
@@ -843,8 +844,8 @@ class CrossSigning {
           ),
         ),
         const Spacer(flex: 1),
-        Flexible(
-          flex: 7,
+        Expanded(
+          flex: isDesktop ? 2 : 7,
           child: Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -853,28 +854,29 @@ class CrossSigning {
                 color: CrossSigningSheetTheme.gridBackgroundColor,
               ),
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.only(top: 10),
                 child: GridView.count(
-                  physics: const BouncingScrollPhysics(),
-                  crossAxisCount: 4,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
+                  crossAxisCount: isDesktop ? 7 : 4,
                   children: List.generate(emoji.length, (index) {
                     return GridTile(
-                      child: Text(
-                        String.fromCharCode(emojiCodes[index]),
-                        style: const TextStyle(fontSize: 32),
-                        textAlign: TextAlign.center,
-                      ),
-                      footer: Text(
-                        emojiDescriptions[index],
-                        style:
-                            CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                          color: CrossSigningSheetTheme.primaryTextColor,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        maxLines: 1,
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            String.fromCharCode(emojiCodes[index]),
+                            style: const TextStyle(fontSize: 32),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            emojiDescriptions[index],
+                            style: CrossSigningSheetTheme.secondaryTextStyle
+                                .copyWith(
+                              color: CrossSigningSheetTheme.primaryTextColor,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
                     );
                   }),
@@ -884,8 +886,8 @@ class CrossSigning {
           ),
         ),
         const Spacer(flex: 1),
-        Flexible(
-          flex: 2,
+        Expanded(
+          flex: isDesktop ? 1 : 2,
           child: _buildBodyOnKey(context, event, setState),
         ),
         const Spacer(flex: 1),
@@ -1003,7 +1005,7 @@ class CrossSigning {
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(
-          flex: 1,
+          flex: isDesktop ? 2 : 1,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
             child: Row(
