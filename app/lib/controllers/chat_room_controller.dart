@@ -124,13 +124,14 @@ class ChatRoomController extends GetxController {
         return;
       }
       _stream = _currentRoom!.timeline();
+      // event handler from paginate
       _diffSubscription = _stream?.diffRx().listen((event) {
         switch (event.action()) {
           case 'Replace':
             for (RoomMessage msg in event.values()!.toList()) {
               types.Message? m = _prepareMessage(msg);
               if (m != null) {
-                _insertMessage(messages.length, m);
+                _insertMessage(0, m);
                 if (isLoading.isFalse) {
                   update(['Chat']);
                 }
@@ -144,7 +145,7 @@ class ChatRoomController extends GetxController {
             RoomMessage? msg = event.value();
             types.Message? m = _prepareMessage(msg!);
             if (m != null) {
-              _insertMessage(event.index()!, m);
+              _insertMessage(messages.length - event.index()!, m);
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
@@ -157,7 +158,7 @@ class ChatRoomController extends GetxController {
             RoomMessage? msg = event.value();
             types.Message? m = _prepareMessage(msg!);
             if (m != null) {
-              _updateMessage(event.index()!, m);
+              _updateMessage(messages.length - event.index()!, m);
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
@@ -170,24 +171,27 @@ class ChatRoomController extends GetxController {
             RoomMessage? msg = event.value();
             types.Message? m = _prepareMessage(msg!);
             if (m != null) {
-              _insertMessage(messages.length, m);
+              _insertMessage(0, m);
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
+              String msgType = msg.msgtype();
+              debugPrint('msgType - $msgType');
               if (msg.msgtype() == 'm.image') {
                 _fetchMessageContent(m.id);
               }
             }
             break;
           case 'RemoveAt':
-            messages.removeAt(event.index()!);
+            messages.removeAt(messages.length - event.index()!);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
             break;
           case 'Move':
-            types.Message m = messages.removeAt(event.oldIndex()!);
-            messages.insert(event.newIndex()!, m);
+            types.Message m =
+                messages.removeAt(messages.length - event.oldIndex()!);
+            messages.insert(messages.length - event.newIndex()!, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -565,7 +569,9 @@ class ChatRoomController extends GetxController {
             'binary': data.asTypedList(),
           },
         );
-        update(['Chat']);
+        if (isLoading.isFalse) {
+          update(['Chat']);
+        }
       }
     });
   }
