@@ -115,7 +115,7 @@ class ChatRoomController extends GetxController {
       _currentRoom = convoRoom;
       update(['room-profile']);
       isLoading.value = true;
-      activeMembers = (await _currentRoom!.activeMembers()).toList();
+      activeMembers = (await convoRoom.activeMembers()).toList();
       update(['active-members']);
       _fetchUserProfiles();
       if (_currentRoom == null) {

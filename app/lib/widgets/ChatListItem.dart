@@ -7,22 +7,22 @@ import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
-import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
-  final String userId;
+  final Client client;
   final Conversation room;
   final RoomMessage? latestMessage;
   final List<types.User> typingUsers;
 
   const ChatListItem({
     Key? key,
-    required this.userId,
+    required this.client,
     required this.room,
     this.latestMessage,
     required this.typingUsers,
@@ -92,7 +92,7 @@ class _ChatListItemState extends State<ChatListItem> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatScreen(
-          userId: widget.userId,
+          client: widget.client,
           room: widget.room,
           roomName: displayName,
           roomAvatar: avatar,

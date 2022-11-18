@@ -45,11 +45,15 @@ impl std::ops::Deref for Member {
 impl Member {
     pub async fn get_profile(&self) -> Result<UserProfile> {
         let client = self.client.clone();
-        let user_id = self.member.user_id().to_owned();
+        let member = self.member.clone();
         RUNTIME
             .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id);
-                user_profile.fetch().await;
+                let user_profile = UserProfile::new(
+                    client,
+                    member.user_id().to_owned(),
+                    member.avatar_url().map(|x| x.to_owned()),
+                    member.display_name().map(|x| x.to_string()),
+                );
                 Ok(user_profile)
             })
             .await?

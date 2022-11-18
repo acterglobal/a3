@@ -573,10 +573,12 @@ class Api {
     String basepath,
     String username,
     String password,
+    String? deviceName,
   ) {
     final tmp0 = basepath;
     final tmp4 = username;
     final tmp8 = password;
+    final tmp12 = deviceName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -586,6 +588,10 @@ class Api {
     var tmp9 = 0;
     var tmp10 = 0;
     var tmp11 = 0;
+    var tmp13 = 0;
+    var tmp15 = 0;
+    var tmp16 = 0;
+    var tmp17 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -607,7 +613,20 @@ class Api {
     tmp9_1.setAll(0, tmp8_0);
     tmp9 = tmp9_0.address;
     tmp11 = tmp10;
-    final tmp12 = _loginNewClient(
+    if (tmp12 == null) {
+      tmp13 = 0;
+    } else {
+      tmp13 = 1;
+      final tmp14 = tmp12;
+      final tmp14_0 = utf8.encode(tmp14);
+      tmp16 = tmp14_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
+      final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
+      tmp15_1.setAll(0, tmp14_0);
+      tmp15 = tmp15_0.address;
+      tmp17 = tmp16;
+    }
+    final tmp18 = _loginNewClient(
       tmp1,
       tmp2,
       tmp3,
@@ -617,13 +636,17 @@ class Api {
       tmp9,
       tmp10,
       tmp11,
+      tmp13,
+      tmp15,
+      tmp16,
+      tmp17,
     );
-    final tmp14 = tmp12;
-    final ffi.Pointer<ffi.Void> tmp14_0 = ffi.Pointer.fromAddress(tmp14);
-    final tmp14_1 = _Box(this, tmp14_0, "__login_new_client_future_drop");
-    tmp14_1._finalizer = this._registerFinalizer(tmp14_1);
-    final tmp13 = _nativeFuture(tmp14_1, this.__loginNewClientFuturePoll);
-    return tmp13;
+    final tmp20 = tmp18;
+    final ffi.Pointer<ffi.Void> tmp20_0 = ffi.Pointer.fromAddress(tmp20);
+    final tmp20_1 = _Box(this, tmp20_0, "__login_new_client_future_drop");
+    tmp20_1._finalizer = this._registerFinalizer(tmp20_1);
+    final tmp19 = _nativeFuture(tmp20_1, this.__loginNewClientFuturePoll);
+    return tmp19;
   }
 
   /// Create a new client from the restore token
@@ -673,15 +696,21 @@ class Api {
   Future<Client> guestClient(
     String basepath,
     String homeserver,
+    String? deviceName,
   ) {
     final tmp0 = basepath;
     final tmp4 = homeserver;
+    final tmp8 = deviceName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp5 = 0;
     var tmp6 = 0;
     var tmp7 = 0;
+    var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -696,20 +725,37 @@ class Api {
     tmp5_1.setAll(0, tmp4_0);
     tmp5 = tmp5_0.address;
     tmp7 = tmp6;
-    final tmp8 = _guestClient(
+    if (tmp8 == null) {
+      tmp9 = 0;
+    } else {
+      tmp9 = 1;
+      final tmp10 = tmp8;
+      final tmp10_0 = utf8.encode(tmp10);
+      tmp12 = tmp10_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = this.__allocate(tmp12 * 1, 1);
+      final Uint8List tmp11_1 = tmp11_0.asTypedList(tmp12);
+      tmp11_1.setAll(0, tmp10_0);
+      tmp11 = tmp11_0.address;
+      tmp13 = tmp12;
+    }
+    final tmp14 = _guestClient(
       tmp1,
       tmp2,
       tmp3,
       tmp5,
       tmp6,
       tmp7,
+      tmp9,
+      tmp11,
+      tmp12,
+      tmp13,
     );
-    final tmp10 = tmp8;
-    final ffi.Pointer<ffi.Void> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-    final tmp10_1 = _Box(this, tmp10_0, "__guest_client_future_drop");
-    tmp10_1._finalizer = this._registerFinalizer(tmp10_1);
-    final tmp9 = _nativeFuture(tmp10_1, this.__guestClientFuturePoll);
-    return tmp9;
+    final tmp16 = tmp14;
+    final ffi.Pointer<ffi.Void> tmp16_0 = ffi.Pointer.fromAddress(tmp16);
+    final tmp16_1 = _Box(this, tmp16_0, "__guest_client_future_drop");
+    tmp16_1._finalizer = this._registerFinalizer(tmp16_1);
+    final tmp15 = _nativeFuture(tmp16_1, this.__guestClientFuturePoll);
+    return tmp15;
   }
 
   /// Create a new client from the restore token
@@ -718,11 +764,13 @@ class Api {
     String username,
     String password,
     String registrationToken,
+    String? deviceName,
   ) {
     final tmp0 = basepath;
     final tmp4 = username;
     final tmp8 = password;
     final tmp12 = registrationToken;
+    final tmp16 = deviceName;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -735,6 +783,10 @@ class Api {
     var tmp13 = 0;
     var tmp14 = 0;
     var tmp15 = 0;
+    var tmp17 = 0;
+    var tmp19 = 0;
+    var tmp20 = 0;
+    var tmp21 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -763,7 +815,20 @@ class Api {
     tmp13_1.setAll(0, tmp12_0);
     tmp13 = tmp13_0.address;
     tmp15 = tmp14;
-    final tmp16 = _registerWithRegistrationToken(
+    if (tmp16 == null) {
+      tmp17 = 0;
+    } else {
+      tmp17 = 1;
+      final tmp18 = tmp16;
+      final tmp18_0 = utf8.encode(tmp18);
+      tmp20 = tmp18_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp19_0 = this.__allocate(tmp20 * 1, 1);
+      final Uint8List tmp19_1 = tmp19_0.asTypedList(tmp20);
+      tmp19_1.setAll(0, tmp18_0);
+      tmp19 = tmp19_0.address;
+      tmp21 = tmp20;
+    }
+    final tmp22 = _registerWithRegistrationToken(
       tmp1,
       tmp2,
       tmp3,
@@ -776,15 +841,19 @@ class Api {
       tmp13,
       tmp14,
       tmp15,
+      tmp17,
+      tmp19,
+      tmp20,
+      tmp21,
     );
-    final tmp18 = tmp16;
-    final ffi.Pointer<ffi.Void> tmp18_0 = ffi.Pointer.fromAddress(tmp18);
-    final tmp18_1 =
-        _Box(this, tmp18_0, "__register_with_registration_token_future_drop");
-    tmp18_1._finalizer = this._registerFinalizer(tmp18_1);
-    final tmp17 =
-        _nativeFuture(tmp18_1, this.__registerWithRegistrationTokenFuturePoll);
-    return tmp17;
+    final tmp24 = tmp22;
+    final ffi.Pointer<ffi.Void> tmp24_0 = ffi.Pointer.fromAddress(tmp24);
+    final tmp24_1 =
+        _Box(this, tmp24_0, "__register_with_registration_token_future_drop");
+    tmp24_1._finalizer = this._registerFinalizer(tmp24_1);
+    final tmp23 =
+        _nativeFuture(tmp24_1, this.__registerWithRegistrationTokenFuturePoll);
+    return tmp23;
   }
 
   /// generate news mock items
@@ -2570,6 +2639,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListUserProfile? __clientSuggestedUsersToInviteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientSuggestedUsersToInviteFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListUserProfile");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListUserProfile._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   bool? __clientVerifiedDeviceFuturePoll(
     int boxed,
     int postCobject,
@@ -4033,10 +4148,18 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__login_new_client");
 
   late final _loginNewClient = _loginNewClientPtr.asFunction<
       int Function(
+    int,
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -4076,10 +4199,18 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__guest_client");
 
   late final _guestClient = _guestClientPtr.asFunction<
       int Function(
+    int,
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -4102,11 +4233,19 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__register_with_registration_token");
 
   late final _registerWithRegistrationToken =
       _registerWithRegistrationTokenPtr.asFunction<
           int Function(
+    int,
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -4132,6 +4271,16 @@ class Api {
 
   late final _colorRgbaU8 = _colorRgbaU8Ptr.asFunction<
       _ColorRgbaU8Return Function(
+    int,
+  )>();
+  late final _newsIdPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsIdReturn Function(
+    ffi.Int64,
+  )>>("__News_id");
+
+  late final _newsId = _newsIdPtr.asFunction<
+      _NewsIdReturn Function(
     int,
   )>();
   late final _newsTextPtr = _lookup<
@@ -4623,16 +4772,6 @@ class Api {
           int Function(
     int,
   )>();
-  late final _conversationTimelinePtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationTimelineReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_timeline");
-
-  late final _conversationTimeline = _conversationTimelinePtr.asFunction<
-      _ConversationTimelineReturn Function(
-    int,
-  )>();
   late final _conversationGetMemberPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4647,6 +4786,16 @@ class Api {
     int,
     int,
     int,
+    int,
+  )>();
+  late final _conversationTimelinePtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationTimelineReturn Function(
+    ffi.Int64,
+  )>>("__Conversation_timeline");
+
+  late final _conversationTimeline = _conversationTimelinePtr.asFunction<
+      _ConversationTimelineReturn Function(
     int,
   )>();
   late final _conversationLatestMessagePtr = _lookup<
@@ -5236,6 +5385,23 @@ class Api {
       int Function(
     int,
   )>();
+  late final _clientSuggestedUsersToInvitePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_suggested_users_to_invite");
+
+  late final _clientSuggestedUsersToInvite =
+      _clientSuggestedUsersToInvitePtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _clientVerifiedDevicePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5322,6 +5488,16 @@ class Api {
 
   late final _clientIncomingMessageRx = _clientIncomingMessageRxPtr.asFunction<
       _ClientIncomingMessageRxReturn Function(
+    int,
+  )>();
+  late final _userProfileUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__UserProfile_user_id");
+
+  late final _userProfileUserId = _userProfileUserIdPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _userProfileHasAvatarPtr = _lookup<
@@ -6472,6 +6648,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientSuggestedUsersToInviteFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_suggested_users_to_invite_future_poll");
+
+  late final _clientSuggestedUsersToInviteFuturePoll =
+      _clientSuggestedUsersToInviteFuturePollPtr.asFunction<
+          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientVerifiedDeviceFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientVerifiedDeviceFuturePollReturn Function(
@@ -7616,6 +7807,55 @@ class Api {
 
   late final _ffiListTagInsert =
       _ffiListTagInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListUserProfile createFfiListUserProfile() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListUserProfileCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListUserProfile");
+    return FfiListUserProfile._(this, list_box);
+  }
+
+  late final _ffiListUserProfileCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListUserProfileCreate");
+
+  late final _ffiListUserProfileCreate =
+      _ffiListUserProfileCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListUserProfileLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListUserProfileLen");
+
+  late final _ffiListUserProfileLen =
+      _ffiListUserProfileLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListUserProfileElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserProfileElementAt");
+
+  late final _ffiListUserProfileElementAt =
+      _ffiListUserProfileElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserProfileRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserProfileRemove");
+
+  late final _ffiListUserProfileRemove =
+      _ffiListUserProfileRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserProfileAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListUserProfileAdd");
+
+  late final _ffiListUserProfileAdd =
+      _ffiListUserProfileAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListUserProfileInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListUserProfileInsert");
+
+  late final _ffiListUserProfileInsert =
+      _ffiListUserProfileInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListVerificationEmoji createFfiListVerificationEmoji() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListVerificationEmojiCreate());
@@ -7711,6 +7951,26 @@ class News {
   final _Box _box;
 
   News._(this._api, this._box);
+
+  /// the id of this news
+  String id() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
 
   /// get the text of the news item
   String? text() {
@@ -8734,35 +8994,6 @@ class Conversation {
     return tmp2;
   }
 
-  /// Get the timeline for the room
-  TimelineStream timeline() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationTimeline(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TimelineStream");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = TimelineStream._(_api, tmp7_1);
-    return tmp2;
-  }
-
   /// get the room member by user id
   Future<Member> getMember(
     String userId,
@@ -8792,6 +9023,35 @@ class Conversation {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__conversationGetMemberFuturePoll);
     return tmp6;
+  }
+
+  /// Get the timeline for the room
+  TimelineStream timeline() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationTimeline(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TimelineStream");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TimelineStream._(_api, tmp7_1);
+    return tmp2;
   }
 
   /// The last message sent to the room
@@ -9968,6 +10228,39 @@ class Client {
     return tmp2;
   }
 
+  /// the users out of room
+  Future<FfiListUserProfile> suggestedUsersToInvite(
+    String roomName,
+  ) {
+    final tmp1 = roomName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSuggestedUsersToInvite(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Client_suggested_users_to_invite_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__clientSuggestedUsersToInviteFuturePoll);
+    return tmp6;
+  }
+
   /// Whether the user already verified the device
   Future<bool> verifiedDevice(
     String devId,
@@ -10147,6 +10440,21 @@ class UserProfile {
   final _Box _box;
 
   UserProfile._(this._api, this._box);
+
+  /// get user id
+  UserId userId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._userProfileUserId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
 
   /// whether to have avatar
   bool hasAvatar() {
@@ -11308,6 +11616,15 @@ class _ColorRgbaU8Return extends ffi.Struct {
   external int arg2;
   @ffi.Uint8()
   external int arg3;
+}
+
+class _NewsIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _NewsTextReturn extends ffi.Struct {
@@ -12577,6 +12894,21 @@ class _ClientFaqsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientSuggestedUsersToInviteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientVerifiedDeviceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -13747,6 +14079,66 @@ class FfiListTag extends Iterable<Tag> implements CustomIterable<Tag> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Tag element) {
     _api._ffiListTagInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListUserProfile extends Iterable<UserProfile>
+    implements CustomIterable<UserProfile> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListUserProfile._(this._api, this._box);
+
+  @override
+  Iterator<UserProfile> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListUserProfileLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  UserProfile elementAt(int index) {
+    final address = _api._ffiListUserProfileElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return UserProfile._(_api, reference);
+  }
+
+  UserProfile operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  UserProfile remove(int index) {
+    final address = _api._ffiListUserProfileRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_UserProfile");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return UserProfile._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(UserProfile element) {
+    _api._ffiListUserProfileAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, UserProfile element) {
+    _api._ffiListUserProfileInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

@@ -14,7 +14,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
-// import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
   final Client client;
@@ -91,7 +90,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           ),
           SliverToBoxAdapter(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 if (widget.client.isGuest()) empty else buildList(context),
               ],
@@ -102,13 +101,8 @@ class _ChatOverviewState extends State<ChatOverview> {
     );
   }
 
-  Positioned get empty {
-    return Positioned.fill(
-      child: Align(
-        alignment: const Alignment(0.0, -0.25),
-        child: SvgPicture.asset('assets/images/empty_messages.svg'),
-      ),
-    );
+  SvgPicture get empty {
+    return SvgPicture.asset('assets/images/empty_messages.svg');
   }
 
   Widget buildListHeader(BuildContext context) {
@@ -239,20 +233,21 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   Widget buildInvitedItem(Invitation item) {
     return InviteInfoWidget(
-      userId: widget.client.userId().toString(),
+      client: widget.client,
       invitation: item,
       avatarColor: Colors.white,
     );
   }
 
   Widget buildJoinedItem(JoinedRoom item) {
+    String roomId = item.conversation.getRoomId();
     // we should be able to update only changed room items
     // so we use GetBuilder to render item
     return GetBuilder<ChatListController>(
-      id: 'chatroom-${item.conversation.getRoomId()}',
+      id: 'chatroom-$roomId',
       builder: (controller) => ChatListItem(
-        key: Key(item.conversation.getRoomId()),
-        userId: widget.client.userId().toString(),
+        key: Key(roomId),
+        client: widget.client,
         room: item.conversation,
         latestMessage: item.latestMessage,
         typingUsers: item.typingUsers,

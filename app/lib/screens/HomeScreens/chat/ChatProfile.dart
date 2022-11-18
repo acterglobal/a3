@@ -14,6 +14,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 class ChatProfileScreen extends StatelessWidget {
+  final Client client;
   final Conversation room;
   final String? roomName;
   final Future<FfiBufferUint8>? roomAvatar;
@@ -22,6 +23,7 @@ class ChatProfileScreen extends StatelessWidget {
 
   const ChatProfileScreen({
     Key? key,
+    required this.client,
     required this.room,
     required this.isGroup,
     required this.isAdmin,
@@ -329,7 +331,12 @@ class ChatProfileScreen extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const RequestScreen()),
+          MaterialPageRoute(
+            builder: (context) => RequestScreen(
+              client: client,
+              room: room,
+            ),
+          ),
         );
       },
       child: Row(

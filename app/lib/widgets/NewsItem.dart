@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:io' show Platform;
 
 import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -26,6 +27,7 @@ class NewsItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var bgColor = convertColor(news.bgColor(), AppCommonTheme.backgroundColor);
     var fgColor = convertColor(news.fgColor(), AppCommonTheme.primaryColor);
+    bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -37,37 +39,41 @@ class NewsItem extends StatelessWidget {
           child: _buildImage(),
           clipBehavior: Clip.none,
         ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Expanded(
-              flex: 5,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height / 4,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Column(
-                    children: <Widget>[
-                      const Spacer(),
-                      _buildTitle(bgColor, fgColor),
-                      const SizedBox(height: 10),
-                      _buildSubtitle(bgColor, fgColor),
-                      const SizedBox(height: 10),
-                    ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return SizedBox(
+              height: constraints.maxWidth >= 600
+                  ? isDesktop
+                      ? MediaQuery.of(context).size.height * 0.5
+                      : MediaQuery.of(context).size.height * 0.7
+                  : MediaQuery.of(context).size.height * 0.4,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                    flex: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          const Spacer(),
+                          _buildTitle(bgColor, fgColor),
+                          const SizedBox(height: 10),
+                          _buildSubtitle(bgColor, fgColor),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                  Expanded(
+                    flex: 1,
+                    child:
+                        NewsSideBar(client: client, news: news, index: index),
+                  ),
+                ],
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height / 2.5,
-                child: InkWell(
-                  child: NewsSideBar(client: client, news: news, index: index),
-                ),
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ],
     );
@@ -78,9 +84,10 @@ class NewsItem extends StatelessWidget {
     if (image == null) {
       return null;
     }
+    var id = news.id();
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
     return CachedMemoryImage(
-      uniqueKey: 'news-item-$index',
+      uniqueKey: 'news-item-$id',
       bytes: Uint8List.fromList(image),
       fit: BoxFit.cover,
     );
@@ -88,7 +95,7 @@ class NewsItem extends StatelessWidget {
 
   Widget _buildTitle(ui.Color backgroundColor, ui.Color foregroundColor) {
     return Text(
-      'Lorem Ipsum is simply dummy text of the printing and',
+      news.text() ?? '',
       style: GoogleFonts.roboto(
         color: foregroundColor,
         fontSize: 16,

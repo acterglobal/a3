@@ -31,15 +31,17 @@ class CustomAvatar extends StatefulWidget {
 
 class _CustomAvatarState extends State<CustomAvatar> {
   Future<Uint8List>? getAvatar() async {
-    if (widget.avatar != null) {
-      try {
-        FfiBufferUint8 avatar = await widget.avatar!;
-        return avatar.asTypedList();
-      } catch (e) {
-        return Uint8List(0);
-      }
+    if (widget.avatar == null) {
+      return Uint8List(0);
     }
-    return Uint8List(0);
+    // sometimes fetch of avatar failed because encryption not working well
+    // this is hack to avoid that issue
+    try {
+      FfiBufferUint8 avatar = await widget.avatar!;
+      return avatar.asTypedList();
+    } catch (e) {
+      return Uint8List(0);
+    }
   }
 
   @override
