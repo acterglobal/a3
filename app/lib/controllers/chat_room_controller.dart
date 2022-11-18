@@ -128,7 +128,8 @@ class ChatRoomController extends GetxController {
       _diffSubscription = _stream?.diffRx().listen((event) {
         switch (event.action()) {
           case 'Replace':
-            for (RoomMessage msg in event.values()!.toList()) {
+            List<RoomMessage> values = event.values()!.toList();
+            for (RoomMessage msg in values) {
               types.Message? m = _prepareMessage(msg);
               if (m != null) {
                 _insertMessage(0, m);
@@ -142,56 +143,69 @@ class ChatRoomController extends GetxController {
             }
             break;
           case 'InsertAt':
-            RoomMessage? msg = event.value();
-            types.Message? m = _prepareMessage(msg!);
+            int index = event.index()!;
+            RoomMessage? value = event.value();
+            if (value == null) {
+              break; // message decryption may be failed
+            }
+            types.Message? m = _prepareMessage(value);
             if (m != null) {
-              _insertMessage(messages.length - event.index()!, m);
+              _insertMessage(messages.length - index, m);
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              if (msg.msgtype() == 'm.image') {
+              if (value.msgtype() == 'm.image') {
                 _fetchMessageContent(m.id);
               }
             }
             break;
           case 'UpdateAt':
-            RoomMessage? msg = event.value();
-            types.Message? m = _prepareMessage(msg!);
+            int index = event.index()!;
+            RoomMessage? value = event.value();
+            if (value == null) {
+              break; // message decryption may be failed
+            }
+            types.Message? m = _prepareMessage(value);
             if (m != null) {
-              _updateMessage(messages.length - event.index()!, m);
+              _updateMessage(messages.length - index, m);
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              if (msg.msgtype() == 'm.image') {
+              if (value.msgtype() == 'm.image') {
                 _fetchMessageContent(m.id);
               }
             }
             break;
           case 'Push':
-            RoomMessage? msg = event.value();
-            types.Message? m = _prepareMessage(msg!);
+            RoomMessage? value = event.value();
+            if (value == null) {
+              break; // message decryption may be failed
+            }
+            types.Message? m = _prepareMessage(value);
             if (m != null) {
               _insertMessage(0, m);
               if (isLoading.isFalse) {
                 update(['Chat']);
               }
-              String msgType = msg.msgtype();
+              String msgType = value.msgtype();
               debugPrint('msgType - $msgType');
-              if (msg.msgtype() == 'm.image') {
+              if (value.msgtype() == 'm.image') {
                 _fetchMessageContent(m.id);
               }
             }
             break;
           case 'RemoveAt':
-            messages.removeAt(messages.length - event.index()!);
+            int index = event.index()!;
+            messages.removeAt(messages.length - index);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
             break;
           case 'Move':
-            types.Message m =
-                messages.removeAt(messages.length - event.oldIndex()!);
-            messages.insert(messages.length - event.newIndex()!, m);
+            int oldIndex = event.oldIndex()!;
+            int newIndex = event.newIndex()!;
+            types.Message m = messages.removeAt(messages.length - oldIndex);
+            messages.insert(messages.length - newIndex, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -211,6 +225,7 @@ class ChatRoomController extends GetxController {
         }
       });
       bool hasMore = await _stream!.paginateBackwards(10);
+      debugPrint('backward pagination has more: $hasMore');
       // load receipt status of room
       var receiptController = Get.find<ReceiptController>();
       var receipts = (await convoRoom.userReceipts()).toList();
@@ -469,6 +484,7 @@ class ChatRoomController extends GetxController {
   //Pagination Control
   Future<void> handleEndReached() async {
     bool hasMore = await _stream!.paginateBackwards(10);
+    debugPrint('backward pagination has more: $hasMore');
     _page = _page + 1;
     update(['Chat']);
   }
