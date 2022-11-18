@@ -80,9 +80,7 @@ class ReceiptController extends GetxController {
     var room = _getRoom(roomId);
     for (var record in records) {
       String seenBy = record.seenBy();
-      if (seenBy != client.userId().toString()) {
-        room.updateUser(seenBy, record.eventId(), record.ts());
-      }
+      room.updateUser(seenBy, record.eventId(), record.ts());
     }
   }
 
