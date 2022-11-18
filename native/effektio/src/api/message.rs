@@ -1,12 +1,15 @@
 use log::info;
 use matrix_sdk::{
-    deserialized_responses::SyncTimelineEvent,
+    deserialized_responses::{SyncTimelineEvent, TimelineEvent},
     room::{
         timeline::{EventTimelineItem, TimelineItem, TimelineItemContent},
         Room,
     },
     ruma::events::{
-        room::message::{MessageFormat, MessageType, RoomMessageEventContent},
+        room::{
+            encrypted::OriginalSyncRoomEncryptedEvent,
+            message::{MessageFormat, MessageType, RoomMessageEventContent},
+        },
         AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
@@ -99,7 +102,34 @@ impl RoomMessage {
         )
     }
 
-    pub(crate) fn from_timeline(
+    pub(crate) fn from_timeline_event(
+        event: &OriginalSyncRoomEncryptedEvent,
+        decrypted: &TimelineEvent,
+        room: Room,
+    ) -> Self {
+        let mut formatted_body: Option<String> = None;
+        info!("sync room encrypted: {:?}", decrypted.event.deserialize());
+        // if let MessageType::Text(content) = decrypted.event.deserialize() {
+        //     if let Some(formatted) = &content.formatted {
+        //         if formatted.format == MessageFormat::Html {
+        //             formatted_body = Some(formatted.body.clone());
+        //         }
+        //     }
+        // }
+        RoomMessage::new(
+            event.event_id.to_string(),
+            room.room_id().to_string(),
+            "OriginalSyncRoomEncryptedEvent".to_string(),
+            formatted_body,
+            event.sender.to_string(),
+            Some(event.origin_server_ts.get().into()),
+            "m.room.encrypted".to_string(),
+            None,
+            None,
+        )
+    }
+
+    pub(crate) fn from_timeline_item(
         event: &EventTimelineItem,
         room: Room,
         body: String,
@@ -270,10 +300,10 @@ pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> O
                 MessageType::ServerNotice(service_notice) => service_notice.body.clone(),
                 MessageType::Text(text) => text.body.clone(),
                 MessageType::Video(video) => video.body.clone(),
-                _ => "Unknown".to_string(),
+                _ => "Unknown timeline item".to_string(),
             };
             info!("timeline fallback: {:?}", fallback);
-            return Some(RoomMessage::from_timeline(
+            return Some(RoomMessage::from_timeline_item(
                 event,
                 room,
                 fallback,
