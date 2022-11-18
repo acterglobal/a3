@@ -33,7 +33,7 @@ class ReceiptUser {
 
 class ReceiptController extends GetxController {
   Client client;
-  StreamSubscription<ReceiptEvent>? _eventReceiver;
+  StreamSubscription<ReceiptEvent>? _subscription;
   final Map<String, ReceiptRoom> _rooms = {};
 
   ReceiptController({required this.client}) : super();
@@ -42,7 +42,7 @@ class ReceiptController extends GetxController {
   void onInit() {
     super.onInit();
 
-    _eventReceiver = client.receiptEventRx()?.listen((event) {
+    _subscription = client.receiptEventRx()?.listen((event) {
       String roomId = event.roomId();
       bool changed = false;
       for (var record in event.receiptRecords()) {
@@ -62,7 +62,7 @@ class ReceiptController extends GetxController {
 
   @override
   void onClose() {
-    _eventReceiver?.cancel();
+    _subscription?.cancel();
 
     super.onClose();
   }
