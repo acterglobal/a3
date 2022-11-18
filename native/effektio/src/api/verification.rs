@@ -1163,9 +1163,7 @@ impl VerificationController {
                     .await
                 {
                     let user_id = c.user_id().expect("guest user cannot get user id");
-                    if device.user_id() == user_id {
-                        if device.is_verified() {}
-                    }
+                    if device.user_id() == user_id && device.is_verified() {}
                 }
             },
         );

@@ -38,7 +38,7 @@ impl TimelineDiff {
 
     pub fn index(&self) -> Option<usize> {
         if self.action == "InsertAt" || self.action == "UpdateAt" || self.action == "RemoveAt" {
-            self.index.clone()
+            self.index
         } else {
             None
         }
@@ -54,7 +54,7 @@ impl TimelineDiff {
 
     pub fn old_index(&self) -> Option<usize> {
         if self.action == "Move" {
-            self.old_index.clone()
+            self.old_index
         } else {
             None
         }
@@ -62,7 +62,7 @@ impl TimelineDiff {
 
     pub fn new_index(&self) -> Option<usize> {
         if self.action == "Move" {
-            self.new_index.clone()
+            self.new_index
         } else {
             None
         }
