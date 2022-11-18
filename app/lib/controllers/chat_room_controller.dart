@@ -103,7 +103,7 @@ class ChatRoomController extends GetxController {
       _currentRoom = convoRoom;
       update(['room-profile']);
       isLoading.value = true;
-      activeMembers = (await _currentRoom!.activeMembers()).toList();
+      activeMembers = (await convoRoom.activeMembers()).toList();
       update(['active-members']);
       _fetchUserProfiles();
       if (_currentRoom == null) {
@@ -111,7 +111,7 @@ class ChatRoomController extends GetxController {
         isLoading.value = false;
         return;
       }
-      _stream = _currentRoom!.timeline();
+      _stream = convoRoom.timeline();
       // i am fetching messages from remote
       if (_currentRoom == null) {
         // user may close chat screen before long loading completed

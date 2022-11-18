@@ -4,19 +4,19 @@ import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show FfiBufferUint8, Invitation;
+    show Client, FfiBufferUint8, Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 class InviteInfoWidget extends StatefulWidget {
-  final String userId;
+  final Client client;
   final Invitation invitation;
   final Color avatarColor;
 
   const InviteInfoWidget({
     Key? key,
-    required this.userId,
+    required this.client,
     required this.invitation,
     required this.avatarColor,
   }) : super(key: key);
@@ -47,6 +47,7 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
 
   @override
   Widget build(BuildContext context) {
+    String userId = widget.client.userId().toString();
     return Card(
       color: AppCommonTheme.darkShade,
       margin: const EdgeInsets.symmetric(vertical: 1),
@@ -56,12 +57,12 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
           ListTile(
             // leading: CircleAvatar(backgroundColor: avatarColor),
             leading: CustomAvatar(
-              uniqueKey: widget.userId,
+              uniqueKey: userId,
               avatar: avatar,
               displayName: displayName,
               radius: 20,
               isGroup: true,
-              stringName: simplifyUserId(widget.userId)!,
+              stringName: simplifyUserId(userId)!,
             ),
             title: _buildTitle(),
             subtitle: _buildSubtitle(context),
@@ -126,7 +127,7 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ChatScreen(
-                      userId: widget.userId,
+                      client: widget.client,
                       room: room.conversation,
                     ),
                   ),

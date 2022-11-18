@@ -167,11 +167,11 @@ object Conversation {
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
-    /// Get the timeline for the room
-    fn timeline() -> Result<TimelineStream>;
-
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// Get the timeline for the room
+    fn timeline() -> Result<TimelineStream>;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
@@ -332,6 +332,9 @@ object Client {
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
+    /// the users out of room
+    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
@@ -358,6 +361,9 @@ object Client {
 }
 
 object UserProfile {
+    /// get user id
+    fn user_id() -> UserId;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 

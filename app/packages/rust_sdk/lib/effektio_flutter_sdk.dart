@@ -1,6 +1,8 @@
 import 'dart:core';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/services.dart';
@@ -121,7 +123,15 @@ class EffektioSdk {
       final api = Platform.isAndroid
           ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
           : ffi.Api.load();
-      api.initLogging('warn,effektio=debug');
+      try {
+        api.initLogging('warn,effektio=debug');
+      } catch (e) {
+        developer.log(
+          'Setting logging failed',
+          level: 900, // warning
+          error: e,
+        );
+      }
       _instance = EffektioSdk._(api);
       await _instance!._restore();
     }
@@ -142,7 +152,18 @@ class EffektioSdk {
         await _api.loginNewClient(appDocPath, username, password, deviceName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
-      _clients.removeAt(0);
+      var client = _clients.removeAt(0);
+      unawaited(
+        client.logout().catchError(
+          (e) {
+            developer.log(
+              'Logout of Guest failed',
+              level: 900, // warning
+              error: e,
+            );
+          },
+        ),
+      ); // Explicitly-ignored fire-and-forget.
     }
     _clients.add(client);
     await _persistSessions();
@@ -151,13 +172,23 @@ class EffektioSdk {
 
   Future<void> logout() async {
     // remove current client from list
-    await _clients[0].logout();
-    _clients.removeAt(0);
-    // reset session
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('sessions', []);
-    // login as guest
-    await _restore();
+    var client = _clients.removeAt(0);
+    await _persistSessions();
+    unawaited(
+      client.logout().catchError(
+        (e) {
+          developer.log(
+            'Logout failed',
+            level: 900, // warning
+            error: e,
+          );
+        },
+      ),
+    ); // Explicitly-ignored fire-and-forget.
+    if (_clients.isEmpty) {
+      // login as guest
+      await _restore();
+    }
   }
 
   Future<ffi.Client> signUp(

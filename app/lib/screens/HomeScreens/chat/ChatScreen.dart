@@ -18,7 +18,7 @@ import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8;
+    show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_types/flutter_chat_types.dart';
@@ -35,12 +35,12 @@ class ChatScreen extends StatefulWidget {
   final Future<FfiBufferUint8>? roomAvatar;
   final String? roomName;
   final Conversation room;
-  final String userId;
+  final Client client;
 
   const ChatScreen({
     Key? key,
     required this.room,
-    required this.userId,
+    required this.client,
     this.roomAvatar,
     this.roomName,
   }) : super(key: key);
@@ -53,13 +53,13 @@ class _ChatScreenState extends State<ChatScreen>
     with SingleTickerProviderStateMixin {
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
-  String id = '';
-  String authId = '';
-  String? currentid;
-  late MessageType messagetype;
+  String authorId = '';
+  String? currentId;
+  late MessageType msgType;
   bool isEmojiContainerVisible = false;
   static var messageIndex = 0;
   late final tabBarController = TabController(length: 3, vsync: this);
+
   @override
   void initState() {
     super.initState();
@@ -277,6 +277,7 @@ class _ChatScreenState extends State<ChatScreen>
           context,
           MaterialPageRoute(
             builder: (context) => ChatProfileScreen(
+              client: widget.client,
               room: widget.room,
               roomName: widget.roomName,
               roomAvatar: widget.roomAvatar,
@@ -370,7 +371,7 @@ class _ChatScreenState extends State<ChatScreen>
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (_) {},
-              user: types.User(id: widget.userId),
+              user: types.User(id: widget.client.userId().toString()),
               // if invited, disable image gallery
               disableImageGallery: invitedIndex != -1,
               //custom avatar builder
@@ -379,7 +380,7 @@ class _ChatScreenState extends State<ChatScreen>
               imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
-              onAvatarTap: (userId) {
+              onAvatarTap: (types.User user) {
                 showNotYetImplementedMsg(
                   context,
                   'Chat Profile view is not implemented yet',
@@ -447,12 +448,11 @@ class _ChatScreenState extends State<ChatScreen>
   Widget bubbleBuilder(
     Widget child, {
     required types.Message message,
-    nextMessageInGroup,
+    required bool nextMessageInGroup,
   }) {
     for (var element in roomController.messages) {
-      id = element.id;
-      authId = widget.userId;
-      messagetype = element.type;
+      authorId = widget.client.userId().toString();
+      msgType = element.type;
     }
 
     return GestureDetector(
@@ -463,41 +463,35 @@ class _ChatScreenState extends State<ChatScreen>
             children: [
               GestureDetector(
                 onTap: () {
-                  setState(() {
-                    isEmojiContainerVisible = false;
-                  });
+                  setState(() => isEmojiContainerVisible = false);
                 },
                 child: SizedBox(
                   child: Column(
-                    crossAxisAlignment: authId != message.author.id
+                    crossAxisAlignment: authorId != message.author.id
                         ? CrossAxisAlignment.start
                         : CrossAxisAlignment.end,
                     children: [
                       Visibility(
                         visible:
-                            currentid == message.id && isEmojiContainerVisible
-                                ? true
-                                : false,
+                            currentId == message.id && isEmojiContainerVisible,
                         child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          margin: authId != message.author.id
-                              ? const EdgeInsets.only(bottom: 8.0, left: 8.0)
-                              : const EdgeInsets.only(bottom: 8.0, right: 8.0),
+                          padding: const EdgeInsets.all(8),
+                          margin: authorId != message.author.id
+                              ? const EdgeInsets.only(bottom: 8, left: 8)
+                              : const EdgeInsets.only(bottom: 8, right: 8),
                           decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(
-                              Radius.circular(30.0),
+                              Radius.circular(30),
                             ),
                             color: AppCommonTheme.backgroundColor,
                             border: Border.all(
                               color: AppCommonTheme.dividerColor,
-                              width: 2.0,
+                              width: 2,
                             ),
                           ),
                           child: EmojiRow(
                             onEmojiTap: (String value) {
-                              setState(() {
-                                isEmojiContainerVisible = false;
-                              });
+                              setState(() => isEmojiContainerVisible = false);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('$value tapped'),
@@ -509,183 +503,7 @@ class _ChatScreenState extends State<ChatScreen>
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        child: Row(
-                          textDirection: authId != message.author.id
-                              ? TextDirection.ltr
-                              : TextDirection.rtl,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Flexible(
-                              child: Stack(
-                                children: [
-                                  Bubble(
-                                    child: child,
-                                    color: authId != message.author.id ||
-                                            messagetype ==
-                                                types.MessageType.image
-                                        ? AppCommonTheme.backgroundColorLight
-                                        : AppCommonTheme.primaryColor,
-                                    margin: nextMessageInGroup
-                                        ? const BubbleEdges.symmetric(
-                                            horizontal: 2,
-                                          )
-                                        : null,
-                                    radius: const Radius.circular(12),
-                                    nip: nextMessageInGroup
-                                        ? BubbleNip.no
-                                        : authId != message.author.id
-                                            ? BubbleNip.leftBottom
-                                            : BubbleNip.rightBottom,
-                                  ),
-                                  authId != message.author.id
-                                      ? Positioned(
-                                          bottom: 0,
-                                          right: 0,
-                                          child: Container(
-                                            width: 100,
-                                            height: 16,
-                                            alignment: Alignment.topRight,
-                                            child: ListView.separated(
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: 2,
-                                              itemBuilder: (_, index) {
-                                                return GestureDetector(
-                                                  onTap: () {
-                                                    showBottomSheet();
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                      4.0,
-                                                    ),
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      color: AppCommonTheme
-                                                          .dividerColor,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                        Radius.circular(8),
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      children: const [
-                                                        Text(
-                                                          heart,
-                                                          style: TextStyle(
-                                                            fontSize: 8,
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 2.0,
-                                                        ),
-                                                        Text(
-                                                          '+12',
-                                                          style: TextStyle(
-                                                            fontSize: 8,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                              separatorBuilder: (
-                                                BuildContext context,
-                                                int index,
-                                              ) {
-                                                return const SizedBox(
-                                                  width: 4,
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        )
-                                      : Positioned(
-                                          bottom: 0,
-                                          left: 0,
-                                          child: Container(
-                                            width: 100,
-                                            height: 16,
-                                            alignment: Alignment.topLeft,
-                                            child: ListView.separated(
-                                              shrinkWrap: true,
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: 2,
-                                              itemBuilder: (_, index) {
-                                                return GestureDetector(
-                                                  onTap: () {
-                                                    showBottomSheet();
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                      4.0,
-                                                    ),
-                                                    decoration:
-                                                        const BoxDecoration(
-                                                      color: AppCommonTheme
-                                                          .dividerColor,
-                                                      borderRadius:
-                                                          BorderRadius.all(
-                                                        Radius.circular(8),
-                                                      ),
-                                                    ),
-                                                    child: Row(
-                                                      children: const [
-                                                        Text(
-                                                          faceWithTears,
-                                                          style: TextStyle(
-                                                            fontSize: 8,
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          width: 2.0,
-                                                        ),
-                                                        Text(
-                                                          '+12',
-                                                          style: TextStyle(
-                                                            fontSize: 8,
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                              separatorBuilder: (
-                                                BuildContext context,
-                                                int index,
-                                              ) {
-                                                return const SizedBox(
-                                                  width: 4,
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        onLongPress: () {
-                          setState(() {
-                            messageIndex = roomController.messages.indexWhere(
-                              (element) => element.id == message.id,
-                            );
-
-                            currentid =
-                                roomController.messages[messageIndex].id;
-
-                            if (currentid == message.id) {
-                              isEmojiContainerVisible =
-                                  !isEmojiContainerVisible;
-                            }
-                          });
-                        },
-                      ),
+                      buildBottomSheet(child, message, nextMessageInGroup),
                     ],
                   ),
                 ),
@@ -696,10 +514,152 @@ class _ChatScreenState extends State<ChatScreen>
       ),
       onTap: () {
         if (isEmojiContainerVisible) {
-          setState(() {
-            isEmojiContainerVisible = false;
-          });
+          setState(() => isEmojiContainerVisible = false);
         }
+      },
+    );
+  }
+
+  Widget buildBottomSheet(
+    Widget child,
+    types.Message message,
+    bool nextMessageInGroup,
+  ) {
+    return GestureDetector(
+      child: Row(
+        textDirection: authorId != message.author.id
+            ? TextDirection.ltr
+            : TextDirection.rtl,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Flexible(
+            child: Stack(
+              children: [
+                Bubble(
+                  child: child,
+                  color: authorId != message.author.id ||
+                          msgType == types.MessageType.image
+                      ? AppCommonTheme.backgroundColorLight
+                      : AppCommonTheme.primaryColor,
+                  margin: nextMessageInGroup
+                      ? const BubbleEdges.symmetric(horizontal: 2)
+                      : null,
+                  radius: const Radius.circular(12),
+                  nip: nextMessageInGroup
+                      ? BubbleNip.no
+                      : authorId != message.author.id
+                          ? BubbleNip.leftBottom
+                          : BubbleNip.rightBottom,
+                ),
+                if (authorId != message.author.id)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      width: 100,
+                      height: 16,
+                      alignment: Alignment.topRight,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 2,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              showBottomSheet();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: AppCommonTheme.dividerColor,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                              ),
+                              child: Row(
+                                children: const [
+                                  Text(
+                                    heart,
+                                    style: TextStyle(fontSize: 8),
+                                  ),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '+12',
+                                    style: TextStyle(fontSize: 8),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const SizedBox(width: 4);
+                        },
+                      ),
+                    ),
+                  )
+                else
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: Container(
+                      width: 100,
+                      height: 16,
+                      alignment: Alignment.topLeft,
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 2,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GestureDetector(
+                            onTap: () {
+                              showBottomSheet();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: AppCommonTheme.dividerColor,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                ),
+                              ),
+                              child: Row(
+                                children: const [
+                                  Text(
+                                    faceWithTears,
+                                    style: TextStyle(fontSize: 8),
+                                  ),
+                                  SizedBox(width: 2),
+                                  Text(
+                                    '+12',
+                                    style: TextStyle(fontSize: 8),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const SizedBox(width: 4);
+                        },
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      onLongPress: () {
+        setState(() {
+          messageIndex = roomController.messages.indexWhere((element) {
+            return element.id == message.id;
+          });
+          currentId = roomController.messages[messageIndex].id;
+          if (currentId == message.id) {
+            isEmojiContainerVisible = !isEmojiContainerVisible;
+          }
+        });
       },
     );
   }
@@ -717,12 +677,12 @@ class _ChatScreenState extends State<ChatScreen>
                   SizedBox(
                     height: 50,
                     child: Padding(
-                      padding: const EdgeInsets.all(4.0),
+                      padding: const EdgeInsets.all(4),
                       child: TabBar(
                         controller: tabBarController,
                         indicator: const BoxDecoration(
                           color: AppCommonTheme.backgroundColor,
-                          borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                         tabs: const [
                           Tab(
@@ -738,12 +698,10 @@ class _ChatScreenState extends State<ChatScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
+                  const SizedBox(height: 16),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: TabBarView(
                         controller: tabBarController,
                         children: [
@@ -767,13 +725,11 @@ class _ChatScreenState extends State<ChatScreen>
     return Expanded(
       child: ListView.separated(
         itemCount: 10,
-        itemBuilder: (_, index) {
+        itemBuilder: (BuildContext context, int index) {
           return EmojiReactionListItem(emoji: emoji);
         },
         separatorBuilder: (BuildContext context, int index) {
-          return const SizedBox(
-            height: 12,
-          );
+          return const SizedBox(height: 12);
         },
       ),
     );
