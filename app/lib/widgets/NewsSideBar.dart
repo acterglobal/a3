@@ -199,7 +199,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                             },
                           ),
                         );
-                      }),
+                      },),
                       Padding(
                         padding: EdgeInsets.only(
                           left: 8,

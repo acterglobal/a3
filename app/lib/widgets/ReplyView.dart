@@ -41,7 +41,9 @@ class ReplyViewState extends State<ReplyView> {
                   Text(
                     widget.replyModel.name,
                     style: TextStyle(
-                        color: widget.replyModel.titleColor, fontSize: 16),
+                      color: widget.replyModel.titleColor,
+                      fontSize: 16,
+                    ),
                   ),
                   Text(
                     widget.replyModel.reply,
@@ -72,7 +74,9 @@ class ReplyViewState extends State<ReplyView> {
           GestureDetector(
             onTap: () {
               newsCommentController.handleReplyLikeClick(
-                  widget.commentPos, widget.currentPos);
+                widget.commentPos,
+                widget.currentPos,
+              );
             },
             child: widget.replyModel.liked
                 ? const Icon(Icons.favorite, color: Colors.red)
