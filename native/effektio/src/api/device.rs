@@ -6,10 +6,7 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device,
-    ruma::{
-        device_id,
-        events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
-    },
+    ruma::{device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch},
     sync::SyncResponse,
     Client as MatrixClient,
 };
