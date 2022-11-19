@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::Result;
 use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
@@ -65,7 +65,9 @@ impl UserProfile {
                 if let Ok(res) = client.media().get_media_content(&req, true).await {
                     return Ok(FfiBuffer::new(res));
                 }
-                bail!("Could not get media content from user profile");
+                // sometimes fetching failed, i don't know that reason
+                info!("Could not get media content from user profile");
+                Ok(FfiBuffer::new(vec![]))
             })
             .await?
     }
@@ -120,7 +122,9 @@ impl RoomProfile {
                 if let Ok(res) = client.media().get_media_content(&req, true).await {
                     return Ok(FfiBuffer::new(res));
                 }
-                bail!("Could not get media content from room profile");
+                // sometimes fetching failed, i don't know that reason
+                info!("Could not get media content from room profile");
+                Ok(FfiBuffer::new(vec![]))
             })
             .await?
     }
