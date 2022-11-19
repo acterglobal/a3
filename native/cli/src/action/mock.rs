@@ -17,7 +17,7 @@ fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
     let store_config = StoreConfig::new().state_store(MemoryStore::new());
 
     Ok(Client::builder()
-        .user_agent(&format!("effektio-cli/{}", crate_version!()))
+        .user_agent(format!("effektio-cli/{}", crate_version!()))
         .store_config(store_config)
         .homeserver_url(homeserver))
 }
