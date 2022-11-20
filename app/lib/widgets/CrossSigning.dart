@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -32,6 +33,7 @@ class CrossSigning {
   late StreamSubscription<VerificationEvent>? _verificationSubscription;
   final Map<String, VerifEvent> _eventMap = {};
   bool _mounted = true;
+  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
   CrossSigning({required this.client}) {
     _installDeviceEvent();
@@ -50,6 +52,7 @@ class CrossSigning {
       for (var record in records) {
         debugPrint('found device id: ' + record.deviceId());
       }
+
       if (!_shouldShowNewDevicePopup()) {
         return;
       }
@@ -158,50 +161,65 @@ class CrossSigning {
     Function setState,
   ) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+        Flexible(
+          flex: isDesktop ? 2 : 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                ),
+                Text(
+                  AppLocalizations.of(context)!.sasIncomingReqNotifTitle,
+                  style: CrossSigningSheetTheme.primaryTextStyle,
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () async {
+                      // cancel verification request from other device
+                      await event.cancelVerificationRequest();
+                      Get.back();
+                      _eventMap.remove(flowId);
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 5),
-            Text(
-              AppLocalizations.of(context)!.sasIncomingReqNotifTitle,
-              style: CrossSigningSheetTheme.primaryTextStyle,
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () async {
-                  // cancel verification request from other device
-                  await event.cancelVerificationRequest();
-                  Get.back();
-                  _eventMap.remove(flowId);
-                },
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Text(
-          sprintf(
-            AppLocalizations.of(context)!.sasIncomingReqNotifContent,
-            [event.sender()],
           ),
-          style: CrossSigningSheetTheme.secondaryTextStyle,
         ),
-        const SizedBox(height: 50),
-        SvgPicture.asset(
-          'assets/images/lock.svg',
-          width: MediaQuery.of(context).size.width * 0.15,
-          height: MediaQuery.of(context).size.height * 0.15,
+        Flexible(
+          flex: 1,
+          child: Text(
+            sprintf(
+              AppLocalizations.of(context)!.sasIncomingReqNotifContent,
+              [event.sender()],
+            ),
+            style: CrossSigningSheetTheme.secondaryTextStyle,
+          ),
         ),
-        const SizedBox(height: 50),
-        _buildBodyOnRequest(context, event, setState),
+        const Spacer(flex: 1),
+        Flexible(
+          flex: 3,
+          child: SvgPicture.asset(
+            'assets/images/lock.svg',
+            width: 100,
+            height: 100,
+          ),
+        ),
+        const Spacer(flex: 1),
+        Flexible(flex: 1, child: _buildBodyOnRequest(context, event, setState)),
+        const Spacer(flex: 1),
       ],
     );
   }
@@ -212,12 +230,8 @@ class CrossSigning {
     Function setState,
   ) {
     if (acceptingRequest) {
-      return const SizedBox(
-        width: 100,
-        height: 100,
-        child: CircularProgressIndicator(
-          color: CrossSigningSheetTheme.loadingIndicatorColor,
-        ),
+      return const CircularProgressIndicator(
+        color: CrossSigningSheetTheme.loadingIndicatorColor,
       );
     }
     return elevatedButton(
@@ -273,104 +287,126 @@ class CrossSigning {
     String flowId,
   ) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              _eventMap[flowId]!.verifyingThisDev
-                  ? AppLocalizations.of(context)!.verifyThisSession
-                  : AppLocalizations.of(context)!.verifySession,
-              style: CrossSigningSheetTheme.primaryTextStyle,
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () async {
-                  // cancel the current verification
-                  await event.cancelVerificationRequest();
-                  // finish verification
-                  Get.back();
-                  _eventMap.remove(flowId);
-                },
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-          child: Text(
-            AppLocalizations.of(context)!.verificationScanSelfNotice,
-            style: CrossSigningSheetTheme.secondaryTextStyle,
-          ),
-        ),
-        const Center(
+        Flexible(
+          flex: 1,
           child: Padding(
-            padding: EdgeInsets.all(25),
-            child: SizedBox(
-              height: 100,
-              width: 100,
-              child: CircularProgressIndicator(
-                color: CrossSigningSheetTheme.loadingIndicatorColor,
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  _eventMap[flowId]!.verifyingThisDev
+                      ? AppLocalizations.of(context)!.verifyThisSession
+                      : AppLocalizations.of(context)!.verifySession,
+                  style: CrossSigningSheetTheme.primaryTextStyle,
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () async {
+                      // cancel the current verification
+                      await event.cancelVerificationRequest();
+                      // finish verification
+                      Get.back();
+                      _eventMap.remove(flowId);
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+            child: Text(
+              AppLocalizations.of(context)!.verificationScanSelfNotice,
+              style: CrossSigningSheetTheme.secondaryTextStyle,
+            ),
+          ),
+        ),
+        const Flexible(
+          flex: 2,
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.all(25),
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator(
+                  color: CrossSigningSheetTheme.loadingIndicatorColor,
+                ),
               ),
             ),
           ),
         ),
-        TextButton(
-          onPressed: () {},
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        Flexible(
+          flex: 1,
+          child: TextButton(
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: SvgPicture.asset(
+                    'assets/images/camera.svg',
+                    color: AppCommonTheme.primaryColor,
+                    height: 14,
+                    width: 14,
+                  ),
+                ),
+                Text(
+                  AppLocalizations.of(context)!.verificationScanWithThisDevice,
+                  style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
+                    color: AppCommonTheme.primaryColor,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          child: Wrap(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: SvgPicture.asset(
-                  'assets/images/camera.svg',
-                  color: AppCommonTheme.primaryColor,
-                  height: 14,
-                  width: 14,
+              ListTile(
+                title: Text(
+                  AppLocalizations.of(context)!.verificationScanEmojiTitle,
+                  style: CrossSigningSheetTheme.primaryTextStyle,
                 ),
-              ),
-              Text(
-                AppLocalizations.of(context)!.verificationScanWithThisDevice,
-                style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                  color: AppCommonTheme.primaryColor,
-                  fontSize: 12,
+                subtitle: Text(
+                  AppLocalizations.of(context)!
+                      .verificationScanSelfEmojiSubtitle,
+                  style: CrossSigningSheetTheme.secondaryTextStyle,
                 ),
+                trailing: const Icon(
+                  Icons.keyboard_arrow_right_outlined,
+                  color: CrossSigningSheetTheme.primaryTextColor,
+                ),
+                onTap: () async {
+                  // start sas verification from this device
+                  await event.startSasVerification();
+                  // go to onStart status
+                  _onKeyVerificationStart(event);
+                },
               ),
             ],
           ),
         ),
-        Wrap(
-          children: [
-            ListTile(
-              title: Text(
-                AppLocalizations.of(context)!.verificationScanEmojiTitle,
-                style: CrossSigningSheetTheme.primaryTextStyle,
-              ),
-              subtitle: Text(
-                AppLocalizations.of(context)!.verificationScanSelfEmojiSubtitle,
-                style: CrossSigningSheetTheme.secondaryTextStyle,
-              ),
-              trailing: const Icon(
-                Icons.keyboard_arrow_right_outlined,
-                color: CrossSigningSheetTheme.primaryTextColor,
-              ),
-              onTap: () async {
-                // start sas verification from this device
-                await event.startSasVerification();
-                // go to onStart status
-                _onKeyVerificationStart(event);
-              },
-            ),
-          ],
-        )
+        const Spacer(flex: 1),
       ],
     );
   }
@@ -413,39 +449,43 @@ class CrossSigning {
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              _eventMap[flowId]?.verifyingThisDev == true
-                  ? AppLocalizations.of(context)!.verifyThisSession
-                  : AppLocalizations.of(context)!.verifySession,
-              style: CrossSigningSheetTheme.primaryTextStyle,
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () async {
-                  // cancel sas verification
-                  await event.cancelSasVerification();
-                  // go to onCancel status
-                  _onKeyVerificationCancel(event, true);
-                },
-                color: Colors.white,
+        Flexible(
+          flex: 1,
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: SvgPicture.asset('assets/images/baseline-devices.svg'),
               ),
-            ),
-          ],
+              const SizedBox(width: 5),
+              Text(
+                _eventMap[flowId]?.verifyingThisDev == true
+                    ? AppLocalizations.of(context)!.verifyThisSession
+                    : AppLocalizations.of(context)!.verifySession,
+                style: CrossSigningSheetTheme.primaryTextStyle,
+              ),
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () async {
+                    // cancel sas verification
+                    await event.cancelSasVerification();
+                    // go to onCancel status
+                    _onKeyVerificationCancel(event, true);
+                  },
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
-        const Center(
-          child: Padding(
-            padding: EdgeInsets.all(50),
+        const Flexible(
+          flex: 3,
+          child: Center(
             child: SizedBox(
               height: 100,
               width: 100,
@@ -455,12 +495,16 @@ class CrossSigning {
             ),
           ),
         ),
-        Center(
-          child: Text(
-            AppLocalizations.of(context)!.pleaseWait,
-            style: CrossSigningSheetTheme.secondaryTextStyle,
+        Flexible(
+          flex: 1,
+          child: Center(
+            child: Text(
+              AppLocalizations.of(context)!.pleaseWait,
+              style: CrossSigningSheetTheme.secondaryTextStyle,
+            ),
           ),
         ),
+        const Spacer(flex: 1),
       ],
     );
   }
@@ -495,73 +539,105 @@ class CrossSigning {
   ) {
     if (manual) {
       return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+          Flexible(
+            flex: isDesktop ? 2 : 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child:
+                        SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    _eventMap[flowId]?.verifyingThisDev == true
+                        ? AppLocalizations.of(context)!.verifyThisSession
+                        : AppLocalizations.of(context)!.verifySession,
+                    style: CrossSigningSheetTheme.primaryTextStyle,
+                  ),
+                  const Spacer(),
+                ],
               ),
-              const SizedBox(width: 5),
-              Text(
-                _eventMap[flowId]?.verifyingThisDev == true
-                    ? AppLocalizations.of(context)!.verifyThisSession
-                    : AppLocalizations.of(context)!.verifySession,
-                style: CrossSigningSheetTheme.primaryTextStyle,
-              ),
-              const Spacer(),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(50, 50, 50, 20),
-            child: SvgPicture.asset(
-              'assets/images/lock.svg',
-              width: MediaQuery.of(context).size.width * 0.15,
-              height: MediaQuery.of(context).size.height * 0.15,
-              color: CrossSigningSheetTheme.secondaryTextColor,
             ),
           ),
-          Text(
-            AppLocalizations.of(context)!.verificationConclusionCompromised,
-            style: CrossSigningSheetTheme.secondaryTextStyle,
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.40,
-            child: elevatedButton(
-              AppLocalizations.of(context)!.sasGotIt,
-              AppCommonTheme.greenButtonColor,
-              () {
-                // finish verification
-                Get.back();
-                _eventMap.remove(flowId);
-              },
-              CrossSigningSheetTheme.buttonTextStyle,
+          Flexible(
+            flex: 3,
+            child: Center(
+              child: SvgPicture.asset(
+                'assets/images/lock.svg',
+                color: CrossSigningSheetTheme.secondaryTextColor,
+                height: 100,
+                width: 100,
+              ),
             ),
           ),
+          Flexible(
+            flex: isDesktop ? 4 : 3,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Text(
+                AppLocalizations.of(context)!.verificationConclusionCompromised,
+                style: CrossSigningSheetTheme.secondaryTextStyle,
+                softWrap: false,
+              ),
+            ),
+          ),
+          const Spacer(flex: 1),
+          Flexible(
+            flex: 1,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.40,
+              child: elevatedButton(
+                AppLocalizations.of(context)!.sasGotIt,
+                AppCommonTheme.greenButtonColor,
+                () {
+                  // finish verification
+                  Get.back();
+                  _eventMap.remove(flowId);
+                },
+                CrossSigningSheetTheme.buttonTextStyle,
+              ),
+            ),
+          ),
+          const Spacer(flex: 1),
         ],
       );
     } else {
       return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+          Flexible(
+            flex: isDesktop ? 2 : 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child:
+                        SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    _eventMap[flowId]?.verifyingThisDev == true
+                        ? AppLocalizations.of(context)!.verifyThisSession
+                        : AppLocalizations.of(context)!.verifySession,
+                    style: CrossSigningSheetTheme.primaryTextStyle,
+                  ),
+                  const Spacer(),
+                ],
               ),
-              const SizedBox(width: 5),
-              Text(
-                _eventMap[flowId]?.verifyingThisDev == true
-                    ? AppLocalizations.of(context)!.verifyThisSession
-                    : AppLocalizations.of(context)!.verifySession,
-                style: CrossSigningSheetTheme.primaryTextStyle,
-              ),
-              const Spacer(),
-            ],
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(50),
+          const Spacer(flex: 1),
+          Flexible(
+            flex: 3,
             child: SvgPicture.asset(
               'assets/images/lock.svg',
               width: MediaQuery.of(context).size.width * 0.15,
@@ -569,26 +645,34 @@ class CrossSigning {
               color: CrossSigningSheetTheme.secondaryTextColor,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              event.reason()!,
-              style: CrossSigningSheetTheme.secondaryTextStyle,
+          Flexible(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                event.reason()!,
+                style: CrossSigningSheetTheme.secondaryTextStyle,
+              ),
             ),
           ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.40,
-            child: elevatedButton(
-              AppLocalizations.of(context)!.sasGotIt,
-              AppCommonTheme.greenButtonColor,
-              () {
-                // finish verification
-                Get.back();
-                _eventMap.remove(flowId);
-              },
-              CrossSigningSheetTheme.buttonTextStyle,
+          const Spacer(flex: 1),
+          Flexible(
+            flex: 1,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.40,
+              child: elevatedButton(
+                AppLocalizations.of(context)!.sasGotIt,
+                AppCommonTheme.greenButtonColor,
+                () {
+                  // finish verification
+                  Get.back();
+                  _eventMap.remove(flowId);
+                },
+                CrossSigningSheetTheme.buttonTextStyle,
+              ),
             ),
           ),
+          const Spacer(flex: 1),
         ],
       );
     }
@@ -622,26 +706,35 @@ class CrossSigning {
     String flowId,
   ) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
-            ),
-            const SizedBox(width: 5),
-            Text(
-              _eventMap[flowId]?.verifyingThisDev == true
-                  ? AppLocalizations.of(context)!.verifyThisSession
-                  : AppLocalizations.of(context)!.verifySession,
-              style: CrossSigningSheetTheme.primaryTextStyle,
-            ),
-            const Spacer(),
-          ],
-        ),
-        const Center(
+        Flexible(
+          flex: isDesktop ? 2 : 1,
           child: Padding(
-            padding: EdgeInsets.all(50),
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  _eventMap[flowId]?.verifyingThisDev == true
+                      ? AppLocalizations.of(context)!.verifyThisSession
+                      : AppLocalizations.of(context)!.verifySession,
+                  style: CrossSigningSheetTheme.primaryTextStyle,
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+        ),
+        const Spacer(flex: 1),
+        const Flexible(
+          flex: 3,
+          child: Center(
             child: SizedBox(
               height: 100,
               width: 100,
@@ -651,13 +744,18 @@ class CrossSigning {
             ),
           ),
         ),
-        Text(
-          sprintf(
-            AppLocalizations.of(context)!.verificationRequestWaitingFor,
-            [event.sender()],
+        const Spacer(flex: 1),
+        Flexible(
+          flex: 2,
+          child: Text(
+            sprintf(
+              AppLocalizations.of(context)!.verificationRequestWaitingFor,
+              [event.sender()],
+            ),
+            style: CrossSigningSheetTheme.secondaryTextStyle,
           ),
-          style: CrossSigningSheetTheme.secondaryTextStyle,
         ),
+        const Spacer(flex: 1),
       ],
     );
   }
@@ -698,83 +796,101 @@ class CrossSigning {
     List<String> emojiDescriptions = emoji.map((e) => e.description()).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+        Expanded(
+          flex: isDesktop ? 1 : 2,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  _eventMap[flowId]?.verifyingThisDev == true
+                      ? AppLocalizations.of(context)!.verifyThisSession
+                      : AppLocalizations.of(context)!.verifySession,
+                  style: CrossSigningSheetTheme.primaryTextStyle,
+                ),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () async {
+                      // cancel key verification
+                      await event.cancelVerificationKey();
+                      // go to onCancel status
+                      _onKeyVerificationCancel(event, true);
+                    },
+                    color: Colors.white,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 5),
-            Text(
-              _eventMap[flowId]?.verifyingThisDev == true
-                  ? AppLocalizations.of(context)!.verifyThisSession
-                  : AppLocalizations.of(context)!.verifySession,
-              style: CrossSigningSheetTheme.primaryTextStyle,
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () async {
-                  // cancel key verification
-                  await event.cancelVerificationKey();
-                  // go to onCancel status
-                  _onKeyVerificationCancel(event, true);
-                },
-                color: Colors.white,
-              ),
-            ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: Text(
-            AppLocalizations.of(context)!.verificationEmojiNotice,
-            style: CrossSigningSheetTheme.secondaryTextStyle,
           ),
         ),
-        Center(
-          child: Container(
-            padding: const EdgeInsets.all(10),
-            height: MediaQuery.of(context).size.height * 0.28,
-            width: MediaQuery.of(context).size.width * 0.90,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: CrossSigningSheetTheme.gridBackgroundColor,
+        Expanded(
+          flex: isDesktop ? 1 : 2,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: Text(
+              AppLocalizations.of(context)!.verificationEmojiNotice,
+              style: CrossSigningSheetTheme.secondaryTextStyle,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(10),
-              child: GridView.count(
-                physics: const BouncingScrollPhysics(),
-                crossAxisCount: 4,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                children: List.generate(emoji.length, (index) {
-                  return GridTile(
-                    child: Text(
-                      String.fromCharCode(emojiCodes[index]),
-                      style: const TextStyle(fontSize: 32),
-                      textAlign: TextAlign.center,
-                    ),
-                    footer: Text(
-                      emojiDescriptions[index],
-                      style: CrossSigningSheetTheme.secondaryTextStyle.copyWith(
-                        color: CrossSigningSheetTheme.primaryTextColor,
-                        overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const Spacer(flex: 1),
+        Expanded(
+          flex: isDesktop ? 2 : 7,
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: CrossSigningSheetTheme.gridBackgroundColor,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: GridView.count(
+                  crossAxisCount: isDesktop ? 7 : 4,
+                  children: List.generate(emoji.length, (index) {
+                    return GridTile(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            String.fromCharCode(emojiCodes[index]),
+                            style: const TextStyle(fontSize: 32),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            emojiDescriptions[index],
+                            style: CrossSigningSheetTheme.secondaryTextStyle
+                                .copyWith(
+                              color: CrossSigningSheetTheme.primaryTextColor,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 5),
-        _buildBodyOnKey(context, event, setState),
+        const Spacer(flex: 1),
+        Expanded(
+          flex: isDesktop ? 1 : 2,
+          child: _buildBodyOnKey(context, event, setState),
+        ),
+        const Spacer(flex: 1),
       ],
     );
   }
@@ -817,7 +933,7 @@ class CrossSigning {
             CrossSigningSheetTheme.buttonTextStyle,
           ),
         ),
-        const SizedBox(width: 5),
+        const Spacer(flex: 1),
         Container(
           padding: const EdgeInsets.only(right: 20),
           width: MediaQuery.of(context).size.width * 0.48,
@@ -886,55 +1002,68 @@ class CrossSigning {
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+        Flexible(
+          flex: isDesktop ? 2 : 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  AppLocalizations.of(context)!.sasVerified,
+                  style: CrossSigningSheetTheme.primaryTextStyle,
+                ),
+              ],
             ),
-            const SizedBox(width: 5),
-            Text(
-              AppLocalizations.of(context)!.sasVerified,
-              style: CrossSigningSheetTheme.primaryTextStyle,
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
             ),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 10,
-          ),
-          child: Text(
-            _eventMap[flowId]!.verifyingThisDev
-                ? AppLocalizations.of(context)!
-                    .verificationConclusionOkSelfNotice
-                : AppLocalizations.of(context)!.verificationConclusionOkDone,
-            style: CrossSigningSheetTheme.secondaryTextStyle,
-            textAlign: TextAlign.center,
+            child: Text(
+              _eventMap[flowId]!.verifyingThisDev
+                  ? AppLocalizations.of(context)!
+                      .verificationConclusionOkSelfNotice
+                  : AppLocalizations.of(context)!.verificationConclusionOkDone,
+              style: CrossSigningSheetTheme.secondaryTextStyle,
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
-        const SizedBox(height: 25),
-        Center(
-          child: SvgPicture.asset(
-            'assets/images/lock.svg',
-            width: MediaQuery.of(context).size.width * 0.15,
-            height: MediaQuery.of(context).size.height * 0.15,
+        Flexible(
+          flex: 2,
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/images/lock.svg',
+              width: MediaQuery.of(context).size.width * 0.15,
+              height: MediaQuery.of(context).size.height * 0.15,
+            ),
           ),
         ),
-        const SizedBox(height: 25),
-        Center(
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.40,
-            child: elevatedButton(
-              AppLocalizations.of(context)!.sasGotIt,
-              CrossSigningSheetTheme.greenButtonColor,
-              () {
-                // finish verification
-                Get.back();
-                _eventMap.remove(flowId);
-              },
-              CrossSigningSheetTheme.buttonTextStyle,
+        Flexible(
+          flex: 1,
+          child: Center(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.40,
+              child: elevatedButton(
+                AppLocalizations.of(context)!.sasGotIt,
+                CrossSigningSheetTheme.greenButtonColor,
+                () {
+                  // finish verification
+                  Get.back();
+                  _eventMap.remove(flowId);
+                },
+                CrossSigningSheetTheme.buttonTextStyle,
+              ),
             ),
           ),
         ),

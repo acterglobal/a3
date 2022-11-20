@@ -628,16 +628,15 @@ impl VerificationController {
             |ev: OriginalSyncRoomMessageEvent,
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
-                if let MessageType::VerificationRequest(_) = &ev.content.msgtype {
-                    let dev_id = c
-                        .device_id()
-                        .expect("guest user cannot get device id")
-                        .to_string();
-                    info!("{} got {}", dev_id, ev.content.event_type());
+                if let MessageType::VerificationRequest(content) = &ev.content.msgtype {
+                    let dev_id = c.device_id().expect("guest user cannot get device id");
+                    let event_type = ev.content.event_type();
+                    info!("{} got {}", dev_id, event_type);
                     let event_id = ev.event_id;
+                    let methods = content.methods.clone();
                     let msg = VerificationEvent::new(
                         &c,
-                        ev.content.event_type().to_string(),
+                        event_type.to_string(),
                         Some(event_id.clone()),
                         None,
                         ev.sender.clone(),
@@ -659,11 +658,12 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -684,11 +684,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
+                let method = ev.content.method;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -709,11 +711,12 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -734,11 +737,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
+                let method = ev.content.method;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -759,11 +764,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
+                let key = ev.content.key;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -784,11 +791,14 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
+                let mac = ev.content.mac;
+                let keys = ev.content.keys;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -809,11 +819,12 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let event_id = ev.clone().content.relates_to.event_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let event_id = ev.content.relates_to.event_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     Some(event_id.clone()),
                     None,
                     ev.sender.clone(),
@@ -834,7 +845,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
             },
         );
         self.sync_room_encrypted_handle = Some(handle);
@@ -887,15 +899,14 @@ impl VerificationController {
             |ev: ToDeviceKeyVerificationRequestEvent,
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
-                let dev_id = c
-                    .device_id()
-                    .expect("guest user cannot get device id")
-                    .to_string();
-                info!("{} got {}", dev_id, ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let dev_id = c.device_id().expect("guest user cannot get device id");
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
+                let methods = ev.content.methods.clone();
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -916,11 +927,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
+                let methods = ev.content.methods;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -941,11 +954,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
+                let method = ev.content.method;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -966,11 +981,12 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -991,11 +1007,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
+                let method = ev.content.method;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -1016,11 +1034,13 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
+                let key = ev.content.key;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -1041,11 +1061,14 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
+                let mac = ev.content.mac;
+                let keys = ev.content.keys;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -1066,11 +1089,12 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
-                let txn_id = ev.clone().content.transaction_id;
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
+                let txn_id = ev.content.transaction_id;
                 let msg = VerificationEvent::new(
                     &c,
-                    ev.content.event_type().to_string(),
+                    event_type.to_string(),
                     None,
                     Some(txn_id.clone()),
                     ev.sender.clone(),
@@ -1091,7 +1115,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
             },
         );
         self.to_device_room_encrypted_handle = Some(handle);
@@ -1102,7 +1127,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
             },
         );
         self.to_device_room_key_handle = Some(handle);
@@ -1113,7 +1139,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
             },
         );
         self.to_device_room_key_request_handle = Some(handle);
@@ -1124,7 +1151,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
             },
         );
         self.to_device_forwarded_room_key_handle = Some(handle);
@@ -1135,7 +1163,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
             },
         );
         self.to_device_secret_send_handle = Some(handle);
@@ -1146,7 +1175,8 @@ impl VerificationController {
              c: MatrixClient,
              Ctx(mut me): Ctx<VerificationController>| async move {
                 let dev_id = c.device_id().expect("guest user cannot get device id");
-                info!("{} got {}", dev_id.to_string(), ev.content.event_type());
+                let event_type = ev.content.event_type();
+                info!("{} got {}", dev_id, event_type);
                 info!("ToDeviceSecretRequestEvent: {:?}", ev);
                 let secret_name = match &ev.content.action {
                     RequestAction::Request(s) => s,

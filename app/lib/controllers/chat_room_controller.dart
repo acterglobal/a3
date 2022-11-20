@@ -297,10 +297,11 @@ class ChatRoomController extends GetxController {
     types.PreviewData previewData,
   ) {
     final idx = messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage =
-        (messages[idx] as types.TextMessage).copyWith(previewData: previewData);
+    final updatedMessage = (messages[idx] as types.TextMessage).copyWith(
+      previewData: previewData,
+    );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
       messages[idx] = updatedMessage;
       update(['Chat']);
     });
@@ -500,15 +501,14 @@ class ChatRoomController extends GetxController {
       _currentRoom!.getRoomId(),
       m.createdAt!,
     );
-    var msg = (m.author.id == client.userId().toString())
-        ? m.copyWith(
-            showStatus: true,
-            status: seenByList.length < activeMembers.length
-                ? types.Status.delivered
-                : types.Status.seen,
-          )
-        : m;
-    messages.insert(index, msg);
+    if (m.author.id == client.userId().toString()) {
+      types.Status status = seenByList.length < activeMembers.length
+          ? types.Status.delivered
+          : types.Status.seen;
+      messages.insert(index, m.copyWith(showStatus: true, status: status));
+    } else {
+      messages.insert(index, m);
+    }
   }
 
   void _updateMessage(int index, types.Message m) {
@@ -517,15 +517,14 @@ class ChatRoomController extends GetxController {
       _currentRoom!.getRoomId(),
       m.createdAt!,
     );
-    var msg = (m.author.id == client.userId().toString())
-        ? m.copyWith(
-            showStatus: true,
-            status: seenByList.length < activeMembers.length
-                ? types.Status.delivered
-                : types.Status.seen,
-          )
-        : m;
-    messages[index] = msg;
+    if (m.author.id == client.userId().toString()) {
+      types.Status status = seenByList.length < activeMembers.length
+          ? types.Status.delivered
+          : types.Status.seen;
+      messages[index] = m.copyWith(showStatus: true, status: status);
+    } else {
+      messages[index] = m;
+    }
   }
 
   types.Message? _prepareMessage(RoomMessage message) {
