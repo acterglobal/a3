@@ -134,7 +134,7 @@ impl RoomMessage {
         room: Room,
         body: String,
         msgtype: String,
-    ) -> Self {
+    ) -> Option<Self> {
         let event_id = match event.event_id() {
             Some(id) => id.to_string(),
             None => format!("{:?}", event.key()),
@@ -142,46 +142,52 @@ impl RoomMessage {
         let mut formatted_body: Option<String> = None;
         let mut image_description: Option<ImageDescription> = None;
         let mut file_description: Option<FileDescription> = None;
-        if let TimelineItemContent::Message(msg) = event.content() {
-            if let MessageType::Text(content) = msg.msgtype() {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        formatted_body = Some(formatted.body.clone());
+        match event.content() {
+            TimelineItemContent::Message(msg) => {
+                if let MessageType::Text(content) = msg.msgtype() {
+                    if let Some(formatted) = &content.formatted {
+                        if formatted.format == MessageFormat::Html {
+                            formatted_body = Some(formatted.body.clone());
+                        }
                     }
                 }
-            }
-            if let MessageType::Image(content) = msg.msgtype() {
-                if let Some(info) = content.info.as_ref() {
-                    image_description = Some(ImageDescription {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                    });
+                if let MessageType::Image(content) = msg.msgtype() {
+                    if let Some(info) = content.info.as_ref() {
+                        image_description = Some(ImageDescription {
+                            name: content.body.clone(),
+                            mimetype: info.mimetype.clone(),
+                            size: info.size.map(u64::from),
+                            width: info.width.map(u64::from),
+                            height: info.height.map(u64::from),
+                        });
+                    }
                 }
-            }
-            if let MessageType::File(content) = msg.msgtype() {
-                if let Some(info) = content.info.as_ref() {
-                    file_description = Some(FileDescription {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                    });
+                if let MessageType::File(content) = msg.msgtype() {
+                    if let Some(info) = content.info.as_ref() {
+                        file_description = Some(FileDescription {
+                            name: content.body.clone(),
+                            mimetype: info.mimetype.clone(),
+                            size: info.size.map(u64::from),
+                        });
+                    }
                 }
+                return Some(RoomMessage::new(
+                    event_id,
+                    room.room_id().to_string(),
+                    body,
+                    formatted_body,
+                    event.sender().to_string(),
+                    event.origin_server_ts().map(|x| x.get().into()),
+                    msgtype,
+                    image_description,
+                    file_description,
+                ));
+            }
+            TimelineItemContent::RedactedMessage => {
+                info!("Edit event applies to a redacted message, discarding");
             }
         }
-        RoomMessage::new(
-            event_id,
-            room.room_id().to_string(),
-            body,
-            formatted_body,
-            event.sender().to_string(),
-            event.origin_server_ts().map(|x| x.get().into()),
-            msgtype,
-            image_description,
-            file_description,
-        )
+        None
     }
 
     pub fn event_id(&self) -> String {
@@ -303,12 +309,12 @@ pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> O
                 _ => "Unknown timeline item".to_string(),
             };
             info!("timeline fallback: {:?}", fallback);
-            return Some(RoomMessage::from_timeline_item(
+            return RoomMessage::from_timeline_item(
                 event,
                 room,
                 fallback,
                 msg.msgtype().msgtype().to_string(),
-            ));
+            );
         }
     }
     None
