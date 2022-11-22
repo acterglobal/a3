@@ -5,7 +5,7 @@ use log::info;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{Room as MatrixRoom, RoomMember},
+    room::{timeline::TimelineItem, Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
@@ -15,7 +15,7 @@ use matrix_sdk::{
     },
     Client as MatrixClient, RoomType,
 };
-use std::{fs::File, io::Write, path::PathBuf};
+use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
 use super::{
     account::Account,
