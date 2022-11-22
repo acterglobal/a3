@@ -56,7 +56,7 @@ class CrossSigning {
       if (!_shouldShowNewDevicePopup()) {
         return;
       }
-      /*Get.generalDialog(
+      Get.generalDialog(
         pageBuilder: (context, anim1, anim2) {
           return Container(
             width: MediaQuery.of(context).size.width,
@@ -76,13 +76,6 @@ class CrossSigning {
               ),
             ),
           );
-        },
-      );*/
-      Get.defaultDialog(
-        title: 'New DeviceDetected',
-        onConfirm: () async {
-          await event.requestVerificationToUser();
-          Get.back();
         },
       );
     });
