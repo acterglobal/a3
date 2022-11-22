@@ -68,7 +68,10 @@ impl Conversation {
         }
     }
 
-    fn set_latest_message(&mut self, msg: RoomMessage) {
+    fn set_latest_message(&mut self, mut msg: RoomMessage) {
+        if msg.is_reply() {
+            msg.simplify_body();
+        }
         self.latest_message = Some(msg);
     }
 
