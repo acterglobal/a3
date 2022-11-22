@@ -9,6 +9,7 @@ import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
@@ -59,12 +60,15 @@ class _ChatScreenState extends State<ChatScreen>
   bool isEmojiContainerVisible = false;
   static var messageIndex = 0;
   late final tabBarController = TabController(length: 3, vsync: this);
+  final networkController = Get.put(NetworkController());
 
   @override
   void initState() {
     super.initState();
 
-    roomController.setCurrentRoom(widget.room);
+    if (networkController.connectionType.value != '0') {
+      roomController.setCurrentRoom(widget.room);
+    }
   }
 
   @override
@@ -262,7 +266,25 @@ class _ChatScreenState extends State<ChatScreen>
           body: Obx(
             () => SafeArea(
               bottom: false,
-              child: buildBody(context),
+              child: networkController.connectionType.value == '0'
+                  ? Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/no_internet.png',
+                            scale: 5,
+                          ),
+                          const Text(
+                            'No internet\nPlease turn on internet to process',
+                            style: SideMenuAndProfileTheme.profileMenuStyle,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    )
+                  : buildBody(context),
             ),
           ),
         );

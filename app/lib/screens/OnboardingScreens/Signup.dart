@@ -1,4 +1,5 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/signup_controller.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
@@ -19,12 +20,13 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreentate extends State<SignupScreen> {
   final formKey = GlobalKey<FormState>();
   final SignUpController signUpController = Get.put(SignUpController());
+  final networkController = Get.put(NetworkController());
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     Get.delete<SignUpController>();
-
+    Get.delete<NetworkController>();
     super.dispose();
   }
 
@@ -188,8 +190,16 @@ class _SignupScreentate extends State<SignupScreen> {
     return CustomOnbaordingButton(
       onPressed: () async {
         if (formKey.currentState!.validate()) {
-          if (await validateSignUp()) {
-            Navigator.pushReplacementNamed(context, '/');
+          if (networkController.connectionType.value == '0') {
+            Get.snackbar(
+              'No internet',
+              'Please turn on internet to continue',
+              colorText: Colors.white,
+            );
+          } else {
+            if (await validateSignUp()) {
+              Navigator.pushReplacementNamed(context, '/');
+            }
           }
         }
       },
