@@ -94,10 +94,10 @@ impl RoomMessage {
                 });
             }
         }
-        let is_reply = match &event.content.relates_to {
-            Some(Relation::Reply { in_reply_to }) => true,
-            _ => false,
-        };
+        let is_reply = matches!(
+            &event.content.relates_to,
+            Some(Relation::Reply { in_reply_to }),
+        );
         RoomMessage::new(
             event.event_id.to_string(),
             room.room_id().to_string(),
@@ -140,10 +140,7 @@ impl RoomMessage {
         )
     }
 
-    pub(crate) fn from_timeline_item(
-        event: &EventTimelineItem,
-        room: Room,
-    ) -> Option<Self> {
+    pub(crate) fn from_timeline_item(event: &EventTimelineItem, room: Room) -> Option<Self> {
         let event_id = match event.event_id() {
             Some(id) => id.to_string(),
             None => format!("{:?}", event.key()),
