@@ -177,6 +177,10 @@ class _ChatScreenState extends State<ChatScreen>
   }) {
     if (imageMessage.uri.isEmpty) {
       // binary data
+      // CachedMemoryImage cannot be used, because uniqueKey not working
+      // If uniqueKey not working, it means cache is not working
+      // So use Image.memory
+      // ToDo: must implement image caching someday
       if (imageMessage.metadata?.containsKey('binary') ?? false) {
         debugPrint('$messageWidth');
         return Image.memory(
@@ -205,17 +209,16 @@ class _ChatScreenState extends State<ChatScreen>
           cacheWidth: 512,
           fit: BoxFit.cover,
         );
-      } else {
-        return Image.memory(
-          kTransparentImage,
-          errorBuilder: (context, url, error) => Text(
-            'Could not load image due to $error',
-          ),
-          width: messageWidth.toDouble(),
-          cacheWidth: messageWidth,
-          cacheHeight: 150,
-        );
       }
+      return Image.memory(
+        kTransparentImage,
+        errorBuilder: (context, url, error) => Text(
+          'Could not load image due to $error',
+        ),
+        width: messageWidth.toDouble(),
+        cacheWidth: messageWidth,
+        cacheHeight: 150,
+      );
     }
     if (isURL(imageMessage.uri)) {
       // remote url
@@ -229,15 +232,13 @@ class _ChatScreenState extends State<ChatScreen>
     }
     // local path
     // the image that just sent is displayed from local not remote
-    else {
-      return Image.file(
-        File(imageMessage.uri),
-        width: messageWidth.toDouble(),
-        errorBuilder: (context, error, stackTrace) => const Text(
-          'Could not load image',
-        ),
-      );
-    }
+    return Image.file(
+      File(imageMessage.uri),
+      width: messageWidth.toDouble(),
+      errorBuilder: (context, error, stackTrace) => const Text(
+        'Could not load image',
+      ),
+    );
   }
 
   @override
