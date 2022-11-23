@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:bubble/bubble.dart';
-import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
@@ -144,6 +143,8 @@ class _ChatScreenState extends State<ChatScreen>
           displayName: roomController.getUserName(userId),
           radius: 15,
           isGroup: false,
+          cacheHeight: 120,
+          cacheWidth: 120,
           stringName: simplifyUserId(userId)!,
         ),
       ),
@@ -177,20 +178,44 @@ class _ChatScreenState extends State<ChatScreen>
     if (imageMessage.uri.isEmpty) {
       // binary data
       if (imageMessage.metadata?.containsKey('binary') ?? false) {
-        return CachedMemoryImage(
-          uniqueKey: imageMessage.id,
-          bytes: imageMessage.metadata?['binary'],
-          width: messageWidth.toDouble(),
-          placeholder: const CircularProgressIndicator(
-            color: AppCommonTheme.primaryColor,
+        debugPrint('$messageWidth');
+        return Image.memory(
+          imageMessage.metadata?['binary'],
+          errorBuilder: (context, url, error) => const Text(
+            'Could not load image',
           ),
+          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) return child;
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: frame != null
+                  ? child
+                  : const SizedBox(
+                      height: 60,
+                      width: 60,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 6,
+                        color: AppCommonTheme.primaryColor,
+                      ),
+                    ),
+            );
+          }),
+          width: messageWidth.toDouble(),
+          cacheHeight: 288,
+          cacheWidth: 512,
+          fit: BoxFit.cover,
+        );
+      } else {
+        return Image.memory(
+          kTransparentImage,
+          errorBuilder: (context, url, error) => Text(
+            'Could not load image due to $error',
+          ),
+          width: messageWidth.toDouble(),
+          cacheWidth: messageWidth,
+          cacheHeight: 150,
         );
       }
-      return CachedMemoryImage(
-        uniqueKey: imageMessage.id,
-        bytes: kTransparentImage,
-        width: messageWidth.toDouble(),
-      );
     }
     if (isURL(imageMessage.uri)) {
       // remote url
@@ -204,13 +229,15 @@ class _ChatScreenState extends State<ChatScreen>
     }
     // local path
     // the image that just sent is displayed from local not remote
-    return Image.file(
-      File(imageMessage.uri),
-      width: messageWidth.toDouble(),
-      errorBuilder: (context, error, stackTrace) => const Text(
-        'Could not load image',
-      ),
-    );
+    else {
+      return Image.file(
+        File(imageMessage.uri),
+        width: messageWidth.toDouble(),
+        errorBuilder: (context, error, stackTrace) => const Text(
+          'Could not load image',
+        ),
+      );
+    }
   }
 
   @override
@@ -299,6 +326,8 @@ class _ChatScreenState extends State<ChatScreen>
               avatar: widget.roomAvatar,
               displayName: widget.roomName,
               radius: 20,
+              cacheHeight: 120,
+              cacheWidth: 120,
               isGroup: true,
               stringName: simplifyRoomId(widget.room.getRoomId())!,
             ),

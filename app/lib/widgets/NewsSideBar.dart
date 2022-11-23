@@ -110,6 +110,8 @@ class _NewsSideBarState extends State<NewsSideBar> {
             ),
           ),
         ),
+        maxHeightDiskCache: 120,
+        maxWidthDiskCache: 120,
         placeholder: (context, url) => const CircularProgressIndicator(),
         errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
@@ -180,26 +182,27 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           ),
                         ),
                       ),
-                      GetBuilder<NewsCommentController>(builder:
-                          (NewsCommentController newsCommentController) {
-                        return Expanded(
-                          child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            controller: scrollController,
-                            itemCount: 10,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: CommentView(
-                                  commentModel:
-                                      newsCommentController.listComments[index],
-                                  postition: index,
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },),
+                      GetBuilder<NewsCommentController>(
+                        builder: (NewsCommentController newsCommentController) {
+                          return Expanded(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              controller: scrollController,
+                              itemCount: 10,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: CommentView(
+                                    commentModel: newsCommentController
+                                        .listComments[index],
+                                    postition: index,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
                       Padding(
                         padding: EdgeInsets.only(
                           left: 8,

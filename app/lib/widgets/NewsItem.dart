@@ -36,7 +36,7 @@ class NewsItem extends StatelessWidget {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: _buildImage(),
+          child: _buildImage(isDesktop),
           clipBehavior: Clip.none,
         ),
         LayoutBuilder(
@@ -79,8 +79,9 @@ class NewsItem extends StatelessWidget {
     );
   }
 
-  Widget? _buildImage() {
+  Widget? _buildImage(bool isDesktop) {
     var image = news.image();
+    Size size = WidgetsBinding.instance.window.physicalSize;
     if (image == null) {
       return null;
     }
@@ -90,6 +91,8 @@ class NewsItem extends StatelessWidget {
       uniqueKey: 'news-item-$id',
       bytes: Uint8List.fromList(image),
       fit: BoxFit.cover,
+      cacheWidth: size.width.toInt(),
+      cacheHeight: size.height.toInt(),
     );
   }
 
