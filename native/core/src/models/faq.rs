@@ -1,3 +1,5 @@
+#[cfg(feature = "with-mocks")]
+use crate::models::color::mocks::ColorFaker;
 use crate::models::Tag;
 
 #[cfg(feature = "with-mocks")]
@@ -49,28 +51,55 @@ impl Faq {
 
 #[cfg(feature = "with-mocks")]
 pub fn gen_mocks() -> Vec<Faq> {
+    let phone_numbers = Tag {
+        title: "phone-numbers".to_string(),
+        color: None,
+    };
+    let important = Tag {
+        title: "important".to_string(),
+        color: ColorFaker.fake(),
+    };
     vec![
         Faq {
-            title: "How to become a coach/trainer for OpenTechSchool?".to_string(),
-            body: "Coaches help to spread the fun of coding. They are not only supporting learners with the expertise and knowledge, they also try to create a friendly and welcoming environment at the events. Learn more about <a href=\"https://www.opentechschool.org/guides#coaching-guidelines\">our coaching guidelines here</a>".to_string(),
+            title: "All Important Info about Uncle Jack's 65th Birthday".to_string(),
+            body: "We'll meet at João's Place, 7871 Faria Via, Braga - you need to follow the long road to the end, through the gate and the fields. Number for the gate lock is 124436 . For important last minute info, call +351 916185416".to_string(),
             pinned: true,
-            tags: vec![Tag { title: "coaching".to_string(), color: None }],
-            likes_count: 123,
-            comments_count: 14,
+            tags: vec![important.clone(), Tag { title: "birthday".to_string(), color: ColorFaker.fake() }, Tag { title: "party".to_string(), color: ColorFaker.fake() }],
+            likes_count: 64,
+            comments_count: 8,
+        },
+        Faq {
+            title: "Esporting Schedule".to_string(),
+            body: "This week, we will meet Wednesday, Friday and Sunday at 3pm and Monday and Tuesday at 6pm for soccess practice at the stadium. There will also be a jogging round every morning 6am and 9am for those interested, starting punctual from the club house. Newcomers welcome".to_string(),
+            pinned: true,
+            tags: vec![important, Tag { title: "schedule".to_string(), color:  ColorFaker.fake() }],
+            likes_count: 12,
+            comments_count: 3,
+        },
+        Faq {
+            title: "Fridge Phone Numbers".to_string(),
+            body: "Most important Phone numbers:<br> - Kims Doctor: +351 916758991 <br> - Garage: +351 357768873<br> - Dentist: +351 206506277<br> - Vet: +351 938979689".to_string(),
+            pinned: true,
+            tags: vec![phone_numbers.clone()],
+            likes_count: 4,
+            comments_count: 2,
+        },
+        Faq {
+            title: "Car Insurance and accident info".to_string(),
+            body: "Insurance: Allianz Santo Antonio, Parque Moserrate, Sintra<br>Phone number: 21 923 7300".to_string(),
+            pinned: false,
+            tags: vec![phone_numbers],
+            likes_count: 312,
+            comments_count: 8,
         },
         Faq {
             title: "How to become a coach/trainer for OpenTechSchool?".to_string(),
             body: "Coaches help to spread the fun of coding. They are not only supporting learners with the expertise and knowledge, they also try to create a friendly and welcoming environment at the events. Learn more about <a href=\"https://www.opentechschool.org/guides#coaching-guidelines\">our coaching guidelines here</a>".to_string(),
-            pinned: true,
+            pinned: false,
             tags: vec![Tag { title: "coaching".to_string(), color: None }],
             likes_count: 312,
             comments_count: 8,
         },
-        Faker.fake(),
-        Faker.fake(),
-        Faker.fake(),
-        Faker.fake(),
-        Faker.fake(),
         Faker.fake(),
         Faker.fake(),
     ]

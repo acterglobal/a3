@@ -15,7 +15,7 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Conversation, FfiBufferUint8;
+    show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -32,12 +32,12 @@ class ChatScreen extends StatefulWidget {
   final Future<FfiBufferUint8>? roomAvatar;
   final String? roomName;
   final Conversation room;
-  final String userId;
+  final Client client;
 
   const ChatScreen({
     Key? key,
     required this.room,
-    required this.userId,
+    required this.client,
     this.roomAvatar,
     this.roomName,
   }) : super(key: key);
@@ -266,6 +266,7 @@ class _ChatScreenState extends State<ChatScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => ChatProfileScreen(
+              client: widget.client,
               room: widget.room,
               roomName: widget.roomName,
               roomAvatar: widget.roomAvatar,
@@ -359,7 +360,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (_) {},
-              user: types.User(id: widget.userId),
+              user: types.User(id: widget.client.userId().toString()),
               // if invited, disable image gallery
               disableImageGallery: invitedIndex != -1,
               //custom avatar builder
@@ -368,7 +369,7 @@ class _ChatScreenState extends State<ChatScreen> {
               imageMessageBuilder: imageMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
-              onAvatarTap: (userId) {
+              onAvatarTap: (types.User user) {
                 showNotYetImplementedMsg(
                   context,
                   'Chat Profile view is not implemented yet',
@@ -437,10 +438,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget bubbleBuilder(
     Widget child, {
     required types.Message message,
-    nextMessageInGroup,
+    required bool nextMessageInGroup,
   }) {
     return ChatBubbleBuilder(
-      userId: widget.userId,
+      userId: widget.client.userId().toString(),
       child: child,
       message: message,
       nextMessageInGroup: nextMessageInGroup,

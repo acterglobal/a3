@@ -11,10 +11,11 @@ use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
+use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    ruma::{device_id, OwnedUserId, RoomId},
-    Client as MatrixClient, LoopCtrl,
+    ruma::{api::client::error::ErrorKind, device_id, OwnedUserId, RoomId},
+    Client as MatrixClient, Error, HttpError, LoopCtrl, RefreshTokenError, RumaApiError,
 };
 use parking_lot::{Mutex, RwLock};
 use std::sync::{
@@ -158,7 +159,7 @@ impl Client {
             // fetch the events that received when offline
             client
                 .clone()
-                .sync_with_callback(SyncSettings::new(), |response| {
+                .sync_with_result_callback(SyncSettings::new(), |result| {
                     let client = client.clone();
                     let state = state.clone();
 
@@ -167,39 +168,46 @@ impl Client {
                     let mut conversation_controller = conversation_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
-                    let initial_arc = initial_arc.clone();
+                    let initial = initial_arc.clone();
 
                     async move {
-                        let state = state.clone();
-                        let initial = initial_arc.clone();
+                        Ok(if let Ok(response) = result {
+                            device_controller.process_device_lists(&client, &response);
 
-                        device_controller.process_device_lists(&client, &response);
+                            if initial.load(Ordering::SeqCst) {
+                                // divide_rooms_from_common must be called after first sync
+                                let (_, convos) = divide_rooms_from_common(client.clone()).await;
+                                conversation_controller.load_rooms(&convos).await;
+                                // load invitations after first sync
+                                invitation_controller.load_invitations(&client).await;
+                            }
 
-                        if initial.load(Ordering::SeqCst) {
-                            // divide_rooms_from_common must be called after first sync
-                            let (_, convos) = divide_rooms_from_common(client.clone()).await;
-                            conversation_controller.load_rooms(&convos).await;
-                            // load invitations after first sync
-                            invitation_controller.load_invitations(&client).await;
-                        }
+                            initial.store(false, Ordering::SeqCst);
+                            let _ = first_synced_arc.send(true);
 
-                        initial.store(false, Ordering::SeqCst);
-
-                        let _ = first_synced_arc.send(true);
-                        if !(*state).read().has_first_synced {
-                            (*state).write().has_first_synced = true;
-                        }
-                        if (*state).read().should_stop_syncing {
-                            (*state).write().is_syncing = false;
-                            return LoopCtrl::Break;
-                        } else if !(*state).read().is_syncing {
-                            (*state).write().is_syncing = true;
-                        }
-
-                        LoopCtrl::Continue
+                            if !state.read().has_first_synced {
+                                state.write().has_first_synced = true;
+                            }
+                            if state.read().should_stop_syncing {
+                                state.write().is_syncing = false;
+                                return Ok(LoopCtrl::Break);
+                            } else if !state.read().is_syncing {
+                                state.write().is_syncing = true;
+                            }
+                            LoopCtrl::Continue
+                        } else {
+                            let mut control = LoopCtrl::Continue;
+                            if let Some(err) = result.err() {
+                                if let Some(RumaApiError::ClientApi(e)) = err.as_ruma_api_error() {
+                                    control = LoopCtrl::Break;
+                                }
+                            }
+                            control
+                        })
                     }
                 })
-                .await;
+                .await
+                .unwrap();
         });
         sync_state
     }
@@ -288,7 +296,7 @@ impl Client {
         let user_id = client.user_id().unwrap().to_owned();
         RUNTIME
             .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id);
+                let mut user_profile = UserProfile::new(client, user_id, None, None);
                 user_profile.fetch().await;
                 Ok(user_profile)
             })
@@ -325,8 +333,13 @@ impl Client {
 
         RUNTIME
             .spawn(async move {
-                let response = c.logout().await?;
-                Ok(true)
+                match c.logout().await {
+                    Ok(resp) => Ok(true),
+                    Err(e) => {
+                        info!("logout error: {:?}", e);
+                        Ok(false)
+                    }
+                }
             })
             .await?
     }
