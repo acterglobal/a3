@@ -65,6 +65,8 @@ class _ChatListItemState extends State<ChatListItem> {
             avatar: avatar,
             displayName: displayName,
             radius: 25,
+            cacheHeight: 120,
+            cacheWidth: 120,
             isGroup: true,
             stringName: simplifyRoomId(roomId)!,
           ),

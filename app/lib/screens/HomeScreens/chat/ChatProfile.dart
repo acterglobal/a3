@@ -98,6 +98,8 @@ class ChatProfileScreen extends StatelessWidget {
                         avatar: roomAvatar,
                         displayName: roomName,
                         radius: 20,
+                        cacheHeight: 120,
+                        cacheWidth: 120,
                         isGroup: true,
                         stringName: simplifyRoomId(room.getRoomId())!,
                       ),
