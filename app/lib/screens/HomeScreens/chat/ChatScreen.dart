@@ -6,6 +6,7 @@ import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatBubbleBuilder.dart';
@@ -48,12 +49,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
+  final networkController = Get.put(NetworkController());
 
   @override
   void initState() {
     super.initState();
 
-    roomController.setCurrentRoom(widget.room);
+    if (networkController.connectionType.value != '0') {
+      roomController.setCurrentRoom(widget.room);
+    }
   }
 
   @override
@@ -297,7 +301,9 @@ class _ChatScreenState extends State<ChatScreen> {
           body: Obx(
             () => SafeArea(
               bottom: false,
-              child: buildBody(context),
+              child: networkController.connectionType.value == '0'
+                  ? noInternetWidget()
+                  : buildBody(context),
             ),
           ),
         );

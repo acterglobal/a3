@@ -72,6 +72,7 @@ dependencies:
   flutter_mentions: ^2.0.1
   flutter_html: ^3.0.0-alpha.5
   flutter_icons_null_safety: ^1.1.0
+  connectivity_plus: ^3.0.2
 
 dev_dependencies:
   flutter_test:
