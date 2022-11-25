@@ -16,6 +16,7 @@ import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
+import 'package:effektio/widgets/NoInternet.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -267,23 +268,7 @@ class _ChatScreenState extends State<ChatScreen>
             () => SafeArea(
               bottom: false,
               child: networkController.connectionType.value == '0'
-                  ? Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/no_internet.png',
-                            scale: 5,
-                          ),
-                          const Text(
-                            'No internet\nPlease turn on internet to process',
-                            style: SideMenuAndProfileTheme.profileMenuStyle,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    )
+                  ? noInternetWidget()
                   : buildBody(context),
             ),
           ),

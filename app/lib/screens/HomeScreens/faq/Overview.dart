@@ -2,6 +2,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/FaqController.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/widgets/FaqListItem.dart';
+import 'package:effektio/widgets/NoInternet.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -26,23 +27,7 @@ class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
         return Obx(
           () => Container(
               child: networkController.connectionType.value == '0'
-                  ? Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/no_internet.png',
-                            scale: 5,
-                          ),
-                          const Text(
-                            'No internet\nPlease turn on internet to process',
-                            style: SideMenuAndProfileTheme.profileMenuStyle,
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    )
+                  ? noInternetWidget()
                   : (!snapshot.hasData)
                       ? Container(
                           height: MediaQuery.of(context).size.height,
