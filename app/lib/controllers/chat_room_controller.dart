@@ -85,7 +85,7 @@ class ChatRoomController extends GetxController {
                 update(['Chat']);
               }
               if (event.msgtype() == 'm.image') {
-                fetchMessageContent(m.id);
+                _fetchMessageContent(m.id);
               }
             }
           }
@@ -140,7 +140,7 @@ class ChatRoomController extends GetxController {
                   update(['Chat']);
                 }
                 if (msg.msgtype() == 'm.image') {
-                  fetchMessageContent(m.id);
+                  _fetchMessageContent(m.id);
                 }
               }
             }
@@ -158,7 +158,7 @@ class ChatRoomController extends GetxController {
                 update(['Chat']);
               }
               if (value.msgtype() == 'm.image') {
-                fetchMessageContent(m.id);
+                _fetchMessageContent(m.id);
               }
             }
             break;
@@ -175,7 +175,7 @@ class ChatRoomController extends GetxController {
                 update(['Chat']);
               }
               if (value.msgtype() == 'm.image') {
-                fetchMessageContent(m.id);
+                _fetchMessageContent(m.id);
               }
             }
             break;
@@ -193,7 +193,7 @@ class ChatRoomController extends GetxController {
               String msgType = value.msgtype();
               debugPrint('msgType - $msgType');
               if (value.msgtype() == 'm.image') {
-                fetchMessageContent(m.id);
+                _fetchMessageContent(m.id);
               }
             }
             break;
@@ -578,7 +578,7 @@ class ChatRoomController extends GetxController {
     return null;
   }
 
-  void fetchMessageContent(String eventId) {
+  void _fetchMessageContent(String eventId) {
     _currentRoom!.imageBinary(eventId).then((data) {
       int idx = messages.indexWhere((x) => x.id == eventId);
       if (idx != -1) {
