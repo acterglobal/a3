@@ -25,7 +25,7 @@ class NetworkController extends GetxController {
     try {
       connectivityResult = await (_connectivity.checkConnectivity());
     } on PlatformException catch (e) {
-      debugPrint(e);
+      debugPrint(e.toString());
     }
     return _updateState(connectivityResult!);
   }
