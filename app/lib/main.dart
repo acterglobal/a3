@@ -56,6 +56,7 @@ class Effektio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugInvertOversizedImages = true; // detect non-optimized images
     return Portal(
       child: Themed(
         child: GetMaterialApp(

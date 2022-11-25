@@ -56,28 +56,28 @@ class CrossSigning {
       if (!_shouldShowNewDevicePopup()) {
         return;
       }
-      Get.generalDialog(
-        pageBuilder: (context, anim1, anim2) {
-          return Container(
-            width: MediaQuery.of(context).size.width,
-            color: Colors.white,
-            child: Card(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  ListTile(
-                    title: const Text('New device detected'),
-                    onTap: () async {
-                      await event.requestVerificationToUser();
-                      Get.back();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      );
+      // Get.generalDialog(
+      //   pageBuilder: (context, anim1, anim2) {
+      //     return Container(
+      //       width: MediaQuery.of(context).size.width,
+      //       color: Colors.white,
+      //       child: Card(
+      //         child: ListView(
+      //           shrinkWrap: true,
+      //           children: [
+      //             ListTile(
+      //               title: const Text('New device detected'),
+      //               onTap: () async {
+      //                 await event.requestVerificationToUser();
+      //                 Get.back();
+      //               },
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     );
+      //   },
+      // );
     });
   }
 

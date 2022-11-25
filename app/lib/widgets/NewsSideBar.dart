@@ -110,6 +110,8 @@ class _NewsSideBarState extends State<NewsSideBar> {
             ),
           ),
         ),
+        maxHeightDiskCache: 120,
+        maxWidthDiskCache: 120,
         placeholder: (context, url) => const CircularProgressIndicator(),
         errorWidget: (context, url, error) => const Icon(Icons.error),
       ),

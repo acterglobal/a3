@@ -50,11 +50,13 @@ class EmojiRow extends StatelessWidget {
     final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
     final size = emojiConfiguration?.size;
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          flex: 5,
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: 5.0,
             children: List.generate(
               emojiList.length,
               (index) => GestureDetector(
@@ -67,14 +69,17 @@ class EmojiRow extends StatelessWidget {
             ),
           ),
         ),
-        IconButton(
-          constraints: const BoxConstraints(),
-          icon: Icon(
-            Icons.add,
-            color: Colors.grey.shade600,
-            size: size ?? 28,
+        Expanded(
+          flex: 1,
+          child: IconButton(
+            padding: const EdgeInsets.only(bottom: 5.0),
+            icon: Icon(
+              Icons.add,
+              color: Colors.grey.shade600,
+              size: size ?? 28,
+            ),
+            onPressed: () => _showBottomSheet(context),
           ),
-          onPressed: () => _showBottomSheet(context),
         ),
       ],
     );

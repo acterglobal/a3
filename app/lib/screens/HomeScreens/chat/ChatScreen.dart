@@ -1,10 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:bubble/bubble.dart';
-import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
@@ -12,18 +9,17 @@ import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
-import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/NoInternet.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
-import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_types/flutter_chat_types.dart';
+
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -51,16 +47,9 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen>
-    with SingleTickerProviderStateMixin {
+class _ChatScreenState extends State<ChatScreen> {
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
-  String authorId = '';
-  String? currentId;
-  late MessageType msgType;
-  bool isEmojiContainerVisible = false;
-  static var messageIndex = 0;
-  late final tabBarController = TabController(length: 3, vsync: this);
   final networkController = Get.put(NetworkController());
 
   @override
@@ -149,6 +138,8 @@ class _ChatScreenState extends State<ChatScreen>
           displayName: roomController.getUserName(userId),
           radius: 15,
           isGroup: false,
+          cacheHeight: 120,
+          cacheWidth: 120,
           stringName: simplifyUserId(userId)!,
         ),
       ),
@@ -181,41 +172,85 @@ class _ChatScreenState extends State<ChatScreen>
   }) {
     if (imageMessage.uri.isEmpty) {
       // binary data
+      // CachedMemoryImage cannot be used, because uniqueKey not working
+      // If uniqueKey not working, it means cache is not working
+      // So use Image.memory
+      // ToDo: must implement image caching someday
       if (imageMessage.metadata?.containsKey('binary') ?? false) {
-        return CachedMemoryImage(
-          uniqueKey: imageMessage.id,
-          bytes: imageMessage.metadata?['binary'],
-          width: messageWidth.toDouble(),
-          placeholder: const CircularProgressIndicator(
-            color: AppCommonTheme.primaryColor,
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            imageMessage.metadata?['binary'],
+            errorBuilder: (context, url, error) {
+              return Text(
+                'Could not load image due to $error',
+              );
+            },
+            frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded) return child;
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: frame != null
+                    ? child
+                    : const SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      ),
+              );
+            }),
+            height: messageWidth.toDouble() / 2,
+            cacheHeight: 288,
+            cacheWidth: 512,
+            width: messageWidth.toDouble(),
+            fit: BoxFit.cover,
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            kTransparentImage,
+            errorBuilder: (context, url, error) => Text(
+              'Could not load image due to $error',
+            ),
+            width: messageWidth.toDouble(),
+            cacheWidth: messageWidth,
+            cacheHeight: messageWidth ~/ 2,
           ),
         );
       }
-      return CachedMemoryImage(
-        uniqueKey: imageMessage.id,
-        bytes: kTransparentImage,
-        width: messageWidth.toDouble(),
-      );
     }
     if (isURL(imageMessage.uri)) {
       // remote url
-      return CachedNetworkImage(
-        imageUrl: imageMessage.uri,
-        width: messageWidth.toDouble(),
-        errorWidget: (context, url, error) => const Text(
-          'Could not load image',
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: CachedNetworkImage(
+          imageUrl: imageMessage.uri,
+          width: messageWidth.toDouble(),
+          errorWidget: (context, url, error) => const Text(
+            'Could not load image',
+          ),
         ),
       );
     }
     // local path
     // the image that just sent is displayed from local not remote
-    return Image.file(
-      File(imageMessage.uri),
-      width: messageWidth.toDouble(),
-      errorBuilder: (context, error, stackTrace) => const Text(
-        'Could not load image',
-      ),
-    );
+    else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.file(
+          File(imageMessage.uri),
+          width: messageWidth.toDouble(),
+          errorBuilder: (context, error, stackTrace) => const Text(
+            'Could not load image',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -306,6 +341,8 @@ class _ChatScreenState extends State<ChatScreen>
               avatar: widget.roomAvatar,
               displayName: widget.roomName,
               radius: 20,
+              cacheHeight: 120,
+              cacheWidth: 120,
               isGroup: true,
               stringName: simplifyRoomId(widget.room.getRoomId())!,
             ),
@@ -398,6 +435,7 @@ class _ChatScreenState extends State<ChatScreen>
               onEndReached:
                   invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
+              onBackgroundTap: () => controller.toggleEmojiContainer(),
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
@@ -457,288 +495,11 @@ class _ChatScreenState extends State<ChatScreen>
     required types.Message message,
     required bool nextMessageInGroup,
   }) {
-    for (var element in roomController.messages) {
-      authorId = widget.client.userId().toString();
-      msgType = element.type;
-    }
-
-    return GestureDetector(
-      child: Column(
-        children: [
-          const SizedBox(height: 6),
-          Stack(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() => isEmojiContainerVisible = false);
-                },
-                child: SizedBox(
-                  child: Column(
-                    crossAxisAlignment: authorId != message.author.id
-                        ? CrossAxisAlignment.start
-                        : CrossAxisAlignment.end,
-                    children: [
-                      Visibility(
-                        visible:
-                            currentId == message.id && isEmojiContainerVisible,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          margin: authorId != message.author.id
-                              ? const EdgeInsets.only(bottom: 8, left: 8)
-                              : const EdgeInsets.only(bottom: 8, right: 8),
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(30),
-                            ),
-                            color: AppCommonTheme.backgroundColor,
-                            border: Border.all(
-                              color: AppCommonTheme.dividerColor,
-                              width: 2,
-                            ),
-                          ),
-                          child: EmojiRow(
-                            onEmojiTap: (String value) {
-                              setState(() => isEmojiContainerVisible = false);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('$value tapped'),
-                                  backgroundColor: AuthTheme.authSuccess,
-                                  duration: const Duration(seconds: 1),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      buildBottomSheet(child, message, nextMessageInGroup),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
-      onTap: () {
-        if (isEmojiContainerVisible) {
-          setState(() => isEmojiContainerVisible = false);
-        }
-      },
-    );
-  }
-
-  Widget buildBottomSheet(
-    Widget child,
-    types.Message message,
-    bool nextMessageInGroup,
-  ) {
-    return GestureDetector(
-      child: Row(
-        textDirection: authorId != message.author.id
-            ? TextDirection.ltr
-            : TextDirection.rtl,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Flexible(
-            child: Stack(
-              children: [
-                Bubble(
-                  child: child,
-                  color: authorId != message.author.id ||
-                          msgType == types.MessageType.image
-                      ? AppCommonTheme.backgroundColorLight
-                      : AppCommonTheme.primaryColor,
-                  margin: nextMessageInGroup
-                      ? const BubbleEdges.symmetric(horizontal: 2)
-                      : null,
-                  radius: const Radius.circular(12),
-                  nip: nextMessageInGroup
-                      ? BubbleNip.no
-                      : authorId != message.author.id
-                          ? BubbleNip.leftBottom
-                          : BubbleNip.rightBottom,
-                ),
-                if (authorId != message.author.id)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 100,
-                      height: 16,
-                      alignment: Alignment.topRight,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 2,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              showBottomSheet();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppCommonTheme.dividerColor,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
-                              child: Row(
-                                children: const [
-                                  Text(
-                                    heart,
-                                    style: TextStyle(fontSize: 8),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '+12',
-                                    style: TextStyle(fontSize: 8),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const SizedBox(width: 4);
-                        },
-                      ),
-                    ),
-                  )
-                else
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child: Container(
-                      width: 100,
-                      height: 16,
-                      alignment: Alignment.topLeft,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: 2,
-                        itemBuilder: (BuildContext context, int index) {
-                          return GestureDetector(
-                            onTap: () {
-                              showBottomSheet();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppCommonTheme.dividerColor,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8),
-                                ),
-                              ),
-                              child: Row(
-                                children: const [
-                                  Text(
-                                    faceWithTears,
-                                    style: TextStyle(fontSize: 8),
-                                  ),
-                                  SizedBox(width: 2),
-                                  Text(
-                                    '+12',
-                                    style: TextStyle(fontSize: 8),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const SizedBox(width: 4);
-                        },
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-      onLongPress: () {
-        setState(() {
-          messageIndex = roomController.messages.indexWhere((element) {
-            return element.id == message.id;
-          });
-          currentId = roomController.messages[messageIndex].id;
-          if (currentId == message.id) {
-            isEmojiContainerVisible = !isEmojiContainerVisible;
-          }
-        });
-      },
-    );
-  }
-
-  void showBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setSheetState) {
-            return Scaffold(
-              backgroundColor: AppCommonTheme.backgroundColorLight,
-              body: Column(
-                children: [
-                  SizedBox(
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: TabBar(
-                        controller: tabBarController,
-                        indicator: const BoxDecoration(
-                          color: AppCommonTheme.backgroundColor,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
-                        tabs: const [
-                          Tab(
-                            text: ('All 15'),
-                          ),
-                          Tab(
-                            text: ('$heart +11'),
-                          ),
-                          Tab(
-                            text: ('$faceWithTears +3'),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: TabBarView(
-                        controller: tabBarController,
-                        children: [
-                          buildReactionListing(astonishedFace),
-                          buildReactionListing(heart),
-                          buildReactionListing(faceWithTears),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget buildReactionListing(String emoji) {
-    return Expanded(
-      child: ListView.separated(
-        itemCount: 10,
-        itemBuilder: (BuildContext context, int index) {
-          return EmojiReactionListItem(emoji: emoji);
-        },
-        separatorBuilder: (BuildContext context, int index) {
-          return const SizedBox(height: 12);
-        },
-      ),
+    return ChatBubbleBuilder(
+      userId: widget.client.userId().toString(),
+      child: child,
+      message: message,
+      nextMessageInGroup: nextMessageInGroup,
     );
   }
 }

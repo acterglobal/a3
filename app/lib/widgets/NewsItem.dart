@@ -2,7 +2,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
 
-import 'package:cached_memory_image/cached_memory_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/NewsSideBar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
@@ -36,7 +35,7 @@ class NewsItem extends StatelessWidget {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: _buildImage(),
+          child: _buildImage(isDesktop),
           clipBehavior: Clip.none,
         ),
         LayoutBuilder(
@@ -79,17 +78,19 @@ class NewsItem extends StatelessWidget {
     );
   }
 
-  Widget? _buildImage() {
+  Widget? _buildImage(bool isDesktop) {
     var image = news.image();
+    Size size = WidgetsBinding.instance.window.physicalSize;
     if (image == null) {
       return null;
     }
-    var id = news.id();
+
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
-    return CachedMemoryImage(
-      uniqueKey: 'news-item-$id',
-      bytes: Uint8List.fromList(image),
+    return Image.memory(
+      Uint8List.fromList(image),
       fit: BoxFit.cover,
+      cacheWidth: size.width.toInt(),
+      cacheHeight: size.height.toInt(),
     );
   }
 
