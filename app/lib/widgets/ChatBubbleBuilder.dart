@@ -151,7 +151,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             )
           : null,
       radius: const Radius.circular(18),
-      nip: widget.nextMessageInGroup
+      padding: messagetype == types.MessageType.image
+          ? const BubbleEdges.all(0)
+          : null,
+      nip: (widget.nextMessageInGroup || messagetype == types.MessageType.image)
           ? BubbleNip.no
           : widget.userId != widget.message.author.id
               ? BubbleNip.leftBottom

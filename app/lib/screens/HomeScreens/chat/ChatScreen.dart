@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
@@ -48,6 +49,7 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
+
   @override
   void initState() {
     super.initState();
@@ -171,63 +173,80 @@ class _ChatScreenState extends State<ChatScreen> {
       // So use Image.memory
       // ToDo: must implement image caching someday
       if (imageMessage.metadata?.containsKey('binary') ?? false) {
-        debugPrint('$messageWidth');
-        return Image.memory(
-          imageMessage.metadata?['binary'],
-          errorBuilder: (context, url, error) => const Text(
-            'Could not load image',
-          ),
-          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
-            if (wasSynchronouslyLoaded) return child;
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: frame != null
-                  ? child
-                  : const SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        color: AppCommonTheme.primaryColor,
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            imageMessage.metadata?['binary'],
+            errorBuilder: (context, url, error) {
+              return Text(
+                'Could not load image due to $error',
+              );
+            },
+            frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+              if (wasSynchronouslyLoaded) return child;
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: frame != null
+                    ? child
+                    : const SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          color: AppCommonTheme.primaryColor,
+                        ),
                       ),
-                    ),
-            );
-          }),
-          width: messageWidth.toDouble(),
-          cacheHeight: 288,
-          cacheWidth: 512,
-          fit: BoxFit.cover,
+              );
+            }),
+            height: messageWidth.toDouble() / 2,
+            cacheHeight: 288,
+            cacheWidth: 512,
+            width: messageWidth.toDouble(),
+            fit: BoxFit.cover,
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            kTransparentImage,
+            errorBuilder: (context, url, error) => Text(
+              'Could not load image due to $error',
+            ),
+            width: messageWidth.toDouble(),
+            cacheWidth: messageWidth,
+            cacheHeight: messageWidth ~/ 2,
+          ),
         );
       }
-      return Image.memory(
-        kTransparentImage,
-        errorBuilder: (context, url, error) => Text(
-          'Could not load image due to $error',
-        ),
-        width: messageWidth.toDouble(),
-        cacheWidth: messageWidth,
-        cacheHeight: 150,
-      );
     }
     if (isURL(imageMessage.uri)) {
       // remote url
-      return CachedNetworkImage(
-        imageUrl: imageMessage.uri,
-        width: messageWidth.toDouble(),
-        errorWidget: (context, url, error) => const Text(
-          'Could not load image',
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: CachedNetworkImage(
+          imageUrl: imageMessage.uri,
+          width: messageWidth.toDouble(),
+          errorWidget: (context, url, error) => const Text(
+            'Could not load image',
+          ),
         ),
       );
     }
     // local path
     // the image that just sent is displayed from local not remote
-    return Image.file(
-      File(imageMessage.uri),
-      width: messageWidth.toDouble(),
-      errorBuilder: (context, error, stackTrace) => const Text(
-        'Could not load image',
-      ),
-    );
+    else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.file(
+          File(imageMessage.uri),
+          width: messageWidth.toDouble(),
+          errorBuilder: (context, error, stackTrace) => const Text(
+            'Could not load image',
+          ),
+        ),
+      );
+    }
   }
 
   @override
