@@ -6,7 +6,6 @@ import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
-import 'package:effektio/widgets/NoInternet.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Invitation;
 import 'package:flutter/material.dart';

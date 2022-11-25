@@ -67,6 +67,26 @@ Widget elevatedButton(
   );
 }
 
+Widget noInternetWidget() {
+  return Center(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(
+          'assets/images/no_internet.png',
+          scale: 5,
+        ),
+        const Text(
+          'No internet\nPlease turn on internet to process',
+          style: SideMenuAndProfileTheme.profileMenuStyle,
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
+}
+
 int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
   r = (r < 0) ? -r : r;
   g = (g < 0) ? -g : g;

@@ -3,7 +3,6 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/NoInternet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -81,7 +80,9 @@ class _ToDoScreenState extends State<ToDoScreen> {
                               children:
                                   List.generate(buttonText.length, (int index) {
                                 return radioButton(
-                                    text: buttonText[index], index: index);
+                                  text: buttonText[index],
+                                  index: index,
+                                );
                               }),
                             ),
                           ),

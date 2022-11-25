@@ -1,8 +1,8 @@
 import 'package:effektio/common/animations/LikeAnimation.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/NewsItem.dart';
-import 'package:effektio/widgets/NoInternet.dart';
 import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -79,7 +79,8 @@ class _NewsScreenState extends State<NewsScreen>
                                     backgroundColor:
                                         AppCommonTheme.primaryColor,
                                     child: Image.asset(
-                                        'assets/images/hamburger.png'),
+                                      'assets/images/hamburger.png',
+                                    ),
                                   ),
                                 ),
                                 onPressed: () {

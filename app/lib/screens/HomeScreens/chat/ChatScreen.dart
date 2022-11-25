@@ -13,7 +13,6 @@ import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
-import 'package:effektio/widgets/NoInternet.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
