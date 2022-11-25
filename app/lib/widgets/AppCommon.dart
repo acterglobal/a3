@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io' show Platform;
 import 'dart:math';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -68,14 +69,25 @@ Widget elevatedButton(
 }
 
 Widget noInternetWidget() {
+  Size screenSize = WidgetsBinding.instance.window.physicalSize;
+  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  double width = screenSize.width;
+  double height = screenSize.height;
   return Center(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(
-          'assets/images/no_internet.png',
-          scale: 5,
+        Flexible(
+          child: Image.asset(
+            'assets/images/no_internet.png',
+            cacheHeight:
+                isDesktop ? (height * 0.25).toInt() : (height * 0.10).toInt(),
+            cacheWidth:
+                isDesktop ? (width * 0.15).toInt() : (height * 0.10).toInt(),
+            filterQuality: FilterQuality.high,
+          ),
         ),
         const Text(
           'No internet\nPlease turn on internet to process',
