@@ -30,7 +30,7 @@ use std::sync::Arc;
 
 use super::{
     client::Client,
-    message::{sync_event_to_message, timeline_item_to_message, RoomMessage},
+    message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
     RUNTIME,

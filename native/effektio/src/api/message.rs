@@ -63,7 +63,18 @@ impl RoomMessage {
         event: &OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
         room: Room,
     ) -> Self {
-        let mut fallback = event.content.body().to_string();
+        let fallback = match &event.content.msgtype {
+            MessageType::Audio(audio) => "sent an audio.".to_string(),
+            MessageType::Emote(emote) => emote.body.clone(),
+            MessageType::File(file) => "sent a file.".to_string(),
+            MessageType::Image(image) => "sent an image.".to_string(),
+            MessageType::Location(location) => location.body.to_string(),
+            MessageType::Notice(notice) => notice.body.clone(),
+            MessageType::ServerNotice(server_notice) => server_notice.body.clone(),
+            MessageType::Text(text) => text.body.clone(),
+            MessageType::Video(video) => "sent a video.".to_string(),
+            _ => "Unknown timeline item".to_string(),
+        };
         let mut formatted_body: Option<String> = None;
         if let MessageType::Text(content) = &event.content.msgtype {
             if let Some(formatted) = &content.formatted {
@@ -148,22 +159,20 @@ impl RoomMessage {
         match event.content() {
             TimelineItemContent::Message(msg) => {
                 let msgtype = msg.msgtype();
-                let mut fallback = match &msgtype {
-                    MessageType::Audio(audio) => audio.body.clone(),
+                let fallback = match &msgtype {
+                    MessageType::Audio(audio) => "sent an audio.".to_string(),
                     MessageType::Emote(emote) => emote.body.clone(),
-                    MessageType::File(file) => file.body.clone(),
-                    MessageType::Image(image) => image.body.clone(),
+                    MessageType::File(file) => "sent a file.".to_string(),
+                    MessageType::Image(image) => "sent an image.".to_string(),
                     MessageType::Location(location) => location.body.clone(),
                     MessageType::Notice(notice) => notice.body.clone(),
-                    MessageType::ServerNotice(service_notice) => service_notice.body.clone(),
+                    MessageType::ServerNotice(server_notice) => server_notice.body.clone(),
                     MessageType::Text(text) => text.body.clone(),
-                    MessageType::Video(video) => video.body.clone(),
+                    MessageType::Video(video) => "sent a video.".to_string(),
                     _ => "Unknown timeline item".to_string(),
                 };
                 info!("timeline fallback: {:?}", fallback);
                 let mut formatted_body: Option<String> = None;
-                let mut image_description: Option<ImageDescription> = None;
-                let mut file_description: Option<FileDescription> = None;
                 if let MessageType::Text(content) = msgtype {
                     if let Some(formatted) = &content.formatted {
                         if formatted.format == MessageFormat::Html {
@@ -171,6 +180,7 @@ impl RoomMessage {
                         }
                     }
                 }
+                let mut image_description: Option<ImageDescription> = None;
                 if let MessageType::Image(content) = msgtype {
                     if let Some(info) = content.info.as_ref() {
                         image_description = Some(ImageDescription {
@@ -182,6 +192,7 @@ impl RoomMessage {
                         });
                     }
                 }
+                let mut file_description: Option<FileDescription> = None;
                 if let MessageType::File(content) = msgtype {
                     if let Some(info) = content.info.as_ref() {
                         file_description = Some(FileDescription {
