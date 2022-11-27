@@ -8,6 +8,7 @@ use matrix_sdk::{
     room::{timeline::TimelineItem, Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
+            reaction::{ReactionEventContent, Relation},
             room::message::{MessageType, RoomMessageEventContent},
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
@@ -195,14 +196,10 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let r = room
-                    .send(
-                        AnyMessageLikeEventContent::RoomMessage(
-                            RoomMessageEventContent::text_plain(message),
-                        ),
-                        None,
-                    )
-                    .await?;
+                let content = AnyMessageLikeEventContent::RoomMessage(
+                    RoomMessageEventContent::text_plain(message),
+                );
+                let r = room.send(content, None).await?;
                 Ok(r.event_id.to_string())
             })
             .await?
@@ -216,14 +213,27 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let r = room
-                    .send(
-                        AnyMessageLikeEventContent::RoomMessage(
-                            RoomMessageEventContent::text_markdown(markdown),
-                        ),
-                        None,
-                    )
-                    .await?;
+                let content = AnyMessageLikeEventContent::RoomMessage(
+                    RoomMessageEventContent::text_markdown(markdown),
+                );
+                let r = room.send(content, None).await?;
+                Ok(r.event_id.to_string())
+            })
+            .await?
+    }
+
+    pub async fn send_reaction(&self, event_id: String, key: String) -> Result<String> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send message to a room we are not in")
+        };
+        let event_id = EventId::parse(event_id)?;
+        RUNTIME
+            .spawn(async move {
+                let relates_to = Relation::new(event_id, key);
+                let content = ReactionEventContent::new(relates_to);
+                let r = room.send(content, None).await.expect("Sending the reaction should not fail");
                 Ok(r.event_id.to_string())
             })
             .await?
