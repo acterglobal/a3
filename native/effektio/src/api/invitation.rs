@@ -211,7 +211,7 @@ impl InvitationController {
         client: &MatrixClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().expect("You seem to be not logged in");
+        let user_id = client.user_id().context("You seem to be not logged in")?;
         if ev.state_key != *user_id {
             return Ok(());
         }
@@ -220,7 +220,7 @@ impl InvitationController {
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
+            .context("Time went backwards")?;
 
         info!("event type: StrippedRoomMemberEvent");
         info!("membership: {:?}", ev.content.membership);
@@ -294,11 +294,11 @@ impl Client {
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
         let client = self.client.clone();
         let room_id = RoomId::parse(room_name)?;
-        let res = self.client.get_room(&room_id);
-        if res.is_none() {
+        let result = self.client.get_room(&room_id);
+        if result.is_none() {
             return Ok(vec![]);
         }
-        let room = res.unwrap();
+        let room = result.unwrap();
         RUNTIME
             .spawn(async move {
                 // get member list of target room
@@ -309,7 +309,7 @@ impl Client {
                 }
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (_, convos) = divide_rooms_from_common(client.clone()).await;
+                let (groups, convos) = divide_rooms_from_common(client.clone()).await;
                 for convo in convos {
                     if convo.room_id() == room_id {
                         continue;
