@@ -68,7 +68,7 @@ impl RoomMessage {
     ) -> Self {
         let mut sent_by_me = false;
         if let Some(user_id) = room.client().user_id() {
-            if user_id.to_owned() == event.sender {
+            if *user_id == event.sender {
                 sent_by_me = true;
             }
         }

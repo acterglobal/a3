@@ -6,9 +6,7 @@ use log::info;
 use matrix_sdk::{
     room::{timeline::Timeline, Room},
     ruma::{
-        events::room::message::{
-            Relation, Replacement, RoomMessageEvent, RoomMessageEventContent,
-        },
+        events::room::message::{Relation, Replacement, RoomMessageEvent, RoomMessageEventContent},
         EventId,
     },
     Client,
@@ -269,7 +267,9 @@ impl TimelineStream {
                 let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));
 
-                timeline.send(edited_content.into(), txn_id.as_deref().map(Into::into)).await?;
+                timeline
+                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
                 Ok(true)
             })
             .await?
