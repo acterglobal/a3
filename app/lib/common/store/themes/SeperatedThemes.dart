@@ -292,6 +292,27 @@ class CrossSigningSheetTheme {
   );
 }
 
+class NotificationPopUpTheme {
+  static const overlayColor = ColorRef(Color(0xff33C481));
+  static const contentColor = ColorRef(Colors.white, id: 'ABT');
+
+  static const contentTitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: contentColor,
+    ),
+  );
+
+  static const contentSubtitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+      color: contentColor,
+    ),
+  );
+}
+
 class ToDoTheme {
   // Color Scheme.
   static const activeCheckColor = ColorRef(Color(0xFF1CF18F));
