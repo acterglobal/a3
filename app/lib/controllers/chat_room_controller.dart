@@ -554,9 +554,16 @@ class ChatRoomController extends GetxController {
     });
   }
 
+  /// Update button state based on text editor.
   void sendButtonUpdate() {
     isSendButtonVisible =
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
+    update(['chat-input']);
+  }
+
+  /// Disable button as soon as send button is pressed.
+  void sendButtonDisable() {
+    isSendButtonVisible = !isSendButtonVisible;
     update(['chat-input']);
   }
 

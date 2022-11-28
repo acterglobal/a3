@@ -463,10 +463,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void onSendButtonPressed(ChatRoomController controller) async {
+    controller.sendButtonDisable();
     String markdownText = controller.mentionKey.currentState!.controller!.text;
     String htmlText = controller.mentionKey.currentState!.controller!.text;
     int messageLength = markdownText.length;
-
     controller.messageTextMapMarkDown.forEach((key, value) {
       markdownText = markdownText.replaceAll(key, value);
     });
@@ -480,7 +480,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     controller.messageTextMapMarkDown.clear();
     controller.mentionKey.currentState!.controller!.clear();
-    controller.sendButtonUpdate();
   }
 
   Widget bubbleBuilder(
