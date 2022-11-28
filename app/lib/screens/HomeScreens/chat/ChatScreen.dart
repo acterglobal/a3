@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
@@ -169,59 +170,42 @@ class _ChatScreenState extends State<ChatScreen> {
     types.ImageMessage imageMessage, {
     required int messageWidth,
   }) {
-    if (imageMessage.uri.isEmpty) {
-      // binary data
-      // CachedMemoryImage cannot be used, because uniqueKey not working
-      // If uniqueKey not working, it means cache is not working
-      // So use Image.memory
-      // ToDo: must implement image caching someday
-      if (imageMessage.metadata?.containsKey('binary') ?? false) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Image.memory(
-            imageMessage.metadata?['binary'],
-            errorBuilder: (context, url, error) {
-              return Text(
-                'Could not load image due to $error',
-              );
-            },
-            frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
-              if (wasSynchronouslyLoaded) return child;
-              return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: frame != null
-                    ? child
-                    : const SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 6,
-                          color: AppCommonTheme.primaryColor,
-                        ),
-                      ),
-              );
-            }),
-            height: messageWidth.toDouble() / 2,
-            cacheHeight: 288,
-            cacheWidth: 512,
-            width: messageWidth.toDouble(),
-            fit: BoxFit.cover,
-          ),
-        );
-      } else {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: Image.memory(
-            kTransparentImage,
-            errorBuilder: (context, url, error) => Text(
+    // binary data
+    // CachedMemoryImage cannot be used, because uniqueKey not working
+    // If uniqueKey not working, it means cache is not working
+    // So use Image.memory
+    // ToDo: must implement image caching someday
+    if (imageMessage.metadata?.containsKey('base64') ?? false) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.memory(
+          base64Decode(imageMessage.metadata?['base64']),
+          errorBuilder: (context, url, error) {
+            return Text(
               'Could not load image due to $error',
-            ),
-            width: messageWidth.toDouble(),
-            cacheWidth: messageWidth,
-            cacheHeight: messageWidth ~/ 2,
-          ),
-        );
-      }
+            );
+          },
+          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) return child;
+            return AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: frame != null
+                  ? child
+                  : const SizedBox(
+                      height: 60,
+                      width: 60,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 6,
+                        color: AppCommonTheme.primaryColor,
+                      ),
+                    ),
+            );
+          }),
+          cacheWidth: 512,
+          width: messageWidth.toDouble(),
+          fit: BoxFit.cover,
+        ),
+      );
     }
     if (isURL(imageMessage.uri)) {
       // remote url

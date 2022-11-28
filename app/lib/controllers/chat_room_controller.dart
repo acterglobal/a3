@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
@@ -69,7 +70,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.incomingMessageRx()?.listen((event) {
+    _messageSubscription = client.incomingMessageRx()?.listen((event) async {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom != null) {
@@ -78,7 +79,7 @@ class ChatRoomController extends GetxController {
           // filter only message from other not me
           // it is processed in handleSendPressed
           if (event.sender() != client.userId().toString()) {
-            types.Message? m = _prepareMessage(event);
+            types.Message? m = await _prepareMessage(event);
             if (m != null) {
               _insertMessage(messages.length, m);
               if (isLoading.isFalse) {
@@ -128,12 +129,12 @@ class ChatRoomController extends GetxController {
       }
       _stream = _currentRoom!.timeline();
       // event handler from paginate
-      _diffSubscription = _stream?.diffRx().listen((event) {
+      _diffSubscription = _stream?.diffRx().listen((event) async {
         switch (event.action()) {
           case 'Replace':
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
-              types.Message? m = _prepareMessage(msg);
+              types.Message? m = await _prepareMessage(msg);
               if (m != null) {
                 _insertMessage(0, m);
                 if (isLoading.isFalse) {
@@ -151,7 +152,7 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
+            types.Message? m = await _prepareMessage(value);
             if (m != null) {
               _insertMessage(messages.length - index, m);
               if (isLoading.isFalse) {
@@ -168,7 +169,7 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
+            types.Message? m = await _prepareMessage(value);
             if (m != null) {
               _updateMessage(messages.length - index, m);
               if (isLoading.isFalse) {
@@ -184,7 +185,7 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
+            types.Message? m = await _prepareMessage(value);
             if (m != null) {
               _insertMessage(0, m);
               if (isLoading.isFalse) {
@@ -485,7 +486,7 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  types.Message? _prepareMessage(RoomMessage message) {
+  Future<types.Message?> _prepareMessage(RoomMessage message) async {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
@@ -509,6 +510,7 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.image') {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
+        final path = (await getApplicationDocumentsDirectory()).path;
         return types.ImageMessage(
           author: author,
           createdAt: createdAt,
@@ -516,7 +518,7 @@ class ChatRoomController extends GetxController {
           id: eventId,
           name: description.name(),
           size: description.size() ?? 0,
-          uri: '',
+          uri: path + description.name(),
           width: description.width()?.toDouble(),
         );
       }
@@ -542,9 +544,10 @@ class ChatRoomController extends GetxController {
     _currentRoom!.imageBinary(eventId).then((data) {
       int idx = messages.indexWhere((x) => x.id == eventId);
       if (idx != -1) {
+        final base64String = base64Encode(data.asTypedList());
         messages[idx] = messages[idx].copyWith(
           metadata: {
-            'binary': data.asTypedList(),
+            'base64': base64String,
           },
         );
         if (isLoading.isFalse) {
