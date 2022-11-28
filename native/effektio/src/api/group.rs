@@ -54,7 +54,7 @@ impl Client {
         &self,
         settings: CreateGroupSettings,
     ) -> Result<OwnedRoomId> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
                 let initial_states = default_effektio_group_states();
@@ -69,17 +69,17 @@ impl Client {
                     name: settings.name.as_ref().map(|x| x.as_ref()),
                     visibility: settings.visibility,
                 });
-                let response = c.create_room(request).await?;
+                let response = client.create_room(request).await?;
                 Ok(response.room_id)
             })
             .await?
     }
 
     pub async fn groups(&self) -> Result<Vec<Group>> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = divide_rooms_from_common(c).await;
+                let (groups, convos) = divide_rooms_from_common(client).await;
                 Ok(groups)
             })
             .await?

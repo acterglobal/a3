@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
@@ -129,7 +129,7 @@ impl VerificationEvent {
                         request
                             .accept()
                             .await
-                            .expect("Can't accept verification request");
+                            .context("Can't accept verification request")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -141,7 +141,7 @@ impl VerificationEvent {
                         request
                             .accept()
                             .await
-                            .expect("Can't accept verification request");
+                            .context("Can't accept verification request")?;
                         return Ok(true);
                     }
                 }
@@ -168,7 +168,7 @@ impl VerificationEvent {
                         request
                             .cancel()
                             .await
-                            .expect("Can't cancel verification request");
+                            .context("Can't cancel verification request")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -180,7 +180,7 @@ impl VerificationEvent {
                         request
                             .cancel()
                             .await
-                            .expect("Can't cancel verification request");
+                            .context("Can't cancel verification request")?;
                         return Ok(true);
                     }
                 }
@@ -212,7 +212,7 @@ impl VerificationEvent {
                         request
                             .accept_with_methods(values)
                             .await
-                            .expect("Can't accept verification request");
+                            .context("Can't accept verification request")?;
                         return Ok(true);
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -224,7 +224,7 @@ impl VerificationEvent {
                         request
                             .accept_with_methods(values)
                             .await
-                            .expect("Can't accept verification request");
+                            .context("Can't accept verification request")?;
                         return Ok(true);
                     }
                 }
@@ -251,7 +251,7 @@ impl VerificationEvent {
                         let sas = request
                             .start_sas()
                             .await
-                            .expect("Can't accept verification request");
+                            .context("Can't accept verification request")?;
                         return Ok(sas.is_some());
                     }
                 } else if let Some(txn_id) = txn_id {
@@ -263,7 +263,7 @@ impl VerificationEvent {
                         let sas = request
                             .start_sas()
                             .await
-                            .expect("Can't accept verification request");
+                            .context("Can't accept verification request")?;
                         return Ok(sas.is_some());
                     }
                 }
