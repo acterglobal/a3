@@ -314,20 +314,7 @@ class ChatRoomController extends GetxController {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    var eventId = await _currentRoom!.sendFormattedMessage(markdownMessage);
-    final textMessage = types.TextMessage(
-      author: types.User(id: client.userId().toString()),
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: eventId,
-      text: htmlMessage,
-      status: types.Status.sent,
-      showStatus: true,
-      metadata: {
-        'messageLength': messageLength,
-      },
-    );
-    messages.insert(0, textMessage);
-    update(['Chat']);
+    await _currentRoom!.sendFormattedMessage(markdownMessage);
   }
 
   Future<void> handleMultipleImageSelection(
@@ -358,7 +345,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await _currentRoom!.sendImageMessage(
+      await _currentRoom!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -366,19 +353,6 @@ class ChatRoomController extends GetxController {
         image.width,
         image.height,
       );
-
-      final message = types.ImageMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        height: image.height.toDouble(),
-        id: eventId,
-        name: result.name,
-        size: bytes.length,
-        uri: result.path,
-        width: image.width.toDouble(),
-      );
-      messages.insert(0, message);
-      update(['Chat']);
     }
   }
 
@@ -425,7 +399,6 @@ class ChatRoomController extends GetxController {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
-
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
       await _currentRoom!.sendFileMessage(
@@ -434,19 +407,6 @@ class ChatRoomController extends GetxController {
         mimeType!,
         result.files.single.size,
       );
-
-      // i am sending message
-      final message = types.FileMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: randomString(),
-        name: result.files.single.name,
-        size: result.files.single.size,
-        uri: result.files.single.path!,
-      );
-      Navigator.pop(context);
-      messages.insert(0, message);
-      update(['Chat']);
     }
   }
 
@@ -594,9 +554,16 @@ class ChatRoomController extends GetxController {
     });
   }
 
+  /// Update button state based on text editor.
   void sendButtonUpdate() {
     isSendButtonVisible =
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
+    update(['chat-input']);
+  }
+
+  /// Disable button as soon as send button is pressed.
+  void sendButtonDisable() {
+    isSendButtonVisible = !isSendButtonVisible;
     update(['chat-input']);
   }
 
