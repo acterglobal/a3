@@ -27,7 +27,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 class ChatScreen extends StatefulWidget {
   final Future<FfiBufferUint8>? roomAvatar;

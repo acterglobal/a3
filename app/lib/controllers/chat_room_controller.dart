@@ -510,6 +510,7 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.image') {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
+        /// this is added to get local path of fetched image for previewing purposes (not yet implemented).
         final path = (await getApplicationDocumentsDirectory()).path;
         return types.ImageMessage(
           author: author,
