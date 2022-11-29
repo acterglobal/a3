@@ -15,7 +15,11 @@ use matrix_sdk::{
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 
-use super::{client::Client, profile::UserProfile, RUNTIME};
+use super::{
+    client::{divide_rooms_from_common, Client},
+    profile::UserProfile,
+    RUNTIME,
+};
 
 #[derive(Default, Clone, Debug)]
 pub struct Invitation {
@@ -48,7 +52,7 @@ impl Invitation {
         let user_id = UserId::parse(self.sender.clone())?;
         RUNTIME
             .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id);
+                let mut user_profile = UserProfile::new(client, user_id, None, None);
                 user_profile.fetch().await;
                 Ok(user_profile)
             })
@@ -207,7 +211,7 @@ impl InvitationController {
         client: &MatrixClient,
     ) -> Result<()> {
         // filter only event for me
-        let user_id = client.user_id().expect("You seem to be not logged in");
+        let user_id = client.user_id().context("You seem to be not logged in")?;
         if ev.state_key != *user_id {
             return Ok(());
         }
@@ -216,7 +220,7 @@ impl InvitationController {
         let start = SystemTime::now();
         let since_the_epoch = start
             .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
+            .context("Time went backwards")?;
 
         info!("event type: StrippedRoomMemberEvent");
         info!("membership: {:?}", ev.content.membership);
@@ -285,5 +289,53 @@ impl Client {
             .invitations
             .signal_cloned()
             .to_stream()
+    }
+
+    pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
+        let client = self.client.clone();
+        let room_id = RoomId::parse(room_name)?;
+        let result = self.client.get_room(&room_id);
+        if result.is_none() {
+            return Ok(vec![]);
+        }
+        let room = result.unwrap();
+        RUNTIME
+            .spawn(async move {
+                // get member list of target room
+                let mut room_members = vec![];
+                let members = room.members().await?;
+                for member in members {
+                    room_members.push(member.user_id().to_string());
+                }
+                // iterate my rooms to get user list
+                let mut profiles: Vec<UserProfile> = vec![];
+                let (groups, convos) = divide_rooms_from_common(client.clone()).await;
+                for convo in convos {
+                    if convo.room_id() == room_id {
+                        continue;
+                    }
+                    let members = convo.members().await?;
+                    for member in members {
+                        let user_id = member.user_id().to_string();
+                        // exclude user that belongs to target room
+                        if room_members.contains(&user_id) {
+                            continue;
+                        }
+                        // exclude user that already selected
+                        if profiles.iter().any(|x| x.user_id() == member.user_id()) {
+                            continue;
+                        }
+                        let user_profile = UserProfile::new(
+                            client.clone(),
+                            member.user_id().to_owned(),
+                            member.avatar_url().map(|x| x.to_owned()),
+                            member.display_name().map(|x| x.to_string()),
+                        );
+                        profiles.push(user_profile);
+                    }
+                }
+                Ok(profiles)
+            })
+            .await?
     }
 }

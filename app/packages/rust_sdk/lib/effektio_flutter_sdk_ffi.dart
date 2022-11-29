@@ -1128,7 +1128,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListRoomMessage? __timelineStreamPaginateBackwardsFuturePoll(
+  bool? __timelineStreamPaginateBackwardsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1166,11 +1166,7 @@ class Api {
       }
       throw tmp9_0;
     }
-    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListRoomMessage");
-    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListRoomMessage._(this, tmp13_1);
-    final tmp7 = tmp14;
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -2643,6 +2639,52 @@ class Api {
     return tmp7;
   }
 
+  FfiListUserProfile? __clientSuggestedUsersToInviteFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientSuggestedUsersToInviteFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListUserProfile");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListUserProfile._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   bool? __clientVerifiedDeviceFuturePoll(
     int boxed,
     int postCobject,
@@ -3719,6 +3761,42 @@ class Api {
     return tmp7;
   }
 
+  TimelineDiff? __timelineStreamDiffRxStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _timelineStreamDiffRxStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(this, tmp11_0, "drop_box_TimelineDiff");
+    tmp11_1._finalizer = this._registerFinalizer(tmp11_1);
+    final tmp9 = TimelineDiff._(this, tmp11_1);
+    return tmp9;
+  }
+
   bool? __syncStateFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
@@ -4195,6 +4273,16 @@ class Api {
       _ColorRgbaU8Return Function(
     int,
   )>();
+  late final _newsIdPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsIdReturn Function(
+    ffi.Int64,
+  )>>("__News_id");
+
+  late final _newsId = _newsIdPtr.asFunction<
+      _NewsIdReturn Function(
+    int,
+  )>();
   late final _newsTextPtr = _lookup<
       ffi.NativeFunction<
           _NewsTextReturn Function(
@@ -4570,6 +4658,76 @@ class Api {
       _FileDescriptionSizeReturn Function(
     int,
   )>();
+  late final _timelineDiffActionPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffActionReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_action");
+
+  late final _timelineDiffAction = _timelineDiffActionPtr.asFunction<
+      _TimelineDiffActionReturn Function(
+    int,
+  )>();
+  late final _timelineDiffValuesPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffValuesReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_values");
+
+  late final _timelineDiffValues = _timelineDiffValuesPtr.asFunction<
+      _TimelineDiffValuesReturn Function(
+    int,
+  )>();
+  late final _timelineDiffIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffIndexReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_index");
+
+  late final _timelineDiffIndex = _timelineDiffIndexPtr.asFunction<
+      _TimelineDiffIndexReturn Function(
+    int,
+  )>();
+  late final _timelineDiffValuePtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffValueReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_value");
+
+  late final _timelineDiffValue = _timelineDiffValuePtr.asFunction<
+      _TimelineDiffValueReturn Function(
+    int,
+  )>();
+  late final _timelineDiffNewIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffNewIndexReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_new_index");
+
+  late final _timelineDiffNewIndex = _timelineDiffNewIndexPtr.asFunction<
+      _TimelineDiffNewIndexReturn Function(
+    int,
+  )>();
+  late final _timelineDiffOldIndexPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineDiffOldIndexReturn Function(
+    ffi.Int64,
+  )>>("__TimelineDiff_old_index");
+
+  late final _timelineDiffOldIndex = _timelineDiffOldIndexPtr.asFunction<
+      _TimelineDiffOldIndexReturn Function(
+    int,
+  )>();
+  late final _timelineStreamDiffRxPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TimelineStream_diff_rx");
+
+  late final _timelineStreamDiffRx = _timelineStreamDiffRxPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _timelineStreamNextPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4584,7 +4742,7 @@ class Api {
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-    ffi.Uint32,
+    ffi.Uint16,
   )>>("__TimelineStream_paginate_backwards");
 
   late final _timelineStreamPaginateBackwards =
@@ -4614,16 +4772,6 @@ class Api {
           int Function(
     int,
   )>();
-  late final _conversationTimelinePtr = _lookup<
-      ffi.NativeFunction<
-          _ConversationTimelineReturn Function(
-    ffi.Int64,
-  )>>("__Conversation_timeline");
-
-  late final _conversationTimeline = _conversationTimelinePtr.asFunction<
-      _ConversationTimelineReturn Function(
-    int,
-  )>();
   late final _conversationGetMemberPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -4638,6 +4786,16 @@ class Api {
     int,
     int,
     int,
+    int,
+  )>();
+  late final _conversationTimelinePtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationTimelineReturn Function(
+    ffi.Int64,
+  )>>("__Conversation_timeline");
+
+  late final _conversationTimeline = _conversationTimelinePtr.asFunction<
+      _ConversationTimelineReturn Function(
     int,
   )>();
   late final _conversationLatestMessagePtr = _lookup<
@@ -5227,6 +5385,23 @@ class Api {
       int Function(
     int,
   )>();
+  late final _clientSuggestedUsersToInvitePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_suggested_users_to_invite");
+
+  late final _clientSuggestedUsersToInvite =
+      _clientSuggestedUsersToInvitePtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _clientVerifiedDevicePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5313,6 +5488,16 @@ class Api {
 
   late final _clientIncomingMessageRx = _clientIncomingMessageRxPtr.asFunction<
       _ClientIncomingMessageRxReturn Function(
+    int,
+  )>();
+  late final _userProfileUserIdPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__UserProfile_user_id");
+
+  late final _userProfileUserId = _userProfileUserIdPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _userProfileHasAvatarPtr = _lookup<
@@ -6463,6 +6648,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientSuggestedUsersToInviteFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_suggested_users_to_invite_future_poll");
+
+  late final _clientSuggestedUsersToInviteFuturePoll =
+      _clientSuggestedUsersToInviteFuturePollPtr.asFunction<
+          _ClientSuggestedUsersToInviteFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientVerifiedDeviceFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientVerifiedDeviceFuturePollReturn Function(
@@ -6850,6 +7050,23 @@ class Api {
   late final _deviceLeftEventDeviceRecordsFuturePoll =
       _deviceLeftEventDeviceRecordsFuturePollPtr.asFunction<
           _DeviceLeftEventDeviceRecordsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _timelineStreamDiffRxStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _TimelineStreamDiffRxStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TimelineStream_diff_rx_stream_poll");
+
+  late final _timelineStreamDiffRxStreamPoll =
+      _timelineStreamDiffRxStreamPollPtr.asFunction<
+          _TimelineStreamDiffRxStreamPollReturn Function(
+    int,
     int,
     int,
     int,
@@ -7590,6 +7807,55 @@ class Api {
 
   late final _ffiListTagInsert =
       _ffiListTagInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListUserProfile createFfiListUserProfile() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListUserProfileCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListUserProfile");
+    return FfiListUserProfile._(this, list_box);
+  }
+
+  late final _ffiListUserProfileCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListUserProfileCreate");
+
+  late final _ffiListUserProfileCreate =
+      _ffiListUserProfileCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListUserProfileLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListUserProfileLen");
+
+  late final _ffiListUserProfileLen =
+      _ffiListUserProfileLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListUserProfileElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserProfileElementAt");
+
+  late final _ffiListUserProfileElementAt =
+      _ffiListUserProfileElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserProfileRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserProfileRemove");
+
+  late final _ffiListUserProfileRemove =
+      _ffiListUserProfileRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserProfileAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListUserProfileAdd");
+
+  late final _ffiListUserProfileAdd =
+      _ffiListUserProfileAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListUserProfileInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(ffi.IntPtr, ffi.Uint32,
+              ffi.IntPtr)>>("__FfiListUserProfileInsert");
+
+  late final _ffiListUserProfileInsert =
+      _ffiListUserProfileInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListVerificationEmoji createFfiListVerificationEmoji() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListVerificationEmojiCreate());
@@ -7685,6 +7951,26 @@ class News {
   final _Box _box;
 
   News._(this._api, this._box);
+
+  /// the id of this news
+  String id() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
 
   /// get the text of the news item
   String? text() {
@@ -8485,6 +8771,125 @@ class FileDescription {
   }
 }
 
+class TimelineDiff {
+  final Api _api;
+  final _Box _box;
+
+  TimelineDiff._(this._api, this._box);
+
+  /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+  String action() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffAction(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// for Replace
+  FfiListRoomMessage? values() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffValues(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FfiListRoomMessage");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp5 = FfiListRoomMessage._(_api, tmp4_1);
+    final tmp2 = tmp5;
+    return tmp2;
+  }
+
+  /// for InsertAt/UpdateAt/RemoveAt
+  int? index() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// for InsertAt/UpdateAt/Push
+  RoomMessage? value() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffValue(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomMessage._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// for Move
+  int? newIndex() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffNewIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// for Move
+  int? oldIndex() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineDiffOldIndex(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 /// Timeline with Room Events
 class TimelineStream {
   final Api _api;
@@ -8492,7 +8897,22 @@ class TimelineStream {
 
   TimelineStream._(this._api, this._box);
 
-  /// Fires whenever a new event arrived
+  /// Fires whenever new diff found
+  Stream<TimelineDiff> diffRx() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._timelineStreamDiffRx(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TimelineStream_diff_rx_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__timelineStreamDiffRxStreamPoll);
+    return tmp2;
+  }
+
+  /// Fires whenever new event arrived
   Future<RoomMessage> next() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -8508,7 +8928,7 @@ class TimelineStream {
   }
 
   /// Get the next count messages backwards,
-  Future<FfiListRoomMessage> paginateBackwards(
+  Future<bool> paginateBackwards(
     int count,
   ) {
     final tmp1 = count;
@@ -8574,35 +8994,6 @@ class Conversation {
     return tmp2;
   }
 
-  /// Get the timeline for the room
-  TimelineStream timeline() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._conversationTimeline(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final tmp6 = tmp1.arg3;
-    final tmp7 = tmp1.arg4;
-    if (tmp3 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
-      if (tmp5 > 0) {
-        final ffi.Pointer<ffi.Void> tmp4_0;
-        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-        _api.__deallocate(tmp4_0, tmp6, 1);
-      }
-      throw tmp3_0;
-    }
-    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
-    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TimelineStream");
-    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
-    final tmp2 = TimelineStream._(_api, tmp7_1);
-    return tmp2;
-  }
-
   /// get the room member by user id
   Future<Member> getMember(
     String userId,
@@ -8632,6 +9023,35 @@ class Conversation {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__conversationGetMemberFuturePoll);
     return tmp6;
+  }
+
+  /// Get the timeline for the room
+  TimelineStream timeline() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationTimeline(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TimelineStream");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TimelineStream._(_api, tmp7_1);
+    return tmp2;
   }
 
   /// The last message sent to the room
@@ -9808,6 +10228,39 @@ class Client {
     return tmp2;
   }
 
+  /// the users out of room
+  Future<FfiListUserProfile> suggestedUsersToInvite(
+    String roomName,
+  ) {
+    final tmp1 = roomName;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSuggestedUsersToInvite(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__Client_suggested_users_to_invite_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__clientSuggestedUsersToInviteFuturePoll);
+    return tmp6;
+  }
+
   /// Whether the user already verified the device
   Future<bool> verifiedDevice(
     String devId,
@@ -9987,6 +10440,21 @@ class UserProfile {
   final _Box _box;
 
   UserProfile._(this._api, this._box);
+
+  /// get user id
+  UserId userId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._userProfileUserId(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
 
   /// whether to have avatar
   bool hasAvatar() {
@@ -11150,6 +11618,15 @@ class _ColorRgbaU8Return extends ffi.Struct {
   external int arg3;
 }
 
+class _NewsIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _NewsTextReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -11404,6 +11881,50 @@ class _FileDescriptionMimetypeReturn extends ffi.Struct {
 }
 
 class _FileDescriptionSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _TimelineDiffActionReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _TimelineDiffValuesReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TimelineDiffIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _TimelineDiffValueReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TimelineDiffNewIndexReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _TimelineDiffOldIndexReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
@@ -11857,7 +12378,7 @@ class _TimelineStreamPaginateBackwardsFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Int64()
+  @ffi.Uint8()
   external int arg5;
 }
 
@@ -12373,6 +12894,21 @@ class _ClientFaqsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientSuggestedUsersToInviteFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientVerifiedDeviceFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -12761,6 +13297,13 @@ class _DeviceLeftEventDeviceRecordsFuturePollReturn extends ffi.Struct {
   external int arg4;
   @ffi.Int64()
   external int arg5;
+}
+
+class _TimelineStreamDiffRxStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _SyncStateFirstSyncedRxStreamPollReturn extends ffi.Struct {
@@ -13536,6 +14079,66 @@ class FfiListTag extends Iterable<Tag> implements CustomIterable<Tag> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Tag element) {
     _api._ffiListTagInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListUserProfile extends Iterable<UserProfile>
+    implements CustomIterable<UserProfile> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListUserProfile._(this._api, this._box);
+
+  @override
+  Iterator<UserProfile> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListUserProfileLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  UserProfile elementAt(int index) {
+    final address = _api._ffiListUserProfileElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return UserProfile._(_api, reference);
+  }
+
+  UserProfile operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  UserProfile remove(int index) {
+    final address = _api._ffiListUserProfileRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_UserProfile");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return UserProfile._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(UserProfile element) {
+    _api._ffiListUserProfileAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, UserProfile element) {
+    _api._ffiListUserProfileInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

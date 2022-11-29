@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
@@ -14,7 +15,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
 import 'package:implicitly_animated_reorderable_list/transitions.dart';
-// import 'package:themed/themed.dart';
 
 class ChatOverview extends StatefulWidget {
   final Client client;
@@ -26,89 +26,93 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
+  final networkController = Get.put(NetworkController());
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            pinned: false,
-            snap: false,
-            floating: true,
-            leading: TextButton(
-              onPressed: () {},
-              child: Container(
-                margin: const EdgeInsets.only(right: 15),
-                child: Text(
-                  AppLocalizations.of(context)!.chat,
-                  style: AppCommonTheme.appBarTitleStyle,
-                ),
+    return Obx(
+      () => Scaffold(
+        body: networkController.connectionType.value == '0'
+            ? noInternetWidget()
+            : CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverAppBar(
+                    pinned: false,
+                    snap: false,
+                    floating: true,
+                    leading: TextButton(
+                      onPressed: () {},
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 15),
+                        child: Text(
+                          AppLocalizations.of(context)!.chat,
+                          style: AppCommonTheme.appBarTitleStyle,
+                        ),
+                      ),
+                    ),
+                    leadingWidth: 100,
+                    actions: [
+                      IconButton(
+                        onPressed: () {
+                          showNotYetImplementedMsg(
+                            context,
+                            'Chat Search is not implemented yet',
+                          );
+                        },
+                        padding: const EdgeInsets.only(right: 10, left: 5),
+                        icon: const Icon(
+                          FlutterIcons.search1_ant,
+                          color: AppCommonTheme.svgIconColor,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showNotYetImplementedMsg(
+                            context,
+                            'Multiselect is not implemented yet',
+                          );
+                        },
+                        padding: const EdgeInsets.only(right: 10, left: 5),
+                        icon: const Icon(
+                          FlutterIcons.select_mco,
+                          color: AppCommonTheme.svgIconColor,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showNotYetImplementedMsg(
+                            context,
+                            'Starting a new chat is not implemented yet',
+                          );
+                        },
+                        padding: const EdgeInsets.only(right: 10, left: 10),
+                        icon: const Icon(
+                          FlutterIcons.md_add_ion,
+                          color: AppCommonTheme.svgIconColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (widget.client.isGuest())
+                          empty
+                        else
+                          buildList(context),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            leadingWidth: 100,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Chat Search is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 5),
-                icon: const Icon(
-                  FlutterIcons.search1_ant,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Multiselect is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 5),
-                icon: const Icon(
-                  FlutterIcons.select_mco,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Starting a new chat is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                icon: const Icon(
-                  FlutterIcons.md_add_ion,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-            ],
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.client.isGuest()) empty else buildList(context),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
 
-  Positioned get empty {
-    return Positioned.fill(
-      child: Align(
-        alignment: const Alignment(0.0, -0.25),
-        child: SvgPicture.asset('assets/images/empty_messages.svg'),
-      ),
-    );
+  SvgPicture get empty {
+    return SvgPicture.asset('assets/images/empty_messages.svg');
   }
 
   Widget buildListHeader(BuildContext context) {
@@ -239,20 +243,21 @@ class _ChatOverviewState extends State<ChatOverview> {
 
   Widget buildInvitedItem(Invitation item) {
     return InviteInfoWidget(
-      userId: widget.client.userId().toString(),
+      client: widget.client,
       invitation: item,
       avatarColor: Colors.white,
     );
   }
 
   Widget buildJoinedItem(JoinedRoom item) {
+    String roomId = item.conversation.getRoomId();
     // we should be able to update only changed room items
     // so we use GetBuilder to render item
     return GetBuilder<ChatListController>(
-      id: 'chatroom-${item.conversation.getRoomId()}',
+      id: 'chatroom-$roomId',
       builder: (controller) => ChatListItem(
-        key: Key(item.conversation.getRoomId()),
-        userId: widget.client.userId().toString(),
+        key: Key(roomId),
+        client: widget.client,
         room: item.conversation,
         latestMessage: item.latestMessage,
         typingUsers: item.typingUsers,

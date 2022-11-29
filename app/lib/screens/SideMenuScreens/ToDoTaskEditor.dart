@@ -80,13 +80,21 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
             children: [
               Row(
                 children: [
-                  Container(
-                    width: 18,
-                    height: 18,
-                    margin: const EdgeInsets.symmetric(horizontal: 10),
-                    decoration: const BoxDecoration(
-                      color: ToDoTheme.calendarColor,
-                      shape: BoxShape.circle,
+                  CircleAvatar(
+                    backgroundColor: AppCommonTheme.transparentColor,
+                    radius: 23,
+                    child: Container(
+                      width: 25,
+                      height: 25,
+                      margin: const EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: ToDoTheme.calendarColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 2,
+                          color: ToDoTheme.floatingABColor,
+                        ),
+                      ),
                     ),
                   ),
                   GetBuilder<ToDoController>(

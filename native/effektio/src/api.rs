@@ -1,5 +1,6 @@
 use anyhow::Result;
 use futures::Stream;
+pub use futures_signals::signal_vec::VecDiff;
 use lazy_static::lazy_static;
 use tokio::runtime;
 
@@ -40,7 +41,7 @@ pub use message::{FileDescription, ImageDescription, RoomMessage};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
-pub use stream::TimelineStream;
+pub use stream::{TimelineDiff, TimelineStream};
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
 

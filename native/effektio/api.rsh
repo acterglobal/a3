@@ -24,6 +24,8 @@ object Color {
 
 /// A news object
 object News {
+    /// the id of this news
+    fn id() -> string;
     /// get the text of the news item
     fn text() -> Option<string>;
     /// the tags on this item
@@ -149,13 +151,36 @@ object FileDescription {
     fn size() -> Option<u64>;
 }
 
+object TimelineDiff {
+    /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+    fn action() -> string;
+
+    /// for Replace
+    fn values() -> Option<Vec<RoomMessage>>;
+
+    /// for InsertAt/UpdateAt/RemoveAt
+    fn index() -> Option<usize>;
+
+    /// for InsertAt/UpdateAt/Push
+    fn value() -> Option<RoomMessage>;
+
+    /// for Move
+    fn new_index() -> Option<usize>;
+
+    /// for Move
+    fn old_index() -> Option<usize>;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
-    /// Fires whenever a new event arrived
+    /// Fires whenever new diff found
+    fn diff_rx() -> Stream<TimelineDiff>;
+
+    /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
     /// Get the next count messages backwards,
-    fn paginate_backwards(count: u32) -> Future<Result<Vec<RoomMessage>>>;
+    fn paginate_backwards(count: u16) -> Future<Result<bool>>;
 }
 
 object Conversation {
@@ -165,11 +190,11 @@ object Conversation {
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
-    /// Get the timeline for the room
-    fn timeline() -> Result<TimelineStream>;
-
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// Get the timeline for the room
+    fn timeline() -> Result<TimelineStream>;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
@@ -330,6 +355,9 @@ object Client {
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
+    /// the users out of room
+    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
@@ -356,6 +384,9 @@ object Client {
 }
 
 object UserProfile {
+    /// get user id
+    fn user_id() -> UserId;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 

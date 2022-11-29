@@ -15,14 +15,14 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
-  final String userId;
+  final Client client;
   final Conversation room;
   final RoomMessage? latestMessage;
   final List<types.User> typingUsers;
 
   const ChatListItem({
     Key? key,
-    required this.userId,
+    required this.client,
     required this.room,
     this.latestMessage,
     required this.typingUsers,
@@ -65,6 +65,8 @@ class _ChatListItemState extends State<ChatListItem> {
             avatar: avatar,
             displayName: displayName,
             radius: 25,
+            cacheHeight: 120,
+            cacheWidth: 120,
             isGroup: true,
             stringName: simplifyRoomId(roomId)!,
           ),
@@ -92,7 +94,7 @@ class _ChatListItemState extends State<ChatListItem> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatScreen(
-          userId: widget.userId,
+          client: widget.client,
           room: widget.room,
           roomName: displayName,
           roomAvatar: avatar,

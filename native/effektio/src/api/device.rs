@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{Context, Result};
 use futures::{
     channel::mpsc::{channel, Receiver, Sender},
     StreamExt,
@@ -31,15 +31,20 @@ impl DeviceChangedEvent {
     }
 
     pub async fn device_records(&self, verified: bool) -> Result<Vec<DeviceRecord>> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c
+                let user_id = client
                     .user_id()
-                    .expect("guest user cannot get the verified devices");
+                    .context("guest user cannot get the verified devices")?;
                 let mut records: Vec<DeviceRecord> = vec![];
-                let response = c.devices().await?;
-                for device in c.encryption().get_user_devices(user_id).await?.devices() {
+                let response = client.devices().await?;
+                for device in client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await?
+                    .devices()
+                {
                     if device.is_verified() == verified {
                         if let Some(dev) = response
                             .devices
@@ -62,15 +67,17 @@ impl DeviceChangedEvent {
     }
 
     pub async fn request_verification_to_user(&self) -> Result<bool> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c.user_id().expect("guest user cannot request verification");
-                let user = c
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let user = client
                     .encryption()
                     .get_user_identity(user_id)
                     .await?
-                    .expect("alice should get user identity");
+                    .context("alice should get user identity")?;
                 user.request_verification().await?;
                 Ok(true)
             })
@@ -78,15 +85,17 @@ impl DeviceChangedEvent {
     }
 
     pub async fn request_verification_to_device(&self, dev_id: String) -> Result<bool> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c.user_id().expect("guest user cannot request verification");
-                let dev = c
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
-                    .expect("alice should get device")
+                    .context("alice should get device")?
                     .unwrap();
                 dev.request_verification_with_methods(vec![VerificationMethod::SasV1])
                     .await?;
@@ -99,17 +108,19 @@ impl DeviceChangedEvent {
         &self,
         methods: &mut Vec<String>,
     ) -> Result<bool> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         let _methods: Vec<VerificationMethod> =
             (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                let user_id = c.user_id().expect("guest user cannot request verification");
-                let user = c
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let user = client
                     .encryption()
                     .get_user_identity(user_id)
                     .await?
-                    .expect("alice should get user identity");
+                    .context("alice should get user identity")?;
                 user.request_verification_with_methods(_methods).await?;
                 Ok(true)
             })
@@ -121,17 +132,19 @@ impl DeviceChangedEvent {
         dev_id: String,
         methods: &mut Vec<String>,
     ) -> Result<bool> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         let _methods: Vec<VerificationMethod> =
             (*methods).iter().map(|e| e.as_str().into()).collect();
         RUNTIME
             .spawn(async move {
-                let user_id = c.user_id().expect("guest user cannot request verification");
-                let dev = c
+                let user_id = client
+                    .user_id()
+                    .context("guest user cannot request verification")?;
+                let dev = client
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
-                    .expect("alice should get device")
+                    .context("alice should get device")?
                     .unwrap();
                 dev.request_verification_with_methods(_methods).await?;
                 Ok(true)
@@ -153,15 +166,20 @@ impl DeviceLeftEvent {
     }
 
     pub async fn device_records(&self, deleted: bool) -> Result<Vec<DeviceRecord>> {
-        let c = self.client.clone();
+        let client = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c
+                let user_id = client
                     .user_id()
-                    .expect("guest user cannot get the deleted devices");
+                    .context("guest user cannot get the deleted devices")?;
                 let mut records: Vec<DeviceRecord> = vec![];
-                let response = c.devices().await?;
-                for device in c.encryption().get_user_devices(user_id).await?.devices() {
+                let response = client.devices().await?;
+                for device in client
+                    .encryption()
+                    .get_user_devices(user_id)
+                    .await?
+                    .devices()
+                {
                     if device.is_deleted() == deleted {
                         if let Some(dev) = response
                             .devices
@@ -254,6 +272,8 @@ impl DeviceController {
     }
 
     pub fn process_device_lists(&mut self, client: &MatrixClient, response: &SyncResponse) {
+        info!("process device lists: {:?}", response);
+
         // avoid device changed event in case that user joined room
         if response.rooms.join.is_empty() {
             for user_id in response.device_lists.changed.clone().into_iter() {
