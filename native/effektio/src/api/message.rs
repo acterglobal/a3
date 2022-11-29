@@ -174,7 +174,6 @@ impl RoomMessage {
                     MessageType::Video(video) => "sent a video.".to_string(),
                     _ => "Unknown timeline item".to_string(),
                 };
-                info!("timeline fallback: {:?}", fallback);
                 let mut formatted_body: Option<String> = None;
                 let mut image_description: Option<ImageDescription> = None;
                 let mut file_description: Option<FileDescription> = None;
