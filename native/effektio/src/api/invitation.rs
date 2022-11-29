@@ -328,7 +328,7 @@ impl Client {
                         let user_profile = UserProfile::new(
                             client.clone(),
                             member.user_id().to_owned(),
-                            member.avatar_url().map(|x| x.to_owned()),
+                            member.avatar_url().map(|x| (*x).to_owned()),
                             member.display_name().map(|x| x.to_string()),
                         );
                         profiles.push(user_profile);
