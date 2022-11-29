@@ -77,8 +77,7 @@ pub struct TimelineStream {
 }
 
 impl TimelineStream {
-    pub fn new(client: Client, room: Room) -> Self {
-        let timeline = Arc::new(room.timeline());
+    pub fn new(client: Client, room: Room, timeline: Arc<Timeline>) -> Self {
         TimelineStream {
             client,
             room,

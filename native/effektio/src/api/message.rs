@@ -227,6 +227,15 @@ impl RoomMessage {
             TimelineItemContent::RedactedMessage => {
                 info!("Edit event applies to a redacted message, discarding");
             }
+            TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
+                info!("Edit event applies to event that couldn't be decrypted, discarding");
+            }
+            TimelineItemContent::FailedToParseMessageLike { event_type, error } => {}
+            TimelineItemContent::FailedToParseState {
+                event_type,
+                state_key,
+                error,
+            } => {}
         }
         None
     }
