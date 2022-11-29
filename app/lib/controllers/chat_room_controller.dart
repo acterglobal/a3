@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
@@ -43,6 +44,7 @@ class ChatRoomController extends GetxController {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
+  bool isEmojiContainerVisible = false;
   final List<XFile> _imageFileList = [];
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
@@ -52,6 +54,8 @@ class ChatRoomController extends GetxController {
   List<Map<String, dynamic>> mentionList = [];
   StreamSubscription<TimelineDiff>? _diffSubscription;
   StreamSubscription<RoomMessage>? _messageSubscription;
+  int emojiMessageIndex = 0;
+  String? emojiCurrentId;
 
   ChatRoomController({required this.client}) : super();
 
@@ -66,7 +70,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.incomingMessageRx()?.listen((event) {
+    _messageSubscription = client.incomingMessageRx()?.listen((event) async {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom != null) {
@@ -75,7 +79,7 @@ class ChatRoomController extends GetxController {
           // filter only message from other not me
           // it is processed in handleSendPressed
           if (event.sender() != client.userId().toString()) {
-            types.Message? m = _prepareMessage(event);
+            types.Message? m = await _prepareMessage(event);
             if (m != null) {
               _insertMessage(messages.length, m);
               if (isLoading.isFalse) {
@@ -125,12 +129,12 @@ class ChatRoomController extends GetxController {
       }
       _stream = await _currentRoom!.timelineStream();
       // event handler from paginate
-      _diffSubscription = _stream?.diffRx().listen((event) {
+      _diffSubscription = _stream?.diffRx().listen((event) async {
         switch (event.action()) {
           case 'Replace':
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
-              types.Message? m = _prepareMessage(msg);
+              types.Message? m = await _prepareMessage(msg);
               if (m != null) {
                 _insertMessage(0, m);
                 if (isLoading.isFalse) {
@@ -148,7 +152,7 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
+            types.Message? m = await _prepareMessage(value);
             if (m != null) {
               _insertMessage(messages.length - index, m);
               if (isLoading.isFalse) {
@@ -165,7 +169,7 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
+            types.Message? m = await _prepareMessage(value);
             if (m != null) {
               _updateMessage(messages.length - index, m);
               if (isLoading.isFalse) {
@@ -181,7 +185,7 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
+            types.Message? m = await _prepareMessage(value);
             if (m != null) {
               _insertMessage(0, m);
               if (isLoading.isFalse) {
@@ -316,20 +320,7 @@ class ChatRoomController extends GetxController {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    var eventId = await _currentRoom!.sendFormattedMessage(markdownMessage);
-    final textMessage = types.TextMessage(
-      author: types.User(id: client.userId().toString()),
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: eventId,
-      text: htmlMessage,
-      status: types.Status.sent,
-      showStatus: true,
-      metadata: {
-        'messageLength': messageLength,
-      },
-    );
-    messages.insert(0, textMessage);
-    update(['Chat']);
+    await _currentRoom!.sendFormattedMessage(markdownMessage);
   }
 
   Future<void> handleMultipleImageSelection(
@@ -360,7 +351,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await _currentRoom!.sendImageMessage(
+      await _currentRoom!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -368,19 +359,6 @@ class ChatRoomController extends GetxController {
         image.width,
         image.height,
       );
-
-      final message = types.ImageMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        height: image.height.toDouble(),
-        id: eventId,
-        name: result.name,
-        size: bytes.length,
-        uri: result.path,
-        width: image.width.toDouble(),
-      );
-      messages.insert(0, message);
-      update(['Chat']);
     }
   }
 
@@ -427,7 +405,6 @@ class ChatRoomController extends GetxController {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
-
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
       await _currentRoom!.sendFileMessage(
@@ -436,19 +413,6 @@ class ChatRoomController extends GetxController {
         mimeType!,
         result.files.single.size,
       );
-
-      // i am sending message
-      final message = types.FileMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: randomString(),
-        name: result.files.single.name,
-        size: result.files.single.size,
-        uri: result.files.single.path!,
-      );
-      Navigator.pop(context);
-      messages.insert(0, message);
-      update(['Chat']);
     }
   }
 
@@ -527,7 +491,7 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  types.Message? _prepareMessage(RoomMessage message) {
+  Future<types.Message?> _prepareMessage(RoomMessage message) async {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
@@ -551,6 +515,8 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.image') {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
+        /// this is added to get local path of fetched image for previewing purposes (not yet implemented).
+        final path = (await getApplicationDocumentsDirectory()).path;
         return types.ImageMessage(
           author: author,
           createdAt: createdAt,
@@ -558,7 +524,7 @@ class ChatRoomController extends GetxController {
           id: eventId,
           name: description.name(),
           size: description.size() ?? 0,
-          uri: '',
+          uri: path + description.name(),
           width: description.width()?.toDouble(),
         );
       }
@@ -584,9 +550,10 @@ class ChatRoomController extends GetxController {
     _currentRoom!.imageBinary(eventId).then((data) {
       int idx = messages.indexWhere((x) => x.id == eventId);
       if (idx != -1) {
+        final base64String = base64Encode(data.asTypedList());
         messages[idx] = messages[idx].copyWith(
           metadata: {
-            'binary': data.asTypedList(),
+            'base64': base64String,
           },
         );
         if (isLoading.isFalse) {
@@ -596,9 +563,16 @@ class ChatRoomController extends GetxController {
     });
   }
 
+  /// Update button state based on text editor.
   void sendButtonUpdate() {
     isSendButtonVisible =
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
+    update(['chat-input']);
+  }
+
+  /// Disable button as soon as send button is pressed.
+  void sendButtonDisable() {
+    isSendButtonVisible = !isSendButtonVisible;
     update(['chat-input']);
   }
 
@@ -607,5 +581,21 @@ class ChatRoomController extends GetxController {
       return Future.value(false);
     }
     return await _currentRoom!.typingNotice(typing);
+  }
+
+  void updateEmojiState(types.Message message) {
+    emojiMessageIndex = messages.indexWhere(
+      (element) => element.id == message.id,
+    );
+    emojiCurrentId = messages[emojiMessageIndex].id;
+    if (emojiCurrentId == message.id) {
+      isEmojiContainerVisible = !isEmojiContainerVisible;
+    }
+    update(['emoji-reaction']);
+  }
+
+  void toggleEmojiContainer() {
+    isEmojiContainerVisible = !isEmojiContainerVisible;
+    update(['emoji-reaction']);
   }
 }

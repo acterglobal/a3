@@ -30,7 +30,7 @@ use std::sync::Arc;
 
 use super::{
     client::Client,
-    message::{sync_event_to_message, timeline_item_to_message, RoomMessage},
+    message::{sync_event_to_message, RoomMessage},
     receipt::ReceiptRecord,
     room::Room,
     RUNTIME,
@@ -144,7 +144,7 @@ impl ConversationController {
                 me.clone().process_room_encrypted(ev, &room, &c);
             },
         );
-        self.message_event_handle = Some(handle);
+        self.encrypted_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(

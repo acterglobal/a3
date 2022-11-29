@@ -29,6 +29,8 @@ class GroupMember extends StatelessWidget {
           stringName: name ?? ' ',
           avatar: avatar,
           displayName: name,
+          cacheHeight: 150,
+          cacheWidth: 150,
         ),
         Expanded(
           // fit: FlexFit.loose,

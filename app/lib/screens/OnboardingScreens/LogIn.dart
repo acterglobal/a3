@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/login_controller.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,12 +18,13 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final loginController = Get.put(LoginController());
+  final networkController = Get.put(NetworkController());
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     Get.delete<LoginController>();
-
+    Get.delete<NetworkController>();
     super.dispose();
   }
 
@@ -111,8 +113,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () async {
                             controller.isSubmitting = true;
                             if (formKey.currentState!.validate()) {
-                              if (await validateLogin()) {
-                                Navigator.pushReplacementNamed(context, '/');
+                              if (networkController.connectionType.value ==
+                                  '0') {
+                                Get.snackbar(
+                                  'No internet',
+                                  'Please turn on internet to continue',
+                                  colorText: Colors.white,
+                                );
+                              } else {
+                                if (await validateLogin()) {
+                                  Navigator.pushReplacementNamed(context, '/');
+                                }
                               }
                             }
                           },
