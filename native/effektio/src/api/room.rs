@@ -48,7 +48,7 @@ impl Member {
                 let user_profile = UserProfile::new(
                     client,
                     member.user_id().to_owned(),
-                    member.avatar_url().map(|x| x.to_owned()),
+                    member.avatar_url().map(|x| (*x).to_owned()),
                     member.display_name().map(|x| x.to_string()),
                 );
                 Ok(user_profile)
