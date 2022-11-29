@@ -65,34 +65,37 @@ impl RoomMessage {
     ) -> Self {
         let mut fallback = event.content.body().to_string();
         let mut formatted_body: Option<String> = None;
-        if let MessageType::Text(content) = &event.content.msgtype {
-            if let Some(formatted) = &content.formatted {
-                if formatted.format == MessageFormat::Html {
-                    formatted_body = Some(formatted.body.clone());
+        let mut image_description: Option<ImageDescription> = None;
+        let mut file_description: Option<FileDescription> = None;
+        match &event.content.msgtype {
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        formatted_body = Some(formatted.body.clone());
+                    }
                 }
             }
-        }
-        let mut image_description: Option<ImageDescription> = None;
-        if let MessageType::Image(content) = &event.content.msgtype {
-            if let Some(info) = content.info.as_ref() {
-                image_description = Some(ImageDescription {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                });
+            MessageType::Image(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    image_description = Some(ImageDescription {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        width: info.width.map(u64::from),
+                        height: info.height.map(u64::from),
+                    });
+                }
             }
-        }
-        let mut file_description: Option<FileDescription> = None;
-        if let MessageType::File(content) = &event.content.msgtype {
-            if let Some(info) = content.info.as_ref() {
-                file_description = Some(FileDescription {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                });
+            MessageType::File(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    file_description = Some(FileDescription {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                    });
+                }
             }
+            _ => {}
         }
         let is_reply = matches!(
             &event.content.relates_to,
@@ -164,32 +167,35 @@ impl RoomMessage {
                 let mut formatted_body: Option<String> = None;
                 let mut image_description: Option<ImageDescription> = None;
                 let mut file_description: Option<FileDescription> = None;
-                if let MessageType::Text(content) = msgtype {
-                    if let Some(formatted) = &content.formatted {
-                        if formatted.format == MessageFormat::Html {
-                            formatted_body = Some(formatted.body.clone());
+                match msgtype {
+                    MessageType::Text(content) => {
+                        if let Some(formatted) = &content.formatted {
+                            if formatted.format == MessageFormat::Html {
+                                formatted_body = Some(formatted.body.clone());
+                            }
                         }
                     }
-                }
-                if let MessageType::Image(content) = msgtype {
-                    if let Some(info) = content.info.as_ref() {
-                        image_description = Some(ImageDescription {
-                            name: content.body.clone(),
-                            mimetype: info.mimetype.clone(),
-                            size: info.size.map(u64::from),
-                            width: info.width.map(u64::from),
-                            height: info.height.map(u64::from),
-                        });
+                    MessageType::Image(content) => {
+                        if let Some(info) = content.info.as_ref() {
+                            image_description = Some(ImageDescription {
+                                name: content.body.clone(),
+                                mimetype: info.mimetype.clone(),
+                                size: info.size.map(u64::from),
+                                width: info.width.map(u64::from),
+                                height: info.height.map(u64::from),
+                            });
+                        }
                     }
-                }
-                if let MessageType::File(content) = msgtype {
-                    if let Some(info) = content.info.as_ref() {
-                        file_description = Some(FileDescription {
-                            name: content.body.clone(),
-                            mimetype: info.mimetype.clone(),
-                            size: info.size.map(u64::from),
-                        });
+                    MessageType::File(content) => {
+                        if let Some(info) = content.info.as_ref() {
+                            file_description = Some(FileDescription {
+                                name: content.body.clone(),
+                                mimetype: info.mimetype.clone(),
+                                size: info.size.map(u64::from),
+                            });
+                        }
                     }
+                    _ => {}
                 }
                 let is_reply = match msg.in_reply_to() {
                     Some(in_reply_to) => true,
@@ -214,6 +220,8 @@ impl RoomMessage {
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn't be decrypted, discarding");
             }
+            TimelineItemContent::FailedToParseMessageLike { event_type, error } => {}
+            TimelineItemContent::FailedToParseState { event_type, state_key, error } => {}
         }
         None
     }
