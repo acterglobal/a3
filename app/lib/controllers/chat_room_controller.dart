@@ -127,7 +127,7 @@ class ChatRoomController extends GetxController {
         isLoading.value = false;
         return;
       }
-      _stream = _currentRoom!.timeline();
+      _stream = await _currentRoom!.timelineStream();
       // event handler from paginate
       _diffSubscription = _stream?.diffRx().listen((event) async {
         switch (event.action()) {
@@ -228,6 +228,11 @@ class ChatRoomController extends GetxController {
             break;
         }
       });
+      if (_currentRoom == null) {
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
+      }
       bool hasMore = await _stream!.paginateBackwards(10);
       debugPrint('backward pagination has more: $hasMore');
       // load receipt status of room

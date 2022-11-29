@@ -37,7 +37,7 @@ pub async fn guest_client(
                 refresh_token: response.refresh_token.clone(),
                 device_id,
             };
-            client.restore_login(session).await?;
+            client.restore_session(session).await?;
             let state = ClientStateBuilder::default().is_guest(true).build()?;
             let c = Client::new(client, state);
             info!("Successfully created guest login: {:?}", response.user_id);
@@ -58,7 +58,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
-            client.restore_login(session).await?;
+            client.restore_session(session).await?;
             let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
             let c = Client::new(client.clone(), state);
             info!(
@@ -132,7 +132,7 @@ pub async fn register_with_registration_token(
         .spawn(async move {
             let client = config.build().await?;
             if let Err(err) = client.register(register::v3::Request::new()).await {
-                if let Some(response) = err.uiaa_response() {
+                if let Some(response) = err.as_uiaa_response() {
                     // FIXME: do actually check the registration types...
                     let request = assign!(register::v3::Request::new(), {
                         username: Some(&username),

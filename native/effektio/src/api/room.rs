@@ -5,7 +5,7 @@ use log::info;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{timeline::TimelineItem, Room as MatrixRoom, RoomMember},
+    room::{Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
             reaction::{ReactionEventContent, Relation},
@@ -152,10 +152,16 @@ impl Room {
             .await?
     }
 
-    pub fn timeline(&self) -> Result<TimelineStream> {
+    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
         let client = self.client.clone();
-        Ok(TimelineStream::new(client, room))
+        RUNTIME
+            .spawn(async move {
+                let timeline = Arc::new(room.timeline().await);
+                let stream = TimelineStream::new(client, room, timeline);
+                Ok(stream)
+            })
+            .await?
     }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
