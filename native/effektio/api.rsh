@@ -200,7 +200,7 @@ object Conversation {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// Get the timeline for the room
-    fn timeline() -> Result<TimelineStream>;
+    fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;

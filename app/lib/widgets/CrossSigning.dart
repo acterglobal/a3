@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:sprintf/sprintf.dart';
 
 class VerifEvent {
@@ -56,28 +57,24 @@ class CrossSigning {
       if (!_shouldShowNewDevicePopup()) {
         return;
       }
-      // Get.generalDialog(
-      //   pageBuilder: (context, anim1, anim2) {
-      //     return Container(
-      //       width: MediaQuery.of(context).size.width,
-      //       color: Colors.white,
-      //       child: Card(
-      //         child: ListView(
-      //           shrinkWrap: true,
-      //           children: [
-      //             ListTile(
-      //               title: const Text('New device detected'),
-      //               onTap: () async {
-      //                 await event.requestVerificationToUser();
-      //                 Get.back();
-      //               },
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     );
-      //   },
-      // );
+      showSimpleNotification(
+        ListTile(
+          leading: SvgPicture.asset(
+            'assets/images/baseline-devices.svg',
+            color: Colors.white,
+          ),
+          title: const Text(
+            'New Session Alert',
+            style: NotificationPopUpTheme.contentTitleStyle,
+          ),
+          subtitle: const Text(
+            'Tap to review and verify!',
+            style: NotificationPopUpTheme.contentSubtitleStyle,
+          ),
+        ),
+        background: NotificationPopUpTheme.overlayColor,
+        duration: const Duration(seconds: 1),
+      );
     });
   }
 

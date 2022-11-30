@@ -31,7 +31,7 @@ pub struct LoginConfig {
 }
 
 async fn default_client_config() -> Result<ClientBuilder> {
-    Ok(Client::builder().user_agent(&format!("effektio-cli/{}", crate_version!())))
+    Ok(Client::builder().user_agent(format!("effektio-cli/{}", crate_version!())))
 }
 
 impl LoginConfig {
