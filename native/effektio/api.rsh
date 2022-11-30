@@ -119,6 +119,10 @@ object RoomMessage {
 
     /// contains source data, name, mimetype and size
     fn file_description() -> Option<FileDescription>;
+
+    fn reaction_keys() -> Vec<string>;
+
+    fn reaction_description(key: string) -> Option<ReactionDescription>;
 }
 
 object ImageDescription {
@@ -149,6 +153,10 @@ object FileDescription {
 
     /// file size in bytes
     fn size() -> Option<u64>;
+}
+
+object ReactionDescription {
+    fn count() -> u64;
 }
 
 object TimelineDiff {

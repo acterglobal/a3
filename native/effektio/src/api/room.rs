@@ -238,7 +238,7 @@ impl Room {
             .spawn(async move {
                 let relates_to = Relation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
-                let response = room.send(content, None).await.expect("Sending the reaction should not fail");
+                let response = room.send(content, None).await?;
                 Ok(response.event_id.to_string())
             })
             .await?

@@ -532,15 +532,22 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
-      return types.TextMessage(
+      Map<String, dynamic> reactions = {};
+      for (var key in message.reactionKeys()) {
+        String k = key.toDartString();
+        reactions[k] = message.reactionDescription(k);
+      }
+      var result = types.TextMessage(
         author: author,
         createdAt: createdAt,
         id: eventId,
         text: message.formattedBody() ?? message.body(),
         metadata: {
           'messageLength': message.body().length,
+          'reactions': reactions,
         },
       );
+      return result;
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
     return null;
