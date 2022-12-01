@@ -79,15 +79,13 @@ class ChatRoomController extends GetxController {
           // filter only message from other not me
           // it is processed in handleSendPressed
           if (event.sender() != client.userId().toString()) {
-            types.Message? m = await _prepareMessage(event);
-            if (m != null) {
-              _insertMessage(messages.length, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (event.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(event);
+            _insertMessage(messages.length, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (event.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
           }
         }
@@ -134,15 +132,13 @@ class ChatRoomController extends GetxController {
           case 'Replace':
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
-              types.Message? m = await _prepareMessage(msg);
-              if (m != null) {
-                _insertMessage(0, m);
-                if (isLoading.isFalse) {
-                  update(['Chat']);
-                }
-                if (msg.msgtype() == 'm.image') {
-                  _fetchMessageContent(m.id);
-                }
+              types.Message m = await _prepareMessage(msg);
+              _insertMessage(0, m);
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (msg.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
               }
             }
             break;
@@ -152,15 +148,13 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = await _prepareMessage(value);
-            if (m != null) {
-              _insertMessage(messages.length - index, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (value.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(value);
+            _insertMessage(messages.length - index, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (value.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
             break;
           case 'UpdateAt':
@@ -169,15 +163,13 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = await _prepareMessage(value);
-            if (m != null) {
-              _updateMessage(messages.length - index, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (value.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(value);
+            _updateMessage(messages.length - index, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (value.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
             break;
           case 'Push':
@@ -185,17 +177,13 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = await _prepareMessage(value);
-            if (m != null) {
-              _insertMessage(0, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              String msgType = value.msgtype();
-              debugPrint('msgType - $msgType');
-              if (value.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(value);
+            _insertMessage(0, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (value.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
             break;
           case 'RemoveAt':
@@ -300,13 +288,13 @@ class ChatRoomController extends GetxController {
     types.TextMessage message,
     types.PreviewData previewData,
   ) {
-    final idx = messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (messages[idx] as types.TextMessage).copyWith(
+    final index = messages.indexWhere((x) => x.id == message.id);
+    final updatedMessage = (messages[index] as types.TextMessage).copyWith(
       previewData: previewData,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      messages[idx] = updatedMessage;
+      messages[index] = updatedMessage;
       update(['Chat']);
     });
   }
@@ -491,7 +479,7 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  Future<types.Message?> _prepareMessage(RoomMessage message) async {
+  Future<types.Message> _prepareMessage(RoomMessage message) async {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
@@ -550,15 +538,21 @@ class ChatRoomController extends GetxController {
       return result;
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
-    return null;
+
+    // should not return null, before we can keep track of index in diff receiver
+    return types.UnsupportedMessage(
+      author: author,
+      createdAt: createdAt,
+      id: eventId,
+    );
   }
 
   void _fetchMessageContent(String eventId) {
     _currentRoom!.imageBinary(eventId).then((data) {
-      int idx = messages.indexWhere((x) => x.id == eventId);
-      if (idx != -1) {
+      int index = messages.indexWhere((x) => x.id == eventId);
+      if (index != -1) {
         final base64String = base64Encode(data.asTypedList());
-        messages[idx] = messages[idx].copyWith(
+        messages[index] = messages[index].copyWith(
           metadata: {
             'base64': base64String,
           },
@@ -591,9 +585,7 @@ class ChatRoomController extends GetxController {
   }
 
   void updateEmojiState(types.Message message) {
-    emojiMessageIndex = messages.indexWhere(
-      (element) => element.id == message.id,
-    );
+    emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
     emojiCurrentId = messages[emojiMessageIndex].id;
     if (emojiCurrentId == message.id) {
       isEmojiContainerVisible = !isEmojiContainerVisible;
