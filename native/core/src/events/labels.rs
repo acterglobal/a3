@@ -17,7 +17,7 @@ impl Serialize for Labels {
     where
         S: Serializer,
     {
-        let len = if self.msgtype.is_some() { 0 } else { 1 }
+        let len = usize::from(self.msgtype.is_none())
             + self.tags.len()
             + self.categories.len()
             + self.others.len();

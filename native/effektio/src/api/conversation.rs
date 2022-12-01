@@ -144,7 +144,7 @@ impl ConversationController {
                 me.clone().process_room_encrypted(ev, &room, &c);
             },
         );
-        self.message_event_handle = Some(handle);
+        self.encrypted_event_handle = Some(handle);
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
@@ -334,7 +334,7 @@ impl Client {
                     visibility: Visibility::Private,
                 });
                 let response = client.create_room(request).await?;
-                Ok(response.room_id)
+                Ok(response.room_id().to_owned())
             })
             .await?
     }
