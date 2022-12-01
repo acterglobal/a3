@@ -1,5 +1,5 @@
 import 'package:bubble/bubble.dart';
-import 'package:effektio/common/constants.dart';
+
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
@@ -83,14 +83,12 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
     List<String> keys = reactions.keys.toList();
     num count = 0;
-    reactions.forEach((key, value) {
-      count += value.count();
-    });
     setState(() {
-      reactionTabs.add(Tab(text: 'All $count'));
-      for (int i = 0; i < keys.length; i++) {
-        reactionTabs.add(Tab(text: keys[i]));
-      }
+      reactions.forEach((key, value) {
+        count += value.count();
+        reactionTabs.add(Tab(text: '$key +${value.count()}'));
+      });
+      reactionTabs.insert(0, (Tab(text: 'All $count')));
       tabBarController =
           TabController(length: reactionTabs.length, vsync: this);
     });
@@ -124,13 +122,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: TabBarView(
                   controller: tabBarController,
-                  children: [
-                    buildReactionListing(astonishedFace),
-                    buildReactionListing(heart),
+                  children: <Widget>[
+                    buildReactionListing(keys),
+                    for (var count in keys) buildReactionListing([count]),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         );
       },
@@ -259,13 +257,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-  Widget buildReactionListing(String emoji) {
+  Widget buildReactionListing(List<String> emojis) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
-      itemCount: 10,
+      itemCount: emojis.length,
       itemBuilder: (BuildContext context, int index) {
-        return EmojiReactionListItem(emoji: emoji);
+        return EmojiReactionListItem(emoji: emojis[index]);
       },
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(height: 12);
