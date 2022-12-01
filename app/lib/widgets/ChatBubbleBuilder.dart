@@ -30,15 +30,16 @@ class ChatBubbleBuilder extends StatefulWidget {
 }
 
 class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late types.MessageType messagetype;
   final ChatRoomController roomController = Get.find<ChatRoomController>();
-  late final TabController tabBarController;
+  late TabController tabBarController;
+  List<Tab> reactionTabs = [];
 
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(length: 3, vsync: this);
+    tabBarController = TabController(length: reactionTabs.length, vsync: this);
     messagetype = widget.message.type;
   }
 
@@ -66,16 +67,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 ),
               ],
             ),
-            GestureDetector(
-              onLongPress: () {
-                roomController.updateEmojiState(widget.message);
-              },
-              child: Align(
-                alignment: widget.userId != widget.message.author.id
-                    ? Alignment.bottomLeft
-                    : Alignment.bottomRight,
-                child: buildEmojiContainer(),
-              ),
+            Align(
+              alignment: widget.userId != widget.message.author.id
+                  ? Alignment.bottomLeft
+                  : Alignment.bottomRight,
+              child: buildEmojiContainer(),
             ),
           ],
         );
@@ -84,13 +80,27 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
 //Emoji reaction info bottom sheet.
-  void showEmojiReactionsSheet() {
+  void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
+    List<String> keys = reactions.keys.toList();
+    num count = 0;
+    reactions.forEach((key, value) {
+      count += value.count();
+    });
+    setState(() {
+      reactionTabs.add(Tab(text: 'All $count'));
+      for (int i = 0; i < keys.length; i++) {
+        reactionTabs.add(Tab(text: keys[i]));
+      }
+      tabBarController =
+          TabController(length: reactionTabs.length, vsync: this);
+    });
     showModalBottomSheet(
       backgroundColor: AppCommonTheme.backgroundColorLight,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
+      isDismissible: true,
       builder: (context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
@@ -105,11 +115,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.all(Radius.circular(12.0)),
                 ),
-                tabs: const [
-                  Tab(text: ('All 15')),
-                  Tab(text: ('$heart +11')),
-                  Tab(text: ('$faceWithTears +3'))
-                ],
+                tabs: reactionTabs,
               ),
             ),
             const SizedBox(height: 10),
@@ -121,7 +127,6 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   children: [
                     buildReactionListing(astonishedFace),
                     buildReactionListing(heart),
-                    buildReactionListing(faceWithTears),
                   ],
                 ),
               ),
@@ -129,34 +134,42 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           ],
         );
       },
+    ).whenComplete(
+      () => setState(() {
+        reactionTabs.clear();
+      }),
     );
   }
 
   // Custom chat bubble
   Widget buildChatBubble() {
-    return Bubble(
-      child: widget.child,
-      color: widget.userId != widget.message.author.id ||
-              messagetype == types.MessageType.image
-          ? AppCommonTheme.backgroundColorLight
-          : AppCommonTheme.primaryColor,
-      margin: widget.nextMessageInGroup
-          ? const BubbleEdges.symmetric(
-              horizontal: 2,
-            )
-          : null,
-      radius: const Radius.circular(18),
-      padding: messagetype == types.MessageType.image
-          ? const BubbleEdges.all(0)
-          : null,
-      nip: (widget.nextMessageInGroup || messagetype == types.MessageType.image)
-          ? BubbleNip.no
-          : widget.userId != widget.message.author.id
-              ? BubbleNip.leftBottom
-              : BubbleNip.rightBottom,
-      nipHeight: 18,
-      nipWidth: 0.5,
-      nipRadius: 0,
+    return GestureDetector(
+      onLongPress: () => roomController.updateEmojiState(widget.message),
+      child: Bubble(
+        child: widget.child,
+        color: widget.userId != widget.message.author.id ||
+                messagetype == types.MessageType.image
+            ? AppCommonTheme.backgroundColorLight
+            : AppCommonTheme.primaryColor,
+        margin: widget.nextMessageInGroup
+            ? const BubbleEdges.symmetric(
+                horizontal: 2,
+              )
+            : null,
+        radius: const Radius.circular(18),
+        padding: messagetype == types.MessageType.image
+            ? const BubbleEdges.all(0)
+            : null,
+        nip: (widget.nextMessageInGroup ||
+                messagetype == types.MessageType.image)
+            ? BubbleNip.no
+            : widget.userId != widget.message.author.id
+                ? BubbleNip.leftBottom
+                : BubbleNip.rightBottom,
+        nipHeight: 18,
+        nipWidth: 0.5,
+        nipRadius: 0,
+      ),
     );
   }
 
@@ -164,53 +177,51 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   Widget buildEmojiContainer() {
     Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
     List<String> keys = reactions.keys.toList();
-    return Container(
-      width: keys.length * 50,
-      margin: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: AppCommonTheme.dividerColor,
-          width: 0.2,
+    return GestureDetector(
+      onLongPress: () => showEmojiReactionsSheet(reactions),
+      child: Container(
+        width: keys.length * 37,
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: AppCommonTheme.dividerColor,
+            width: 0.2,
+          ),
+          borderRadius: BorderRadius.only(
+            topLeft: widget.nextMessageInGroup
+                ? const Radius.circular(12)
+                : widget.userId != widget.message.author.id
+                    ? const Radius.circular(0)
+                    : const Radius.circular(12),
+            topRight: widget.nextMessageInGroup
+                ? const Radius.circular(12)
+                : widget.userId != widget.message.author.id
+                    ? const Radius.circular(12)
+                    : const Radius.circular(0),
+            bottomLeft: const Radius.circular(12),
+            bottomRight: const Radius.circular(12),
+          ),
+          color: ChatTheme01.chatEmojiContainerColor,
         ),
-        borderRadius: BorderRadius.only(
-          topLeft: widget.nextMessageInGroup
-              ? const Radius.circular(12)
-              : widget.userId != widget.message.author.id
-                  ? const Radius.circular(0)
-                  : const Radius.circular(12),
-          topRight: widget.nextMessageInGroup
-              ? const Radius.circular(12)
-              : widget.userId != widget.message.author.id
-                  ? const Radius.circular(12)
-                  : const Radius.circular(0),
-          bottomLeft: const Radius.circular(12),
-          bottomRight: const Radius.circular(12),
-        ),
-        color: ChatTheme01.chatEmojiContainerColor,
-      ),
-      padding: const EdgeInsets.all(5),
-      child: Wrap(
-        direction: Axis.horizontal,
-        spacing: 5.0,
-        runSpacing: 3.0,
-        children: List.generate(keys.length, (int index) {
-          String key = keys[index];
-          ReactionDescription desc = reactions[key];
-          int count = desc.count();
-          return GestureDetector(
-            onTap: () {
-              showEmojiReactionsSheet();
-            },
-            child: Row(
+        padding: const EdgeInsets.all(5),
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 5.0,
+          runSpacing: 3.0,
+          children: List.generate(keys.length, (int index) {
+            String key = keys[index];
+            ReactionDescription? desc = reactions[key];
+            int count = desc!.count();
+            return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(key, style: ChatTheme01.emojiCountStyle),
                 const SizedBox(width: 2.0),
                 Text(count.toString(), style: ChatTheme01.emojiCountStyle),
               ],
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
