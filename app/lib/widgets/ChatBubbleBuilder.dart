@@ -1,13 +1,12 @@
 import 'package:bubble/bubble.dart';
 import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
-
-import 'package:effektio/controllers/chat_room_controller.dart';
 
 class ChatBubbleBuilder extends StatefulWidget {
   final String userId;
@@ -46,13 +45,15 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       id: 'emoji-reaction',
       builder: (context) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             const SizedBox(height: 6),
             Row(
-              textDirection: widget.userId != widget.message.author.id
-                  ? TextDirection.ltr
-                  : TextDirection.rtl,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
+              textDirection:
+                  !isAuthor() ? TextDirection.ltr : TextDirection.rtl,
               children: [
                 Flexible(
                   child: Stack(
@@ -68,9 +69,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               onLongPress: () =>
                   roomController.updateEmojiState(widget.message),
               child: Align(
-                alignment: widget.userId != widget.message.author.id
-                    ? Alignment.bottomLeft
-                    : Alignment.bottomRight,
+                alignment:
+                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
                 child: buildEmojiContainer(20),
               ),
             ),
@@ -139,12 +139,73 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
 //Custom chat bubble
   Widget buildChatBubble() {
+    return Column(
+      crossAxisAlignment:
+          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'You replied',
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Bubble(
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              'This is a reply message demo',
+              style: ChatTheme01.chatReplyTextStyle,
+            ),
+          ),
+          color: AppCommonTheme.backgroundColorLight,
+          margin: widget.nextMessageInGroup
+              ? const BubbleEdges.symmetric(
+                  horizontal: 2,
+                )
+              : null,
+          radius: const Radius.circular(22),
+          padding: messagetype == types.MessageType.image
+              ? const BubbleEdges.all(0)
+              : null,
+          nip: BubbleNip.no,
+        ),
+        const SizedBox(
+          height: 4,
+        ),
+        Bubble(
+          child: widget.child,
+          color: !isAuthor() || messagetype == types.MessageType.image
+              ? AppCommonTheme.backgroundColorLight
+              : AppCommonTheme.primaryColor,
+          margin: widget.nextMessageInGroup
+              ? const BubbleEdges.symmetric(
+                  horizontal: 2,
+                )
+              : null,
+          radius: const Radius.circular(22),
+          padding: messagetype == types.MessageType.image
+              ? const BubbleEdges.all(0)
+              : null,
+          nip: (widget.nextMessageInGroup ||
+                  messagetype == types.MessageType.image)
+              ? BubbleNip.no
+              : !isAuthor()
+                  ? BubbleNip.leftBottom
+                  : BubbleNip.rightBottom,
+          nipHeight: 18,
+          nipWidth: 0.5,
+          nipRadius: 0,
+        ),
+      ],
+    );
+  }
+
+  //Custom reply bubble
+  Widget buildReplyBubble() {
     return Bubble(
       child: widget.child,
-      color: widget.userId != widget.message.author.id ||
-              messagetype == types.MessageType.image
-          ? AppCommonTheme.backgroundColorLight
-          : AppCommonTheme.primaryColor,
+      color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
           ? const BubbleEdges.symmetric(
               horizontal: 2,
@@ -154,14 +215,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       padding: messagetype == types.MessageType.image
           ? const BubbleEdges.all(0)
           : null,
-      nip: (widget.nextMessageInGroup || messagetype == types.MessageType.image)
-          ? BubbleNip.no
-          : widget.userId != widget.message.author.id
-              ? BubbleNip.leftBottom
-              : BubbleNip.rightBottom,
-      nipHeight: 18,
-      nipWidth: 0.5,
-      nipRadius: 0,
+      nip: BubbleNip.no,
     );
   }
 
@@ -178,12 +232,12 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         borderRadius: BorderRadius.only(
           topLeft: widget.nextMessageInGroup
               ? const Radius.circular(12)
-              : widget.userId != widget.message.author.id
+              : !isAuthor()
                   ? const Radius.circular(0)
                   : const Radius.circular(12),
           topRight: widget.nextMessageInGroup
               ? const Radius.circular(12)
-              : widget.userId != widget.message.author.id
+              : !isAuthor()
                   ? const Radius.circular(12)
                   : const Radius.circular(0),
           bottomLeft: const Radius.circular(12),
@@ -235,7 +289,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         width: 198,
         height: 42,
         padding: const EdgeInsets.all(8.0),
-        margin: widget.userId != widget.message.author.id
+        margin: !isAuthor()
             ? const EdgeInsets.only(bottom: 8.0, left: 8.0)
             : const EdgeInsets.only(bottom: 8.0, right: 8.0),
         decoration: BoxDecoration(
@@ -278,5 +332,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         );
       },
     );
+  }
+
+  bool isAuthor() {
+    return widget.userId == widget.message.author.id;
   }
 }
