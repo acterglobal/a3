@@ -21,7 +21,7 @@ git = "https://github.com/ruma/ruma"
 rev = "ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
 
 [profile.release]
-panic = 'unwind'
+panic = "unwind"
 opt-level = 2
 lto = true
 codegen-units = 1
