@@ -174,97 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
-                              return Dialog(
-                                child: Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  height: 280,
-                                  decoration: const BoxDecoration(
-                                    color: AppCommonTheme.backgroundColorLight,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(16),
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 8.0,
-                                        ),
-                                        const Text(
-                                          'Report This Message',
-                                          style:
-                                              AppCommonTheme.appBarTitleStyle,
-                                        ),
-                                        const SizedBox(
-                                          height: 16.0,
-                                        ),
-                                        const Text(
-                                          "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: AppCommonTheme.dividerColor,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            const snackBar = SnackBar(
-                                              content: Text('Message reported'),
-                                            );
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(snackBar);
-                                            roomController
-                                                    .isEmojiContainerVisible =
-                                                false;
-                                            roomController
-                                                .update(['emoji-reaction']);
-                                            Navigator.pop(context);
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(20),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  14,
-                                                ),
-                                                color:
-                                                    AppCommonTheme.primaryColor,
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(8),
-                                                child: Center(
-                                                  child: Text(
-                                                    'Okay!',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
+                              return buildReplyDialog();
                             },
                           );
                         }
@@ -567,7 +477,11 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached:
                   invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              onBackgroundTap: () => controller.toggleEmojiContainer(),
+              onBackgroundTap: () {
+                if (controller.isEmojiContainerVisible) {
+                  controller.toggleEmojiContainer();
+                }
+              },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
@@ -581,6 +495,92 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget buildReplyDialog() {
+    return Dialog(
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        height: 280,
+        decoration: const BoxDecoration(
+          color: AppCommonTheme.backgroundColorLight,
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 8.0,
+              ),
+              const Text(
+                'Report This Message',
+                style: AppCommonTheme.appBarTitleStyle,
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              const Text(
+                "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppCommonTheme.dividerColor,
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  const snackBar = SnackBar(
+                    content: Text('Message reported'),
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  roomController.isEmojiContainerVisible = false;
+                  roomController.update(['emoji-reaction']);
+                  Navigator.pop(context);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        14,
+                      ),
+                      color: AppCommonTheme.primaryColor,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Center(
+                        child: Text(
+                          'Okay!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
