@@ -65,14 +65,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 ),
               ],
             ),
-            GestureDetector(
-              onLongPress: () =>
-                  roomController.updateEmojiState(widget.message),
-              child: Align(
-                alignment:
-                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-                child: buildEmojiContainer(20),
-              ),
+            Align(
+              alignment:
+                  !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
+              child: buildEmojiContainer(20),
             ),
           ],
         );
@@ -139,65 +135,71 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
 //Custom chat bubble
   Widget buildChatBubble() {
-    return Column(
-      crossAxisAlignment:
-          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'You replied',
-          style: TextStyle(color: Colors.white, fontSize: 12),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        Bubble(
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'This is a reply message demo',
-              style: ChatTheme01.chatReplyTextStyle,
-            ),
+    return GestureDetector(
+      onLongPress: () {
+        roomController.updateEmojiState(widget.message);
+        roomController.replyMessageWidget = widget.child;
+      },
+      child: Column(
+        crossAxisAlignment:
+            isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'You replied',
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
-          color: AppCommonTheme.backgroundColorLight,
-          margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(
-                  horizontal: 2,
-                )
-              : null,
-          radius: const Radius.circular(22),
-          padding: messagetype == types.MessageType.image
-              ? const BubbleEdges.all(0)
-              : null,
-          nip: BubbleNip.no,
-        ),
-        const SizedBox(
-          height: 4,
-        ),
-        Bubble(
-          child: widget.child,
-          color: !isAuthor() || messagetype == types.MessageType.image
-              ? AppCommonTheme.backgroundColorLight
-              : AppCommonTheme.primaryColor,
-          margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(
-                  horizontal: 2,
-                )
-              : null,
-          radius: const Radius.circular(22),
-          padding: messagetype == types.MessageType.image
-              ? const BubbleEdges.all(0)
-              : null,
-          nip: (widget.nextMessageInGroup ||
-                  messagetype == types.MessageType.image)
-              ? BubbleNip.no
-              : !isAuthor()
-                  ? BubbleNip.leftBottom
-                  : BubbleNip.rightBottom,
-          nipHeight: 18,
-          nipWidth: 0.5,
-          nipRadius: 0,
-        ),
-      ],
+          const SizedBox(
+            height: 8,
+          ),
+          Bubble(
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text(
+                'This is a reply message demo',
+                style: ChatTheme01.chatReplyTextStyle,
+              ),
+            ),
+            color: AppCommonTheme.backgroundColorLight,
+            margin: widget.nextMessageInGroup
+                ? const BubbleEdges.symmetric(
+                    horizontal: 2,
+                  )
+                : null,
+            radius: const Radius.circular(22),
+            padding: messagetype == types.MessageType.image
+                ? const BubbleEdges.all(0)
+                : null,
+            nip: BubbleNip.no,
+          ),
+          const SizedBox(
+            height: 4,
+          ),
+          Bubble(
+            child: widget.child,
+            color: !isAuthor() || messagetype == types.MessageType.image
+                ? AppCommonTheme.backgroundColorLight
+                : AppCommonTheme.primaryColor,
+            margin: widget.nextMessageInGroup
+                ? const BubbleEdges.symmetric(
+                    horizontal: 2,
+                  )
+                : null,
+            radius: const Radius.circular(22),
+            padding: messagetype == types.MessageType.image
+                ? const BubbleEdges.all(0)
+                : null,
+            nip: (widget.nextMessageInGroup ||
+                    messagetype == types.MessageType.image)
+                ? BubbleNip.no
+                : !isAuthor()
+                    ? BubbleNip.leftBottom
+                    : BubbleNip.rightBottom,
+            nipHeight: 18,
+            nipWidth: 0.5,
+            nipRadius: 0,
+          ),
+        ],
+      ),
     );
   }
 

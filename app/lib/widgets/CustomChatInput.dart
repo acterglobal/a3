@@ -53,24 +53,19 @@ class CustomChatInput extends StatelessWidget {
                         children: [
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text(
+                            children: [
+                              const Text(
                                 'Replying to yourself',
                                 style:
                                     TextStyle(color: Colors.grey, fontSize: 12),
                               ),
-                              Text(
-                                "It's morning in Tokyo",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              )
+                              controller.replyMessageWidget ?? const SizedBox(),
                             ],
                           ),
                           GestureDetector(
                             onTap: () {
                               controller.showReplyView = false;
+                              controller.replyMessageWidget = null;
                               controller.update(['chat-input']);
                             },
                             child: const Icon(

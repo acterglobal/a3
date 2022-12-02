@@ -58,6 +58,8 @@ class ChatRoomController extends GetxController {
   String? emojiCurrentId;
   String? authorId;
   bool showReplyView = false;
+  Widget? replyMessageWidget;
+  types.Message? repliedToMessage;
 
   ChatRoomController({required this.client}) : super();
 
@@ -380,6 +382,7 @@ class ChatRoomController extends GetxController {
         height: image.height.toDouble(),
         id: eventId,
         name: result.name,
+        repliedMessage: repliedToMessage,
         size: bytes.length,
         uri: result.path,
         width: image.width.toDouble(),
@@ -527,6 +530,7 @@ class ChatRoomController extends GetxController {
         createdAt: createdAt,
         id: eventId,
         text: message.formattedBody() ?? message.body(),
+        repliedMessage: repliedToMessage,
         metadata: {
           'messageLength': message.body().length,
         },
