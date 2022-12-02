@@ -549,7 +549,7 @@ class _ChatScreenState extends State<ChatScreen> {
               onSendPressed: (_) {},
               user: types.User(id: widget.client.userId().toString()),
               // if invited, disable image gallery
-              disableImageGallery: invitedIndex != -1,
+              disableImageGallery: true,
               //custom avatar builder
               avatarBuilder: avatarBuilder,
               bubbleBuilder: bubbleBuilder,
