@@ -36,36 +36,86 @@ class CustomChatInput extends StatelessWidget {
         GetBuilder<ChatRoomController>(
           id: 'chat-input',
           builder: (ChatRoomController controller) {
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              color: AppCommonTheme.backgroundColorLight,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (isChatScreen) _buildAttachmentButton(controller),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _buildTextEditor(context, controller),
-                        ),
+            return Column(
+              children: [
+                Visibility(
+                  visible: controller.showReplyView,
+                  child: Container(
+                    color: AppCommonTheme.backgroundColorLight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 12.0,
+                        left: 16.0,
+                        right: 16.0,
                       ),
-                      if (controller.isSendButtonVisible || !isChatScreen)
-                        _buildSendButton(),
-                      if (!controller.isSendButtonVisible && isChatScreen)
-                        _buildImageButton(context, controller),
-                      if (!controller.isSendButtonVisible && isChatScreen)
-                        const SizedBox(width: 10),
-                      if (!controller.isSendButtonVisible && isChatScreen)
-                        _buildAudioButton(),
-                    ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Text(
+                                'Replying to yourself',
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
+                              ),
+                              Text(
+                                "It's morning in Tokyo",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                              )
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              controller.showReplyView = false;
+                              controller.update(['chat-input']);
+                            },
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  color: AppCommonTheme.backgroundColorLight,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (isChatScreen) _buildAttachmentButton(controller),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _buildTextEditor(context, controller),
+                            ),
+                          ),
+                          if (controller.isSendButtonVisible || !isChatScreen)
+                            _buildSendButton(),
+                          if (!controller.isSendButtonVisible && isChatScreen)
+                            _buildImageButton(context, controller),
+                          if (!controller.isSendButtonVisible && isChatScreen)
+                            const SizedBox(width: 10),
+                          if (!controller.isSendButtonVisible && isChatScreen)
+                            _buildAudioButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),

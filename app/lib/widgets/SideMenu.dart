@@ -110,6 +110,8 @@ class SideDrawer extends StatelessWidget {
             child: CustomAvatar(
               uniqueKey: userId,
               radius: 24,
+              cacheHeight: 120,
+              cacheWidth: 120,
               avatar: displayAvatar,
               displayName: displayName,
               isGroup: false,

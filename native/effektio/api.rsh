@@ -119,6 +119,9 @@ object RoomMessage {
 
     /// contains source data, name, mimetype and size
     fn file_description() -> Option<FileDescription>;
+
+    /// Whether this message is editable
+    fn is_editable() -> bool;
 }
 
 object ImageDescription {
@@ -181,6 +184,9 @@ object TimelineStream {
 
     /// Get the next count messages backwards,
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
+
+    /// modify the room message
+    fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Conversation {
@@ -194,7 +200,7 @@ object Conversation {
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
     /// Get the timeline for the room
-    fn timeline() -> Result<TimelineStream>;
+    fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;

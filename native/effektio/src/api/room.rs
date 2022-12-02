@@ -5,7 +5,7 @@ use log::info;
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{timeline::TimelineItem, Room as MatrixRoom, RoomMember},
+    room::{Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
             room::message::{MessageType, RoomMessageEventContent},
@@ -47,7 +47,7 @@ impl Member {
                 let user_profile = UserProfile::new(
                     client,
                     member.user_id().to_owned(),
-                    member.avatar_url().map(|x| x.to_owned()),
+                    member.avatar_url().map(|x| (*x).to_owned()),
                     member.display_name().map(|x| x.to_string()),
                 );
                 Ok(user_profile)
@@ -98,10 +98,10 @@ impl Room {
 
     pub async fn active_members(&self) -> Result<Vec<Member>> {
         let client = self.client.clone();
-        let r = self.room.clone();
+        let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let members = r
+                let members = room
                     .active_members()
                     .await
                     .context("No members")?
@@ -118,10 +118,10 @@ impl Room {
 
     pub async fn active_members_no_sync(&self) -> Result<Vec<Member>> {
         let client = self.client.clone();
-        let r = self.room.clone();
+        let room = self.room.clone();
         RUNTIME
             .spawn(async move {
-                let members = r
+                let members = room
                     .active_members_no_sync()
                     .await
                     .context("No members")?
@@ -138,11 +138,11 @@ impl Room {
 
     pub async fn get_member(&self, user_id: String) -> Result<Member> {
         let client = self.client.clone();
-        let r = self.room.clone();
+        let room = self.room.clone();
         let uid = UserId::parse(user_id)?;
         RUNTIME
             .spawn(async move {
-                let member = r.get_member(&uid).await?.context("User not found")?;
+                let member = room.get_member(&uid).await?.context("User not found")?;
                 Ok(Member {
                     client: client.clone(),
                     member,
@@ -151,11 +151,16 @@ impl Room {
             .await?
     }
 
-    pub fn timeline(&self) -> Result<TimelineStream> {
+    pub async fn timeline_stream(&self) -> Result<TimelineStream> {
         let room = self.room.clone();
         let client = self.client.clone();
-        let stream = TimelineStream::new(client, room);
-        Ok(stream)
+        RUNTIME
+            .spawn(async move {
+                let timeline = Arc::new(room.timeline().await);
+                let stream = TimelineStream::new(client, room, timeline);
+                Ok(stream)
+            })
+            .await?
     }
 
     pub async fn typing_notice(&self, typing: bool) -> Result<bool> {
@@ -195,15 +200,11 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let r = room
-                    .send(
-                        AnyMessageLikeEventContent::RoomMessage(
-                            RoomMessageEventContent::text_plain(message),
-                        ),
-                        None,
-                    )
-                    .await?;
-                Ok(r.event_id.to_string())
+                let content = AnyMessageLikeEventContent::RoomMessage(
+                    RoomMessageEventContent::text_plain(message),
+                );
+                let response = room.send(content, None).await?;
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -216,15 +217,11 @@ impl Room {
         };
         RUNTIME
             .spawn(async move {
-                let r = room
-                    .send(
-                        AnyMessageLikeEventContent::RoomMessage(
-                            RoomMessageEventContent::text_markdown(markdown),
-                        ),
-                        None,
-                    )
-                    .await?;
-                Ok(r.event_id.to_string())
+                let content = AnyMessageLikeEventContent::RoomMessage(
+                    RoomMessageEventContent::text_markdown(markdown),
+                );
+                let response = room.send(content, None).await?;
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -254,10 +251,10 @@ impl Room {
                     blurhash: None,
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
-                let r = room
+                let response = room
                     .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
-                Ok(r.event_id.to_string())
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -360,17 +357,11 @@ impl Room {
                 ))) = evt.event.deserialize()
                 {
                     if let MessageType::Image(content) = &m.content.msgtype {
-                        let source = content.source.clone();
-                        let data = client
-                            .media()
-                            .get_media_content(
-                                &MediaRequest {
-                                    source,
-                                    format: MediaFormat::File,
-                                },
-                                false,
-                            )
-                            .await?;
+                        let request = MediaRequest {
+                            source: content.source.clone(),
+                            format: MediaFormat::File,
+                        };
+                        let data = client.media().get_media_content(&request, false).await?;
                         Ok(FfiBuffer::new(data))
                     } else {
                         bail!("Invalid file format")
@@ -402,10 +393,10 @@ impl Room {
                     size: Some(UInt::from(size)),
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
-                let r = room
+                let response = room
                     .send_attachment(name.as_str(), &mime_type, &image, config)
                     .await?;
-                Ok(r.event_id.to_string())
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -427,31 +418,26 @@ impl Room {
                 ))) = evt.event.deserialize()
                 {
                     if let MessageType::File(content) = m.content.msgtype {
-                        let source = content.source.clone();
+                        let request = MediaRequest {
+                            source: content.source.clone(),
+                            format: MediaFormat::File,
+                        };
                         let name = content.body.clone();
                         let mut path = PathBuf::from(dir_path.clone());
                         path.push(name);
                         let mut file = File::create(path.clone())?;
-                        let data = client
-                            .media()
-                            .get_media_content(
-                                &MediaRequest {
-                                    source,
-                                    format: MediaFormat::File,
-                                },
-                                false,
-                            )
-                            .await?;
+                        let data = client.media().get_media_content(&request, false).await?;
                         file.write_all(&data)?;
                         let key =
                             [room.room_id().as_str().as_bytes(), event_id.as_bytes()].concat();
                         let path_text = path
                             .to_str()
-                            .expect("Path was generated from strings. Must be string");
+                            .context("Path was generated from strings. Must be string")?;
                         client
                             .store()
                             .set_custom_value(&key, path_text.as_bytes().to_vec())
-                            .await?;
+                            .await?
+                            .context("Saving the file path to storage was failed")?;
                         Ok(path_text.to_owned())
                     } else {
                         bail!("This message type is not file")
@@ -484,13 +470,13 @@ impl Room {
                             event_id.as_str().as_bytes(),
                         ]
                         .concat();
-                        let path = client.store().get_custom_value(&key).await?;
-                        if let Some(value) = path {
-                            let text = std::str::from_utf8(&value)?;
-                            Ok(text.to_owned())
-                        } else {
-                            bail!("Couldn't get the path of saved file")
-                        }
+                        let path = client
+                            .store()
+                            .get_custom_value(&key)
+                            .await?
+                            .context("Couldn't get the path of saved file")?;
+                        let text = std::str::from_utf8(&path)?;
+                        Ok(text.to_owned())
                     } else {
                         bail!("This message type is not file")
                     }

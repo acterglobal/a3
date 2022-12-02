@@ -8,12 +8,13 @@ use matrix_sdk::{
     ruma::events::{
         room::{
             encrypted::OriginalSyncRoomEncryptedEvent,
-            message::{MessageFormat, MessageType, RoomMessageEventContent},
+            message::{MessageFormat, MessageType, Relation, RoomMessageEventContent},
         },
         AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
         SyncMessageLikeEvent,
     },
 };
+use regex::Regex;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
@@ -27,6 +28,8 @@ pub struct RoomMessage {
     msgtype: String,
     image_description: Option<ImageDescription>,
     file_description: Option<FileDescription>,
+    is_reply: bool,
+    is_editable: bool,
 }
 
 impl RoomMessage {
@@ -41,6 +44,8 @@ impl RoomMessage {
         msgtype: String,
         image_description: Option<ImageDescription>,
         file_description: Option<FileDescription>,
+        is_reply: bool,
+        is_editable: bool,
     ) -> Self {
         RoomMessage {
             event_id,
@@ -52,6 +57,8 @@ impl RoomMessage {
             msgtype,
             image_description,
             file_description,
+            is_reply,
+            is_editable,
         }
     }
 
@@ -59,46 +66,82 @@ impl RoomMessage {
         event: &OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
         room: Room,
     ) -> Self {
+        let mut sent_by_me = false;
+        if let Some(user_id) = room.client().user_id() {
+            if *user_id == event.sender {
+                sent_by_me = true;
+            }
+        }
+        let fallback = match &event.content.msgtype {
+            MessageType::Audio(audio) => "sent an audio.".to_string(),
+            MessageType::Emote(emote) => emote.body.clone(),
+            MessageType::File(file) => "sent a file.".to_string(),
+            MessageType::Image(image) => "sent an image.".to_string(),
+            MessageType::Location(location) => location.body.to_string(),
+            MessageType::Notice(notice) => notice.body.clone(),
+            MessageType::ServerNotice(server_notice) => server_notice.body.clone(),
+            MessageType::Text(text) => text.body.clone(),
+            MessageType::Video(video) => "sent a video.".to_string(),
+            _ => "Unknown timeline item".to_string(),
+        };
         let mut formatted_body: Option<String> = None;
-        if let MessageType::Text(content) = &event.content.msgtype {
-            if let Some(formatted) = &content.formatted {
-                if formatted.format == MessageFormat::Html {
-                    formatted_body = Some(formatted.body.clone());
+        let mut image_description: Option<ImageDescription> = None;
+        let mut file_description: Option<FileDescription> = None;
+        let mut is_editable = false;
+        match &event.content.msgtype {
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        formatted_body = Some(formatted.body.clone());
+                    }
+                }
+                if sent_by_me {
+                    is_editable = true;
                 }
             }
-        }
-        let mut image_description: Option<ImageDescription> = None;
-        if let MessageType::Image(content) = &event.content.msgtype {
-            if let Some(info) = content.info.as_ref() {
-                image_description = Some(ImageDescription {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                    width: info.width.map(u64::from),
-                    height: info.height.map(u64::from),
-                });
+            MessageType::Emote(content) => {
+                if sent_by_me {
+                    is_editable = true;
+                }
             }
-        }
-        let mut file_description: Option<FileDescription> = None;
-        if let MessageType::File(content) = &event.content.msgtype {
-            if let Some(info) = content.info.as_ref() {
-                file_description = Some(FileDescription {
-                    name: content.body.clone(),
-                    mimetype: info.mimetype.clone(),
-                    size: info.size.map(u64::from),
-                });
+            MessageType::Image(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    image_description = Some(ImageDescription {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        width: info.width.map(u64::from),
+                        height: info.height.map(u64::from),
+                    });
+                }
             }
+            MessageType::File(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    file_description = Some(FileDescription {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                    });
+                }
+            }
+            _ => {}
         }
+        let is_reply = matches!(
+            &event.content.relates_to,
+            Some(Relation::Reply { in_reply_to }),
+        );
         RoomMessage::new(
             event.event_id.to_string(),
             room.room_id().to_string(),
-            event.content.body().to_string(),
+            fallback,
             formatted_body,
             event.sender.to_string(),
             Some(event.origin_server_ts.get().into()),
             event.content.msgtype().to_string(),
             image_description,
             file_description,
+            is_reply,
+            is_editable,
         )
     }
 
@@ -126,62 +169,111 @@ impl RoomMessage {
             "m.room.encrypted".to_string(),
             None,
             None,
+            false,
+            false,
         )
     }
 
-    pub(crate) fn from_timeline_item(
-        event: &EventTimelineItem,
-        room: Room,
-        body: String,
-        msgtype: String,
-    ) -> Self {
+    pub(crate) fn from_timeline_item(event: &EventTimelineItem, room: Room) -> Option<Self> {
         let event_id = match event.event_id() {
             Some(id) => id.to_string(),
             None => format!("{:?}", event.key()),
         };
-        let mut formatted_body: Option<String> = None;
-        let mut image_description: Option<ImageDescription> = None;
-        let mut file_description: Option<FileDescription> = None;
-        if let TimelineItemContent::Message(msg) = event.content() {
-            if let MessageType::Text(content) = msg.msgtype() {
-                if let Some(formatted) = &content.formatted {
-                    if formatted.format == MessageFormat::Html {
-                        formatted_body = Some(formatted.body.clone());
+        match event.content() {
+            TimelineItemContent::Message(msg) => {
+                let mut sent_by_me = false;
+                if let Some(user_id) = room.client().user_id() {
+                    if user_id == event.sender() {
+                        sent_by_me = true;
                     }
                 }
-            }
-            if let MessageType::Image(content) = msg.msgtype() {
-                if let Some(info) = content.info.as_ref() {
-                    image_description = Some(ImageDescription {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                    });
+                let msgtype = msg.msgtype();
+                let fallback = match &msgtype {
+                    MessageType::Audio(audio) => "sent an audio.".to_string(),
+                    MessageType::Emote(emote) => emote.body.clone(),
+                    MessageType::File(file) => "sent a file.".to_string(),
+                    MessageType::Image(image) => "sent an image.".to_string(),
+                    MessageType::Location(location) => location.body.clone(),
+                    MessageType::Notice(notice) => notice.body.clone(),
+                    MessageType::ServerNotice(server_notice) => server_notice.body.clone(),
+                    MessageType::Text(text) => text.body.clone(),
+                    MessageType::Video(video) => "sent a video.".to_string(),
+                    _ => "Unknown timeline item".to_string(),
+                };
+                let mut formatted_body: Option<String> = None;
+                let mut image_description: Option<ImageDescription> = None;
+                let mut file_description: Option<FileDescription> = None;
+                let mut is_editable = false;
+                match msgtype {
+                    MessageType::Text(content) => {
+                        if let Some(formatted) = &content.formatted {
+                            if formatted.format == MessageFormat::Html {
+                                formatted_body = Some(formatted.body.clone());
+                            }
+                        }
+                        if sent_by_me {
+                            is_editable = true;
+                        }
+                    }
+                    MessageType::Emote(content) => {
+                        if sent_by_me {
+                            is_editable = true;
+                        }
+                    }
+                    MessageType::Image(content) => {
+                        if let Some(info) = content.info.as_ref() {
+                            image_description = Some(ImageDescription {
+                                name: content.body.clone(),
+                                mimetype: info.mimetype.clone(),
+                                size: info.size.map(u64::from),
+                                width: info.width.map(u64::from),
+                                height: info.height.map(u64::from),
+                            });
+                        }
+                    }
+                    MessageType::File(content) => {
+                        if let Some(info) = content.info.as_ref() {
+                            file_description = Some(FileDescription {
+                                name: content.body.clone(),
+                                mimetype: info.mimetype.clone(),
+                                size: info.size.map(u64::from),
+                            });
+                        }
+                    }
+                    _ => {}
                 }
+                let is_reply = match msg.in_reply_to() {
+                    Some(in_reply_to) => true,
+                    None => false,
+                };
+                return Some(RoomMessage::new(
+                    event_id,
+                    room.room_id().to_string(),
+                    fallback,
+                    formatted_body,
+                    event.sender().to_string(),
+                    event.origin_server_ts().map(|x| x.get().into()),
+                    msgtype.msgtype().to_string(),
+                    image_description,
+                    file_description,
+                    is_reply,
+                    is_editable,
+                ));
             }
-            if let MessageType::File(content) = msg.msgtype() {
-                if let Some(info) = content.info.as_ref() {
-                    file_description = Some(FileDescription {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                    });
-                }
+            TimelineItemContent::RedactedMessage => {
+                info!("Edit event applies to a redacted message, discarding");
             }
+            TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
+                info!("Edit event applies to event that couldn't be decrypted, discarding");
+            }
+            TimelineItemContent::FailedToParseMessageLike { event_type, error } => {}
+            TimelineItemContent::FailedToParseState {
+                event_type,
+                state_key,
+                error,
+            } => {}
         }
-        RoomMessage::new(
-            event_id,
-            room.room_id().to_string(),
-            body,
-            formatted_body,
-            event.sender().to_string(),
-            event.origin_server_ts().map(|x| x.get().into()),
-            msgtype,
-            image_description,
-            file_description,
-        )
+        None
     }
 
     pub fn event_id(&self) -> String {
@@ -218,6 +310,22 @@ impl RoomMessage {
 
     pub fn file_description(&self) -> Option<FileDescription> {
         self.file_description.clone()
+    }
+
+    pub(crate) fn is_reply(&self) -> bool {
+        self.is_reply
+    }
+
+    pub(crate) fn simplify_body(&mut self) {
+        if let Some(text) = self.formatted_body.clone() {
+            let re = Regex::new(r"^<mx-reply>[\s\S]+</mx-reply>").unwrap();
+            self.body = re.replace(text.as_str(), "").to_string();
+            info!("regex replaced");
+        }
+    }
+
+    pub fn is_editable(&self) -> bool {
+        self.is_editable
     }
 }
 
@@ -289,27 +397,7 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
 
 pub(crate) fn timeline_item_to_message(item: Arc<TimelineItem>, room: Room) -> Option<RoomMessage> {
     if let Some(event) = item.as_event() {
-        if let TimelineItemContent::Message(msg) = event.content() {
-            let fallback = match &msg.msgtype() {
-                MessageType::Audio(audio) => audio.body.clone(),
-                MessageType::Emote(emote) => emote.body.clone(),
-                MessageType::File(file) => file.body.clone(),
-                MessageType::Image(image) => image.body.clone(),
-                MessageType::Location(location) => location.body.clone(),
-                MessageType::Notice(notice) => notice.body.clone(),
-                MessageType::ServerNotice(service_notice) => service_notice.body.clone(),
-                MessageType::Text(text) => text.body.clone(),
-                MessageType::Video(video) => video.body.clone(),
-                _ => "Unknown timeline item".to_string(),
-            };
-            info!("timeline fallback: {:?}", fallback);
-            return Some(RoomMessage::from_timeline_item(
-                event,
-                room,
-                fallback,
-                msg.msgtype().msgtype().to_string(),
-            ));
-        }
+        return RoomMessage::from_timeline_item(event, room);
     }
     None
 }

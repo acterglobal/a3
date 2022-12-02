@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:cached_memory_image/provider/cached_memory_image_provider.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -10,6 +9,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 class CustomAvatar extends StatefulWidget {
   final String uniqueKey;
   final Future<FfiBufferUint8>? avatar;
+  final int? cacheHeight;
+  final int? cacheWidth;
   final String? displayName;
   final double radius;
   final bool isGroup;
@@ -23,6 +24,8 @@ class CustomAvatar extends StatefulWidget {
     required this.radius,
     required this.isGroup,
     required this.stringName,
+    this.cacheHeight,
+    this.cacheWidth,
   }) : super(key: key);
 
   @override
@@ -55,9 +58,12 @@ class _CustomAvatarState extends State<CustomAvatar> {
         }
         if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
           return CircleAvatar(
-            backgroundImage: CachedMemoryImageProvider(
-              widget.uniqueKey,
-              bytes: snapshot.requireData,
+            backgroundImage: ResizeImage(
+              MemoryImage(
+                snapshot.requireData,
+              ),
+              height: widget.cacheHeight ?? widget.radius.toInt(),
+              width: widget.cacheWidth ?? widget.radius.toInt(),
             ),
             radius: widget.radius,
           );

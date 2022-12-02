@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
@@ -43,6 +44,7 @@ class ChatRoomController extends GetxController {
   GlobalKey<FlutterMentionsState> mentionKey =
       GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
+  bool isEmojiContainerVisible = false;
   final List<XFile> _imageFileList = [];
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
@@ -52,6 +54,10 @@ class ChatRoomController extends GetxController {
   List<Map<String, dynamic>> mentionList = [];
   StreamSubscription<TimelineDiff>? _diffSubscription;
   StreamSubscription<RoomMessage>? _messageSubscription;
+  int emojiMessageIndex = 0;
+  String? emojiCurrentId;
+  String? authorId;
+  bool showReplyView = false;
 
   ChatRoomController({required this.client}) : super();
 
@@ -66,7 +72,7 @@ class ChatRoomController extends GetxController {
       }
     });
 
-    _messageSubscription = client.incomingMessageRx()?.listen((event) {
+    _messageSubscription = client.incomingMessageRx()?.listen((event) async {
       // the latest message is dealt in convo receiver of ChatListController
       // here manage only its message history
       if (_currentRoom != null) {
@@ -75,15 +81,13 @@ class ChatRoomController extends GetxController {
           // filter only message from other not me
           // it is processed in handleSendPressed
           if (event.sender() != client.userId().toString()) {
-            types.Message? m = _prepareMessage(event);
-            if (m != null) {
-              _insertMessage(messages.length, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (event.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(event);
+            _insertMessage(messages.length, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (event.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
           }
         }
@@ -123,22 +127,20 @@ class ChatRoomController extends GetxController {
         isLoading.value = false;
         return;
       }
-      _stream = _currentRoom!.timeline();
+      _stream = await _currentRoom!.timelineStream();
       // event handler from paginate
-      _diffSubscription = _stream?.diffRx().listen((event) {
+      _diffSubscription = _stream?.diffRx().listen((event) async {
         switch (event.action()) {
           case 'Replace':
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
-              types.Message? m = _prepareMessage(msg);
-              if (m != null) {
-                _insertMessage(0, m);
-                if (isLoading.isFalse) {
-                  update(['Chat']);
-                }
-                if (msg.msgtype() == 'm.image') {
-                  _fetchMessageContent(m.id);
-                }
+              types.Message m = await _prepareMessage(msg);
+              _insertMessage(0, m);
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (msg.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
               }
             }
             break;
@@ -148,15 +150,13 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
-            if (m != null) {
-              _insertMessage(messages.length - index, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (value.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(value);
+            _insertMessage(messages.length - index, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (value.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
             break;
           case 'UpdateAt':
@@ -165,15 +165,13 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
-            if (m != null) {
-              _updateMessage(messages.length - index, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (value.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(value);
+            _updateMessage(messages.length - index, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (value.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
             break;
           case 'Push':
@@ -181,17 +179,13 @@ class ChatRoomController extends GetxController {
             if (value == null) {
               break; // message decryption may be failed
             }
-            types.Message? m = _prepareMessage(value);
-            if (m != null) {
-              _insertMessage(0, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              String msgType = value.msgtype();
-              debugPrint('msgType - $msgType');
-              if (value.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
-              }
+            types.Message m = await _prepareMessage(value);
+            _insertMessage(0, m);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            if (value.msgtype() == 'm.image') {
+              _fetchMessageContent(m.id);
             }
             break;
           case 'RemoveAt':
@@ -224,6 +218,11 @@ class ChatRoomController extends GetxController {
             break;
         }
       });
+      if (_currentRoom == null) {
+        // user may close chat screen before long loading completed
+        isLoading.value = false;
+        return;
+      }
       bool hasMore = await _stream!.paginateBackwards(10);
       debugPrint('backward pagination has more: $hasMore');
       // load receipt status of room
@@ -291,13 +290,13 @@ class ChatRoomController extends GetxController {
     types.TextMessage message,
     types.PreviewData previewData,
   ) {
-    final idx = messages.indexWhere((element) => element.id == message.id);
-    final updatedMessage = (messages[idx] as types.TextMessage).copyWith(
+    final index = messages.indexWhere((x) => x.id == message.id);
+    final updatedMessage = (messages[index] as types.TextMessage).copyWith(
       previewData: previewData,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      messages[idx] = updatedMessage;
+      messages[index] = updatedMessage;
       update(['Chat']);
     });
   }
@@ -311,20 +310,7 @@ class ChatRoomController extends GetxController {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    var eventId = await _currentRoom!.sendFormattedMessage(markdownMessage);
-    final textMessage = types.TextMessage(
-      author: types.User(id: client.userId().toString()),
-      createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: eventId,
-      text: htmlMessage,
-      status: types.Status.sent,
-      showStatus: true,
-      metadata: {
-        'messageLength': messageLength,
-      },
-    );
-    messages.insert(0, textMessage);
-    update(['Chat']);
+    await _currentRoom!.sendFormattedMessage(markdownMessage);
   }
 
   Future<void> handleMultipleImageSelection(
@@ -355,7 +341,7 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await _currentRoom!.sendImageMessage(
+      await _currentRoom!.sendImageMessage(
         result.path,
         result.name,
         mimeType!,
@@ -363,19 +349,6 @@ class ChatRoomController extends GetxController {
         image.width,
         image.height,
       );
-
-      final message = types.ImageMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        height: image.height.toDouble(),
-        id: eventId,
-        name: result.name,
-        size: bytes.length,
-        uri: result.path,
-        width: image.width.toDouble(),
-      );
-      messages.insert(0, message);
-      update(['Chat']);
     }
   }
 
@@ -422,7 +395,6 @@ class ChatRoomController extends GetxController {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
-
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
       await _currentRoom!.sendFileMessage(
@@ -431,19 +403,6 @@ class ChatRoomController extends GetxController {
         mimeType!,
         result.files.single.size,
       );
-
-      // i am sending message
-      final message = types.FileMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        id: randomString(),
-        name: result.files.single.name,
-        size: result.files.single.size,
-        uri: result.files.single.path!,
-      );
-      Navigator.pop(context);
-      messages.insert(0, message);
-      update(['Chat']);
     }
   }
 
@@ -522,7 +481,7 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  types.Message? _prepareMessage(RoomMessage message) {
+  Future<types.Message> _prepareMessage(RoomMessage message) async {
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
@@ -546,6 +505,8 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.image') {
       ImageDescription? description = message.imageDescription();
       if (description != null) {
+        /// this is added to get local path of fetched image for previewing purposes (not yet implemented).
+        final path = (await getApplicationDocumentsDirectory()).path;
         return types.ImageMessage(
           author: author,
           createdAt: createdAt,
@@ -553,7 +514,7 @@ class ChatRoomController extends GetxController {
           id: eventId,
           name: description.name(),
           size: description.size() ?? 0,
-          uri: '',
+          uri: path + description.name(),
           width: description.width()?.toDouble(),
         );
       }
@@ -572,16 +533,23 @@ class ChatRoomController extends GetxController {
       );
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
-    return null;
+
+    // should not return null, before we can keep track of index in diff receiver
+    return types.UnsupportedMessage(
+      author: author,
+      createdAt: createdAt,
+      id: eventId,
+    );
   }
 
   void _fetchMessageContent(String eventId) {
     _currentRoom!.imageBinary(eventId).then((data) {
-      int idx = messages.indexWhere((x) => x.id == eventId);
-      if (idx != -1) {
-        messages[idx] = messages[idx].copyWith(
+      int index = messages.indexWhere((x) => x.id == eventId);
+      if (index != -1) {
+        final base64String = base64Encode(data.asTypedList());
+        messages[index] = messages[index].copyWith(
           metadata: {
-            'binary': data.asTypedList(),
+            'base64': base64String,
           },
         );
         if (isLoading.isFalse) {
@@ -591,9 +559,16 @@ class ChatRoomController extends GetxController {
     });
   }
 
+  /// Update button state based on text editor.
   void sendButtonUpdate() {
     isSendButtonVisible =
         mentionKey.currentState!.controller!.text.trim().isNotEmpty;
+    update(['chat-input']);
+  }
+
+  /// Disable button as soon as send button is pressed.
+  void sendButtonDisable() {
+    isSendButtonVisible = !isSendButtonVisible;
     update(['chat-input']);
   }
 
@@ -602,5 +577,27 @@ class ChatRoomController extends GetxController {
       return Future.value(false);
     }
     return await _currentRoom!.typingNotice(typing);
+  }
+
+  void updateEmojiState(types.Message message) {
+    emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
+    emojiCurrentId = messages[emojiMessageIndex].id;
+    if (emojiCurrentId == message.id) {
+      isEmojiContainerVisible = !isEmojiContainerVisible;
+    }
+
+    if (isEmojiContainerVisible) {
+      authorId = message.author.id;
+    }
+    update(['emoji-reaction']);
+  }
+
+  bool isAuthor() {
+    return client.userId().toString() == authorId;
+  }
+
+  void toggleEmojiContainer() {
+    isEmojiContainerVisible = !isEmojiContainerVisible;
+    update(['emoji-reaction']);
   }
 }

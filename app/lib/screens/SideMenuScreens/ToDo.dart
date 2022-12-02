@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/MockData.dart' as mock;
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class ToDoScreen extends StatefulWidget {
 
 class _ToDoScreenState extends State<ToDoScreen> {
   final ToDoController todoController = ToDoController.instance;
+  final networkController = Get.put(NetworkController());
   List<String> buttonText = ['Mine', 'All Teams', 'Unassigned'];
 
   @override
@@ -32,60 +34,72 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: ToDoTheme.floatingABColor,
-        onPressed: () {
-          showNotYetImplementedMsg(
-            context,
-            'Add Task-List Action not yet implemented',
-          );
-        },
-        child: const Icon(Icons.add_outlined, size: 25),
-      ),
-      body: Container(
-        decoration: ToDoTheme.toDoDecoration,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 25),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                const Padding(
-                  padding: EdgeInsets.only(left: 12),
-                  child: Text('Tasks', style: ToDoTheme.titleTextStyle),
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 12, top: 10),
-                  child: Text(
-                    mock.loremPara1,
-                    style: ToDoTheme.subtitleTextStyle,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 12, top: 15),
-                  child: Wrap(
-                    direction: Axis.horizontal,
-                    spacing: 5.0,
-                    children: List.generate(buttonText.length, (int index) {
-                      return radioButton(text: buttonText[index], index: index);
-                    }),
-                  ),
-                ),
-                ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: todoController.todoList!.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return todoController.todoList![index];
+    return Obx(
+      () => Container(
+        child: networkController.connectionType.value == '0'
+            ? noInternetWidget()
+            : Scaffold(
+                extendBodyBehindAppBar: true,
+                floatingActionButtonLocation:
+                    FloatingActionButtonLocation.miniEndFloat,
+                floatingActionButton: FloatingActionButton(
+                  backgroundColor: ToDoTheme.floatingABColor,
+                  onPressed: () {
+                    showNotYetImplementedMsg(
+                      context,
+                      'Add Task-List Action not yet implemented',
+                    );
                   },
+                  child: const Icon(Icons.add_outlined, size: 25),
                 ),
-              ],
-            ),
-          ),
-        ),
+                body: Container(
+                  decoration: ToDoTheme.toDoDecoration,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 25),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Padding(
+                            padding: EdgeInsets.only(left: 12),
+                            child:
+                                Text('Tasks', style: ToDoTheme.titleTextStyle),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 12, top: 10),
+                            child: Text(
+                              mock.loremPara1,
+                              style: ToDoTheme.subtitleTextStyle,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 12, top: 15),
+                            child: Wrap(
+                              direction: Axis.horizontal,
+                              spacing: 5.0,
+                              children:
+                                  List.generate(buttonText.length, (int index) {
+                                return radioButton(
+                                  text: buttonText[index],
+                                  index: index,
+                                );
+                              }),
+                            ),
+                          ),
+                          ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: todoController.todoList!.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return todoController.todoList![index];
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }
