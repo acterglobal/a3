@@ -226,29 +226,34 @@ class _ChatScreenState extends State<ChatScreen> {
     }
     // local path
     // the image that just sent is displayed from local not remote
-    else {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.file(
-          File(imageMessage.uri),
-          width: messageWidth.toDouble(),
-          errorBuilder: (
-            BuildContext context,
-            Object error,
-            StackTrace? stackTrace,
-          ) {
-            return const Text('Could not load image');
-          },
-        ),
-      );
-    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15),
+      child: Image.file(
+        File(imageMessage.uri),
+        width: messageWidth.toDouble(),
+        errorBuilder: (
+          BuildContext context,
+          Object error,
+          StackTrace? stackTrace,
+        ) {
+          return const Text('Could not load image');
+        },
+      ),
+    );
   }
 
   Widget customMessageBuilder(
     types.CustomMessage customMessage, {
     required int messageWidth,
   }) {
-    return const SizedBox();
+    // return const Text('Failed to decrypt message. Re-request session keys.');
+    String text = 'Failed to decrypt message. Re-request session keys.';
+    return Container(
+      width: sqrt(text.length) * 38.5,
+      padding: const EdgeInsets.all(8),
+      constraints: const BoxConstraints(minWidth: 57),
+      child: Text(text, style: const TextStyle(color: Colors.white)),
+    );
   }
 
   @override

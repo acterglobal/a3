@@ -132,6 +132,7 @@ class ChatRoomController extends GetxController {
       _diffSubscription = _stream?.diffRx().listen((event) async {
         switch (event.action()) {
           case 'Replace':
+            debugPrint('chat room message replace');
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
               types.Message m = await _prepareMessage(msg);
@@ -145,6 +146,7 @@ class ChatRoomController extends GetxController {
             }
             break;
           case 'InsertAt':
+            debugPrint('chat room message insert at');
             int index = event.index()!;
             RoomMessage? value = event.value();
             types.Message m = await _prepareMessage(value);
@@ -157,6 +159,7 @@ class ChatRoomController extends GetxController {
             }
             break;
           case 'UpdateAt':
+            debugPrint('chat room message update at');
             int index = event.index()!;
             RoomMessage? value = event.value();
             types.Message m = await _prepareMessage(value);
@@ -169,6 +172,7 @@ class ChatRoomController extends GetxController {
             }
             break;
           case 'Push':
+            debugPrint('chat room message push');
             RoomMessage? value = event.value();
             types.Message m = await _prepareMessage(value);
             _insertMessage(0, m);
