@@ -19,7 +19,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -142,6 +141,162 @@ class _ChatScreenState extends State<ChatScreen> {
           stringName: simplifyUserId(userId)!,
         ),
       ),
+    );
+  }
+
+  Widget customBottomWidget() {
+    return GetBuilder<ChatRoomController>(
+      id: 'emoji-reaction',
+      builder: (ChatRoomController controller) {
+        return roomController.isEmojiContainerVisible
+            ? Container(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                color: AppCommonTheme.backgroundColorLight,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        roomController.isEmojiContainerVisible = false;
+                        roomController.showReplyView = true;
+                        roomController.update(['emoji-reaction', 'chat-input']);
+                      },
+                      child: const Text(
+                        'Reply',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: (() {
+                        if (roomController.isAuthor()) {
+                          // TODO add unsent message call
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: Container(
+                                  padding: const EdgeInsets.all(16.0),
+                                  height: 280,
+                                  decoration: const BoxDecoration(
+                                    color: AppCommonTheme.backgroundColorLight,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(16),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 8.0,
+                                        ),
+                                        const Text(
+                                          'Report This Message',
+                                          style:
+                                              AppCommonTheme.appBarTitleStyle,
+                                        ),
+                                        const SizedBox(
+                                          height: 16.0,
+                                        ),
+                                        const Text(
+                                          "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: AppCommonTheme.dividerColor,
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            const snackBar = SnackBar(
+                                              content: Text('Message reported'),
+                                            );
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(snackBar);
+                                            roomController
+                                                    .isEmojiContainerVisible =
+                                                false;
+                                            roomController
+                                                .update(['emoji-reaction']);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(20),
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  14,
+                                                ),
+                                                color:
+                                                    AppCommonTheme.primaryColor,
+                                              ),
+                                              child: const Padding(
+                                                padding: EdgeInsets.all(8),
+                                                child: Center(
+                                                  child: Text(
+                                                    'Okay!',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      }),
+                      child: Text(
+                        roomController.isAuthor() ? 'Unsend' : 'Report',
+                        style: TextStyle(
+                          color: roomController.isAuthor()
+                              ? Colors.white
+                              : Colors.red,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        showMoreOptions();
+                      },
+                      child: const Text(
+                        'More',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : CustomChatInput(
+                isChatScreen: true,
+                roomName:
+                    widget.roomName ?? AppLocalizations.of(context)!.noName,
+                onButtonPressed: () => onSendButtonPressed(controller),
+              );
+      },
     );
   }
 
@@ -378,12 +533,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return Stack(
           children: [
             Chat(
-              customBottomWidget: CustomChatInput(
-                isChatScreen: true,
-                roomName:
-                    widget.roomName ?? AppLocalizations.of(context)!.noName,
-                onButtonPressed: () => onSendButtonPressed(controller),
-              ),
+              customBottomWidget: customBottomWidget(),
               textMessageBuilder: textMessageBuilder,
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
@@ -469,6 +619,69 @@ class _ChatScreenState extends State<ChatScreen> {
     );
     controller.messageTextMapMarkDown.clear();
     controller.mentionKey.currentState!.controller!.clear();
+  }
+
+  void showMoreOptions() {
+    showModalBottomSheet(
+      backgroundColor: AppCommonTheme.backgroundColorLight,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ListTile(
+              leading: Icon(
+                Icons.link,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Copy',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 22.0),
+              width: MediaQuery.of(context).size.width,
+              height: 2,
+              color: Colors.grey,
+            ),
+            const ListTile(
+              leading: Icon(
+                Icons.bookmark_border_outlined,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Bookmark',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 22.0),
+              width: MediaQuery.of(context).size.width,
+              height: 2,
+              color: Colors.grey,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget bubbleBuilder(
