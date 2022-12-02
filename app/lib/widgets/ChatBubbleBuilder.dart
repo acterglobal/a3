@@ -1,6 +1,6 @@
 import 'package:bubble/bubble.dart';
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -8,8 +8,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
-
-import 'package:effektio/controllers/chat_room_controller.dart';
 
 class ChatBubbleBuilder extends StatefulWidget {
   final String userId;
@@ -79,7 +77,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-//Emoji reaction info bottom sheet.
+  //Emoji reaction info bottom sheet.
   void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
     List<String> keys = reactions.keys.toList();
     num count = 0;
@@ -132,11 +130,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           ],
         );
       },
-    ).whenComplete(
-      () => setState(() {
+    ).whenComplete(() {
+      setState(() {
         reactionTabs.clear();
-      }),
-    );
+      });
+    });
   }
 
   // Custom chat bubble
@@ -181,10 +179,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         width: keys.length * 37,
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: AppCommonTheme.dividerColor,
-            width: 0.2,
-          ),
+          border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
           borderRadius: BorderRadius.only(
             topLeft: widget.nextMessageInGroup
                 ? const Radius.circular(12)

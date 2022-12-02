@@ -28,6 +28,7 @@ import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
@@ -56,6 +57,7 @@ class ChatRoomController extends GetxController {
   StreamSubscription<RoomMessage>? _messageSubscription;
   int emojiMessageIndex = 0;
   String? emojiCurrentId;
+  final Uuid _uuid = const Uuid();
 
   ChatRoomController({required this.client}) : super();
 
@@ -145,44 +147,35 @@ class ChatRoomController extends GetxController {
           case 'InsertAt':
             int index = event.index()!;
             RoomMessage? value = event.value();
-            if (value == null) {
-              break; // message decryption may be failed
-            }
             types.Message m = await _prepareMessage(value);
             _insertMessage(messages.length - index, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (value.msgtype() == 'm.image') {
+            if (value?.msgtype() == 'm.image') {
               _fetchMessageContent(m.id);
             }
             break;
           case 'UpdateAt':
             int index = event.index()!;
             RoomMessage? value = event.value();
-            if (value == null) {
-              break; // message decryption may be failed
-            }
             types.Message m = await _prepareMessage(value);
             _updateMessage(messages.length - index, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (value.msgtype() == 'm.image') {
+            if (value?.msgtype() == 'm.image') {
               _fetchMessageContent(m.id);
             }
             break;
           case 'Push':
             RoomMessage? value = event.value();
-            if (value == null) {
-              break; // message decryption may be failed
-            }
             types.Message m = await _prepareMessage(value);
             _insertMessage(0, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (value.msgtype() == 'm.image') {
+            if (value?.msgtype() == 'm.image') {
               _fetchMessageContent(m.id);
             }
             break;
@@ -479,7 +472,18 @@ class ChatRoomController extends GetxController {
     }
   }
 
-  Future<types.Message> _prepareMessage(RoomMessage message) async {
+  Future<types.Message> _prepareMessage(RoomMessage? message) async {
+    // message decryption may be failed
+    if (message == null) {
+      // should not return null, before we can keep track of index in diff receiver
+      String userId = client.userId().toString();
+      return types.CustomMessage(
+        author: types.User(id: userId, firstName: simplifyUserId(userId)),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        id: _uuid.v4(),
+      );
+    }
+
     String msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
@@ -525,7 +529,7 @@ class ChatRoomController extends GetxController {
         String k = key.toDartString();
         reactions[k] = message.reactionDescription(k);
       }
-      var result = types.TextMessage(
+      return types.TextMessage(
         author: author,
         createdAt: createdAt,
         id: eventId,
@@ -535,12 +539,11 @@ class ChatRoomController extends GetxController {
           'reactions': reactions,
         },
       );
-      return result;
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
 
     // should not return null, before we can keep track of index in diff receiver
-    return types.UnsupportedMessage(
+    return types.CustomMessage(
       author: author,
       createdAt: createdAt,
       id: eventId,

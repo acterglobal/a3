@@ -179,13 +179,18 @@ class _ChatScreenState extends State<ChatScreen> {
         borderRadius: BorderRadius.circular(15),
         child: Image.memory(
           base64Decode(imageMessage.metadata?['base64']),
-          errorBuilder: (context, url, error) {
-            return Text(
-              'Could not load image due to $error',
-            );
+          errorBuilder: (BuildContext context, Object url, StackTrace? error) {
+            return Text('Could not load image due to $error');
           },
-          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
-            if (wasSynchronouslyLoaded) return child;
+          frameBuilder: (
+            BuildContext context,
+            Widget child,
+            int? frame,
+            bool wasSynchronouslyLoaded,
+          ) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            }
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: frame != null
@@ -199,7 +204,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
             );
-          }),
+          },
           cacheWidth: 512,
           width: messageWidth.toDouble(),
           fit: BoxFit.cover,
@@ -213,9 +218,9 @@ class _ChatScreenState extends State<ChatScreen> {
         child: CachedNetworkImage(
           imageUrl: imageMessage.uri,
           width: messageWidth.toDouble(),
-          errorWidget: (context, url, error) => const Text(
-            'Could not load image',
-          ),
+          errorWidget: (BuildContext context, Object url, dynamic error) {
+            return const Text('Could not load image');
+          },
         ),
       );
     }
@@ -227,12 +232,23 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Image.file(
           File(imageMessage.uri),
           width: messageWidth.toDouble(),
-          errorBuilder: (context, error, stackTrace) => const Text(
-            'Could not load image',
-          ),
+          errorBuilder: (
+            BuildContext context,
+            Object error,
+            StackTrace? stackTrace,
+          ) {
+            return const Text('Could not load image');
+          },
         ),
       );
     }
+  }
+
+  Widget customMessageBuilder(
+    types.CustomMessage customMessage, {
+    required int messageWidth,
+  }) {
+    return const SizedBox();
   }
 
   @override
@@ -404,6 +420,7 @@ class _ChatScreenState extends State<ChatScreen> {
               avatarBuilder: avatarBuilder,
               bubbleBuilder: bubbleBuilder,
               imageMessageBuilder: imageMessageBuilder,
+              customMessageBuilder: customMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
               onAvatarTap: (types.User user) {
