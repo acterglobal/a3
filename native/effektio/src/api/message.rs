@@ -315,20 +315,18 @@ impl RoomMessage {
                 event_type,
                 state_key,
                 error,
-            } => {
-                RoomMessage::new(
-                    event_id,
-                    room_id,
-                    sender,
-                    origin_server_ts,
-                    None,
-                    None,
-                    None,
-                    None,
-                    false,
-                    false,
-                )
-            }
+            } => RoomMessage::new(
+                event_id,
+                room_id,
+                sender,
+                origin_server_ts,
+                None,
+                None,
+                None,
+                None,
+                false,
+                false,
+            )
         }
     }
 
