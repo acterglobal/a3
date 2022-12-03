@@ -527,6 +527,14 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
+      if (message.body().toString().contains('https://matrix.to/#/')) {
+        return types.CustomMessage(
+          author: author,
+          createdAt: createdAt,
+          id: eventId,
+          metadata: {'link': message.body()},
+        );
+      }
       return types.TextMessage(
         author: author,
         createdAt: createdAt,

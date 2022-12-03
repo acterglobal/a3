@@ -14,6 +14,7 @@ import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
+import 'package:effektio/widgets/InviteMessageComponent.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
@@ -235,6 +236,20 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  Widget customInviteMessageBuilder(
+    types.CustomMessage message, {
+    required int messageWidth,
+  }) {
+    final isMe = message.author.id == widget.client.userId().toString();
+    String link = message.metadata!['link'];
+    String roomName = link.split('#')[2].split(':')[0];
+    return InviteMessageComponent(
+      message: message,
+      room: roomName,
+      isMe: isMe,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(
@@ -404,6 +419,7 @@ class _ChatScreenState extends State<ChatScreen> {
               avatarBuilder: avatarBuilder,
               bubbleBuilder: bubbleBuilder,
               imageMessageBuilder: imageMessageBuilder,
+              customMessageBuilder: customInviteMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
               onAvatarTap: (types.User user) {

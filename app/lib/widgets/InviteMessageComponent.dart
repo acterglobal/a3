@@ -1,11 +1,21 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 
 class InviteMessageComponent extends StatelessWidget {
-  const InviteMessageComponent({Key? key}) : super(key: key);
+  final String room;
+  final CustomMessage message;
+  final bool isMe;
+  const InviteMessageComponent({
+    Key? key,
+    required this.room,
+    required this.message,
+    required this.isMe,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
         color: AppCommonTheme.backgroundColorLight,
@@ -15,8 +25,10 @@ class InviteMessageComponent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'NELLY HAS INVITED YOU TO JOIN',
+          Text(
+            isMe
+                ? 'YOU HAVE INVITED TO JOIN'
+                : '${message.author.firstName!.toUpperCase()} HAS INVITED YOU TO JOIN',
             style: ChatTheme01.chatTitleStyle,
           ),
           const SizedBox(
@@ -24,6 +36,7 @@ class InviteMessageComponent extends StatelessWidget {
           ),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const CircleAvatar(
                 backgroundColor: Colors.green,
@@ -33,22 +46,22 @@ class InviteMessageComponent extends StatelessWidget {
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                
                 children: [
-                  const Text('Code News', style: ChatTheme01.chatBodyStyle),
+                  Text(room, style: ChatTheme01.chatBodyStyle),
                   const SizedBox(
                     height: 3,
                   ),
                   const Text('6 Members', style: ChatTheme01.latestChatStyle),
-                  const SizedBox(
-                    width: 250,
-                    child: Divider(
-                      color: Colors.grey,
-                      thickness: 0.6,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Container(
+                      width: size.width * 0.5,
+                      height: 0.8,
+                      color: AppCommonTheme.dividerColor,
                     ),
                   ),
                   SizedBox(
-                    width: 250,
+                    width: size.width * 0.5,
                     child: ElevatedButton(
                       onPressed: () {},
                       child: const Text(
@@ -62,7 +75,6 @@ class InviteMessageComponent extends StatelessWidget {
                             MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
-                            
                           ),
                         ),
                       ),
