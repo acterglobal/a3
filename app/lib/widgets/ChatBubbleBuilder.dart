@@ -57,7 +57,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               children: [
                 Flexible(
                   child: Stack(
-                    children: <Widget>[
+                    children: [
                       buildChatBubble(),
                       buildEmojiRow(),
                     ],
@@ -66,8 +66,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               ],
             ),
             GestureDetector(
-              onLongPress: () =>
-                  roomController.updateEmojiState(widget.message),
+              onLongPress: () {
+                roomController.updateEmojiState(widget.message);
+              },
               child: Align(
                 alignment:
                     !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
@@ -100,27 +101,19 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 controller: tabBarController,
                 indicator: const BoxDecoration(
                   color: AppCommonTheme.backgroundColor,
-                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
                 tabs: const [
-                  Tab(
-                    text: ('All 15'),
-                  ),
-                  Tab(
-                    text: ('$heart +11'),
-                  ),
-                  Tab(
-                    text: ('$faceWithTears +3'),
-                  )
+                  Tab(text: 'All 15'),
+                  Tab(text: '$heart +11'),
+                  Tab(text: '$faceWithTears +3')
                 ],
               ),
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TabBarView(
                   controller: tabBarController,
                   children: [
@@ -137,7 +130,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-//Custom chat bubble
+  //Custom chat bubble
   Widget buildChatBubble() {
     return Column(
       crossAxisAlignment:
@@ -147,12 +140,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           'You replied',
           style: TextStyle(color: Colors.white, fontSize: 12),
         ),
-        const SizedBox(
-          height: 8,
-        ),
+        const SizedBox(height: 8),
         Bubble(
           child: const Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(8),
             child: Text(
               'This is a reply message demo',
               style: ChatTheme01.chatReplyTextStyle,
@@ -160,9 +151,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           ),
           color: AppCommonTheme.backgroundColorLight,
           margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(
-                  horizontal: 2,
-                )
+              ? const BubbleEdges.symmetric(horizontal: 2)
               : null,
           radius: const Radius.circular(22),
           padding: messagetype == types.MessageType.image
@@ -170,18 +159,14 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               : null,
           nip: BubbleNip.no,
         ),
-        const SizedBox(
-          height: 4,
-        ),
+        const SizedBox(height: 4),
         Bubble(
           child: widget.child,
           color: !isAuthor() || messagetype == types.MessageType.image
               ? AppCommonTheme.backgroundColorLight
               : AppCommonTheme.primaryColor,
           margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(
-                  horizontal: 2,
-                )
+              ? const BubbleEdges.symmetric(horizontal: 2)
               : null,
           radius: const Radius.circular(22),
           padding: messagetype == types.MessageType.image
@@ -207,9 +192,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       child: widget.child,
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
-          ? const BubbleEdges.symmetric(
-              horizontal: 2,
-            )
+          ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(18),
       padding: messagetype == types.MessageType.image
@@ -225,10 +208,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       width: emojisCount * 50,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        border: Border.all(
-          color: AppCommonTheme.dividerColor,
-          width: 0.2,
-        ),
+        border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
         borderRadius: BorderRadius.only(
           topLeft: widget.nextMessageInGroup
               ? const Radius.circular(12)
@@ -248,28 +228,20 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       padding: const EdgeInsets.all(5),
       child: Wrap(
         direction: Axis.horizontal,
-        spacing: 5.0,
-        runSpacing: 3.0,
+        spacing: 5,
+        runSpacing: 3,
         children: List.generate(
           emojisCount,
-          (_) => GestureDetector(
+          (int index) => GestureDetector(
             onTap: () {
               showEmojiReactionsSheet();
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: const [
-                Text(
-                  heart,
-                  style: ChatTheme01.emojiCountStyle,
-                ),
-                SizedBox(
-                  width: 2.0,
-                ),
-                Text(
-                  '+12',
-                  style: ChatTheme01.emojiCountStyle,
-                )
+                Text(heart, style: ChatTheme01.emojiCountStyle),
+                SizedBox(width: 2),
+                Text('+12', style: ChatTheme01.emojiCountStyle)
               ],
             ),
           ),
@@ -282,25 +254,18 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   Widget buildEmojiRow() {
     return Visibility(
       visible: roomController.emojiCurrentId == widget.message.id &&
-              roomController.isEmojiContainerVisible
-          ? true
-          : false,
+          roomController.isEmojiContainerVisible,
       child: Container(
         width: 198,
         height: 42,
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8),
         margin: !isAuthor()
-            ? const EdgeInsets.only(bottom: 8.0, left: 8.0)
-            : const EdgeInsets.only(bottom: 8.0, right: 8.0),
+            ? const EdgeInsets.only(bottom: 8, left: 8)
+            : const EdgeInsets.only(bottom: 8, right: 8),
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(20.0),
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           color: AppCommonTheme.backgroundColor,
-          border: Border.all(
-            color: AppCommonTheme.dividerColor,
-            width: 0.5,
-          ),
+          border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
         ),
         child: EmojiRow(
           onEmojiTap: (String value) {
@@ -323,13 +288,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
       itemCount: 10,
-      itemBuilder: (_, index) {
+      itemBuilder: (BuildContext context, int index) {
         return EmojiReactionListItem(emoji: emoji);
       },
       separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(
-          height: 12,
-        );
+        return const SizedBox(height: 12);
       },
     );
   }

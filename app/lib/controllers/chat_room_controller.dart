@@ -10,10 +10,11 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Client,
         Conversation,
         FfiBufferUint8,
-        FileDescription,
-        ImageDescription,
+        FileDesc,
+        ImageDesc,
         Member,
         RoomMessage,
+        TextDesc,
         TimelineDiff,
         TimelineStream,
         UserProfile;
@@ -146,10 +147,7 @@ class ChatRoomController extends GetxController {
             break;
           case 'InsertAt':
             int index = event.index()!;
-            RoomMessage? value = event.value();
-            if (value == null) {
-              break; // message decryption may be failed
-            }
+            RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
             _insertMessage(messages.length - index, m);
             if (isLoading.isFalse) {
@@ -161,10 +159,7 @@ class ChatRoomController extends GetxController {
             break;
           case 'UpdateAt':
             int index = event.index()!;
-            RoomMessage? value = event.value();
-            if (value == null) {
-              break; // message decryption may be failed
-            }
+            RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
             _updateMessage(messages.length - index, m);
             if (isLoading.isFalse) {
@@ -175,10 +170,7 @@ class ChatRoomController extends GetxController {
             }
             break;
           case 'Push':
-            RoomMessage? value = event.value();
-            if (value == null) {
-              break; // message decryption may be failed
-            }
+            RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
             _insertMessage(0, m);
             if (isLoading.isFalse) {
@@ -482,7 +474,7 @@ class ChatRoomController extends GetxController {
   }
 
   Future<types.Message> _prepareMessage(RoomMessage message) async {
-    String msgtype = message.msgtype();
+    String? msgtype = message.msgtype();
     String sender = message.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
     int? createdAt = message.originServerTs(); // in milliseconds
@@ -491,7 +483,7 @@ class ChatRoomController extends GetxController {
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
-      FileDescription? description = message.fileDescription();
+      FileDesc? description = message.fileDesc();
       if (description != null) {
         return types.FileMessage(
           author: author,
@@ -503,7 +495,7 @@ class ChatRoomController extends GetxController {
         );
       }
     } else if (msgtype == 'm.image') {
-      ImageDescription? description = message.imageDescription();
+      ImageDesc? description = message.imageDesc();
       if (description != null) {
         /// this is added to get local path of fetched image for previewing purposes (not yet implemented).
         final path = (await getApplicationDocumentsDirectory()).path;
@@ -522,13 +514,15 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
+      TextDesc? description = message.textDesc();
+      String body = description!.body();
       return types.TextMessage(
         author: author,
         createdAt: createdAt,
         id: eventId,
-        text: message.formattedBody() ?? message.body(),
+        text: description.formattedBody() ?? body,
         metadata: {
-          'messageLength': message.body().length,
+          'messageLength': body.length,
         },
       );
     } else if (msgtype == 'm.video') {

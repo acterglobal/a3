@@ -102,30 +102,34 @@ object RoomMessage {
     /// The User, who sent that event
     fn sender() -> string;
 
-    /// the body of the massage - fallback string reprensentation
-    fn body() -> string;
-
-    /// get html body
-    fn formatted_body() -> Option<string>;
-
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> Option<u64>;
 
     /// the type of massage, like audio, text, image, file, etc
-    fn msgtype() -> string;
+    fn msgtype() -> Option<string>;
+
+    /// contains text fallback and formatted text
+    fn text_desc() -> Option<TextDesc>;
 
     /// contains source data, name, mimetype, size, width and height
-    fn image_description() -> Option<ImageDescription>;
+    fn image_desc() -> Option<ImageDesc>;
 
     /// contains source data, name, mimetype and size
-    fn file_description() -> Option<FileDescription>;
+    fn file_desc() -> Option<FileDesc>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
 
-object ImageDescription {
+object TextDesc {
+    /// fallback text
+    fn body() -> string;
 
+    /// formatted text
+    fn formatted_body() -> Option<string>;
+}
+
+object ImageDesc {
     /// file name
     fn name() -> string;
 
@@ -142,8 +146,7 @@ object ImageDescription {
     fn height() -> Option<u64>;
 }
 
-object FileDescription {
-
+object FileDesc {
     /// file name
     fn name() -> string;
 

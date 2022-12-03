@@ -4600,27 +4600,6 @@ class Api {
       _RoomMessageSenderReturn Function(
     int,
   )>();
-  late final _roomMessageBodyPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomMessageBodyReturn Function(
-    ffi.Int64,
-  )>>("__RoomMessage_body");
-
-  late final _roomMessageBody = _roomMessageBodyPtr.asFunction<
-      _RoomMessageBodyReturn Function(
-    int,
-  )>();
-  late final _roomMessageFormattedBodyPtr = _lookup<
-      ffi.NativeFunction<
-          _RoomMessageFormattedBodyReturn Function(
-    ffi.Int64,
-  )>>("__RoomMessage_formatted_body");
-
-  late final _roomMessageFormattedBody =
-      _roomMessageFormattedBodyPtr.asFunction<
-          _RoomMessageFormattedBodyReturn Function(
-    int,
-  )>();
   late final _roomMessageOriginServerTsPtr = _lookup<
       ffi.NativeFunction<
           _RoomMessageOriginServerTsReturn Function(
@@ -4642,26 +4621,34 @@ class Api {
       _RoomMessageMsgtypeReturn Function(
     int,
   )>();
-  late final _roomMessageImageDescriptionPtr = _lookup<
+  late final _roomMessageTextDescPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageImageDescriptionReturn Function(
+          _RoomMessageTextDescReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_image_description");
+  )>>("__RoomMessage_text_desc");
 
-  late final _roomMessageImageDescription =
-      _roomMessageImageDescriptionPtr.asFunction<
-          _RoomMessageImageDescriptionReturn Function(
+  late final _roomMessageTextDesc = _roomMessageTextDescPtr.asFunction<
+      _RoomMessageTextDescReturn Function(
     int,
   )>();
-  late final _roomMessageFileDescriptionPtr = _lookup<
+  late final _roomMessageImageDescPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageFileDescriptionReturn Function(
+          _RoomMessageImageDescReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_file_description");
+  )>>("__RoomMessage_image_desc");
 
-  late final _roomMessageFileDescription =
-      _roomMessageFileDescriptionPtr.asFunction<
-          _RoomMessageFileDescriptionReturn Function(
+  late final _roomMessageImageDesc = _roomMessageImageDescPtr.asFunction<
+      _RoomMessageImageDescReturn Function(
+    int,
+  )>();
+  late final _roomMessageFileDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageFileDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_file_desc");
+
+  late final _roomMessageFileDesc = _roomMessageFileDescPtr.asFunction<
+      _RoomMessageFileDescReturn Function(
     int,
   )>();
   late final _roomMessageIsEditablePtr = _lookup<
@@ -4674,85 +4661,104 @@ class Api {
       int Function(
     int,
   )>();
-  late final _imageDescriptionNamePtr = _lookup<
+  late final _textDescBodyPtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescriptionNameReturn Function(
+          _TextDescBodyReturn Function(
     ffi.Int64,
-  )>>("__ImageDescription_name");
+  )>>("__TextDesc_body");
 
-  late final _imageDescriptionName = _imageDescriptionNamePtr.asFunction<
-      _ImageDescriptionNameReturn Function(
+  late final _textDescBody = _textDescBodyPtr.asFunction<
+      _TextDescBodyReturn Function(
     int,
   )>();
-  late final _imageDescriptionMimetypePtr = _lookup<
+  late final _textDescFormattedBodyPtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescriptionMimetypeReturn Function(
+          _TextDescFormattedBodyReturn Function(
     ffi.Int64,
-  )>>("__ImageDescription_mimetype");
+  )>>("__TextDesc_formatted_body");
 
-  late final _imageDescriptionMimetype =
-      _imageDescriptionMimetypePtr.asFunction<
-          _ImageDescriptionMimetypeReturn Function(
+  late final _textDescFormattedBody = _textDescFormattedBodyPtr.asFunction<
+      _TextDescFormattedBodyReturn Function(
     int,
   )>();
-  late final _imageDescriptionSizePtr = _lookup<
+  late final _imageDescNamePtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescriptionSizeReturn Function(
+          _ImageDescNameReturn Function(
     ffi.Int64,
-  )>>("__ImageDescription_size");
+  )>>("__ImageDesc_name");
 
-  late final _imageDescriptionSize = _imageDescriptionSizePtr.asFunction<
-      _ImageDescriptionSizeReturn Function(
+  late final _imageDescName = _imageDescNamePtr.asFunction<
+      _ImageDescNameReturn Function(
     int,
   )>();
-  late final _imageDescriptionWidthPtr = _lookup<
+  late final _imageDescMimetypePtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescriptionWidthReturn Function(
+          _ImageDescMimetypeReturn Function(
     ffi.Int64,
-  )>>("__ImageDescription_width");
+  )>>("__ImageDesc_mimetype");
 
-  late final _imageDescriptionWidth = _imageDescriptionWidthPtr.asFunction<
-      _ImageDescriptionWidthReturn Function(
+  late final _imageDescMimetype = _imageDescMimetypePtr.asFunction<
+      _ImageDescMimetypeReturn Function(
     int,
   )>();
-  late final _imageDescriptionHeightPtr = _lookup<
+  late final _imageDescSizePtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescriptionHeightReturn Function(
+          _ImageDescSizeReturn Function(
     ffi.Int64,
-  )>>("__ImageDescription_height");
+  )>>("__ImageDesc_size");
 
-  late final _imageDescriptionHeight = _imageDescriptionHeightPtr.asFunction<
-      _ImageDescriptionHeightReturn Function(
+  late final _imageDescSize = _imageDescSizePtr.asFunction<
+      _ImageDescSizeReturn Function(
     int,
   )>();
-  late final _fileDescriptionNamePtr = _lookup<
+  late final _imageDescWidthPtr = _lookup<
       ffi.NativeFunction<
-          _FileDescriptionNameReturn Function(
+          _ImageDescWidthReturn Function(
     ffi.Int64,
-  )>>("__FileDescription_name");
+  )>>("__ImageDesc_width");
 
-  late final _fileDescriptionName = _fileDescriptionNamePtr.asFunction<
-      _FileDescriptionNameReturn Function(
+  late final _imageDescWidth = _imageDescWidthPtr.asFunction<
+      _ImageDescWidthReturn Function(
     int,
   )>();
-  late final _fileDescriptionMimetypePtr = _lookup<
+  late final _imageDescHeightPtr = _lookup<
       ffi.NativeFunction<
-          _FileDescriptionMimetypeReturn Function(
+          _ImageDescHeightReturn Function(
     ffi.Int64,
-  )>>("__FileDescription_mimetype");
+  )>>("__ImageDesc_height");
 
-  late final _fileDescriptionMimetype = _fileDescriptionMimetypePtr.asFunction<
-      _FileDescriptionMimetypeReturn Function(
+  late final _imageDescHeight = _imageDescHeightPtr.asFunction<
+      _ImageDescHeightReturn Function(
     int,
   )>();
-  late final _fileDescriptionSizePtr = _lookup<
+  late final _fileDescNamePtr = _lookup<
       ffi.NativeFunction<
-          _FileDescriptionSizeReturn Function(
+          _FileDescNameReturn Function(
     ffi.Int64,
-  )>>("__FileDescription_size");
+  )>>("__FileDesc_name");
 
-  late final _fileDescriptionSize = _fileDescriptionSizePtr.asFunction<
-      _FileDescriptionSizeReturn Function(
+  late final _fileDescName = _fileDescNamePtr.asFunction<
+      _FileDescNameReturn Function(
+    int,
+  )>();
+  late final _fileDescMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_mimetype");
+
+  late final _fileDescMimetype = _fileDescMimetypePtr.asFunction<
+      _FileDescMimetypeReturn Function(
+    int,
+  )>();
+  late final _fileDescSizePtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescSizeReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_size");
+
+  late final _fileDescSize = _fileDescSizePtr.asFunction<
+      _FileDescSizeReturn Function(
     int,
   )>();
   late final _timelineDiffActionPtr = _lookup<
@@ -8629,31 +8635,27 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// the body of the massage - fallback string reprensentation
-  String body() {
+  /// the server receiving timestamp in milliseconds
+  int? originServerTs() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageBody(
+    final tmp1 = _api._roomMessageOriginServerTs(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    if (tmp3 == 0) {
+      return null;
     }
+    final tmp2 = tmp4;
     return tmp2;
   }
 
-  /// get html body
-  String? formattedBody() {
+  /// the type of massage, like audio, text, image, file, etc
+  String? msgtype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageFormattedBody(
+    final tmp1 = _api._roomMessageMsgtype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8673,11 +8675,11 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// the server receiving timestamp in milliseconds
-  int? originServerTs() {
+  /// contains text fallback and formatted text
+  TextDesc? textDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageOriginServerTs(
+    final tmp1 = _api._roomMessageTextDesc(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8685,35 +8687,18 @@ class RoomMessage {
     if (tmp3 == 0) {
       return null;
     }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// the type of massage, like audio, text, image, file, etc
-  String msgtype() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageMsgtype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextDesc._(_api, tmp4_1);
     return tmp2;
   }
 
   /// contains source data, name, mimetype, size, width and height
-  ImageDescription? imageDescription() {
+  ImageDesc? imageDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageImageDescription(
+    final tmp1 = _api._roomMessageImageDesc(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8722,17 +8707,17 @@ class RoomMessage {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDescription");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ImageDescription._(_api, tmp4_1);
+    final tmp2 = ImageDesc._(_api, tmp4_1);
     return tmp2;
   }
 
   /// contains source data, name, mimetype and size
-  FileDescription? fileDescription() {
+  FileDesc? fileDesc() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageFileDescription(
+    final tmp1 = _api._roomMessageFileDesc(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8741,9 +8726,9 @@ class RoomMessage {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDescription");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = FileDescription._(_api, tmp4_1);
+    final tmp2 = FileDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -8765,17 +8750,73 @@ class RoomMessage {
   }
 }
 
-class ImageDescription {
+class TextDesc {
   final Api _api;
   final _Box _box;
 
-  ImageDescription._(this._api, this._box);
+  TextDesc._(this._api, this._box);
+
+  /// fallback text
+  String body() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._textDescBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// formatted text
+  String? formattedBody() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._textDescFormattedBody(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class ImageDesc {
+  final Api _api;
+  final _Box _box;
+
+  ImageDesc._(this._api, this._box);
 
   /// file name
   String name() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionName(
+    final tmp1 = _api._imageDescName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8795,7 +8836,7 @@ class ImageDescription {
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionMimetype(
+    final tmp1 = _api._imageDescMimetype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8819,7 +8860,7 @@ class ImageDescription {
   int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionSize(
+    final tmp1 = _api._imageDescSize(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8835,7 +8876,7 @@ class ImageDescription {
   int? width() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionWidth(
+    final tmp1 = _api._imageDescWidth(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8851,7 +8892,7 @@ class ImageDescription {
   int? height() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionHeight(
+    final tmp1 = _api._imageDescHeight(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8869,17 +8910,17 @@ class ImageDescription {
   }
 }
 
-class FileDescription {
+class FileDesc {
   final Api _api;
   final _Box _box;
 
-  FileDescription._(this._api, this._box);
+  FileDesc._(this._api, this._box);
 
   /// file name
   String name() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescriptionName(
+    final tmp1 = _api._fileDescName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8899,7 +8940,7 @@ class FileDescription {
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescriptionMimetype(
+    final tmp1 = _api._fileDescMimetype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8923,7 +8964,7 @@ class FileDescription {
   int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescriptionSize(
+    final tmp1 = _api._fileDescSize(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -11996,26 +12037,6 @@ class _RoomMessageSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageBodyReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _RoomMessageFormattedBodyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
 class _RoomMessageOriginServerTsReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -12024,38 +12045,6 @@ class _RoomMessageOriginServerTsReturn extends ffi.Struct {
 }
 
 class _RoomMessageMsgtypeReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _RoomMessageImageDescriptionReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomMessageFileDescriptionReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _ImageDescriptionNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _ImageDescriptionMimetypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -12066,28 +12055,28 @@ class _ImageDescriptionMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ImageDescriptionSizeReturn extends ffi.Struct {
+class _RoomMessageTextDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Int64()
   external int arg1;
 }
 
-class _ImageDescriptionWidthReturn extends ffi.Struct {
+class _RoomMessageImageDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Int64()
   external int arg1;
 }
 
-class _ImageDescriptionHeightReturn extends ffi.Struct {
+class _RoomMessageFileDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Int64()
   external int arg1;
 }
 
-class _FileDescriptionNameReturn extends ffi.Struct {
+class _TextDescBodyReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -12096,7 +12085,7 @@ class _FileDescriptionNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _FileDescriptionMimetypeReturn extends ffi.Struct {
+class _TextDescFormattedBodyReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -12107,7 +12096,68 @@ class _FileDescriptionMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _FileDescriptionSizeReturn extends ffi.Struct {
+class _ImageDescNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _ImageDescMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ImageDescSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _FileDescNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _FileDescMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
