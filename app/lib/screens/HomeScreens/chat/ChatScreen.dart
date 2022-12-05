@@ -410,14 +410,14 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 GetBuilder<ChatRoomController>(
                   id: 'room-profile',
-                  builder: (_) {
+                  builder: (ChatRoomController controller) {
                     return buildRoomName(context);
                   },
                 ),
                 const SizedBox(height: 5),
                 GetBuilder<ChatRoomController>(
                   id: 'active-members',
-                  builder: (_) {
+                  builder: (ChatRoomController controller) {
                     return buildActiveMembers(context);
                   },
                 ),
@@ -426,7 +426,7 @@ class _ChatScreenState extends State<ChatScreen> {
             actions: [
               GetBuilder<ChatRoomController>(
                 id: 'room-profile',
-                builder: (_) {
+                builder: (ChatRoomController controller) {
                   return buildProfileAction();
                 },
               ),
@@ -542,7 +542,7 @@ class _ChatScreenState extends State<ChatScreen> {
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
               ),
-              onSendPressed: (_) {},
+              onSendPressed: (types.PartialText partialText) {},
               user: types.User(id: widget.client.userId().toString()),
               // if invited, disable image gallery
               disableImageGallery: invitedIndex != -1,
