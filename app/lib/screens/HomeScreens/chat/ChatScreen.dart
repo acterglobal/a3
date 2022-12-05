@@ -569,7 +569,10 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached:
                   invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              onBackgroundTap: () => controller.toggleEmojiContainer(),
+              onBackgroundTap: () {
+                roomController.isEmojiContainerVisible = false;
+                roomController.update(['emoji-reaction']);
+              },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
