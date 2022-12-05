@@ -1,9 +1,10 @@
 import 'package:bubble/bubble.dart';
-import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
@@ -27,15 +28,16 @@ class ChatBubbleBuilder extends StatefulWidget {
 }
 
 class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late types.MessageType messagetype;
   final ChatRoomController roomController = Get.find<ChatRoomController>();
-  late final TabController tabBarController;
+  late TabController tabBarController;
+  List<Tab> reactionTabs = [];
 
   @override
   void initState() {
     super.initState();
-    tabBarController = TabController(length: 3, vsync: this);
+    tabBarController = TabController(length: reactionTabs.length, vsync: this);
     messagetype = widget.message.type;
   }
 
@@ -47,7 +49,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+          children: [
             const SizedBox(height: 6),
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -72,7 +74,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               child: Align(
                 alignment:
                     !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-                child: buildEmojiContainer(context, 20),
+                child: buildEmojiContainer(),
               ),
             ),
           ],
@@ -82,14 +84,26 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
   //Emoji reaction info bottom sheet.
-  void showEmojiReactionsSheet(BuildContext context) {
+  void showEmojiReactionsSheet(Map<String, dynamic> reactions) {
+    List<String> keys = reactions.keys.toList();
+    num count = 0;
+    setState(() {
+      reactions.forEach((key, value) {
+        count += value.count();
+        reactionTabs.add(Tab(text: '$key +${value.count()}'));
+      });
+      reactionTabs.insert(0, (Tab(text: 'All $count')));
+      tabBarController =
+          TabController(length: reactionTabs.length, vsync: this);
+    });
     showModalBottomSheet(
       backgroundColor: AppCommonTheme.backgroundColorLight,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
-      builder: (BuildContext ctx) {
+      isDismissible: true,
+      builder: (BuildContext context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -103,11 +117,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
-                tabs: const [
-                  Tab(text: 'All 15'),
-                  Tab(text: '$heart +11'),
-                  Tab(text: '$faceWithTears +3')
-                ],
+                tabs: reactionTabs,
               ),
             ),
             const SizedBox(height: 10),
@@ -117,20 +127,23 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 child: TabBarView(
                   controller: tabBarController,
                   children: [
-                    buildReactionListing(astonishedFace),
-                    buildReactionListing(heart),
-                    buildReactionListing(faceWithTears),
+                    buildReactionListing(keys),
+                    for (var count in keys) buildReactionListing([count]),
                   ],
                 ),
               ),
-            )
+            ),
           ],
         );
       },
-    );
+    ).whenComplete(() {
+      setState(() {
+        reactionTabs.clear();
+      });
+    });
   }
 
-  //Custom chat bubble
+  // Custom chat bubble
   Widget buildChatBubble() {
     return Column(
       crossAxisAlignment:
@@ -203,9 +216,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
   //Emoji Container which shows message reactions
-  Widget buildEmojiContainer(BuildContext context, int emojisCount) {
+  Widget buildEmojiContainer() {
+    Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
+    List<String> keys = reactions.keys.toList();
     return Container(
-      width: emojisCount * 50,
+      width: keys.length * 50,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
@@ -230,17 +245,20 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         direction: Axis.horizontal,
         spacing: 5,
         runSpacing: 3,
-        children: List.generate(emojisCount, (int index) {
+        children: List.generate(keys.length, (int index) {
+          String key = keys[index];
+          ReactionDesc? desc = reactions[key];
+          int count = desc!.count();
           return GestureDetector(
             onTap: () {
-              showEmojiReactionsSheet(context);
+              showEmojiReactionsSheet(reactions);
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                Text(heart, style: ChatTheme01.emojiCountStyle),
-                SizedBox(width: 2),
-                Text('+12', style: ChatTheme01.emojiCountStyle)
+              children: [
+                Text(key, style: ChatTheme01.emojiCountStyle),
+                const SizedBox(width: 2),
+                Text(count.toString(), style: ChatTheme01.emojiCountStyle),
               ],
             ),
           );
@@ -282,13 +300,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-  Widget buildReactionListing(String emoji) {
+  Widget buildReactionListing(List<String> emojis) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
-      itemCount: 10,
+      itemCount: emojis.length,
       itemBuilder: (BuildContext context, int index) {
-        return EmojiReactionListItem(emoji: emoji);
+        return EmojiReactionListItem(emoji: emojis[index]);
       },
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(height: 12);

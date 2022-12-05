@@ -117,6 +117,10 @@ object RoomMessage {
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
 
+    fn reaction_keys() -> Vec<string>;
+
+    fn reaction_desc(key: string) -> Option<ReactionDesc>;
+
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
@@ -155,6 +159,10 @@ object FileDesc {
 
     /// file size in bytes
     fn size() -> Option<u64>;
+}
+
+object ReactionDesc {
+    fn count() -> u64;
 }
 
 object TimelineDiff {
@@ -226,11 +234,20 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
-    /// invite the new user to this room
-    fn invite_user(user_id: string) -> Future<Result<bool>>;
+    /// Send a text message in MarkDown format to the room
+    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
+
+    /// Send reaction about existing event
+    fn send_reaction(event_id: string, key: string) -> Future<Result<string>>;
+
+    /// send the image message to this room
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// get the user status on this room
     fn room_type() -> string;
+
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
 
     /// join this room
     fn join() -> Future<Result<bool>>;
@@ -240,12 +257,6 @@ object Conversation {
 
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
-
-    /// Send a text message in MarkDown format to the room
-    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
-
-    /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable

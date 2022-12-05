@@ -2,7 +2,7 @@ use log::info;
 use matrix_sdk::{
     deserialized_responses::{SyncTimelineEvent, TimelineEvent},
     room::{
-        timeline::{EventTimelineItem, TimelineItem, TimelineItemContent},
+        timeline::{EventTimelineItem, ReactionDetails, TimelineItem, TimelineItemContent},
         Room,
     },
     ruma::events::{
@@ -15,7 +15,7 @@ use matrix_sdk::{
     },
 };
 use regex::Regex;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 #[derive(Clone, Debug)]
 pub struct RoomMessage {
@@ -28,6 +28,7 @@ pub struct RoomMessage {
     image_desc: Option<ImageDesc>,
     file_desc: Option<FileDesc>,
     is_reply: bool,
+    reactions: HashMap<String, ReactionDesc>,
     is_editable: bool,
 }
 
@@ -43,6 +44,7 @@ impl RoomMessage {
         image_desc: Option<ImageDesc>,
         file_desc: Option<FileDesc>,
         is_reply: bool,
+        reactions: HashMap<String, ReactionDesc>,
         is_editable: bool,
     ) -> Self {
         RoomMessage {
@@ -55,6 +57,7 @@ impl RoomMessage {
             image_desc,
             file_desc,
             is_reply,
+            reactions,
             is_editable,
         }
     }
@@ -63,6 +66,7 @@ impl RoomMessage {
         event: &OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
         room: Room,
     ) -> Self {
+        info!("room message from original sync event");
         let mut sent_by_me = false;
         if let Some(user_id) = room.client().user_id() {
             if *user_id == event.sender {
@@ -130,6 +134,9 @@ impl RoomMessage {
             &event.content.relates_to,
             Some(Relation::Reply { in_reply_to }),
         );
+        // room list needn't show message reaction
+        // so sync event handler should keep `reactions` empty
+        // reaction event handler needn't exist in conversation controller
         RoomMessage::new(
             event.event_id.to_string(),
             room.room_id().to_string(),
@@ -140,6 +147,7 @@ impl RoomMessage {
             image_desc,
             file_desc,
             is_reply,
+            Default::default(),
             is_editable,
         )
     }
@@ -171,6 +179,7 @@ impl RoomMessage {
             None,
             None,
             false,
+            Default::default(),
             false,
         )
     }
@@ -183,6 +192,13 @@ impl RoomMessage {
         let room_id = room.room_id().to_string();
         let sender = event.sender().to_string();
         let origin_server_ts: Option<u64> = event.origin_server_ts().map(|x| x.get().into());
+        let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
+        for (key, value) in event.reactions().iter() {
+            reactions.insert(
+                key.to_string(),
+                ReactionDesc::new(value.count.into()),
+            );
+        }
 
         match event.content() {
             TimelineItemContent::Message(msg) => {
@@ -264,6 +280,7 @@ impl RoomMessage {
                     image_desc,
                     file_desc,
                     is_reply,
+                    reactions,
                     is_editable,
                 )
             }
@@ -279,6 +296,7 @@ impl RoomMessage {
                     None,
                     None,
                     false,
+                    Default::default(),
                     false,
                 )
             }
@@ -294,6 +312,7 @@ impl RoomMessage {
                     None,
                     None,
                     false,
+                    Default::default(),
                     false,
                 )
             }
@@ -309,6 +328,7 @@ impl RoomMessage {
                     None,
                     None,
                     false,
+                    Default::default(),
                     false,
                 )
             }
@@ -328,6 +348,7 @@ impl RoomMessage {
                     None,
                     None,
                     false,
+                    Default::default(),
                     false,
                 )
             }
@@ -379,6 +400,18 @@ impl RoomMessage {
                 self.text_desc = Some(text_desc);
                 info!("regex replaced");
             }
+        }
+    }
+
+    pub fn reaction_keys(&self) -> Vec<String> {
+        self.reactions.keys().cloned().collect()
+    }
+
+    pub fn reaction_desc(&self, key: String) -> Option<ReactionDesc> {
+        if self.reactions.contains_key(&key) {
+            Some(self.reactions[&key].clone())
+        } else {
+            None
         }
     }
 
@@ -460,6 +493,21 @@ impl FileDesc {
 
     pub fn size(&self) -> Option<u64> {
         self.size
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ReactionDesc {
+    count: u64,
+}
+
+impl ReactionDesc {
+    pub(crate) fn new(count: u64) -> Self {
+        ReactionDesc { count }
+    }
+
+    pub fn count(&self) -> u64 {
+        self.count
     }
 }
 
