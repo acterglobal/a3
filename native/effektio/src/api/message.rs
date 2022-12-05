@@ -2,7 +2,7 @@ use log::info;
 use matrix_sdk::{
     deserialized_responses::{SyncTimelineEvent, TimelineEvent},
     room::{
-        timeline::{EventTimelineItem, TimelineItem, TimelineItemContent},
+        timeline::{EventTimelineItem, ReactionDetails, TimelineItem, TimelineItemContent},
         Room,
     },
     ruma::events::{
@@ -15,7 +15,7 @@ use matrix_sdk::{
     },
 };
 use regex::Regex;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc};
 
 #[derive(Clone, Debug)]
 pub struct RoomMessage {
@@ -29,6 +29,7 @@ pub struct RoomMessage {
     image_description: Option<ImageDescription>,
     file_description: Option<FileDescription>,
     is_reply: bool,
+    reactions: HashMap<String, ReactionDescription>,
     is_editable: bool,
 }
 
@@ -45,6 +46,7 @@ impl RoomMessage {
         image_description: Option<ImageDescription>,
         file_description: Option<FileDescription>,
         is_reply: bool,
+        reactions: HashMap<String, ReactionDescription>,
         is_editable: bool,
     ) -> Self {
         RoomMessage {
@@ -58,6 +60,7 @@ impl RoomMessage {
             image_description,
             file_description,
             is_reply,
+            reactions,
             is_editable,
         }
     }
@@ -66,6 +69,7 @@ impl RoomMessage {
         event: &OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
         room: Room,
     ) -> Self {
+        info!("room message from original sync event");
         let mut sent_by_me = false;
         if let Some(user_id) = room.client().user_id() {
             if *user_id == event.sender {
@@ -130,6 +134,9 @@ impl RoomMessage {
             &event.content.relates_to,
             Some(Relation::Reply { in_reply_to }),
         );
+        // room list needn't show message reaction
+        // so sync event handler should keep `reactions` empty
+        // reaction event handler needn't exist in conversation controller
         RoomMessage::new(
             event.event_id.to_string(),
             room.room_id().to_string(),
@@ -141,6 +148,7 @@ impl RoomMessage {
             image_description,
             file_description,
             is_reply,
+            Default::default(),
             is_editable,
         )
     }
@@ -170,11 +178,19 @@ impl RoomMessage {
             None,
             None,
             false,
+            Default::default(),
             false,
         )
     }
 
     pub(crate) fn from_timeline_item(event: &EventTimelineItem, room: Room) -> Option<Self> {
+        let mut reactions: HashMap<String, ReactionDescription> = HashMap::new();
+        for (key, value) in event.reactions().iter() {
+            reactions.insert(
+                key.to_string(),
+                ReactionDescription::new(value.count.into()),
+            );
+        }
         let event_id = match event.event_id() {
             Some(id) => id.to_string(),
             None => format!("{:?}", event.key()),
@@ -257,6 +273,7 @@ impl RoomMessage {
                     image_description,
                     file_description,
                     is_reply,
+                    reactions,
                     is_editable,
                 ));
             }
@@ -324,6 +341,18 @@ impl RoomMessage {
         }
     }
 
+    pub fn reaction_keys(&self) -> Vec<String> {
+        self.reactions.keys().cloned().collect()
+    }
+
+    pub fn reaction_description(&self, key: String) -> Option<ReactionDescription> {
+        if self.reactions.contains_key(&key) {
+            Some(self.reactions[&key].clone())
+        } else {
+            None
+        }
+    }
+
     pub fn is_editable(&self) -> bool {
         self.is_editable
     }
@@ -378,6 +407,21 @@ impl FileDescription {
 
     pub fn size(&self) -> Option<u64> {
         self.size
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct ReactionDescription {
+    count: u64,
+}
+
+impl ReactionDescription {
+    pub(crate) fn new(count: u64) -> Self {
+        ReactionDescription { count }
+    }
+
+    pub fn count(&self) -> u64 {
+        self.count
     }
 }
 
