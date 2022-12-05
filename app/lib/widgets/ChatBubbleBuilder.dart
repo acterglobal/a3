@@ -80,7 +80,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-//Emoji reaction info bottom sheet.
+  //Emoji reaction info bottom sheet.
   void showEmojiReactionsSheet() {
     showModalBottomSheet(
       backgroundColor: AppCommonTheme.backgroundColorLight,

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
@@ -467,10 +467,13 @@ class ChatRoomController extends GetxController {
       _currentRoom!.getRoomId(),
       m.createdAt!,
     );
+
     if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.length < activeMembers.length
-          ? types.Status.delivered
-          : types.Status.seen;
+      types.Status status = seenByList.isEmpty
+          ? types.Status.sent
+          : seenByList.length < activeMembers.length
+              ? types.Status.delivered
+              : types.Status.seen;
       messages.insert(index, m.copyWith(showStatus: true, status: status));
     } else {
       messages.insert(index, m);

@@ -19,6 +19,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -543,6 +544,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 sendButtonAccessibilityLabel: '',
               ),
               messages: controller.messages,
+              customStatusBuilder: customStatusBuilder,
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
               ),
@@ -574,8 +576,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 attachmentButtonIcon:
                     SvgPicture.asset('assets/images/attachment.svg'),
                 sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
-                seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
-                deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
           ],
@@ -695,5 +695,34 @@ class _ChatScreenState extends State<ChatScreen> {
       message: message,
       nextMessageInGroup: nextMessageInGroup,
     );
+  }
+
+  Widget customStatusBuilder(types.Message message,
+      {required BuildContext context}) {
+    if (message.status == Status.delivered) {
+      return SvgPicture.asset('assets/images/deliveredIcon.svg');
+    } else if (message.status == Status.seen) {
+      return SvgPicture.asset('assets/images/seenIcon.svg');
+    } else if (message.status == Status.sending) {
+      return const Center(
+        child: SizedBox(
+          height: 10,
+          width: 10,
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.transparent,
+            strokeWidth: 1.5,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              AppCommonTheme.primaryColor,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return SvgPicture.asset(
+        'assets/images/sentIcon.svg',
+        width: 12,
+        height: 12,
+      );
+    }
   }
 }
