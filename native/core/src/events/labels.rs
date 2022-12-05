@@ -121,7 +121,7 @@ mod test {
             others: vec!["m.type:whatever".to_string(), "with:other:test".to_string()],
         };
         let ser = serde_json::to_string(&labels)?;
-        println!("Serialized: {:}", ser);
+        println!("Serialized: {ser:}");
 
         let after: Labels = serde_json::from_str(&ser)?;
         assert_eq!(labels, after);
