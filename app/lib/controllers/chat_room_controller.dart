@@ -529,10 +529,13 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.key.verification.request') {}
 
     // should not return null, before we can keep track of index in diff receiver
-    return types.UnsupportedMessage(
+    return types.CustomMessage(
       author: author,
       createdAt: createdAt,
       id: eventId,
+      metadata: const {
+        'decryptFailed': true,
+      },
     );
   }
 

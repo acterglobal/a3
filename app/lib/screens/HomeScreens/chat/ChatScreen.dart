@@ -144,158 +144,147 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget customBottomWidget() {
+  Widget customBottomWidget(BuildContext context) {
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
-        return roomController.isEmojiContainerVisible
-            ? Container(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                color: AppCommonTheme.backgroundColorLight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        roomController.isEmojiContainerVisible = false;
-                        roomController.showReplyView = true;
-                        roomController.update(['emoji-reaction', 'chat-input']);
-                      },
-                      child: const Text(
-                        'Reply',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: (() {
-                        if (roomController.isAuthor()) {
-                          // TODO add unsent message call
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Dialog(
-                                child: Container(
-                                  padding: const EdgeInsets.all(16.0),
-                                  height: 280,
-                                  decoration: const BoxDecoration(
-                                    color: AppCommonTheme.backgroundColorLight,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(16),
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            GestureDetector(
-                                              onTap: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 8.0,
-                                        ),
-                                        const Text(
-                                          'Report This Message',
-                                          style:
-                                              AppCommonTheme.appBarTitleStyle,
-                                        ),
-                                        const SizedBox(
-                                          height: 16.0,
-                                        ),
-                                        const Text(
-                                          "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: AppCommonTheme.dividerColor,
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            const snackBar = SnackBar(
-                                              content: Text('Message reported'),
-                                            );
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(snackBar);
-                                            roomController
-                                                    .isEmojiContainerVisible =
-                                                false;
-                                            roomController
-                                                .update(['emoji-reaction']);
-                                            Navigator.pop(context);
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(20),
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                  14,
-                                                ),
-                                                color:
-                                                    AppCommonTheme.primaryColor,
-                                              ),
-                                              child: const Padding(
-                                                padding: EdgeInsets.all(8),
-                                                child: Center(
-                                                  child: Text(
-                                                    'Okay!',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }
-                      }),
-                      child: Text(
-                        roomController.isAuthor() ? 'Unsend' : 'Report',
-                        style: TextStyle(
-                          color: roomController.isAuthor()
-                              ? Colors.white
-                              : Colors.red,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showMoreOptions();
-                      },
-                      child: const Text(
-                        'More',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
+        if (!roomController.isEmojiContainerVisible) {
+          return CustomChatInput(
+            isChatScreen: true,
+            roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
+            onButtonPressed: () => onSendButtonPressed(controller),
+          );
+        }
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          color: AppCommonTheme.backgroundColorLight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  roomController.isEmojiContainerVisible = false;
+                  roomController.showReplyView = true;
+                  roomController.update(['emoji-reaction', 'chat-input']);
+                },
+                child: const Text(
+                  'Reply',
+                  style: TextStyle(color: Colors.white),
                 ),
-              )
-            : CustomChatInput(
-                isChatScreen: true,
-                roomName:
-                    widget.roomName ?? AppLocalizations.of(context)!.noName,
-                onButtonPressed: () => onSendButtonPressed(controller),
-              );
+              ),
+              GestureDetector(
+                onTap: () {
+                  if (roomController.isAuthor()) {
+                    // TODO add unsent message call
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext ctx) {
+                        return Dialog(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            height: 280,
+                            decoration: const BoxDecoration(
+                              color: AppCommonTheme.backgroundColorLight,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                            ),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(ctx);
+                                        },
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Report This Message',
+                                    style: AppCommonTheme.appBarTitleStyle,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: AppCommonTheme.dividerColor,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      const snackBar = SnackBar(
+                                        content: Text('Message reported'),
+                                      );
+                                      ScaffoldMessenger.of(ctx)
+                                          .showSnackBar(snackBar);
+                                      roomController.isEmojiContainerVisible =
+                                          false;
+                                      roomController.update(['emoji-reaction']);
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          color: AppCommonTheme.primaryColor,
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8),
+                                          child: Center(
+                                            child: Text(
+                                              'Okay!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Text(
+                  roomController.isAuthor() ? 'Unsend' : 'Report',
+                  style: TextStyle(
+                    color:
+                        roomController.isAuthor() ? Colors.white : Colors.red,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  showMoreOptions();
+                },
+                child: const Text(
+                  'More',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -339,7 +328,7 @@ class _ChatScreenState extends State<ChatScreen> {
               'Could not load image due to $error',
             );
           },
-          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
             if (wasSynchronouslyLoaded) return child;
             return AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
@@ -354,7 +343,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
             );
-          }),
+          },
           cacheWidth: 512,
           width: messageWidth.toDouble(),
           fit: BoxFit.cover,
@@ -533,7 +522,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return Stack(
           children: [
             Chat(
-              customBottomWidget: customBottomWidget(),
+              customBottomWidget: customBottomWidget(context),
               textMessageBuilder: textMessageBuilder,
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
@@ -554,6 +543,7 @@ class _ChatScreenState extends State<ChatScreen> {
               avatarBuilder: avatarBuilder,
               bubbleBuilder: bubbleBuilder,
               imageMessageBuilder: imageMessageBuilder,
+              customMessageBuilder: customMessageBuilder,
               showUserAvatars: true,
               onAttachmentPressed: () => handleAttachmentPressed(context),
               onAvatarTap: (types.User user) {
@@ -643,7 +633,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 22.0),
+              margin: const EdgeInsets.symmetric(horizontal: 22),
               width: MediaQuery.of(context).size.width,
               height: 2,
               color: Colors.grey,
@@ -659,7 +649,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 22.0),
+              margin: const EdgeInsets.symmetric(horizontal: 22),
               width: MediaQuery.of(context).size.width,
               height: 2,
               color: Colors.grey,
@@ -669,7 +659,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               },
               child: const Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16),
                 child: Center(
                   child: Text(
                     'Cancel',
@@ -695,5 +685,21 @@ class _ChatScreenState extends State<ChatScreen> {
       message: message,
       nextMessageInGroup: nextMessageInGroup,
     );
+  }
+
+  Widget customMessageBuilder(
+    types.CustomMessage customMessage, {
+    required int messageWidth,
+  }) {
+    if (customMessage.metadata?['decryptFailed'] == true) {
+      String text = 'Failed to decrypt message. Re-request session keys.';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    return const SizedBox();
   }
 }
