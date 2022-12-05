@@ -700,8 +700,10 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget customStatusBuilder(types.Message message,
-      {required BuildContext context}) {
+  Widget customStatusBuilder(
+    types.Message message, {
+    required BuildContext context,
+  }) {
     if (message.status == Status.delivered) {
       return SvgPicture.asset('assets/images/deliveredIcon.svg');
     } else if (message.status == Status.seen) {
