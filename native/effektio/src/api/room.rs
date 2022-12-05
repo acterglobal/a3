@@ -486,6 +486,21 @@ impl Room {
             })
             .await?
     }
+
+    pub async fn is_encrypted(&self) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't know if a room we are not in is encrypted")
+        };
+        let client = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let encrypted = room.is_encrypted().await?;
+                Ok(encrypted)
+            })
+            .await?
+    }
 }
 
 impl std::ops::Deref for Room {

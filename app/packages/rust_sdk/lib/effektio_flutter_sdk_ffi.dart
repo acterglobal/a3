@@ -2041,6 +2041,48 @@ class Api {
     return tmp7;
   }
 
+  bool? __conversationIsEncryptedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationIsEncryptedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   RoomProfile? __groupGetProfileFuturePoll(
     int boxed,
     int postCobject,
@@ -2174,6 +2216,48 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_Member");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = Member._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __groupIsEncryptedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _groupIsEncryptedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -5209,6 +5293,16 @@ class Api {
           int Function(
     int,
   )>();
+  late final _conversationIsEncryptedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Conversation_is_encrypted");
+
+  late final _conversationIsEncrypted = _conversationIsEncryptedPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _groupGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5243,6 +5337,16 @@ class Api {
     int,
     int,
     int,
+    int,
+  )>();
+  late final _groupIsEncryptedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Group_is_encrypted");
+
+  late final _groupIsEncrypted = _groupIsEncryptedPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _memberGetProfilePtr = _lookup<
@@ -6590,6 +6694,21 @@ class Api {
     int,
     int,
   )>();
+  late final _conversationIsEncryptedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationIsEncryptedFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_is_encrypted_future_poll");
+
+  late final _conversationIsEncryptedFuturePoll =
+      _conversationIsEncryptedFuturePollPtr.asFunction<
+          _ConversationIsEncryptedFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _groupGetProfileFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _GroupGetProfileFuturePollReturn Function(
@@ -6631,6 +6750,21 @@ class Api {
   late final _groupGetMemberFuturePoll =
       _groupGetMemberFuturePollPtr.asFunction<
           _GroupGetMemberFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _groupIsEncryptedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupIsEncryptedFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Group_is_encrypted_future_poll");
+
+  late final _groupIsEncryptedFuturePoll =
+      _groupIsEncryptedFuturePollPtr.asFunction<
+          _GroupIsEncryptedFuturePollReturn Function(
     int,
     int,
     int,
@@ -9886,6 +10020,23 @@ class Conversation {
     return tmp2;
   }
 
+  /// whether this room is encrypted one
+  Future<bool> isEncrypted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationIsEncrypted(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Conversation_is_encrypted_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__conversationIsEncryptedFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -9956,6 +10107,21 @@ class Group {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__groupGetMemberFuturePoll);
     return tmp6;
+  }
+
+  /// whether this room is encrypted one
+  Future<bool> isEncrypted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupIsEncrypted(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Group_is_encrypted_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__groupIsEncryptedFuturePoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -12955,6 +13121,21 @@ class _ConversationUserReceiptsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConversationIsEncryptedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _GroupGetProfileFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -12997,6 +13178,21 @@ class _GroupGetMemberFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _GroupIsEncryptedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 

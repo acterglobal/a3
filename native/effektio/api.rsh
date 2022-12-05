@@ -263,6 +263,9 @@ object Conversation {
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
+
+    /// whether this room is encrypted one
+    fn is_encrypted() -> Future<Result<bool>>;
 }
 
 object Group {
@@ -274,6 +277,9 @@ object Group {
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// whether this room is encrypted one
+    fn is_encrypted() -> Future<Result<bool>>;
 }
 
 object Member {
