@@ -29,6 +29,7 @@ pub struct RoomMessage {
     image_description: Option<ImageDescription>,
     file_description: Option<FileDescription>,
     is_reply: bool,
+    is_editable: bool,
 }
 
 impl RoomMessage {
@@ -44,6 +45,7 @@ impl RoomMessage {
         image_description: Option<ImageDescription>,
         file_description: Option<FileDescription>,
         is_reply: bool,
+        is_editable: bool,
     ) -> Self {
         RoomMessage {
             event_id,
@@ -56,6 +58,7 @@ impl RoomMessage {
             image_description,
             file_description,
             is_reply,
+            is_editable,
         }
     }
 
@@ -63,6 +66,12 @@ impl RoomMessage {
         event: &OriginalSyncMessageLikeEvent<RoomMessageEventContent>,
         room: Room,
     ) -> Self {
+        let mut sent_by_me = false;
+        if let Some(user_id) = room.client().user_id() {
+            if *user_id == event.sender {
+                sent_by_me = true;
+            }
+        }
         let fallback = match &event.content.msgtype {
             MessageType::Audio(audio) => "sent an audio.".to_string(),
             MessageType::Emote(emote) => emote.body.clone(),
@@ -78,12 +87,21 @@ impl RoomMessage {
         let mut formatted_body: Option<String> = None;
         let mut image_description: Option<ImageDescription> = None;
         let mut file_description: Option<FileDescription> = None;
+        let mut is_editable = false;
         match &event.content.msgtype {
             MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
                     if formatted.format == MessageFormat::Html {
                         formatted_body = Some(formatted.body.clone());
                     }
+                }
+                if sent_by_me {
+                    is_editable = true;
+                }
+            }
+            MessageType::Emote(content) => {
+                if sent_by_me {
+                    is_editable = true;
                 }
             }
             MessageType::Image(content) => {
@@ -123,6 +141,7 @@ impl RoomMessage {
             image_description,
             file_description,
             is_reply,
+            is_editable,
         )
     }
 
@@ -151,6 +170,7 @@ impl RoomMessage {
             None,
             None,
             false,
+            false,
         )
     }
 
@@ -161,6 +181,12 @@ impl RoomMessage {
         };
         match event.content() {
             TimelineItemContent::Message(msg) => {
+                let mut sent_by_me = false;
+                if let Some(user_id) = room.client().user_id() {
+                    if user_id == event.sender() {
+                        sent_by_me = true;
+                    }
+                }
                 let msgtype = msg.msgtype();
                 let fallback = match &msgtype {
                     MessageType::Audio(audio) => "sent an audio.".to_string(),
@@ -177,12 +203,21 @@ impl RoomMessage {
                 let mut formatted_body: Option<String> = None;
                 let mut image_description: Option<ImageDescription> = None;
                 let mut file_description: Option<FileDescription> = None;
+                let mut is_editable = false;
                 match msgtype {
                     MessageType::Text(content) => {
                         if let Some(formatted) = &content.formatted {
                             if formatted.format == MessageFormat::Html {
                                 formatted_body = Some(formatted.body.clone());
                             }
+                        }
+                        if sent_by_me {
+                            is_editable = true;
+                        }
+                    }
+                    MessageType::Emote(content) => {
+                        if sent_by_me {
+                            is_editable = true;
                         }
                     }
                     MessageType::Image(content) => {
@@ -222,6 +257,7 @@ impl RoomMessage {
                     image_description,
                     file_description,
                     is_reply,
+                    is_editable,
                 ));
             }
             TimelineItemContent::RedactedMessage => {
@@ -286,6 +322,10 @@ impl RoomMessage {
             self.body = re.replace(text.as_str(), "").to_string();
             info!("regex replaced");
         }
+    }
+
+    pub fn is_editable(&self) -> bool {
+        self.is_editable
     }
 }
 
