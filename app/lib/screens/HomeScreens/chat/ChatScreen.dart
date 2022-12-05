@@ -531,9 +531,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: controller.messages
-                  .where((x) => x.metadata?['decryptFailed'] != true)
-                  .toList(),
+              messages: controller.messages,
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
               ),
