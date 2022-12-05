@@ -58,6 +58,8 @@ class ChatRoomController extends GetxController {
   int emojiMessageIndex = 0;
   String? emojiCurrentId;
   final Uuid _uuid = const Uuid();
+  String? authorId;
+  bool showReplyView = false;
 
   ChatRoomController({required this.client}) : super();
 
@@ -597,7 +599,15 @@ class ChatRoomController extends GetxController {
     if (emojiCurrentId == message.id) {
       isEmojiContainerVisible = !isEmojiContainerVisible;
     }
+
+    if (isEmojiContainerVisible) {
+      authorId = message.author.id;
+    }
     update(['emoji-reaction']);
+  }
+
+  bool isAuthor() {
+    return client.userId().toString() == authorId;
   }
 
   void toggleEmojiContainer() {

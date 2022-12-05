@@ -47,13 +47,15 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       id: 'emoji-reaction',
       builder: (context) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 6),
             Row(
-              textDirection: widget.userId != widget.message.author.id
-                  ? TextDirection.ltr
-                  : TextDirection.rtl,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
+              textDirection:
+                  !isAuthor() ? TextDirection.ltr : TextDirection.rtl,
               children: [
                 Flexible(
                   child: Stack(
@@ -65,11 +67,14 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 ),
               ],
             ),
-            Align(
-              alignment: widget.userId != widget.message.author.id
-                  ? Alignment.bottomLeft
-                  : Alignment.bottomRight,
-              child: buildEmojiContainer(),
+            GestureDetector(
+              onLongPress: () =>
+                  roomController.updateEmojiState(widget.message),
+              child: Align(
+                alignment:
+                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
+                child: buildEmojiContainer(),
+              ),
             ),
           ],
         );
@@ -109,7 +114,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 controller: tabBarController,
                 indicator: const BoxDecoration(
                   color: AppCommonTheme.backgroundColor,
-                  borderRadius: BorderRadius.all(Radius.circular(12.0)),
+                  borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
                 tabs: reactionTabs,
               ),
@@ -117,7 +122,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             const SizedBox(height: 10),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TabBarView(
                   controller: tabBarController,
                   children: <Widget>[
@@ -139,33 +144,79 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
   // Custom chat bubble
   Widget buildChatBubble() {
-    return GestureDetector(
-      onLongPress: () => roomController.updateEmojiState(widget.message),
-      child: Bubble(
-        child: widget.child,
-        color: widget.userId != widget.message.author.id ||
-                messagetype == types.MessageType.image
-            ? AppCommonTheme.backgroundColorLight
-            : AppCommonTheme.primaryColor,
-        margin: widget.nextMessageInGroup
-            ? const BubbleEdges.symmetric(
-                horizontal: 2,
-              )
-            : null,
-        radius: const Radius.circular(18),
-        padding: messagetype == types.MessageType.image
-            ? const BubbleEdges.all(0)
-            : null,
-        nip: (widget.nextMessageInGroup ||
-                messagetype == types.MessageType.image)
-            ? BubbleNip.no
-            : widget.userId != widget.message.author.id
-                ? BubbleNip.leftBottom
-                : BubbleNip.rightBottom,
-        nipHeight: 18,
-        nipWidth: 0.5,
-        nipRadius: 0,
-      ),
+    return Column(
+      crossAxisAlignment:
+          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'You replied',
+          style: TextStyle(color: Colors.white, fontSize: 12),
+        ),
+        const SizedBox(height: 8),
+        Bubble(
+          child: const Padding(
+            padding: EdgeInsets.all(8),
+            child: Text(
+              'This is a reply message demo',
+              style: ChatTheme01.chatReplyTextStyle,
+            ),
+          ),
+          color: AppCommonTheme.backgroundColorLight,
+          margin: widget.nextMessageInGroup
+              ? const BubbleEdges.symmetric(
+                  horizontal: 2,
+                )
+              : null,
+          radius: const Radius.circular(22),
+          padding: messagetype == types.MessageType.image
+              ? const BubbleEdges.all(0)
+              : null,
+          nip: BubbleNip.no,
+        ),
+        const SizedBox(height: 4),
+        Bubble(
+          child: widget.child,
+          color: !isAuthor() || messagetype == types.MessageType.image
+              ? AppCommonTheme.backgroundColorLight
+              : AppCommonTheme.primaryColor,
+          margin: widget.nextMessageInGroup
+              ? const BubbleEdges.symmetric(
+                  horizontal: 2,
+                )
+              : null,
+          radius: const Radius.circular(22),
+          padding: messagetype == types.MessageType.image
+              ? const BubbleEdges.all(0)
+              : null,
+          nip: (widget.nextMessageInGroup ||
+                  messagetype == types.MessageType.image)
+              ? BubbleNip.no
+              : !isAuthor()
+                  ? BubbleNip.leftBottom
+                  : BubbleNip.rightBottom,
+          nipHeight: 18,
+          nipWidth: 0.5,
+          nipRadius: 0,
+        ),
+      ],
+    );
+  }
+
+  //Custom reply bubble
+  Widget buildReplyBubble() {
+    return Bubble(
+      child: widget.child,
+      color: AppCommonTheme.backgroundColorLight,
+      margin: widget.nextMessageInGroup
+          ? const BubbleEdges.symmetric(
+              horizontal: 2,
+            )
+          : null,
+      radius: const Radius.circular(18),
+      padding: messagetype == types.MessageType.image
+          ? const BubbleEdges.all(0)
+          : null,
+      nip: BubbleNip.no,
     );
   }
 
@@ -173,48 +224,50 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   Widget buildEmojiContainer() {
     Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
     List<String> keys = reactions.keys.toList();
-    return GestureDetector(
-      onLongPress: () => showEmojiReactionsSheet(reactions),
-      child: Container(
-        width: keys.length * 37,
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
-          borderRadius: BorderRadius.only(
-            topLeft: widget.nextMessageInGroup
-                ? const Radius.circular(12)
-                : widget.userId != widget.message.author.id
-                    ? const Radius.circular(0)
-                    : const Radius.circular(12),
-            topRight: widget.nextMessageInGroup
-                ? const Radius.circular(12)
-                : widget.userId != widget.message.author.id
-                    ? const Radius.circular(12)
-                    : const Radius.circular(0),
-            bottomLeft: const Radius.circular(12),
-            bottomRight: const Radius.circular(12),
-          ),
-          color: ChatTheme01.chatEmojiContainerColor,
+    return Container(
+      width: keys.length * 50,
+      margin: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
+        borderRadius: BorderRadius.only(
+          topLeft: widget.nextMessageInGroup
+              ? const Radius.circular(12)
+              : !isAuthor()
+                  ? const Radius.circular(0)
+                  : const Radius.circular(12),
+          topRight: widget.nextMessageInGroup
+              ? const Radius.circular(12)
+              : !isAuthor()
+                  ? const Radius.circular(12)
+                  : const Radius.circular(0),
+          bottomLeft: const Radius.circular(12),
+          bottomRight: const Radius.circular(12),
         ),
-        padding: const EdgeInsets.all(5),
-        child: Wrap(
-          direction: Axis.horizontal,
-          spacing: 5.0,
-          runSpacing: 3.0,
-          children: List.generate(keys.length, (int index) {
-            String key = keys[index];
-            ReactionDescription? desc = reactions[key];
-            int count = desc!.count();
-            return Row(
+        color: ChatTheme01.chatEmojiContainerColor,
+      ),
+      padding: const EdgeInsets.all(5),
+      child: Wrap(
+        direction: Axis.horizontal,
+        spacing: 5,
+        runSpacing: 3,
+        children: List.generate(keys.length, (int index) {
+          String key = keys[index];
+          ReactionDescription? desc = reactions[key];
+          int count = desc!.count();
+          return GestureDetector(
+            onTap: () {
+              showEmojiReactionsSheet(reactions);
+            },
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(key, style: ChatTheme01.emojiCountStyle),
-                const SizedBox(width: 2.0),
+                const SizedBox(width: 2),
                 Text(count.toString(), style: ChatTheme01.emojiCountStyle),
               ],
-            );
-          }),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }
@@ -227,12 +280,12 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       child: Container(
         width: 198,
         height: 42,
-        padding: const EdgeInsets.all(8.0),
-        margin: widget.userId != widget.message.author.id
-            ? const EdgeInsets.only(bottom: 8.0, left: 8.0)
-            : const EdgeInsets.only(bottom: 8.0, right: 8.0),
+        padding: const EdgeInsets.all(8),
+        margin: !isAuthor()
+            ? const EdgeInsets.only(bottom: 8, left: 8)
+            : const EdgeInsets.only(bottom: 8, right: 8),
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20.0)),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           color: AppCommonTheme.backgroundColor,
           border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
         ),
@@ -264,5 +317,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         return const SizedBox(height: 12);
       },
     );
+  }
+
+  bool isAuthor() {
+    return widget.userId == widget.message.author.id;
   }
 }
