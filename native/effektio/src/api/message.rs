@@ -194,10 +194,7 @@ impl RoomMessage {
         let origin_server_ts: Option<u64> = event.origin_server_ts().map(|x| x.get().into());
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
         for (key, value) in event.reactions().iter() {
-            reactions.insert(
-                key.to_string(),
-                ReactionDesc::new(value.count.into()),
-            );
+            reactions.insert(key.to_string(), ReactionDesc::new(value.count.into()));
         }
 
         match event.content() {
