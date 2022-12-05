@@ -43,7 +43,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   Widget build(BuildContext context) {
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
-      builder: (context) {
+      builder: (ChatRoomController controller) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
@@ -72,7 +72,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               child: Align(
                 alignment:
                     !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-                child: buildEmojiContainer(20),
+                child: buildEmojiContainer(context, 20),
               ),
             ),
           ],
@@ -81,15 +81,15 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-//Emoji reaction info bottom sheet.
-  void showEmojiReactionsSheet() {
+  //Emoji reaction info bottom sheet.
+  void showEmojiReactionsSheet(BuildContext context) {
     showModalBottomSheet(
       backgroundColor: AppCommonTheme.backgroundColorLight,
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
-      builder: (context) {
+      builder: (BuildContext ctx) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -203,7 +203,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
   //Emoji Container which shows message reactions
-  Widget buildEmojiContainer(int emojisCount) {
+  Widget buildEmojiContainer(BuildContext context, int emojisCount) {
     return Container(
       width: emojisCount * 50,
       margin: const EdgeInsets.all(2),
@@ -230,11 +230,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         direction: Axis.horizontal,
         spacing: 5,
         runSpacing: 3,
-        children: List.generate(
-          emojisCount,
-          (int index) => GestureDetector(
+        children: List.generate(emojisCount, (int index) {
+          return GestureDetector(
             onTap: () {
-              showEmojiReactionsSheet();
+              showEmojiReactionsSheet(context);
             },
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -244,8 +243,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 Text('+12', style: ChatTheme01.emojiCountStyle)
               ],
             ),
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
