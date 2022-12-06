@@ -227,10 +227,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
     List<String> keys = reactions.keys.toList();
     return Container(
-      width: keys.length * 35.5,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
+        border: keys.isEmpty
+            ? null
+            : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
         borderRadius: BorderRadius.only(
           topLeft: widget.nextMessageInGroup
               ? const Radius.circular(12)
