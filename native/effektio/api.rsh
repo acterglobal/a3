@@ -119,6 +119,13 @@ object RoomMessage {
 
     /// contains source data, name, mimetype and size
     fn file_description() -> Option<FileDescription>;
+
+    fn reaction_keys() -> Vec<string>;
+
+    fn reaction_description(key: string) -> Option<ReactionDescription>;
+
+    /// Whether this message is editable
+    fn is_editable() -> bool;
 }
 
 object ImageDescription {
@@ -151,6 +158,10 @@ object FileDescription {
     fn size() -> Option<u64>;
 }
 
+object ReactionDescription {
+    fn count() -> u64;
+}
+
 object TimelineDiff {
     /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
     fn action() -> string;
@@ -181,6 +192,9 @@ object TimelineStream {
 
     /// Get the next count messages backwards,
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
+
+    /// modify the room message
+    fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Conversation {
@@ -217,11 +231,20 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
-    /// invite the new user to this room
-    fn invite_user(user_id: string) -> Future<Result<bool>>;
+    /// Send a text message in MarkDown format to the room
+    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
+
+    /// Send reaction about existing event
+    fn send_reaction(event_id: string, key: string) -> Future<Result<string>>;
+
+    /// send the image message to this room
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// get the user status on this room
     fn room_type() -> string;
+
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
 
     /// join this room
     fn join() -> Future<Result<bool>>;
@@ -231,12 +254,6 @@ object Conversation {
 
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
-
-    /// Send a text message in MarkDown format to the room
-    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
-
-    /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
