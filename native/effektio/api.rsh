@@ -105,6 +105,9 @@ object RoomMessage {
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> Option<u64>;
 
+    /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+    fn item_content() -> string;
+
     /// the type of massage, like audio, text, image, file, etc
     fn msgtype() -> Option<string>;
 

@@ -538,7 +538,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: controller.messages,
+              messages: controller.getMessages(),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
               ),
@@ -702,7 +702,7 @@ class _ChatScreenState extends State<ChatScreen> {
     types.CustomMessage customMessage, {
     required int messageWidth,
   }) {
-    if (customMessage.metadata?['decryptFailed'] == true) {
+    if (customMessage.metadata?['itemContent'] == 'UnableToDecrypt') {
       String text = 'Failed to decrypt message. Re-request session keys.';
       return Container(
         width: sqrt(text.length) * 38.5,

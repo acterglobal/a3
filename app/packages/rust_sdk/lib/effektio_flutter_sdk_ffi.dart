@@ -4745,6 +4745,16 @@ class Api {
           _RoomMessageOriginServerTsReturn Function(
     int,
   )>();
+  late final _roomMessageItemContentPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageItemContentReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_item_content");
+
+  late final _roomMessageItemContent = _roomMessageItemContentPtr.asFunction<
+      _RoomMessageItemContentReturn Function(
+    int,
+  )>();
   late final _roomMessageMsgtypePtr = _lookup<
       ffi.NativeFunction<
           _RoomMessageMsgtypeReturn Function(
@@ -8909,6 +8919,26 @@ class RoomMessage {
     return tmp2;
   }
 
+  /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+  String itemContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageItemContent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
   /// the type of massage, like audio, text, image, file, etc
   String? msgtype() {
     var tmp0 = 0;
@@ -12452,6 +12482,15 @@ class _RoomMessageOriginServerTsReturn extends ffi.Struct {
   external int arg0;
   @ffi.Uint64()
   external int arg1;
+}
+
+class _RoomMessageItemContentReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _RoomMessageMsgtypeReturn extends ffi.Struct {

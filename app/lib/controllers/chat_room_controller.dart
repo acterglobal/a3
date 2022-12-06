@@ -32,7 +32,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
-  List<types.Message> messages = [];
+  List<types.Message> _messages = [];
   List<types.User> typingUsers = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
@@ -83,7 +83,7 @@ class ChatRoomController extends GetxController {
           // it is processed in handleSendPressed
           if (event.sender() != client.userId().toString()) {
             types.Message m = await _prepareMessage(event);
-            _insertMessage(messages.length, m);
+            _insertMessage(_messages.length, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -108,7 +108,7 @@ class ChatRoomController extends GetxController {
   //get the timeline of room
   Future<void> setCurrentRoom(Conversation? convoRoom) async {
     if (convoRoom == null) {
-      messages.clear();
+      _messages.clear();
       typingUsers.clear();
       activeMembers.clear();
       mentionList.clear();
@@ -151,7 +151,7 @@ class ChatRoomController extends GetxController {
             int index = event.index()!;
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            _insertMessage(messages.length - index, m);
+            _insertMessage(_messages.length - index, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -164,7 +164,7 @@ class ChatRoomController extends GetxController {
             int index = event.index()!;
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            _updateMessage(messages.length - index, m);
+            _updateMessage(_messages.length - index, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -186,7 +186,7 @@ class ChatRoomController extends GetxController {
             break;
           case 'RemoveAt':
             int index = event.index()!;
-            messages.removeAt(messages.length - index);
+            _messages.removeAt(_messages.length - index);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -194,20 +194,20 @@ class ChatRoomController extends GetxController {
           case 'Move':
             int oldIndex = event.oldIndex()!;
             int newIndex = event.newIndex()!;
-            types.Message m = messages.removeAt(messages.length - oldIndex);
-            messages.insert(messages.length - newIndex, m);
+            types.Message m = _messages.removeAt(_messages.length - oldIndex);
+            _messages.insert(_messages.length - newIndex, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
             break;
           case 'Pop':
-            messages.removeLast();
+            _messages.removeLast();
             if (isLoading.isFalse) {
               update(['Chat']);
             }
             break;
           case 'Clear':
-            messages.clear();
+            _messages.clear();
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -286,13 +286,13 @@ class ChatRoomController extends GetxController {
     types.TextMessage message,
     types.PreviewData previewData,
   ) {
-    final index = messages.indexWhere((x) => x.id == message.id);
-    final updatedMessage = (messages[index] as types.TextMessage).copyWith(
+    final index = _messages.indexWhere((x) => x.id == message.id);
+    final updatedMessage = (_messages[index] as types.TextMessage).copyWith(
       previewData: previewData,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((Duration duration) {
-      messages[index] = updatedMessage;
+      _messages[index] = updatedMessage;
       update(['Chat']);
     });
   }
@@ -381,7 +381,7 @@ class ChatRoomController extends GetxController {
         width: image.width.toDouble(),
       );
       Navigator.pop(context);
-      messages.insert(0, message);
+      _messages.insert(0, message);
       update(['Chat']);
     }
   }
@@ -455,9 +455,9 @@ class ChatRoomController extends GetxController {
       types.Status status = seenByList.length < activeMembers.length
           ? types.Status.delivered
           : types.Status.seen;
-      messages.insert(index, m.copyWith(showStatus: true, status: status));
+      _messages.insert(index, m.copyWith(showStatus: true, status: status));
     } else {
-      messages.insert(index, m);
+      _messages.insert(index, m);
     }
   }
 
@@ -471,9 +471,9 @@ class ChatRoomController extends GetxController {
       types.Status status = seenByList.length < activeMembers.length
           ? types.Status.delivered
           : types.Status.seen;
-      messages[index] = m.copyWith(showStatus: true, status: status);
+      _messages[index] = m.copyWith(showStatus: true, status: status);
     } else {
-      messages[index] = m;
+      _messages[index] = m;
     }
   }
 
@@ -543,18 +543,33 @@ class ChatRoomController extends GetxController {
       author: author,
       createdAt: createdAt,
       id: eventId,
-      metadata: const {
-        'decryptFailed': true,
+      metadata: {
+        'itemContent': message.itemContent(),
       },
     );
   }
 
+  List<types.Message> getMessages() {
+    return _messages.where((x) {
+      if (x.metadata?['itemContent'] == 'RedactedMessage') {
+        return false; // it cannot be placed as independent entry on msg list
+      }
+      if (x.metadata?['itemContent'] == 'FailedToParseMessageLike') {
+        return false; // it cannot be placed as independent entry on msg list
+      }
+      if (x.metadata?['itemContent'] == 'FailedToParseState') {
+        return false; // it cannot be placed as independent entry on msg list
+      }
+      return true;
+    }).toList();
+  }
+
   void _fetchMessageContent(String eventId) {
     _currentRoom!.imageBinary(eventId).then((data) {
-      int index = messages.indexWhere((x) => x.id == eventId);
+      int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final base64String = base64Encode(data.asTypedList());
-        messages[index] = messages[index].copyWith(
+        _messages[index] = _messages[index].copyWith(
           metadata: {
             'base64': base64String,
           },
@@ -587,8 +602,8 @@ class ChatRoomController extends GetxController {
   }
 
   void updateEmojiState(types.Message message) {
-    emojiMessageIndex = messages.indexWhere((x) => x.id == message.id);
-    emojiCurrentId = messages[emojiMessageIndex].id;
+    emojiMessageIndex = _messages.indexWhere((x) => x.id == message.id);
+    emojiCurrentId = _messages[emojiMessageIndex].id;
     if (emojiCurrentId == message.id) {
       isEmojiContainerVisible = !isEmojiContainerVisible;
     }

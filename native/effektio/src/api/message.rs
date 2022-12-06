@@ -23,6 +23,7 @@ pub struct RoomMessage {
     room_id: String,
     sender: String,
     origin_server_ts: Option<u64>,
+    item_content: String,
     msgtype: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
@@ -39,6 +40,7 @@ impl RoomMessage {
         room_id: String,
         sender: String,
         origin_server_ts: Option<u64>,
+        item_content: String,
         msgtype: Option<String>,
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
@@ -52,6 +54,7 @@ impl RoomMessage {
             room_id,
             sender,
             origin_server_ts,
+            item_content,
             msgtype,
             text_desc,
             image_desc,
@@ -142,6 +145,7 @@ impl RoomMessage {
             room.room_id().to_string(),
             event.sender.to_string(),
             Some(event.origin_server_ts.get().into()),
+            "Message".to_string(),
             Some(event.content.msgtype().to_string()),
             Some(text_desc),
             image_desc,
@@ -174,6 +178,7 @@ impl RoomMessage {
             room.room_id().to_string(),
             event.sender.to_string(),
             Some(event.origin_server_ts.get().into()),
+            "Message".to_string(),
             Some("m.room.encrypted".to_string()),
             Some(text_desc),
             None,
@@ -272,6 +277,7 @@ impl RoomMessage {
                     room_id,
                     sender,
                     origin_server_ts,
+                    "Message".to_string(),
                     Some(msgtype.msgtype().to_string()),
                     Some(text_desc),
                     image_desc,
@@ -288,6 +294,7 @@ impl RoomMessage {
                     room_id,
                     sender,
                     origin_server_ts,
+                    "RedactedMessage".to_string(),
                     None,
                     None,
                     None,
@@ -304,6 +311,7 @@ impl RoomMessage {
                     room_id,
                     sender,
                     origin_server_ts,
+                    "UnableToDecrypt".to_string(),
                     None,
                     None,
                     None,
@@ -320,6 +328,7 @@ impl RoomMessage {
                     room_id,
                     sender,
                     origin_server_ts,
+                    "FailedToParseMessageLike".to_string(),
                     None,
                     None,
                     None,
@@ -340,6 +349,7 @@ impl RoomMessage {
                     room_id,
                     sender,
                     origin_server_ts,
+                    "FailedToParseState".to_string(),
                     None,
                     None,
                     None,
@@ -366,6 +376,10 @@ impl RoomMessage {
 
     pub fn origin_server_ts(&self) -> Option<u64> {
         self.origin_server_ts
+    }
+
+    pub fn item_content(&self) -> String {
+        self.item_content.clone()
     }
 
     pub fn msgtype(&self) -> Option<String> {
