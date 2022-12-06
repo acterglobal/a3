@@ -29,7 +29,6 @@ import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:uuid/uuid.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
@@ -58,7 +57,6 @@ class ChatRoomController extends GetxController {
   StreamSubscription<RoomMessage>? _messageSubscription;
   int emojiMessageIndex = 0;
   String? emojiCurrentId;
-  final Uuid _uuid = const Uuid();
   String? authorId;
   bool showReplyView = false;
 
@@ -157,7 +155,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (value?.msgtype() == 'm.image') {
+            if (value.msgtype() == 'm.image') {
               _fetchMessageContent(m.id);
             }
             break;
@@ -170,7 +168,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (value?.msgtype() == 'm.image') {
+            if (value.msgtype() == 'm.image') {
               _fetchMessageContent(m.id);
             }
             break;
@@ -182,7 +180,7 @@ class ChatRoomController extends GetxController {
             if (isLoading.isFalse) {
               update(['Chat']);
             }
-            if (value?.msgtype() == 'm.image') {
+            if (value.msgtype() == 'm.image') {
               _fetchMessageContent(m.id);
             }
             break;
