@@ -85,7 +85,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     setState(() {
       reactions.forEach((key, value) {
         count += value.count();
-        reactionTabs.add(Tab(text: '$key +${value.count()}'));
+        reactionTabs.add(Tab(text: '$key+${value.count()}'));
       });
       reactionTabs.insert(0, (Tab(text: 'All $count')));
       tabBarController =
@@ -104,6 +104,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           children: [
             Flexible(
               child: TabBar(
+                isScrollable: true,
                 overlayColor:
                     MaterialStateProperty.all<Color>(Colors.transparent),
                 padding: const EdgeInsets.all(24),
@@ -118,8 +119,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             const SizedBox(height: 10),
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
                 child: TabBarView(
+                  viewportFraction: 1.0,
                   controller: tabBarController,
                   children: <Widget>[
                     buildReactionListing(keys),
@@ -231,10 +233,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
     List<String> keys = reactions.keys.toList();
     return Container(
-      width: keys.length * 50,
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        border: Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
+        border: keys.isEmpty
+            ? null
+            : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
         borderRadius: BorderRadius.only(
           topLeft: widget.nextMessageInGroup
               ? const Radius.circular(12)
