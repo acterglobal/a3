@@ -66,11 +66,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   ),
                 ),
               ],
+            ),
             Align(
               alignment:
                   !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-              child: buildEmojiContainer(20),
-              ),
+              child: buildEmojiContainer(),
             ),
           ],
         );
