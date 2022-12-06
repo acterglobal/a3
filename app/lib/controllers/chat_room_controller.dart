@@ -32,7 +32,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
-  List<types.Message> _messages = [];
+  final List<types.Message> _messages = [];
   List<types.User> typingUsers = [];
   TimelineStream? _stream;
   RxBool isLoading = false.obs;
