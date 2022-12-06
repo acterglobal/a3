@@ -66,11 +66,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   ),
                 ),
               ],
+            ),
             Align(
               alignment:
                   !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-              child: buildEmojiContainer(20),
-              ),
+              child: buildEmojiContainer(),
             ),
           ],
         );
@@ -146,6 +146,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       onLongPress: () {
         roomController.updateEmojiState(widget.message);
         roomController.replyMessageWidget = widget.child;
+        roomController.repliedToMessage = widget.message;
       },
       child: Column(
         crossAxisAlignment:
