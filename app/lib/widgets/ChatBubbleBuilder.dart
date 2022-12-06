@@ -139,6 +139,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       onLongPress: () {
         roomController.updateEmojiState(widget.message);
         roomController.replyMessageWidget = widget.child;
+        roomController.repliedToMessage = widget.message;
       },
       child: Column(
         crossAxisAlignment:

@@ -54,10 +54,13 @@ class CustomChatInput extends StatelessWidget {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Replying to yourself',
-                                style:
-                                    TextStyle(color: Colors.grey, fontSize: 12),
+                              Text(
+                                'Replying to ${controller.repliedToMessage?.author.firstName}',
+                                style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 12,
+                                ),
+                                softWrap: true,
                               ),
                               controller.replyMessageWidget ?? const SizedBox(),
                             ],
