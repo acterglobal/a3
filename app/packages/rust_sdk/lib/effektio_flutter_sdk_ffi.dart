@@ -4714,6 +4714,16 @@ class Api {
           _RoomMessageFileDescriptionReturn Function(
     int,
   )>();
+  late final _roomMessageIsReplyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__RoomMessage_is_reply");
+
+  late final _roomMessageIsReply = _roomMessageIsReplyPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _roomMessageReactionKeysPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -8873,6 +8883,19 @@ class RoomMessage {
     return tmp2;
   }
 
+  /// whether this msg is reply to another msg
+  bool isReply() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageIsReply(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// represent what symbol other users reacted by
   FfiListFfiString reactionKeys() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -8888,6 +8911,7 @@ class RoomMessage {
     return tmp2;
   }
 
+  /// return the detailed info of reaction
   ReactionDescription? reactionDescription(
     String key,
   ) {

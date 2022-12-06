@@ -120,8 +120,13 @@ object RoomMessage {
     /// contains source data, name, mimetype and size
     fn file_description() -> Option<FileDescription>;
 
+    /// whether this msg is reply to another msg
+    fn is_reply() -> bool;
+
+    /// represent what symbol other users reacted by
     fn reaction_keys() -> Vec<string>;
 
+    /// return the detailed info of reaction
     fn reaction_description(key: string) -> Option<ReactionDescription>;
 
     /// Whether this message is editable
