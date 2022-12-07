@@ -329,7 +329,7 @@ impl RoomMessage {
         self.file_description.clone()
     }
 
-    pub(crate) fn is_reply(&self) -> bool {
+    pub fn is_reply(&self) -> bool {
         self.is_reply
     }
 
