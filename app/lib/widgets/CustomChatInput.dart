@@ -51,29 +51,37 @@ class CustomChatInput extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Replying to ${controller.repliedToMessage?.author.firstName}',
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
+                          Flexible(
+                            flex: 2,
+                            child: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.start,
+                              children: [
+                                Text(
+                                  controller.isAuthor()
+                                      ? 'Replying to yourself'
+                                      : 'Replying to ${controller.repliedToMessage?.author.firstName}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                                softWrap: true,
-                              ),
-                              controller.replyMessageWidget ?? const SizedBox(),
-                            ],
+                                controller.replyMessageWidget ??
+                                    const SizedBox(),
+                              ],
+                            ),
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              controller.showReplyView = false;
-                              controller.replyMessageWidget = null;
-                              controller.update(['chat-input']);
-                            },
-                            child: const Icon(
-                              Icons.close,
-                              color: Colors.white,
+                          Flexible(
+                            flex: 1,
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.showReplyView = false;
+                                controller.replyMessageWidget = null;
+                                controller.update(['chat-input']);
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
                             ),
                           )
                         ],
