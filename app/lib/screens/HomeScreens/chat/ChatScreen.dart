@@ -701,7 +701,7 @@ class _ChatScreenState extends State<ChatScreen> {
     types.CustomMessage customMessage, {
     required int messageWidth,
   }) {
-    if (customMessage.metadata?['itemContent'] == 'UnableToDecrypt') {
+    if (customMessage.metadata?['itemContentType'] == 'UnableToDecrypt') {
       String text = 'Failed to decrypt message. Re-request session keys.';
       return Container(
         width: sqrt(text.length) * 38.5,
