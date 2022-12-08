@@ -4,7 +4,7 @@ import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show ReactionDescription;
+    show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
@@ -45,7 +45,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   Widget build(BuildContext context) {
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
-      builder: (context) {
+      builder: (ChatRoomController controller) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
@@ -68,8 +68,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               ],
             ),
             GestureDetector(
-              onLongPress: () =>
-                  roomController.updateEmojiState(widget.message),
+              onLongPress: () {
+                roomController.updateEmojiState(widget.message);
+              },
               child: Align(
                 alignment:
                     !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
@@ -102,7 +103,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
       isDismissible: true,
-      builder: (context) {
+      builder: (BuildContext context) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -127,7 +128,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 child: TabBarView(
                   viewportFraction: 1.0,
                   controller: tabBarController,
-                  children: <Widget>[
+                  children: [
                     buildReactionListing(keys),
                     for (var count in keys) buildReactionListing([count]),
                   ],
@@ -150,41 +151,37 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       crossAxisAlignment:
           isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
-        const Text(
-          'You replied',
-          style: TextStyle(color: Colors.white, fontSize: 12),
-        ),
-        const SizedBox(height: 8),
-        Bubble(
-          child: const Padding(
-            padding: EdgeInsets.all(8),
-            child: Text(
-              'This is a reply message demo',
-              style: ChatTheme01.chatReplyTextStyle,
-            ),
-          ),
-          color: AppCommonTheme.backgroundColorLight,
-          margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(
-                  horizontal: 2,
-                )
-              : null,
-          radius: const Radius.circular(22),
-          padding: messagetype == types.MessageType.image
-              ? const BubbleEdges.all(0)
-              : null,
-          nip: BubbleNip.no,
-        ),
-        const SizedBox(height: 4),
+        // const Text(
+        //   'You replied',
+        //   style: TextStyle(color: Colors.white, fontSize: 12),
+        // ),
+        // const SizedBox(height: 8),
+        // Bubble(
+        //   child: const Padding(
+        //     padding: EdgeInsets.all(8),
+        //     child: Text(
+        //       'This is a reply message demo',
+        //       style: ChatTheme01.chatReplyTextStyle,
+        //     ),
+        //   ),
+        //   color: AppCommonTheme.backgroundColorLight,
+        //   margin: widget.nextMessageInGroup
+        //       ? const BubbleEdges.symmetric(horizontal: 2)
+        //       : null,
+        //   radius: const Radius.circular(22),
+        //   padding: messagetype == types.MessageType.image
+        //       ? const BubbleEdges.all(0)
+        //       : null,
+        //   nip: BubbleNip.no,
+        // ),
+        // const SizedBox(height: 4),
         Bubble(
           child: widget.child,
           color: !isAuthor() || messagetype == types.MessageType.image
               ? AppCommonTheme.backgroundColorLight
               : AppCommonTheme.primaryColor,
           margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(
-                  horizontal: 2,
-                )
+              ? const BubbleEdges.symmetric(horizontal: 2)
               : null,
           radius: const Radius.circular(22),
           padding: messagetype == types.MessageType.image
@@ -210,9 +207,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       child: widget.child,
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
-          ? const BubbleEdges.symmetric(
-              horizontal: 2,
-            )
+          ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(18),
       padding: messagetype == types.MessageType.image
@@ -224,8 +219,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
   //Emoji Container which shows message reactions
   Widget buildEmojiContainer() {
-    Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
-    List<String> keys = reactions.keys.toList();
+    List<String> keys = [];
+    if (widget.message.metadata != null) {
+      if (widget.message.metadata!.containsKey('reactions')) {
+        Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
+        keys = reactions.keys.toList();
+      }
+    }
     return Container(
       margin: const EdgeInsets.all(2),
       decoration: BoxDecoration(
@@ -255,7 +255,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         runSpacing: 3,
         children: List.generate(keys.length, (int index) {
           String key = keys[index];
-          ReactionDescription? desc = reactions[key];
+          Map<String, dynamic> reactions =
+              widget.message.metadata!['reactions'];
+          ReactionDesc? desc = reactions[key];
           int count = desc!.count();
           return GestureDetector(
             onTap: () {
