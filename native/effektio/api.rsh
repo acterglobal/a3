@@ -92,12 +92,9 @@ object UserId {
 }
 
 /// A room Message metadata and content
-object RoomMessage {
+object RoomEventItem {
     /// Unique ID of this event
     fn event_id() -> string;
-
-    /// room ID of this event
-    fn room_id() -> string;
 
     /// The User, who sent that event
     fn sender() -> string;
@@ -106,7 +103,7 @@ object RoomMessage {
     fn origin_server_ts() -> Option<u64>;
 
     /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
-    fn item_content() -> string;
+    fn item_content_type() -> string;
 
     /// the type of massage, like audio, text, image, file, etc
     fn msgtype() -> Option<string>;
@@ -120,12 +117,31 @@ object RoomMessage {
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
 
+    /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
 
+    /// the details that users reacted using this emote key in this message
     fn reaction_desc(key: string) -> Option<ReactionDesc>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
+}
+
+object RoomVirtualItem {}
+
+/// A room Message metadata and content
+object RoomMessage {
+    /// one of event/virtual
+    fn item_type() -> string;
+
+    /// room ID of this event
+    fn room_id() -> string;
+
+    /// valid only if item_type is "event"
+    fn event_item() -> Option<RoomEventItem>;
+
+    /// valid only if item_type is "virtual"
+    fn virtual_item() -> Option<RoomVirtualItem>;
 }
 
 object TextDesc {

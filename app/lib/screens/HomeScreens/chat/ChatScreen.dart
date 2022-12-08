@@ -148,7 +148,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
-        if (!roomController.isEmojiContainerVisible) {
+        if (!controller.isEmojiContainerVisible) {
           return CustomChatInput(
             isChatScreen: true,
             roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
@@ -163,9 +163,9 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               GestureDetector(
                 onTap: () {
-                  roomController.isEmojiContainerVisible = false;
-                  roomController.showReplyView = true;
-                  roomController.update(['emoji-reaction', 'chat-input']);
+                  controller.isEmojiContainerVisible = false;
+                  controller.showReplyView = true;
+                  controller.update(['emoji-reaction', 'chat-input']);
                 },
                 child: const Text(
                   'Reply',
@@ -174,7 +174,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               GestureDetector(
                 onTap: () {
-                  if (roomController.isAuthor()) {
+                  if (controller.isAuthor()) {
                     // TODO add unsent message call
                   } else {
                     showDialog(
@@ -227,9 +227,9 @@ class _ChatScreenState extends State<ChatScreen> {
                                       );
                                       ScaffoldMessenger.of(ctx)
                                           .showSnackBar(snackBar);
-                                      roomController.isEmojiContainerVisible =
+                                      controller.isEmojiContainerVisible =
                                           false;
-                                      roomController.update(['emoji-reaction']);
+                                      controller.update(['emoji-reaction']);
                                       Navigator.pop(ctx);
                                     },
                                     child: Padding(
@@ -266,10 +266,9 @@ class _ChatScreenState extends State<ChatScreen> {
                   }
                 },
                 child: Text(
-                  roomController.isAuthor() ? 'Unsend' : 'Report',
+                  controller.isAuthor() ? 'Unsend' : 'Report',
                   style: TextStyle(
-                    color:
-                        roomController.isAuthor() ? Colors.white : Colors.red,
+                    color: controller.isAuthor() ? Colors.white : Colors.red,
                   ),
                 ),
               ),

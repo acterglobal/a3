@@ -13,6 +13,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         FileDesc,
         ImageDesc,
         Member,
+        RoomEventItem,
         RoomMessage,
         TextDesc,
         TimelineDiff,
@@ -81,14 +82,17 @@ class ChatRoomController extends GetxController {
         if (event.roomId() == _currentRoom!.getRoomId()) {
           // filter only message from other not me
           // it is processed in handleSendPressed
-          if (event.sender() != client.userId().toString()) {
-            types.Message m = await _prepareMessage(event);
-            _insertMessage(_messages.length, m);
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            if (event.msgtype() == 'm.image') {
-              _fetchMessageContent(m.id);
+          types.Message m = await _prepareMessage(event);
+          _insertMessage(_messages.length, m);
+          RoomEventItem? eventItem = event.eventItem();
+          if (eventItem != null) {
+            if (eventItem.sender() != client.userId().toString()) {
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (eventItem.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
+              }
             }
           }
         }
@@ -138,11 +142,14 @@ class ChatRoomController extends GetxController {
             for (RoomMessage msg in values) {
               types.Message m = await _prepareMessage(msg);
               _insertMessage(0, m);
-              if (isLoading.isFalse) {
-                update(['Chat']);
-              }
-              if (msg.msgtype() == 'm.image') {
-                _fetchMessageContent(m.id);
+              RoomEventItem? eventItem = msg.eventItem();
+              if (eventItem != null) {
+                if (isLoading.isFalse) {
+                  update(['Chat']);
+                }
+                if (eventItem.msgtype() == 'm.image') {
+                  _fetchMessageContent(m.id);
+                }
               }
             }
             break;
@@ -152,11 +159,14 @@ class ChatRoomController extends GetxController {
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
             _insertMessage(_messages.length - index, m);
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            if (value.msgtype() == 'm.image') {
-              _fetchMessageContent(m.id);
+            RoomEventItem? eventItem = value.eventItem();
+            if (eventItem != null) {
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (eventItem.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
+              }
             }
             break;
           case 'UpdateAt':
@@ -165,11 +175,14 @@ class ChatRoomController extends GetxController {
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
             _updateMessage(_messages.length - index, m);
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            if (value.msgtype() == 'm.image') {
-              _fetchMessageContent(m.id);
+            RoomEventItem? eventItem = value.eventItem();
+            if (eventItem != null) {
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (eventItem.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
+              }
             }
             break;
           case 'Push':
@@ -177,11 +190,14 @@ class ChatRoomController extends GetxController {
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
             _insertMessage(0, m);
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            if (value.msgtype() == 'm.image') {
-              _fetchMessageContent(m.id);
+            RoomEventItem? eventItem = value.eventItem();
+            if (eventItem != null) {
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (eventItem.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
+              }
             }
             break;
           case 'RemoveAt':
@@ -194,8 +210,12 @@ class ChatRoomController extends GetxController {
           case 'Move':
             int oldIndex = event.oldIndex()!;
             int newIndex = event.newIndex()!;
+            int i = _messages.length - newIndex;
+            if (oldIndex < newIndex) {
+              i += 1;
+            }
             types.Message m = _messages.removeAt(_messages.length - oldIndex);
-            _messages.insert(_messages.length - newIndex, m);
+            _messages.insert(i, m);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -447,47 +467,65 @@ class ChatRoomController extends GetxController {
 
   void _insertMessage(int index, types.Message m) {
     var receiptController = Get.find<ReceiptController>();
-    List<String> seenByList = receiptController.getSeenByList(
-      _currentRoom!.getRoomId(),
-      m.createdAt!,
-    );
-    if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.length < activeMembers.length
-          ? types.Status.delivered
-          : types.Status.seen;
-      _messages.insert(index, m.copyWith(showStatus: true, status: status));
-    } else {
-      _messages.insert(index, m);
+    if (m.type != types.MessageType.unsupported &&
+        m.type != types.MessageType.custom) {
+      List<String> seenByList = receiptController.getSeenByList(
+        _currentRoom!.getRoomId(),
+        m.createdAt!,
+      );
+      if (m.author.id == client.userId().toString()) {
+        types.Status status = seenByList.length < activeMembers.length
+            ? types.Status.delivered
+            : types.Status.seen;
+        _messages.insert(index, m.copyWith(showStatus: true, status: status));
+        return;
+      }
     }
+    _messages.insert(index, m);
   }
 
   void _updateMessage(int index, types.Message m) {
     var receiptController = Get.find<ReceiptController>();
-    List<String> seenByList = receiptController.getSeenByList(
-      _currentRoom!.getRoomId(),
-      m.createdAt!,
-    );
-    if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.length < activeMembers.length
-          ? types.Status.delivered
-          : types.Status.seen;
-      _messages[index] = m.copyWith(showStatus: true, status: status);
-    } else {
-      _messages[index] = m;
+    if (m.type != types.MessageType.unsupported &&
+        m.type != types.MessageType.custom) {
+      List<String> seenByList = receiptController.getSeenByList(
+        _currentRoom!.getRoomId(),
+        m.createdAt!,
+      );
+      if (m.author.id == client.userId().toString()) {
+        types.Status status = seenByList.length < activeMembers.length
+            ? types.Status.delivered
+            : types.Status.seen;
+        _messages[index] = m.copyWith(showStatus: true, status: status);
+        return;
+      }
     }
+    _messages[index] = m;
   }
 
   Future<types.Message> _prepareMessage(RoomMessage message) async {
-    String? msgtype = message.msgtype();
-    String sender = message.sender();
+    RoomEventItem? eventItem = message.eventItem();
+    if (eventItem == null) {
+      // should not return null, before we can keep track of index in diff receiver
+      return types.UnsupportedMessage(
+        author: types.User(id: client.userId().toString()),
+        id: UniqueKey().toString(),
+        metadata: const {
+          'itemType': 'virtual',
+        },
+      );
+    }
+
+    String? msgtype = eventItem.msgtype();
+    String sender = eventItem.sender();
     var author = types.User(id: sender, firstName: simplifyUserId(sender));
-    int? createdAt = message.originServerTs(); // in milliseconds
-    String eventId = message.eventId();
+    int? createdAt = eventItem.originServerTs(); // in milliseconds
+    String eventId = eventItem.eventId();
 
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
-      FileDesc? description = message.fileDesc();
+      FileDesc? description = eventItem.fileDesc();
       if (description != null) {
         return types.FileMessage(
           author: author,
@@ -499,7 +537,7 @@ class ChatRoomController extends GetxController {
         );
       }
     } else if (msgtype == 'm.image') {
-      ImageDesc? description = message.imageDesc();
+      ImageDesc? description = eventItem.imageDesc();
       if (description != null) {
         /// this is added to get local path of fetched image for previewing purposes (not yet implemented).
         final path = (await getApplicationDocumentsDirectory()).path;
@@ -518,12 +556,12 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.notice') {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
-      TextDesc? description = message.textDesc();
+      TextDesc? description = eventItem.textDesc();
       String body = description!.body();
       Map<String, dynamic> reactions = {};
-      for (var key in message.reactionKeys()) {
+      for (var key in eventItem.reactionKeys()) {
         String k = key.toDartString();
-        reactions[k] = message.reactionDesc(k);
+        reactions[k] = eventItem.reactionDesc(k);
       }
       return types.TextMessage(
         author: author,
@@ -544,24 +582,33 @@ class ChatRoomController extends GetxController {
       createdAt: createdAt,
       id: eventId,
       metadata: {
-        'itemContent': message.itemContent(),
+        'itemType': 'event',
+        'itemContentType': eventItem.itemContentType(),
       },
     );
   }
 
   List<types.Message> getMessages() {
-    return _messages.where((x) {
-      if (x.metadata?['itemContent'] == 'RedactedMessage') {
-        return false; // it cannot be placed as independent entry on msg list
+    List<types.Message> msgs = _messages.where((x) {
+      if (x.metadata?['itemType'] == 'virtual') {
+        // UnsupportedMessage
+        return false;
       }
-      if (x.metadata?['itemContent'] == 'FailedToParseMessageLike') {
-        return false; // it cannot be placed as independent entry on msg list
-      }
-      if (x.metadata?['itemContent'] == 'FailedToParseState') {
-        return false; // it cannot be placed as independent entry on msg list
+      if (x.metadata?['itemType'] == 'event') {
+        // CustomMessage
+        if (x.metadata?['itemContentType'] == 'RedactedMessage') {
+          return false; // it cannot be placed as independent entry on msg list
+        }
+        if (x.metadata?['itemContentType'] == 'FailedToParseMessageLike') {
+          return false; // it cannot be placed as independent entry on msg list
+        }
+        if (x.metadata?['itemContentType'] == 'FailedToParseState') {
+          return false; // it cannot be placed as independent entry on msg list
+        }
       }
       return true;
     }).toList();
+    return msgs;
   }
 
   void _fetchMessageContent(String eventId) {

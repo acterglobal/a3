@@ -131,8 +131,12 @@ class _ChatListItemState extends State<ChatListItem> {
     if (widget.latestMessage == null) {
       return const SizedBox();
     }
-    String sender = widget.latestMessage!.sender();
-    String body = widget.latestMessage!.textDesc()?.body() ?? 'Unknown item';
+    RoomEventItem? eventItem = widget.latestMessage!.eventItem();
+    if (eventItem == null) {
+      return const SizedBox();
+    }
+    String sender = eventItem.sender();
+    String body = eventItem.textDesc()?.body() ?? 'Unknown item';
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: ParsedText(
@@ -204,7 +208,11 @@ class _ChatListItemState extends State<ChatListItem> {
     if (widget.latestMessage == null) {
       return null;
     }
-    int? ts = widget.latestMessage!.originServerTs();
+    RoomEventItem? eventItem = widget.latestMessage!.eventItem();
+    if (eventItem == null) {
+      return null;
+    }
+    int? ts = eventItem.originServerTs();
     if (ts == null) {
       return null;
     }
