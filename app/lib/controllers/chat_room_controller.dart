@@ -241,6 +241,9 @@ class ChatRoomController extends GetxController {
       }
       bool hasMore = await _stream!.paginateBackwards(10);
       debugPrint('backward pagination has more: $hasMore');
+      if (hasMore && _messages.length < 10) {
+        await _stream!.paginateBackwards(10);
+      }
       // load receipt status of room
       var receiptController = Get.find<ReceiptController>();
       var receipts = (await convoRoom.userReceipts()).toList();
