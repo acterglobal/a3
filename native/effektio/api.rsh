@@ -92,49 +92,70 @@ object UserId {
 }
 
 /// A room Message metadata and content
-object RoomMessage {
+object RoomEventItem {
     /// Unique ID of this event
     fn event_id() -> string;
-
-    /// room ID of this event
-    fn room_id() -> string;
 
     /// The User, who sent that event
     fn sender() -> string;
 
-    /// the body of the massage - fallback string reprensentation
-    fn body() -> string;
-
-    /// get html body
-    fn formatted_body() -> Option<string>;
-
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> Option<u64>;
 
+    /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+    fn item_content_type() -> string;
+
     /// the type of massage, like audio, text, image, file, etc
-    fn msgtype() -> string;
+    fn msgtype() -> Option<string>;
+
+    /// contains text fallback and formatted text
+    fn text_desc() -> Option<TextDesc>;
 
     /// contains source data, name, mimetype, size, width and height
-    fn image_description() -> Option<ImageDescription>;
+    fn image_desc() -> Option<ImageDesc>;
 
     /// contains source data, name, mimetype and size
-    fn file_description() -> Option<FileDescription>;
+    fn file_desc() -> Option<FileDesc>;
 
     /// whether this msg is reply to another msg
     fn is_reply() -> bool;
 
-    /// represent what symbol other users reacted by
+    /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
 
-    /// return the detailed info of reaction
-    fn reaction_description(key: string) -> Option<ReactionDescription>;
+    /// the details that users reacted using this emote key in this message
+    fn reaction_desc(key: string) -> Option<ReactionDesc>;
 
     /// Whether this message is editable
     fn is_editable() -> bool;
 }
 
-object ImageDescription {
+object RoomVirtualItem {}
 
+/// A room Message metadata and content
+object RoomMessage {
+    /// one of event/virtual
+    fn item_type() -> string;
+
+    /// room ID of this event
+    fn room_id() -> string;
+
+    /// valid only if item_type is "event"
+    fn event_item() -> Option<RoomEventItem>;
+
+    /// valid only if item_type is "virtual"
+    fn virtual_item() -> Option<RoomVirtualItem>;
+}
+
+object TextDesc {
+    /// fallback text
+    fn body() -> string;
+
+    /// formatted text
+    fn formatted_body() -> Option<string>;
+}
+
+object ImageDesc {
     /// file name
     fn name() -> string;
 
@@ -151,8 +172,7 @@ object ImageDescription {
     fn height() -> Option<u64>;
 }
 
-object FileDescription {
-
+object FileDesc {
     /// file name
     fn name() -> string;
 
@@ -163,7 +183,7 @@ object FileDescription {
     fn size() -> Option<u64>;
 }
 
-object ReactionDescription {
+object ReactionDesc {
     fn count() -> u64;
 }
 
@@ -276,6 +296,9 @@ object Conversation {
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
+
+    /// whether this room is encrypted one
+    fn is_encrypted() -> Future<Result<bool>>;
 }
 
 object Group {
@@ -287,6 +310,9 @@ object Group {
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// whether this room is encrypted one
+    fn is_encrypted() -> Future<Result<bool>>;
 }
 
 object Member {

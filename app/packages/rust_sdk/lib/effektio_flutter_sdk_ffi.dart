@@ -2091,6 +2091,48 @@ class Api {
     return tmp7;
   }
 
+  bool? __conversationIsEncryptedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _conversationIsEncryptedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
   RoomProfile? __groupGetProfileFuturePoll(
     int boxed,
     int postCobject,
@@ -2224,6 +2266,48 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_Member");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = Member._(this, tmp13_1);
+    return tmp7;
+  }
+
+  bool? __groupIsEncryptedFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _groupIsEncryptedFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final tmp7 = tmp13 > 0;
     return tmp7;
   }
 
@@ -4620,14 +4704,144 @@ class Api {
       _UserIdToStringReturn Function(
     int,
   )>();
-  late final _roomMessageEventIdPtr = _lookup<
+  late final _roomEventItemEventIdPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageEventIdReturn Function(
+          _RoomEventItemEventIdReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_event_id");
+  )>>("__RoomEventItem_event_id");
 
-  late final _roomMessageEventId = _roomMessageEventIdPtr.asFunction<
-      _RoomMessageEventIdReturn Function(
+  late final _roomEventItemEventId = _roomEventItemEventIdPtr.asFunction<
+      _RoomEventItemEventIdReturn Function(
+    int,
+  )>();
+  late final _roomEventItemSenderPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemSenderReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_sender");
+
+  late final _roomEventItemSender = _roomEventItemSenderPtr.asFunction<
+      _RoomEventItemSenderReturn Function(
+    int,
+  )>();
+  late final _roomEventItemOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemOriginServerTsReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_origin_server_ts");
+
+  late final _roomEventItemOriginServerTs =
+      _roomEventItemOriginServerTsPtr.asFunction<
+          _RoomEventItemOriginServerTsReturn Function(
+    int,
+  )>();
+  late final _roomEventItemItemContentTypePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemItemContentTypeReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_item_content_type");
+
+  late final _roomEventItemItemContentType =
+      _roomEventItemItemContentTypePtr.asFunction<
+          _RoomEventItemItemContentTypeReturn Function(
+    int,
+  )>();
+  late final _roomEventItemMsgtypePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemMsgtypeReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_msgtype");
+
+  late final _roomEventItemMsgtype = _roomEventItemMsgtypePtr.asFunction<
+      _RoomEventItemMsgtypeReturn Function(
+    int,
+  )>();
+  late final _roomEventItemTextDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemTextDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_text_desc");
+
+  late final _roomEventItemTextDesc = _roomEventItemTextDescPtr.asFunction<
+      _RoomEventItemTextDescReturn Function(
+    int,
+  )>();
+  late final _roomEventItemImageDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemImageDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_image_desc");
+
+  late final _roomEventItemImageDesc = _roomEventItemImageDescPtr.asFunction<
+      _RoomEventItemImageDescReturn Function(
+    int,
+  )>();
+  late final _roomEventItemFileDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemFileDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_file_desc");
+
+  late final _roomEventItemFileDesc = _roomEventItemFileDescPtr.asFunction<
+      _RoomEventItemFileDescReturn Function(
+    int,
+  )>();
+  late final _roomEventItemIsReplyPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_is_reply");
+
+  late final _roomEventItemIsReply = _roomEventItemIsReplyPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _roomEventItemReactionKeysPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_reaction_keys");
+
+  late final _roomEventItemReactionKeys =
+      _roomEventItemReactionKeysPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _roomEventItemReactionDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemReactionDescReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__RoomEventItem_reaction_desc");
+
+  late final _roomEventItemReactionDesc =
+      _roomEventItemReactionDescPtr.asFunction<
+          _RoomEventItemReactionDescReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _roomEventItemIsEditablePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_is_editable");
+
+  late final _roomEventItemIsEditable = _roomEventItemIsEditablePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _roomMessageItemTypePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomMessageItemTypeReturn Function(
+    ffi.Int64,
+  )>>("__RoomMessage_item_type");
+
+  late final _roomMessageItemType = _roomMessageItemTypePtr.asFunction<
+      _RoomMessageItemTypeReturn Function(
     int,
   )>();
   late final _roomMessageRoomIdPtr = _lookup<
@@ -4640,217 +4854,134 @@ class Api {
       _RoomMessageRoomIdReturn Function(
     int,
   )>();
-  late final _roomMessageSenderPtr = _lookup<
+  late final _roomMessageEventItemPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageSenderReturn Function(
+          _RoomMessageEventItemReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_sender");
+  )>>("__RoomMessage_event_item");
 
-  late final _roomMessageSender = _roomMessageSenderPtr.asFunction<
-      _RoomMessageSenderReturn Function(
+  late final _roomMessageEventItem = _roomMessageEventItemPtr.asFunction<
+      _RoomMessageEventItemReturn Function(
     int,
   )>();
-  late final _roomMessageBodyPtr = _lookup<
+  late final _roomMessageVirtualItemPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageBodyReturn Function(
+          _RoomMessageVirtualItemReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_body");
+  )>>("__RoomMessage_virtual_item");
 
-  late final _roomMessageBody = _roomMessageBodyPtr.asFunction<
-      _RoomMessageBodyReturn Function(
+  late final _roomMessageVirtualItem = _roomMessageVirtualItemPtr.asFunction<
+      _RoomMessageVirtualItemReturn Function(
     int,
   )>();
-  late final _roomMessageFormattedBodyPtr = _lookup<
+  late final _textDescBodyPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageFormattedBodyReturn Function(
+          _TextDescBodyReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_formatted_body");
+  )>>("__TextDesc_body");
 
-  late final _roomMessageFormattedBody =
-      _roomMessageFormattedBodyPtr.asFunction<
-          _RoomMessageFormattedBodyReturn Function(
+  late final _textDescBody = _textDescBodyPtr.asFunction<
+      _TextDescBodyReturn Function(
     int,
   )>();
-  late final _roomMessageOriginServerTsPtr = _lookup<
+  late final _textDescFormattedBodyPtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageOriginServerTsReturn Function(
+          _TextDescFormattedBodyReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_origin_server_ts");
+  )>>("__TextDesc_formatted_body");
 
-  late final _roomMessageOriginServerTs =
-      _roomMessageOriginServerTsPtr.asFunction<
-          _RoomMessageOriginServerTsReturn Function(
+  late final _textDescFormattedBody = _textDescFormattedBodyPtr.asFunction<
+      _TextDescFormattedBodyReturn Function(
     int,
   )>();
-  late final _roomMessageMsgtypePtr = _lookup<
+  late final _imageDescNamePtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageMsgtypeReturn Function(
+          _ImageDescNameReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_msgtype");
+  )>>("__ImageDesc_name");
 
-  late final _roomMessageMsgtype = _roomMessageMsgtypePtr.asFunction<
-      _RoomMessageMsgtypeReturn Function(
+  late final _imageDescName = _imageDescNamePtr.asFunction<
+      _ImageDescNameReturn Function(
     int,
   )>();
-  late final _roomMessageImageDescriptionPtr = _lookup<
+  late final _imageDescMimetypePtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageImageDescriptionReturn Function(
+          _ImageDescMimetypeReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_image_description");
+  )>>("__ImageDesc_mimetype");
 
-  late final _roomMessageImageDescription =
-      _roomMessageImageDescriptionPtr.asFunction<
-          _RoomMessageImageDescriptionReturn Function(
+  late final _imageDescMimetype = _imageDescMimetypePtr.asFunction<
+      _ImageDescMimetypeReturn Function(
     int,
   )>();
-  late final _roomMessageFileDescriptionPtr = _lookup<
+  late final _imageDescSizePtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageFileDescriptionReturn Function(
+          _ImageDescSizeReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_file_description");
+  )>>("__ImageDesc_size");
 
-  late final _roomMessageFileDescription =
-      _roomMessageFileDescriptionPtr.asFunction<
-          _RoomMessageFileDescriptionReturn Function(
+  late final _imageDescSize = _imageDescSizePtr.asFunction<
+      _ImageDescSizeReturn Function(
     int,
   )>();
-  late final _roomMessageIsReplyPtr = _lookup<
+  late final _imageDescWidthPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _ImageDescWidthReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_is_reply");
+  )>>("__ImageDesc_width");
 
-  late final _roomMessageIsReply = _roomMessageIsReplyPtr.asFunction<
-      int Function(
+  late final _imageDescWidth = _imageDescWidthPtr.asFunction<
+      _ImageDescWidthReturn Function(
     int,
   )>();
-  late final _roomMessageReactionKeysPtr = _lookup<
+  late final _imageDescHeightPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Int64 Function(
+          _ImageDescHeightReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_reaction_keys");
+  )>>("__ImageDesc_height");
 
-  late final _roomMessageReactionKeys = _roomMessageReactionKeysPtr.asFunction<
-      int Function(
+  late final _imageDescHeight = _imageDescHeightPtr.asFunction<
+      _ImageDescHeightReturn Function(
     int,
   )>();
-  late final _roomMessageReactionDescriptionPtr = _lookup<
+  late final _fileDescNamePtr = _lookup<
       ffi.NativeFunction<
-          _RoomMessageReactionDescriptionReturn Function(
+          _FileDescNameReturn Function(
     ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__RoomMessage_reaction_description");
+  )>>("__FileDesc_name");
 
-  late final _roomMessageReactionDescription =
-      _roomMessageReactionDescriptionPtr.asFunction<
-          _RoomMessageReactionDescriptionReturn Function(
-    int,
-    int,
-    int,
+  late final _fileDescName = _fileDescNamePtr.asFunction<
+      _FileDescNameReturn Function(
     int,
   )>();
-  late final _roomMessageIsEditablePtr = _lookup<
+  late final _fileDescMimetypePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _FileDescMimetypeReturn Function(
     ffi.Int64,
-  )>>("__RoomMessage_is_editable");
+  )>>("__FileDesc_mimetype");
 
-  late final _roomMessageIsEditable = _roomMessageIsEditablePtr.asFunction<
-      int Function(
+  late final _fileDescMimetype = _fileDescMimetypePtr.asFunction<
+      _FileDescMimetypeReturn Function(
     int,
   )>();
-  late final _imageDescriptionNamePtr = _lookup<
+  late final _fileDescSizePtr = _lookup<
       ffi.NativeFunction<
-          _ImageDescriptionNameReturn Function(
+          _FileDescSizeReturn Function(
     ffi.Int64,
-  )>>("__ImageDescription_name");
+  )>>("__FileDesc_size");
 
-  late final _imageDescriptionName = _imageDescriptionNamePtr.asFunction<
-      _ImageDescriptionNameReturn Function(
+  late final _fileDescSize = _fileDescSizePtr.asFunction<
+      _FileDescSizeReturn Function(
     int,
   )>();
-  late final _imageDescriptionMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescriptionMimetypeReturn Function(
-    ffi.Int64,
-  )>>("__ImageDescription_mimetype");
-
-  late final _imageDescriptionMimetype =
-      _imageDescriptionMimetypePtr.asFunction<
-          _ImageDescriptionMimetypeReturn Function(
-    int,
-  )>();
-  late final _imageDescriptionSizePtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescriptionSizeReturn Function(
-    ffi.Int64,
-  )>>("__ImageDescription_size");
-
-  late final _imageDescriptionSize = _imageDescriptionSizePtr.asFunction<
-      _ImageDescriptionSizeReturn Function(
-    int,
-  )>();
-  late final _imageDescriptionWidthPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescriptionWidthReturn Function(
-    ffi.Int64,
-  )>>("__ImageDescription_width");
-
-  late final _imageDescriptionWidth = _imageDescriptionWidthPtr.asFunction<
-      _ImageDescriptionWidthReturn Function(
-    int,
-  )>();
-  late final _imageDescriptionHeightPtr = _lookup<
-      ffi.NativeFunction<
-          _ImageDescriptionHeightReturn Function(
-    ffi.Int64,
-  )>>("__ImageDescription_height");
-
-  late final _imageDescriptionHeight = _imageDescriptionHeightPtr.asFunction<
-      _ImageDescriptionHeightReturn Function(
-    int,
-  )>();
-  late final _fileDescriptionNamePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescriptionNameReturn Function(
-    ffi.Int64,
-  )>>("__FileDescription_name");
-
-  late final _fileDescriptionName = _fileDescriptionNamePtr.asFunction<
-      _FileDescriptionNameReturn Function(
-    int,
-  )>();
-  late final _fileDescriptionMimetypePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescriptionMimetypeReturn Function(
-    ffi.Int64,
-  )>>("__FileDescription_mimetype");
-
-  late final _fileDescriptionMimetype = _fileDescriptionMimetypePtr.asFunction<
-      _FileDescriptionMimetypeReturn Function(
-    int,
-  )>();
-  late final _fileDescriptionSizePtr = _lookup<
-      ffi.NativeFunction<
-          _FileDescriptionSizeReturn Function(
-    ffi.Int64,
-  )>>("__FileDescription_size");
-
-  late final _fileDescriptionSize = _fileDescriptionSizePtr.asFunction<
-      _FileDescriptionSizeReturn Function(
-    int,
-  )>();
-  late final _reactionDescriptionCountPtr = _lookup<
+  late final _reactionDescCountPtr = _lookup<
       ffi.NativeFunction<
           ffi.Uint64 Function(
     ffi.Int64,
-  )>>("__ReactionDescription_count");
+  )>>("__ReactionDesc_count");
 
-  late final _reactionDescriptionCount =
-      _reactionDescriptionCountPtr.asFunction<
-          int Function(
+  late final _reactionDescCount = _reactionDescCountPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _timelineDiffActionPtr = _lookup<
@@ -5324,6 +5455,16 @@ class Api {
           int Function(
     int,
   )>();
+  late final _conversationIsEncryptedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Conversation_is_encrypted");
+
+  late final _conversationIsEncrypted = _conversationIsEncryptedPtr.asFunction<
+      int Function(
+    int,
+  )>();
   late final _groupGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5358,6 +5499,16 @@ class Api {
     int,
     int,
     int,
+    int,
+  )>();
+  late final _groupIsEncryptedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Group_is_encrypted");
+
+  late final _groupIsEncrypted = _groupIsEncryptedPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _memberGetProfilePtr = _lookup<
@@ -6720,6 +6871,21 @@ class Api {
     int,
     int,
   )>();
+  late final _conversationIsEncryptedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ConversationIsEncryptedFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Conversation_is_encrypted_future_poll");
+
+  late final _conversationIsEncryptedFuturePoll =
+      _conversationIsEncryptedFuturePollPtr.asFunction<
+          _ConversationIsEncryptedFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _groupGetProfileFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _GroupGetProfileFuturePollReturn Function(
@@ -6761,6 +6927,21 @@ class Api {
   late final _groupGetMemberFuturePoll =
       _groupGetMemberFuturePollPtr.asFunction<
           _GroupGetMemberFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _groupIsEncryptedFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupIsEncryptedFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Group_is_encrypted_future_poll");
+
+  late final _groupIsEncryptedFuturePoll =
+      _groupIsEncryptedFuturePollPtr.asFunction<
+          _GroupIsEncryptedFuturePollReturn Function(
     int,
     int,
     int,
@@ -8699,17 +8880,274 @@ class UserId {
 }
 
 /// A room Message metadata and content
+class RoomEventItem {
+  final Api _api;
+  final _Box _box;
+
+  RoomEventItem._(this._api, this._box);
+
+  /// Unique ID of this event
+  String eventId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemEventId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// The User, who sent that event
+  String sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemSender(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the server receiving timestamp in milliseconds
+  int? originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+  String itemContentType() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemItemContentType(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the type of massage, like audio, text, image, file, etc
+  String? msgtype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemMsgtype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// contains text fallback and formatted text
+  TextDesc? textDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemTextDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_TextDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = TextDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype, size, width and height
+  ImageDesc? imageDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemImageDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ImageDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype and size
+  FileDesc? fileDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemFileDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = FileDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// whether this msg is reply to another msg
+  bool isReply() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemIsReply(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// the emote key list that users reacted about this message
+  FfiListFfiString reactionKeys() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemReactionKeys(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// the details that users reacted using this emote key in this message
+  ReactionDesc? reactionDesc(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._roomEventItemReactionDesc(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    if (tmp7 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+    final tmp8_1 = _Box(_api, tmp8_0, "drop_box_ReactionDesc");
+    tmp8_1._finalizer = _api._registerFinalizer(tmp8_1);
+    final tmp6 = ReactionDesc._(_api, tmp8_1);
+    return tmp6;
+  }
+
+  /// Whether this message is editable
+  bool isEditable() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemIsEditable(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class RoomVirtualItem {
+  final Api _api;
+  final _Box _box;
+
+  RoomVirtualItem._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A room Message metadata and content
 class RoomMessage {
   final Api _api;
   final _Box _box;
 
   RoomMessage._(this._api, this._box);
 
-  /// Unique ID of this event
-  String eventId() {
+  /// one of event/virtual
+  String itemType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageEventId(
+    final tmp1 = _api._roomMessageItemType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8745,31 +9183,61 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// The User, who sent that event
-  String sender() {
+  /// valid only if item_type is "event"
+  RoomEventItem? eventItem() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageSender(
+    final tmp1 = _api._roomMessageEventItem(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    if (tmp3 == 0) {
+      return null;
     }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomEventItem");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomEventItem._(_api, tmp4_1);
     return tmp2;
   }
 
-  /// the body of the massage - fallback string reprensentation
+  /// valid only if item_type is "virtual"
+  RoomVirtualItem? virtualItem() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomMessageVirtualItem(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomVirtualItem");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = RoomVirtualItem._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TextDesc {
+  final Api _api;
+  final _Box _box;
+
+  TextDesc._(this._api, this._box);
+
+  /// fallback text
   String body() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageBody(
+    final tmp1 = _api._textDescBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8785,11 +9253,11 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// get html body
+  /// formatted text
   String? formattedBody() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageFormattedBody(
+    final tmp1 = _api._textDescFormattedBody(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8809,172 +9277,23 @@ class RoomMessage {
     return tmp2;
   }
 
-  /// the server receiving timestamp in milliseconds
-  int? originServerTs() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageOriginServerTs(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// the type of massage, like audio, text, image, file, etc
-  String msgtype() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageMsgtype(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
-    }
-    return tmp2;
-  }
-
-  /// contains source data, name, mimetype, size, width and height
-  ImageDescription? imageDescription() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageImageDescription(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDescription");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = ImageDescription._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// contains source data, name, mimetype and size
-  FileDescription? fileDescription() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageFileDescription(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_FileDescription");
-    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = FileDescription._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// whether this msg is reply to another msg
-  bool isReply() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageIsReply(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
-  /// represent what symbol other users reacted by
-  FfiListFfiString reactionKeys() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageReactionKeys(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListFfiString._(_api, tmp3_1);
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// return the detailed info of reaction
-  ReactionDescription? reactionDescription(
-    String key,
-  ) {
-    final tmp1 = key;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    final tmp5 = _api._roomMessageReactionDescription(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    final tmp7 = tmp5.arg0;
-    final tmp8 = tmp5.arg1;
-    if (tmp7 == 0) {
-      return null;
-    }
-    final ffi.Pointer<ffi.Void> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
-    final tmp8_1 = _Box(_api, tmp8_0, "drop_box_ReactionDescription");
-    tmp8_1._finalizer = _api._registerFinalizer(tmp8_1);
-    final tmp6 = ReactionDescription._(_api, tmp8_1);
-    return tmp6;
-  }
-
-  /// Whether this message is editable
-  bool isEditable() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._roomMessageIsEditable(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
-    return tmp2;
-  }
-
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
   }
 }
 
-class ImageDescription {
+class ImageDesc {
   final Api _api;
   final _Box _box;
 
-  ImageDescription._(this._api, this._box);
+  ImageDesc._(this._api, this._box);
 
   /// file name
   String name() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionName(
+    final tmp1 = _api._imageDescName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -8994,7 +9313,7 @@ class ImageDescription {
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionMimetype(
+    final tmp1 = _api._imageDescMimetype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9018,7 +9337,7 @@ class ImageDescription {
   int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionSize(
+    final tmp1 = _api._imageDescSize(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9034,7 +9353,7 @@ class ImageDescription {
   int? width() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionWidth(
+    final tmp1 = _api._imageDescWidth(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9050,7 +9369,7 @@ class ImageDescription {
   int? height() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._imageDescriptionHeight(
+    final tmp1 = _api._imageDescHeight(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9068,17 +9387,17 @@ class ImageDescription {
   }
 }
 
-class FileDescription {
+class FileDesc {
   final Api _api;
   final _Box _box;
 
-  FileDescription._(this._api, this._box);
+  FileDesc._(this._api, this._box);
 
   /// file name
   String name() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescriptionName(
+    final tmp1 = _api._fileDescName(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9098,7 +9417,7 @@ class FileDescription {
   String? mimetype() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescriptionMimetype(
+    final tmp1 = _api._fileDescMimetype(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9122,7 +9441,7 @@ class FileDescription {
   int? size() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._fileDescriptionSize(
+    final tmp1 = _api._fileDescSize(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -9140,16 +9459,16 @@ class FileDescription {
   }
 }
 
-class ReactionDescription {
+class ReactionDesc {
   final Api _api;
   final _Box _box;
 
-  ReactionDescription._(this._api, this._box);
+  ReactionDesc._(this._api, this._box);
 
   int count() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._reactionDescriptionCount(
+    final tmp1 = _api._reactionDescCount(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -10115,6 +10434,23 @@ class Conversation {
     return tmp2;
   }
 
+  /// whether this room is encrypted one
+  Future<bool> isEncrypted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._conversationIsEncrypted(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__Conversation_is_encrypted_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__conversationIsEncryptedFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -10185,6 +10521,21 @@ class Group {
     tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
     final tmp6 = _nativeFuture(tmp7_1, _api.__groupGetMemberFuturePoll);
     return tmp6;
+  }
+
+  /// whether this room is encrypted one
+  Future<bool> isEncrypted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupIsEncrypted(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Group_is_encrypted_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__groupIsEncryptedFuturePoll);
+    return tmp2;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -12239,7 +12590,80 @@ class _UserIdToStringReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageEventIdReturn extends ffi.Struct {
+class _RoomEventItemEventIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _RoomEventItemSenderReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _RoomEventItemOriginServerTsReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _RoomEventItemItemContentTypeReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _RoomEventItemMsgtypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _RoomEventItemTextDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomEventItemImageDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomEventItemFileDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomEventItemReactionDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomMessageItemTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -12257,7 +12681,21 @@ class _RoomMessageRoomIdReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageSenderReturn extends ffi.Struct {
+class _RoomMessageEventItemReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _RoomMessageVirtualItemReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TextDescBodyReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -12266,73 +12704,7 @@ class _RoomMessageSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomMessageBodyReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _RoomMessageFormattedBodyReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-}
-
-class _RoomMessageOriginServerTsReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _RoomMessageMsgtypeReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _RoomMessageImageDescriptionReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomMessageFileDescriptionReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _RoomMessageReactionDescriptionReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-}
-
-class _ImageDescriptionNameReturn extends ffi.Struct {
-  @ffi.Int64()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-}
-
-class _ImageDescriptionMimetypeReturn extends ffi.Struct {
+class _TextDescFormattedBodyReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -12343,28 +12715,7 @@ class _ImageDescriptionMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ImageDescriptionSizeReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescriptionWidthReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _ImageDescriptionHeightReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _FileDescriptionNameReturn extends ffi.Struct {
+class _ImageDescNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -12373,7 +12724,7 @@ class _FileDescriptionNameReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _FileDescriptionMimetypeReturn extends ffi.Struct {
+class _ImageDescMimetypeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -12384,7 +12735,48 @@ class _FileDescriptionMimetypeReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _FileDescriptionSizeReturn extends ffi.Struct {
+class _ImageDescSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _FileDescNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _FileDescMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
@@ -13201,6 +13593,21 @@ class _ConversationUserReceiptsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ConversationIsEncryptedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
+  external int arg5;
+}
+
 class _GroupGetProfileFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -13243,6 +13650,21 @@ class _GroupGetMemberFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Int64()
+  external int arg5;
+}
+
+class _GroupIsEncryptedFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Uint8()
   external int arg5;
 }
 

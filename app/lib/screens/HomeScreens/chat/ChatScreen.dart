@@ -144,68 +144,146 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget customBottomWidget() {
+  Widget customBottomWidget(BuildContext context) {
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
-        return roomController.isEmojiContainerVisible
-            ? Container(
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                color: AppCommonTheme.backgroundColorLight,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        roomController.isEmojiContainerVisible = false;
-                        roomController.showReplyView = true;
-                        roomController.update(['emoji-reaction', 'chat-input']);
-                      },
-                      child: const Text(
-                        'Reply',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: (() {
-                        if (roomController.isAuthor()) {
-                          // TODO add unsent message call
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return buildReplyDialog();
-                            },
-                          );
-                        }
-                      }),
-                      child: Text(
-                        roomController.isAuthor() ? 'Unsend' : 'Report',
-                        style: TextStyle(
-                          color: roomController.isAuthor()
-                              ? Colors.white
-                              : Colors.red,
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showMoreOptions();
-                      },
-                      child: const Text(
-                        'More',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ],
+        if (!controller.isEmojiContainerVisible) {
+          return CustomChatInput(
+            isChatScreen: true,
+            roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
+            onButtonPressed: () => onSendButtonPressed(controller),
+          );
+        }
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          color: AppCommonTheme.backgroundColorLight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  controller.isEmojiContainerVisible = false;
+                  controller.showReplyView = true;
+                  controller.update(['emoji-reaction', 'chat-input']);
+                },
+                child: const Text(
+                  'Reply',
+                  style: TextStyle(color: Colors.white),
                 ),
-              )
-            : CustomChatInput(
-                isChatScreen: true,
-                roomName:
-                    widget.roomName ?? AppLocalizations.of(context)!.noName,
-                onButtonPressed: () => onSendButtonPressed(controller),
-              );
+              ),
+              GestureDetector(
+                onTap: () {
+                  if (controller.isAuthor()) {
+                    // TODO add unsent message call
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext ctx) {
+                        return Dialog(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            height: 280,
+                            decoration: const BoxDecoration(
+                              color: AppCommonTheme.backgroundColorLight,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                            ),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(ctx);
+                                        },
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Report This Message',
+                                    style: AppCommonTheme.appBarTitleStyle,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: AppCommonTheme.dividerColor,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      const snackBar = SnackBar(
+                                        content: Text('Message reported'),
+                                      );
+                                      ScaffoldMessenger.of(ctx)
+                                          .showSnackBar(snackBar);
+                                      controller.isEmojiContainerVisible =
+                                          false;
+                                      controller.update(['emoji-reaction']);
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          color: AppCommonTheme.primaryColor,
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8),
+                                          child: Center(
+                                            child: Text(
+                                              'Okay!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Text(
+                  controller.isAuthor() ? 'Unsend' : 'Report',
+                  style: TextStyle(
+                    color: controller.isAuthor() ? Colors.white : Colors.red,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  showMoreOptions();
+                },
+                child: const Text(
+                  'More',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
@@ -307,20 +385,6 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget customMessageBuilder(
-    types.CustomMessage customMessage, {
-    required int messageWidth,
-  }) {
-    // return const Text('Failed to decrypt message. Re-request session keys.');
-    String text = 'Failed to decrypt message. Re-request session keys.';
-    return Container(
-      width: sqrt(text.length) * 38.5,
-      padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(minWidth: 57),
-      child: Text(text, style: const TextStyle(color: Colors.white)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return OrientationBuilder(
@@ -345,14 +409,14 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 GetBuilder<ChatRoomController>(
                   id: 'room-profile',
-                  builder: (_) {
+                  builder: (ChatRoomController controller) {
                     return buildRoomName(context);
                   },
                 ),
                 const SizedBox(height: 5),
                 GetBuilder<ChatRoomController>(
                   id: 'active-members',
-                  builder: (_) {
+                  builder: (ChatRoomController controller) {
                     return buildActiveMembers(context);
                   },
                 ),
@@ -361,7 +425,7 @@ class _ChatScreenState extends State<ChatScreen> {
             actions: [
               GetBuilder<ChatRoomController>(
                 id: 'room-profile',
-                builder: (_) {
+                builder: (ChatRoomController controller) {
                   return buildProfileAction();
                 },
               ),
@@ -464,7 +528,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return Stack(
           children: [
             Chat(
-              customBottomWidget: customBottomWidget(),
+              customBottomWidget: customBottomWidget(context),
               textMessageBuilder: textMessageBuilder,
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
@@ -473,11 +537,11 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: controller.messages,
+              messages: controller.getMessages(),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
               ),
-              onSendPressed: (_) {},
+              onSendPressed: (types.PartialText partialText) {},
               user: types.User(id: widget.client.userId().toString()),
               // if invited, disable image gallery
               disableImageGallery: true,
@@ -666,7 +730,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 22.0),
+              margin: const EdgeInsets.symmetric(horizontal: 22),
               width: MediaQuery.of(context).size.width,
               height: 2,
               color: Colors.grey,
@@ -682,7 +746,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 22.0),
+              margin: const EdgeInsets.symmetric(horizontal: 22),
               width: MediaQuery.of(context).size.width,
               height: 2,
               color: Colors.grey,
@@ -692,7 +756,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 Navigator.pop(context);
               },
               child: const Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16),
                 child: Center(
                   child: Text(
                     'Cancel',
@@ -712,13 +776,25 @@ class _ChatScreenState extends State<ChatScreen> {
     required types.Message message,
     required bool nextMessageInGroup,
   }) {
-    // reaction exists for only `m.text` event
-    if (message is types.TextMessage) {
-      return ChatBubbleBuilder(
-        userId: widget.client.userId().toString(),
-        child: child,
-        message: message,
-        nextMessageInGroup: nextMessageInGroup,
+    return ChatBubbleBuilder(
+      userId: widget.client.userId().toString(),
+      child: child,
+      message: message,
+      nextMessageInGroup: nextMessageInGroup,
+    );
+  }
+
+  Widget customMessageBuilder(
+    types.CustomMessage customMessage, {
+    required int messageWidth,
+  }) {
+    if (customMessage.metadata?['itemContentType'] == 'UnableToDecrypt') {
+      String text = 'Failed to decrypt message. Re-request session keys.';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
       );
     }
     return const SizedBox();
