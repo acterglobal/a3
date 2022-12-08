@@ -685,16 +685,12 @@ class _ChatScreenState extends State<ChatScreen> {
     required types.Message message,
     required bool nextMessageInGroup,
   }) {
-    // reaction exists for only `m.text` event
-    if (message is types.TextMessage) {
-      return ChatBubbleBuilder(
-        userId: widget.client.userId().toString(),
-        child: child,
-        message: message,
-        nextMessageInGroup: nextMessageInGroup,
-      );
-    }
-    return const SizedBox();
+    return ChatBubbleBuilder(
+      userId: widget.client.userId().toString(),
+      child: child,
+      message: message,
+      nextMessageInGroup: nextMessageInGroup,
+    );
   }
 
   Widget customMessageBuilder(

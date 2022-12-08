@@ -217,8 +217,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
   //Emoji Container which shows message reactions
   Widget buildEmojiContainer() {
-    Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
-    List<String> keys = reactions.keys.toList();
+    List<String> keys = [];
+    if (widget.message.metadata != null) {
+      if (widget.message.metadata!.containsKey('reactions')) {
+        Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
+        keys = reactions.keys.toList();
+      }
+    }
     return Container(
       width: keys.length * 50,
       margin: const EdgeInsets.all(2),
@@ -247,6 +252,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         runSpacing: 3,
         children: List.generate(keys.length, (int index) {
           String key = keys[index];
+          Map<String, dynamic> reactions =
+              widget.message.metadata!['reactions'];
           ReactionDesc? desc = reactions[key];
           int count = desc!.count();
           return GestureDetector(
