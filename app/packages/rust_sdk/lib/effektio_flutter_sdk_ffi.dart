@@ -4786,14 +4786,14 @@ class Api {
       _RoomEventItemFileDescReturn Function(
     int,
   )>();
-  late final _roomEventItemIsReplyPtr = _lookup<
+  late final _roomEventItemInReplyToPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          _RoomEventItemInReplyToReturn Function(
     ffi.Int64,
-  )>>("__RoomEventItem_is_reply");
+  )>>("__RoomEventItem_in_reply_to");
 
-  late final _roomEventItemIsReply = _roomEventItemIsReplyPtr.asFunction<
-      int Function(
+  late final _roomEventItemInReplyTo = _roomEventItemInReplyToPtr.asFunction<
+      _RoomEventItemInReplyToReturn Function(
     int,
   )>();
   late final _roomEventItemReactionKeysPtr = _lookup<
@@ -9043,15 +9043,27 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// whether this msg is reply to another msg
-  bool isReply() {
+  /// original event id, if this msg is reply to another msg
+  String? inReplyTo() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemIsReply(
+    final tmp1 = _api._roomEventItemInReplyTo(
       tmp0,
     );
-    final tmp3 = tmp1;
-    final tmp2 = tmp3 > 0;
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -12654,6 +12666,17 @@ class _RoomEventItemFileDescReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _RoomEventItemInReplyToReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _RoomEventItemReactionDescReturn extends ffi.Struct {

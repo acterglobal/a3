@@ -8,13 +8,16 @@ use matrix_sdk::{
         },
         Room,
     },
-    ruma::events::{
-        room::{
-            encrypted::OriginalSyncRoomEncryptedEvent,
-            message::{MessageFormat, MessageType, Relation, RoomMessageEventContent},
+    ruma::{
+        events::{
+            room::{
+                encrypted::OriginalSyncRoomEncryptedEvent,
+                message::{MessageFormat, MessageType, Relation, RoomMessageEventContent},
+            },
+            AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
+            SyncMessageLikeEvent,
         },
-        AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalSyncMessageLikeEvent,
-        SyncMessageLikeEvent,
+        OwnedEventId,
     },
 };
 use regex::Regex;
@@ -30,7 +33,7 @@ pub struct RoomEventItem {
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
     file_desc: Option<FileDesc>,
-    is_reply: bool,
+    in_reply_to: Option<OwnedEventId>,
     reactions: HashMap<String, ReactionDesc>,
     is_editable: bool,
 }
@@ -46,7 +49,7 @@ impl RoomEventItem {
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
         file_desc: Option<FileDesc>,
-        is_reply: bool,
+        in_reply_to: Option<OwnedEventId>,
         reactions: HashMap<String, ReactionDesc>,
         is_editable: bool,
     ) -> Self {
@@ -59,7 +62,7 @@ impl RoomEventItem {
             text_desc,
             image_desc,
             file_desc,
-            is_reply,
+            in_reply_to,
             reactions,
             is_editable,
         }
@@ -97,8 +100,8 @@ impl RoomEventItem {
         self.file_desc.clone()
     }
 
-    pub(crate) fn is_reply(&self) -> bool {
-        self.is_reply
+    pub fn in_reply_to(&self) -> Option<String> {
+        self.in_reply_to.as_ref().map(|x| x.to_string())
     }
 
     pub(crate) fn simplify_body(&mut self) {
@@ -224,10 +227,10 @@ impl RoomMessage {
             }
             _ => {}
         }
-        let is_reply = matches!(
-            &event.content.relates_to,
-            Some(Relation::Reply { in_reply_to }),
-        );
+        let mut original_event_id = None;
+        if let Some(Relation::Reply { in_reply_to }) = &event.content.relates_to {
+            original_event_id = Some(in_reply_to.event_id.clone());
+        }
         // room list needn't show message reaction
         // so sync event handler should keep `reactions` empty
         // reaction event handler needn't exist in conversation controller
@@ -240,7 +243,7 @@ impl RoomMessage {
             Some(text_desc),
             image_desc,
             file_desc,
-            is_reply,
+            original_event_id,
             Default::default(),
             is_editable,
         );
@@ -278,7 +281,7 @@ impl RoomMessage {
             Some(text_desc),
             None,
             None,
-            false,
+            None,
             Default::default(),
             false,
         );
@@ -369,10 +372,10 @@ impl RoomMessage {
                     }
                     _ => {}
                 }
-                let is_reply = match msg.in_reply_to() {
-                    Some(in_reply_to) => true,
-                    None => false,
-                };
+                let mut original_event_id = None;
+                if let Some(in_reply_to) = msg.in_reply_to() {
+                    original_event_id = Some(in_reply_to.to_owned());
+                }
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -382,7 +385,7 @@ impl RoomMessage {
                     Some(text_desc),
                     image_desc,
                     file_desc,
-                    is_reply,
+                    original_event_id,
                     reactions,
                     is_editable,
                 )
@@ -398,7 +401,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
-                    false,
+                    None,
                     Default::default(),
                     false,
                 )
@@ -414,7 +417,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
-                    false,
+                    None,
                     Default::default(),
                     false,
                 )
@@ -430,7 +433,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
-                    false,
+                    None,
                     Default::default(),
                     false,
                 )
@@ -450,7 +453,7 @@ impl RoomMessage {
                     None,
                     None,
                     None,
-                    false,
+                    None,
                     Default::default(),
                     false,
                 )

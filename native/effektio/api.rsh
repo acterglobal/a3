@@ -117,8 +117,8 @@ object RoomEventItem {
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
 
-    /// whether this msg is reply to another msg
-    fn is_reply() -> bool;
+    /// original event id, if this msg is reply to another msg
+    fn in_reply_to() -> Option<string>;
 
     /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
