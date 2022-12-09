@@ -293,6 +293,28 @@ class _ChatScreenState extends State<ChatScreen> {
     required int messageWidth,
     required bool showName,
   }) {
+    if (p1.metadata != null && p1.metadata!.containsKey('inReplyTo')) {
+      // remove mx-reply tag from formatted text
+      RegExp re = RegExp(r'^<mx-reply>(.*)<\/mx-reply>(.*)$');
+      RegExpMatch? match = re.firstMatch(p1.text);
+      if (match != null) {
+        String? original = match.group(1);
+        String? reply = match.group(2);
+        return Container(
+          width: sqrt(p1.metadata!['messageLength']) * 38.5,
+          padding: const EdgeInsets.all(8),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Html(
+            // ignore: prefer_single_quotes, unnecessary_string_interpolations
+            data: """$original$reply""",
+            style: {
+              'body': Style(color: Colors.white),
+              'a': Style(textDecoration: TextDecoration.none)
+            },
+          ),
+        );
+      }
+    }
     return Container(
       width: sqrt(p1.metadata!['messageLength']) * 38.5,
       padding: const EdgeInsets.all(8),

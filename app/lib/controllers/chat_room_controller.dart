@@ -563,22 +563,28 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
       TextDesc? description = eventItem.textDesc();
-      String body = description!.body();
+      String? formattedBody = description!.formattedBody();
+      String body = description.body(); // always exists
       Map<String, dynamic> reactions = {};
       for (var key in eventItem.reactionKeys()) {
         String k = key.toDartString();
         reactions[k] = eventItem.reactionDesc(k);
       }
+      var metadata = {
+        'messageLength': body.length,
+        'reactions': reactions,
+      };
+      String? inReplyTo = eventItem.inReplyTo();
+      if (inReplyTo != null) {
+        metadata['inReplyTo'] = inReplyTo;
+      }
       return types.TextMessage(
         author: author,
         createdAt: createdAt,
         id: eventId,
-        text: description.formattedBody() ?? body,
+        text: formattedBody ?? body,
         repliedMessage: repliedToMessage,
-        metadata: {
-          'messageLength': body.length,
-          'reactions': reactions,
-        },
+        metadata: metadata,
       );
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
