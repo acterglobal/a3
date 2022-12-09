@@ -222,13 +222,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      const snackBar = SnackBar(
-                                        content: Text('Message reported'),
+                                      showNotYetImplementedMsg(
+                                        ctx,
+                                        'Report feature not yet implemented',
                                       );
-                                      ScaffoldMessenger.of(ctx)
-                                          .showSnackBar(snackBar);
-                                      controller.isEmojiContainerVisible =
-                                          false;
                                       controller.update(['emoji-reaction']);
                                       Navigator.pop(ctx);
                                     },
@@ -293,28 +290,6 @@ class _ChatScreenState extends State<ChatScreen> {
     required int messageWidth,
     required bool showName,
   }) {
-    if (p1.metadata != null && p1.metadata!.containsKey('inReplyTo')) {
-      // remove mx-reply tag from formatted text
-      RegExp re = RegExp(r'^<mx-reply>(.*)<\/mx-reply>(.*)$');
-      RegExpMatch? match = re.firstMatch(p1.text);
-      if (match != null) {
-        String? original = match.group(1);
-        String? reply = match.group(2);
-        return Container(
-          width: sqrt(p1.metadata!['messageLength']) * 38.5,
-          padding: const EdgeInsets.all(8),
-          constraints: const BoxConstraints(minWidth: 57),
-          child: Html(
-            // ignore: prefer_single_quotes, unnecessary_string_interpolations
-            data: """$original$reply""",
-            style: {
-              'body': Style(color: Colors.white),
-              'a': Style(textDecoration: TextDecoration.none)
-            },
-          ),
-        );
-      }
-    }
     return Container(
       width: sqrt(p1.metadata!['messageLength']) * 38.5,
       padding: const EdgeInsets.all(8),
@@ -334,11 +309,6 @@ class _ChatScreenState extends State<ChatScreen> {
     types.ImageMessage imageMessage, {
     required int messageWidth,
   }) {
-    // binary data
-    // CachedMemoryImage cannot be used, because uniqueKey not working
-    // If uniqueKey not working, it means cache is not working
-    // So use Image.memory
-    // ToDo: must implement image caching someday
     if (imageMessage.metadata?.containsKey('base64') ?? false) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
@@ -565,7 +535,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               onSendPressed: (types.PartialText partialText) {},
               user: types.User(id: widget.client.userId().toString()),
-              // if invited, disable image gallery
+              // disable image preview
               disableImageGallery: true,
               //custom avatar builder
               avatarBuilder: avatarBuilder,
@@ -588,6 +558,8 @@ class _ChatScreenState extends State<ChatScreen> {
               onBackgroundTap: () {
                 if (controller.isEmojiContainerVisible) {
                   controller.toggleEmojiContainer();
+                  roomController.replyMessageWidget = null;
+                  roomController.repliedToMessage = null;
                 }
               },
               emptyState: const EmptyHistoryPlaceholder(),
@@ -603,92 +575,6 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         );
       },
-    );
-  }
-
-  Widget buildReplyDialog() {
-    return Dialog(
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        height: 280,
-        decoration: const BoxDecoration(
-          color: AppCommonTheme.backgroundColorLight,
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
-        ),
-        child: Center(
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 8.0,
-              ),
-              const Text(
-                'Report This Message',
-                style: AppCommonTheme.appBarTitleStyle,
-              ),
-              const SizedBox(
-                height: 16.0,
-              ),
-              const Text(
-                "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppCommonTheme.dividerColor,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  const snackBar = SnackBar(
-                    content: Text('Message reported'),
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                  roomController.isEmojiContainerVisible = false;
-                  roomController.update(['emoji-reaction']);
-                  Navigator.pop(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        14,
-                      ),
-                      color: AppCommonTheme.primaryColor,
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Center(
-                        child: Text(
-                          'Okay!',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -798,12 +684,16 @@ class _ChatScreenState extends State<ChatScreen> {
     required types.Message message,
     required bool nextMessageInGroup,
   }) {
-    return ChatBubbleBuilder(
-      userId: widget.client.userId().toString(),
-      child: child,
-      message: message,
-      nextMessageInGroup: nextMessageInGroup,
-    );
+    return GetBuilder<ChatRoomController>(
+        id: 'chat-bubble',
+        builder: (context) {
+          return ChatBubbleBuilder(
+            userId: widget.client.userId().toString(),
+            child: child,
+            message: message,
+            nextMessageInGroup: nextMessageInGroup,
+          );
+        });
   }
 
   Widget customMessageBuilder(

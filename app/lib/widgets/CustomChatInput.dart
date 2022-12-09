@@ -8,6 +8,7 @@ import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends StatelessWidget {
   static const List<List<String>> _attachmentNameList = [
@@ -59,7 +60,7 @@ class CustomChatInput extends StatelessWidget {
                                 Text(
                                   controller.isAuthor()
                                       ? 'Replying to yourself'
-                                      : 'Replying to ${controller.repliedToMessage?.author.firstName}',
+                                      : 'Replying to ${toBeginningOfSentenceCase(controller.repliedToMessage?.author.firstName)}',
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontSize: 12,

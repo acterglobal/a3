@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
@@ -7,6 +9,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class ChatBubbleBuilder extends StatefulWidget {
@@ -67,15 +70,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 ),
               ],
             ),
-            GestureDetector(
-              onLongPress: () {
-                roomController.updateEmojiState(widget.message);
-              },
-              child: Align(
-                alignment:
-                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-                child: buildEmojiContainer(),
-              ),
+            Align(
+              alignment:
+                  !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
+              child: buildEmojiContainer(),
             ),
           ],
         );
@@ -147,74 +145,113 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
   // Custom chat bubble
   Widget buildChatBubble() {
-    return Column(
-      crossAxisAlignment:
-          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        // const Text(
-        //   'You replied',
-        //   style: TextStyle(color: Colors.white, fontSize: 12),
-        // ),
-        // const SizedBox(height: 8),
-        // Bubble(
-        //   child: const Padding(
-        //     padding: EdgeInsets.all(8),
-        //     child: Text(
-        //       'This is a reply message demo',
-        //       style: ChatTheme01.chatReplyTextStyle,
-        //     ),
-        //   ),
-        //   color: AppCommonTheme.backgroundColorLight,
-        //   margin: widget.nextMessageInGroup
-        //       ? const BubbleEdges.symmetric(horizontal: 2)
-        //       : null,
-        //   radius: const Radius.circular(22),
-        //   padding: messagetype == types.MessageType.image
-        //       ? const BubbleEdges.all(0)
-        //       : null,
-        //   nip: BubbleNip.no,
-        // ),
-        // const SizedBox(height: 4),
-        Bubble(
-          child: widget.child,
-          color: !isAuthor() || messagetype == types.MessageType.image
-              ? AppCommonTheme.backgroundColorLight
-              : AppCommonTheme.primaryColor,
-          margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(horizontal: 2)
-              : null,
-          radius: const Radius.circular(22),
-          padding: messagetype == types.MessageType.image
-              ? const BubbleEdges.all(0)
-              : null,
-          nip: (widget.nextMessageInGroup ||
-                  messagetype == types.MessageType.image)
-              ? BubbleNip.no
-              : !isAuthor()
-                  ? BubbleNip.leftBottom
-                  : BubbleNip.rightBottom,
-          nipHeight: 18,
-          nipWidth: 0.5,
-          nipRadius: 0,
-        ),
-      ],
+    return GestureDetector(
+      onLongPress: () {
+        roomController.updateEmojiState(widget.message);
+        roomController.replyMessageWidget = widget.child;
+        roomController.repliedToMessage = widget.message;
+      },
+      child: Column(
+        crossAxisAlignment:
+            isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          (widget.message.metadata != null &&
+                  widget.message.metadata!.containsKey('hasReply'))
+              ? isAuthor()
+                  ? const Text(
+                      'You replied',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    )
+                  : const Text(
+                      'Replied to you',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    )
+              : const SizedBox(),
+          const SizedBox(height: 8),
+          (widget.message.metadata != null &&
+                  widget.message.metadata!.containsKey('hasReply'))
+              ? buildReplyBubble(widget.message)
+              : const SizedBox(),
+          const SizedBox(height: 4),
+          Bubble(
+            child: widget.child,
+            color: !isAuthor() || messagetype == types.MessageType.image
+                ? AppCommonTheme.backgroundColorLight
+                : AppCommonTheme.primaryColor,
+            margin: widget.nextMessageInGroup
+                ? const BubbleEdges.symmetric(horizontal: 2)
+                : null,
+            radius: const Radius.circular(22),
+            padding: messagetype == types.MessageType.image
+                ? const BubbleEdges.all(0)
+                : null,
+            nip: (widget.nextMessageInGroup ||
+                    messagetype == types.MessageType.image)
+                ? BubbleNip.no
+                : !isAuthor()
+                    ? BubbleNip.leftBottom
+                    : BubbleNip.rightBottom,
+            nipHeight: 18,
+            nipWidth: 0.5,
+            nipRadius: 0,
+          ),
+        ],
+      ),
     );
   }
 
   //Custom reply bubble
-  Widget buildReplyBubble() {
+  Widget buildReplyBubble(types.Message? message) {
     return Bubble(
-      child: widget.child,
+      child: replyMessageBuilder(message!),
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
-      radius: const Radius.circular(18),
-      padding: messagetype == types.MessageType.image
+      radius: const Radius.circular(22),
+      padding: message.metadata?['hasReply']['type'] == 'm.image'
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
     );
+  }
+
+  Widget replyMessageBuilder(types.Message? message) {
+    switch (message?.metadata?['hasReply']['type']) {
+      case 'm.text':
+        return Html(
+          data: """${message?.metadata?['hasReply']['parent']}""",
+          style: {
+            'body': Style(
+              color: ChatTheme01.chatReplyTextColor,
+              fontWeight: FontWeight.w400,
+              fontSize: FontSize(14),
+            ),
+          },
+        );
+      case 'm.image':
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: base64Decode(message?.metadata?['hasReply']['parent'])
+                  .isNotEmpty
+              ? Image.memory(
+                  base64Decode(message?.metadata?['hasReply']['parent']),
+                  errorBuilder:
+                      (BuildContext context, Object url, StackTrace? error) {
+                    return Text('Could not load image due to $error');
+                  },
+                  cacheHeight: 75,
+                  cacheWidth: 75,
+                  fit: BoxFit.cover,
+                )
+              : const SizedBox(),
+        );
+      case 'm.file':
+        break;
+      default:
+        return const SizedBox();
+    }
+    return const SizedBox();
   }
 
   //Emoji Container which shows message reactions
