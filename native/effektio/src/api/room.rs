@@ -9,7 +9,7 @@ use matrix_sdk::{
     ruma::{
         events::{
             reaction::{ReactionEventContent, Relation},
-            room::message::{MessageType, RoomMessageEventContent},
+            room::message::{MessageFormat, MessageType, RoomMessageEventContent},
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
         EventId, UInt, UserId,
@@ -21,7 +21,7 @@ use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 use super::{
     account::Account,
     api::FfiBuffer,
-    message::RoomMessage,
+    message::{FileDesc, ImageDesc, RoomEventItem, RoomMessage, TextDesc},
     profile::{RoomProfile, UserProfile},
     stream::TimelineStream,
     RUNTIME,
@@ -516,6 +516,32 @@ impl Room {
             .spawn(async move {
                 let encrypted = room.is_encrypted().await?;
                 Ok(encrypted)
+            })
+            .await?
+    }
+
+    pub async fn get_message(&self, event_id: String) -> Result<RoomMessage> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't read message from a room we are not in")
+        };
+        let client = self.client.clone();
+        let r = self.room.clone();
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let eid = EventId::parse(event_id.clone())?;
+                let evt = room.event(&eid).await?;
+                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                    MessageLikeEvent::Original(m),
+                ))) = evt.event.deserialize()
+                {
+                    let msg = RoomMessage::from_original(&m, r);
+                    Ok(msg)
+                } else {
+                    bail!("Invalid event id")
+                }
             })
             .await?
     }

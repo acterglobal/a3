@@ -299,6 +299,9 @@ object Conversation {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
+
+    /// get original of reply msg
+    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 }
 
 object Group {

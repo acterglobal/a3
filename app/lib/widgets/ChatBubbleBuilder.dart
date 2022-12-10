@@ -156,21 +156,21 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           (widget.message.metadata != null &&
-                  widget.message.metadata!.containsKey('hasReply'))
+                  widget.message.metadata!.containsKey('repliedTo'))
               ? isAuthor()
                   ? const Text(
-                      'You replied',
+                      'You',
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     )
-                  : const Text(
-                      'Replied to you',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                  : Text(
+                      widget.message.metadata!['repliedTo']['sender'],
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     )
               : const SizedBox(),
           const SizedBox(height: 8),
           (widget.message.metadata != null &&
-                  widget.message.metadata!.containsKey('hasReply'))
-              ? buildReplyBubble(widget.message)
+                  widget.message.metadata!.containsKey('repliedTo'))
+              ? buildOriginalBubble(widget.message)
               : const SizedBox(),
           const SizedBox(height: 4),
           Bubble(
@@ -200,27 +200,27 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-  //Custom reply bubble
-  Widget buildReplyBubble(types.Message? message) {
+  //Custom original bubble
+  Widget buildOriginalBubble(types.Message? message) {
     return Bubble(
-      child: replyMessageBuilder(message!),
+      child: originalMessageBuilder(message!),
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(22),
-      padding: message.metadata?['hasReply']['type'] == 'm.image'
+      padding: message.metadata?['repliedTo']['type'] == 'm.image'
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
     );
   }
 
-  Widget replyMessageBuilder(types.Message? message) {
-    switch (message?.metadata?['hasReply']['type']) {
+  Widget originalMessageBuilder(types.Message? message) {
+    switch (message?.metadata?['repliedTo']['type']) {
       case 'm.text':
         return Html(
-          data: """${message?.metadata?['hasReply']['parent']}""",
+          data: """${message?.metadata?['repliedTo']['content']}""",
           style: {
             'body': Style(
               color: ChatTheme01.chatReplyTextColor,
@@ -232,10 +232,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       case 'm.image':
         return ClipRRect(
           borderRadius: BorderRadius.circular(15),
-          child: base64Decode(message?.metadata?['hasReply']['parent'])
+          child: base64Decode(message?.metadata?['repliedTo']['content'])
                   .isNotEmpty
               ? Image.memory(
-                  base64Decode(message?.metadata?['hasReply']['parent']),
+                  base64Decode(message?.metadata?['repliedTo']['content']),
                   errorBuilder:
                       (BuildContext context, Object url, StackTrace? error) {
                     return Text('Could not load image due to $error');
@@ -247,11 +247,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               : const SizedBox(),
         );
       case 'm.file':
-        break;
+        return Text(
+          message?.metadata?['repliedTo']['content'],
+          style: const TextStyle(color: Colors.white, fontSize: 12),
+        );
       default:
         return const SizedBox();
     }
-    return const SizedBox();
   }
 
   //Emoji Container which shows message reactions

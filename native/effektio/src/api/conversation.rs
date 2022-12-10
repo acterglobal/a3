@@ -213,7 +213,7 @@ impl ConversationController {
                 room: room.clone(),
             });
             if let Ok(decrypted) = joined.decrypt_event(&Raw::new(&ev).unwrap()).await {
-                let msg = RoomMessage::from_timeline_event(&ev, &decrypted, room.clone());
+                let msg = RoomMessage::from_encrypted_timeline_event(&ev, &decrypted, room.clone());
                 convo.set_latest_message(msg.clone());
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -245,7 +245,7 @@ impl ConversationController {
                 client: client.clone(),
                 room: room.clone(),
             });
-            let msg = RoomMessage::from_original(&ev, room.clone());
+            let msg = RoomMessage::from_original_sync(&ev, room.clone());
             convo.set_latest_message(msg.clone());
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
