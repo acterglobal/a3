@@ -163,7 +163,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     )
                   : Text(
-                      widget.message.metadata!['repliedTo']['sender'],
+                      roomController.client.userId().toString() ==
+                              widget.message.metadata!['repliedTo']['sender']
+                          ? 'Replied to you'
+                          : 'Replied to ${widget.message.metadata!['repliedTo']['sender']}',
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     )
               : const SizedBox(),
