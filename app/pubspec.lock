@@ -440,7 +440,7 @@ packages:
     source: hosted
     version: "2.3.1"
   html:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: html
       url: "https://pub.dartlang.org"

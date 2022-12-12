@@ -24,7 +24,6 @@ import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_mentions/flutter_mentions.dart';
-import 'package:html/parser.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
@@ -683,41 +682,6 @@ class ChatRoomController extends GetxController {
         'itemContentType': eventItem.itemContentType(),
       },
     );
-  }
-
-  Map<String, String>? _parseOriginalMessage(
-    String eventId,
-    String formattedBody,
-  ) {
-    RegExp re = RegExp(r'^<mx-reply>(.*)<\/mx-reply>(.*)$');
-    RegExpMatch? match = re.firstMatch(formattedBody);
-    if (match == null) {
-      return null;
-    }
-    String original = match.group(1)!;
-    String reply = match.group(2)!;
-    Map<String, String> result = original.contains('sent an image.')
-        ? {
-            'eventId': eventId,
-            'content': '', // original content will be fetched later
-            'type': 'm.image',
-            'reply': reply,
-          }
-        : {
-            'eventId': eventId,
-            'content': original,
-            'type': 'm.text',
-            'reply': reply,
-          };
-    var document = parse(original);
-    var anchors = document.getElementsByTagName('a');
-    for (var anchor in anchors) {
-      if (anchor.attributes['href']!.contains('https://matrix.to/#/@')) {
-        result['sender'] = anchor.innerHtml;
-        break;
-      }
-    }
-    return result;
   }
 
   List<types.Message> getMessages() {
