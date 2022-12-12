@@ -7,6 +7,7 @@ import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_html/flutter_html.dart';
@@ -233,12 +234,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           },
         );
       case 'm.image':
+        Uint8List data =
+            base64Decode(message?.metadata?['repliedTo']['content']);
         return ClipRRect(
           borderRadius: BorderRadius.circular(15),
-          child: base64Decode(message?.metadata?['repliedTo']['content'])
-                  .isNotEmpty
+          child: data.isNotEmpty
               ? Image.memory(
-                  base64Decode(message?.metadata?['repliedTo']['content']),
+                  data,
                   errorBuilder:
                       (BuildContext context, Object url, StackTrace? error) {
                     return Text('Could not load image due to $error');

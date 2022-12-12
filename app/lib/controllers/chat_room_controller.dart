@@ -147,7 +147,10 @@ class ChatRoomController extends GetxController {
               _insertMessage(0, m);
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 if (m.metadata?['repliedTo']['type'] == 'm.image') {
-                  _fetchReplyContent(m.metadata?['repliedTo']['eventId'], m.id);
+                  _fetchOriginalContent(
+                    m.metadata?['repliedTo']['eventId'],
+                    m.id,
+                  );
                 }
               }
               RoomEventItem? eventItem = msg.eventItem();
@@ -169,7 +172,10 @@ class ChatRoomController extends GetxController {
             _insertMessage(_messages.length - index, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
-                _fetchReplyContent(m.metadata?['repliedTo']['eventId'], m.id);
+                _fetchOriginalContent(
+                  m.metadata?['repliedTo']['eventId'],
+                  m.id,
+                );
               }
             }
             RoomEventItem? eventItem = value.eventItem();
@@ -190,7 +196,10 @@ class ChatRoomController extends GetxController {
             _updateMessage(_messages.length - index, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
-                _fetchReplyContent(m.metadata?['repliedTo']['eventId'], m.id);
+                _fetchOriginalContent(
+                  m.metadata?['repliedTo']['eventId'],
+                  m.id,
+                );
               }
             }
             RoomEventItem? eventItem = value.eventItem();
@@ -210,7 +219,10 @@ class ChatRoomController extends GetxController {
             _insertMessage(0, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
-                _fetchReplyContent(m.metadata?['repliedTo']['eventId'], m.id);
+                _fetchOriginalContent(
+                  m.metadata?['repliedTo']['eventId'],
+                  m.id,
+                );
               }
             }
             RoomEventItem? eventItem = value.eventItem();
@@ -241,7 +253,10 @@ class ChatRoomController extends GetxController {
             _messages.insert(i, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
-                _fetchReplyContent(m.metadata?['repliedTo']['eventId'], m.id);
+                _fetchOriginalContent(
+                  m.metadata?['repliedTo']['eventId'],
+                  m.id,
+                );
               }
             }
             if (isLoading.isFalse) {
@@ -732,12 +747,9 @@ class ChatRoomController extends GetxController {
     _currentRoom!.imageBinary(eventId).then((data) {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
-        final base64String = base64Encode(data.asTypedList());
-        _messages[index] = _messages[index].copyWith(
-          metadata: {
-            'base64': base64String,
-          },
-        );
+        final metadata = _messages[index].metadata ?? {};
+        metadata['base64'] = base64Encode(data.asTypedList());
+        _messages[index] = _messages[index].copyWith(metadata: metadata);
         if (isLoading.isFalse) {
           update(['Chat']);
         }
@@ -745,13 +757,14 @@ class ChatRoomController extends GetxController {
     });
   }
 
-  // fetch reply content media .i.e. image,file etc.
-  void _fetchReplyContent(String parentId, String eventId) {
-    _currentRoom!.imageBinary(parentId).then((data) {
-      int index = _messages.indexWhere((x) => x.id == eventId);
+  // fetch original content media for reply msg .i.e. image,file etc.
+  void _fetchOriginalContent(String originalId, String replyId) {
+    _currentRoom!.imageBinary(originalId).then((data) {
+      int index = _messages.indexWhere((x) => x.id == replyId);
       if (index != -1) {
-        final base64String = base64Encode(data.asTypedList());
-        _messages[index].metadata?['repliedTo']['content'] = base64String;
+        final metadata = _messages[index].metadata ?? {};
+        metadata['repliedTo']['content'] = base64Encode(data.asTypedList());
+        _messages[index] = _messages[index].copyWith(metadata: metadata);
         if (isLoading.isFalse) {
           update(['Chat']);
         }
