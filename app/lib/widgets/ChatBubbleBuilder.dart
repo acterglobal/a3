@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -7,7 +8,6 @@ import 'package:effektio/widgets/EmojiReactionListItem.dart';
 import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_html/flutter_html.dart';
