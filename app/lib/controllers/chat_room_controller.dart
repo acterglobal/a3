@@ -602,41 +602,52 @@ class ChatRoomController extends GetxController {
       }
     }
 
+    Map<String, dynamic> reactions = {};
+    for (var key in eventItem.reactionKeys()) {
+      String k = key.toDartString();
+      reactions[k] = eventItem.reactionDesc(k);
+    }
+
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
       FileDesc? description = eventItem.fileDesc();
-      Map<String, dynamic> metadata = {};
-
       if (description != null) {
+        Map<String, dynamic> metadata = {};
         if (repliedTo != null) {
           metadata['repliedTo'] = repliedTo;
+        }
+        if (reactions.isNotEmpty) {
+          metadata['reactions'] = reactions;
         }
         return types.FileMessage(
           author: author,
           createdAt: createdAt,
           id: eventId,
+          metadata: metadata,
           name: description.name(),
           size: description.size() ?? 0,
-          metadata: metadata,
           uri: '',
         );
       }
     } else if (msgtype == 'm.image') {
       ImageDesc? description = eventItem.imageDesc();
-      Map<String, dynamic> metadata = {};
       if (description != null) {
+        Map<String, dynamic> metadata = {};
         if (repliedTo != null) {
           metadata['repliedTo'] = repliedTo;
+        }
+        if (reactions.isNotEmpty) {
+          metadata['reactions'] = reactions;
         }
         return types.ImageMessage(
           author: author,
           createdAt: createdAt,
           height: description.height()?.toDouble(),
           id: eventId,
+          metadata: metadata,
           name: description.name(),
           size: description.size() ?? 0,
-          metadata: metadata,
           uri: '',
           width: description.width()?.toDouble(),
         );
@@ -646,29 +657,26 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
       TextDesc? description = eventItem.textDesc();
-      String? formattedBody = description!.formattedBody();
-      debugPrint('reply formatted - $formattedBody');
-      String body = description.body(); // always exists
-      debugPrint('reply body - $body');
-      Map<String, dynamic> reactions = {};
-      for (var key in eventItem.reactionKeys()) {
-        String k = key.toDartString();
-        reactions[k] = eventItem.reactionDesc(k);
+      if (description != null) {
+        String? formattedBody = description.formattedBody();
+        String body = description.body(); // always exists
+        Map<String, dynamic> metadata = {
+          'messageLength': body.length,
+        };
+        if (repliedTo != null) {
+          metadata['repliedTo'] = repliedTo;
+        }
+        if (reactions.isNotEmpty) {
+          metadata['reactions'] = reactions;
+        }
+        return types.TextMessage(
+          author: author,
+          createdAt: createdAt,
+          id: eventId,
+          metadata: metadata,
+          text: formattedBody ?? body,
+        );
       }
-      var metadata = {
-        'messageLength': body.length,
-        'reactions': reactions,
-      };
-      if (repliedTo != null) {
-        metadata['repliedTo'] = repliedTo;
-      }
-      return types.TextMessage(
-        author: author,
-        createdAt: createdAt,
-        id: eventId,
-        text: formattedBody ?? body,
-        metadata: metadata,
-      );
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
 
