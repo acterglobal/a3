@@ -525,15 +525,26 @@ class ChatRoomController extends GetxController {
     int? createdAt = eventItem.originServerTs(); // in milliseconds
     String eventId = eventItem.eventId();
 
+    Map<String, dynamic> reactions = {};
+    for (var key in eventItem.reactionKeys()) {
+      String k = key.toDartString();
+      reactions[k] = eventItem.reactionDesc(k);
+    }
+
     if (msgtype == 'm.audio') {
     } else if (msgtype == 'm.emote') {
     } else if (msgtype == 'm.file') {
       FileDesc? description = eventItem.fileDesc();
       if (description != null) {
+        Map<String, dynamic> metadata = {};
+        if (reactions.isNotEmpty) {
+          metadata['reactions'] = reactions;
+        }
         return types.FileMessage(
           author: author,
           createdAt: createdAt,
           id: eventId,
+          metadata: metadata,
           name: description.name(),
           size: description.size() ?? 0,
           uri: '',
@@ -542,13 +553,18 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.image') {
       ImageDesc? description = eventItem.imageDesc();
       if (description != null) {
-        /// this is added to get local path of fetched image for previewing purposes (not yet implemented).
+        Map<String, dynamic> metadata = {};
+        if (reactions.isNotEmpty) {
+          metadata['reactions'] = reactions;
+        }
+        // this is added to get local path of fetched image for previewing purposes (not yet implemented).
         final path = (await getApplicationDocumentsDirectory()).path;
         return types.ImageMessage(
           author: author,
           createdAt: createdAt,
           height: description.height()?.toDouble(),
           id: eventId,
+          metadata: metadata,
           name: description.name(),
           size: description.size() ?? 0,
           uri: path + description.name(),
@@ -560,21 +576,20 @@ class ChatRoomController extends GetxController {
     } else if (msgtype == 'm.server_notice') {
     } else if (msgtype == 'm.text') {
       TextDesc? description = eventItem.textDesc();
-      String body = description!.body();
-      Map<String, dynamic> reactions = {};
-      for (var key in eventItem.reactionKeys()) {
-        String k = key.toDartString();
-        reactions[k] = eventItem.reactionDesc(k);
+      String? formattedBody = description!.formattedBody();
+      String body = description.body(); // always exists
+      Map<String, dynamic> metadata = {
+        'messageLength': body.length,
+      };
+      if (reactions.isNotEmpty) {
+        metadata['reactions'] = reactions;
       }
       return types.TextMessage(
         author: author,
         createdAt: createdAt,
         id: eventId,
-        text: description.formattedBody() ?? body,
-        metadata: {
-          'messageLength': body.length,
-          'reactions': reactions,
-        },
+        metadata: metadata,
+        text: formattedBody ?? body,
       );
     } else if (msgtype == 'm.video') {
     } else if (msgtype == 'm.key.verification.request') {}
