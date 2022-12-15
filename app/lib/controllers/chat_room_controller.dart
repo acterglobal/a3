@@ -640,6 +640,7 @@ class ChatRoomController extends GetxController {
         if (reactions.isNotEmpty) {
           metadata['reactions'] = reactions;
         }
+        metadata['base64'] = '';
         return types.ImageMessage(
           author: author,
           createdAt: createdAt,
