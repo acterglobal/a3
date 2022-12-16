@@ -20,6 +20,10 @@ default-features = false
 git = "https://github.com/bitfriend/ruma"
 rev = "537b282955736796b153ee73dae093719b8e6893"
 
+[patch."https://github.com/ruma/ruma"]
+ruma = { git = "https://github.com/bitfriend/ruma", rev = "537b282955736796b153ee73dae093719b8e6893" }
+ruma-common = { git = "https://github.com/bitfriend/ruma", rev = "537b282955736796b153ee73dae093719b8e6893" }
+
 [profile.release]
 panic = "unwind"
 opt-level = 2

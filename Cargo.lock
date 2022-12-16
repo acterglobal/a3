@@ -885,7 +885,7 @@ dependencies = [
  "mime",
  "parking_lot 0.11.2",
  "regex",
- "ruma 0.7.4 (git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893)",
+ "ruma",
  "sanitize-filename-reader-friendly",
  "serde",
  "serde_json",
@@ -1709,7 +1709,7 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "reqwest",
- "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma",
  "serde",
  "serde_json",
  "thiserror",
@@ -1736,7 +1736,7 @@ dependencies = [
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
  "once_cell",
- "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma",
  "serde",
  "serde_json",
  "thiserror",
@@ -1753,7 +1753,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "instant",
- "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma",
  "serde",
  "tokio",
  "wasm-bindgen-futures",
@@ -1781,7 +1781,7 @@ dependencies = [
  "matrix-sdk-common",
  "pbkdf2",
  "rand 0.8.5",
- "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma",
  "serde",
  "serde_json",
  "sha2 0.10.6",
@@ -1809,7 +1809,7 @@ dependencies = [
  "matrix-sdk-base",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
- "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma",
  "serde",
  "serde_json",
  "thiserror",
@@ -1834,7 +1834,7 @@ dependencies = [
  "matrix-sdk-common",
  "matrix-sdk-crypto",
  "matrix-sdk-store-encryption",
- "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma",
  "serde",
  "serde_json",
  "sled",
@@ -2478,31 +2478,20 @@ dependencies = [
 [[package]]
 name = "ruma"
 version = "0.7.4"
-source = "git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d#3211fccab0b58a9adab1c8a775c1a3a8cff4121d"
-dependencies = [
- "assign",
- "js_int",
- "js_option",
- "ruma-client-api",
- "ruma-common 0.10.5 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
- "ruma-federation-api",
-]
-
-[[package]]
-name = "ruma"
-version = "0.7.4"
 source = "git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893#537b282955736796b153ee73dae093719b8e6893"
 dependencies = [
  "assign",
  "js_int",
  "js_option",
- "ruma-common 0.10.5 (git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893)",
+ "ruma-client-api",
+ "ruma-common",
+ "ruma-federation-api",
 ]
 
 [[package]]
 name = "ruma-client-api"
 version = "0.15.3"
-source = "git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d#3211fccab0b58a9adab1c8a775c1a3a8cff4121d"
+source = "git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893#537b282955736796b153ee73dae093719b8e6893"
 dependencies = [
  "assign",
  "bytes",
@@ -2511,7 +2500,7 @@ dependencies = [
  "js_option",
  "maplit",
  "percent-encoding",
- "ruma-common 0.10.5 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma-common",
  "serde",
  "serde_json",
 ]
@@ -2519,7 +2508,7 @@ dependencies = [
 [[package]]
 name = "ruma-common"
 version = "0.10.5"
-source = "git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d#3211fccab0b58a9adab1c8a775c1a3a8cff4121d"
+source = "git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893#537b282955736796b153ee73dae093719b8e6893"
 dependencies = [
  "base64",
  "bytes",
@@ -2536,8 +2525,8 @@ dependencies = [
  "pulldown-cmark",
  "rand 0.8.5",
  "regex",
- "ruma-identifiers-validation 0.9.0 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
- "ruma-macros 0.10.5 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma-identifiers-validation",
+ "ruma-macros",
  "serde",
  "serde_json",
  "thiserror",
@@ -2548,37 +2537,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "ruma-common"
-version = "0.10.5"
-source = "git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893#537b282955736796b153ee73dae093719b8e6893"
-dependencies = [
- "base64",
- "bytes",
- "form_urlencoded",
- "indexmap",
- "itoa",
- "js_int",
- "js_option",
- "konst",
- "percent-encoding",
- "regex",
- "ruma-identifiers-validation 0.9.0 (git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893)",
- "ruma-macros 0.10.5 (git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893)",
- "serde",
- "serde_json",
- "thiserror",
- "tracing",
- "url",
- "wildmatch",
-]
-
-[[package]]
 name = "ruma-federation-api"
 version = "0.6.0"
-source = "git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d#3211fccab0b58a9adab1c8a775c1a3a8cff4121d"
+source = "git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893#537b282955736796b153ee73dae093719b8e6893"
 dependencies = [
  "js_int",
- "ruma-common 0.10.5 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
+ "ruma-common",
  "serde",
  "serde_json",
 ]
@@ -2586,34 +2550,10 @@ dependencies = [
 [[package]]
 name = "ruma-identifiers-validation"
 version = "0.9.0"
-source = "git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d#3211fccab0b58a9adab1c8a775c1a3a8cff4121d"
-dependencies = [
- "js_int",
- "thiserror",
-]
-
-[[package]]
-name = "ruma-identifiers-validation"
-version = "0.9.0"
 source = "git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893#537b282955736796b153ee73dae093719b8e6893"
 dependencies = [
  "js_int",
  "thiserror",
-]
-
-[[package]]
-name = "ruma-macros"
-version = "0.10.5"
-source = "git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d#3211fccab0b58a9adab1c8a775c1a3a8cff4121d"
-dependencies = [
- "once_cell",
- "proc-macro-crate",
- "proc-macro2",
- "quote",
- "ruma-identifiers-validation 0.9.0 (git+https://github.com/ruma/ruma?rev=3211fccab0b58a9adab1c8a775c1a3a8cff4121d)",
- "serde",
- "syn",
- "toml",
 ]
 
 [[package]]
@@ -2625,7 +2565,7 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "ruma-identifiers-validation 0.9.0 (git+https://github.com/bitfriend/ruma?rev=537b282955736796b153ee73dae093719b8e6893)",
+ "ruma-identifiers-validation",
  "serde",
  "syn",
  "toml",
