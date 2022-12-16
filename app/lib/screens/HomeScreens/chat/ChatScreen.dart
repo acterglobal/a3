@@ -310,43 +310,57 @@ class _ChatScreenState extends State<ChatScreen> {
     required int messageWidth,
   }) {
     if (imageMessage.metadata?.containsKey('base64') ?? false) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.memory(
-          base64Decode(imageMessage.metadata?['base64']),
-          errorBuilder: (BuildContext context, Object url, StackTrace? error) {
-            return Text('Could not load image due to $error');
-          },
-          frameBuilder: (
-            BuildContext context,
-            Widget child,
-            int? frame,
-            bool wasSynchronouslyLoaded,
-          ) {
-            if (wasSynchronouslyLoaded) {
-              return child;
-            }
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: frame != null
-                  ? child
-                  : const SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        color: AppCommonTheme.primaryColor,
+      if (imageMessage.metadata?['base64'].isNotEmpty) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            base64Decode(imageMessage.metadata?['base64']),
+            errorBuilder:
+                (BuildContext context, Object url, StackTrace? error) {
+              return Text('Could not load image due to $error');
+            },
+            frameBuilder: (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child;
+              }
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: frame != null
+                    ? child
+                    : const SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          color: AppCommonTheme.primaryColor,
+                        ),
                       ),
-                    ),
-            );
-          },
-          cacheWidth: 512,
-          width: messageWidth.toDouble(),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-    if (isURL(imageMessage.uri)) {
+              );
+            },
+            cacheWidth: 512,
+            width: messageWidth.toDouble(),
+            fit: BoxFit.cover,
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: const SizedBox(
+            height: 60,
+            width: 60,
+            child: CircularProgressIndicator(
+              strokeWidth: 6,
+              color: AppCommonTheme.primaryColor,
+            ),
+          ),
+        );
+      }
+    } else if (imageMessage.uri.isNotEmpty && isURL(imageMessage.uri)) {
       // remote url
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
@@ -354,27 +368,29 @@ class _ChatScreenState extends State<ChatScreen> {
           imageUrl: imageMessage.uri,
           width: messageWidth.toDouble(),
           errorWidget: (BuildContext context, Object url, dynamic error) {
-            return const Text('Could not load image');
+            return Text('Could not load image due to $error');
           },
         ),
       );
     }
     // local path
     // the image that just sent is displayed from local not remote
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: Image.file(
-        File(imageMessage.uri),
-        width: messageWidth.toDouble(),
-        errorBuilder: (
-          BuildContext context,
-          Object error,
-          StackTrace? stackTrace,
-        ) {
-          return const Text('Could not load image');
-        },
-      ),
-    );
+    else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.file(
+          File(imageMessage.uri),
+          width: messageWidth.toDouble(),
+          errorBuilder: (
+            BuildContext context,
+            Object error,
+            StackTrace? stackTrace,
+          ) {
+            return Text('Could not load image due to $error');
+          },
+        ),
+      );
+    }
   }
 
   @override
@@ -685,15 +701,16 @@ class _ChatScreenState extends State<ChatScreen> {
     required bool nextMessageInGroup,
   }) {
     return GetBuilder<ChatRoomController>(
-        id: 'chat-bubble',
-        builder: (context) {
-          return ChatBubbleBuilder(
-            userId: widget.client.userId().toString(),
-            child: child,
-            message: message,
-            nextMessageInGroup: nextMessageInGroup,
-          );
-        });
+      id: 'chat-bubble',
+      builder: (context) {
+        return ChatBubbleBuilder(
+          userId: widget.client.userId().toString(),
+          child: child,
+          message: message,
+          nextMessageInGroup: nextMessageInGroup,
+        );
+      },
+    );
   }
 
   Widget customMessageBuilder(
