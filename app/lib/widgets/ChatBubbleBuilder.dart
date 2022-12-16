@@ -2,7 +2,7 @@ import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
-import 'package:effektio/widgets/emoji_row.dart';
+import 'package:effektio/widgets/ActionRow.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
@@ -58,24 +58,19 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   !isAuthor() ? TextDirection.ltr : TextDirection.rtl,
               children: [
                 Flexible(
-                  child: Stack(
+                  child: Column(
                     children: [
-                      buildChatBubble(),
                       buildEmojiRow(),
+                      buildChatBubble(),
                     ],
                   ),
                 ),
               ],
             ),
-            GestureDetector(
-              onLongPress: () {
-                roomController.updateEmojiState(widget.message);
-              },
-              child: Align(
-                alignment:
-                    !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-                child: buildEmojiContainer(),
-              ),
+            Align(
+              alignment:
+                  !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
+              child: buildEmojiContainer(),
             ),
           ],
         );
@@ -147,57 +142,38 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
   // Custom chat bubble
   Widget buildChatBubble() {
-    return Column(
-      crossAxisAlignment:
-          isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        // const Text(
-        //   'You replied',
-        //   style: TextStyle(color: Colors.white, fontSize: 12),
-        // ),
-        // const SizedBox(height: 8),
-        // Bubble(
-        //   child: const Padding(
-        //     padding: EdgeInsets.all(8),
-        //     child: Text(
-        //       'This is a reply message demo',
-        //       style: ChatTheme01.chatReplyTextStyle,
-        //     ),
-        //   ),
-        //   color: AppCommonTheme.backgroundColorLight,
-        //   margin: widget.nextMessageInGroup
-        //       ? const BubbleEdges.symmetric(horizontal: 2)
-        //       : null,
-        //   radius: const Radius.circular(22),
-        //   padding: messagetype == types.MessageType.image
-        //       ? const BubbleEdges.all(0)
-        //       : null,
-        //   nip: BubbleNip.no,
-        // ),
-        // const SizedBox(height: 4),
-        Bubble(
-          child: widget.child,
-          color: !isAuthor() || messagetype == types.MessageType.image
-              ? AppCommonTheme.backgroundColorLight
-              : AppCommonTheme.primaryColor,
-          margin: widget.nextMessageInGroup
-              ? const BubbleEdges.symmetric(horizontal: 2)
-              : null,
-          radius: const Radius.circular(22),
-          padding: messagetype == types.MessageType.image
-              ? const BubbleEdges.all(0)
-              : null,
-          nip: (widget.nextMessageInGroup ||
-                  messagetype == types.MessageType.image)
-              ? BubbleNip.no
-              : !isAuthor()
-                  ? BubbleNip.leftBottom
-                  : BubbleNip.rightBottom,
-          nipHeight: 18,
-          nipWidth: 0.5,
-          nipRadius: 0,
-        ),
-      ],
+    return GestureDetector(
+      onLongPress: () {
+        roomController.updateEmojiState(widget.message);
+      },
+      child: Column(
+        crossAxisAlignment:
+            isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: <Widget>[
+          Bubble(
+            child: widget.child,
+            color: !isAuthor() || messagetype == types.MessageType.image
+                ? AppCommonTheme.backgroundColorLight
+                : AppCommonTheme.primaryColor,
+            margin: widget.nextMessageInGroup
+                ? const BubbleEdges.symmetric(horizontal: 2)
+                : null,
+            radius: const Radius.circular(22),
+            padding: messagetype == types.MessageType.image
+                ? const BubbleEdges.all(0)
+                : null,
+            nip: (widget.nextMessageInGroup ||
+                    messagetype == types.MessageType.image)
+                ? BubbleNip.no
+                : !isAuthor()
+                    ? BubbleNip.leftBottom
+                    : BubbleNip.rightBottom,
+            nipHeight: 18,
+            nipWidth: 0.5,
+            nipRadius: 0,
+          ),
+        ],
+      ),
     );
   }
 
@@ -294,7 +270,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           color: AppCommonTheme.backgroundColor,
           border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
         ),
-        child: EmojiRow(
+        child: ActionRow(
+          isClient: roomController.isAuthor(),
           onEmojiTap: (String value) {
             roomController.toggleEmojiContainer();
             ScaffoldMessenger.of(context).showSnackBar(

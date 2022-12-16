@@ -25,16 +25,19 @@ import 'package:effektio/widgets/emoji_picker_widget.dart';
 import 'package:effektio/widgets/reaction_popup_configuration.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 typedef StringsCallBack = void Function(String emoji, String messageId);
 
-class EmojiRow extends StatelessWidget {
-  EmojiRow({
+class ActionRow extends StatelessWidget {
+  ActionRow({
     Key? key,
     required this.onEmojiTap,
     this.emojiConfiguration,
+    required this.isClient,
   }) : super(key: key);
 
+  final bool isClient;
   final StringCallback onEmojiTap;
   final EmojiConfiguration? emojiConfiguration;
   final List<String> _emojiUnicodes = [
@@ -50,13 +53,31 @@ class EmojiRow extends StatelessWidget {
     final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
     final size = emojiConfiguration?.size;
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Expanded(
+        Visibility(
+          visible: isClient,
+          child: Flexible(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: GestureDetector(
+                onTap: () => {},
+                child: SvgPicture.asset(
+                  'assets/images/edit.svg',
+                  color: Colors.grey.shade600,
+                  height: 22,
+                  width: 22,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Flexible(
           flex: 5,
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: 5.0,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(
               emojiList.length,
               (index) => GestureDetector(
@@ -69,16 +90,15 @@ class EmojiRow extends StatelessWidget {
             ),
           ),
         ),
-        Expanded(
+        Flexible(
           flex: 1,
-          child: IconButton(
-            padding: const EdgeInsets.only(bottom: 5.0),
-            icon: Icon(
+          child: GestureDetector(
+            onTap: () => _showBottomSheet(context),
+            child: Icon(
               Icons.add,
               color: Colors.grey.shade600,
-              size: size ?? 28,
+              size: size ?? 22,
             ),
-            onPressed: () => _showBottomSheet(context),
           ),
         ),
       ],

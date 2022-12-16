@@ -325,29 +325,6 @@ class _ChatScreenState extends State<ChatScreen> {
           errorBuilder: (BuildContext context, Object url, StackTrace? error) {
             return Text('Could not load image due to $error');
           },
-          frameBuilder: (
-            BuildContext context,
-            Widget child,
-            int? frame,
-            bool wasSynchronouslyLoaded,
-          ) {
-            if (wasSynchronouslyLoaded) {
-              return child;
-            }
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: frame != null
-                  ? child
-                  : const SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        color: AppCommonTheme.primaryColor,
-                      ),
-                    ),
-            );
-          },
           cacheWidth: 512,
           width: messageWidth.toDouble(),
           fit: BoxFit.cover,
@@ -563,7 +540,11 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached:
                   invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              onBackgroundTap: () => controller.toggleEmojiContainer(),
+              onBackgroundTap: () {
+                if (controller.isEmojiContainerVisible) {
+                  controller.toggleEmojiContainer();
+                }
+              },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
