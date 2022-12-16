@@ -7,12 +7,16 @@ use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
     room::{Room as MatrixRoom, RoomMember},
     ruma::{
+        assign,
         events::{
             reaction::ReactionEventContent,
             relation::Annotation,
-            room::message::{
-                ForwardThread, MessageFormat, MessageType, Relation, RoomMessageEvent,
-                RoomMessageEventContent,
+            room::{
+                ImageInfo,
+                message::{
+                    ForwardThread, ImageMessageEventContent, MessageFormat, MessageType, Relation, RoomMessageEvent,
+                    RoomMessageEventContent,
+                },
             },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
@@ -636,15 +640,16 @@ impl Room {
                     .context("Couldn't retrieve original message.")?;
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
-                    height: height.map(UInt::from),
-                    width: width.map(UInt::from),
-                    size: size.map(UInt::from),
-                    blurhash: None,
-                }));
                 let response = client.media().upload(&content_type, image).await?;
 
-                let reply_content = RoomMessageEventContent::image(name, response.content_uri, config)
+                let info = assign!(ImageInfo::new(), {
+                    height: height.map(UInt::from),
+                    width: width.map(UInt::from),
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let image_content = ImageMessageEventContent::plain(name, response.content_uri, Some(Box::new(info)));
+                let reply_content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
                 timeline
