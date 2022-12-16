@@ -42,7 +42,7 @@ impl NewsDraft {
             .spawn(async move {
                 let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let response = me.client.media().upload(&mime, &image).await?;
+                let response = me.client.media().upload(&mime, image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();
@@ -96,7 +96,7 @@ impl NewsDraft {
             .spawn(async move {
                 let mut image = std::fs::read(p).context("Couldn't open file for reading")?;
 
-                let response = me.client.media().upload(&mime, &image).await?;
+                let response = me.client.media().upload(&mime, image).await?;
 
                 let mut inner = me.content.lock_mut();
                 let counter = inner.contents.len();

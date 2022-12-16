@@ -7,18 +7,18 @@ default-members = ["native/effektio"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "afda63f9e2cc44e8cc7c1dca6b50264ee31a2c26"
+rev = "ca30a22df014a121043e5a9c7d6cda55b7ab674a"
 default-features = false
 features = ["rustls-tls"]
 
 [workspace.dependencies.matrix-sdk-base]
 git = "https://github.com/matrix-org/matrix-rust-sdk"
-rev = "afda63f9e2cc44e8cc7c1dca6b50264ee31a2c26"
+rev = "ca30a22df014a121043e5a9c7d6cda55b7ab674a"
 default-features = false
 
 [workspace.dependencies.ruma]
-git = "https://github.com/ruma/ruma"
-rev = "ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+git = "https://github.com/bitfriend/ruma"
+rev = "537b282955736796b153ee73dae093719b8e6893"
 
 [profile.release]
 panic = "unwind"

@@ -27,7 +27,7 @@ use std::{collections::HashMap, sync::Arc};
 pub struct RoomEventItem {
     event_id: String,
     sender: String,
-    origin_server_ts: Option<u64>,
+    origin_server_ts: u64,
     item_content_type: String,
     msgtype: Option<String>,
     text_desc: Option<TextDesc>,
@@ -43,7 +43,7 @@ impl RoomEventItem {
     fn new(
         event_id: String,
         sender: String,
-        origin_server_ts: Option<u64>,
+        origin_server_ts: u64,
         item_content_type: String,
         msgtype: Option<String>,
         text_desc: Option<TextDesc>,
@@ -76,7 +76,7 @@ impl RoomEventItem {
         self.sender.clone()
     }
 
-    pub fn origin_server_ts(&self) -> Option<u64> {
+    pub fn origin_server_ts(&self) -> u64 {
         self.origin_server_ts
     }
 
@@ -223,7 +223,7 @@ impl RoomMessage {
         let event_item = RoomEventItem::new(
             event.sender.to_string(),
             event.sender.to_string(),
-            Some(event.origin_server_ts.get().into()),
+            event.origin_server_ts.get().into(),
             "Message".to_string(),
             Some(event.content.msgtype().to_string()),
             Some(text_desc),
@@ -319,7 +319,7 @@ impl RoomMessage {
         let event_item = RoomEventItem::new(
             event.sender.to_string(),
             event.sender.to_string(),
-            Some(event.origin_server_ts.get().into()),
+            event.origin_server_ts.get().into(),
             "Message".to_string(),
             Some(event.content.msgtype().to_string()),
             Some(text_desc),
@@ -357,7 +357,7 @@ impl RoomMessage {
         let event_item = RoomEventItem::new(
             event.event_id.to_string(),
             event.sender.to_string(),
-            Some(event.origin_server_ts.get().into()),
+            event.origin_server_ts.get().into(),
             "Message".to_string(),
             Some("m.room.encrypted".to_string()),
             Some(text_desc),
@@ -382,7 +382,7 @@ impl RoomMessage {
         };
         let room_id = room.room_id().to_string();
         let sender = event.sender().to_string();
-        let origin_server_ts: Option<u64> = event.origin_server_ts().map(|x| x.get().into());
+        let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
         for (key, value) in event.reactions().iter() {
             reactions.insert(key.to_string(), ReactionDesc::new(value.count.into()));

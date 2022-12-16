@@ -70,7 +70,7 @@ impl Account {
         let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let new_url = account.upload_avatar(&c_type.parse()?, &data).await?;
+                let new_url = account.upload_avatar(&c_type.parse()?, data).await?;
                 Ok(true)
             })
             .await?

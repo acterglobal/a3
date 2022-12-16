@@ -8,8 +8,12 @@ use matrix_sdk::{
     room::{Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
-            reaction::{ReactionEventContent, Relation},
-            room::message::{MessageFormat, MessageType, RoomMessageEventContent},
+            reaction::ReactionEventContent,
+            relation::Annotation,
+            room::message::{
+                ForwardThread, MessageFormat, MessageType, Relation, RoomMessageEvent,
+                RoomMessageEventContent,
+            },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
         EventId, UInt, UserId,
@@ -236,7 +240,7 @@ impl Room {
         let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
-                let relates_to = Relation::new(event_id, key);
+                let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 let response = room.send(content, None).await?;
                 Ok(response.event_id.to_string())
@@ -270,7 +274,7 @@ impl Room {
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, &image, config)
+                    .send_attachment(name.as_str(), &mime_type, image, config)
                     .await?;
                 Ok(response.event_id.to_string())
             })
@@ -412,7 +416,7 @@ impl Room {
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, &image, config)
+                    .send_attachment(name.as_str(), &mime_type, image, config)
                     .await?;
                 Ok(response.event_id.to_string())
             })
@@ -542,6 +546,111 @@ impl Room {
                 } else {
                     bail!("Invalid event id")
                 }
+            })
+            .await?
+    }
+
+    pub async fn send_reply_as_text(
+        &self,
+        msg: String,
+        in_reply_to_event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send reply as text to a room we are not in")
+        };
+
+        let timeline = Arc::new(room.timeline().await);
+        let event_id = EventId::parse(in_reply_to_event_id)?;
+
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let original_message = event_content
+                    .as_original()
+                    .context("Couldn't retrieve original message.")?;
+
+                let reply_content = RoomMessageEventContent::text_markdown(msg)
+                    .make_reply_to(original_message, ForwardThread::Yes);
+
+                timeline
+                    .send(reply_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_reply_as_image(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
+        in_reply_to_event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send reply as image to a room we are not in")
+        };
+        let client = self.client.clone();
+        let r = self.room.clone();
+
+        let timeline = Arc::new(room.timeline().await);
+        let event_id = EventId::parse(in_reply_to_event_id)?;
+
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut image = std::fs::read(path)?;
+
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let original_message = event_content
+                    .as_original()
+                    .context("Couldn't retrieve original message.")?;
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
+                    height: height.map(UInt::from),
+                    width: width.map(UInt::from),
+                    size: size.map(UInt::from),
+                    blurhash: None,
+                }));
+                let response = client.media().upload(&content_type, image).await?;
+
+                let reply_content = RoomMessageEventContent::image(name, response.content_uri, config)
+                    .make_reply_to(original_message, ForwardThread::Yes);
+
+                timeline
+                    .send(reply_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
             })
             .await?
     }

@@ -327,11 +327,11 @@ impl Client {
                 let initial_states = default_effektio_conversation_states();
                 let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&CreationContent::new())?),
-                    initial_state: &initial_states,
+                    initial_state: initial_states,
                     is_direct: true,
-                    invite: &settings.invites,
-                    room_alias_name: settings.alias.as_deref(),
-                    name: settings.name.as_ref().map(|x| x.as_ref()),
+                    invite: settings.invites,
+                    room_alias_name: settings.alias,
+                    name: settings.name,
                     visibility: Visibility::Private,
                 });
                 let response = client.create_room(request).await?;

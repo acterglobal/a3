@@ -100,7 +100,7 @@ object RoomEventItem {
     fn sender() -> string;
 
     /// the server receiving timestamp in milliseconds
-    fn origin_server_ts() -> Option<u64>;
+    fn origin_server_ts() -> u64;
 
     /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn item_content_type() -> string;
@@ -302,6 +302,12 @@ object Conversation {
 
     /// get original of reply msg
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+
+    /// send reply as text
+    fn send_reply_as_text(msg: string, in_reply_to_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// send reply as image
+    fn send_reply_as_image(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, in_reply_to_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Group {
