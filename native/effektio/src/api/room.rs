@@ -12,11 +12,12 @@ use matrix_sdk::{
             reaction::ReactionEventContent,
             relation::Annotation,
             room::{
-                ImageInfo,
                 message::{
-                    ForwardThread, ImageMessageEventContent, MessageFormat, MessageType, Relation, RoomMessageEvent,
+                    FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
+                    MessageFormat, MessageType, Relation, RoomMessageEvent,
                     RoomMessageEventContent,
                 },
+                ImageInfo,
             },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
@@ -648,8 +649,75 @@ impl Room {
                     mimetype: Some(mimetype),
                     size: size.map(UInt::from),
                 });
-                let image_content = ImageMessageEventContent::plain(name, response.content_uri, Some(Box::new(info)));
+                let image_content = ImageMessageEventContent::plain(
+                    name,
+                    response.content_uri,
+                    Some(Box::new(info)),
+                );
                 let reply_content = RoomMessageEventContent::new(MessageType::Image(image_content))
+                    .make_reply_to(original_message, ForwardThread::Yes);
+
+                timeline
+                    .send(reply_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn send_reply_as_file(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: Option<u32>,
+        in_reply_to_event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't send reply as image to a room we are not in")
+        };
+        let client = self.client.clone();
+        let r = self.room.clone();
+
+        let timeline = Arc::new(room.timeline().await);
+        let event_id = EventId::parse(in_reply_to_event_id)?;
+
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut image = std::fs::read(path)?;
+
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let original_message = event_content
+                    .as_original()
+                    .context("Couldn't retrieve original message.")?;
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, image).await?;
+
+                let info = assign!(FileInfo::new(), {
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let file_content = FileMessageEventContent::plain(
+                    name,
+                    response.content_uri,
+                    Some(Box::new(info)),
+                );
+                let reply_content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
                 timeline

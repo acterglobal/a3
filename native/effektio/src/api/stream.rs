@@ -8,9 +8,7 @@ use matrix_sdk::{
     ruma::{
         events::{
             relation::Replacement,
-            room::message::{
-                MessageType, Relation, RoomMessageEvent, RoomMessageEventContent,
-            },
+            room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
         },
         EventId,
     },
