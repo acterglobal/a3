@@ -23,6 +23,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:filesystem_picker/filesystem_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -371,9 +372,22 @@ class ChatRoomController extends GetxController {
     // image or video is sent automatically
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
-    await _currentRoom!.sendFormattedMessage(markdownMessage);
-    repliedToMessage = null;
-    replyMessageWidget = null;
+    if (repliedToMessage != null) {
+      await _currentRoom!
+          .sendReplyAsText(
+        markdownMessage,
+        repliedToMessage!.id,
+        repliedToMessage!.author.id,
+      )
+          .whenComplete(() {
+        repliedToMessage = null;
+        replyMessageWidget = null;
+        showReplyView = false;
+        update(['chat-input']);
+      });
+    } else {
+      await _currentRoom!.sendFormattedMessage(markdownMessage);
+    }
   }
 
   Future<void> handleMultipleImageSelection(
@@ -404,14 +418,34 @@ class ChatRoomController extends GetxController {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      await _currentRoom!.sendImageMessage(
-        result.path,
-        result.name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-      );
+      if (repliedToMessage != null) {
+        await _currentRoom!
+            .sendReplyAsImage(
+          result.path,
+          result.name,
+          mimeType!,
+          bytes.length,
+          image.width,
+          image.height,
+          repliedToMessage!.id,
+          repliedToMessage!.author.id,
+        )
+            .whenComplete(() {
+          repliedToMessage = null;
+          replyMessageWidget = null;
+          showReplyView = false;
+          update(['chat-input']);
+        });
+      } else {
+        await _currentRoom!.sendImageMessage(
+          result.path,
+          result.name,
+          mimeType!,
+          bytes.length,
+          image.width,
+          image.height,
+        );
+      }
     }
   }
 
@@ -422,35 +456,38 @@ class ChatRoomController extends GetxController {
       maxWidth: 1440,
       source: ImageSource.gallery,
     );
-
     if (result != null) {
       final bytes = await result.readAsBytes();
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
-      var eventId = await _currentRoom!.sendImageMessage(
-        result.path,
-        result.name,
-        mimeType!,
-        bytes.length,
-        image.width,
-        image.height,
-      );
-
-      // i am sending message
-      final message = types.ImageMessage(
-        author: types.User(id: client.userId().toString()),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
-        height: image.height.toDouble(),
-        id: eventId,
-        name: result.name,
-        repliedMessage: repliedToMessage,
-        size: bytes.length,
-        uri: result.path,
-        width: image.width.toDouble(),
-      );
-      Navigator.pop(context);
-      _messages.insert(0, message);
-      update(['Chat']);
+      if (repliedToMessage != null) {
+        await _currentRoom!
+            .sendReplyAsImage(
+          result.path,
+          result.name,
+          mimeType!,
+          bytes.length,
+          image.width,
+          image.height,
+          repliedToMessage!.id,
+          repliedToMessage!.author.id,
+        )
+            .whenComplete(() {
+          repliedToMessage = null;
+          replyMessageWidget = null;
+          showReplyView = false;
+          update(['chat-input']);
+        });
+      } else {
+        await _currentRoom!.sendImageMessage(
+          result.path,
+          result.name,
+          mimeType!,
+          bytes.length,
+          image.width,
+          image.height,
+        );
+      }
     }
   }
 
@@ -461,12 +498,30 @@ class ChatRoomController extends GetxController {
     );
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
-      await _currentRoom!.sendFileMessage(
-        result.files.single.path!,
-        result.files.single.name,
-        mimeType!,
-        result.files.single.size,
-      );
+      if (repliedToMessage != null) {
+        await _currentRoom!
+            .sendReplyAsFile(
+          result.files.single.path!,
+          result.files.single.name,
+          mimeType!,
+          result.files.single.size,
+          repliedToMessage!.id,
+          repliedToMessage!.author.id,
+        )
+            .whenComplete(() {
+          repliedToMessage = null;
+          replyMessageWidget = null;
+          showReplyView = false;
+          update(['chat-input']);
+        });
+      } else {
+        await _currentRoom!.sendFileMessage(
+          result.files.single.path!,
+          result.files.single.name,
+          mimeType!,
+          result.files.single.size,
+        );
+      }
     }
   }
 
@@ -721,7 +776,6 @@ class ChatRoomController extends GetxController {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final metadata = _messages[index].metadata ?? {};
-
         metadata['base64'] = base64Encode(data.asTypedList());
         _messages[index] = _messages[index].copyWith(metadata: metadata);
         if (isLoading.isFalse) {

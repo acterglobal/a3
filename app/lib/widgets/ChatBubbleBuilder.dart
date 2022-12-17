@@ -158,7 +158,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         children: [
           (widget.message.metadata != null &&
                   widget.message.metadata!.containsKey('repliedTo'))
-              ? isAuthor()
+              ? widget.userId == widget.message.metadata!['repliedTo']['sender']
                   ? const Text(
                       'Replied to yourself',
                       style: TextStyle(color: Colors.white, fontSize: 12),

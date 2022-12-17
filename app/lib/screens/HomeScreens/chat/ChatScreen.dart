@@ -627,7 +627,6 @@ class _ChatScreenState extends State<ChatScreen> {
       htmlText,
       messageLength,
     );
-    controller.repliedToMessage = null;
     controller.messageTextMapMarkDown.clear();
     controller.mentionKey.currentState!.controller!.clear();
   }
