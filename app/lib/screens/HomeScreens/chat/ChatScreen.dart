@@ -342,8 +342,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
               );
             },
-            cacheWidth: 512,
-            width: messageWidth.toDouble(),
+            cacheWidth: 256,
+            width: messageWidth.toDouble() / 2,
             fit: BoxFit.cover,
           ),
         );

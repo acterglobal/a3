@@ -721,6 +721,7 @@ class ChatRoomController extends GetxController {
       int index = _messages.indexWhere((x) => x.id == eventId);
       if (index != -1) {
         final metadata = _messages[index].metadata ?? {};
+
         metadata['base64'] = base64Encode(data.asTypedList());
         _messages[index] = _messages[index].copyWith(metadata: metadata);
         if (isLoading.isFalse) {

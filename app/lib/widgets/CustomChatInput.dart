@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/svg.dart';
@@ -38,6 +41,7 @@ class CustomChatInput extends StatelessWidget {
           id: 'chat-input',
           builder: (ChatRoomController controller) {
             return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Visibility(
                   visible: controller.showReplyView,
@@ -53,9 +57,10 @@ class CustomChatInput extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Flexible(
-                            flex: 2,
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
+                            flex: 1,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   controller.isAuthor()
@@ -66,13 +71,17 @@ class CustomChatInput extends StatelessWidget {
                                     fontSize: 12,
                                   ),
                                 ),
-                                controller.replyMessageWidget ??
-                                    const SizedBox(),
+                                if (controller.repliedToMessage != null &&
+                                    controller.replyMessageWidget != null)
+                                  _replyContentBuilder(
+                                    controller.repliedToMessage,
+                                    controller.replyMessageWidget,
+                                  ),
                               ],
                             ),
                           ),
                           Flexible(
-                            flex: 1,
+                            flex: 2,
                             child: GestureDetector(
                               onTap: () {
                                 controller.showReplyView = false;
@@ -278,6 +287,39 @@ class CustomChatInput extends StatelessWidget {
 
   Widget _buildAudioButton() {
     return SvgPicture.asset('assets/images/microphone-2.svg', fit: BoxFit.none);
+  }
+
+  Widget _replyContentBuilder(Message? msg, Widget? messageWidget) {
+    if (msg != null) {
+      switch (msg.type) {
+        case MessageType.text:
+          return messageWidget!;
+        case MessageType.image:
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6.33),
+                child: Image.memory(
+                  base64Decode(msg.metadata?['base64']),
+                  fit: BoxFit.fill,
+                  cacheWidth: 125,
+                ),
+              ),
+            ),
+          );
+        case MessageType.file:
+          return messageWidget!;
+        case MessageType.custom:
+          return messageWidget!;
+        case MessageType.system:
+          break;
+        case MessageType.unsupported:
+          break;
+      }
+    }
+    return const SizedBox.shrink();
   }
 }
 
