@@ -54,6 +54,7 @@ class ActionRow extends StatelessWidget {
     final size = emojiConfiguration?.size;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Visibility(
           visible: isClient,

@@ -258,9 +258,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     return Visibility(
       visible: roomController.emojiCurrentId == widget.message.id &&
           roomController.isEmojiContainerVisible,
+      replacement: const SizedBox.shrink(),
       child: Container(
-        width: 198,
-        height: 42,
         padding: const EdgeInsets.all(8),
         margin: !isAuthor()
             ? const EdgeInsets.only(bottom: 8, left: 8)
