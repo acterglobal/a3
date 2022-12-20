@@ -1,21 +1,14 @@
 use log::info;
 use matrix_sdk::{
-    deserialized_responses::{SyncTimelineEvent, TimelineEvent},
+    deserialized_responses::SyncTimelineEvent,
     room::{
-        timeline::{
-            EventTimelineItem, ReactionDetails, TimelineItem, TimelineItemContent,
-            VirtualTimelineItem,
-        },
+        timeline::{EventTimelineItem, TimelineItem, TimelineItemContent, VirtualTimelineItem},
         Room,
     },
     ruma::{
         events::{
-            room::{
-                encrypted::OriginalSyncRoomEncryptedEvent,
-                message::{MessageFormat, MessageType, Relation, RoomMessageEventContent},
-            },
-            AnySyncMessageLikeEvent, AnySyncTimelineEvent, OriginalMessageLikeEvent,
-            OriginalSyncMessageLikeEvent, SyncMessageLikeEvent,
+            room::message::{MessageFormat, MessageType, Relation},
+            AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
         },
         OwnedEventId,
     },

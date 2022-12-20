@@ -14,8 +14,7 @@ use matrix_sdk::{
             room::{
                 message::{
                     FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                    MessageFormat, MessageType, Relation, RoomMessageEvent,
-                    RoomMessageEventContent,
+                    MessageType, RoomMessageEvent, RoomMessageEventContent,
                 },
                 ImageInfo,
             },
@@ -30,7 +29,7 @@ use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 use super::{
     account::Account,
     api::FfiBuffer,
-    message::{FileDesc, ImageDesc, RoomEventItem, RoomMessage, TextDesc},
+    message::RoomMessage,
     profile::{RoomProfile, UserProfile},
     stream::TimelineStream,
     RUNTIME,
@@ -558,32 +557,34 @@ impl Room {
                         }
                         bail!("Invalid AnyMessageLikeEvent::RoomEncrypted: {:?}", e)
                     }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(m))) => match m {
-                        MessageLikeEvent::Original(m) => {
-                            let msg = RoomMessage::from_sync_event(
-                                Some(m.content.msgtype),
-                                m.content.relates_to,
-                                m.event_id.to_string(),
-                                m.sender.to_string(),
-                                m.origin_server_ts.get().into(),
-                                "Message".to_string(),
-                                &r,
-                                false, // not needed for parent msg
-                            );
-                            return Ok(msg);
-                        }
-                        MessageLikeEvent::Redacted(m) => {
-                            let msg = RoomMessage::from_sync_event(
-                                None,
-                                None,
-                                m.event_id.to_string(),
-                                m.sender.to_string(),
-                                m.origin_server_ts.get().into(),
-                                "RedactedMessage".to_string(),
-                                &r,
-                                false, // not needed for deleted msg
-                            );
-                            return Ok(msg);
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(m))) => {
+                        match m {
+                            MessageLikeEvent::Original(m) => {
+                                let msg = RoomMessage::from_sync_event(
+                                    Some(m.content.msgtype),
+                                    m.content.relates_to,
+                                    m.event_id.to_string(),
+                                    m.sender.to_string(),
+                                    m.origin_server_ts.get().into(),
+                                    "Message".to_string(),
+                                    &r,
+                                    false, // not needed for parent msg
+                                );
+                                Ok(msg)
+                            }
+                            MessageLikeEvent::Redacted(m) => {
+                                let msg = RoomMessage::from_sync_event(
+                                    None,
+                                    None,
+                                    m.event_id.to_string(),
+                                    m.sender.to_string(),
+                                    m.origin_server_ts.get().into(),
+                                    "RedactedMessage".to_string(),
+                                    &r,
+                                    false, // not needed for deleted msg
+                                );
+                                Ok(msg)
+                            }
                         }
                     }
                     Ok(AnyTimelineEvent::MessageLike(_)) => {
