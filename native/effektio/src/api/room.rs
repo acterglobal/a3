@@ -1,7 +1,7 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
-use log::info;
+use log::{info, warn};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -542,15 +542,75 @@ impl Room {
             .spawn(async move {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
-                if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                    MessageLikeEvent::Original(m),
-                ))) = evt.event.deserialize()
-                {
-                    let msg = RoomMessage::from_original(&m, r);
-                    Ok(msg)
-                } else {
-                    bail!("Invalid event id")
+                match evt.event.deserialize() {
+                    Ok(AnyTimelineEvent::State(s)) => {
+                        bail!("Invalid AnyTimelineEvent::State: {:?}", s)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) => {
+                        if let Some(r) = r.as_original() {
+                            info!("RoomRedaction: {:?}", r.content);
+                        }
+                        bail!("Invalid AnyMessageLikeEvent::RoomRedaction: {:?}", r)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomEncrypted(e))) => {
+                        if let Some(e) = e.as_original() {
+                            info!("RoomEncrypted: {:?}", e.content);
+                        }
+                        bail!("Invalid AnyMessageLikeEvent::RoomEncrypted: {:?}", e)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(m))) => match m {
+                        MessageLikeEvent::Original(m) => {
+                            let msg = RoomMessage::from_sync_event(
+                                Some(m.content.msgtype),
+                                m.content.relates_to,
+                                m.event_id.to_string(),
+                                m.sender.to_string(),
+                                m.origin_server_ts.get().into(),
+                                "Message".to_string(),
+                                &r,
+                                false, // not needed for parent msg
+                            );
+                            return Ok(msg);
+                        }
+                        MessageLikeEvent::Redacted(m) => {
+                            let msg = RoomMessage::from_sync_event(
+                                None,
+                                None,
+                                m.event_id.to_string(),
+                                m.sender.to_string(),
+                                m.origin_server_ts.get().into(),
+                                "RedactedMessage".to_string(),
+                                &r,
+                                false, // not needed for deleted msg
+                            );
+                            return Ok(msg);
+                        }
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(_)) => {
+                        bail!("Invalid AnyTimelineEvent::MessageLike: other")
+                    }
+                    Err(e) => {
+                        warn!("Error deserializing event {:?}", e);
+                        bail!("Invalid event deserialization error")
+                    }
                 }
+                // if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                //     MessageLikeEvent::Original(m),
+                // ))) = evt.event.deserialize()
+                // {
+                //     let msg = RoomMessage::from_sync_event(
+                //         m.content.msgtype,
+                //         m.content.relates_to,
+                //         m.event_id.to_string(),
+                //         m.sender.to_string(),
+                //         m.origin_server_ts.get().into(),
+                //         "Message".to_string(),
+                //         r,
+                //     );
+                //     Ok(msg)
+                // } else {
+                //     bail!("Invalid event id")
+                // }
             })
             .await?
     }
