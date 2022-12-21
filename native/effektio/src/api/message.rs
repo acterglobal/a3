@@ -368,6 +368,29 @@ impl RoomMessage {
                     false,
                 )
             }
+            TimelineItemContent::Sticker(s) => {
+                let content = s.content();
+                let image_desc = ImageDesc {
+                    name: content.body.clone(),
+                    mimetype: content.info.mimetype.clone(),
+                    size: content.info.size.map(u64::from),
+                    width: content.info.width.map(u64::from),
+                    height: content.info.height.map(u64::from),
+                };
+                RoomEventItem::new(
+                    event_id,
+                    sender,
+                    origin_server_ts,
+                    "Sticker".to_string(),
+                    Some("m.sticker".to_string()),
+                    None,
+                    Some(image_desc),
+                    None,
+                    None,
+                    Default::default(),
+                    false,
+                )
+            }
             TimelineItemContent::UnableToDecrypt(encrypted_msg) => {
                 info!("Edit event applies to event that couldn't be decrypted, discarding");
                 RoomEventItem::new(

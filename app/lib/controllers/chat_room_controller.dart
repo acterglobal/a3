@@ -641,6 +641,8 @@ class ChatRoomController extends GetxController {
           'content': orgEventItem.fileDesc()!.name(),
           'type': orgMsgType!,
         };
+      } else if (orgMsgType == 'm.sticker') {
+        // user can't do any action about sticker message
       }
     }
 
@@ -721,7 +723,8 @@ class ChatRoomController extends GetxController {
         );
       }
     } else if (msgtype == 'm.video') {
-    } else if (msgtype == 'm.key.verification.request') {}
+    } else if (msgtype == 'm.key.verification.request') {
+    } else if (msgtype == 'm.sticker') {}
 
     // should not return null, before we can keep track of index in diff receiver
     return types.CustomMessage(

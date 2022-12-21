@@ -595,23 +595,6 @@ impl Room {
                         bail!("Invalid event deserialization error")
                     }
                 }
-                // if let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
-                //     MessageLikeEvent::Original(m),
-                // ))) = evt.event.deserialize()
-                // {
-                //     let msg = RoomMessage::from_sync_event(
-                //         m.content.msgtype,
-                //         m.content.relates_to,
-                //         m.event_id.to_string(),
-                //         m.sender.to_string(),
-                //         m.origin_server_ts.get().into(),
-                //         "Message".to_string(),
-                //         r,
-                //     );
-                //     Ok(msg)
-                // } else {
-                //     bail!("Invalid event id")
-                // }
             })
             .await?
     }
