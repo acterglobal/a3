@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
@@ -372,18 +372,15 @@ class ChatRoomController extends GetxController {
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
     if (repliedToMessage != null) {
-      await _currentRoom!
-          .sendReplyAsText(
+      await _currentRoom!.sendReplyAsText(
         markdownMessage,
         repliedToMessage!.id,
-        repliedToMessage!.author.id,
-      )
-          .whenComplete(() {
-        repliedToMessage = null;
-        replyMessageWidget = null;
-        showReplyView = false;
-        update(['chat-input']);
-      });
+        null,
+      );
+      repliedToMessage = null;
+      replyMessageWidget = null;
+      showReplyView = false;
+      update(['chat-input']);
     } else {
       await _currentRoom!.sendFormattedMessage(markdownMessage);
     }
@@ -418,8 +415,7 @@ class ChatRoomController extends GetxController {
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
       if (repliedToMessage != null) {
-        await _currentRoom!
-            .sendReplyAsImage(
+        await _currentRoom!.sendReplyAsImage(
           result.path,
           result.name,
           mimeType!,
@@ -427,14 +423,12 @@ class ChatRoomController extends GetxController {
           image.width,
           image.height,
           repliedToMessage!.id,
-          repliedToMessage!.author.id,
-        )
-            .whenComplete(() {
-          repliedToMessage = null;
-          replyMessageWidget = null;
-          showReplyView = false;
-          update(['chat-input']);
-        });
+          null,
+        );
+        repliedToMessage = null;
+        replyMessageWidget = null;
+        showReplyView = false;
+        update(['chat-input']);
       } else {
         await _currentRoom!.sendImageMessage(
           result.path,
@@ -460,8 +454,7 @@ class ChatRoomController extends GetxController {
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
       if (repliedToMessage != null) {
-        await _currentRoom!
-            .sendReplyAsImage(
+        await _currentRoom!.sendReplyAsImage(
           result.path,
           result.name,
           mimeType!,
@@ -469,14 +462,12 @@ class ChatRoomController extends GetxController {
           image.width,
           image.height,
           repliedToMessage!.id,
-          repliedToMessage!.author.id,
-        )
-            .whenComplete(() {
-          repliedToMessage = null;
-          replyMessageWidget = null;
-          showReplyView = false;
-          update(['chat-input']);
-        });
+          null,
+        );
+        repliedToMessage = null;
+        replyMessageWidget = null;
+        showReplyView = false;
+        update(['chat-input']);
       } else {
         await _currentRoom!.sendImageMessage(
           result.path,
@@ -498,21 +489,18 @@ class ChatRoomController extends GetxController {
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
       if (repliedToMessage != null) {
-        await _currentRoom!
-            .sendReplyAsFile(
+        await _currentRoom!.sendReplyAsFile(
           result.files.single.path!,
           result.files.single.name,
           mimeType!,
           result.files.single.size,
           repliedToMessage!.id,
-          repliedToMessage!.author.id,
-        )
-            .whenComplete(() {
-          repliedToMessage = null;
-          replyMessageWidget = null;
-          showReplyView = false;
-          update(['chat-input']);
-        });
+          null,
+        );
+        repliedToMessage = null;
+        replyMessageWidget = null;
+        showReplyView = false;
+        update(['chat-input']);
       } else {
         await _currentRoom!.sendFileMessage(
           result.files.single.path!,
