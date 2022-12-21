@@ -155,6 +155,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       child: Column(
         crossAxisAlignment:
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           (widget.message.metadata != null &&
                   widget.message.metadata!.containsKey('repliedTo'))
@@ -225,6 +226,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       case 'm.text':
         return Html(
           data: """${message?.metadata?['repliedTo']['content']}""",
+          shrinkWrap: true,
           style: {
             'body': Style(
               color: ChatTheme01.chatReplyTextColor,
