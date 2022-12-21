@@ -372,7 +372,7 @@ class ChatRoomController extends GetxController {
     // user will click "send" button explicitly for text only
     await _currentRoom!.typingNotice(false);
     if (repliedToMessage != null) {
-      await _currentRoom!.sendReplyAsText(
+      await _currentRoom!.sendTextReply(
         markdownMessage,
         repliedToMessage!.id,
         null,
@@ -415,7 +415,7 @@ class ChatRoomController extends GetxController {
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
       if (repliedToMessage != null) {
-        await _currentRoom!.sendReplyAsImage(
+        await _currentRoom!.sendImageReply(
           result.path,
           result.name,
           mimeType!,
@@ -454,7 +454,7 @@ class ChatRoomController extends GetxController {
       final image = await decodeImageFromList(bytes);
       final mimeType = lookupMimeType(result.path);
       if (repliedToMessage != null) {
-        await _currentRoom!.sendReplyAsImage(
+        await _currentRoom!.sendImageReply(
           result.path,
           result.name,
           mimeType!,
@@ -489,7 +489,7 @@ class ChatRoomController extends GetxController {
     if (result != null && result.files.single.path != null) {
       final mimeType = lookupMimeType(result.files.single.path!);
       if (repliedToMessage != null) {
-        await _currentRoom!.sendReplyAsFile(
+        await _currentRoom!.sendFileReply(
           result.files.single.path!,
           result.files.single.name,
           mimeType!,

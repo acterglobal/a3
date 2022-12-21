@@ -14,7 +14,7 @@ use matrix_sdk::{
             room::{
                 message::{
                     FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                    MessageType, RoomMessageEvent, RoomMessageEventContent,
+                    MessageType, RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent,
                 },
                 ImageInfo,
             },
@@ -599,7 +599,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_reply_as_text(
+    pub async fn send_text_reply(
         &self,
         msg: String,
         in_reply_to_event_id: String,
@@ -630,7 +630,8 @@ impl Room {
                     .as_original()
                     .context("Couldn't retrieve original message.")?;
 
-                let reply_content = RoomMessageEventContent::text_markdown(msg)
+                let text_content = TextMessageEventContent::markdown(msg);
+                let reply_content = RoomMessageEventContent::new(MessageType::Text(text_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
 
                 timeline
@@ -642,7 +643,7 @@ impl Room {
     }
 
     #[allow(clippy::too_many_arguments)]
-    pub async fn send_reply_as_image(
+    pub async fn send_image_reply(
         &self,
         uri: String,
         name: String,
@@ -708,7 +709,7 @@ impl Room {
             .await?
     }
 
-    pub async fn send_reply_as_file(
+    pub async fn send_file_reply(
         &self,
         uri: String,
         name: String,

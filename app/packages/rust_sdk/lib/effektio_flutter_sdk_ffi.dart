@@ -2178,7 +2178,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationSendReplyAsTextFuturePoll(
+  bool? __conversationSendTextReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2192,7 +2192,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendReplyAsTextFuturePoll(
+    final tmp6 = _conversationSendTextReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2220,7 +2220,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationSendReplyAsImageFuturePoll(
+  bool? __conversationSendImageReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2234,7 +2234,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendReplyAsImageFuturePoll(
+    final tmp6 = _conversationSendImageReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -2262,7 +2262,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationSendReplyAsFileFuturePoll(
+  bool? __conversationSendFileReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2276,7 +2276,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _conversationSendReplyAsFileFuturePoll(
+    final tmp6 = _conversationSendFileReplyFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5652,7 +5652,7 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSendReplyAsTextPtr = _lookup<
+  late final _conversationSendTextReplyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -5666,10 +5666,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_reply_as_text");
+  )>>("__Conversation_send_text_reply");
 
-  late final _conversationSendReplyAsText =
-      _conversationSendReplyAsTextPtr.asFunction<
+  late final _conversationSendTextReply =
+      _conversationSendTextReplyPtr.asFunction<
           int Function(
     int,
     int,
@@ -5683,7 +5683,7 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSendReplyAsImagePtr = _lookup<
+  late final _conversationSendImageReplyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -5709,10 +5709,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_reply_as_image");
+  )>>("__Conversation_send_image_reply");
 
-  late final _conversationSendReplyAsImage =
-      _conversationSendReplyAsImagePtr.asFunction<
+  late final _conversationSendImageReply =
+      _conversationSendImageReplyPtr.asFunction<
           int Function(
     int,
     int,
@@ -5738,7 +5738,7 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSendReplyAsFilePtr = _lookup<
+  late final _conversationSendFileReplyPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -5760,10 +5760,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__Conversation_send_reply_as_file");
+  )>>("__Conversation_send_file_reply");
 
-  late final _conversationSendReplyAsFile =
-      _conversationSendReplyAsFilePtr.asFunction<
+  late final _conversationSendFileReply =
+      _conversationSendFileReplyPtr.asFunction<
           int Function(
     int,
     int,
@@ -7221,47 +7221,47 @@ class Api {
     int,
     int,
   )>();
-  late final _conversationSendReplyAsTextFuturePollPtr = _lookup<
+  late final _conversationSendTextReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendReplyAsTextFuturePollReturn Function(
+          _ConversationSendTextReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_reply_as_text_future_poll");
+  )>>("__Conversation_send_text_reply_future_poll");
 
-  late final _conversationSendReplyAsTextFuturePoll =
-      _conversationSendReplyAsTextFuturePollPtr.asFunction<
-          _ConversationSendReplyAsTextFuturePollReturn Function(
+  late final _conversationSendTextReplyFuturePoll =
+      _conversationSendTextReplyFuturePollPtr.asFunction<
+          _ConversationSendTextReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendReplyAsImageFuturePollPtr = _lookup<
+  late final _conversationSendImageReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendReplyAsImageFuturePollReturn Function(
+          _ConversationSendImageReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_reply_as_image_future_poll");
+  )>>("__Conversation_send_image_reply_future_poll");
 
-  late final _conversationSendReplyAsImageFuturePoll =
-      _conversationSendReplyAsImageFuturePollPtr.asFunction<
-          _ConversationSendReplyAsImageFuturePollReturn Function(
+  late final _conversationSendImageReplyFuturePoll =
+      _conversationSendImageReplyFuturePollPtr.asFunction<
+          _ConversationSendImageReplyFuturePollReturn Function(
     int,
     int,
     int,
   )>();
-  late final _conversationSendReplyAsFileFuturePollPtr = _lookup<
+  late final _conversationSendFileReplyFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ConversationSendReplyAsFileFuturePollReturn Function(
+          _ConversationSendFileReplyFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Conversation_send_reply_as_file_future_poll");
+  )>>("__Conversation_send_file_reply_future_poll");
 
-  late final _conversationSendReplyAsFileFuturePoll =
-      _conversationSendReplyAsFileFuturePollPtr.asFunction<
-          _ConversationSendReplyAsFileFuturePollReturn Function(
+  late final _conversationSendFileReplyFuturePoll =
+      _conversationSendFileReplyFuturePollPtr.asFunction<
+          _ConversationSendFileReplyFuturePollReturn Function(
     int,
     int,
     int,
@@ -10871,7 +10871,7 @@ class Conversation {
   }
 
   /// send reply as text
-  Future<bool> sendReplyAsText(
+  Future<bool> sendTextReply(
     String msg,
     String inReplyToEventId,
     String? txnId,
@@ -10918,7 +10918,7 @@ class Conversation {
       tmp12 = tmp12_0.address;
       tmp14 = tmp13;
     }
-    final tmp15 = _api._conversationSendReplyAsText(
+    final tmp15 = _api._conversationSendTextReply(
       tmp0,
       tmp2,
       tmp3,
@@ -10934,15 +10934,15 @@ class Conversation {
     final tmp17 = tmp15;
     final ffi.Pointer<ffi.Void> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
     final tmp17_1 =
-        _Box(_api, tmp17_0, "__Conversation_send_reply_as_text_future_drop");
+        _Box(_api, tmp17_0, "__Conversation_send_text_reply_future_drop");
     tmp17_1._finalizer = _api._registerFinalizer(tmp17_1);
     final tmp16 =
-        _nativeFuture(tmp17_1, _api.__conversationSendReplyAsTextFuturePoll);
+        _nativeFuture(tmp17_1, _api.__conversationSendTextReplyFuturePoll);
     return tmp16;
   }
 
   /// send reply as image
-  Future<bool> sendReplyAsImage(
+  Future<bool> sendImageReply(
     String uri,
     String name,
     String mimetype,
@@ -11046,7 +11046,7 @@ class Conversation {
       tmp32 = tmp32_0.address;
       tmp34 = tmp33;
     }
-    final tmp35 = _api._conversationSendReplyAsImage(
+    final tmp35 = _api._conversationSendImageReply(
       tmp0,
       tmp2,
       tmp3,
@@ -11074,15 +11074,15 @@ class Conversation {
     final tmp37 = tmp35;
     final ffi.Pointer<ffi.Void> tmp37_0 = ffi.Pointer.fromAddress(tmp37);
     final tmp37_1 =
-        _Box(_api, tmp37_0, "__Conversation_send_reply_as_image_future_drop");
+        _Box(_api, tmp37_0, "__Conversation_send_image_reply_future_drop");
     tmp37_1._finalizer = _api._registerFinalizer(tmp37_1);
     final tmp36 =
-        _nativeFuture(tmp37_1, _api.__conversationSendReplyAsImageFuturePoll);
+        _nativeFuture(tmp37_1, _api.__conversationSendImageReplyFuturePoll);
     return tmp36;
   }
 
   /// send reply as file
-  Future<bool> sendReplyAsFile(
+  Future<bool> sendFileReply(
     String uri,
     String name,
     String mimetype,
@@ -11164,7 +11164,7 @@ class Conversation {
       tmp24 = tmp24_0.address;
       tmp26 = tmp25;
     }
-    final tmp27 = _api._conversationSendReplyAsFile(
+    final tmp27 = _api._conversationSendFileReply(
       tmp0,
       tmp2,
       tmp3,
@@ -11188,10 +11188,10 @@ class Conversation {
     final tmp29 = tmp27;
     final ffi.Pointer<ffi.Void> tmp29_0 = ffi.Pointer.fromAddress(tmp29);
     final tmp29_1 =
-        _Box(_api, tmp29_0, "__Conversation_send_reply_as_file_future_drop");
+        _Box(_api, tmp29_0, "__Conversation_send_file_reply_future_drop");
     tmp29_1._finalizer = _api._registerFinalizer(tmp29_1);
     final tmp28 =
-        _nativeFuture(tmp29_1, _api.__conversationSendReplyAsFileFuturePoll);
+        _nativeFuture(tmp29_1, _api.__conversationSendFileReplyFuturePoll);
     return tmp28;
   }
 
@@ -14371,7 +14371,7 @@ class _ConversationGetMessageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendReplyAsTextFuturePollReturn extends ffi.Struct {
+class _ConversationSendTextReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -14386,7 +14386,7 @@ class _ConversationSendReplyAsTextFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendReplyAsImageFuturePollReturn extends ffi.Struct {
+class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -14401,7 +14401,7 @@ class _ConversationSendReplyAsImageFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ConversationSendReplyAsFileFuturePollReturn extends ffi.Struct {
+class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
