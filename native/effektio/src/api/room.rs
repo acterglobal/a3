@@ -627,13 +627,12 @@ impl Room {
         } else {
             bail!("Can't send reply as text to a room we are not in")
         };
-
-        let timeline = Arc::new(room.timeline().await);
         let event_id = EventId::parse(in_reply_to_event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
+                let timeline = Arc::new(room.timeline().await);
                 let timeline_event = room
                     .event(&event_id)
                     .await
@@ -677,8 +676,6 @@ impl Room {
         };
         let client = self.client.clone();
         let r = self.room.clone();
-
-        let timeline = Arc::new(room.timeline().await);
         let event_id = EventId::parse(in_reply_to_event_id)?;
 
         // any variable in self can't be called directly in spawn
@@ -687,6 +684,7 @@ impl Room {
                 let path = PathBuf::from(uri);
                 let mut image = std::fs::read(path)?;
 
+                let timeline = Arc::new(room.timeline().await);
                 let timeline_event = room
                     .event(&event_id)
                     .await
@@ -742,8 +740,6 @@ impl Room {
         };
         let client = self.client.clone();
         let r = self.room.clone();
-
-        let timeline = Arc::new(room.timeline().await);
         let event_id = EventId::parse(in_reply_to_event_id)?;
 
         // any variable in self can't be called directly in spawn
@@ -752,6 +748,7 @@ impl Room {
                 let path = PathBuf::from(uri);
                 let mut image = std::fs::read(path)?;
 
+                let timeline = Arc::new(room.timeline().await);
                 let timeline_event = room
                     .event(&event_id)
                     .await
