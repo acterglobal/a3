@@ -219,7 +219,7 @@ impl ConversationController {
                     ev.sender.to_string(),
                     ev.origin_server_ts.get().into(),
                     "Message".to_string(),
-                    &room,
+                    room,
                     false,
                 );
                 convo.set_latest_message(msg.clone());

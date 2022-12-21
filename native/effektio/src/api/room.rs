@@ -641,6 +641,7 @@ impl Room {
             .await?
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_reply_as_image(
         &self,
         uri: String,

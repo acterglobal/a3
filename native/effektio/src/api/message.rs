@@ -152,6 +152,7 @@ impl RoomMessage {
         }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub(crate) fn from_sync_event(
         msgtype: Option<MessageType>,
         relates_to: Option<Relation<MessageType>>,
@@ -165,7 +166,7 @@ impl RoomMessage {
         let mut sent_by_me = false;
         if (has_editable) {
             if let Some(user_id) = room.client().user_id() {
-                if user_id.to_string() == sender {
+                if *user_id == sender {
                     sent_by_me = true;
                 }
             }
