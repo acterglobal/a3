@@ -184,9 +184,6 @@ object TimelineStream {
 
     /// Get the next count messages backwards,
     fn paginate_backwards(count: u16) -> Future<Result<bool>>;
-
-    /// modify the room message
-    fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Conversation {
@@ -260,6 +257,9 @@ object Conversation {
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
+
+    /// modify the room message
+    fn edit_text_message(new_msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Group {

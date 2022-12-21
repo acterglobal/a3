@@ -8,7 +8,10 @@ use matrix_sdk::{
     room::{Room as MatrixRoom, RoomMember},
     ruma::{
         events::{
-            room::message::{MessageType, RoomMessageEventContent},
+            room::message::{
+                FileMessageEventContent, ImageMessageEventContent, MessageType, Relation,
+                Replacement, RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent,
+            },
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
         },
         EventId, UInt, UserId,
@@ -483,6 +486,54 @@ impl Room {
                 } else {
                     bail!("It is not message")
                 }
+            })
+            .await?
+    }
+
+    pub async fn edit_text_message(
+        &self,
+        new_msg: String,
+        event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message from a room we are not in")
+        };
+        let eid = EventId::parse(event_id)?;
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let timeline = Arc::new(room.timeline().await);
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    info!("Can't edit an event not sent by own user");
+                    return Ok(false);
+                }
+
+                let text_content = TextMessageEventContent::markdown(new_msg.to_owned());
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Text(text_content.clone()));
+                let replacement = Replacement::new(eid.to_owned(), MessageType::Text(text_content));
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                timeline
+                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
             })
             .await?
     }
