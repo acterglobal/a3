@@ -100,7 +100,7 @@ object RoomEventItem {
     fn sender() -> string;
 
     /// the server receiving timestamp in milliseconds
-    fn origin_server_ts() -> Option<u64>;
+    fn origin_server_ts() -> u64;
 
     /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn item_content_type() -> string;
@@ -116,6 +116,9 @@ object RoomEventItem {
 
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
+
+    /// original event id, if this msg is reply to another msg
+    fn in_reply_to() -> Option<string>;
 
     /// the emote key list that users reacted about this message
     fn reaction_keys() -> Vec<string>;
@@ -296,6 +299,18 @@ object Conversation {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
+
+    /// get original of reply msg
+    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+
+    /// send reply as text
+    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// send reply as image
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// send reply as file
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Group {

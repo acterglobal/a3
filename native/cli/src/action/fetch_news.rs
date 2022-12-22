@@ -35,7 +35,7 @@ impl FetchNews {
         let mut query =
             matrix_sdk::room::MessagesOptions::backward().from(Some(sync_resp.next_batch.as_str()));
         let mut filter = RoomEventFilter::default();
-        filter.types = Some(types.as_slice());
+        filter.types = Some(types.as_slice().to_vec());
         query.filter = filter;
         let messages = room.messages(query).await?;
         if messages.chunk.is_empty() {

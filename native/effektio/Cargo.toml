@@ -29,7 +29,7 @@ log-panics = "2.0.0"
 mime = "0.3.16"
 parking_lot = "0.11.2"
 regex = "1"
-ruma =  { workspace = true }
+ruma = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }

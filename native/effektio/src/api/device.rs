@@ -236,7 +236,7 @@ impl DeviceRecord {
     }
 
     pub fn display_name(&self) -> Option<String> {
-        self.device.display_name().map(|s| s.to_owned())
+        self.device.display_name().map(|s| s.to_string())
     }
 
     pub fn last_seen_ip(&self) -> Option<String> {
