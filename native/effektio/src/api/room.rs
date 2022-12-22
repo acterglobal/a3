@@ -278,9 +278,9 @@ impl Room {
 
     pub fn room_type(&self) -> String {
         match self.room.room_type() {
-            RoomType::Joined => "joined".to_owned(),
-            RoomType::Left => "left".to_owned(),
-            RoomType::Invited => "invited".to_owned(),
+            RoomType::Joined => "joined".to_string(),
+            RoomType::Left => "left".to_string(),
+            RoomType::Invited => "invited".to_string(),
         }
     }
 
@@ -455,7 +455,7 @@ impl Room {
                             .set_custom_value(&key, path_text.as_bytes().to_vec())
                             .await?
                             .context("Saving the file path to storage was failed")?;
-                        Ok(path_text.to_owned())
+                        Ok(path_text.to_string())
                     } else {
                         bail!("This message type is not file")
                     }
@@ -493,7 +493,7 @@ impl Room {
                             .await?
                             .context("Couldn't get the path of saved file")?;
                         let text = std::str::from_utf8(&path)?;
-                        Ok(text.to_owned())
+                        Ok(text.to_string())
                     } else {
                         bail!("This message type is not file")
                     }
