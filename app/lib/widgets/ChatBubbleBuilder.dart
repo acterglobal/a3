@@ -204,7 +204,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
-        constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2.5),
+        constraints: BoxConstraints(maxWidth: constraints.maxWidth / 3),
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           border: keys.isEmpty
