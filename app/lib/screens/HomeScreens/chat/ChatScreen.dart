@@ -222,13 +222,10 @@ class _ChatScreenState extends State<ChatScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () {
-                                      const snackBar = SnackBar(
-                                        content: Text('Message reported'),
+                                      showNotYetImplementedMsg(
+                                        ctx,
+                                        'Report feature not yet implemented',
                                       );
-                                      ScaffoldMessenger.of(ctx)
-                                          .showSnackBar(snackBar);
-                                      controller.isEmojiContainerVisible =
-                                          false;
                                       controller.update(['emoji-reaction']);
                                       Navigator.pop(ctx);
                                     },
@@ -312,49 +309,58 @@ class _ChatScreenState extends State<ChatScreen> {
     types.ImageMessage imageMessage, {
     required int messageWidth,
   }) {
-    // binary data
-    // CachedMemoryImage cannot be used, because uniqueKey not working
-    // If uniqueKey not working, it means cache is not working
-    // So use Image.memory
-    // ToDo: must implement image caching someday
     if (imageMessage.metadata?.containsKey('base64') ?? false) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.memory(
-          base64Decode(imageMessage.metadata?['base64']),
-          errorBuilder: (BuildContext context, Object url, StackTrace? error) {
-            return Text('Could not load image due to $error');
-          },
-          frameBuilder: (
-            BuildContext context,
-            Widget child,
-            int? frame,
-            bool wasSynchronouslyLoaded,
-          ) {
-            if (wasSynchronouslyLoaded) {
-              return child;
-            }
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: frame != null
-                  ? child
-                  : const SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        color: AppCommonTheme.primaryColor,
+      if (imageMessage.metadata?['base64'].isNotEmpty) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            base64Decode(imageMessage.metadata?['base64']),
+            errorBuilder:
+                (BuildContext context, Object url, StackTrace? error) {
+              return Text('Could not load image due to $error');
+            },
+            frameBuilder: (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child;
+              }
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: frame != null
+                    ? child
+                    : const SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          color: AppCommonTheme.primaryColor,
+                        ),
                       ),
-                    ),
-            );
-          },
-          cacheWidth: 512,
-          width: messageWidth.toDouble(),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-    if (isURL(imageMessage.uri)) {
+              );
+            },
+            cacheWidth: 256,
+            width: messageWidth.toDouble() / 2,
+            fit: BoxFit.cover,
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: const SizedBox(
+            height: 60,
+            width: 60,
+            child: CircularProgressIndicator(
+              strokeWidth: 6,
+              color: AppCommonTheme.primaryColor,
+            ),
+          ),
+        );
+      }
+    } else if (imageMessage.uri.isNotEmpty && isURL(imageMessage.uri)) {
       // remote url
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
@@ -362,27 +368,29 @@ class _ChatScreenState extends State<ChatScreen> {
           imageUrl: imageMessage.uri,
           width: messageWidth.toDouble(),
           errorWidget: (BuildContext context, Object url, dynamic error) {
-            return const Text('Could not load image');
+            return Text('Could not load image due to $error');
           },
         ),
       );
     }
     // local path
     // the image that just sent is displayed from local not remote
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: Image.file(
-        File(imageMessage.uri),
-        width: messageWidth.toDouble(),
-        errorBuilder: (
-          BuildContext context,
-          Object error,
-          StackTrace? stackTrace,
-        ) {
-          return const Text('Could not load image');
-        },
-      ),
-    );
+    else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: Image.file(
+          File(imageMessage.uri),
+          width: messageWidth.toDouble(),
+          errorBuilder: (
+            BuildContext context,
+            Object error,
+            StackTrace? stackTrace,
+          ) {
+            return Text('Could not load image due to $error');
+          },
+        ),
+      );
+    }
   }
 
   @override
@@ -543,8 +551,8 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               onSendPressed: (types.PartialText partialText) {},
               user: types.User(id: widget.client.userId().toString()),
-              // if invited, disable image gallery
-              disableImageGallery: invitedIndex != -1,
+              // disable image preview
+              disableImageGallery: true,
               //custom avatar builder
               avatarBuilder: avatarBuilder,
               bubbleBuilder: bubbleBuilder,
@@ -563,7 +571,13 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached:
                   invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              onBackgroundTap: () => controller.toggleEmojiContainer(),
+              onBackgroundTap: () {
+                if (controller.isEmojiContainerVisible) {
+                  controller.toggleEmojiContainer();
+                  roomController.replyMessageWidget = null;
+                  roomController.repliedToMessage = null;
+                }
+              },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
@@ -685,11 +699,16 @@ class _ChatScreenState extends State<ChatScreen> {
     required types.Message message,
     required bool nextMessageInGroup,
   }) {
-    return ChatBubbleBuilder(
-      userId: widget.client.userId().toString(),
-      child: child,
-      message: message,
-      nextMessageInGroup: nextMessageInGroup,
+    return GetBuilder<ChatRoomController>(
+      id: 'chat-bubble',
+      builder: (context) {
+        return ChatBubbleBuilder(
+          userId: widget.client.userId().toString(),
+          child: child,
+          message: message,
+          nextMessageInGroup: nextMessageInGroup,
+        );
+      },
     );
   }
 

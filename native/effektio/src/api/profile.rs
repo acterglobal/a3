@@ -38,7 +38,7 @@ impl UserProfile {
         // use low-level api request so that non-member can see member in room
         let client = self.client.clone();
         let user_id = self.user_id.clone();
-        let request = GetProfileRequest::new(&user_id);
+        let request = GetProfileRequest::new(user_id);
         let response = client.send(request, None).await?;
         self.avatar_url = response.avatar_url;
         self.display_name = response.displayname;

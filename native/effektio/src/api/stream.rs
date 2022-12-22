@@ -6,8 +6,9 @@ use log::info;
 use matrix_sdk::{
     room::{timeline::Timeline, Room},
     ruma::{
-        events::room::message::{
-            MessageType, Relation, Replacement, RoomMessageEvent, RoomMessageEventContent,
+        events::{
+            relation::Replacement,
+            room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
         },
         EventId,
     },

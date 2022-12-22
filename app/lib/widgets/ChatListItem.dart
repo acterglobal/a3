@@ -212,10 +212,7 @@ class _ChatListItemState extends State<ChatListItem> {
     if (eventItem == null) {
       return null;
     }
-    int? ts = eventItem.originServerTs();
-    if (ts == null) {
-      return null;
-    }
+    int ts = eventItem.originServerTs();
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
