@@ -258,8 +258,14 @@ object Conversation {
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
 
-    /// modify the room message
+    /// modify the text message of room
     fn edit_text_message(new_msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// modify the image message of room
+    fn edit_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// modify the filee message of room
+    fn edit_file_message(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Group {
