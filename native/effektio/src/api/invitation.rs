@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use futures_signals::signal::{
     Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
 };
-use log::{error, info, warn};
+use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
