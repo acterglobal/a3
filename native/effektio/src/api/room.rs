@@ -602,7 +602,7 @@ impl Room {
     pub async fn send_text_reply(
         &self,
         msg: String,
-        in_reply_to_event_id: String,
+        event_id: String,
         txn_id: Option<String>,
     ) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
@@ -610,14 +610,14 @@ impl Room {
         } else {
             bail!("Can't send reply as text to a room we are not in")
         };
-        let event_id = EventId::parse(in_reply_to_event_id)?;
+        let eid = EventId::parse(event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let timeline = Arc::new(room.timeline().await);
                 let timeline_event = room
-                    .event(&event_id)
+                    .event(&eid)
                     .await
                     .context("Couldn't find event.")?;
 
@@ -651,7 +651,7 @@ impl Room {
         size: Option<u32>,
         width: Option<u32>,
         height: Option<u32>,
-        in_reply_to_event_id: String,
+        event_id: String,
         txn_id: Option<String>,
     ) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
@@ -661,17 +661,17 @@ impl Room {
         };
         let client = self.client.clone();
         let r = self.room.clone();
-        let event_id = EventId::parse(in_reply_to_event_id)?;
+        let eid = EventId::parse(event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let path = PathBuf::from(uri);
-                let mut image = std::fs::read(path)?;
+                let mut image_buf = std::fs::read(path)?;
 
                 let timeline = Arc::new(room.timeline().await);
                 let timeline_event = room
-                    .event(&event_id)
+                    .event(&eid)
                     .await
                     .context("Couldn't find event.")?;
 
@@ -685,7 +685,7 @@ impl Room {
                     .context("Couldn't retrieve original message.")?;
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, image).await?;
+                let response = client.media().upload(&content_type, image_buf).await?;
 
                 let info = assign!(ImageInfo::new(), {
                     height: height.map(UInt::from),
@@ -715,27 +715,27 @@ impl Room {
         name: String,
         mimetype: String,
         size: Option<u32>,
-        in_reply_to_event_id: String,
+        event_id: String,
         txn_id: Option<String>,
     ) -> Result<bool> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send reply as image to a room we are not in")
+            bail!("Can't send reply as file to a room we are not in")
         };
         let client = self.client.clone();
         let r = self.room.clone();
-        let event_id = EventId::parse(in_reply_to_event_id)?;
+        let eid = EventId::parse(event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let path = PathBuf::from(uri);
-                let mut image = std::fs::read(path)?;
+                let mut file_buf = std::fs::read(path)?;
 
                 let timeline = Arc::new(room.timeline().await);
                 let timeline_event = room
-                    .event(&event_id)
+                    .event(&eid)
                     .await
                     .context("Couldn't find event.")?;
 
@@ -749,7 +749,7 @@ impl Room {
                     .context("Couldn't retrieve original message.")?;
 
                 let content_type: mime::Mime = mimetype.parse()?;
-                let response = client.media().upload(&content_type, image).await?;
+                let response = client.media().upload(&content_type, file_buf).await?;
 
                 let info = assign!(FileInfo::new(), {
                     mimetype: Some(mimetype),

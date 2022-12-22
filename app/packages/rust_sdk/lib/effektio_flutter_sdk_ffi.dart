@@ -10873,11 +10873,11 @@ class Conversation {
   /// send reply as text
   Future<bool> sendTextReply(
     String msg,
-    String inReplyToEventId,
+    String eventId,
     String? txnId,
   ) {
     final tmp1 = msg;
-    final tmp5 = inReplyToEventId;
+    final tmp5 = eventId;
     final tmp9 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -10949,7 +10949,7 @@ class Conversation {
     int? size,
     int? width,
     int? height,
-    String inReplyToEventId,
+    String eventId,
     String? txnId,
   ) {
     final tmp1 = uri;
@@ -10958,7 +10958,7 @@ class Conversation {
     final tmp13 = size;
     final tmp17 = width;
     final tmp21 = height;
-    final tmp25 = inReplyToEventId;
+    final tmp25 = eventId;
     final tmp29 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
@@ -11087,14 +11087,14 @@ class Conversation {
     String name,
     String mimetype,
     int? size,
-    String inReplyToEventId,
+    String eventId,
     String? txnId,
   ) {
     final tmp1 = uri;
     final tmp5 = name;
     final tmp9 = mimetype;
     final tmp13 = size;
-    final tmp17 = inReplyToEventId;
+    final tmp17 = eventId;
     final tmp21 = txnId;
     var tmp0 = 0;
     var tmp2 = 0;
