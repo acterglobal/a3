@@ -14,7 +14,8 @@ use matrix_sdk::{
             room::{
                 message::{
                     FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                    MessageType, RoomMessageEvent, RoomMessageEventContent, TextMessageEventContent,
+                    MessageType, RoomMessageEvent, RoomMessageEventContent,
+                    TextMessageEventContent,
                 },
                 ImageInfo,
             },
@@ -269,7 +270,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let path = PathBuf::from(uri);
-                let mut image = std::fs::read(path)?;
+                let mut image_buf = std::fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::Image(BaseImageInfo {
                     height: height.map(UInt::from),
                     width: width.map(UInt::from),
@@ -278,7 +279,7 @@ impl Room {
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, image, config)
+                    .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
                 Ok(response.event_id.to_string())
             })
@@ -414,13 +415,13 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let path = PathBuf::from(uri);
-                let mut image = std::fs::read(path)?;
+                let mut image_buf = std::fs::read(path)?;
                 let config = AttachmentConfig::new().info(AttachmentInfo::File(BaseFileInfo {
                     size: Some(UInt::from(size)),
                 }));
                 let mime_type: mime::Mime = mimetype.parse()?;
                 let response = room
-                    .send_attachment(name.as_str(), &mime_type, image, config)
+                    .send_attachment(name.as_str(), &mime_type, image_buf, config)
                     .await?;
                 Ok(response.event_id.to_string())
             })
@@ -616,10 +617,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let timeline = Arc::new(room.timeline().await);
-                let timeline_event = room
-                    .event(&eid)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -670,10 +668,7 @@ impl Room {
                 let mut image_buf = std::fs::read(path)?;
 
                 let timeline = Arc::new(room.timeline().await);
-                let timeline_event = room
-                    .event(&eid)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -734,10 +729,7 @@ impl Room {
                 let mut file_buf = std::fs::read(path)?;
 
                 let timeline = Arc::new(room.timeline().await);
-                let timeline_event = room
-                    .event(&eid)
-                    .await
-                    .context("Couldn't find event.")?;
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
