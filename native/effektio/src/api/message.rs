@@ -335,9 +335,9 @@ impl RoomMessage {
                     }
                     _ => {}
                 }
-                let mut original_event_id = None;
+                let mut replied_to_id = None;
                 if let Some(in_reply_to) = msg.in_reply_to() {
-                    original_event_id = Some(in_reply_to.to_owned());
+                    replied_to_id = Some(in_reply_to.to_owned());
                 }
                 RoomEventItem::new(
                     event_id,
@@ -348,7 +348,7 @@ impl RoomMessage {
                     Some(text_desc),
                     image_desc,
                     file_desc,
-                    original_event_id,
+                    replied_to_id,
                     reactions,
                     is_editable,
                 )

@@ -157,26 +157,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          (widget.message.metadata != null &&
-                  widget.message.metadata!.containsKey('repliedTo'))
-              ? widget.userId == widget.message.metadata!['repliedTo']['sender']
-                  ? const Text(
-                      'Replied to yourself',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    )
-                  : Text(
-                      roomController.client.userId().toString() ==
-                              widget.message.metadata!['repliedTo']['sender']
-                          ? 'Replied to you'
-                          : 'Replied to ${widget.message.metadata!['repliedTo']['sender']}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    )
-              : const SizedBox(),
+          buildRepliedTo(),
           const SizedBox(height: 8),
-          (widget.message.metadata != null &&
-                  widget.message.metadata!.containsKey('repliedTo'))
-              ? buildOriginalBubble(widget.message)
-              : const SizedBox(),
+          buildRepliedToBubble(),
           const SizedBox(height: 4),
           Bubble(
             child: widget.child,
@@ -205,27 +188,55 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
+  Widget buildRepliedTo() {
+    Map<String, dynamic>? metadata = widget.message.metadata;
+    if (metadata == null || !metadata.containsKey('repliedTo')) {
+      return const SizedBox();
+    }
+    if (metadata['repliedTo']['sender'] == widget.userId) {
+      return const Text(
+        'Replied to you',
+        style: TextStyle(color: Colors.white, fontSize: 12),
+      );
+    }
+    String myId = roomController.client.userId().toString();
+    return Text(
+      metadata['repliedTo']['sender'] == myId
+          ? 'Replied to you'
+          : 'Replied to ${metadata['repliedTo']['sender']}',
+      style: const TextStyle(color: Colors.white, fontSize: 12),
+    );
+  }
+
   //Custom original bubble
-  Widget buildOriginalBubble(types.Message? message) {
+  Widget buildRepliedToBubble() {
+    Map<String, dynamic>? metadata = widget.message.metadata;
+    if (metadata == null || !metadata.containsKey('repliedTo')) {
+      return const SizedBox();
+    }
     return Bubble(
-      child: originalMessageBuilder(message!),
+      child: repliedToBuilder(),
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(22),
-      padding: message.metadata?['repliedTo']['type'] == 'm.image'
+      padding: metadata['repliedTo']['type'] == 'm.image'
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
     );
   }
 
-  Widget originalMessageBuilder(types.Message? message) {
-    switch (message?.metadata?['repliedTo']['type']) {
+  Widget repliedToBuilder() {
+    Map<String, dynamic>? metadata = widget.message.metadata;
+    if (metadata == null || !metadata.containsKey('repliedTo')) {
+      return const SizedBox();
+    }
+    switch (metadata['repliedTo']['type']) {
       case 'm.text':
         return Html(
-          data: """${message?.metadata?['repliedTo']['content']}""",
+          data: """${metadata['repliedTo']['content']}""",
           shrinkWrap: true,
           style: {
             'body': Style(
@@ -236,26 +247,28 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           },
         );
       case 'm.image':
-        Uint8List data =
-            base64Decode(message?.metadata?['repliedTo']['content']);
+        Uint8List data = base64Decode(metadata['repliedTo']['content']);
         return ClipRRect(
           borderRadius: BorderRadius.circular(15),
-          child: data.isNotEmpty
-              ? Image.memory(
+          child: data.isEmpty
+              ? const SizedBox()
+              : Image.memory(
                   data,
-                  errorBuilder:
-                      (BuildContext context, Object url, StackTrace? error) {
+                  errorBuilder: (
+                    BuildContext context,
+                    Object url,
+                    StackTrace? error,
+                  ) {
                     return Text('Could not load image due to $error');
                   },
                   cacheHeight: 75,
                   cacheWidth: 75,
                   fit: BoxFit.cover,
-                )
-              : const SizedBox(),
+                ),
         );
       case 'm.file':
         return Text(
-          message?.metadata?['repliedTo']['content'],
+          metadata['repliedTo']['content'],
           style: const TextStyle(color: Colors.white, fontSize: 12),
         );
       default:

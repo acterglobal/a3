@@ -64,7 +64,7 @@ class CustomChatInput extends StatelessWidget {
                               children: [
                                 Text(
                                   controller.isAuthor()
-                                      ? 'Replying to yourself'
+                                      ? 'Replying to you'
                                       : 'Replying to ${toBeginningOfSentenceCase(controller.repliedToMessage?.author.firstName)}',
                                   style: const TextStyle(
                                     color: Colors.grey,
