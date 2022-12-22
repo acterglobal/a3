@@ -49,7 +49,7 @@ impl NewsDraft {
 
                 inner.contents.push(events::NewsContentType::Image(
                     events::ImageMessageEventContent::plain(
-                        "".to_owned(),
+                        "".to_string(),
                         response.content_uri,
                         None,
                     ),
@@ -103,7 +103,7 @@ impl NewsDraft {
 
                 inner.contents.push(events::NewsContentType::Image(
                     events::ImageMessageEventContent::plain(
-                        "".to_owned(),
+                        "".to_string(),
                         response.content_uri,
                         None,
                     ),
