@@ -37,9 +37,13 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   @override
   void initState() {
     super.initState();
+
     tabBarController = TabController(length: reactionTabs.length, vsync: this);
     messagetype = widget.message.type;
   }
+
+  // A helper function to get bubble widget size to set constraints beforehand
+  //for emoji container.
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +51,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment:
               isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 6),
             Stack(
               clipBehavior: Clip.none,
               children: [
@@ -197,55 +201,59 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         keys = reactions.keys.toList();
       }
     }
-    return Container(
-      margin: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        border: keys.isEmpty
-            ? null
-            : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
-        borderRadius: BorderRadius.only(
-          topLeft: widget.nextMessageInGroup
-              ? const Radius.circular(12)
-              : !isAuthor()
-                  ? const Radius.circular(0)
-                  : const Radius.circular(12),
-          topRight: widget.nextMessageInGroup
-              ? const Radius.circular(12)
-              : !isAuthor()
-                  ? const Radius.circular(12)
-                  : const Radius.circular(0),
-          bottomLeft: const Radius.circular(12),
-          bottomRight: const Radius.circular(12),
+
+    return LayoutBuilder(builder: (context, constraints) {
+      return Container(
+        constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2.5),
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          border: keys.isEmpty
+              ? null
+              : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
+          borderRadius: BorderRadius.only(
+            topLeft: widget.nextMessageInGroup
+                ? const Radius.circular(12)
+                : !isAuthor()
+                    ? const Radius.circular(0)
+                    : const Radius.circular(12),
+            topRight: widget.nextMessageInGroup
+                ? const Radius.circular(12)
+                : !isAuthor()
+                    ? const Radius.circular(12)
+                    : const Radius.circular(0),
+            bottomLeft: const Radius.circular(12),
+            bottomRight: const Radius.circular(12),
+          ),
+          color: ChatTheme01.chatEmojiContainerColor,
         ),
-        color: ChatTheme01.chatEmojiContainerColor,
-      ),
-      padding: const EdgeInsets.all(5),
-      child: Wrap(
-        direction: Axis.horizontal,
-        spacing: 5,
-        runSpacing: 3,
-        children: List.generate(keys.length, (int index) {
-          String key = keys[index];
-          Map<String, dynamic> reactions =
-              widget.message.metadata!['reactions'];
-          ReactionDesc? desc = reactions[key];
-          int count = desc!.count();
-          return GestureDetector(
-            onTap: () {
-              showEmojiReactionsSheet(reactions);
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(key, style: ChatTheme01.emojiCountStyle),
-                const SizedBox(width: 2),
-                Text(count.toString(), style: ChatTheme01.emojiCountStyle),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
+        padding: const EdgeInsets.all(5),
+        child: Wrap(
+          direction: Axis.horizontal,
+          spacing: 5,
+          runSpacing: 3,
+          children: List.generate(keys.length, (int index) {
+            String key = keys[index];
+            Map<String, dynamic> reactions =
+                widget.message.metadata!['reactions'];
+            ReactionDesc? desc = reactions[key];
+            int count = desc!.count();
+            return GestureDetector(
+              onTap: () {
+                showEmojiReactionsSheet(reactions);
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(key, style: ChatTheme01.emojiCountStyle),
+                  const SizedBox(width: 2),
+                  Text(count.toString(), style: ChatTheme01.emojiCountStyle),
+                ],
+              ),
+            );
+          }),
+        ),
+      );
+    });
   }
 
   //Emoji Row to select emoji reaction
