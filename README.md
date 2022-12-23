@@ -342,3 +342,7 @@ The `RiverPagedBuilder` offers, other than the properties we already saw, the sa
 - `noMoreItemsIndicatorBuilder` - a builder for the empty state for the subsequent request (we have fetched all the items!)
 
 If we need to give a coherent design to our app we could wrap the `RiverPagedBuilder` into a new Widget!
+
+## Testing ##
+An integration test is provided demonstrating how easy it is to test this widget:
+https://github.com/ftognetto/riverpod_infinite_scroll/blob/main/example/integration_test/app_test.dart
