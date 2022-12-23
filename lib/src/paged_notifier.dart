@@ -23,10 +23,14 @@ class PagedNotifier<PageKeyType, ItemType>
   /// A builder for providing a custom error string
   final String? Function(dynamic error)? errorBuilder;
 
+  /// A builder for providing a custom error string
+  final bool printStackTrace;
+
   PagedNotifier(
       {required LoadFunction<PageKeyType, ItemType> load,
       required this.nextPageKeyBuilder,
-      this.errorBuilder})
+      this.errorBuilder,
+      this.printStackTrace = false})
       : _load = load,
         super(PagedState<PageKeyType, ItemType>());
 
@@ -56,7 +60,7 @@ class PagedNotifier<PageKeyType, ItemType>
                 ? errorBuilder!(e)
                 : 'Si è verificato un\'errore. Per favore riprovare.');
         debugPrint(e.toString());
-        debugPrint(stacktrace.toString());
+        if (printStackTrace) { debugPrint(stacktrace.toString()); }
       }
     }
     return null;
