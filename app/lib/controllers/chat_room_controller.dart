@@ -835,6 +835,9 @@ class ChatRoomController extends GetxController {
 
   Future<void> sendEmojiReaction(String eventId, String emoji) async {
     await _currentRoom!.sendReaction(eventId, emoji);
-    update(['Chat']);
+  }
+
+  Future<void> redactRoomMessage(String eventId) async {
+    await _currentRoom!.redactMessage(eventId, '', null);
   }
 }

@@ -59,7 +59,7 @@ class EmojiRow extends StatelessWidget {
             spacing: 5.0,
             children: List.generate(
               emojiList.length,
-              (index) => GestureDetector(
+              (index) => InkWell(
                 onTap: () => onEmojiTap(emojiList[index]),
                 child: Text(
                   emojiList[index],
