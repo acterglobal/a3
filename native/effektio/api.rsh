@@ -311,6 +311,9 @@ object Conversation {
 
     /// send reply as file
     fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// redact any message (including text/image/file and reaction)
+    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Group {

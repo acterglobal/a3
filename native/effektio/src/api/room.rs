@@ -194,9 +194,9 @@ impl Room {
         } else {
             bail!("Can't send read_receipt to a room we are not in")
         };
-        let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
+                let event_id = EventId::parse(event_id)?;
                 room.read_receipt(&event_id).await?;
                 Ok(true)
             })
@@ -243,9 +243,9 @@ impl Room {
         } else {
             bail!("Can't send message to a room we are not in")
         };
-        let event_id = EventId::parse(event_id)?;
         RUNTIME
             .spawn(async move {
+                let event_id = EventId::parse(event_id)?;
                 let relates_to = Annotation::new(event_id, key);
                 let content = ReactionEventContent::new(relates_to);
                 let response = room.send(content, None).await?;
@@ -266,7 +266,7 @@ impl Room {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't send message as image to a room we are not in")
         };
         RUNTIME
             .spawn(async move {
@@ -411,7 +411,7 @@ impl Room {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
-            bail!("Can't send message to a room we are not in")
+            bail!("Can't send message as file to a room we are not in")
         };
         RUNTIME
             .spawn(async move {
@@ -612,13 +612,13 @@ impl Room {
         } else {
             bail!("Can't send reply as text to a room we are not in")
         };
-        let eid = EventId::parse(event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
                 let timeline = Arc::new(room.timeline().await);
-                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+                let event_id = EventId::parse(event_id)?;
+                let timeline_event = room.event(&event_id).await.context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -660,7 +660,6 @@ impl Room {
         };
         let client = self.client.clone();
         let r = self.room.clone();
-        let eid = EventId::parse(event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
@@ -669,7 +668,8 @@ impl Room {
                 let mut image_buf = std::fs::read(path)?;
 
                 let timeline = Arc::new(room.timeline().await);
-                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+                let event_id = EventId::parse(event_id)?;
+                let timeline_event = room.event(&event_id).await.context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -721,7 +721,6 @@ impl Room {
         };
         let client = self.client.clone();
         let r = self.room.clone();
-        let eid = EventId::parse(event_id)?;
 
         // any variable in self can't be called directly in spawn
         RUNTIME
@@ -730,7 +729,8 @@ impl Room {
                 let mut file_buf = std::fs::read(path)?;
 
                 let timeline = Arc::new(room.timeline().await);
-                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+                let event_id = EventId::parse(event_id)?;
+                let timeline_event = room.event(&event_id).await.context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -759,6 +759,28 @@ impl Room {
                 timeline
                     .send(reply_content.into(), txn_id.as_deref().map(Into::into))
                     .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn redact_message(
+        &self,
+        event_id: String,
+        reason: Option<String>,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't redact any message from a room we are not in")
+        };
+
+        // any variable in self can't be called directly in spawn
+        RUNTIME
+            .spawn(async move {
+                let event_id = EventId::parse(event_id)?;
+                room.redact(&event_id, reason.as_deref(), txn_id.map(Into::into)).await?;
                 Ok(true)
             })
             .await?
