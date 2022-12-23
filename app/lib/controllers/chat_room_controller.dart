@@ -143,7 +143,9 @@ class ChatRoomController extends GetxController {
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
               types.Message m = await _prepareMessage(msg);
-              _insertMessage(0, m);
+              if (m.type != types.MessageType.unsupported) {
+                _insertMessage(0, m);
+              }
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 if (m.metadata?['repliedTo']['type'] == 'm.image') {
                   _fetchOriginalContent(
@@ -168,7 +170,9 @@ class ChatRoomController extends GetxController {
             int index = event.index()!;
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            _insertMessage(_messages.length - index, m);
+            if (m.type != types.MessageType.unsupported) {
+              _insertMessage(_messages.length - index, m);
+            }
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
                 _fetchOriginalContent(
@@ -215,7 +219,10 @@ class ChatRoomController extends GetxController {
             debugPrint('chat room message push');
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            _insertMessage(0, m);
+
+            if (m.type != types.MessageType.unsupported) {
+              _insertMessage(0, m);
+            }
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
                 _fetchOriginalContent(
@@ -283,8 +290,9 @@ class ChatRoomController extends GetxController {
       }
       bool hasMore = await _stream!.paginateBackwards(10);
       debugPrint('backward pagination has more: $hasMore');
-      if (hasMore && _messages.length < 10) {
-        await _stream!.paginateBackwards(10);
+      while (hasMore) {
+        hasMore = await _stream!.paginateBackwards(10);
+        if (_messages.length >= 10) break;
       }
       // load receipt status of room
       var receiptController = Get.find<ReceiptController>();
