@@ -184,7 +184,11 @@ object FileDesc {
 }
 
 object ReactionDesc {
+    /// how many times this key was clicked
     fn count() -> u64;
+
+    /// which users selected this key
+    fn senders() -> Vec<string>;
 }
 
 object TimelineDiff {
