@@ -351,7 +351,6 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               roomController.repliedToMessage!.id,
               value,
             );
-            roomController.toggleEmojiContainer();
           },
         ),
       ),
