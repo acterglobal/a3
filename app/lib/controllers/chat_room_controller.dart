@@ -143,9 +143,7 @@ class ChatRoomController extends GetxController {
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
               types.Message m = await _prepareMessage(msg);
-              if (m.type != types.MessageType.unsupported) {
-                _insertMessage(0, m);
-              }
+              _insertMessage(0, m);
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 if (m.metadata?['repliedTo']['type'] == 'm.image') {
                   _fetchOriginalContent(
@@ -170,9 +168,7 @@ class ChatRoomController extends GetxController {
             int index = event.index()!;
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            if (m.type != types.MessageType.unsupported) {
-              _insertMessage(_messages.length - index, m);
-            }
+            _insertMessage(_messages.length - index, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
                 _fetchOriginalContent(
@@ -219,10 +215,7 @@ class ChatRoomController extends GetxController {
             debugPrint('chat room message push');
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-
-            if (m.type != types.MessageType.unsupported) {
-              _insertMessage(0, m);
-            }
+            _insertMessage(0, m);
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               if (m.metadata?['repliedTo']['type'] == 'm.image') {
                 _fetchOriginalContent(
@@ -838,5 +831,10 @@ class ChatRoomController extends GetxController {
   void toggleEmojiContainer() {
     isEmojiContainerVisible = !isEmojiContainerVisible;
     update(['emoji-reaction']);
+  }
+
+  Future<void> sendEmojiReaction(String eventId, String emoji) async {
+    await _currentRoom!.sendReaction(eventId, emoji);
+    update(['Chat']);
   }
 }

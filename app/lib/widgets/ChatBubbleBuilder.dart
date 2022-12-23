@@ -346,15 +346,12 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
         ),
         child: EmojiRow(
-          onEmojiTap: (String value) {
-            roomController.toggleEmojiContainer();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('$value tapped'),
-                backgroundColor: AuthTheme.authSuccess,
-                duration: const Duration(seconds: 1),
-              ),
+          onEmojiTap: (String value) async {
+            await roomController.sendEmojiReaction(
+              roomController.repliedToMessage!.id,
+              value,
             );
+            roomController.toggleEmojiContainer();
           },
         ),
       ),
