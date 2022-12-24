@@ -64,10 +64,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               clipBehavior: Clip.none,
               children: [
                 buildChatBubble(),
-                Positioned(
-                  left: isAuthor() ? -100 : 50,
-                  child: buildEmojiRow(),
-                ),
+                buildEmojiRow(),
               ],
             ),
             Align(
@@ -334,6 +331,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       visible: roomController.emojiCurrentId == widget.message.id &&
           roomController.isEmojiContainerVisible,
       child: Container(
+        width: 198,
+        height: 42,
         padding: const EdgeInsets.all(8),
         margin: !isAuthor()
             ? const EdgeInsets.only(bottom: 8, left: 8)
@@ -349,7 +348,6 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               roomController.repliedToMessage!.id,
               value,
             );
-            roomController.toggleEmojiContainer();
           },
         ),
       ),
