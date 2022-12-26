@@ -2,7 +2,10 @@ use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::{
-        timeline::{EventTimelineItem, TimelineDetails, TimelineItem, TimelineItemContent, VirtualTimelineItem},
+        timeline::{
+            EventTimelineItem, TimelineDetails, TimelineItem, TimelineItemContent,
+            VirtualTimelineItem,
+        },
         Room,
     },
     ruma::{

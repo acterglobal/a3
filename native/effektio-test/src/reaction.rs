@@ -1,10 +1,7 @@
 use anyhow::Result;
 use effektio::{
     api::login_new_client,
-    matrix_sdk::ruma::{
-        events::room::message::MessageType,
-        EventId,
-    },
+    matrix_sdk::ruma::{events::room::message::MessageType, EventId},
 };
 use futures::stream::StreamExt;
 use tempfile::TempDir;
@@ -128,12 +125,24 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .await
         .expect("odo should belong to ops");
 
-    kyra_group.send_reaction(event_id.clone(), "👏".to_string()).await?;
-    worf_group.send_reaction(event_id.clone(), "😎".to_string()).await?;
-    bashir_group.send_reaction(event_id.clone(), "😜".to_string()).await?;
-    miles_group.send_reaction(event_id.clone(), "🤩".to_string()).await?;
-    jadzia_group.send_reaction(event_id.clone(), "😍".to_string()).await?;
-    odo_group.send_reaction(event_id.clone(), "😂".to_string()).await?;
+    kyra_group
+        .send_reaction(event_id.clone(), "👏".to_string())
+        .await?;
+    worf_group
+        .send_reaction(event_id.clone(), "😎".to_string())
+        .await?;
+    bashir_group
+        .send_reaction(event_id.clone(), "😜".to_string())
+        .await?;
+    miles_group
+        .send_reaction(event_id.clone(), "🤩".to_string())
+        .await?;
+    jadzia_group
+        .send_reaction(event_id.clone(), "😍".to_string())
+        .await?;
+    odo_group
+        .send_reaction(event_id.clone(), "😂".to_string())
+        .await?;
 
     let event_id = EventId::parse(event_id)?;
     let event = sisko_group.event(&event_id).await?;

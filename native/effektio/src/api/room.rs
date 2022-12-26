@@ -618,7 +618,10 @@ impl Room {
             .spawn(async move {
                 let timeline = Arc::new(room.timeline().await);
                 let event_id = EventId::parse(event_id)?;
-                let timeline_event = room.event(&event_id).await.context("Couldn't find event.")?;
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -669,7 +672,10 @@ impl Room {
 
                 let timeline = Arc::new(room.timeline().await);
                 let event_id = EventId::parse(event_id)?;
-                let timeline_event = room.event(&event_id).await.context("Couldn't find event.")?;
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -730,7 +736,10 @@ impl Room {
 
                 let timeline = Arc::new(room.timeline().await);
                 let event_id = EventId::parse(event_id)?;
-                let timeline_event = room.event(&event_id).await.context("Couldn't find event.")?;
+                let timeline_event = room
+                    .event(&event_id)
+                    .await
+                    .context("Couldn't find event.")?;
 
                 let event_content = timeline_event
                     .event
@@ -780,7 +789,8 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let event_id = EventId::parse(event_id)?;
-                room.redact(&event_id, reason.as_deref(), txn_id.map(Into::into)).await?;
+                room.redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
+                    .await?;
                 Ok(true)
             })
             .await?
