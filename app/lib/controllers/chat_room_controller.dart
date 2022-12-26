@@ -174,7 +174,6 @@ class ChatRoomController extends GetxController {
             debugPrint('chat room message insert at');
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-
             if (m.type != types.MessageType.custom &&
                 m.type != types.MessageType.unsupported) {
               debugPrint('TYPE:${m.type}');
@@ -197,7 +196,6 @@ class ChatRoomController extends GetxController {
                 }
               }
             }
-
             break;
           case 'UpdateAt':
             debugPrint('chat room message update at');
@@ -224,7 +222,6 @@ class ChatRoomController extends GetxController {
                 }
               }
             }
-
             break;
           case 'Push':
             debugPrint('chat room message push');
@@ -251,7 +248,6 @@ class ChatRoomController extends GetxController {
                 }
               }
             }
-
             break;
           case 'RemoveAt':
             int index = event.index()!;
