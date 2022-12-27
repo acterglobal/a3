@@ -157,24 +157,22 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          (widget.message.metadata != null &&
-                  widget.message.metadata!.containsKey('repliedTo'))
-              ? widget.userId == widget.message.metadata!['repliedTo']['sender']
+          (widget.message.repliedMessage != null)
+              ? widget.userId == widget.message.repliedMessage!.author.id
                   ? const Text(
                       'Replied to yourself',
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     )
                   : Text(
                       roomController.client.userId().toString() ==
-                              widget.message.metadata!['repliedTo']['sender']
+                              widget.message.repliedMessage!.author.id
                           ? 'Replied to you'
-                          : 'Replied to ${widget.message.metadata!['repliedTo']['sender']}',
+                          : 'Replied to ${widget.message.repliedMessage!.author.id}',
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     )
               : const SizedBox(),
           const SizedBox(height: 8),
-          (widget.message.metadata != null &&
-                  widget.message.metadata!.containsKey('repliedTo'))
+          (widget.message.repliedMessage != null)
               ? buildOriginalBubble(widget.message)
               : const SizedBox(),
           const SizedBox(height: 4),
@@ -206,26 +204,26 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
   //Custom original bubble
-  Widget buildOriginalBubble(types.Message? message) {
+  Widget buildOriginalBubble(types.Message message) {
     return Bubble(
-      child: originalMessageBuilder(message!),
+      child: originalMessageBuilder(message),
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(22),
-      padding: message.metadata?['repliedTo']['type'] == 'm.image'
+      padding: message.repliedMessage!.type == types.MessageType.image
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
     );
   }
 
-  Widget originalMessageBuilder(types.Message? message) {
-    switch (message?.metadata?['repliedTo']['type']) {
-      case 'm.text':
+  Widget originalMessageBuilder(types.Message message) {
+    switch (message.repliedMessage!.type) {
+      case types.MessageType.text:
         return Html(
-          data: """${message?.metadata?['repliedTo']['content']}""",
+          data: """${message.repliedMessage!.metadata?['content']}""",
           shrinkWrap: true,
           style: {
             'body': Style(
@@ -235,9 +233,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             ),
           },
         );
-      case 'm.image':
+      case types.MessageType.image:
         Uint8List data =
-            base64Decode(message?.metadata?['repliedTo']['content']);
+            base64Decode(message.repliedMessage!.metadata?['content']);
         return ClipRRect(
           borderRadius: BorderRadius.circular(15),
           child: data.isNotEmpty
@@ -253,9 +251,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                 )
               : const SizedBox(),
         );
-      case 'm.file':
+      case types.MessageType.file:
         return Text(
-          message?.metadata?['repliedTo']['content'],
+          message.repliedMessage!.metadata?['content'],
           style: const TextStyle(color: Colors.white, fontSize: 12),
         );
       default:
