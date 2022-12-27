@@ -475,9 +475,11 @@ class ChatRoomController extends GetxController {
       m.createdAt!,
     );
     if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.length < activeMembers.length
-          ? types.Status.delivered
-          : types.Status.seen;
+      types.Status status = seenByList.isEmpty
+          ? types.Status.sent
+          : seenByList.length < activeMembers.length
+              ? types.Status.delivered
+              : types.Status.seen;
       messages[index] = m.copyWith(showStatus: true, status: status);
     } else {
       messages[index] = m;
