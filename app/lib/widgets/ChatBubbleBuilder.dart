@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
@@ -7,6 +10,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class ChatBubbleBuilder extends StatefulWidget {
@@ -145,11 +149,35 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     return GestureDetector(
       onLongPress: () {
         roomController.updateEmojiState(widget.message);
+        roomController.replyMessageWidget = widget.child;
+        roomController.repliedToMessage = widget.message;
       },
       child: Column(
         crossAxisAlignment:
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          (widget.message.metadata != null &&
+                  widget.message.metadata!.containsKey('repliedTo'))
+              ? widget.userId == widget.message.metadata!['repliedTo']['sender']
+                  ? const Text(
+                      'Replied to yourself',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    )
+                  : Text(
+                      roomController.client.userId().toString() ==
+                              widget.message.metadata!['repliedTo']['sender']
+                          ? 'Replied to you'
+                          : 'Replied to ${widget.message.metadata!['repliedTo']['sender']}',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    )
+              : const SizedBox(),
+          const SizedBox(height: 8),
+          (widget.message.metadata != null &&
+                  widget.message.metadata!.containsKey('repliedTo'))
+              ? buildOriginalBubble(widget.message)
+              : const SizedBox(),
+          const SizedBox(height: 4),
           Bubble(
             child: widget.child,
             color: !isAuthor() || messagetype == types.MessageType.image
@@ -177,20 +205,62 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-  //Custom reply bubble
-  Widget buildReplyBubble() {
+  //Custom original bubble
+  Widget buildOriginalBubble(types.Message? message) {
     return Bubble(
-      child: widget.child,
+      child: originalMessageBuilder(message!),
       color: AppCommonTheme.backgroundColorLight,
       margin: widget.nextMessageInGroup
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
-      radius: const Radius.circular(18),
-      padding: messagetype == types.MessageType.image
+      radius: const Radius.circular(22),
+      padding: message.metadata?['repliedTo']['type'] == 'm.image'
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
     );
+  }
+
+  Widget originalMessageBuilder(types.Message? message) {
+    switch (message?.metadata?['repliedTo']['type']) {
+      case 'm.text':
+        return Html(
+          data: """${message?.metadata?['repliedTo']['content']}""",
+          shrinkWrap: true,
+          style: {
+            'body': Style(
+              color: ChatTheme01.chatReplyTextColor,
+              fontWeight: FontWeight.w400,
+              fontSize: FontSize(14),
+            ),
+          },
+        );
+      case 'm.image':
+        Uint8List data =
+            base64Decode(message?.metadata?['repliedTo']['content']);
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: data.isNotEmpty
+              ? Image.memory(
+                  data,
+                  errorBuilder:
+                      (BuildContext context, Object url, StackTrace? error) {
+                    return Text('Could not load image due to $error');
+                  },
+                  cacheHeight: 75,
+                  cacheWidth: 75,
+                  fit: BoxFit.cover,
+                )
+              : const SizedBox(),
+        );
+      case 'm.file':
+        return Text(
+          message?.metadata?['repliedTo']['content'],
+          style: const TextStyle(color: Colors.white, fontSize: 12),
+        );
+      default:
+        return const SizedBox();
+    }
   }
 
   //Emoji Container which shows message reactions

@@ -28,8 +28,8 @@ async fn register(homeserver: &str, username: &str, password: &str) -> Result<Cl
         // FIXME: do actually check the registration types...
         if let Some(_response) = resp.as_uiaa_response() {
             let request = assign!(RegistrationRequest::new(), {
-                username: Some(username),
-                password: Some(password),
+                username: Some(username.to_string()),
+                password: Some(password.to_string()),
                 auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
             });
             client.register(request).await?;

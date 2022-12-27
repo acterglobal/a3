@@ -23,9 +23,9 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     let alice_dir = TempDir::new()?;
     let alice = login_new_client(
-        alice_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
+        alice_dir.path().to_str().expect("always works").to_string(),
+        "@sisko:ds9.effektio.org".to_string(),
+        "sisko".to_string(),
     )
     .await?;
 
@@ -34,9 +34,9 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     let bob_dir = TempDir::new()?;
     let bob = login_new_client(
-        bob_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
+        bob_dir.path().to_str().expect("always works").to_string(),
+        "@sisko:ds9.effektio.org".to_string(),
+        "sisko".to_string(),
     )
     .await?;
 
@@ -74,7 +74,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
                 event
                     .request_verification_to_device_with_methods(
                         bob_device_id,
-                        &mut vec!["m.sas.v1".to_owned()],
+                        &mut vec!["m.sas.v1".to_string()],
                     )
                     .await?;
                 break;
@@ -90,7 +90,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
 
     // Bob accepts the request, sending a Ready request
     event
-        .accept_verification_request_with_methods(&mut vec!["m.sas.v1".to_owned()])
+        .accept_verification_request_with_methods(&mut vec!["m.sas.v1".to_string()])
         .await?;
     // And also immediately sends a start request
     let started = event.start_sas_verification().await?;
