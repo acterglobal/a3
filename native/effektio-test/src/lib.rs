@@ -12,3 +12,5 @@ mod invitation;
 // mod typing;
 // #[cfg(test)]
 // mod verification;
+#[cfg(test)]
+mod tasks;
