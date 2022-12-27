@@ -23,7 +23,7 @@ impl Serialize for Labels {
             + self.others.len();
         let mut seq = serializer.serialize_seq(Some(len))?;
         if let Some(ref msg) = self.msgtype {
-            seq.serialize_element(&format!("m.type:{:}", msg))?;
+            seq.serialize_element(&format!("m.type:{msg:}"))?;
         }
         for (prefix, entries) in [
             ("m.tag", self.tags.iter()),
@@ -31,7 +31,7 @@ impl Serialize for Labels {
             ("m.section", self.sections.iter()),
         ] {
             for e in entries {
-                seq.serialize_element(&format!("{:}:{:}", prefix, e))?;
+                seq.serialize_element(&format!("{prefix:}:{e:}"))?;
             }
         }
         for e in self.others.iter() {
@@ -100,7 +100,7 @@ mod test {
             others: vec!["whatever".to_string(), "with:other:test".to_string()],
         };
         let ser = serde_json::to_string(&labels)?;
-        println!("Serialized: {:}", ser);
+        println!("Serialized: {ser:}");
 
         let after: Labels = serde_json::from_str(&ser)?;
         assert_eq!(labels, after);
@@ -121,7 +121,7 @@ mod test {
             others: vec!["m.type:whatever".to_string(), "with:other:test".to_string()],
         };
         let ser = serde_json::to_string(&labels)?;
-        println!("Serialized: {:}", ser);
+        println!("Serialized: {ser:}");
 
         let after: Labels = serde_json::from_str(&ser)?;
         assert_eq!(labels, after);

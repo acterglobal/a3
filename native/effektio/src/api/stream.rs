@@ -6,8 +6,9 @@ use log::info;
 use matrix_sdk::{
     room::{timeline::Timeline, Room},
     ruma::{
-        events::room::message::{
-            MessageType, Relation, Replacement, RoomMessageEvent, RoomMessageEventContent,
+        events::{
+            relation::Replacement,
+            room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
         },
         EventId,
     },
@@ -99,10 +100,12 @@ impl TimelineStream {
         stream.map(move |diff| match diff {
             VecDiff::Replace { values } => TimelineDiff {
                 action: "Replace".to_string(),
-                values: values
-                    .iter()
-                    .map(|x| timeline_item_to_message(x.clone(), room.clone()))
-                    .collect(),
+                values: Some(
+                    values
+                        .iter()
+                        .map(|x| timeline_item_to_message(x.clone(), room.clone()))
+                        .collect(),
+                ),
                 index: None,
                 value: None,
                 new_index: None,
@@ -112,7 +115,7 @@ impl TimelineStream {
                 action: "InsertAt".to_string(),
                 values: None,
                 index: Some(index),
-                value: timeline_item_to_message(value, room.clone()),
+                value: Some(timeline_item_to_message(value, room.clone())),
                 new_index: None,
                 old_index: None,
             },
@@ -120,7 +123,7 @@ impl TimelineStream {
                 action: "UpdateAt".to_string(),
                 values: None,
                 index: Some(index),
-                value: timeline_item_to_message(value, room.clone()),
+                value: Some(timeline_item_to_message(value, room.clone())),
                 new_index: None,
                 old_index: None,
             },
@@ -128,7 +131,7 @@ impl TimelineStream {
                 action: "Push".to_string(),
                 values: None,
                 index: None,
-                value: timeline_item_to_message(value, room.clone()),
+                value: Some(timeline_item_to_message(value, room.clone())),
                 new_index: None,
                 old_index: None,
             },
@@ -201,9 +204,8 @@ impl TimelineStream {
                             }
                             VecDiff::Push { value } => {
                                 info!("stream forward timeline push");
-                                if let Some(inner) = timeline_item_to_message(value, room.clone()) {
-                                    return Ok(inner);
-                                }
+                                let inner = timeline_item_to_message(value, room.clone());
+                                return Ok(inner);
                             }
                             VecDiff::RemoveAt { index } => {
                                 info!("stream forward timeline remove_at");
@@ -263,7 +265,7 @@ impl TimelineStream {
 
                 let replacement = Replacement::new(
                     event_id.to_owned(),
-                    MessageType::text_markdown(new_msg.to_owned()),
+                    MessageType::text_markdown(new_msg.to_string()),
                 );
                 let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
                 edited_content.relates_to = Some(Relation::Replacement(replacement));

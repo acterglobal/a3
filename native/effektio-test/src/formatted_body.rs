@@ -12,9 +12,9 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     // initialize sisko's client
     let tmp_dir = TempDir::new()?;
     let sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@sisko:ds9.effektio.org".to_string(),
+        "sisko".to_string(),
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
@@ -23,16 +23,16 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // sisko creates room and invites kyra
     let settings = CreateConversationSettingsBuilder::default()
-        .invites(vec!["@kyra:ds9.effektio.org".to_owned().try_into()?])
+        .invites(vec!["@kyra:ds9.effektio.org".to_string().try_into()?])
         .build()?;
     let sisko_kyra_dm_id = sisko.create_conversation(settings).await?;
 
     // initialize kyra's client
     let tmp_dir = TempDir::new()?;
     let kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@kyra:ds9.effektio.org".to_owned(),
-        "kyra".to_owned(),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@kyra:ds9.effektio.org".to_string(),
+        "kyra".to_string(),
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
@@ -53,7 +53,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // sisko sends the formatted text message to kyra
     let convo = sisko.conversation(sisko_kyra_dm_id.to_string()).await?;
-    let event_id = convo.send_formatted_message("**Hello**".to_owned()).await?;
+    let event_id = convo.send_formatted_message("**Hello**".to_string()).await?;
 
     // kyra receives the formatted text message from sisko
     let mut convos_rx = kyra.conversations_rx();

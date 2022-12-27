@@ -25,7 +25,7 @@ pub async fn guest_client(
             let client = config.build().await?;
             let mut request = register::v3::Request::new();
             request.kind = register::RegistrationKind::Guest;
-            request.initial_device_display_name = device_name.as_deref();
+            request.initial_device_display_name = device_name;
             let response = client.register(request).await?;
             let device_id = response
                 .device_id
@@ -135,11 +135,11 @@ pub async fn register_with_registration_token(
                 if let Some(response) = err.as_uiaa_response() {
                     // FIXME: do actually check the registration types...
                     let request = assign!(register::v3::Request::new(), {
-                        username: Some(&username),
-                        password: Some(&password),
-                        initial_device_display_name: device_name.as_deref(),
+                        username: Some(username.clone()),
+                        password: Some(password),
+                        initial_device_display_name: device_name,
                         auth: Some(uiaa::AuthData::RegistrationToken(
-                            uiaa::RegistrationToken::new(&registration_token),
+                            uiaa::RegistrationToken::new(registration_token),
                         )),
                     });
                     client.register(request).await?;

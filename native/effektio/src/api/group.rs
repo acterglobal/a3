@@ -62,11 +62,11 @@ impl Client {
                     creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
                         room_type: Some(RoomType::Space)
                     }))?),
-                    initial_state: &initial_states,
+                    initial_state: initial_states,
                     is_direct: false,
-                    invite: &settings.invites,
-                    room_alias_name: settings.alias.as_deref(),
-                    name: settings.name.as_ref().map(|x| x.as_ref()),
+                    invite: settings.invites,
+                    room_alias_name: settings.alias,
+                    name: settings.name,
                     visibility: settings.visibility,
                 });
                 let response = client.create_room(request).await?;

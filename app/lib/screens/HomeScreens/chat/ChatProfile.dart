@@ -639,8 +639,8 @@ class ChatProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(12),
             child: GetBuilder<ChatRoomController>(
               id: 'user-profile-$userId',
-              builder: (_) {
-                return (roomController.getUserName(userId) == null)
+              builder: (ChatRoomController controller) {
+                return (controller.getUserName(userId) == null)
                     ? const Center(
                         child: CircularProgressIndicator(
                           color: AppCommonTheme.primaryColor,
@@ -648,9 +648,9 @@ class ChatProfileScreen extends StatelessWidget {
                       )
                     : GroupMember(
                         userId: userId,
-                        name: roomController.getUserName(userId),
+                        name: controller.getUserName(userId),
                         isAdmin: true,
-                        avatar: roomController.getUserAvatar(userId),
+                        avatar: controller.getUserAvatar(userId),
                       );
               },
             ),
