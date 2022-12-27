@@ -17,13 +17,13 @@ impl Serialize for Labels {
     where
         S: Serializer,
     {
-        let len = usize::from(self.msgtype.is_none())
+        let len = if self.msgtype.is_some() { 0 } else { 1 }
             + self.tags.len()
             + self.categories.len()
             + self.others.len();
         let mut seq = serializer.serialize_seq(Some(len))?;
         if let Some(ref msg) = self.msgtype {
-            seq.serialize_element(&format!("m.type:{msg:}"))?;
+            seq.serialize_element(&format!("m.type:{:}", msg))?;
         }
         for (prefix, entries) in [
             ("m.tag", self.tags.iter()),
@@ -31,7 +31,7 @@ impl Serialize for Labels {
             ("m.section", self.sections.iter()),
         ] {
             for e in entries {
-                seq.serialize_element(&format!("{prefix:}:{e:}"))?;
+                seq.serialize_element(&format!("{:}:{:}", prefix, e))?;
             }
         }
         for e in self.others.iter() {
@@ -56,13 +56,13 @@ impl<'de> Visitor<'de> for LabelsVisitor {
     {
         let mut me = Labels::default();
         while let Some(key) = seq.next_element::<String>()? {
-            if let Some((prefix, result)) = key.split_once(':') {
+            if let Some((prefix, res)) = key.split_once(':') {
                 match prefix {
                     // first has priority
-                    "m.type" if me.msgtype.is_none() => me.msgtype = Some(result.to_string()),
-                    "m.tag" => me.tags.push(result.to_string()),
-                    "m.section" => me.sections.push(result.to_string()),
-                    "m.cat" => me.categories.push(result.to_string()),
+                    "m.type" if me.msgtype.is_none() => me.msgtype = Some(res.to_string()),
+                    "m.tag" => me.tags.push(res.to_string()),
+                    "m.section" => me.sections.push(res.to_string()),
+                    "m.cat" => me.categories.push(res.to_string()),
                     _ => me.others.push(key),
                 }
             } else {
@@ -100,7 +100,7 @@ mod test {
             others: vec!["whatever".to_string(), "with:other:test".to_string()],
         };
         let ser = serde_json::to_string(&labels)?;
-        println!("Serialized: {ser:}");
+        println!("Serialized: {:}", ser);
 
         let after: Labels = serde_json::from_str(&ser)?;
         assert_eq!(labels, after);
@@ -121,7 +121,7 @@ mod test {
             others: vec!["m.type:whatever".to_string(), "with:other:test".to_string()],
         };
         let ser = serde_json::to_string(&labels)?;
-        println!("Serialized: {ser:}");
+        println!("Serialized: {:}", ser);
 
         let after: Labels = serde_json::from_str(&ser)?;
         assert_eq!(labels, after);

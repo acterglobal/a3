@@ -13,20 +13,29 @@ license-file = "../../LICENSE.txt"
 with-mocks = ["fake", "rand"]
 
 [dependencies]
+thiserror = "1.0"
 assign = "1.1.1"
 chrono = {version = "0.4", default-features = false, features = ["serde"]}
 chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }
 csscolorparser = { version = "0.5.0", features = ["serde"] }
-matrix-sdk = { workspace = true }
+futures = "0.3.24"
+dashmap = "5.4.0"
 serde = "1.0.136"
 serde_json = "1.0.82"
+derive_builder = "0.11.2"
 serde_repr = "0.1"
+tracing = "0.1.36"
 url = { version = "2.2.2", features = ["serde"] }
 
 # with-mocks
 fake = { version = "2.4", optional = true, features = ["derive"] }
 rand = { version = "0.8", optional = true }
 
+[dependencies.matrix-sdk]
+workspace = true
+default-features = false
+
 [dev-dependencies.matrix-sdk]
 workspace = true
 features = ["rustls-tls"]
+default-features = false

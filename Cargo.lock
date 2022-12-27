@@ -925,12 +925,17 @@ dependencies = [
  "chrono",
  "chrono-tz",
  "csscolorparser",
+ "dashmap",
+ "derive_builder 0.11.2",
  "fake",
+ "futures",
  "matrix-sdk",
  "rand 0.8.5",
  "serde",
  "serde_json",
  "serde_repr",
+ "thiserror",
+ "tracing",
  "url",
 ]
 
