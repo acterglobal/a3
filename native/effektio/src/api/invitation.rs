@@ -16,7 +16,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::time::{sleep, Duration};
 
 use super::{
-    client::{divide_rooms_from_common, Client},
+    client::{devide_groups_from_convos, Client},
     profile::UserProfile,
     RUNTIME,
 };
@@ -293,6 +293,7 @@ impl Client {
 
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
         let client = self.client.clone();
+        let executor = self.executor.clone();
         let room_id = RoomId::parse(room_name)?;
         let result = self.client.get_room(&room_id);
         if result.is_none() {
@@ -309,7 +310,7 @@ impl Client {
                 }
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (groups, convos) = divide_rooms_from_common(client.clone()).await;
+                let (groups, convos) = devide_groups_from_convos(client.clone(), executor).await;
                 for convo in convos {
                     if convo.room_id() == room_id {
                         continue;

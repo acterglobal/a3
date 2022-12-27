@@ -24,6 +24,7 @@ mod profile;
 mod receipt;
 mod room;
 mod stream;
+mod tasks;
 mod typing;
 mod verification;
 

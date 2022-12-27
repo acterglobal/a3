@@ -1,15 +1,17 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
+    executor::Executor,
     models::Faq,
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
+    store::Store,
     RestoreToken,
 };
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
 
-use futures::{stream, StreamExt};
+use futures::{future::try_join_all, stream, StreamExt};
 use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
@@ -53,6 +55,8 @@ pub struct ClientState {
 #[derive(Clone)]
 pub struct Client {
     pub(crate) client: MatrixClient,
+    pub(crate) store: Store,
+    pub(crate) executor: Executor,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
@@ -69,38 +73,64 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn divide_rooms_from_common(
+pub(crate) async fn devide_groups_from_convos(
     client: MatrixClient,
+    executor: Executor,
 ) -> (Vec<Group>, Vec<Conversation>) {
-    let (groups, convos, _) = stream::iter(client.clone().joined_rooms().into_iter())
+    let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
-            (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut convos, client), room| {
-                let r = Room {
-                    room: room.into(),
+            (Vec::new(), Vec::new(), (client, executor)),
+            async move |(mut groups, mut conversations, (client, executor)), room| {
+                let inner = Room {
+                    room: room.clone(),
                     client: client.clone(),
                 };
-                if r.is_effektio_group().await {
-                    groups.push(Group { inner: r });
+
+                if inner.is_effektio_group().await {
+                    groups.push(Group {
+                        executor: executor.clone(),
+                        inner,
+                    });
                 } else {
-                    convos.push(Conversation::new(r));
+                    conversations.push(Conversation::new(inner));
                 }
-                (groups, convos, client)
+
+                (groups, conversations, (client, executor))
             },
         )
         .await;
     (groups, convos)
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct HistoryLoadState {
+    pub total_groups: usize,
+    pub loaded_groups: usize,
+}
+
+impl HistoryLoadState {
+    pub fn is_done_loading(&self) -> bool {
+        self.total_groups <= self.loaded_groups
+    }
+
+    fn group_loaded(&mut self) {
+        self.loaded_groups = self.loaded_groups.checked_add(1).unwrap_or(usize::MAX)
+    }
+}
+
 #[derive(Clone)]
 pub struct SyncState {
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
 }
 
 impl SyncState {
     pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
-        Self { first_synced_rx }
+        Self {
+            first_synced_rx,
+            history_loading: Default::default(),
+        }
     }
 
     pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
@@ -109,9 +139,13 @@ impl SyncState {
 }
 
 impl Client {
-    pub fn new(client: MatrixClient, state: ClientState) -> Self {
-        Client {
+    pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
+        let store = Store::new(client.clone()).await?;
+        let executor = Executor::new(client.clone(), store.clone()).await?;
+        let cl = Client {
             client,
+            store,
+            executor,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
@@ -119,10 +153,44 @@ impl Client {
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
+        };
+        cl.init_tasks().await;
+        Ok(cl)
+    }
+
+    /// Get access to the internal state
+    pub fn executor(&self) -> &Executor {
+        &self.executor
+    }
+
+    async fn refresh_history(
+        &self,
+        history: futures_signals::signal::Mutable<HistoryLoadState>,
+    ) -> anyhow::Result<()> {
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                let groups = me.groups().await?;
+                history.lock_mut().total_groups = groups.len();
+
+                try_join_all(groups.iter().map(|g| g.refresh_history())).await?;
+                Ok(())
+            })
+            .await?
+    }
+
+    async fn refresh_history_on_start(
+        &self,
+        history: futures_signals::signal::Mutable<HistoryLoadState>,
+    ) {
+        if let Err(e) = self.refresh_history(history).await {
+            tracing::error!("Refreshing history failed: {:}", e);
         }
     }
 
     pub fn start_sync(&mut self) -> SyncState {
+        let me = self.clone();
+        let executor = self.executor.clone();
         let client = self.client.clone();
         let state = self.state.clone();
 
@@ -147,6 +215,7 @@ impl Client {
 
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
+        let sync_state_history = sync_state.history_loading.clone();
 
         RUNTIME.spawn(async move {
             let client = client.clone();
@@ -156,11 +225,15 @@ impl Client {
             let mut device_controller = device_controller.clone();
             let mut conversation_controller = conversation_controller.clone();
 
+            let sync_state_history = sync_state_history.clone();
+
             // fetch the events that received when offline
             client
                 .clone()
                 .sync_with_result_callback(SyncSettings::new(), |result| {
                     let client = client.clone();
+                    let me = me.clone();
+                    let executor = executor.clone();
                     let state = state.clone();
 
                     let mut invitation_controller = invitation_controller.clone();
@@ -168,6 +241,7 @@ impl Client {
                     let mut conversation_controller = conversation_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
+                    let sync_state_history = sync_state_history.clone();
                     let initial = initial_arc.clone();
 
                     async move {
@@ -175,11 +249,14 @@ impl Client {
                             device_controller.process_device_lists(&client, &response);
 
                             if initial.load(Ordering::SeqCst) {
-                                // divide_rooms_from_common must be called after first sync
-                                let (_, convos) = divide_rooms_from_common(client.clone()).await;
+                                // devide_groups_from_convos must be called after first sync
+                                let (_, convos) =
+                                    devide_groups_from_convos(client.clone(), executor.clone())
+                                        .await;
                                 conversation_controller.load_rooms(&convos).await;
                                 // load invitations after first sync
                                 invitation_controller.load_invitations(&client).await;
+                                me.refresh_history_on_start(sync_state_history.clone());
                             }
 
                             initial.store(false, Ordering::SeqCst);
@@ -241,9 +318,10 @@ impl Client {
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
         let client = self.client.clone();
+        let executor = self.executor.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, conversations) = divide_rooms_from_common(client).await;
+                let (groups, conversations) = devide_groups_from_convos(client, executor).await;
                 Ok(conversations)
             })
             .await?

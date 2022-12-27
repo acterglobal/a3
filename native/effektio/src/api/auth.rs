@@ -39,7 +39,7 @@ pub async fn guest_client(
             };
             client.restore_session(session).await?;
             let state = ClientStateBuilder::default().is_guest(true).build()?;
-            let c = Client::new(client, state);
+            let c = Client::new(client, state).await?;
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
         })
@@ -60,7 +60,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
             let client = config.build().await?;
             client.restore_session(session).await?;
             let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
-            let c = Client::new(client.clone(), state);
+            let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
                 user_id,
@@ -106,7 +106,7 @@ pub async fn login_new_client(
             };
             login_builder.send().await?;
             let state = ClientStateBuilder::default().is_guest(false).build()?;
-            let c = Client::new(client.clone(), state);
+            let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {:?}, device {:?}",
                 user_id,
@@ -150,7 +150,7 @@ pub async fn register_with_registration_token(
                 bail!("Server is not set up to allow registration.");
             }
             let state = ClientStateBuilder::default().is_guest(false).build()?;
-            let c = Client::new(client.clone(), state);
+            let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully registered user {:?}, device {:?}",
                 username,
