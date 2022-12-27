@@ -14,7 +14,7 @@ use matrix_sdk::{
             room::{
                 message::{
                     FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                    MessageType, RoomMessageEvent, Relation as MessageRelation,
+                    MessageType, Relation as MessageRelation, RoomMessageEvent,
                     RoomMessageEventContent, TextMessageEventContent,
                 },
                 ImageInfo,
