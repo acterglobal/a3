@@ -2,15 +2,18 @@ import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -35,6 +38,9 @@ class ChatListItem extends StatefulWidget {
 class _ChatListItemState extends State<ChatListItem> {
   Future<FfiBufferUint8>? avatar;
   String? displayName;
+  String? userId;
+
+  List<Member> activeMembers = [];
 
   @override
   void initState() {
@@ -50,6 +56,10 @@ class _ChatListItemState extends State<ChatListItem> {
         });
       }
     });
+
+    userId = widget.client.account().userId();
+
+    getActiveMembers();
   }
 
   @override
@@ -110,9 +120,41 @@ class _ChatListItemState extends State<ChatListItem> {
         style: ChatTheme01.chatTitleStyle,
       );
     }
-    return Text(
-      displayName!,
-      style: ChatTheme01.chatTitleStyle,
+
+    RoomEventItem? eventItem =
+        widget.latestMessage == null ? null : widget.latestMessage!.eventItem();
+    var senderID = '';
+    var messageStatus;
+
+    if (eventItem != null) {
+      int ts = eventItem.originServerTs();
+
+      var receiptController = Get.find<ReceiptController>();
+      List<String> seenByList = receiptController.getSeenByList(
+        widget.room.getRoomId(),
+        ts,
+      );
+
+      senderID = widget.latestMessage!.eventItem()!.sender();
+
+      messageStatus = seenByList.isEmpty
+          ? types.Status.sent
+          : seenByList.length < activeMembers.length
+              ? types.Status.delivered
+              : types.Status.seen;
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          displayName!,
+          style: ChatTheme01.chatTitleStyle,
+        ),
+        senderID == userId
+            ? customStatusBuilder(messageStatus)
+            : const SizedBox(),
+      ],
     );
   }
 
@@ -212,13 +254,40 @@ class _ChatListItemState extends State<ChatListItem> {
     if (eventItem == null) {
       return null;
     }
+
     int ts = eventItem.originServerTs();
+
     return Text(
       DateFormat.Hm().format(
         DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
       ),
       style: ChatTheme01.latestChatDateStyle,
     );
+  }
+
+  Widget customStatusBuilder(types.Status status) {
+    if (status == Status.delivered) {
+      return SvgPicture.asset('assets/images/deliveredIcon.svg');
+    } else if (status == Status.seen) {
+      return SvgPicture.asset('assets/images/seenIcon.svg');
+    } else if (status == Status.sending) {
+      return const Center(
+        child: SizedBox(
+          height: 10,
+          width: 10,
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.transparent,
+            strokeWidth: 1.5,
+          ),
+        ),
+      );
+    } else {
+      return SvgPicture.asset(
+        'assets/images/sentIcon.svg',
+        width: 12,
+        height: 12,
+      );
+    }
   }
 
   String getUserPlural(List<types.User> authors) {
@@ -231,5 +300,9 @@ class _ChatListItemState extends State<ChatListItem> {
     } else {
       return '${authors[0].firstName} and ${authors.length - 1} others typing...';
     }
+  }
+
+  Future<void> getActiveMembers() async {
+    activeMembers = (await widget.room.activeMembers()).toList();
   }
 }

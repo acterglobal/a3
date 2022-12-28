@@ -565,7 +565,7 @@ class ChatRoomController extends GetxController {
         m.createdAt!,
       );
       if (m.author.id == client.userId().toString()) {
-	types.Status status = seenByList.isEmpty
+      types.Status status = seenByList.isEmpty
           ? types.Status.sent
           : seenByList.length < activeMembers.length
               ? types.Status.delivered
