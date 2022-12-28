@@ -1,8 +1,5 @@
 use anyhow::Result;
-use effektio::{
-    api::login_new_client,
-    matrix_sdk::ruma::EventId,
-};
+use effektio::{api::login_new_client, matrix_sdk::ruma::EventId};
 use futures::stream::StreamExt;
 use tempfile::TempDir;
 

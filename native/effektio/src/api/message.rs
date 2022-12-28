@@ -275,7 +275,7 @@ impl RoomMessage {
                 vec![]
             };
             let description = ReactionDesc::new(value.count.into(), senders);
-            reactions.insert(key.to_string(), description);
+            reactions.insert(key.clone(), description);
         }
 
         let event_item = match event.content() {
