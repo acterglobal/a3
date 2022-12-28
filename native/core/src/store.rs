@@ -1,4 +1,5 @@
 use std::iter::FromIterator;
+use std::sync::Arc;
 
 use crate::models::AnyEffektioModel;
 use crate::{Error, Result};
@@ -10,9 +11,9 @@ use matrix_sdk::{ruma::EventId, Client as MatrixClient};
 #[derive(Clone, Debug)]
 pub struct Store {
     client: MatrixClient,
-    models: dashmap::DashMap<String, AnyEffektioModel>,
-    indizes: dashmap::DashMap<String, Vec<String>>,
-    dirty: dashmap::DashSet<String>,
+    models: Arc<dashmap::DashMap<String, AnyEffektioModel>>,
+    indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
+    dirty: Arc<dashmap::DashSet<String>>,
 }
 
 async fn get_from_store(client: MatrixClient, key: &String) -> Result<AnyEffektioModel> {
@@ -38,7 +39,7 @@ impl Store {
             Vec::new()
         };
 
-        let indizes = DashMap::new();
+        let indizes = Arc::new(DashMap::new());
         let mut models_sources = Vec::new();
         for m in models_vec {
             let key = m.key();
@@ -49,7 +50,7 @@ impl Store {
             models_sources.push((key, m));
         }
 
-        let models = DashMap::from_iter(models_sources);
+        let models = Arc::new(DashMap::from_iter(models_sources));
 
         Ok(Store {
             client,
@@ -64,7 +65,7 @@ impl Store {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
         } else {
-            tracing::debug!(key = key, "No list found");
+            tracing::debug!(user=?self.client.user_id(), key, "No list found");
             vec![]
         };
         let models = self.models.clone();
@@ -87,6 +88,7 @@ impl Store {
         let key = mdl.key();
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
+            tracing::trace!(user=?self.client.user_id(), key, "previous model found");
             let mut remove_idzs = Vec::new();
             for idz in prev.indizes() {
                 if let Some(idx) = indizes.iter().position(|i| i == &idz) {
@@ -103,13 +105,15 @@ impl Store {
             }
         }
         for idx in indizes.into_iter() {
-            tracing::trace!(idx = idx, key = key, "adding to index");
+            tracing::trace!(user = ?self.client.user_id(), idx, key, exists=self.indizes.contains_key(&idx), "adding to index");
             self.indizes
-                .entry(idx)
+                .entry(idx.clone())
                 .or_default()
                 .value_mut()
                 .push(key.clone());
+            tracing::trace!(user = ?self.client.user_id(), idx, key, exists=self.indizes.contains_key(&idx), "added to index");
         }
+        tracing::trace!(user=?self.client.user_id(), key, "saved");
         self.dirty.insert(key);
         Ok(())
     }
@@ -127,7 +131,7 @@ impl Store {
                     )
                     .await?;
             } else {
-                tracing::warn!("Inconsistency error: {:} is missing", key);
+                tracing::warn!(key, "Inconsistency error: key is missing");
             }
         }
 

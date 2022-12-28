@@ -138,6 +138,7 @@ impl Mock {
         match self.users.get(&username) {
             Some(c) => Ok(c.clone()),
             None => {
+                log::trace!("client not found. creating for {:}", username);
                 let client =
                     ensure_user(self.homeserver.as_str(), username.clone(), self.persist).await?;
                 self.users.insert(username, client.clone());
@@ -339,35 +340,36 @@ impl Mock {
 
         odo.sync_once(Default::default()).await?;
 
-        let task_list = odo.task_lists().await?;
-        println!("task lists found: {:?}", task_list);
-        // .into_iter()
-        // .find(|e| e.event_id == task_list_id)
-        // .unwrap();
+        let task_list = odo
+            .task_lists()
+            .await?
+            .into_iter()
+            .find(|e| e.event_id == task_list_id)
+            .unwrap();
 
-        // task_list
-        //     .task_builder()
-        //     .title("Holding Cells review".into())
-        //     .description(
-        //         "What is the occupancy rate? Who is in the holding cells, for how much longer?"
-        //             .into(),
-        //     )
-        //     .send()
-        //     .await?;
+        task_list
+            .task_builder()
+            .title("Holding Cells review".into())
+            .description(
+                "What is the occupancy rate? Who is in the holding cells, for how much longer?"
+                    .into(),
+            )
+            .send()
+            .await?;
 
-        // task_list
-        //     .task_builder()
-        //     .title("Special guests".into())
-        //     .description("Any special guests expected, needing special attention?".into())
-        //     .send()
-        //     .await?;
+        task_list
+            .task_builder()
+            .title("Special guests".into())
+            .description("Any special guests expected, needing special attention?".into())
+            .send()
+            .await?;
 
-        // task_list
-        //     .task_builder()
-        //     .title("Federation reports".into())
-        //     .description("Daily status report from the federation".into())
-        //     .send()
-        //     .await?;
+        task_list
+            .task_builder()
+            .title("Federation reports".into())
+            .description("Daily status report from the federation".into())
+            .send()
+            .await?;
 
         log::info!("Creating task lists and tasks done.");
 
