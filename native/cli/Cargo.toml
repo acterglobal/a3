@@ -17,9 +17,11 @@ futures = { version = "0.3.21" }
 log = "0.4.14"
 matrix-sdk = { workspace = true }
 matrix-sdk-base = { workspace = true }
+matrix-sdk-sled = { workspace = true }
 mime = "0.3.16"
 term-table = "1.3.2"
 tokio = { version = "1", features = ["full", "time"] }
+tracing = { version = "0.1.36", features = ["log"] }
 
 [dependencies.effektio-core]
 path = "../core"

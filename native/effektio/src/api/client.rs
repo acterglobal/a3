@@ -52,7 +52,7 @@ pub struct ClientState {
     pub should_stop_syncing: bool,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Client {
     pub(crate) client: MatrixClient,
     pub(crate) store: Store,

@@ -66,6 +66,10 @@ features = ["lax_deserialize"]
 tracing-wasm = "0.2.1"
 wasm-bindgen-futures = "0.4.28"
 
+#   ----   WASM
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+matrix-sdk-sled = { workspace = true }
+
 #   ----  ANDROID
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = "0.11"

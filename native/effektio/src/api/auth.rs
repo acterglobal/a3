@@ -19,7 +19,9 @@ pub async fn guest_client(
     homeurl: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
+    let config = platform::new_client_config(base_path, homeurl.clone())
+        .await?
+        .homeserver_url(homeurl);
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
@@ -53,7 +55,9 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         is_guest,
     } = serde_json::from_str(&restore_token)?;
     let user_id = session.user_id.to_string();
-    let config = platform::new_client_config(base_path, user_id.clone())?.homeserver_url(homeurl);
+    let config = platform::new_client_config(base_path, user_id.clone())
+        .await?
+        .homeserver_url(homeurl);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -78,8 +82,9 @@ pub async fn login_new_client(
     device_name: Option<String>,
 ) -> Result<Client> {
     let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let mut config =
-        platform::new_client_config(base_path, username)?.server_name(user_id.server_name());
+    let mut config = platform::new_client_config(base_path, username)
+        .await?
+        .server_name(user_id.server_name());
 
     match user_id.server_name().as_str() {
         "effektio.org" => {
@@ -125,7 +130,8 @@ pub async fn register_with_registration_token(
     device_name: Option<String>,
 ) -> Result<Client> {
     let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let config = platform::new_client_config(base_path, username.clone())?
+    let config = platform::new_client_config(base_path, username.clone())
+        .await?
         .server_name(user_id.server_name());
     // First we need to log in.
     RUNTIME

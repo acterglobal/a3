@@ -109,7 +109,7 @@ impl std::ops::Deref for Conversation {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
     incoming_event_tx: Sender<RoomMessage>,

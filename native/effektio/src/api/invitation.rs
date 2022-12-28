@@ -130,7 +130,7 @@ impl Invitation {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct InvitationController {
     invitations: Mutable<Vec<Invitation>>,
     stripped_event_handle: Option<EventHandlerHandle>,

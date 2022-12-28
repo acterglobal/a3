@@ -16,6 +16,13 @@ git = "https://github.com/matrix-org/matrix-rust-sdk"
 rev = "f5c0ea460599fe2c2b8bf533e8169256c084a531"
 default-features = false
 
+[workspace.dependencies.matrix-sdk-sled]
+git = "https://github.com/matrix-org/matrix-rust-sdk"
+rev = "f5c0ea460599fe2c2b8bf533e8169256c084a531"
+default-features = false
+features = ["crypto-store", "state-store"]
+
+
 [workspace.dependencies.ruma]
 git = "https://github.com/ruma/ruma"
 rev = "ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
