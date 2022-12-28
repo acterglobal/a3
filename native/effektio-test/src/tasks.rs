@@ -34,7 +34,7 @@ async fn tasks_smoketest() -> Result<()> {
     // we should have
     let task_list = client
         .task_lists()
-        .await
+        .await?
         .into_iter()
         .next()
         .expect("we should have a task list");

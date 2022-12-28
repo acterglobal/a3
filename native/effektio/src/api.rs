@@ -32,7 +32,7 @@ pub use account::Account;
 pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
-pub use client::{Client, ClientStateBuilder, SyncState};
+pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::models::{Color, Faq, News, Tag};
@@ -45,6 +45,7 @@ pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use stream::{TimelineDiff, TimelineStream};
+pub use tasks::{Task, TaskDraft, TaskList, TaskListDraft};
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
 

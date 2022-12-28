@@ -362,7 +362,7 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                if let Ok(room) = me.room(name_or_id) {
+                if let Ok(room) = me.room(name_or_id).await {
                     if !room.is_effektio_group().await {
                         Ok(Conversation::new(room))
                     } else {

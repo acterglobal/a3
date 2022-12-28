@@ -12,7 +12,7 @@ use effektio_core::{
 use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{future::try_join_all, stream, StreamExt};
-use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
+use futures_signals::signal::{channel, MutableSignalCloned, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
@@ -135,6 +135,10 @@ impl SyncState {
 
     pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
+    }
+
+    pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
+        self.history_loading.signal_cloned().to_stream()
     }
 }
 
@@ -340,60 +344,49 @@ impl Client {
     //     }).await?
     // }
 
-    pub fn user_id(&self) -> Result<OwnedUserId> {
-        let user_id = self
-            .client
-            .user_id()
-            .context("No User ID found")?
-            .to_owned();
-        Ok(user_id)
-    }
-
-    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
-        let room_id = RoomId::parse(room_name)?;
-        if let Some(room) = self.client.get_room(&room_id) {
-            return Ok(Room {
-                room,
-                client: self.client.clone(),
-            });
-        }
-        bail!("Room not found")
-    }
-
-    pub fn account(&self) -> Result<Account> {
-        let user_id = self.client.user_id().unwrap();
-        Ok(Account::new(self.client.account(), user_id.to_string()))
-    }
-
-    pub fn device_id(&self) -> Result<String> {
-        let device_id = self.client.device_id().context("No Device ID found")?;
-        Ok(device_id.to_string())
-    }
-
-    pub async fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.client.clone();
-        let user_id = client.user_id().unwrap().to_owned();
+    pub async fn user_id(&self) -> Result<OwnedUserId> {
+        let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let mut user_profile = UserProfile::new(client, user_id, None, None);
-                user_profile.fetch().await;
-                Ok(user_profile)
+                let user_id = l.user_id().context("No User ID found")?.to_owned();
+                Ok(user_id)
             })
             .await?
     }
 
-    pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
-        let client = self.client.clone();
+    pub async fn room(&self, room_name: String) -> Result<Room> {
+        let room_id = RoomId::parse(room_name)?;
+        let l = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot request verification")?;
-                let dev = client
+                if let Some(room) = l.get_room(&room_id) {
+                    return Ok(Room {
+                        room,
+                        client: l.clone(),
+                    });
+                }
+                bail!("Room not found")
+            })
+            .await?
+    }
+
+    pub async fn account(&self) -> Result<Account> {
+        Ok(Account::new(
+            self.client.account(),
+            self.user_id().await?.to_string(),
+        ))
+    }
+
+    pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
+        let c = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let dev = c
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
-                    .context("client should get device")?
+                    .expect("client should get device")
                     .unwrap();
                 Ok(dev.is_verified())
             })
