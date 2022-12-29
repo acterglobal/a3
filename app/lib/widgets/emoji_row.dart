@@ -52,34 +52,28 @@ class EmojiRow extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          flex: 5,
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: 5.0,
-            children: List.generate(
-              emojiList.length,
-              (index) => GestureDetector(
-                onTap: () => onEmojiTap(emojiList[index]),
-                child: Text(
-                  emojiList[index],
-                  style: TextStyle(fontSize: size ?? 18),
-                ),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 5.0,
+          children: List.generate(
+            emojiList.length,
+            (index) => InkWell(
+              onTap: () => onEmojiTap(emojiList[index]),
+              child: Text(
+                emojiList[index],
+                style: TextStyle(fontSize: size ?? 18),
               ),
             ),
           ),
         ),
-        Expanded(
-          flex: 1,
-          child: IconButton(
-            padding: const EdgeInsets.only(bottom: 5.0),
-            icon: Icon(
-              Icons.add,
-              color: Colors.grey.shade600,
-              size: size ?? 28,
-            ),
-            onPressed: () => _showBottomSheet(context),
+        IconButton(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          icon: Icon(
+            Icons.add,
+            color: Colors.grey.shade600,
+            size: size ?? 28,
           ),
+          onPressed: () => _showBottomSheet(context),
         ),
       ],
     );

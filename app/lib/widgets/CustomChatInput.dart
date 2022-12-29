@@ -290,36 +290,30 @@ class CustomChatInput extends StatelessWidget {
   }
 
   Widget _replyContentBuilder(Message? msg, Widget? messageWidget) {
-    if (msg != null) {
-      switch (msg.type) {
-        case MessageType.text:
-          return messageWidget!;
-        case MessageType.image:
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(6.33),
-                child: Image.memory(
-                  base64Decode(msg.metadata?['base64']),
-                  fit: BoxFit.fill,
-                  cacheWidth: 125,
-                ),
-              ),
+    if (msg is TextMessage) {
+      return messageWidget!;
+    } else if (msg is ImageMessage) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6.33),
+            child: Image.memory(
+              base64Decode(msg.metadata?['base64']),
+              fit: BoxFit.fill,
+              cacheWidth: 125,
             ),
-          );
-        case MessageType.file:
-          return messageWidget!;
-        case MessageType.custom:
-          return messageWidget!;
-        case MessageType.system:
-          break;
-        case MessageType.unsupported:
-          break;
-      }
+          ),
+        ),
+      );
+    } else if (msg is FileMessage) {
+      return messageWidget!;
+    } else if (msg is CustomMessage) {
+      return messageWidget!;
+    } else {
+      return const SizedBox.shrink();
     }
-    return const SizedBox.shrink();
   }
 }
 
