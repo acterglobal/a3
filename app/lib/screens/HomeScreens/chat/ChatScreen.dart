@@ -174,9 +174,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   if (controller.isAuthor()) {
-                    // TODO add unsent message call
+                    // redact message call
+                    await roomController
+                        .redactRoomMessage(roomController.repliedToMessage!.id);
+                    roomController.toggleEmojiContainer();
                   } else {
                     showDialog(
                       context: context,
