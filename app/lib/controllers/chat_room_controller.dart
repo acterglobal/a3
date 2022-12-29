@@ -459,10 +459,7 @@ class ChatRoomController extends GetxController {
     }
     String? name = result.files.single.name;
     String? mimeType = lookupMimeType(path);
-    Uint8List? bytes = result.files.single.bytes;
-    if (bytes == null) {
-      return;
-    }
+    Uint8List bytes = File(path).readAsBytesSync();
     final image = await decodeImageFromList(bytes);
     if (repliedToMessage != null) {
       await _currentRoom!.sendImageReply(
