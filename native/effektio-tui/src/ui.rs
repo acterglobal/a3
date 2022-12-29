@@ -13,10 +13,10 @@ use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
 use tui::{
     backend::{Backend, CrosstermBackend},
-    layout::{Alignment, Constraint, Direction, Layout},
+    layout::{Alignment, Constraint, Direction, Layout, Rect},
     style::{Color, Modifier, Style},
-    text::{Span, Spans},
-    widgets::{Block, Borders, Tabs},
+    text::{Span, Spans, Text},
+    widgets::{Block, Borders, List, ListItem, ListState, Tabs},
     Frame, Terminal,
 };
 use tui_logger::{TuiLoggerWidget, TuiWidgetEvent};
@@ -51,10 +51,157 @@ struct ChatStats {
     notifications: u32,
 }
 
+#[derive(Clone, Debug, Default)]
+struct TasksState {
+    task_lists_list_state: ListState,
+    selected: Option<TaskList>,
+    task_lists: Vec<TaskList>,
+}
+
+impl TasksState {
+    fn fresh(task_lists: Vec<TaskList>) -> Self {
+        TasksState {
+            task_lists_list_state: Default::default(),
+            selected: None,
+            task_lists,
+        }
+    }
+
+    fn select_next(&mut self) {
+        if self.task_lists.is_empty() {
+            return;
+        }
+        let Some(current) = self.task_lists_list_state.selected() else {
+            self.task_lists_list_state.select(Some(0));
+            return
+        };
+
+        let next = current + 1;
+        if next < self.task_lists.len() {
+            self.task_lists_list_state.select(Some(next));
+        }
+    }
+    fn select(&mut self) {
+        if let Some(selected) = self
+            .task_lists_list_state
+            .selected()
+            .map(|idx| self.task_lists.get(idx))
+            .flatten()
+        {
+            self.selected = Some(selected.clone());
+        }
+    }
+
+    fn select_prev(&mut self) {
+        if self.task_lists.is_empty() {
+            return;
+        }
+        let Some(current) = self.task_lists_list_state.selected() else {
+            self.task_lists_list_state.select(Some(0));
+            return
+        };
+
+        if current > 0 {
+            self.task_lists_list_state.select(Some(current - 1))
+        }
+    }
+
+    fn handle_key(&mut self, key: KeyEvent) -> bool {
+        match key.code {
+            KeyCode::Down => {
+                self.select_next();
+                true
+            }
+            KeyCode::Enter => {
+                self.select();
+                true
+            }
+            KeyCode::Up => {
+                self.select_prev();
+                true
+            }
+            KeyCode::Esc => {
+                if self.selected.is_some() {
+                    self.selected = None;
+                    true
+                } else {
+                    false
+                }
+            }
+            // KeyCode::Char('n') => {
+            //     let groups = &self.groups;
+            //     let names: Vec<String> =
+            //         join_all(groups.iter().map(|g| g.display_name()))
+            //             .await
+            //             .into_iter()
+            //             .map(|d| d.map(|i| format!("{}", i)))
+            //             .collect::<Result<Vec<_>, StoreError>>()
+            //             .unwrap();
+
+            //     let list_title = Input::<String>::new()
+            //         .with_prompt("List Title")
+            //         .interact_text()
+            //         .unwrap();
+
+            //     let chosen: usize = Select::new()
+            //         .with_prompt("Under which Group?")
+            //         .items(&names)
+            //         .interact()
+            //         .unwrap();
+
+            //     let group = &groups[chosen];
+            //     let mut tl_draft = group.task_list_draft().unwrap();
+            //     tl_draft.name(list_title);
+
+            //     tl_draft.send().await.unwrap();
+            //     true
+            // }
+            _ => false,
+        }
+    }
+
+    fn render<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, block_border_style: Style) {
+        if let Some(selected) = &self.selected {
+            let ls = List::new(
+                selected
+                    .tasks()
+                    .iter()
+                    .map(|l| ListItem::new(Text::from(l.title().clone())))
+                    .collect::<Vec<_>>(),
+            )
+            .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY))
+            .block(
+                Block::default()
+                    .title(format!(" 🗹 > {:}", selected.name()))
+                    .borders(Borders::ALL)
+                    .border_style(block_border_style),
+            );
+
+            f.render_stateful_widget(ls, area, &mut self.task_lists_list_state);
+        } else {
+            let ls = List::new(
+                self.task_lists
+                    .iter()
+                    .map(|l| ListItem::new(Text::from(l.name().clone())))
+                    .collect::<Vec<_>>(),
+            )
+            .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY))
+            .block(
+                Block::default()
+                    .title(" Tasks 🗹")
+                    .borders(Borders::ALL)
+                    .border_style(block_border_style),
+            );
+
+            f.render_stateful_widget(ls, area, &mut self.task_lists_list_state);
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 enum Tool {
     News,
-    Tasks(Vec<TaskList>),
+    Tasks(TasksState),
     Chat(Option<ChatStats>),
 }
 
@@ -62,11 +209,11 @@ impl Tool {
     fn name(&self) -> String {
         match self {
             Tool::News => "News".to_owned(),
-            Tool::Tasks(t) => {
-                if t.is_empty() {
+            Tool::Tasks(TasksState { task_lists, .. }) => {
+                if task_lists.is_empty() {
                     "Tasks".to_owned()
                 } else {
-                    format!("Tasks ({:})", t.len())
+                    format!("Tasks ({:})", task_lists.len())
                 }
             }
             Tool::Chat(stats) => match stats {
@@ -99,7 +246,7 @@ impl Tool {
             unimplemented!("What are you doing here?")
         }
         tracing::info!(len = t.len(), "setting tasks");
-        *self = Tool::Tasks(t)
+        *self = Tool::Tasks(TasksState::fresh(t))
     }
 
     fn all() -> [Self; 3] {
@@ -108,6 +255,13 @@ impl Tool {
             Tool::News,
             Tool::Chat(None),
         ]
+    }
+
+    fn handle_key(&mut self, key: KeyEvent) -> bool {
+        match self {
+            Tool::Tasks(task_state) => task_state.handle_key(key),
+            _ => false,
+        }
     }
 }
 
@@ -197,67 +351,49 @@ impl App {
         &self.tools[self.index]
     }
 
+    pub fn selected_tool_mut(&mut self) -> &mut Tool {
+        &mut self.tools[self.index]
+    }
     async fn handle_key(&mut self, key: KeyEvent) -> bool {
-        // true means exit
-        match key.code {
-            KeyCode::Esc => return true,
-            KeyCode::Tab if !self.logs_fullscreen => {
-                self.next_widget();
-                return false;
-            }
-            _ => {}
-        }
-
-        match self.selected_widget {
+        let handled = match self.selected_widget {
             Widget::Tools => match key.code {
-                KeyCode::Right => self.next_tool(),
-                KeyCode::Left => self.previous_tool(),
-                _ => {}
+                KeyCode::Right => {
+                    self.next_tool();
+                    true
+                }
+                KeyCode::Left => {
+                    self.previous_tool();
+                    true
+                }
+                _ => false,
             },
             Widget::Logs => match key.code {
                 KeyCode::Char(c) if c == 'f' => {
                     self.logs_fullscreen = !self.logs_fullscreen;
+                    true
                 }
                 KeyCode::Up => {
                     self.log_state.transition(&TuiWidgetEvent::PrevPageKey);
+                    true
                 }
                 KeyCode::Down => {
                     self.log_state.transition(&TuiWidgetEvent::NextPageKey);
+                    true
+                }
+                _ => false,
+            },
+            Widget::Main => self.selected_tool_mut().handle_key(key),
+        };
+
+        if !handled {
+            // true means exit
+            match key.code {
+                KeyCode::Esc => return true,
+                KeyCode::Tab if !self.logs_fullscreen => {
+                    self.next_widget();
+                    return false;
                 }
                 _ => {}
-            },
-            Widget::Main => {
-                match key.code {
-                    KeyCode::Char('n') if self.selected_tool().is_tasks() => {
-                        let groups = &self.groups;
-                        let names: Vec<String> = join_all(groups.iter().map(|g| g.display_name()))
-                            .await
-                            .into_iter()
-                            .map(|d| d.map(|i| format!("{}", i)))
-                            .collect::<Result<Vec<_>, StoreError>>()
-                            .unwrap();
-
-                        let list_title = Input::<String>::new()
-                            .with_prompt("List Title")
-                            .interact_text()
-                            .unwrap();
-
-                        let chosen: usize = Select::new()
-                            .with_prompt("Under which Group?")
-                            .items(&names)
-                            .interact()
-                            .unwrap();
-
-                        let group = &groups[chosen];
-                        let mut tl_draft = group.task_list_draft().unwrap();
-                        tl_draft.name(list_title);
-
-                        tl_draft.send().await.unwrap();
-                    }
-                    _ => {
-                        // ...
-                    }
-                }
             }
         }
 
@@ -314,7 +450,7 @@ async fn run_app<B: Backend>(
     let mut last_tick = Instant::now();
 
     loop {
-        terminal.draw(|f| ui(f, &app))?;
+        terminal.draw(|f| ui(f, &mut app))?;
 
         let timeout = tick_rate
             .checked_sub(last_tick.elapsed())
@@ -341,7 +477,7 @@ async fn run_app<B: Backend>(
     }
 }
 
-fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
+fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
     let size = f.size();
     let constraints = if app.logs_fullscreen {
         [
@@ -392,14 +528,6 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
         .select(app.index)
         .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY));
 
-    let mut main = Block::default()
-        .title(format!(" {:} ", app.selected_tool().name()))
-        .borders(Borders::ALL);
-
-    if app.selected_widget == Widget::Main {
-        main = main.border_style(Style::default().fg(PRIMARY));
-    }
-
     let mut titles = vec![
         Spans::from(vec![Span::styled(
             app.username.clone().unwrap_or("".to_owned()),
@@ -448,8 +576,26 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
     f.render_widget(status, chunks[2]);
     if app.logs_fullscreen {
         f.render_widget(logger, chunks[1]);
-    } else {
-        f.render_widget(main, chunks[1]);
-        f.render_widget(logger, chunks[3]);
+        return;
     }
+
+    f.render_widget(logger, chunks[3]);
+    let border_style = if app.selected_widget == Widget::Main {
+        Style::default().fg(PRIMARY)
+    } else {
+        Style::default()
+    };
+
+    match app.selected_tool_mut() {
+        Tool::Tasks(tasks_state) if !tasks_state.task_lists.is_empty() => {
+            tasks_state.render(f, chunks[1], border_style);
+        }
+        t => {
+            let default_block = Block::default()
+                .title(format!(" {:} ", t.name()))
+                .borders(Borders::ALL)
+                .border_style(border_style);
+            f.render_widget(default_block, chunks[1]);
+        }
+    };
 }

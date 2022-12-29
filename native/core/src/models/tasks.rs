@@ -9,6 +9,12 @@ pub struct Task {
     inner: OriginalMessageLikeEvent<TaskEventContent>,
 }
 
+impl Task {
+    pub fn title(&self) -> &String {
+        &self.inner.content.title
+    }
+}
+
 impl Deref for Task {
     type Target = OriginalMessageLikeEvent<TaskEventContent>;
     fn deref(&self) -> &Self::Target {
@@ -48,7 +54,7 @@ impl TaskList {
     pub fn room_id(&self) -> OwnedRoomId {
         self.inner.room_id.clone()
     }
-    pub fn name(&self) -> Option<String> {
-        Some(self.inner.content.name.clone())
+    pub fn name(&self) -> &String {
+        &self.inner.content.name
     }
 }
