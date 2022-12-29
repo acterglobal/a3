@@ -85,8 +85,7 @@ class ChatRoomController extends GetxController {
           // filter only message from other not me
           // it is processed in handleSendPressed
           types.Message m = await _prepareMessage(event);
-          if (m.type != types.MessageType.custom &&
-              m.type != types.MessageType.unsupported) {
+          if (m is! types.CustomMessage && m is! types.UnsupportedMessage) {
             _insertMessage(m);
             RoomEventItem? eventItem = event.eventItem();
             if (eventItem != null) {
@@ -152,8 +151,7 @@ class ChatRoomController extends GetxController {
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
               types.Message m = await _prepareMessage(msg);
-              if (m.type != types.MessageType.custom &&
-                  m.type != types.MessageType.unsupported) {
+              if (m is! types.CustomMessage && m is! types.UnsupportedMessage) {
                 _insertMessage(m);
                 if (m.metadata != null &&
                     m.metadata!.containsKey('repliedTo')) {
@@ -178,8 +176,7 @@ class ChatRoomController extends GetxController {
             debugPrint('chat room message insert at');
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            if (m.type != types.MessageType.custom &&
-                m.type != types.MessageType.unsupported) {
+            if (m is! types.CustomMessage && m is! types.UnsupportedMessage) {
               _insertMessage(m);
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 _fetchOriginalContent(
@@ -202,8 +199,7 @@ class ChatRoomController extends GetxController {
             debugPrint('chat room message update at');
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            if (m.type != types.MessageType.custom &&
-                m.type != types.MessageType.unsupported) {
+            if (m is! types.CustomMessage && m is! types.UnsupportedMessage) {
               _updateMessage(m);
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 _fetchOriginalContent(
@@ -232,8 +228,7 @@ class ChatRoomController extends GetxController {
             debugPrint('chat room message push');
             RoomMessage value = event.value()!;
             types.Message m = await _prepareMessage(value);
-            if (m.type != types.MessageType.custom &&
-                m.type != types.MessageType.unsupported) {
+            if (m is! types.CustomMessage && m is! types.UnsupportedMessage) {
               _messages.insert(0, m);
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 _fetchOriginalContent(
@@ -273,8 +268,7 @@ class ChatRoomController extends GetxController {
               i += 1;
             }
             types.Message m = _messages.removeAt(_messages.length - oldIndex);
-            if (m.type != types.MessageType.custom &&
-                m.type != types.MessageType.unsupported) {
+            if (m is! types.CustomMessage && m is! types.UnsupportedMessage) {
               _messages.insert(i, m);
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 _fetchOriginalContent(
@@ -783,7 +777,6 @@ class ChatRoomController extends GetxController {
           id: originalId,
           createdAt: orgEventItem.originServerTs(),
           text: orgEventItem.textDesc()!.body(),
-          type: types.MessageType.text,
           metadata: repliedToContent,
         );
       } else if (orgMsgType == 'm.image') {
@@ -797,7 +790,6 @@ class ChatRoomController extends GetxController {
           name: orgEventItem.imageDesc()!.name(),
           size: orgEventItem.imageDesc()!.size()!,
           uri: '',
-          type: types.MessageType.image,
           metadata: repliedToContent,
         );
       } else if (orgMsgType == 'm.file') {
@@ -811,7 +803,6 @@ class ChatRoomController extends GetxController {
           name: orgEventItem.fileDesc()!.name(),
           size: orgEventItem.fileDesc()!.size()!,
           uri: '',
-          type: types.MessageType.file,
           metadata: repliedToContent,
         );
       } else if (orgMsgType == 'm.sticker') {

@@ -33,7 +33,6 @@ class ChatBubbleBuilder extends StatefulWidget {
 
 class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     with TickerProviderStateMixin {
-  late types.MessageType messagetype;
   final ChatRoomController roomController = Get.find<ChatRoomController>();
   late TabController tabBarController;
   List<Tab> reactionTabs = [];
@@ -43,7 +42,6 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     super.initState();
 
     tabBarController = TabController(length: reactionTabs.length, vsync: this);
-    messagetype = widget.message.type;
   }
 
   // A helper function to get bubble widget size to set constraints beforehand
@@ -174,18 +172,18 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           const SizedBox(height: 4),
           Bubble(
             child: widget.child,
-            color: !isAuthor() || messagetype == types.MessageType.image
+            color: !isAuthor() || widget.message is types.ImageMessage
                 ? AppCommonTheme.backgroundColorLight
                 : AppCommonTheme.primaryColor,
             margin: widget.nextMessageInGroup
                 ? const BubbleEdges.symmetric(horizontal: 2)
                 : null,
             radius: const Radius.circular(22),
-            padding: messagetype == types.MessageType.image
+            padding: widget.message is types.ImageMessage
                 ? const BubbleEdges.all(0)
                 : null,
             nip: (widget.nextMessageInGroup ||
-                    messagetype == types.MessageType.image)
+                    widget.message is types.ImageMessage)
                 ? BubbleNip.no
                 : !isAuthor()
                     ? BubbleNip.leftBottom
@@ -208,7 +206,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(22),
-      padding: message.repliedMessage!.type == types.MessageType.image
+      padding: message.repliedMessage is types.ImageMessage
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
@@ -216,44 +214,43 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
   Widget originalMessageBuilder(types.Message message) {
-    switch (message.repliedMessage!.type) {
-      case types.MessageType.text:
-        return Html(
-          data: """${message.repliedMessage!.metadata?['content']}""",
-          shrinkWrap: true,
-          style: {
-            'body': Style(
-              color: ChatTheme01.chatReplyTextColor,
-              fontWeight: FontWeight.w400,
-              fontSize: FontSize(14),
-            ),
-          },
-        );
-      case types.MessageType.image:
-        Uint8List data =
-            base64Decode(message.repliedMessage!.metadata?['content']);
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: data.isNotEmpty
-              ? Image.memory(
-                  data,
-                  errorBuilder:
-                      (BuildContext context, Object url, StackTrace? error) {
-                    return Text('Could not load image due to $error');
-                  },
-                  cacheHeight: 75,
-                  cacheWidth: 75,
-                  fit: BoxFit.cover,
-                )
-              : const SizedBox(),
-        );
-      case types.MessageType.file:
-        return Text(
-          message.repliedMessage!.metadata?['content'],
-          style: const TextStyle(color: Colors.white, fontSize: 12),
-        );
-      default:
-        return const SizedBox();
+    if (message.repliedMessage is types.TextMessage) {
+      return Html(
+        data: """${message.repliedMessage!.metadata?['content']}""",
+        shrinkWrap: true,
+        style: {
+          'body': Style(
+            color: ChatTheme01.chatReplyTextColor,
+            fontWeight: FontWeight.w400,
+            fontSize: FontSize(14),
+          ),
+        },
+      );
+    } else if (message.repliedMessage is types.ImageMessage) {
+      Uint8List data =
+          base64Decode(message.repliedMessage!.metadata?['content']);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: data.isNotEmpty
+            ? Image.memory(
+                data,
+                errorBuilder:
+                    (BuildContext context, Object url, StackTrace? error) {
+                  return Text('Could not load image due to $error');
+                },
+                cacheHeight: 75,
+                cacheWidth: 75,
+                fit: BoxFit.cover,
+              )
+            : const SizedBox(),
+      );
+    } else if (message.repliedMessage is types.FileMessage) {
+      return Text(
+        message.repliedMessage!.metadata?['content'],
+        style: const TextStyle(color: Colors.white, fontSize: 12),
+      );
+    } else {
+      return const SizedBox();
     }
   }
 
