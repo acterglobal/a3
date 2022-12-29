@@ -158,25 +158,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          (widget.message.repliedMessage != null)
-              ? widget.userId == widget.message.repliedMessage!.author.id
-                  ? const Text(
-                      'Replied to you',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    )
-                  : Text(
-                      roomController.client.userId().toString() ==
-                              widget.message.repliedMessage!.author.id
-                          ? 'Replied to you'
-                          : 'Replied to ${widget.message.repliedMessage!.author.id}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    )
-              : const SizedBox(),
-          const SizedBox(height: 8),
-          (widget.message.repliedMessage != null)
-              ? buildOriginalBubble(widget.message)
-              : const SizedBox(),
-          const SizedBox(height: 4),
+          ...buildInReplyToBubble(),
           Bubble(
             child: widget.child,
             color: !isAuthor() || widget.message is types.ImageMessage
@@ -204,26 +186,43 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     );
   }
 
-  //Custom original bubble
-  Widget buildOriginalBubble(types.Message message) {
-    return Bubble(
-      child: originalMessageBuilder(message),
-      color: AppCommonTheme.backgroundColorLight,
-      margin: widget.nextMessageInGroup
-          ? const BubbleEdges.symmetric(horizontal: 2)
-          : null,
-      radius: const Radius.circular(22),
-      padding: message.repliedMessage is types.ImageMessage
-          ? const BubbleEdges.all(0)
-          : null,
-      nip: BubbleNip.no,
-    );
+  List<Widget> buildInReplyToBubble() {
+    types.Message? msg = widget.message.repliedMessage;
+    if (msg == null) {
+      return [];
+    }
+    return [
+      widget.userId == msg.author.id
+          ? const Text(
+              'Replied to you',
+              style: TextStyle(color: Colors.white, fontSize: 12),
+            )
+          : Text(
+              roomController.client.userId().toString() == msg.author.id
+                  ? 'Replied to you'
+                  : 'Replied to ${msg.author.id}',
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
+      const SizedBox(height: 8),
+      Bubble(
+        child: inReplyToMessageBuilder(),
+        color: AppCommonTheme.backgroundColorLight,
+        margin: widget.nextMessageInGroup
+            ? const BubbleEdges.symmetric(horizontal: 2)
+            : null,
+        radius: const Radius.circular(22),
+        padding: msg is types.ImageMessage ? const BubbleEdges.all(0) : null,
+        nip: BubbleNip.no,
+      ),
+      const SizedBox(height: 4),
+    ];
   }
 
-  Widget originalMessageBuilder(types.Message message) {
-    if (message.repliedMessage is types.TextMessage) {
+  Widget inReplyToMessageBuilder() {
+    types.Message? msg = widget.message.repliedMessage;
+    if (msg is types.TextMessage) {
       return Html(
-        data: """${message.repliedMessage!.metadata?['content']}""",
+        data: """${msg.metadata?['content']}""",
         shrinkWrap: true,
         style: {
           'body': Style(
@@ -233,9 +232,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           ),
         },
       );
-    } else if (message.repliedMessage is types.ImageMessage) {
-      Uint8List data =
-          base64Decode(message.repliedMessage!.metadata?['content']);
+    } else if (msg is types.ImageMessage) {
+      Uint8List data = base64Decode(msg.metadata?['content']);
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: data.isNotEmpty
@@ -251,9 +249,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               )
             : const SizedBox(),
       );
-    } else if (message.repliedMessage is types.FileMessage) {
+    } else if (msg is types.FileMessage) {
       return Text(
-        message.repliedMessage!.metadata?['content'],
+        msg.metadata?['content'],
         style: const TextStyle(color: Colors.white, fontSize: 12),
       );
     } else {
