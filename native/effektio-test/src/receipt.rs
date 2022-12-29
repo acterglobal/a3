@@ -9,34 +9,34 @@ async fn sisko_detects_kyra_read() -> Result<()> {
 
     let tmp_dir = TempDir::new()?;
     let sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@sisko:ds9.effektio.org".to_string(),
+        "sisko".to_string(),
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
     let mut sisko_synced = sisko_syncer.first_synced_rx().expect("note yet read");
     while sisko_synced.next().await != Some(true) {} // let's wait for it to have synced
     let sisko_group = sisko
-        .get_group("#ops:ds9.effektio.org".to_owned())
+        .get_group("#ops:ds9.effektio.org".to_string())
         .await
         .expect("sisko should belong to ops");
     let event_id = sisko_group
-        .send_plain_message("Hi, everyone".to_owned())
+        .send_plain_message("Hi, everyone".to_string())
         .await?;
 
     let tmp_dir = TempDir::new()?;
     let kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@kyra:ds9.effektio.org".to_owned(),
-        "kyra".to_owned(),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@kyra:ds9.effektio.org".to_string(),
+        "kyra".to_string(),
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
     let mut first_synced = kyra_syncer.first_synced_rx().expect("note yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
     let kyra_group = kyra
-        .get_group("#ops:ds9.effektio.org".to_owned())
+        .get_group("#ops:ds9.effektio.org".to_string())
         .await
         .expect("kyra should belong to ops");
     kyra_group.read_receipt(event_id).await?;

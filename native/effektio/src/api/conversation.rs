@@ -3,8 +3,8 @@ use derive_builder::Builder;
 use effektio_core::statics::default_effektio_conversation_states;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use js_int::uint;
 use log::{error, info, warn};
+
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
@@ -21,7 +21,7 @@ use matrix_sdk::{
             message::OriginalSyncRoomMessageEvent,
         },
         serde::Raw,
-        OwnedRoomId, OwnedUserId, RoomId,
+        OwnedRoomId, OwnedUserId,
     },
     Client as MatrixClient,
 };
@@ -69,8 +69,9 @@ impl Conversation {
     }
 
     fn set_latest_message(&mut self, mut msg: RoomMessage) {
-        if msg.is_reply() {
-            msg.simplify_body();
+        if let Some(mut event_item) = msg.event_item() {
+            event_item.simplify_body();
+            msg.set_event_item(Some(event_item));
         }
         self.latest_message = Some(msg);
     }
@@ -212,7 +213,16 @@ impl ConversationController {
                 room: room.clone(),
             });
             if let Ok(decrypted) = joined.decrypt_event(&Raw::new(&ev).unwrap()).await {
-                let msg = RoomMessage::from_timeline_event(&ev, &decrypted, room.clone());
+                let msg = RoomMessage::from_sync_event(
+                    None,
+                    None,
+                    ev.event_id.to_string(),
+                    ev.sender.to_string(),
+                    ev.origin_server_ts.get().into(),
+                    "Message".to_string(),
+                    room,
+                    false,
+                );
                 convo.set_latest_message(msg.clone());
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -244,7 +254,16 @@ impl ConversationController {
                 client: client.clone(),
                 room: room.clone(),
             });
-            let msg = RoomMessage::from_original(&ev, room.clone());
+            let msg = RoomMessage::from_sync_event(
+                Some(ev.content.msgtype),
+                ev.content.relates_to,
+                ev.event_id.to_string(),
+                ev.sender.to_string(),
+                ev.origin_server_ts.get().into(),
+                "Message".to_string(),
+                room,
+                true,
+            );
             convo.set_latest_message(msg.clone());
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -326,15 +345,15 @@ impl Client {
                 let initial_states = default_effektio_conversation_states();
                 let request = assign!(CreateRoomRequest::new(), {
                     creation_content: Some(Raw::new(&CreationContent::new())?),
-                    initial_state: &initial_states,
+                    initial_state: initial_states,
                     is_direct: true,
-                    invite: &settings.invites,
-                    room_alias_name: settings.alias.as_deref(),
-                    name: settings.name.as_ref().map(|x| x.as_ref()),
+                    invite: settings.invites,
+                    room_alias_name: settings.alias,
+                    name: settings.name,
                     visibility: Visibility::Private,
                 });
                 let response = client.create_room(request).await?;
-                Ok(response.room_id)
+                Ok(response.room_id().to_owned())
             })
             .await?
     }

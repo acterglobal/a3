@@ -59,6 +59,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -73,13 +74,13 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
       },
       child: Card(
         elevation: 0,
-        color: ToDoTheme.secondaryCardColor,
+        color: deviceWidth<600? ToDoTheme.secondaryCardColor:AppCommonTheme.transparentColor,
         margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 2),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
               child: Row(
                 children: <Widget>[
                   GestureDetector(
@@ -145,7 +146,7 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                       ),
                     ),
                   ),
-                  Expanded(
+                  Flexible(
                     child: Padding(
                       padding: const EdgeInsets.only(left: 8, top: 3),
                       child: Text(
@@ -159,18 +160,10 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 8, top: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                  // large screens
+                  if (deviceWidth > 600) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(left: 40, right: 8),
                       child: SvgPicture.asset(
                         'assets/images/calendar-2.svg',
                         color: isAllDay
@@ -178,20 +171,17 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                             : ToDoTheme.calendarColor,
                       ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 7,
-                    child: Text(
+                    Text(
                       widget.dateTime,
                       style: isAllDay
                           ? ToDoTheme.todayCalendarTextStyle
                           : ToDoTheme.calendarTextStyle,
                     ),
-                  ),
-                  widget.hasMessage
-                      ? Expanded(
-                          flex: 2,
-                          child: Row(
+                    const SizedBox(
+                      width: 40,
+                    ),
+                    widget.hasMessage
+                        ? Row(
                             children: [
                               SvgPicture.asset(
                                 'assets/images/message.svg',
@@ -208,26 +198,98 @@ class _ToDoTaskItemState extends State<ToDoTaskItem> {
                                 ),
                               ),
                             ],
-                          ),
-                        )
-                      : const Spacer(flex: 2),
-                  Expanded(
-                    flex: 7,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: AvatarStack(
-                        borderWidth: 0,
-                        settings: settings,
-                        avatars: avatars,
-                        infoWidgetBuilder: avatarBuilder,
-                        width: 28,
-                        height: 28,
+                          )
+                        : const SizedBox(),
+                    const SizedBox(
+                      width: 25,
+                    ),
+                    Flexible(
+                      child: SizedBox(
+                        width: 110,
+                        child: AvatarStack(
+                          borderWidth: 0,
+                          settings: settings,
+                          avatars: avatars,
+                          infoWidgetBuilder: avatarBuilder,
+                          width: 24,
+                          height: 24,
+                        ),
                       ),
                     ),
-                  ),
+                  ]
                 ],
               ),
             ),
+            //small screens
+            if (deviceWidth < 600)
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SvgPicture.asset(
+                          'assets/images/calendar-2.svg',
+                          color: isAllDay
+                              ? ToDoTheme.todayCalendarColor
+                              : ToDoTheme.calendarColor,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Text(
+                        widget.dateTime,
+                        style: isAllDay
+                            ? ToDoTheme.todayCalendarTextStyle
+                            : ToDoTheme.calendarTextStyle,
+                      ),
+                    ),
+                    widget.hasMessage
+                        ? Expanded(
+                            flex: 2,
+                            child: Row(
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/images/message.svg',
+                                  height: 12,
+                                  width: 12,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 5),
+                                  child: Text(
+                                    '$messageCount',
+                                    style: ToDoTheme.buttonTextStyle.copyWith(
+                                      color: ToDoTheme.primaryTextColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : const Spacer(flex: 2),
+                    Expanded(
+                      flex: 7,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: AvatarStack(
+                          borderWidth: 0,
+                          settings: settings,
+                          avatars: avatars,
+                          infoWidgetBuilder: avatarBuilder,
+                          width: 28,
+                          height: 28,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),

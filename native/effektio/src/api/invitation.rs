@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use futures_signals::signal::{
     Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
 };
-use log::{error, info, warn};
+use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
@@ -328,7 +328,7 @@ impl Client {
                         let user_profile = UserProfile::new(
                             client.clone(),
                             member.user_id().to_owned(),
-                            member.avatar_url().map(|x| x.to_owned()),
+                            member.avatar_url().map(|x| (*x).to_owned()),
                             member.display_name().map(|x| x.to_string()),
                         );
                         profiles.push(user_profile);

@@ -1,10 +1,17 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use futures::{Stream, StreamExt};
 use futures_signals::signal_vec::{SignalVecExt, VecDiff};
 use js_int::UInt;
 use log::info;
 use matrix_sdk::{
     room::{timeline::Timeline, Room},
+    ruma::{
+        events::{
+            relation::Replacement,
+            room::message::{MessageType, Relation, RoomMessageEvent, RoomMessageEventContent},
+        },
+        EventId,
+    },
     Client,
 };
 use std::sync::Arc;
@@ -77,8 +84,7 @@ pub struct TimelineStream {
 }
 
 impl TimelineStream {
-    pub fn new(client: Client, room: Room) -> Self {
-        let timeline = Arc::new(room.timeline());
+    pub fn new(client: Client, room: Room, timeline: Arc<Timeline>) -> Self {
         TimelineStream {
             client,
             room,
@@ -94,10 +100,12 @@ impl TimelineStream {
         stream.map(move |diff| match diff {
             VecDiff::Replace { values } => TimelineDiff {
                 action: "Replace".to_string(),
-                values: values
-                    .iter()
-                    .map(|x| timeline_item_to_message(x.clone(), room.clone()))
-                    .collect(),
+                values: Some(
+                    values
+                        .iter()
+                        .map(|x| timeline_item_to_message(x.clone(), room.clone()))
+                        .collect(),
+                ),
                 index: None,
                 value: None,
                 new_index: None,
@@ -107,7 +115,7 @@ impl TimelineStream {
                 action: "InsertAt".to_string(),
                 values: None,
                 index: Some(index),
-                value: timeline_item_to_message(value, room.clone()),
+                value: Some(timeline_item_to_message(value, room.clone())),
                 new_index: None,
                 old_index: None,
             },
@@ -115,7 +123,7 @@ impl TimelineStream {
                 action: "UpdateAt".to_string(),
                 values: None,
                 index: Some(index),
-                value: timeline_item_to_message(value, room.clone()),
+                value: Some(timeline_item_to_message(value, room.clone())),
                 new_index: None,
                 old_index: None,
             },
@@ -123,7 +131,7 @@ impl TimelineStream {
                 action: "Push".to_string(),
                 values: None,
                 index: None,
-                value: timeline_item_to_message(value, room.clone()),
+                value: Some(timeline_item_to_message(value, room.clone())),
                 new_index: None,
                 old_index: None,
             },
@@ -196,9 +204,8 @@ impl TimelineStream {
                             }
                             VecDiff::Push { value } => {
                                 info!("stream forward timeline push");
-                                if let Some(inner) = timeline_item_to_message(value, room.clone()) {
-                                    return Ok(inner);
-                                }
+                                let inner = timeline_item_to_message(value, room.clone());
+                                return Ok(inner);
                             }
                             VecDiff::RemoveAt { index } => {
                                 info!("stream forward timeline remove_at");
@@ -218,6 +225,55 @@ impl TimelineStream {
                         }
                     }
                 }
+            })
+            .await?
+    }
+
+    pub async fn edit(
+        &self,
+        new_msg: String,
+        original_event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let Room::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message from a room we are not in")
+        };
+        let timeline = self.timeline.clone();
+        let event_id = EventId::parse(original_event_id)?;
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let timeline_event = room.event(&event_id).await.expect("Couldn't find event.");
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .expect("Couldn't deserialise event");
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    info!("Can't edit an event not sent by own user");
+                    return Ok(false);
+                }
+
+                let replacement = Replacement::new(
+                    event_id.to_owned(),
+                    MessageType::text_markdown(new_msg.to_string()),
+                );
+                let mut edited_content = RoomMessageEventContent::text_markdown(new_msg);
+                edited_content.relates_to = Some(Relation::Replacement(replacement));
+
+                timeline
+                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
             })
             .await?
     }

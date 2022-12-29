@@ -20,7 +20,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -146,6 +145,150 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
+  Widget customBottomWidget(BuildContext context) {
+    return GetBuilder<ChatRoomController>(
+      id: 'emoji-reaction',
+      builder: (ChatRoomController controller) {
+        if (!controller.isEmojiContainerVisible) {
+          return CustomChatInput(
+            isChatScreen: true,
+            roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
+            onButtonPressed: () => onSendButtonPressed(controller),
+          );
+        }
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          color: AppCommonTheme.backgroundColorLight,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  controller.isEmojiContainerVisible = false;
+                  controller.showReplyView = true;
+                  controller.update(['emoji-reaction', 'chat-input']);
+                },
+                child: const Text(
+                  'Reply',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  if (controller.isAuthor()) {
+                    // redact message call
+                    await roomController
+                        .redactRoomMessage(roomController.repliedToMessage!.id);
+                    roomController.toggleEmojiContainer();
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext ctx) {
+                        return Dialog(
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            height: 280,
+                            decoration: const BoxDecoration(
+                              color: AppCommonTheme.backgroundColorLight,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(16),
+                              ),
+                            ),
+                            child: Center(
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(ctx);
+                                        },
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Report This Message',
+                                    style: AppCommonTheme.appBarTitleStyle,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  const Text(
+                                    "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: AppCommonTheme.dividerColor,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showNotYetImplementedMsg(
+                                        ctx,
+                                        'Report feature not yet implemented',
+                                      );
+                                      controller.update(['emoji-reaction']);
+                                      Navigator.pop(ctx);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
+                                          color: AppCommonTheme.primaryColor,
+                                        ),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8),
+                                          child: Center(
+                                            child: Text(
+                                              'Okay!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Text(
+                  controller.isAuthor() ? 'Unsend' : 'Report',
+                  style: TextStyle(
+                    color: controller.isAuthor() ? Colors.white : Colors.red,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  showMoreOptions();
+                },
+                child: const Text(
+                  'More',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget textMessageBuilder(
     types.TextMessage p1, {
     required int messageWidth,
@@ -170,53 +313,67 @@ class _ChatScreenState extends State<ChatScreen> {
     types.ImageMessage imageMessage, {
     required int messageWidth,
   }) {
-    // binary data
-    // CachedMemoryImage cannot be used, because uniqueKey not working
-    // If uniqueKey not working, it means cache is not working
-    // So use Image.memory
-    // ToDo: must implement image caching someday
     if (imageMessage.metadata?.containsKey('base64') ?? false) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.memory(
-          base64Decode(imageMessage.metadata?['base64']),
-          errorBuilder: (context, url, error) {
-            return Text(
-              'Could not load image due to $error',
-            );
-          },
-          frameBuilder: ((context, child, frame, wasSynchronouslyLoaded) {
-            if (wasSynchronouslyLoaded) return child;
-            return AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: frame != null
-                  ? child
-                  : const SizedBox(
-                      height: 60,
-                      width: 60,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 6,
-                        color: AppCommonTheme.primaryColor,
+      if (imageMessage.metadata?['base64'].isNotEmpty) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Image.memory(
+            base64Decode(imageMessage.metadata?['base64']),
+            errorBuilder:
+                (BuildContext context, Object url, StackTrace? error) {
+              return Text('Could not load image due to $error');
+            },
+            frameBuilder: (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child;
+              }
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: frame != null
+                    ? child
+                    : const SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          color: AppCommonTheme.primaryColor,
+                        ),
                       ),
-                    ),
-            );
-          }),
-          cacheWidth: 512,
-          width: messageWidth.toDouble(),
-          fit: BoxFit.cover,
-        ),
-      );
-    }
-    if (isURL(imageMessage.uri)) {
+              );
+            },
+            cacheWidth: 256,
+            width: messageWidth.toDouble() / 2,
+            fit: BoxFit.cover,
+          ),
+        );
+      } else {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: const SizedBox(
+            height: 60,
+            width: 60,
+            child: CircularProgressIndicator(
+              strokeWidth: 6,
+              color: AppCommonTheme.primaryColor,
+            ),
+          ),
+        );
+      }
+    } else if (imageMessage.uri.isNotEmpty && isURL(imageMessage.uri)) {
       // remote url
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: CachedNetworkImage(
           imageUrl: imageMessage.uri,
           width: messageWidth.toDouble(),
-          errorWidget: (context, url, error) => const Text(
-            'Could not load image',
-          ),
+          errorWidget: (BuildContext context, Object url, dynamic error) {
+            return Text('Could not load image due to $error');
+          },
         ),
       );
     }
@@ -228,9 +385,13 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Image.file(
           File(imageMessage.uri),
           width: messageWidth.toDouble(),
-          errorBuilder: (context, error, stackTrace) => const Text(
-            'Could not load image',
-          ),
+          errorBuilder: (
+            BuildContext context,
+            Object error,
+            StackTrace? stackTrace,
+          ) {
+            return Text('Could not load image due to $error');
+          },
         ),
       );
     }
@@ -274,14 +435,14 @@ class _ChatScreenState extends State<ChatScreen> {
               children: [
                 GetBuilder<ChatRoomController>(
                   id: 'room-profile',
-                  builder: (_) {
+                  builder: (ChatRoomController controller) {
                     return buildRoomName(context);
                   },
                 ),
                 const SizedBox(height: 5),
                 GetBuilder<ChatRoomController>(
                   id: 'active-members',
-                  builder: (_) {
+                  builder: (ChatRoomController controller) {
                     return buildActiveMembers(context);
                   },
                 ),
@@ -290,7 +451,7 @@ class _ChatScreenState extends State<ChatScreen> {
             actions: [
               GetBuilder<ChatRoomController>(
                 id: 'room-profile',
-                builder: (_) {
+                builder: (ChatRoomController controller) {
                   return buildProfileAction();
                 },
               ),
@@ -393,12 +554,7 @@ class _ChatScreenState extends State<ChatScreen> {
         return Stack(
           children: [
             Chat(
-              customBottomWidget: CustomChatInput(
-                isChatScreen: true,
-                roomName:
-                    widget.roomName ?? AppLocalizations.of(context)!.noName,
-                onButtonPressed: () => onSendButtonPressed(controller),
-              ),
+              customBottomWidget: customBottomWidget(context),
               textMessageBuilder: textMessageBuilder,
               l10n: ChatL10nEn(
                 emptyChatPlaceholder: '',
@@ -407,14 +563,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              messages: controller.messages,
+              messages: controller.getMessages(),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
               ),
-              onSendPressed: (_) {},
+              onSendPressed: (types.PartialText partialText) {},
               user: types.User(id: widget.client.userId().toString()),
-              // if invited, disable image gallery
-              disableImageGallery: invitedIndex != -1,
+              // disable image preview
+              disableImageGallery: true,
               //custom avatar builder
               avatarBuilder: avatarBuilder,
               bubbleBuilder: bubbleBuilder,
@@ -433,7 +589,13 @@ class _ChatScreenState extends State<ChatScreen> {
               onEndReached:
                   invitedIndex != -1 ? null : controller.handleEndReached,
               onEndReachedThreshold: 0.75,
-              onBackgroundTap: () => controller.toggleEmojiContainer(),
+              onBackgroundTap: () {
+                if (controller.isEmojiContainerVisible) {
+                  controller.toggleEmojiContainer();
+                  roomController.replyMessageWidget = null;
+                  roomController.repliedToMessage = null;
+                }
+              },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
               theme: EffektioChatTheme(
@@ -487,16 +649,100 @@ class _ChatScreenState extends State<ChatScreen> {
     controller.mentionKey.currentState!.controller!.clear();
   }
 
+  void showMoreOptions() {
+    showModalBottomSheet(
+      backgroundColor: AppCommonTheme.backgroundColorLight,
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ListTile(
+              leading: Icon(
+                Icons.link,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Copy',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 22),
+              width: MediaQuery.of(context).size.width,
+              height: 2,
+              color: Colors.grey,
+            ),
+            const ListTile(
+              leading: Icon(
+                Icons.bookmark_border_outlined,
+                color: Colors.white,
+              ),
+              title: Text(
+                'Bookmark',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 22),
+              width: MediaQuery.of(context).size.width,
+              height: 2,
+              color: Colors.grey,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget bubbleBuilder(
     Widget child, {
     required types.Message message,
     required bool nextMessageInGroup,
   }) {
-    return ChatBubbleBuilder(
-      userId: widget.client.userId().toString(),
-      child: child,
-      message: message,
-      nextMessageInGroup: nextMessageInGroup,
+    return GetBuilder<ChatRoomController>(
+      id: 'chat-bubble',
+      builder: (context) {
+        return ChatBubbleBuilder(
+          userId: widget.client.userId().toString(),
+          child: child,
+          message: message,
+          nextMessageInGroup: nextMessageInGroup,
+        );
+      },
     );
+  }
+
+  Widget customMessageBuilder(
+    types.CustomMessage customMessage, {
+    required int messageWidth,
+  }) {
+    if (customMessage.metadata?['itemContentType'] == 'UnableToDecrypt') {
+      String text = 'Failed to decrypt message. Re-request session keys.';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    return const SizedBox();
   }
 }

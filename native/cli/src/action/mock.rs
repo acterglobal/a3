@@ -17,7 +17,7 @@ fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
     let store_config = StoreConfig::new().state_store(MemoryStore::new());
 
     Ok(Client::builder()
-        .user_agent(&format!("effektio-cli/{}", crate_version!()))
+        .user_agent(format!("effektio-cli/{}", crate_version!()))
         .store_config(store_config)
         .homeserver_url(homeserver))
 }
@@ -26,11 +26,10 @@ async fn register(homeserver: &str, username: &str, password: &str) -> Result<Cl
     let client = default_client_config(homeserver)?.build().await?;
     if let Err(resp) = client.register(RegistrationRequest::new()).await {
         // FIXME: do actually check the registration types...
-        if let Some(_response) = resp.uiaa_response() {
+        if let Some(_response) = resp.as_uiaa_response() {
             let request = assign!(RegistrationRequest::new(), {
-                username: Some(username),
-                password: Some(password),
-
+                username: Some(username.to_string()),
+                password: Some(password.to_string()),
                 auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
             });
             client.register(request).await?;

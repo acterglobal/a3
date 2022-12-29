@@ -5,12 +5,9 @@ use futures::{
 };
 use log::{info, warn};
 use matrix_sdk::{
-    deserialized_responses::SyncResponse,
     encryption::identities::Device,
-    ruma::{
-        api::client::sync::sync_events::v3::DeviceLists, device_id,
-        events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch,
-    },
+    ruma::{device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch},
+    sync::SyncResponse,
     Client as MatrixClient,
 };
 use parking_lot::Mutex;
@@ -239,7 +236,7 @@ impl DeviceRecord {
     }
 
     pub fn display_name(&self) -> Option<String> {
-        self.device.display_name().map(|s| s.to_owned())
+        self.device.display_name().map(|s| s.to_string())
     }
 
     pub fn last_seen_ip(&self) -> Option<String> {

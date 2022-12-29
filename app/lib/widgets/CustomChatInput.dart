@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
+import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends StatelessWidget {
   static const List<List<String>> _attachmentNameList = [
@@ -36,36 +40,98 @@ class CustomChatInput extends StatelessWidget {
         GetBuilder<ChatRoomController>(
           id: 'chat-input',
           builder: (ChatRoomController controller) {
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              color: AppCommonTheme.backgroundColorLight,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      if (isChatScreen) _buildAttachmentButton(controller),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: _buildTextEditor(context, controller),
-                        ),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Visibility(
+                  visible: controller.showReplyView,
+                  child: Container(
+                    color: AppCommonTheme.backgroundColorLight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        top: 12.0,
+                        left: 16.0,
+                        right: 16.0,
                       ),
-                      if (controller.isSendButtonVisible || !isChatScreen)
-                        _buildSendButton(),
-                      if (!controller.isSendButtonVisible && isChatScreen)
-                        _buildImageButton(context, controller),
-                      if (!controller.isSendButtonVisible && isChatScreen)
-                        const SizedBox(width: 10),
-                      if (!controller.isSendButtonVisible && isChatScreen)
-                        _buildAudioButton(),
-                    ],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  controller.isAuthor()
+                                      ? 'Replying to yourself'
+                                      : 'Replying to ${toBeginningOfSentenceCase(controller.repliedToMessage?.author.firstName)}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                if (controller.repliedToMessage != null &&
+                                    controller.replyMessageWidget != null)
+                                  _replyContentBuilder(
+                                    controller.repliedToMessage,
+                                    controller.replyMessageWidget,
+                                  ),
+                              ],
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: GestureDetector(
+                              onTap: () {
+                                controller.showReplyView = false;
+                                controller.replyMessageWidget = null;
+                                controller.update(['chat-input']);
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  color: AppCommonTheme.backgroundColorLight,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          if (isChatScreen) _buildAttachmentButton(controller),
+                          Expanded(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: _buildTextEditor(context, controller),
+                            ),
+                          ),
+                          if (controller.isSendButtonVisible || !isChatScreen)
+                            _buildSendButton(),
+                          if (!controller.isSendButtonVisible && isChatScreen)
+                            _buildImageButton(context, controller),
+                          if (!controller.isSendButtonVisible && isChatScreen)
+                            const SizedBox(width: 10),
+                          if (!controller.isSendButtonVisible && isChatScreen)
+                            _buildAudioButton(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             );
           },
         ),
@@ -221,6 +287,33 @@ class CustomChatInput extends StatelessWidget {
 
   Widget _buildAudioButton() {
     return SvgPicture.asset('assets/images/microphone-2.svg', fit: BoxFit.none);
+  }
+
+  Widget _replyContentBuilder(Message? msg, Widget? messageWidget) {
+    if (msg is TextMessage) {
+      return messageWidget!;
+    } else if (msg is ImageMessage) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 100, maxWidth: 125),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(6.33),
+            child: Image.memory(
+              base64Decode(msg.metadata?['base64']),
+              fit: BoxFit.fill,
+              cacheWidth: 125,
+            ),
+          ),
+        ),
+      );
+    } else if (msg is FileMessage) {
+      return messageWidget!;
+    } else if (msg is CustomMessage) {
+      return messageWidget!;
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }
 
