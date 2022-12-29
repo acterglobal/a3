@@ -409,7 +409,7 @@ class AttachmentWidget extends StatelessWidget {
             _roomController.handleMultipleImageSelection(context, roomName);
             break;
           case 'gif':
-            //gif handle
+            _roomController.handleImageSelection(context);
             break;
           case 'document':
             _roomController.handleFileSelection(context);

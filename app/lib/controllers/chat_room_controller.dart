@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
@@ -25,7 +26,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
@@ -47,7 +47,7 @@ class ChatRoomController extends GetxController {
       GlobalKey<FlutterMentionsState>();
   bool isSendButtonVisible = false;
   bool isEmojiContainerVisible = false;
-  final List<XFile> _imageFileList = [];
+  final List<PlatformFile> _imageFileList = [];
   List<Member> activeMembers = [];
   Map<String, String> messageTextMapMarkDown = {};
   Map<String, String> messageTextMapHtml = {};
@@ -387,124 +387,144 @@ class ChatRoomController extends GetxController {
     String roomName,
   ) async {
     _imageFileList.clear();
-    final result = await ImagePicker().pickMultiImage(
-      imageQuality: 70,
-      maxWidth: 1440,
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: true,
     );
-    if (result != null) {
-      _imageFileList.addAll(result);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ImageSelection(
-            imageList: _imageFileList,
-            roomName: roomName,
-          ),
-        ),
-      );
+    if (result == null) {
+      return;
     }
+    _imageFileList.addAll(result.files);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageSelection(
+          imageList: _imageFileList,
+          roomName: roomName,
+        ),
+      ),
+    );
   }
 
-  Future<void> sendImage(XFile? result) async {
-    if (result != null) {
-      final bytes = await result.readAsBytes();
-      final image = await decodeImageFromList(bytes);
-      final mimeType = lookupMimeType(result.path);
-      if (repliedToMessage != null) {
-        await _currentRoom!.sendImageReply(
-          result.path,
-          result.name,
-          mimeType!,
-          bytes.length,
-          image.width,
-          image.height,
-          repliedToMessage!.id,
-          null,
-        );
-        repliedToMessage = null;
-        replyMessageWidget = null;
-        showReplyView = false;
-        update(['chat-input']);
-      } else {
-        await _currentRoom!.sendImageMessage(
-          result.path,
-          result.name,
-          mimeType!,
-          bytes.length,
-          image.width,
-          image.height,
-        );
-      }
+  Future<void> sendImage(PlatformFile file) async {
+    String? path = file.path;
+    if (path == null) {
+      return;
+    }
+    String? name = file.name;
+    String? mimeType = lookupMimeType(path);
+    Uint8List? bytes = file.bytes;
+    if (bytes == null) {
+      return;
+    }
+    final image = await decodeImageFromList(bytes);
+    if (repliedToMessage != null) {
+      await _currentRoom!.sendImageReply(
+        path,
+        name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+        repliedToMessage!.id,
+        null,
+      );
+      repliedToMessage = null;
+      replyMessageWidget = null;
+      showReplyView = false;
+      update(['chat-input']);
+    } else {
+      await _currentRoom!.sendImageMessage(
+        path,
+        name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+      );
     }
   }
 
   //image selection
   Future<void> handleImageSelection(BuildContext context) async {
-    final result = await ImagePicker().pickImage(
-      imageQuality: 70,
-      maxWidth: 1440,
-      source: ImageSource.gallery,
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
     );
-    if (result != null) {
-      final bytes = await result.readAsBytes();
-      final image = await decodeImageFromList(bytes);
-      final mimeType = lookupMimeType(result.path);
-      if (repliedToMessage != null) {
-        await _currentRoom!.sendImageReply(
-          result.path,
-          result.name,
-          mimeType!,
-          bytes.length,
-          image.width,
-          image.height,
-          repliedToMessage!.id,
-          null,
-        );
-        repliedToMessage = null;
-        replyMessageWidget = null;
-        showReplyView = false;
-        update(['chat-input']);
-      } else {
-        await _currentRoom!.sendImageMessage(
-          result.path,
-          result.name,
-          mimeType!,
-          bytes.length,
-          image.width,
-          image.height,
-        );
-      }
+    if (result == null) {
+      return;
+    }
+    String? path = result.files.single.path;
+    if (path == null) {
+      return;
+    }
+    String? name = result.files.single.name;
+    String? mimeType = lookupMimeType(path);
+    Uint8List? bytes = result.files.single.bytes;
+    if (bytes == null) {
+      return;
+    }
+    final image = await decodeImageFromList(bytes);
+    if (repliedToMessage != null) {
+      await _currentRoom!.sendImageReply(
+        path,
+        name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+        repliedToMessage!.id,
+        null,
+      );
+      repliedToMessage = null;
+      replyMessageWidget = null;
+      showReplyView = false;
+      update(['chat-input']);
+    } else {
+      await _currentRoom!.sendImageMessage(
+        path,
+        name,
+        mimeType!,
+        bytes.length,
+        image.width,
+        image.height,
+      );
     }
   }
 
   //file selection
   Future<void> handleFileSelection(BuildContext context) async {
-    final result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.any,
     );
-    if (result != null && result.files.single.path != null) {
-      final mimeType = lookupMimeType(result.files.single.path!);
-      if (repliedToMessage != null) {
-        await _currentRoom!.sendFileReply(
-          result.files.single.path!,
-          result.files.single.name,
-          mimeType!,
-          result.files.single.size,
-          repliedToMessage!.id,
-          null,
-        );
-        repliedToMessage = null;
-        replyMessageWidget = null;
-        showReplyView = false;
-        update(['chat-input']);
-      } else {
-        await _currentRoom!.sendFileMessage(
-          result.files.single.path!,
-          result.files.single.name,
-          mimeType!,
-          result.files.single.size,
-        );
-      }
+    if (result == null) {
+      return;
+    }
+    String? path = result.files.single.path;
+    if (path == null) {
+      return;
+    }
+    String? name = result.files.single.name;
+    String? mimeType = lookupMimeType(path);
+    if (repliedToMessage != null) {
+      await _currentRoom!.sendFileReply(
+        path,
+        name,
+        mimeType!,
+        result.files.single.size,
+        repliedToMessage!.id,
+        null,
+      );
+      repliedToMessage = null;
+      replyMessageWidget = null;
+      showReplyView = false;
+      update(['chat-input']);
+    } else {
+      await _currentRoom!.sendFileMessage(
+        path,
+        name,
+        mimeType!,
+        result.files.single.size,
+      );
     }
   }
 
