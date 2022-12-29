@@ -584,12 +584,12 @@ class ChatRoomController extends GetxController {
         m.createdAt!,
       );
       if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.isEmpty
-          ? types.Status.sent
-          : seenByList.length < activeMembers.length
-              ? types.Status.delivered
-              : types.Status.seen;
-        _messages.insert(index, m.copyWith(showStatus: true, status: status));
+        types.Status status = seenByList.isEmpty
+            ? types.Status.sent
+            : seenByList.length < activeMembers.length
+                ? types.Status.delivered
+                : types.Status.seen;
+        _messages.add(m.copyWith(showStatus: true, status: status));
         return;
       }
     }

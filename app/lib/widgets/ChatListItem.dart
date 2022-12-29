@@ -121,29 +121,6 @@ class _ChatListItemState extends State<ChatListItem> {
       );
     }
 
-    RoomEventItem? eventItem =
-        widget.latestMessage == null ? null : widget.latestMessage!.eventItem();
-    var senderID = '';
-    var messageStatus;
-
-    if (eventItem != null) {
-      int ts = eventItem.originServerTs();
-
-      var receiptController = Get.find<ReceiptController>();
-      List<String> seenByList = receiptController.getSeenByList(
-        widget.room.getRoomId(),
-        ts,
-      );
-
-      senderID = widget.latestMessage!.eventItem()!.sender();
-
-      messageStatus = seenByList.isEmpty
-          ? types.Status.sent
-          : seenByList.length < activeMembers.length
-              ? types.Status.delivered
-              : types.Status.seen;
-    }
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -151,9 +128,6 @@ class _ChatListItemState extends State<ChatListItem> {
           displayName!,
           style: ChatTheme01.chatTitleStyle,
         ),
-        senderID == userId
-            ? customStatusBuilder(messageStatus)
-            : const SizedBox(),
       ],
     );
   }
@@ -254,14 +228,35 @@ class _ChatListItemState extends State<ChatListItem> {
     if (eventItem == null) {
       return null;
     }
-
+    String senderID = '';
+    types.Status? messageStatus;
     int ts = eventItem.originServerTs();
+    var receiptController = Get.find<ReceiptController>();
+    List<String> seenByList = receiptController.getSeenByList(
+      widget.room.getRoomId(),
+      ts,
+    );
 
-    return Text(
-      DateFormat.Hm().format(
-        DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
-      ),
-      style: ChatTheme01.latestChatDateStyle,
+    senderID = widget.latestMessage!.eventItem()!.sender();
+
+    messageStatus = seenByList.isEmpty
+        ? types.Status.sent
+        : seenByList.length < activeMembers.length
+            ? types.Status.delivered
+            : types.Status.seen;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          DateFormat.Hm().format(
+            DateTime.fromMillisecondsSinceEpoch(ts, isUtc: true),
+          ),
+          style: ChatTheme01.latestChatDateStyle,
+        ),
+        senderID == userId
+            ? customStatusBuilder(messageStatus)
+            : const SizedBox(),
+      ],
     );
   }
 
