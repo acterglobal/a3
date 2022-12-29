@@ -38,7 +38,7 @@ impl Client {
                 // Common usage: Room event plus room and client.
                 if let MessageLikeEvent::Original(o) = ev.into_full_event(room.room_id().to_owned())
                 {
-                    tracing::warn!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling task");
+                    tracing::trace!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling task");
                     executor.handle(o.into()).await;
                 }
             },

@@ -54,6 +54,7 @@ impl Group {
             .await?
             .map(|v| serde_json::from_slice::<HistoryState>(&v))
         {
+            tracing::trace!(name, state=?h.seen, "found history state");
             Some(h.seen.clone())
         } else {
             None

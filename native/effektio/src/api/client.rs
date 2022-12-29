@@ -104,13 +104,19 @@ pub(crate) async fn devide_groups_from_convos(
 
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
+    pub has_started: bool,
     pub total_groups: usize,
     pub loaded_groups: usize,
 }
 
 impl HistoryLoadState {
     pub fn is_done_loading(&self) -> bool {
-        self.total_groups <= self.loaded_groups
+        self.has_started && self.total_groups == self.loaded_groups
+    }
+
+    pub fn start(&mut self, total: usize) {
+        self.has_started = true;
+        self.total_groups = total;
     }
 
     fn group_loaded(&mut self) {
@@ -139,6 +145,12 @@ impl SyncState {
 
     pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
         self.history_loading.signal_cloned().to_stream()
+    }
+}
+
+impl Client {
+    fn user_id_ref(&self) -> Option<&matrix_sdk::ruma::UserId> {
+        self.client.user_id()
     }
 }
 
@@ -174,22 +186,31 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
+                tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
                 let groups = me.groups().await?;
-                history.lock_mut().total_groups = groups.len();
+                history.lock_mut().start(groups.len());
 
-                try_join_all(groups.iter().map(|g| g.refresh_history())).await?;
+                try_join_all(groups.iter().map(|g| async {
+                    let x = g.refresh_history().await;
+                    history.lock_mut().group_loaded();
+                    x
+                }))
+                .await?;
                 Ok(())
             })
             .await?
     }
 
-    async fn refresh_history_on_start(
+    fn refresh_history_on_start(
         &self,
         history: futures_signals::signal::Mutable<HistoryLoadState>,
     ) {
-        if let Err(e) = self.refresh_history(history).await {
-            tracing::error!("Refreshing history failed: {:}", e);
-        }
+        let me = self.clone();
+        RUNTIME.spawn(async move {
+            if let Err(e) = me.refresh_history(history).await {
+                tracing::error!("Refreshing history failed: {:}", e);
+            }
+        });
     }
 
     pub fn start_sync(&mut self) -> SyncState {
@@ -252,7 +273,14 @@ impl Client {
                         Ok(if let Ok(response) = result {
                             device_controller.process_device_lists(&client, &response);
 
-                            if initial.load(Ordering::SeqCst) {
+                            if initial.compare_exchange(
+                                true,
+                                false,
+                                Ordering::Relaxed,
+                                Ordering::Relaxed,
+                            ) == Ok(true)
+                            {
+                                tracing::trace!(user_id=?client.user_id(), "initial synced");
                                 // devide_groups_from_convos must be called after first sync
                                 let (_, convos) =
                                     devide_groups_from_convos(client.clone(), executor.clone())
@@ -260,15 +288,14 @@ impl Client {
                                 conversation_controller.load_rooms(&convos).await;
                                 // load invitations after first sync
                                 invitation_controller.load_invitations(&client).await;
+
                                 me.refresh_history_on_start(sync_state_history.clone());
-                            }
 
-                            initial.store(false, Ordering::SeqCst);
-                            let _ = first_synced_arc.send(true);
-
-                            if !state.read().has_first_synced {
+                                initial.store(false, Ordering::SeqCst);
+                                let _ = first_synced_arc.send(true);
                                 state.write().has_first_synced = true;
                             }
+
                             if state.read().should_stop_syncing {
                                 state.write().is_syncing = false;
                                 return Ok(LoopCtrl::Break);
@@ -345,13 +372,10 @@ impl Client {
     // }
 
     pub async fn user_id(&self) -> Result<OwnedUserId> {
-        let l = self.client.clone();
-        RUNTIME
-            .spawn(async move {
-                let user_id = l.user_id().context("No User ID found")?.to_owned();
-                Ok(user_id)
-            })
-            .await?
+        self.client
+            .user_id()
+            .map(|x| x.to_owned())
+            .context("UserId not found. Not logged in?")
     }
 
     pub async fn room(&self, room_name: String) -> Result<Room> {

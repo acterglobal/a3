@@ -16,6 +16,8 @@ pub struct Store {
     dirty: Arc<dashmap::DashSet<String>>,
 }
 
+static ALL_MODELS_KEY: &str = "EFFEKTIO::ALL";
+
 async fn get_from_store(client: MatrixClient, key: &String) -> Result<AnyEffektioModel> {
     let v = client
         .store()
@@ -29,7 +31,7 @@ impl Store {
     pub async fn new(client: MatrixClient) -> Result<Self> {
         let models_vec = if let Some(v) = client
             .store()
-            .get_custom_value("EFFEKTIO::ALL".as_bytes())
+            .get_custom_value(ALL_MODELS_KEY.as_bytes())
             .await?
             .map(|v| serde_json::from_slice::<Vec<String>>(&v))
             .transpose()?
@@ -115,6 +117,7 @@ impl Store {
         }
         tracing::trace!(user=?self.client.user_id(), key, "saved");
         self.dirty.insert(key);
+        self.sync().await?; // FIXME: should we really run this every time?
         Ok(())
     }
 
@@ -136,6 +139,16 @@ impl Store {
         }
 
         self.dirty.clear();
+        let model_keys = self
+            .models
+            .iter()
+            .map(|v| v.key().clone())
+            .collect::<Vec<String>>();
+        self.client
+            .store()
+            .set_custom_value(ALL_MODELS_KEY.as_bytes(), serde_json::to_vec(&model_keys)?)
+            .await?;
+
         Ok(())
     }
 }

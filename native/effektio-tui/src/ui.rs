@@ -98,6 +98,7 @@ impl Tool {
         if !self.is_tasks() {
             unimplemented!("What are you doing here?")
         }
+        tracing::info!(len = t.len(), "setting tasks");
         *self = Tool::Tasks(t)
     }
 

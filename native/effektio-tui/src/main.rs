@@ -10,7 +10,6 @@ use config::EffektioTuiConfig;
 use futures::future::Either;
 use futures::pin_mut;
 use futures::StreamExt;
-use log::warn;
 use std::sync::mpsc::channel;
 use tui_logger;
 use ui::AppUpdate;
@@ -27,35 +26,14 @@ async fn main() -> Result<()> {
     let cli = EffektioTuiConfig::parse();
 
     // Set max_log_level to Trace
-    tui_logger::init_logger(log::LevelFilter::Trace).unwrap();
-    // Set default level for unknown targets to Trace
-    tui_logger::set_default_level(log::LevelFilter::Warn);
-
-    for pair in cli.log.split(",") {
-        if let Some((name, lvl)) = pair.split_once("=") {
-            let level = match lvl.to_lowercase().as_str() {
-                "trace" => log::LevelFilter::Trace,
-                "debug" => log::LevelFilter::Debug,
-                "info" => log::LevelFilter::Info,
-                "warn" => log::LevelFilter::Warn,
-                "error" => log::LevelFilter::Error,
-                // nothing means error
-                _ => continue,
-            };
-            tui_logger::set_level_for_target(name, level);
-        } else {
-            let level = match pair.to_lowercase().as_str() {
-                "trace" => log::LevelFilter::Trace,
-                "debug" => log::LevelFilter::Debug,
-                "info" => log::LevelFilter::Info,
-                "warn" => log::LevelFilter::Warn,
-                "error" => log::LevelFilter::Error,
-                // nothing means error
-                _ => continue,
-            };
-            tui_logger::set_default_level(level);
-        }
-    }
+    let drain = tui_logger::Drain::new();
+    // instead of tui_logger::init_logger, we use `env_logger`
+    env_logger::Builder::default()
+        .parse_filters(&cli.log)
+        .format(move |_buf, record|
+            // patch the env-logger entry through our drain to the tui-logger
+            Ok(drain.log(record)))
+        .init(); // make this the global logger
 
     let (sender, rx) = channel::<AppUpdate>();
     let app_dir = if cli.local {
@@ -119,17 +97,17 @@ async fn main() -> Result<()> {
                     }
                 }
                 Some(Either::Right(history)) => {
-                    warn!("History updated. Done? {:}", history.is_done_loading());
+                    tracing::info!("History updated. Done? {:}", history.is_done_loading());
                     if history.is_done_loading() {
                         match client.task_lists().await {
                             Ok(task_lists) => {
                                 if task_lists.is_empty() {
-                                    warn!("No task lists found");
+                                    tracing::warn!("No task lists found");
                                 }
                                 sender.send(AppUpdate::SetTasksList(task_lists)).unwrap();
                             }
-                            Err(e) => {
-                                warn!("TaskList couldn't be read: {:?}", e);
+                            Err(error) => {
+                                tracing::error!(?error, "TaskList couldn't be read");
                             }
                         }
                     }

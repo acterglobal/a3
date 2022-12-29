@@ -9,8 +9,6 @@ use effektio::api::login_new_client;
 use effektio::Client;
 use effektio_core::matrix_sdk::ruma::OwnedUserId;
 
-use log::warn;
-
 pub const ENV_USER: &str = "EFFEKTIO_USER";
 pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";
 
@@ -38,7 +36,7 @@ impl LoginConfig {
     pub async fn client(&self, path: PathBuf) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        warn!("Logging in as {}", username);
+        tracing::info!("Logging in as {}", username);
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
             _ => Password::with_theme(&theme)
@@ -62,7 +60,7 @@ impl LoginConfig {
 #[clap(author, version, about, long_about = None)]
 pub struct EffektioTuiConfig {
     /// Logging configuration
-    #[clap(short, long, default_value = "warn")]
+    #[clap(short, long, default_value = "effektio_tui=info,warn")]
     pub log: String,
 
     /// Start logger in fullscreen
