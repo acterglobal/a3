@@ -91,7 +91,7 @@ impl Client {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct TaskListDraft {
     client: MatrixClient,
     room: Joined,
@@ -148,10 +148,19 @@ impl TaskList {
     }
 
     pub fn tasks(&self) -> Vec<Task> {
-        Default::default()
+        self.content
+            .tasks
+            .iter()
+            .map(|task| Task {
+                client: self.client.clone(),
+                room: self.room.clone(),
+                content: task.clone(),
+            })
+            .collect()
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct Task {
     client: MatrixClient,
     room: Joined,

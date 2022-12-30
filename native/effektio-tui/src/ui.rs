@@ -7,7 +7,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use dialoguer::{Input, Select};
-use effektio::{matrix_sdk::StoreError, Conversation, Group, HistoryLoadState, TaskList};
+use effektio::{matrix_sdk::StoreError, Conversation, Group, HistoryLoadState, Task, TaskList};
 use futures::future::join_all;
 use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
@@ -54,31 +54,49 @@ struct ChatStats {
 #[derive(Clone, Debug, Default)]
 struct TasksState {
     task_lists_list_state: ListState,
+    tasks_list_state: ListState,
     selected: Option<TaskList>,
     task_lists: Vec<TaskList>,
+    tasks: Vec<Task>,
 }
 
+pub fn next(list_state: &mut ListState, list_len: usize) {
+    if list_len == 0 {
+        return;
+    }
+    let Some(current) = list_state.selected() else {
+        list_state.select(Some(0));
+        return
+    };
+
+    let next = current + 1;
+    if next < list_len {
+        list_state.select(Some(next));
+    }
+}
+
+pub fn prev(list_state: &mut ListState) {
+    let current = list_state.selected().unwrap_or_default();
+    if current > 0 {
+        list_state.select(Some(current - 1))
+    }
+}
 impl TasksState {
     fn fresh(task_lists: Vec<TaskList>) -> Self {
         TasksState {
             task_lists_list_state: Default::default(),
+            tasks_list_state: Default::default(),
             selected: None,
             task_lists,
+            tasks: Default::default(),
         }
     }
 
     fn select_next(&mut self) {
-        if self.task_lists.is_empty() {
-            return;
-        }
-        let Some(current) = self.task_lists_list_state.selected() else {
-            self.task_lists_list_state.select(Some(0));
-            return
-        };
-
-        let next = current + 1;
-        if next < self.task_lists.len() {
-            self.task_lists_list_state.select(Some(next));
+        if let Some(selected) = &self.selected {
+            next(&mut self.tasks_list_state, self.tasks.len());
+        } else {
+            next(&mut self.task_lists_list_state, self.task_lists.len());
         }
     }
     fn select(&mut self) {
@@ -88,21 +106,23 @@ impl TasksState {
             .map(|idx| self.task_lists.get(idx))
             .flatten()
         {
+            tracing::trace!(?selected, "selecting");
+            self.tasks = selected.tasks();
             self.selected = Some(selected.clone());
         }
     }
 
     fn select_prev(&mut self) {
-        if self.task_lists.is_empty() {
-            return;
-        }
-        let Some(current) = self.task_lists_list_state.selected() else {
-            self.task_lists_list_state.select(Some(0));
-            return
-        };
-
-        if current > 0 {
-            self.task_lists_list_state.select(Some(current - 1))
+        if let Some(selected) = &self.selected {
+            if self.tasks.is_empty() {
+                return;
+            }
+            prev(&mut self.tasks_list_state);
+        } else {
+            if self.task_lists.is_empty() {
+                return;
+            }
+            prev(&mut self.task_lists_list_state);
         }
     }
 
@@ -163,10 +183,18 @@ impl TasksState {
     fn render<B: Backend>(&mut self, f: &mut Frame<B>, area: Rect, block_border_style: Style) {
         if let Some(selected) = &self.selected {
             let ls = List::new(
-                selected
-                    .tasks()
+                self.tasks
                     .iter()
-                    .map(|l| ListItem::new(Text::from(l.title().clone())))
+                    .map(|t| {
+                        if t.is_done() {
+                            format!(" ☑ {:}", t.title())
+                        } else if let Some(p) = t.percent() {
+                            format!(" {p}% {:}", t.title())
+                        } else {
+                            format!(" ◻ {:}", t.title())
+                        }
+                    })
+                    .map(|s| ListItem::new(Text::from(s)))
                     .collect::<Vec<_>>(),
             )
             .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY))
@@ -177,7 +205,7 @@ impl TasksState {
                     .border_style(block_border_style),
             );
 
-            f.render_stateful_widget(ls, area, &mut self.task_lists_list_state);
+            f.render_stateful_widget(ls, area, &mut self.tasks_list_state);
         } else {
             let ls = List::new(
                 self.task_lists
@@ -245,7 +273,7 @@ impl Tool {
         if !self.is_tasks() {
             unimplemented!("What are you doing here?")
         }
-        tracing::info!(len = t.len(), "setting tasks");
+        tracing::info!(len = t.len(), "settin tasks");
         *self = Tool::Tasks(TasksState::fresh(t))
     }
 

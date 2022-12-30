@@ -44,7 +44,7 @@ impl Default for Priority {
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
 #[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
-#[builder(name = "TaskListBuilder")]
+#[builder(name = "TaskListBuilder", derive(Debug))]
 pub struct TaskListEventContent {
     pub name: String,
     #[builder(setter(into, strip_option), default)]
@@ -73,7 +73,7 @@ pub struct TaskListEventContent {
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
-#[builder(name = "TaskBuilder")]
+#[builder(name = "TaskBuilder", derive(Debug))]
 pub struct TaskEventContent {
     /// The title of the Task
     pub title: String,

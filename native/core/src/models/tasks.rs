@@ -16,6 +16,18 @@ impl Task {
     pub fn title(&self) -> &String {
         &self.inner.content.title
     }
+
+    pub fn is_done(&self) -> bool {
+        self.inner
+            .content
+            .progress_percent
+            .map(|u| u >= 100)
+            .unwrap_or_default()
+    }
+
+    pub fn percent(&self) -> Option<u8> {
+        self.inner.content.progress_percent
+    }
 }
 
 impl super::EffektioModel for Task {
@@ -56,7 +68,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskList {
     inner: OriginalMessageLikeEvent<TaskListEventContent>,
-    tasks: Vec<Task>,
+    pub tasks: Vec<Task>,
 }
 
 impl Deref for TaskList {
@@ -104,6 +116,8 @@ impl super::EffektioModel for TaskList {
         let super::AnyEffektioModel::Task(task) = model else {
             return Ok(false)
         };
+
+        tracing::trace!(key = self.key(), ?task, "adding task to list");
 
         self.tasks.push(task.clone().into());
         Ok(true)

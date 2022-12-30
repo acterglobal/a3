@@ -74,7 +74,7 @@ impl Store {
         })
     }
 
-    #[tracing::instrument]
+    #[tracing::instrument(skip(self))]
     pub fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
@@ -97,7 +97,7 @@ impl Store {
             .clone())
     }
 
-    #[tracing::instrument]
+    #[tracing::instrument(skip(self))]
     pub async fn save_raw(&self, mdl: AnyEffektioModel) -> Result<()> {
         let key = mdl.key();
         let mut indizes = mdl.indizes();

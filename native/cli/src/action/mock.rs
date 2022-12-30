@@ -333,29 +333,29 @@ impl Mock {
         odo.start_sync().await_has_synced_history().await?;
 
         let task_lists = odo.task_lists().await?;
-        if task_lists.iter().any(|t| t.name() == &list_name) {
-            tracing::warn!(list_name, "TaskList already found. skipping");
-            return Ok(());
-        }
-        //kyra.sync_once(Default::default()).await?;
+        let task_list =
+            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) {
+                task_list
+            } else {
+                //kyra.sync_once(Default::default()).await?;
 
-        let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
-        let mut draft = odo_ops.task_list_draft()?;
+                let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
+                let mut draft = odo_ops.task_list_draft()?;
 
-        let task_list_id = draft
-            .name(list_name)
-            .description("The tops of the daily security briefing with kyra".into())
-            .send()
-            .await?;
+                let task_list_id = draft
+                    .name(list_name)
+                    .description("The tops of the daily security briefing with kyra".into())
+                    .send()
+                    .await?;
 
-        odo.sync_once(Default::default()).await?;
+                odo.sync_once(Default::default()).await?;
 
-        let task_list = odo
-            .task_lists()
-            .await?
-            .into_iter()
-            .find(|e| e.event_id == task_list_id)
-            .unwrap();
+                odo.task_lists()
+                    .await?
+                    .into_iter()
+                    .find(|e| e.event_id == task_list_id)
+                    .unwrap()
+            };
 
         task_list
             .task_builder()
