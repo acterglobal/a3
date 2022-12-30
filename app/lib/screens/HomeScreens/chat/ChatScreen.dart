@@ -19,7 +19,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -719,11 +718,11 @@ class _ChatScreenState extends State<ChatScreen> {
     types.Message message, {
     required BuildContext context,
   }) {
-    if (message.status == Status.delivered) {
+    if (message.status == types.Status.delivered) {
       return SvgPicture.asset('assets/images/deliveredIcon.svg');
-    } else if (message.status == Status.seen) {
+    } else if (message.status == types.Status.seen) {
       return SvgPicture.asset('assets/images/seenIcon.svg');
-    } else if (message.status == Status.sending) {
+    } else if (message.status == types.Status.sending) {
       return const Center(
         child: SizedBox(
           height: 10,
