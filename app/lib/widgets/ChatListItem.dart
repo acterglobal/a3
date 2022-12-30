@@ -9,7 +9,6 @@ import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_parsed_text/flutter_parsed_text.dart';
@@ -261,11 +260,11 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   Widget customStatusBuilder(types.Status status) {
-    if (status == Status.delivered) {
+    if (status == types.Status.delivered) {
       return SvgPicture.asset('assets/images/deliveredIcon.svg');
-    } else if (status == Status.seen) {
+    } else if (status == types.Status.seen) {
       return SvgPicture.asset('assets/images/seenIcon.svg');
-    } else if (status == Status.sending) {
+    } else if (status == types.Status.sending) {
       return const Center(
         child: SizedBox(
           height: 10,
