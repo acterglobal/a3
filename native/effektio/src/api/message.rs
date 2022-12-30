@@ -2,7 +2,10 @@ use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::{
-        timeline::{EventTimelineItem, TimelineItem, TimelineItemContent, VirtualTimelineItem},
+        timeline::{
+            EventTimelineItem, TimelineDetails, TimelineItem, TimelineItemContent,
+            VirtualTimelineItem,
+        },
         Room,
     },
     ruma::{
@@ -10,7 +13,7 @@ use matrix_sdk::{
             room::message::{MessageFormat, MessageType, Relation},
             AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
         },
-        OwnedEventId,
+        OwnedEventId, OwnedUserId,
     },
 };
 use regex::Regex;
@@ -266,7 +269,13 @@ impl RoomMessage {
         let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
         for (key, value) in event.reactions().iter() {
-            reactions.insert(key.to_string(), ReactionDesc::new(value.count.into()));
+            let senders = if let TimelineDetails::Ready(senders) = value.senders.clone() {
+                senders
+            } else {
+                vec![]
+            };
+            let description = ReactionDesc::new(value.count.into(), senders);
+            reactions.insert(key.clone(), description);
         }
 
         let event_item = match event.content() {
@@ -558,15 +567,20 @@ impl FileDesc {
 #[derive(Clone, Debug)]
 pub struct ReactionDesc {
     count: u64,
+    senders: Vec<OwnedUserId>,
 }
 
 impl ReactionDesc {
-    pub(crate) fn new(count: u64) -> Self {
-        ReactionDesc { count }
+    pub(crate) fn new(count: u64, senders: Vec<OwnedUserId>) -> Self {
+        ReactionDesc { count, senders }
     }
 
     pub fn count(&self) -> u64 {
         self.count
+    }
+
+    pub fn senders(&self) -> Vec<String> {
+        self.senders.iter().map(|x| x.to_string()).collect()
     }
 }
 
