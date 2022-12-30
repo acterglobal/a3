@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:effektio/common/store/themes/AppTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
@@ -17,7 +18,6 @@ import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
 import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
 import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-// import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
 import 'package:effektio/widgets/SideMenu.dart';
@@ -29,14 +29,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:themed/themed.dart';
+import 'package:window_size/window_size.dart';
 
 void main() async {
   await startApp();
@@ -44,6 +45,10 @@ void main() async {
 
 Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  if (isDesktop) {
+    setWindowTitle('Effektio');
+  }
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');

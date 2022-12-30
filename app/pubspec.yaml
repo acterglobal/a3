@@ -74,6 +74,10 @@ dependencies:
   flutter_icons_null_safety: ^1.1.0
   connectivity_plus: ^3.0.2
   overlay_support: ^2.1.0
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
 
 dev_dependencies:
   flutter_test:
