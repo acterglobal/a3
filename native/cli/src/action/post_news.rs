@@ -4,9 +4,9 @@ use clap::Parser;
 use crate::config::{LoginConfig, ENV_ROOM};
 use effektio_core::events;
 
-use log::info;
 use std::ffi::OsStr;
 use std::path::PathBuf;
+use tracing::info;
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]

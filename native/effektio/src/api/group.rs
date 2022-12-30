@@ -3,9 +3,10 @@ use super::room::Room;
 use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
-use effektio_core::executor::Executor;
 use effektio_core::{
-    events::AnyEffektioEvent,
+    events::tasks::TaskListEvent,
+    executor::Executor,
+    models::AnyEffektioModel,
     ruma::{
         api::client::{
             account::register::v3::Request as RegistrationRequest,
@@ -16,6 +17,7 @@ use effektio_core::{
             uiaa,
         },
         assign,
+        events::MessageLikeEvent,
         room::RoomType,
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
@@ -43,16 +45,17 @@ impl Group {
         let name = self.inner.name();
         tracing::trace!(name, "refreshing history");
         let room = self.inner.clone();
+        let room_id = room.room_id();
         let client = room.client.clone();
         room.sync_members().await?;
 
-        let custom_storage_key = format!("{:}_:history", room.room_id());
+        let custom_storage_key = format!("{room_id}::history");
 
-        let mut from = if let Some(Ok(h)) = client
+        let mut from = if let Ok(h) = self
+            .executor
             .store()
-            .get_custom_value(custom_storage_key.as_bytes())
-            .await?
-            .map(|v| serde_json::from_slice::<HistoryState>(&v))
+            .get_raw::<HistoryState>(&custom_storage_key)
+            .await
         {
             tracing::trace!(name, state=?h.seen, "found history state");
             Some(h.seen.clone())
@@ -76,16 +79,29 @@ impl Group {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                if let Ok(event) = msg.event.deserialize_as::<AnyEffektioEvent>() {
-                    warn!("{:} handling {:?}", room.room_id(), event);
-                    // ...
-                    if let Err(e) = self.executor.handle(event).await {
-                        tracing::error!("Failure handling event: {:}", e);
+                let model = match AnyEffektioModel::try_from(&msg.event) {
+                    Ok(e) => e,
+                    Err(effektio_core::Error::UnknownEvent) => {
+                        // that's fine, continue
+                        tracing::trace!("not an effektio msg");
+                        continue;
                     }
-                    warn!("done handling");
-                } else {
-                    tracing::trace!(?msg, "not an effektio msg");
+                    Err(msg) => {
+                        tracing::warn!(?msg, "parsing effektio model failed");
+                        continue;
+                    }
+                };
+                // match event {
+                //     MessageLikeEvent::Original(o) => {
+                tracing::trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
+                if let Err(e) = self.executor.handle(model).await {
+                    tracing::error!("Failure handling event: {:}", e);
                 }
+                //     }
+                //     MessageLikeEvent::Redacted(r) => {
+                //         tracing::trace!(redaction = ?r, "redaction ignored");
+                //     }
+                // }
             }
 
             // Todo: Do we want to do something with the states, too?

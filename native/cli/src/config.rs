@@ -8,7 +8,7 @@ use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
 use crate::action::Action;
 
-use log::warn;
+use tracing::warn;
 
 pub const ENV_USER: &str = "EFFEKTIO_USER";
 pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";

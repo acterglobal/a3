@@ -27,6 +27,10 @@ features = ["crypto-store", "state-store"]
 git = "https://github.com/ruma/ruma"
 rev = "ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
 
+[workspace.dependencies.ruma-macros]
+git = "https://github.com/ruma/ruma"
+rev = "ed100afddb5fb30f1ccf368d7e712a3a483e63bf"
+
 [profile.release]
 panic = "unwind"
 opt-level = 2

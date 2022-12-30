@@ -1,6 +1,9 @@
 use std::ops::Deref;
 
-use crate::events::tasks::{TaskEventContent, TaskListEventContent};
+use crate::{
+    events::tasks::{TaskEventContent, TaskListEventContent},
+    statics::KEYS,
+};
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
 
@@ -15,10 +18,38 @@ impl Task {
     }
 }
 
+impl super::EffektioModel for Task {
+    /// The indizes this model should be added to
+    fn indizes(&self) -> Vec<String> {
+        vec![]
+    }
+    /// The key to store this model under
+    fn key(&self) -> String {
+        format!("task-{:}", self.event_id)
+    }
+    /// The models to inform about this model as it belongs to that
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![format!(
+            "tasklist-{:}",
+            self.inner.content.task_list_id.event_id
+        )])
+    }
+    /// handle transition
+    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
+        unimplemented!("not yet existing")
+    }
+}
+
 impl Deref for Task {
     type Target = OriginalMessageLikeEvent<TaskEventContent>;
     fn deref(&self) -> &Self::Target {
         &self.inner
+    }
+}
+
+impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
+    fn from(inner: OriginalMessageLikeEvent<TaskEventContent>) -> Self {
+        Task { inner }
     }
 }
 
@@ -56,5 +87,25 @@ impl TaskList {
     }
     pub fn name(&self) -> &String {
         &self.inner.content.name
+    }
+}
+
+impl super::EffektioModel for TaskList {
+    /// The indizes this model should be added to
+    fn indizes(&self) -> Vec<String> {
+        vec![KEYS::TASKS.to_owned()]
+    }
+    /// The key to store this model under
+    fn key(&self) -> String {
+        format!("tasklist-{:}", self.inner.event_id)
+    }
+    /// handle transition
+    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
+        let super::AnyEffektioModel::Task(task) = model else {
+            return Ok(false)
+        };
+
+        self.tasks.push(task.clone().into());
+        Ok(true)
     }
 }

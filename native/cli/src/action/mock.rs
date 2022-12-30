@@ -49,6 +49,9 @@ async fn register(homeserver: &str, username: String, persist: bool) -> Result<C
                 auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
             });
             client.register(request).await?;
+        } else {
+            tracing::error!(?resp, "Not a UIAA response");
+            anyhow::bail!("No a uiaa response");
         }
     }
 
@@ -59,7 +62,7 @@ async fn ensure_user(homeserver: &str, username: String, persist: bool) -> Resul
     let cl = match register(homeserver, username.clone(), persist).await {
         Ok(cl) => cl,
         Err(e) => {
-            log::warn!("Could not register {:}, {:}", username, e);
+            tracing::warn!("Could not register {:}, {:}", username, e);
             default_client_config(homeserver, &username, persist)
                 .await?
                 .build()
@@ -138,7 +141,7 @@ impl Mock {
         match self.users.get(&username) {
             Some(c) => Ok(c.clone()),
             None => {
-                log::trace!("client not found. creating for {:}", username);
+                tracing::trace!("client not found. creating for {:}", username);
                 let client =
                     ensure_user(self.homeserver.as_str(), username.clone(), self.persist).await?;
                 self.users.insert(username, client.clone());
@@ -238,16 +241,16 @@ impl Mock {
 
         match admin.create_effektio_group(ops_settings).await {
             Ok(ops_id) => {
-                log::info!("Ops Room Id: {:?}", ops_id);
+                tracing::info!("Ops Room Id: {:?}", ops_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                log::warn!("Problem creating Ops Room: {:?}", inner);
+                tracing::warn!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
-                log::error!("Creating Ops Room failed: {:?}", e);
+                tracing::error!("Creating Ops Room failed: {:?}", e);
             }
         }
 
@@ -260,16 +263,16 @@ impl Mock {
 
         match admin.create_effektio_group(promenade_settings).await {
             Ok(promenade_room_id) => {
-                log::info!("Promenade Room Id: {:?}", promenade_room_id);
+                tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                log::warn!("Problem creating Promenade Room: {:?}", inner);
+                tracing::warn!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
-                log::error!("Creating Promenade Room failed: {:?}", e);
+                tracing::error!("Creating Promenade Room failed: {:?}", e);
             }
         }
 
@@ -282,33 +285,33 @@ impl Mock {
 
         match admin.create_effektio_group(quarks_settings).await {
             Ok(quarks_id) => {
-                log::info!("Quarks Room Id: {:?}", quarks_id);
+                tracing::info!("Quarks Room Id: {:?}", quarks_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                log::warn!("Problem creating Quarks Room: {:?}", inner);
+                tracing::warn!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
-                log::error!("Creating Quarks Room failed: {:?}", e);
+                tracing::error!("Creating Quarks Room failed: {:?}", e);
             }
         }
 
-        log::info!("Done creating spaces");
+        tracing::info!("Done creating spaces");
         Ok(())
     }
 
     pub async fn accept_invitations(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
-            log::info!("Accepting invites for {:}", member.user_id().await?);
+            tracing::info!("Accepting invites for {:}", member.user_id().await?);
             member.sync_once(Default::default()).await?;
             for invited in member.invited_rooms().iter() {
-                log::info!("accepting {:#?}", invited);
+                tracing::trace!("accepting {:#?}", invited);
                 invited.accept_invitation().await?;
             }
         }
-        log::info!("Done accepting invites");
+        tracing::info!("Done accepting invites");
 
         Ok(())
     }
@@ -316,24 +319,31 @@ impl Mock {
     pub async fn sync_up(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
             member.sync_once(Default::default()).await?;
-            log::info!("Synced {:}", member.user_id().await?);
+            tracing::info!("Synced {:}", member.user_id().await?);
         }
         Ok(())
     }
 
     pub async fn tasks(&mut self) -> Result<()> {
+        let list_name = "Daily Security Brief".to_owned();
         //let sisko = &self.sisko;
-        let odo = self.client("odo".to_owned()).await?;
+        let mut odo = self.client("odo".to_owned()).await?;
         //let kyra = &self.kyra;
         //sisko.sync_once(Default::default()).await?;
-        odo.sync_once(Default::default()).await?;
+        odo.start_sync().await_has_synced_history().await?;
+
+        let task_lists = odo.task_lists().await?;
+        if task_lists.iter().any(|t| t.name() == &list_name) {
+            tracing::warn!(list_name, "TaskList already found. skipping");
+            return Ok(());
+        }
         //kyra.sync_once(Default::default()).await?;
 
         let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
         let mut draft = odo_ops.task_list_draft()?;
 
         let task_list_id = draft
-            .name("Daily Security Brief".into())
+            .name(list_name)
             .description("The tops of the daily security briefing with kyra".into())
             .send()
             .await?;
@@ -371,7 +381,7 @@ impl Mock {
             .send()
             .await?;
 
-        log::info!("Creating task lists and tasks done.");
+        tracing::info!("Creating task lists and tasks done.");
 
         Ok(())
     }
@@ -394,7 +404,7 @@ impl Mock {
         }))
         .await?;
 
-        log::info!("Encryption keys exported to .local");
+        tracing::info!("Encryption keys exported to .local");
 
         Ok(())
     }

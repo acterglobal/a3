@@ -28,21 +28,34 @@ use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixC
 
 impl Client {
     pub(crate) async fn init_tasks(&self) {
-        let executor = self.executor.clone();
-        self.client.add_event_handler_context(executor);
-        self.client.add_event_handler(
-            |ev: SyncTaskListEvent,
-             room: Room,
-             client: MatrixClient,
-             Ctx(executor): Ctx<Executor>| async move {
-                // Common usage: Room event plus room and client.
-                if let MessageLikeEvent::Original(o) = ev.into_full_event(room.room_id().to_owned())
-                {
-                    tracing::trace!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling task");
-                    executor.handle(o.into()).await;
-                }
-            },
-        );
+        // let executor = self.executor.clone();
+        // self.client.add_event_handler_context(executor);
+        // self.client.add_event_handler(
+        //     |ev: SyncTaskListEvent,
+        //      room: Room,
+        //      client: MatrixClient,
+        //      Ctx(executor): Ctx<Executor>| async move {
+        //         // Common usage: Room event plus room and client.
+        //         if let MessageLikeEvent::Original(o) = ev.into_full_event(room.room_id().to_owned())
+        //         {
+        //             tracing::trace!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling tasklist");
+        //             executor.handle(o.into()).await;
+        //         }
+        //     },
+        // );
+        // self.client.add_event_handler(
+        //     |ev: SyncTaskEvent,
+        //      room: Room,
+        //      client: MatrixClient,
+        //      Ctx(executor): Ctx<Executor>| async move {
+        //         // Common usage: Room event plus room and client.
+        //         if let MessageLikeEvent::Original(o) = ev.into_full_event(room.room_id().to_owned())
+        //         {
+        //             tracing::trace!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling task");
+        //             executor.handle(o.into()).await;
+        //         }
+        //     },
+        // );
     }
 
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {

@@ -1,12 +1,14 @@
 use std::iter::FromIterator;
 use std::sync::Arc;
 
-use crate::models::AnyEffektioModel;
-use crate::{Error, Result};
+use crate::{
+    models::{AnyEffektioModel, EffektioModel},
+    Error, Result,
+};
 use dashmap::mapref::one::RefMut;
 use dashmap::DashMap;
 use futures::future::try_join_all;
-use matrix_sdk::{ruma::EventId, Client as MatrixClient};
+use matrix_sdk::Client as MatrixClient;
 
 #[derive(Clone, Debug)]
 pub struct Store {
@@ -18,16 +20,22 @@ pub struct Store {
 
 static ALL_MODELS_KEY: &str = "EFFEKTIO::ALL";
 
-async fn get_from_store(client: MatrixClient, key: &String) -> Result<AnyEffektioModel> {
+async fn get_from_store<T: serde::de::DeserializeOwned>(
+    client: MatrixClient,
+    key: &str,
+) -> Result<T> {
     let v = client
         .store()
-        .get_custom_value(format!("effektio:{:}", key).as_bytes())
+        .get_custom_value(format!("effektio:{key}").as_bytes())
         .await?
         .ok_or(Error::ModelNotFound)?;
-    Ok(serde_json::from_slice::<AnyEffektioModel>(&v)?)
+    Ok(serde_json::from_slice(v.as_slice())?)
 }
 
 impl Store {
+    pub async fn get_raw<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T> {
+        get_from_store(self.client.clone(), key).await
+    }
     pub async fn new(client: MatrixClient) -> Result<Self> {
         let models_vec = if let Some(v) = client
             .store()
@@ -36,7 +44,11 @@ impl Store {
             .map(|v| serde_json::from_slice::<Vec<String>>(&v))
             .transpose()?
         {
-            try_join_all(v.iter().map(|k| get_from_store(client.clone(), k))).await?
+            try_join_all(
+                v.iter()
+                    .map(|k| get_from_store::<AnyEffektioModel>(client.clone(), &k)),
+            )
+            .await?
         } else {
             Vec::new()
         };
@@ -76,17 +88,17 @@ impl Store {
             .filter_map(move |name| models.get(&name).map(|v| v.value().clone())))
     }
 
-    pub async fn get(&self, evt_id: &EventId) -> Result<AnyEffektioModel> {
+    pub async fn get(&self, model_key: &str) -> Result<AnyEffektioModel> {
         Ok(self
             .models
-            .get(&evt_id.to_string())
+            .get(model_key)
             .ok_or(Error::ModelNotFound)?
             .value()
             .clone())
     }
 
     #[tracing::instrument]
-    pub async fn save(&self, mdl: AnyEffektioModel) -> Result<()> {
+    pub async fn save_raw(&self, mdl: AnyEffektioModel) -> Result<()> {
         let key = mdl.key();
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
@@ -117,6 +129,19 @@ impl Store {
         }
         tracing::trace!(user=?self.client.user_id(), key, "saved");
         self.dirty.insert(key);
+        Ok(())
+    }
+
+    pub async fn save_many(&self, models: Vec<AnyEffektioModel>) -> Result<()> {
+        for mdl in models.into_iter() {
+            self.save_raw(mdl).await?;
+        }
+        self.sync().await?; // FIXME: should we really run this every time?
+        Ok(())
+    }
+
+    pub async fn save(&self, mdl: AnyEffektioModel) -> Result<()> {
+        self.save_raw(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(())
     }

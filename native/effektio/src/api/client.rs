@@ -11,7 +11,7 @@ use effektio_core::{
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
 
-use futures::{future::try_join_all, stream, StreamExt};
+use futures::{future::try_join_all, pin_mut, stream, StreamExt};
 use futures_signals::signal::{channel, MutableSignalCloned, Receiver, SignalExt, SignalStream};
 use log::info;
 use matrix_sdk::{
@@ -145,6 +145,19 @@ impl SyncState {
 
     pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
         self.history_loading.signal_cloned().to_stream()
+    }
+
+    pub async fn await_has_synced_history(&self) -> Result<u32> {
+        tracing::trace!("Waiting for history to sync");
+        let signal = self.history_loading.signal_cloned().to_stream();
+        pin_mut!(signal);
+        while let Some(next_state) = signal.next().await {
+            if next_state.is_done_loading() {
+                tracing::trace!(?next_state, "History sync completed");
+                return Ok(next_state.loaded_groups as u32);
+            }
+        }
+        unimplemented!("We never reach this state")
     }
 }
 

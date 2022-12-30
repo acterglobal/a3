@@ -8,7 +8,7 @@ use effektio_core::ruma;
 use crate::ruma::api::client::filter::RoomEventFilter;
 use crate::ruma::events::room::MediaSource;
 
-use log::{info, warn};
+use tracing::{info, warn};
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
