@@ -33,7 +33,6 @@ class ChatBubbleBuilder extends StatefulWidget {
 
 class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     with TickerProviderStateMixin {
-  late types.MessageType messagetype;
   final ChatRoomController roomController = Get.find<ChatRoomController>();
   late TabController tabBarController;
   List<Tab> reactionTabs = [];
@@ -41,9 +40,12 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   @override
   void initState() {
     super.initState();
+
     tabBarController = TabController(length: reactionTabs.length, vsync: this);
-    messagetype = widget.message.type;
   }
+
+  // A helper function to get bubble widget size to set constraints beforehand
+  //for emoji container.
 
   @override
   Widget build(BuildContext context) {
@@ -51,24 +53,16 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment:
+              isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 6),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.start,
-              textDirection:
-                  !isAuthor() ? TextDirection.ltr : TextDirection.rtl,
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                Flexible(
-                  child: Stack(
-                    children: [
-                      buildChatBubble(),
-                      buildEmojiRow(),
-                    ],
-                  ),
-                ),
+                buildChatBubble(),
+                buildEmojiRow(),
               ],
             ),
             Align(
@@ -178,18 +172,18 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           const SizedBox(height: 4),
           Bubble(
             child: widget.child,
-            color: !isAuthor() || messagetype == types.MessageType.image
+            color: !isAuthor() || widget.message is types.ImageMessage
                 ? AppCommonTheme.backgroundColorLight
                 : AppCommonTheme.primaryColor,
             margin: widget.nextMessageInGroup
                 ? const BubbleEdges.symmetric(horizontal: 2)
                 : null,
             radius: const Radius.circular(22),
-            padding: messagetype == types.MessageType.image
+            padding: widget.message is types.ImageMessage
                 ? const BubbleEdges.all(0)
                 : null,
             nip: (widget.nextMessageInGroup ||
-                    messagetype == types.MessageType.image)
+                    widget.message is types.ImageMessage)
                 ? BubbleNip.no
                 : !isAuthor()
                     ? BubbleNip.leftBottom
@@ -212,7 +206,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           ? const BubbleEdges.symmetric(horizontal: 2)
           : null,
       radius: const Radius.circular(22),
-      padding: message.repliedMessage!.type == types.MessageType.image
+      padding: message.repliedMessage is types.ImageMessage
           ? const BubbleEdges.all(0)
           : null,
       nip: BubbleNip.no,
@@ -220,44 +214,43 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
   }
 
   Widget originalMessageBuilder(types.Message message) {
-    switch (message.repliedMessage!.type) {
-      case types.MessageType.text:
-        return Html(
-          data: """${message.repliedMessage!.metadata?['content']}""",
-          shrinkWrap: true,
-          style: {
-            'body': Style(
-              color: ChatTheme01.chatReplyTextColor,
-              fontWeight: FontWeight.w400,
-              fontSize: FontSize(14),
-            ),
-          },
-        );
-      case types.MessageType.image:
-        Uint8List data =
-            base64Decode(message.repliedMessage!.metadata?['content']);
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(15),
-          child: data.isNotEmpty
-              ? Image.memory(
-                  data,
-                  errorBuilder:
-                      (BuildContext context, Object url, StackTrace? error) {
-                    return Text('Could not load image due to $error');
-                  },
-                  cacheHeight: 75,
-                  cacheWidth: 75,
-                  fit: BoxFit.cover,
-                )
-              : const SizedBox(),
-        );
-      case types.MessageType.file:
-        return Text(
-          message.repliedMessage!.metadata?['content'],
-          style: const TextStyle(color: Colors.white, fontSize: 12),
-        );
-      default:
-        return const SizedBox();
+    if (message.repliedMessage is types.TextMessage) {
+      return Html(
+        data: """${message.repliedMessage!.metadata?['content']}""",
+        shrinkWrap: true,
+        style: {
+          'body': Style(
+            color: ChatTheme01.chatReplyTextColor,
+            fontWeight: FontWeight.w400,
+            fontSize: FontSize(14),
+          ),
+        },
+      );
+    } else if (message.repliedMessage is types.ImageMessage) {
+      Uint8List data =
+          base64Decode(message.repliedMessage!.metadata?['content']);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: data.isNotEmpty
+            ? Image.memory(
+                data,
+                errorBuilder:
+                    (BuildContext context, Object url, StackTrace? error) {
+                  return Text('Could not load image due to $error');
+                },
+                cacheHeight: 75,
+                cacheWidth: 75,
+                fit: BoxFit.cover,
+              )
+            : const SizedBox(),
+      );
+    } else if (message.repliedMessage is types.FileMessage) {
+      return Text(
+        message.repliedMessage!.metadata?['content'],
+        style: const TextStyle(color: Colors.white, fontSize: 12),
+      );
+    } else {
+      return const SizedBox();
     }
   }
 
@@ -270,54 +263,60 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         keys = reactions.keys.toList();
       }
     }
-    return Container(
-      margin: const EdgeInsets.all(2),
-      decoration: BoxDecoration(
-        border: keys.isEmpty
-            ? null
-            : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
-        borderRadius: BorderRadius.only(
-          topLeft: widget.nextMessageInGroup
-              ? const Radius.circular(12)
-              : !isAuthor()
-                  ? const Radius.circular(0)
-                  : const Radius.circular(12),
-          topRight: widget.nextMessageInGroup
-              ? const Radius.circular(12)
-              : !isAuthor()
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          constraints: BoxConstraints(maxWidth: constraints.maxWidth / 3),
+          margin: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            border: keys.isEmpty
+                ? null
+                : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
+            borderRadius: BorderRadius.only(
+              topLeft: widget.nextMessageInGroup
                   ? const Radius.circular(12)
-                  : const Radius.circular(0),
-          bottomLeft: const Radius.circular(12),
-          bottomRight: const Radius.circular(12),
-        ),
-        color: ChatTheme01.chatEmojiContainerColor,
-      ),
-      padding: const EdgeInsets.all(5),
-      child: Wrap(
-        direction: Axis.horizontal,
-        spacing: 5,
-        runSpacing: 3,
-        children: List.generate(keys.length, (int index) {
-          String key = keys[index];
-          Map<String, dynamic> reactions =
-              widget.message.metadata!['reactions'];
-          ReactionDesc? desc = reactions[key];
-          int count = desc!.count();
-          return GestureDetector(
-            onTap: () {
-              showEmojiReactionsSheet(reactions);
-            },
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(key, style: ChatTheme01.emojiCountStyle),
-                const SizedBox(width: 2),
-                Text(count.toString(), style: ChatTheme01.emojiCountStyle),
-              ],
+                  : !isAuthor()
+                      ? const Radius.circular(0)
+                      : const Radius.circular(12),
+              topRight: widget.nextMessageInGroup
+                  ? const Radius.circular(12)
+                  : !isAuthor()
+                      ? const Radius.circular(12)
+                      : const Radius.circular(0),
+              bottomLeft: const Radius.circular(12),
+              bottomRight: const Radius.circular(12),
             ),
-          );
-        }),
-      ),
+            color: ChatTheme01.chatEmojiContainerColor,
+          ),
+          padding: const EdgeInsets.all(5),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: 5,
+            runSpacing: 3,
+            children: List.generate(keys.length, (int index) {
+              String key = keys[index];
+              Map<String, dynamic> reactions =
+                  widget.message.metadata!['reactions'];
+              ReactionDesc? desc = reactions[key];
+              int count = desc!.count();
+              return GestureDetector(
+                onTap: () {
+                  showEmojiReactionsSheet(reactions);
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(key, style: ChatTheme01.emojiCountStyle),
+                    const SizedBox(width: 2),
+                    Text(count.toString(), style: ChatTheme01.emojiCountStyle),
+                  ],
+                ),
+              );
+            }),
+          ),
+        );
+      },
     );
   }
 
@@ -339,14 +338,10 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
         ),
         child: EmojiRow(
-          onEmojiTap: (String value) {
-            roomController.toggleEmojiContainer();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('$value tapped'),
-                backgroundColor: AuthTheme.authSuccess,
-                duration: const Duration(seconds: 1),
-              ),
+          onEmojiTap: (String value) async {
+            await roomController.sendEmojiReaction(
+              roomController.repliedToMessage!.id,
+              value,
             );
           },
         ),
