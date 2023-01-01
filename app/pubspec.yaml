@@ -76,6 +76,10 @@ dependencies:
   overlay_support: ^2.1.0
   flutter_keyboard_visibility: ^5.4.0
   timelines: ^0.1.0
+  window_size:
+    git:
+      url: https://github.com/google/flutter-desktop-embedding.git
+      path: plugins/window_size
 
 dev_dependencies:
   flutter_test:
