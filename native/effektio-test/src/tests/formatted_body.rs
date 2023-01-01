@@ -55,7 +55,9 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // sisko sends the formatted text message to kyra
     let convo = sisko.conversation(sisko_kyra_dm_id.to_string()).await?;
-    let event_id = convo.send_formatted_message("**Hello**".to_string()).await?;
+    let event_id = convo
+        .send_formatted_message("**Hello**".to_string())
+        .await?;
 
     // kyra receives the formatted text message from sisko
     let mut convos_rx = kyra.conversations_rx();
