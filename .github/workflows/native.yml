@@ -18,6 +18,8 @@ jobs:
             clippy_extras: --tests
           - name: CLI
             package: effektio-cli
+          - name: TUI
+            package: effektio-tui
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
