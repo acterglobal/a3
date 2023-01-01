@@ -8,10 +8,11 @@ async fn sisko_detects_kyra_read() -> Result<()> {
     let _ = env_logger::try_init();
 
     let tmp_dir = TempDir::new()?;
-    let sisko = login_new_client(
+    let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
+        None,
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
@@ -26,10 +27,11 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .await?;
 
     let tmp_dir = TempDir::new()?;
-    let kyra = login_new_client(
+    let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
+        None,
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
@@ -41,13 +43,13 @@ async fn sisko_detects_kyra_read() -> Result<()> {
         .expect("kyra should belong to ops");
     kyra_group.read_receipt(event_id).await?;
 
-    let mut event_rx = kyra.receipt_event_rx()?;
+    let mut event_rx = kyra.receipt_event_rx().unwrap();
     loop {
         match event_rx.try_next() {
             Ok(Some(event)) => {
                 let mut found = false;
                 for record in event.receipt_records() {
-                    if record.user_id().as_str() == "@kyra:ds9.effektio.org" {
+                    if record.seen_by() == "@kyra:ds9.effektio.org" {
                         found = true;
                         break;
                     }
