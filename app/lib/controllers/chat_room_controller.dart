@@ -577,16 +577,21 @@ class ChatRoomController extends GetxController {
 
   void _insertMessage(types.Message m) {
     var receiptController = Get.find<ReceiptController>();
-    List<String> seenByList = receiptController.getSeenByList(
-      _currentRoom!.getRoomId(),
-      m.createdAt!,
-    );
-    if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.length < activeMembers.length
-          ? types.Status.delivered
-          : types.Status.seen;
-      _messages.add(m.copyWith(showStatus: true, status: status));
-      return;
+    if (m.type != types.MessageType.unsupported &&
+        m.type != types.MessageType.custom) {
+      List<String> seenByList = receiptController.getSeenByList(
+        _currentRoom!.getRoomId(),
+        m.createdAt!,
+      );
+      if (m.author.id == client.userId().toString()) {
+        types.Status status = seenByList.isEmpty
+            ? types.Status.sent
+            : seenByList.length < activeMembers.length
+                ? types.Status.delivered
+                : types.Status.seen;
+        _messages.add(m.copyWith(showStatus: true, status: status));
+        return;
+      }
     }
     _messages.add(m);
   }
@@ -599,9 +604,11 @@ class ChatRoomController extends GetxController {
       m.createdAt!,
     );
     if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.length < activeMembers.length
-          ? types.Status.delivered
-          : types.Status.seen;
+      types.Status status = seenByList.isEmpty
+          ? types.Status.sent
+          : seenByList.length < activeMembers.length
+              ? types.Status.delivered
+              : types.Status.seen;
       _messages[index] = m.copyWith(showStatus: true, status: status);
       return;
     }
