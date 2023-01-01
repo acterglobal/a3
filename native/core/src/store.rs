@@ -46,7 +46,7 @@ impl Store {
         {
             try_join_all(
                 v.iter()
-                    .map(|k| get_from_store::<AnyEffektioModel>(client.clone(), &k)),
+                    .map(|k| get_from_store::<AnyEffektioModel>(client.clone(), k)),
             )
             .await?
         } else {
@@ -116,9 +116,8 @@ impl Store {
             }
 
             for idz in remove_idzs {
-                self.indizes
-                    .get_mut(&idz)
-                    .map(|mut v| v.value_mut().retain(|k| k != &key));
+                if let Some(mut v) = self.indizes
+                    .get_mut(&idz) { v.value_mut().retain(|k| k != &key) }
             }
         }
         for idx in indizes.into_iter() {
@@ -157,7 +156,7 @@ impl Store {
                 self.client
                     .store()
                     .set_custom_value(
-                        format!("effektio:{:}", key).as_bytes(),
+                        format!("effektio:{key:}").as_bytes(),
                         serde_json::to_vec(r.value())?,
                     )
                     .await?;

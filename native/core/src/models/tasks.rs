@@ -62,7 +62,7 @@ impl super::EffektioModel for Task {
             return Ok(false)
         };
 
-        Ok(update.content.apply(&mut self.inner.content)?)
+        update.content.apply(&mut self.inner.content)
     }
 }
 

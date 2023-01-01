@@ -143,7 +143,7 @@ mod test {
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.effektio.org","age":11523850}"#;
         let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let effektio_ev = AnyEffektioModel::from_raw_tlevent(&event).unwrap();
+        let _effektio_ev = AnyEffektioModel::from_raw_tlevent(&event).unwrap();
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }

@@ -167,7 +167,7 @@ impl Client {
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
         let store = Store::new(client.clone()).await?;
-        let executor = Executor::new(client.clone(), store.clone()).await?;
+        let executor = Executor::new(store.clone()).await?;
         client.add_event_handler_context(executor.clone());
         let cl = Client {
             client,

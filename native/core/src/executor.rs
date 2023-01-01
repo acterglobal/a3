@@ -6,20 +6,17 @@ use crate::{
 use async_broadcast::{broadcast, Receiver, Sender};
 use async_recursion::async_recursion;
 use dashmap::{mapref::entry::Entry, DashMap};
-use matrix_sdk::Client as MatrixClient;
 use std::sync::Arc;
 
 #[derive(Clone, Debug)]
 pub struct Executor {
-    client: MatrixClient,
     store: Store,
     notifiers: Arc<DashMap<String, Sender<()>>>,
 }
 
 impl Executor {
-    pub async fn new(client: MatrixClient, store: Store) -> Result<Self> {
+    pub async fn new(store: Store) -> Result<Self> {
         Ok(Executor {
-            client,
             store,
             notifiers: Default::default(),
         })
@@ -47,11 +44,11 @@ impl Executor {
                 let v = o.get();
                 if v.is_closed() || v.receiver_count() == 0 {
                     o.remove();
-                } else {
-                    if v.try_broadcast(()).is_err() {
-                        // we have overflow activated, this only fails because it has been closed
-                        o.remove();
-                    }
+                    continue;
+                }
+                if v.try_broadcast(()).is_err() {
+                    // we have overflow activated, this only fails because it has been closed
+                    o.remove();
                 }
             }
         }
@@ -82,7 +79,7 @@ impl Executor {
         let mut models = vec![];
         for p in parents {
             let mut parent = self.store.get(&p).await?;
-            if parent.transition(&model)? {
+            if parent.transition(model)? {
                 if let Some(grandparents) = parent.belongs_to() {
                     let mut parent_models = self.transition_tree(grandparents, &parent).await?;
                     if !parent_models.is_empty() {
@@ -92,6 +89,6 @@ impl Executor {
                 models.push(parent);
             }
         }
-        return Ok(models);
+        Ok(models)
     }
 }

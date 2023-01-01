@@ -260,22 +260,22 @@ impl TaskUpdateEventContent {
         }
 
         if let Some(utc_due) = &self.utc_due {
-            task.utc_due = utc_due.clone();
+            task.utc_due = *utc_due;
             updated = true;
         }
 
         if let Some(utc_start) = &self.utc_start {
-            task.utc_start = utc_start.clone();
+            task.utc_start = *utc_start;
             updated = true;
         }
 
         if let Some(progress_percent) = &self.progress_percent {
-            task.progress_percent = progress_percent.clone();
+            task.progress_percent = *progress_percent;
             updated = true;
         }
 
         if let Some(sort_order) = &self.sort_order {
-            task.sort_order = sort_order.clone();
+            task.sort_order = *sort_order;
             updated = true;
         }
 
