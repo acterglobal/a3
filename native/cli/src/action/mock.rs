@@ -3,78 +3,12 @@ use std::collections::HashMap;
 use anyhow::Result;
 use clap::{crate_version, Parser};
 
-use effektio::{platform::sanitize, Client as EfkClient, CreateGroupSettingsBuilder};
-use effektio_core::{
-    matrix_sdk::{Client, ClientBuilder},
-    ruma::{
-        api::client::{
-            account::register::v3::Request as RegistrationRequest, room::Visibility, uiaa,
-        },
-        assign, OwnedUserId,
-    },
+use effektio::{
+    platform::sanitize, testing::ensure_user, Client as EfkClient, CreateGroupSettingsBuilder,
 };
+use effektio_core::ruma::{api::client::room::Visibility, OwnedUserId};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
-
-async fn default_client_config(
-    homeserver: &str,
-    username: &str,
-    persist: bool,
-) -> Result<ClientBuilder> {
-    let store_config = if persist {
-        let path = sanitize(".local".to_string(), username.to_string());
-        make_store_config(path, Some(username)).await?
-    } else {
-        StoreConfig::new().state_store(MemoryStore::new())
-    };
-
-    Ok(Client::builder()
-        .user_agent(format!("effektio-cli/{}", crate_version!()))
-        .store_config(store_config)
-        .homeserver_url(homeserver))
-}
-
-async fn register(homeserver: &str, username: String, persist: bool) -> Result<Client> {
-    let client = default_client_config(homeserver, &username, persist)
-        .await?
-        .build()
-        .await?;
-    if let Err(resp) = client.register(RegistrationRequest::new()).await {
-        // FIXME: do actually check the registration types...
-        if let Some(_response) = resp.as_uiaa_response() {
-            let request = assign!(RegistrationRequest::new(), {
-                username: Some(username.clone()),
-                password: Some(username),
-
-                auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
-            });
-            client.register(request).await?;
-        } else {
-            tracing::error!(?resp, "Not a UIAA response");
-            anyhow::bail!("No a uiaa response");
-        }
-    }
-
-    Ok(client)
-}
-
-async fn ensure_user(homeserver: &str, username: String, persist: bool) -> Result<EfkClient> {
-    let cl = match register(homeserver, username.clone(), persist).await {
-        Ok(cl) => cl,
-        Err(e) => {
-            tracing::warn!("Could not register {:}, {:}", username, e);
-            default_client_config(homeserver, &username, persist)
-                .await?
-                .build()
-                .await?
-        }
-    };
-    cl.login_username(username.clone(), &username)
-        .send()
-        .await?;
-
-    EfkClient::new(cl, Default::default()).await
-}
 
 #[derive(Parser, Debug)]
 pub struct MockOpts {
@@ -142,8 +76,23 @@ impl Mock {
             Some(c) => Ok(c.clone()),
             None => {
                 tracing::trace!("client not found. creating for {:}", username);
-                let client =
-                    ensure_user(self.homeserver.as_str(), username.clone(), self.persist).await?;
+
+                let store_config = if self.persist {
+                    let path = sanitize(".local".to_string(), username.clone());
+                    make_store_config(path, Some(&username)).await?
+                } else {
+                    StoreConfig::new().state_store(MemoryStore::new())
+                };
+
+                let user_agent = format!("effektio-cli/{}", crate_version!());
+
+                let client = ensure_user(
+                    self.homeserver.as_str(),
+                    username.clone(),
+                    user_agent,
+                    store_config,
+                )
+                .await?;
                 self.users.insert(username, client.clone());
                 Ok(client)
             }

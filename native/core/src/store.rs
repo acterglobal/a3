@@ -116,8 +116,9 @@ impl Store {
             }
 
             for idz in remove_idzs {
-                if let Some(mut v) = self.indizes
-                    .get_mut(&idz) { v.value_mut().retain(|k| k != &key) }
+                if let Some(mut v) = self.indizes.get_mut(&idz) {
+                    v.value_mut().retain(|k| k != &key)
+                }
             }
         }
         for idx in indizes.into_iter() {

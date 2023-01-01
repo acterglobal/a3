@@ -12,4 +12,7 @@ pub mod platform;
 #[cfg(feature = "cbindgen")]
 pub mod api_generated;
 
+#[cfg(feature = "testing")]
+pub mod testing;
+
 pub use api::*;

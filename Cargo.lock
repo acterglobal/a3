@@ -974,6 +974,7 @@ dependencies = [
  "log",
  "log-panics",
  "matrix-sdk",
+ "matrix-sdk-base",
  "matrix-sdk-sled",
  "mime",
  "parking_lot 0.11.2",

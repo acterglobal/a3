@@ -11,6 +11,7 @@ license-file = "../../LICENSE.txt"
 [features]
 default = [ "with-mocks", "dart" ]
 with-mocks = [ "effektio-core/with-mocks" ]
+testing = [ "dep:matrix-sdk-base" ]
 dart = [ "with-mocks" ]
 
 [build-dependencies]
@@ -57,6 +58,10 @@ features = [
     "rustls-tls",
     "sled",
 ]
+
+[dependencies.matrix-sdk-base]
+workspace = true
+optional = true
 
 [dependencies.js_int]
 version = "0.2.2"
