@@ -22,14 +22,14 @@ async fn default_client_config(
     persist: bool,
 ) -> Result<ClientBuilder> {
     let store_config = if persist {
-        let path = sanitize(".local".to_string(), format!("{:}", username));
+        let path = sanitize(".local".to_string(), username.to_string());
         make_store_config(path, Some(username)).await?
     } else {
         StoreConfig::new().state_store(MemoryStore::new())
     };
 
     Ok(Client::builder()
-        .user_agent(&format!("effektio-cli/{}", crate_version!()))
+        .user_agent(format!("effektio-cli/{}", crate_version!()))
         .store_config(store_config)
         .homeserver_url(homeserver))
 }
@@ -201,35 +201,31 @@ impl Mock {
         let civilians = self.civilians().await;
         let quark_customers = self.quark_customers().await;
 
-        let team_ids: Vec<OwnedUserId> =
-            futures::future::join_all(team.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let team_ids: Vec<OwnedUserId> = team
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
-        let civilians_ids: Vec<OwnedUserId> =
-            futures::future::join_all(civilians.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let civilians_ids: Vec<OwnedUserId> = civilians
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
-        let quark_customer_ids: Vec<OwnedUserId> =
-            futures::future::join_all(quark_customers.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let quark_customer_ids: Vec<OwnedUserId> = quark_customers
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
         let everyone = self.everyone().await;
 
-        let _everyones_ids: Vec<OwnedUserId> =
-            futures::future::join_all(everyone.iter().map(|a| a.user_id()))
-                .await
-                .into_iter()
-                .map(|a| a.expect("everyone here has an id"))
-                .collect();
+        let _everyones_ids: Vec<OwnedUserId> = everyone
+            .iter()
+            .map(|a| a.user_id())
+            .map(|a| a.expect("everyone here has an id"))
+            .collect();
 
         let ops_settings = CreateGroupSettingsBuilder::default()
             .name("Ops".to_owned())
@@ -304,7 +300,7 @@ impl Mock {
 
     pub async fn accept_invitations(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
-            tracing::info!("Accepting invites for {:}", member.user_id().await?);
+            tracing::info!("Accepting invites for {:}", member.user_id()?);
             member.sync_once(Default::default()).await?;
             for invited in member.invited_rooms().iter() {
                 tracing::trace!("accepting {:#?}", invited);
@@ -319,7 +315,7 @@ impl Mock {
     pub async fn sync_up(&mut self) -> Result<()> {
         for member in self.everyone().await.iter() {
             member.sync_once(Default::default()).await?;
-            tracing::info!("Synced {:}", member.user_id().await?);
+            tracing::info!("Synced {:}", member.user_id()?);
         }
         Ok(())
     }
@@ -389,10 +385,10 @@ impl Mock {
         std::fs::create_dir_all(".local")?;
 
         futures::future::try_join_all(self.users.values().map(|cl| async move {
-            let full_username = cl.user_id().await.unwrap();
+            let full_username = cl.user_id().unwrap();
             let user_export_file = sanitize(
                 ".local".to_string(),
-                format!("mock_export_{:}", full_username),
+                format!("mock_export_{full_username:}"),
             );
 
             cl.sync_once(Default::default()).await?;

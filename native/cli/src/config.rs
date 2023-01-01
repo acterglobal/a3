@@ -31,7 +31,7 @@ pub struct LoginConfig {
 }
 
 async fn default_client_config() -> Result<ClientBuilder> {
-    Ok(Client::builder().user_agent(&format!("effektio-cli/{}", crate_version!())))
+    Ok(Client::builder().user_agent(format!("effektio-cli/{}", crate_version!())))
 }
 
 impl LoginConfig {
@@ -42,7 +42,7 @@ impl LoginConfig {
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
             _ => Password::with_theme(&theme)
-                .with_prompt(format!("Password for {:} :", username))
+                .with_prompt(format!("Password for {username:} :"))
                 .interact()?,
         };
 
