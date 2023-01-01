@@ -12,6 +12,7 @@ pub mod store;
 pub mod support;
 pub use error::{Error, Result};
 pub use support::RestoreToken;
+pub mod util;
 
 #[cfg(feature = "with-mocks")]
 pub mod mocks {

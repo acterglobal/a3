@@ -22,46 +22,17 @@ use effektio_core::{
         OwnedEventId, OwnedRoomId,
     },
     statics::KEYS,
+    store::Store,
 };
 use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
 
 impl Client {
-    pub(crate) async fn init_tasks(&self) {
-        // let executor = self.executor.clone();
-        // self.client.add_event_handler_context(executor);
-        // self.client.add_event_handler(
-        //     |ev: SyncTaskListEvent,
-        //      room: Room,
-        //      client: MatrixClient,
-        //      Ctx(executor): Ctx<Executor>| async move {
-        //         // Common usage: Room event plus room and client.
-        //         if let MessageLikeEvent::Original(o) = ev.into_full_event(room.room_id().to_owned())
-        //         {
-        //             tracing::trace!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling tasklist");
-        //             executor.handle(o.into()).await;
-        //         }
-        //     },
-        // );
-        // self.client.add_event_handler(
-        //     |ev: SyncTaskEvent,
-        //      room: Room,
-        //      client: MatrixClient,
-        //      Ctx(executor): Ctx<Executor>| async move {
-        //         // Common usage: Room event plus room and client.
-        //         if let MessageLikeEvent::Original(o) = ev.into_full_event(room.room_id().to_owned())
-        //         {
-        //             tracing::trace!(room_id=?room.room_id(), user_id=?client.user_id(), event = ?o, "handling task");
-        //             executor.handle(o.into()).await;
-        //         }
-        //     },
-        // );
-    }
-
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Joined> = HashMap::new();
         let client = self.client.clone();
+        let store = self.store.clone();
         for mdl in self.store.get_list(KEYS::TASKS)? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
@@ -80,6 +51,7 @@ impl Client {
                 };
                 task_lists.push(TaskList {
                     client: client.clone(),
+                    store: store.clone(),
                     room,
                     content: t,
                 })
@@ -125,6 +97,7 @@ impl TaskListDraft {
 #[derive(Clone, Debug)]
 pub struct TaskList {
     client: MatrixClient,
+    store: Store,
     room: Joined,
     content: models::TaskList,
 }
@@ -147,16 +120,35 @@ impl TaskList {
         }
     }
 
-    pub fn tasks(&self) -> Vec<Task> {
-        self.content
-            .tasks
-            .iter()
-            .map(|task| Task {
-                client: self.client.clone(),
-                room: self.room.clone(),
-                content: task.clone(),
+    pub async fn tasks(&self) -> Result<Vec<Task>> {
+        let tasks = self.content.tasks.clone();
+        if tasks.is_empty() {
+            return Ok(vec![]);
+        };
+        let store = self.store.clone();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        Ok(RUNTIME
+            .spawn(async move {
+                store
+                    .get_many(tasks)
+                    .await
+                    .into_iter()
+                    .filter_map(|o| o)
+                    .filter_map(|e| {
+                        if let AnyEffektioModel::Task(content) = e {
+                            Some(Task {
+                                client: client.clone(),
+                                room: room.clone(),
+                                content,
+                            })
+                        } else {
+                            None
+                        }
+                    })
+                    .collect()
             })
-            .collect()
+            .await?)
     }
 }
 
@@ -171,6 +163,16 @@ impl std::ops::Deref for Task {
     type Target = models::Task;
     fn deref(&self) -> &Self::Target {
         &self.content
+    }
+}
+
+impl Task {
+    pub fn update_builder(&self) -> TaskUpdateBuilder {
+        TaskUpdateBuilder {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            content: self.content.updater(),
+        }
     }
 }
 
@@ -205,27 +207,66 @@ impl TaskDraft {
     }
 }
 
+#[derive(Clone)]
+pub struct TaskUpdateBuilder {
+    client: MatrixClient,
+    room: Joined,
+    content: tasks::TaskUpdateBuilder,
+}
+
+impl TaskUpdateBuilder {
+    pub fn title(&mut self, title: String) -> &mut Self {
+        self.content.title(Some(title));
+        self
+    }
+
+    pub fn description(&mut self, description: String) -> &mut Self {
+        self.content
+            .description(Some(Some(TextMessageEventContent::plain(description))));
+        self
+    }
+
+    pub fn mark_done(&mut self) -> &mut Self {
+        self.content.progress_percent(Some(Some(100)));
+        self
+    }
+
+    pub fn mark_undone(&mut self) -> &mut Self {
+        self.content.progress_percent(Some(None));
+        self
+    }
+
+    pub async fn send(&self) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let inner = self.content.build()?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(inner, None).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+}
+
 impl Group {
     pub fn task_list_draft(&self) -> Result<TaskListDraft> {
-        if let matrix_sdk::room::Room::Joined(joined) = &self.inner.room {
-            Ok(TaskListDraft {
-                client: self.client.clone(),
-                room: joined.clone(),
-                content: Default::default(),
-            })
-        } else {
-            bail!("You can't create todos for groups we are not part on")
-        }
+        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+            bail!("You can't create tasks for groups we are not part on")
+        };
+        Ok(TaskListDraft {
+            client: self.client.clone(),
+            room: joined.clone(),
+            content: Default::default(),
+        })
     }
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
-        if let matrix_sdk::room::Room::Joined(joined) = &self.inner.room {
-            Ok(TaskListDraft {
-                client: self.client.clone(),
-                room: joined.clone(),
-                content,
-            })
-        } else {
-            bail!("You can't create todos for groups we are not part on")
-        }
+        let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
+            bail!("You can't create tasks for groups we are not part on")
+        };
+        Ok(TaskListDraft {
+            client: self.client.clone(),
+            room: joined.clone(),
+            content,
+        })
     }
 }

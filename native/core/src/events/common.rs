@@ -30,4 +30,30 @@ impl From<OwnedEventId> for InThread {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "rel_type", rename = "m.reference")]
+pub struct Reference {
+    /// The event this event archives.
+    pub event_id: OwnedEventId,
+}
+
+impl From<OwnedEventId> for Reference {
+    fn from(event_id: OwnedEventId) -> Reference {
+        Reference { event_id }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "rel_type", rename = "org.effektio.dev.update")]
+pub struct Update {
+    /// The event this event archives.
+    pub event_id: OwnedEventId,
+}
+
+impl From<OwnedEventId> for Update {
+    fn from(event_id: OwnedEventId) -> Update {
+        Update { event_id }
+    }
+}
+
 pub type BelongsTo = InThread;

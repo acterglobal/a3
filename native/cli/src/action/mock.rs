@@ -348,8 +348,7 @@ impl Mock {
                     .send()
                     .await?;
 
-                odo.sync_once(Default::default()).await?;
-
+                // FIXME: this might fail if the sync hasn't finished yet.
                 odo.task_lists()
                     .await?
                     .into_iter()

@@ -171,6 +171,7 @@ impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
         let store = Store::new(client.clone()).await?;
         let executor = Executor::new(client.clone(), store.clone()).await?;
+        client.add_event_handler_context(executor.clone());
         let cl = Client {
             client,
             store,
@@ -183,7 +184,6 @@ impl Client {
             receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
         };
-        cl.init_tasks().await;
         Ok(cl)
     }
 
@@ -204,6 +204,7 @@ impl Client {
                 history.lock_mut().start(groups.len());
 
                 try_join_all(groups.iter().map(|g| async {
+                    g.add_handlers().await;
                     let x = g.refresh_history().await;
                     history.lock_mut().group_loaded();
                     x

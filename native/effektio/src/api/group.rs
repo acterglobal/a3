@@ -4,7 +4,7 @@ use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    events::tasks::TaskListEvent,
+    events::tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskUpdateEvent},
     executor::Executor,
     models::AnyEffektioModel,
     ruma::{
@@ -17,7 +17,7 @@ use effektio_core::{
             uiaa,
         },
         assign,
-        events::MessageLikeEvent,
+        events::{AnySyncTimelineEvent, MessageLikeEvent},
         room::RoomType,
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
@@ -25,7 +25,12 @@ use effektio_core::{
     statics::{default_effektio_group_states, initial_state_for_alias},
 };
 use log::warn;
-use matrix_sdk::room::{Messages, MessagesOptions};
+use matrix_sdk::{
+    deserialized_responses::EncryptionInfo,
+    event_handler::Ctx,
+    room::{Messages, MessagesOptions},
+    Client as MatrixClient,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
@@ -41,6 +46,54 @@ struct HistoryState {
 }
 
 impl Group {
+    pub(crate) async fn add_handlers(&self) {
+        self.room
+            .client()
+            .add_event_handler_context(self.executor.clone());
+        let room_id = self.room_id().to_owned();
+        /// FIXME: combine into one handler
+        self.room.add_event_handler(
+            move |ev: SyncTaskListEvent,
+                  client: MatrixClient,
+                  //  room: Room,
+                  encryption_info: Option<EncryptionInfo>,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyEffektioModel::TaskList(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncTaskEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyEffektioModel::Task(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncTaskUpdateEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyEffektioModel::TaskUpdate(t.into()))
+                            .await;
+                    }
+                }
+            },
+        );
+    }
     pub(crate) async fn refresh_history(&self) -> anyhow::Result<()> {
         let name = self.inner.name();
         tracing::trace!(name, "refreshing history");
@@ -79,17 +132,8 @@ impl Group {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                let model = match AnyEffektioModel::try_from(&msg.event) {
-                    Ok(e) => e,
-                    Err(effektio_core::Error::UnknownEvent) => {
-                        // that's fine, continue
-                        tracing::trace!("not an effektio msg");
-                        continue;
-                    }
-                    Err(msg) => {
-                        tracing::warn!(?msg, "parsing effektio model failed");
-                        continue;
-                    }
+                let Some(model) = AnyEffektioModel::from_raw_tlevent(&msg.event) else {
+                    continue
                 };
                 // match event {
                 //     MessageLikeEvent::Original(o) => {

@@ -1,11 +1,15 @@
 use std::ops::Deref;
 
 use crate::{
-    events::tasks::{TaskEventContent, TaskListEventContent},
+    events::tasks::{
+        TaskEventContent, TaskListEventContent, TaskUpdateBuilder, TaskUpdateEventContent,
+    },
     statics::KEYS,
 };
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
+
+use super::AnyEffektioModel;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
@@ -28,6 +32,12 @@ impl Task {
     pub fn percent(&self) -> Option<u8> {
         self.inner.content.progress_percent
     }
+
+    pub fn updater(&self) -> TaskUpdateBuilder {
+        TaskUpdateBuilder::default()
+            .task(self.inner.event_id.to_owned())
+            .to_owned()
+    }
 }
 
 impl super::EffektioModel for Task {
@@ -48,7 +58,11 @@ impl super::EffektioModel for Task {
     }
     /// handle transition
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
-        unimplemented!("not yet existing")
+        let AnyEffektioModel::TaskUpdate(update) = model else {
+            return Ok(false)
+        };
+
+        Ok(update.content.apply(&mut self.inner.content)?)
     }
 }
 
@@ -66,9 +80,45 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct TaskUpdate {
+    inner: OriginalMessageLikeEvent<TaskUpdateEventContent>,
+}
+
+impl super::EffektioModel for TaskUpdate {
+    /// The indizes this model should be added to
+    fn indizes(&self) -> Vec<String> {
+        vec![format!(
+            "task-{:}::history",
+            self.inner.content.task.event_id
+        )]
+    }
+    /// The key to store this model under
+    fn key(&self) -> String {
+        format!("task-update-{:}", self.event_id)
+    }
+    /// The models to inform about this model as it belongs to that
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![format!("task-{:}", self.inner.content.task.event_id)])
+    }
+}
+
+impl Deref for TaskUpdate {
+    type Target = OriginalMessageLikeEvent<TaskUpdateEventContent>;
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
+    fn from(inner: OriginalMessageLikeEvent<TaskUpdateEventContent>) -> Self {
+        TaskUpdate { inner }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskList {
     inner: OriginalMessageLikeEvent<TaskListEventContent>,
-    pub tasks: Vec<Task>,
+    pub tasks: Vec<String>,
 }
 
 impl Deref for TaskList {
@@ -119,7 +169,7 @@ impl super::EffektioModel for TaskList {
 
         tracing::trace!(key = self.key(), ?task, "adding task to list");
 
-        self.tasks.push(task.clone().into());
+        self.tasks.push(task.key());
         Ok(true)
     }
 }

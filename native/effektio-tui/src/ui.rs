@@ -93,27 +93,52 @@ impl TasksState {
     }
 
     fn select_next(&mut self) {
-        if let Some(selected) = &self.selected {
+        if self.selected.is_some() {
             next(&mut self.tasks_list_state, self.tasks.len());
         } else {
             next(&mut self.task_lists_list_state, self.task_lists.len());
         }
     }
-    fn select(&mut self) {
-        if let Some(selected) = self
-            .task_lists_list_state
-            .selected()
-            .map(|idx| self.task_lists.get(idx))
-            .flatten()
-        {
-            tracing::trace!(?selected, "selecting");
-            self.tasks = selected.tasks();
-            self.selected = Some(selected.clone());
+    async fn select(&mut self) {
+        if self.selected.is_some() {
+            if let Some(idx) = self.tasks_list_state.selected() {
+                let Some(task) = self.tasks.get(idx) else {
+                    panic!("can't be readed");
+                };
+
+                let resp = if task.is_done() {
+                    tracing::trace!(?task, "marking undone");
+                    task.update_builder().mark_undone().send().await
+                } else {
+                    tracing::trace!(?task, "marking done");
+                    task.update_builder().mark_done().send().await
+                };
+
+                match resp {
+                    Err(error) => {
+                        tracing::error!(?task, ?error, "updating task failed");
+                    }
+                    Ok(event_id) => {
+                        tracing::trace!(?task, ?event_id, "updating accepted");
+                    }
+                }
+            }
+        } else {
+            if let Some(selected) = self
+                .task_lists_list_state
+                .selected()
+                .map(|idx| self.task_lists.get(idx))
+                .flatten()
+            {
+                tracing::trace!(?selected, "selecting");
+                self.tasks = selected.tasks().await.unwrap();
+                self.selected = Some(selected.clone());
+            }
         }
     }
 
     fn select_prev(&mut self) {
-        if let Some(selected) = &self.selected {
+        if self.selected.is_some() {
             if self.tasks.is_empty() {
                 return;
             }
@@ -126,21 +151,27 @@ impl TasksState {
         }
     }
 
-    fn handle_key(&mut self, key: KeyEvent) -> bool {
+    async fn handle_key(&mut self, key: KeyEvent) -> bool {
         match key.code {
             KeyCode::Down => {
                 self.select_next();
                 true
             }
             KeyCode::Enter => {
-                self.select();
+                self.select().await;
                 true
             }
             KeyCode::Up => {
                 self.select_prev();
                 true
             }
-            KeyCode::Esc => {
+            KeyCode::Right => {
+                if self.selected.is_none() {
+                    self.select().await;
+                }
+                true
+            }
+            KeyCode::Esc | KeyCode::Left => {
                 if self.selected.is_some() {
                     self.selected = None;
                     true
@@ -187,11 +218,11 @@ impl TasksState {
                     .iter()
                     .map(|t| {
                         if t.is_done() {
-                            format!(" ☑ {:}", t.title())
+                            format!(" [x] {:}", t.title())
                         } else if let Some(p) = t.percent() {
                             format!(" {p}% {:}", t.title())
                         } else {
-                            format!(" ◻ {:}", t.title())
+                            format!(" [ ] {:}", t.title())
                         }
                     })
                     .map(|s| ListItem::new(Text::from(s)))
@@ -200,7 +231,7 @@ impl TasksState {
             .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY))
             .block(
                 Block::default()
-                    .title(format!(" 🗹 > {:}", selected.name()))
+                    .title(format!(" [🗹] > {:}", selected.name()))
                     .borders(Borders::ALL)
                     .border_style(block_border_style),
             );
@@ -285,9 +316,9 @@ impl Tool {
         ]
     }
 
-    fn handle_key(&mut self, key: KeyEvent) -> bool {
+    async fn handle_key(&mut self, key: KeyEvent) -> bool {
         match self {
-            Tool::Tasks(task_state) => task_state.handle_key(key),
+            Tool::Tasks(task_state) => task_state.handle_key(key).await,
             _ => false,
         }
     }
@@ -410,7 +441,7 @@ impl App {
                 }
                 _ => false,
             },
-            Widget::Main => self.selected_tool_mut().handle_key(key),
+            Widget::Main => self.selected_tool_mut().handle_key(key).await,
         };
 
         if !handled {

@@ -7,7 +7,7 @@ use crate::{
 };
 use dashmap::mapref::one::RefMut;
 use dashmap::DashMap;
-use futures::future::try_join_all;
+use futures::future::{join_all, try_join_all};
 use matrix_sdk::Client as MatrixClient;
 
 #[derive(Clone, Debug)]
@@ -95,6 +95,9 @@ impl Store {
             .ok_or(Error::ModelNotFound)?
             .value()
             .clone())
+    }
+    pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyEffektioModel>> {
+        join_all(model_keys.iter().map(|k| async { self.get(k).await.ok() })).await
     }
 
     #[tracing::instrument(skip(self))]

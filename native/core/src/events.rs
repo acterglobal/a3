@@ -13,6 +13,6 @@ mod news;
 pub mod tasks;
 
 pub use comments::{CommentEvent, CommentEventDevContent};
-pub use common::{BelongsTo, Color, Colorize, TimeZone, UtcDateTime};
+pub use common::{BelongsTo, Color, Colorize, Reference, TimeZone, Update, UtcDateTime};
 pub use labels::Labels;
 pub use news::{NewsContentType, NewsEvent, NewsEventDevContent};
