@@ -118,7 +118,7 @@ impl TaskList {
         TaskDraft {
             client: self.client.clone(),
             room: self.room.clone(),
-            content: content,
+            content,
         }
     }
 
@@ -136,7 +136,7 @@ impl TaskList {
                     .get_many(tasks)
                     .await
                     .into_iter()
-                    .filter_map(|o| o)
+                    .flatten()
                     .filter_map(|e| {
                         if let AnyEffektioModel::Task(content) = e {
                             Some(Task {

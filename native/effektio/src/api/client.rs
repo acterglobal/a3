@@ -383,7 +383,7 @@ impl Client {
     //     }).await?
     // }
 
-    pub async fn user_id(&self) -> Result<OwnedUserId> {
+    pub fn user_id(&self) -> Result<OwnedUserId> {
         self.client
             .user_id()
             .map(|x| x.to_owned())
@@ -406,11 +406,28 @@ impl Client {
             .await?
     }
 
-    pub async fn account(&self) -> Result<Account> {
+    pub fn account(&self) -> Result<Account> {
         Ok(Account::new(
             self.client.account(),
-            self.user_id().await?.to_string(),
+            self.user_id()?.to_string(),
         ))
+    }
+
+    pub fn device_id(&self) -> Result<String> {
+        let device_id = self.client.device_id().context("No Device ID found")?;
+        Ok(device_id.to_string())
+    }
+
+    pub async fn get_user_profile(&self) -> Result<UserProfile> {
+        let client = self.client.clone();
+        let user_id = client.user_id().unwrap().to_owned();
+        RUNTIME
+            .spawn(async move {
+                let mut user_profile = UserProfile::new(client, user_id, None, None);
+                user_profile.fetch().await;
+                Ok(user_profile)
+            })
+            .await?
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {

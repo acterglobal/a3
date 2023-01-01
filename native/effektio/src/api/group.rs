@@ -112,7 +112,7 @@ impl Group {
             .await
         {
             tracing::trace!(name, state=?h.seen, "found history state");
-            Some(h.seen.clone())
+            Some(h.seen)
         } else {
             None
         };
