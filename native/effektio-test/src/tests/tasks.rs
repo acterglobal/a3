@@ -45,7 +45,7 @@ async fn tasks_smoketest() -> Result<()> {
     );
 
     assert_eq!(
-        task_list.tasks().len(),
+        task_list.tasks().await?.len(),
         0,
         "There are already tasks in the new list"
     );
@@ -59,6 +59,6 @@ async fn tasks_smoketest() -> Result<()> {
         .await
         .expect("sync works");
 
-    assert_eq!(task_list.tasks().len(), 1, "Task is on our list");
+    assert_eq!(task_list.tasks().await?.len(), 1, "Task is on our list");
     Ok(())
 }

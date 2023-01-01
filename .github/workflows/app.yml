@@ -31,6 +31,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          override: true
 
       - name: Cache Cargo
         id: cache-cargo
@@ -92,6 +93,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          override: true
       - name: Install cargo-make
         uses: davidB/rust-cargo-make@v1
       - uses: Swatinem/rust-cache@v1

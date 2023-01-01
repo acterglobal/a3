@@ -358,7 +358,7 @@ impl Client {
             .await?
     }
 
-    pub(crate) async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
+    pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
