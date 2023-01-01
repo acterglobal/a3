@@ -175,6 +175,7 @@ class _ChatScreenState extends State<ChatScreen> {
               GestureDetector(
                 onTap: () {
                   if (controller.isAuthor()) {
+                    // ignore: todo
                     // TODO add unsent message call
                   } else {
                     showDialog(

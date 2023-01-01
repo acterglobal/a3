@@ -1,4 +1,7 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/MyAssignments.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/MyRecentActivity.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/ToDoBookmarks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 
@@ -13,38 +16,59 @@ class _ToDoMineScreenState extends State<ToDoMineScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: const [
+      children: [
         ListTile(
-          leading: Icon(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const MyAssignmentScreen(),
+              ),
+            );
+          },
+          leading: const Icon(
             FlutterIcons.check_circle_faw,
             color: Colors.white,
           ),
-          title: Text(
+          title: const Text(
             'My assignments',
             style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
         ListTile(
-          leading: Icon(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ToDoBookmarkScreen(),
+              ),
+            );
+          },
+          leading: const Icon(
             FlutterIcons.bookmark_mdi,
             color: Colors.white,
           ),
-          title: Text(
+          title: const Text(
             'Bookmarks',
             style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
         ListTile(
-          leading: Icon(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const MyRecentActivityScreen(),
+              ),
+            );
+          },
+          leading: const Icon(
             FlutterIcons.pie_chart_ent,
             color: Colors.white,
           ),
-          title: Text(
+          title: const Text(
             'My recent activity',
             style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
-        ListTile(
+        const ListTile(
           leading: Icon(
             FlutterIcons.event_mdi,
             color: Colors.white,

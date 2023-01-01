@@ -2,9 +2,10 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
@@ -40,21 +41,19 @@ class _ToDoScreenState extends State<ToDoScreen> {
             : Scaffold(
                 appBar: AppBar(
                   backgroundColor: ToDoTheme.backgroundGradient2Color,
-                  leading: const Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.white,
-                  ),
                   title:
                       const Text('Todo List', style: ToDoTheme.titleTextStyle),
-                  centerTitle: true,
+                  centerTitle: false,
                   actions: [
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: InkWell(
                         onTap: () {
-                          showNotYetImplementedMsg(
+                          Navigator.push(
                             context,
-                            'Add Task-List Action not yet implemented',
+                            MaterialPageRoute(
+                              builder: (context) => const CreateTaskScreen(),
+                            ),
                           );
                         },
                         child: const Icon(
@@ -67,57 +66,62 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 ),
                 body: Container(
                   decoration: ToDoTheme.toDoDecoration,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Wrap(
-                            direction: Axis.horizontal,
-                            spacing: 5.0,
-                            children:
-                                List.generate(buttonText.length, (int index) {
-                              return index == 3
-                                  ? const SizedBox(
-                                      width: 48,
-                                    )
-                                  : radioButton(
-                                      text: buttonText[index],
-                                      index: index,
-                                    );
-                            }),
-                          ),
-                        ),
-                        GetBuilder<ToDoController>(
-                          id: 'radiobtn',
-                          builder: (ToDoController controller) {
-                            return Container(
-                              child: todoController.selectedValueIndex == 0
-                                  ? Expanded(
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount:
-                                            todoController.todoList!.length,
-                                        itemBuilder: (
-                                          BuildContext context,
-                                          int index,
-                                        ) {
-                                          return todoController
-                                              .todoList![index];
-                                        },
-                                      ),
-                                    )
-                                  : todoController.selectedValueIndex == 1
-                                      ? const ToDoMineScreen()
-                                      : todoController.selectedValueIndex == 2
+                  child: Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Wrap(
+                                direction: Axis.horizontal,
+                                spacing: 5.0,
+                                children:
+                                    List.generate(buttonText.length, (int index) {
+                                  return index == 3
+                                      ? const SizedBox(
+                                          width: 48,
+                                        )
+                                      : radioButton(
+                                          text: buttonText[index],
+                                          index: index,
+                                        );
+                                }),
+                              ),
+                            ),
+                            GetBuilder<ToDoController>(
+                              id: 'radiobtn',
+                              builder: (ToDoController controller) {
+                                return Container(
+                                  child: todoController.selectedValueIndex == 0
+                                      ? Expanded(
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            itemCount:
+                                                todoController.todoList!.length,
+                                            itemBuilder: (
+                                              BuildContext context,
+                                              int index,
+                                            ) {
+                                              return todoController
+                                                  .todoList![index];
+                                            },
+                                          ),
+                                        )
+                                      : todoController.selectedValueIndex == 1
                                           ? const ToDoMineScreen()
-                                          : const ToDoMineScreen(),
-                            );
-                          },
-                        )
-                      ],
-                    ),
+                                          : todoController.selectedValueIndex == 2
+                                              ? const Placeholder()
+                                              : const Placeholder(),
+                                );
+                              },
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

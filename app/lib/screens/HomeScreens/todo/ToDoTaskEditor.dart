@@ -3,6 +3,7 @@ import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoTaskAssign.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/SubscriberScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/cupertino.dart';
@@ -68,7 +69,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showMoreBottomSheet();
+            },
             icon: const Icon(Icons.more_horiz),
             color: ToDoTheme.primaryTextColor,
           ),
@@ -320,9 +323,10 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                           width: 22,
                           height: 22,
                           decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(100))),
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(100)),
+                          ),
                         ),
                         Expanded(
                           child: Column(
@@ -339,11 +343,18 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                                       'Jane Doe',
                                       style: ToDoTheme.taskSubtitleTextStyle
                                           .copyWith(
-                                              color: ToDoTheme.calendarColor),
+                                        color: ToDoTheme.calendarColor,
+                                      ),
                                     ),
-                                    const Icon(
+                                    InkWell(
+                                      onTap: () {
+                                        showCommentBottomSheet();
+                                      },
+                                      child: const Icon(
                                         FlutterIcons.dots_three_horizontal_ent,
-                                        color: Colors.white)
+                                        color: Colors.white,
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
@@ -375,7 +386,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                                             color: AppCommonTheme
                                                 .backgroundColorLight,
                                             borderRadius: BorderRadius.all(
-                                                Radius.circular(100)),
+                                                Radius.circular(100),),
                                           ),
                                           child: const Text(
                                             '😍 1',
@@ -433,19 +444,29 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         fontSize: 13,
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(100)),
-                        border: Border.all(color: Colors.white),
-                      ),
-                      child: Text(
-                        'Add/remove people',
-                        style: ToDoTheme.taskTitleTextStyle.copyWith(
-                          color: ToDoTheme.calendarColor,
-                          fontSize: 13,
+                    InkWell(
+                      onTap: (){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ToDoSubscriberScreen(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(100)),
+                          border: Border.all(color: Colors.white),
+                        ),
+                        child: Text(
+                          'Add/remove people',
+                          style: ToDoTheme.taskTitleTextStyle.copyWith(
+                            color: ToDoTheme.calendarColor,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ),
@@ -651,6 +672,106 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
     );
   }
 
+  void showMoreBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: ToDoTheme.bottomSheetColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: <Widget>[
+            ListView(
+              shrinkWrap: true,
+              padding: const EdgeInsets.all(10),
+              children: <Widget>[
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: const Icon(
+                      Icons.bookmark_border,
+                      color: ToDoTheme.primaryTextColor,
+                    ),
+                    title: Text(
+                      'Bookmark',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading:const Icon(Icons.link, color: ToDoTheme.primaryTextColor,),
+                    title: Text(
+                      'Copy Link',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: const Icon(Icons.comments_disabled_outlined, color: ToDoTheme.primaryTextColor,),
+                    title: Text(
+                      'Close comment',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: const Icon(Icons.delete_outline, color: ToDoTheme.primaryTextColor,),
+                    title: Text(
+                      'Delete',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: ListTile(
+                    leading: const Icon(Icons.access_time, color: ToDoTheme.primaryTextColor,),
+                    title: Text(
+                      'View change log',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              height: 60,
+              width: double.infinity,
+              margin: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: ToDoTheme.primaryTextColor),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Center(
+                child: Text('Share this ToDo', style: ToDoTheme.taskTitleTextStyle.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   Widget infoAvatarBuilder(int count) {
     return CircleAvatar(
       radius: 28,
@@ -752,6 +873,114 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
           ),
         ),
       ),
+    );
+  }
+
+  void showCommentBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: ToDoTheme.bottomSheetColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return Wrap(
+          children: [
+            Padding(padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: ToDoTheme.secondaryCardColor,
+                      borderRadius: BorderRadius.circular(12)
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.bookmark_border, color: ToDoTheme.primaryTextColor,),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text('Save', style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: ToDoTheme.secondaryCardColor,
+                      borderRadius: BorderRadius.circular(12)
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.link, color: ToDoTheme.primaryTextColor,),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text('Copy Link', style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: ToDoTheme.secondaryCardColor,
+                      borderRadius: BorderRadius.circular(12)
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.file_upload_outlined, color: ToDoTheme.primaryTextColor,),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text('Save', style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: ToDoTheme.secondaryCardColor,
+                      borderRadius: BorderRadius.circular(12)
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.warning_amber_rounded, color: Colors.red,),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Text('Save', style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red,
+                      ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),)
+          ],
+        );
+      },
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:effektio/common/store/MockData.dart';
+import 'package:effektio/models/SubscriberModel.dart';
 import 'package:effektio/widgets/ToDoListView.dart';
 import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class ToDoController extends GetxController {
   RxBool expandBtn = false.obs;
   int selectedValueIndex = 0;
   Random random = Random();
+  FocusNode addTaskNode = FocusNode();
 
   // initialize todolist and tasks.
   void init() {
@@ -304,6 +306,26 @@ class ToDoController extends GetxController {
         ),
       ].obs,
     );
+  }
+
+  // Mock data for subscribed users
+  List<SubscriberModel> listSubscribers = <SubscriberModel>[
+    SubscriberModel('', 'Okon Invincible', false),
+    SubscriberModel('', 'Floym Dore', false),
+    SubscriberModel('', 'Raveena Tondon', false),
+    SubscriberModel('', 'Karishma Kapoor', false),
+    SubscriberModel('', 'Hema Malini', false),
+    SubscriberModel('', 'John Doe', false),
+  ];
+
+  void handleCheckClick(int position) {
+    var subscribeModel = listSubscribers[position];
+    if (subscribeModel.isSelected) {
+      subscribeModel.isSelected = false;
+    } else {
+      subscribeModel.isSelected = true;
+    }
+    update();
   }
 
   void updateIndex(int index) {
