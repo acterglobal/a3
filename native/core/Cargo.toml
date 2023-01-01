@@ -28,6 +28,8 @@ serde_repr = "0.1"
 tracing = "0.1.36"
 url = { version = "2.2.2", features = ["serde"] }
 ruma-macros = { workspace = true }
+async-recursion = "1"
+async-broadcast = "0.5"
 
 # with-mocks
 fake = { version = "2.4", optional = true, features = ["derive"] }

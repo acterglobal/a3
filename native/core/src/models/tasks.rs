@@ -168,8 +168,14 @@ impl super::EffektioModel for TaskList {
         };
 
         tracing::trace!(key = self.key(), ?task, "adding task to list");
+        let key = task.key();
 
-        self.tasks.push(task.key());
-        Ok(true)
+        if !self.tasks.iter().any(|k| k == &key) {
+            // new item, add it
+            self.tasks.push(key);
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 }
