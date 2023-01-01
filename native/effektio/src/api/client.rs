@@ -73,29 +73,26 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn devide_groups_from_convos(
-    client: MatrixClient,
-    executor: Executor,
-) -> (Vec<Group>, Vec<Conversation>) {
+pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Vec<Conversation>) {
     let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
-            (Vec::new(), Vec::new(), (client, executor)),
-            async move |(mut groups, mut conversations, (client, executor)), room| {
+            (Vec::new(), Vec::new(), client),
+            async move |(mut groups, mut conversations, client), room| {
                 let inner = Room {
                     room: room.clone(),
-                    client: client.clone(),
+                    client: client.client.clone(),
                 };
 
                 if inner.is_effektio_group().await {
                     groups.push(Group {
-                        executor: executor.clone(),
+                        client: client.clone(),
                         inner,
                     });
                 } else {
                     conversations.push(Conversation::new(inner));
                 }
 
-                (groups, conversations, (client, executor))
+                (groups, conversations, client)
             },
         )
         .await;
@@ -185,6 +182,10 @@ impl Client {
             conversation_controller: ConversationController::new(),
         };
         Ok(cl)
+    }
+
+    pub fn store(&self) -> &Store {
+        &self.store
     }
 
     /// Get access to the internal state
@@ -296,9 +297,7 @@ impl Client {
                             {
                                 tracing::trace!(user_id=?client.user_id(), "initial synced");
                                 // devide_groups_from_convos must be called after first sync
-                                let (_, convos) =
-                                    devide_groups_from_convos(client.clone(), executor.clone())
-                                        .await;
+                                let (_, convos) = devide_groups_from_convos(me.clone()).await;
                                 conversation_controller.load_rooms(&convos).await;
                                 // load invitations after first sync
                                 invitation_controller.load_invitations(&client).await;
@@ -362,11 +361,10 @@ impl Client {
     }
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
-        let client = self.client.clone();
-        let executor = self.executor.clone();
+        let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, conversations) = devide_groups_from_convos(client, executor).await;
+                let (groups, conversations) = devide_groups_from_convos(client).await;
                 Ok(conversations)
             })
             .await?

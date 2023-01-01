@@ -35,7 +35,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone)]
 pub struct Group {
-    pub(crate) executor: Executor,
+    pub client: Client,
     pub(crate) inner: Room,
 }
 
@@ -49,7 +49,7 @@ impl Group {
     pub(crate) async fn add_handlers(&self) {
         self.room
             .client()
-            .add_event_handler_context(self.executor.clone());
+            .add_event_handler_context(self.client.executor.clone());
         let room_id = self.room_id().to_owned();
         /// FIXME: combine into one handler
         self.room.add_event_handler(
@@ -105,6 +105,7 @@ impl Group {
         let custom_storage_key = format!("{room_id}::history");
 
         let mut from = if let Ok(h) = self
+            .client
             .executor
             .store()
             .get_raw::<HistoryState>(&custom_storage_key)
@@ -138,7 +139,7 @@ impl Group {
                 // match event {
                 //     MessageLikeEvent::Original(o) => {
                 tracing::trace!(?room_id, user_id=?client.user_id(), ?model, "handling timeline event");
-                if let Err(e) = self.executor.handle(model).await {
+                if let Err(e) = self.client.executor().handle(model).await {
                     tracing::error!("Failure handling event: {:}", e);
                 }
                 //     }
@@ -230,11 +231,10 @@ impl Client {
     }
 
     pub async fn groups(&self) -> Result<Vec<Group>> {
-        let c = self.client.clone();
-        let e = self.executor.clone();
+        let c = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, _) = devide_groups_from_convos(c, e).await;
+                let (groups, _) = devide_groups_from_convos(c).await;
                 Ok(groups)
             })
             .await?
@@ -244,7 +244,7 @@ impl Client {
         if let Ok(room_id) = OwnedRoomId::try_from(alias_or_id.clone()) {
             match self.get_room(&room_id) {
                 Some(room) => Ok(Group {
-                    executor: self.executor().clone(),
+                    client: self.clone(),
                     inner: Room {
                         room,
                         client: self.client.clone(),

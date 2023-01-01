@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 use anyhow::Result;
+use async_broadcast::Receiver as Subscription;
 use clap::crate_version;
 use crossterm::{
     event::{self, DisableMouseCapture, Event, KeyCode, KeyEvent},
@@ -57,6 +58,7 @@ struct TasksState {
     tasks_list_state: ListState,
     selected: Option<TaskList>,
     task_lists: Vec<TaskList>,
+    receivers: Vec<Subscription<()>>,
     tasks: Vec<Task>,
 }
 
@@ -88,8 +90,32 @@ impl TasksState {
             tasks_list_state: Default::default(),
             selected: None,
             task_lists,
+            receivers: Default::default(),
             tasks: Default::default(),
         }
+    }
+
+    async fn tick(&mut self) {
+        let mut update = false;
+        for t in self.receivers.iter_mut() {
+            if t.try_recv().is_ok() {
+                // consume
+                update = true;
+            }
+        }
+
+        if update {
+            tracing::trace!("refreshing upon tick");
+            if let Some(t) = &self.selected.clone() {
+                self.refresh(&t).await;
+            }
+        }
+    }
+
+    async fn refresh(&mut self, task_list: &TaskList) {
+        self.tasks = task_list.tasks().await.unwrap();
+        self.receivers = self.tasks.iter().map(|t| t.subscribe()).collect();
+        // self.receivers.push(task_list.subscribe());
     }
 
     fn select_next(&mut self) {
@@ -127,11 +153,11 @@ impl TasksState {
             if let Some(selected) = self
                 .task_lists_list_state
                 .selected()
-                .map(|idx| self.task_lists.get(idx))
+                .map(|idx| self.task_lists.get(idx).cloned())
                 .flatten()
             {
                 tracing::trace!(?selected, "selecting");
-                self.tasks = selected.tasks().await.unwrap();
+                self.refresh(&selected).await;
                 self.selected = Some(selected.clone());
             }
         }
@@ -368,6 +394,13 @@ impl App {
         }
     }
 
+    async fn on_tick(&mut self) {
+        match self.selected_tool_mut() {
+            Tool::Tasks(t) => t.tick().await,
+            _ => {}
+        };
+    }
+
     pub fn next_widget(&mut self) {
         self.selected_widget = self.selected_widget.next()
     }
@@ -530,7 +563,7 @@ async fn run_app<B: Backend>(
             }
         }
         if last_tick.elapsed() >= tick_rate {
-            //app.on_tick();
+            app.on_tick().await;
             last_tick = Instant::now();
         }
     }

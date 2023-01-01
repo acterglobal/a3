@@ -961,6 +961,7 @@ dependencies = [
  "android_logger",
  "anyhow",
  "assign",
+ "async-broadcast",
  "derive_builder 0.10.2",
  "effektio-core",
  "env_logger 0.9.3",
@@ -1056,6 +1057,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "app_dirs2",
+ "async-broadcast",
  "clap",
  "crossterm",
  "dialoguer",

@@ -5,6 +5,7 @@ use std::{
 
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
+use async_broadcast::Receiver;
 use effektio_core::{
     events::{
         self,
@@ -12,7 +13,7 @@ use effektio_core::{
         TextMessageEventContent,
     },
     executor::Executor,
-    models::{self, AnyEffektioModel},
+    models::{self, AnyEffektioModel, EffektioModel},
     // models::,
     ruma::{
         events::{
@@ -31,8 +32,7 @@ impl Client {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Joined> = HashMap::new();
-        let client = self.client.clone();
-        let store = self.store.clone();
+        let client = self.clone();
         for mdl in self.store.get_list(KEYS::TASKS)? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
@@ -51,7 +51,6 @@ impl Client {
                 };
                 task_lists.push(TaskList {
                     client: client.clone(),
-                    store: store.clone(),
                     room,
                     content: t,
                 })
@@ -65,7 +64,7 @@ impl Client {
 
 #[derive(Clone, Debug)]
 pub struct TaskListDraft {
-    client: MatrixClient,
+    client: Client,
     room: Joined,
     content: TaskListBuilder,
 }
@@ -96,8 +95,7 @@ impl TaskListDraft {
 
 #[derive(Clone, Debug)]
 pub struct TaskList {
-    client: MatrixClient,
-    store: Store,
+    client: Client,
     room: Joined,
     content: models::TaskList,
 }
@@ -110,6 +108,10 @@ impl std::ops::Deref for TaskList {
 }
 
 impl TaskList {
+    pub fn client(&self) -> &Client {
+        &self.client
+    }
+
     pub fn task_builder(&self) -> TaskDraft {
         let mut content = TaskBuilder::default();
         content.task_list_id(self.event_id());
@@ -125,12 +127,12 @@ impl TaskList {
         if tasks.is_empty() {
             return Ok(vec![]);
         };
-        let store = self.store.clone();
         let client = self.client.clone();
         let room = self.room.clone();
         Ok(RUNTIME
             .spawn(async move {
-                store
+                client
+                    .store()
                     .get_many(tasks)
                     .await
                     .into_iter()
@@ -154,7 +156,7 @@ impl TaskList {
 
 #[derive(Clone, Debug)]
 pub struct Task {
-    client: MatrixClient,
+    client: Client,
     room: Joined,
     content: models::Task,
 }
@@ -174,11 +176,15 @@ impl Task {
             content: self.content.updater(),
         }
     }
+    pub fn subscribe(&self) -> Receiver<()> {
+        let key = self.content.key();
+        self.client.executor().subscribe(key)
+    }
 }
 
 #[derive(Clone)]
 pub struct TaskDraft {
-    client: MatrixClient,
+    client: Client,
     room: Joined,
     content: TaskBuilder,
 }
@@ -209,7 +215,7 @@ impl TaskDraft {
 
 #[derive(Clone)]
 pub struct TaskUpdateBuilder {
-    client: MatrixClient,
+    client: Client,
     room: Joined,
     content: tasks::TaskUpdateBuilder,
 }

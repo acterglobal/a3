@@ -292,8 +292,7 @@ impl Client {
     }
 
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
-        let client = self.client.clone();
-        let executor = self.executor.clone();
+        let client = self.clone();
         let room_id = RoomId::parse(room_name)?;
         let result = self.client.get_room(&room_id);
         if result.is_none() {
@@ -310,7 +309,7 @@ impl Client {
                 }
                 // iterate my rooms to get user list
                 let mut profiles: Vec<UserProfile> = vec![];
-                let (groups, convos) = devide_groups_from_convos(client.clone(), executor).await;
+                let (groups, convos) = devide_groups_from_convos(client.clone()).await;
                 for convo in convos {
                     if convo.room_id() == room_id {
                         continue;
@@ -327,7 +326,7 @@ impl Client {
                             continue;
                         }
                         let user_profile = UserProfile::new(
-                            client.clone(),
+                            client.client.clone(),
                             member.user_id().to_owned(),
                             member.avatar_url().map(|x| (*x).to_owned()),
                             member.display_name().map(|x| x.to_string()),
