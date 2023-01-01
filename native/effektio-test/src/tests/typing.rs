@@ -8,10 +8,11 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     let _ = env_logger::try_init();
 
     let tmp_dir = TempDir::new()?;
-    let sisko = login_new_client(
+    let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
+        None,
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
@@ -25,14 +26,15 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
     println!("sent: {:?}", sent);
 
     let tmp_dir = TempDir::new()?;
-    let kyra = login_new_client(
+    let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
+        None,
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
-    let mut event_rx = kyra.typing_event_rx()?;
+    let mut event_rx = kyra.typing_event_rx().unwrap();
 
     loop {
         match event_rx.try_next() {
