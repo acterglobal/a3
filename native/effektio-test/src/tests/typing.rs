@@ -12,7 +12,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
-        None,
+        Some("SISKO_DEV".to_string()),
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
@@ -30,7 +30,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
-        None,
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
