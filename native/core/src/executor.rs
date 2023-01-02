@@ -28,7 +28,17 @@ impl Executor {
 
     pub fn subscribe(&self, key: String) -> Receiver<()> {
         match self.notifiers.entry(key) {
-            Entry::Occupied(o) => o.get().new_receiver(),
+            Entry::Occupied(o) => {
+                let sender = o.get();
+                if sender.is_closed() {
+                    // replace the existing channel to reopen
+                    let (sender, recv) = broadcast(1);
+                    o.replace_entry(sender);
+                    recv
+                } else {
+                    sender.new_receiver()
+                }
+            }
             Entry::Vacant(v) => {
                 let (mut sender, receiver) = broadcast(1);
                 sender.set_overflow(true);
@@ -40,16 +50,23 @@ impl Executor {
 
     pub fn notifv(&self, keys: Vec<String>) {
         for key in keys {
+            let span = tracing::trace_span!("Asked to notify", key = key);
+            let _enter = span.enter();
             if let Entry::Occupied(o) = self.notifiers.entry(key) {
                 let v = o.get();
-                if v.is_closed() || v.receiver_count() == 0 {
+                if v.is_closed() {
+                    tracing::trace!("No listeners. removing");
                     o.remove();
                     continue;
                 }
-                if v.try_broadcast(()).is_err() {
+                tracing::trace!("Broadcasting");
+                if let Err(error) = v.try_broadcast(()) {
+                    tracing::trace!(?error, "Notifying failed");
                     // we have overflow activated, this only fails because it has been closed
                     o.remove();
                 }
+            } else {
+                tracing::trace!("No one to notify");
             }
         }
     }

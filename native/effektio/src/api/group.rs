@@ -192,7 +192,7 @@ pub struct CreateGroupSettings {
     visibility: Visibility,
     #[builder(default = "Vec::new()")]
     invites: Vec<OwnedUserId>,
-    #[builder(setter(strip_option))]
+    #[builder(setter(strip_option), default)]
     alias: Option<String>,
 }
 

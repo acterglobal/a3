@@ -17,6 +17,7 @@ path = "../core"
 
 [dependencies]
 anyhow = "1"
+uuid = "1.2.2"
 env_logger = "0.9"
 futures = "0.3.17"
 log = "0.4"

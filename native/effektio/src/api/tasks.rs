@@ -31,7 +31,7 @@ use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixC
 impl Client {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
-        let mut rooms_map: HashMap<OwnedRoomId, Joined> = HashMap::new();
+        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
         for mdl in self.store.get_list(KEYS::TASKS)? {
             #[allow(irrefutable_let_patterns)]
@@ -40,9 +40,9 @@ impl Client {
                 let room = match rooms_map.entry(room_id) {
                     Entry::Occupied(t) => t.get().clone(),
                     Entry::Vacant(e) => {
-                        if let Some(joined) = client.get_joined_room(e.key()) {
-                            e.insert(joined.clone());
-                            joined
+                        if let Some(room) = client.get_room(e.key()) {
+                            e.insert(room.clone());
+                            room
                         } else {
                             /// User not part of the room anymore, ignore
                             continue;
@@ -59,6 +59,62 @@ impl Client {
             }
         }
         Ok(task_lists)
+    }
+    pub async fn task_list(&self, key: &str) -> Result<TaskList> {
+        let client = self.clone();
+        let mdl = self.store.get(key).await?;
+
+        let AnyEffektioModel::TaskList(task_list) = mdl else  {
+            bail!("Not a Tasklist model: {key}")
+        };
+        let Some(room) = client.get_room(&task_list.room_id()) else {
+            bail!("Room not found for task_list item");
+        };
+
+        Ok(TaskList {
+            client: client.clone(),
+            room,
+            content: task_list,
+        })
+    }
+}
+
+impl Group {
+    pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
+        let mut task_lists = Vec::new();
+        let room_id = self.room_id();
+        for mdl in self.client.store().get_list(KEYS::TASKS)? {
+            #[allow(irrefutable_let_patterns)]
+            if let AnyEffektioModel::TaskList(t) = mdl {
+                if t.room_id == room_id {
+                    task_lists.push(TaskList {
+                        client: self.client.clone(),
+                        room: self.room.clone(),
+                        content: t,
+                    })
+                }
+            } else {
+                tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
+            }
+        }
+        Ok(task_lists)
+    }
+    pub async fn task_list(&self, key: &str) -> Result<TaskList> {
+        let mdl = self.client.store().get(key).await?;
+
+        let AnyEffektioModel::TaskList(task_list) = mdl else  {
+            bail!("Not a Tasklist model: {key}")
+        };
+        assert!(
+            self.room_id() == task_list.room_id(),
+            "This task doesn't belong to this room"
+        );
+
+        Ok(TaskList {
+            client: self.client.clone(),
+            room: self.room.clone(),
+            content: task_list,
+        })
     }
 }
 
@@ -96,7 +152,7 @@ impl TaskListDraft {
 #[derive(Clone, Debug)]
 pub struct TaskList {
     client: Client,
-    room: Joined,
+    room: Room,
     content: models::TaskList,
 }
 
@@ -112,19 +168,31 @@ impl TaskList {
         &self.client
     }
 
+    pub async fn refresh(&mut self) -> Result<()> {
+        let key = self.content.key();
+        let AnyEffektioModel::TaskList(content) = self.client.store().get(&key).await? else {
+            bail!("Refreshing failed. {key} not a task")
+        };
+        self.content = content;
+        Ok(())
+    }
+
     pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.key();
         self.client.executor().subscribe(key)
     }
 
-    pub fn task_builder(&self) -> TaskDraft {
+    pub fn task_builder(&self) -> Result<TaskDraft> {
+        let Room::Joined(joined) = &self.room else {
+            bail!("Can only create tasks in joined rooms");
+        };
         let mut content = TaskBuilder::default();
         content.task_list_id(self.event_id());
-        TaskDraft {
+        Ok(TaskDraft {
             client: self.client.clone(),
-            room: self.room.clone(),
+            room: joined.clone(),
             content,
-        }
+        })
     }
 
     pub async fn tasks(&self) -> Result<Vec<Task>> {
@@ -162,7 +230,7 @@ impl TaskList {
 #[derive(Clone, Debug)]
 pub struct Task {
     client: Client,
-    room: Joined,
+    room: Room,
     content: models::Task,
 }
 
@@ -174,12 +242,23 @@ impl std::ops::Deref for Task {
 }
 
 impl Task {
-    pub fn update_builder(&self) -> TaskUpdateBuilder {
-        TaskUpdateBuilder {
+    pub async fn refresh(&mut self) -> Result<()> {
+        let key = self.content.key();
+        let AnyEffektioModel::Task(content) = self.client.store().get(&key).await? else {
+            bail!("Refreshing failed. {key} not a task")
+        };
+        self.content = content;
+        Ok(())
+    }
+    pub fn update_builder(&self) -> Result<TaskUpdateBuilder> {
+        let Room::Joined(joined) = &self.room else {
+            bail!("Can only update tasks in joined rooms");
+        };
+        Ok(TaskUpdateBuilder {
             client: self.client.clone(),
-            room: self.room.clone(),
+            room: joined.clone(),
             content: self.content.updater(),
-        }
+        })
     }
     pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.key();
