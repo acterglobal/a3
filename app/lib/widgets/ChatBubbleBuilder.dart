@@ -224,6 +224,7 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             fontWeight: FontWeight.w400,
             fontSize: FontSize(14),
           ),
+          'a': Style(textDecoration: TextDecoration.none),
         },
       );
     } else if (message.repliedMessage is types.ImageMessage) {

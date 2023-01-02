@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
@@ -10,8 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_link_previewer/flutter_link_previewer.dart';
-import 'package:flutter_parsed_text/flutter_parsed_text.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -154,67 +151,12 @@ class _ChatListItemState extends State<ChatListItem> {
     String body = eventItem.textDesc()?.body() ?? 'Unknown item';
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: ParsedText(
-        text: '${simplifyUserId(sender)}: $body',
-        style: ChatTheme01.latestChatStyle,
-        regexOptions: const RegexOptions(multiLine: true, dotAll: true),
-        maxLines: 2,
-        parse: [
-          MatchText(
-            pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: '_(.*?)_',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              fontStyle: FontStyle.italic,
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll('_', '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: '~(.*?)~',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              decoration: TextDecoration.lineThrough,
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll('~', '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: '`(.*?)`',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll('`', '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: regexEmail,
-            style: ChatTheme01.latestChatStyle.copyWith(
-              decoration: TextDecoration.underline,
-            ),
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: regexLink,
-            style: ChatTheme01.latestChatStyle.copyWith(
-              decoration: TextDecoration.underline,
-            ),
-            onTap: (String value) => handleTap(context),
-          ),
-        ],
+      child: Html(
+        data: '''${simplifyUserId(sender)}: $body''',
+        style: {
+          'body': Style(color: Colors.white, maxLines: 2),
+          'a': Style(textDecoration: TextDecoration.none)
+        },
       ),
     );
   }
