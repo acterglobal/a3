@@ -297,7 +297,7 @@ impl Mock {
                 odo.task_lists()
                     .await?
                     .into_iter()
-                    .find(|e| e.event_id == task_list_id)
+                    .find(|e| e.event_id() == task_list_id)
                     .unwrap()
             };
 

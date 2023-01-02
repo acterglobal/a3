@@ -149,6 +149,7 @@ async fn odos_tasks() -> Result<()> {
 
 #[tokio::test]
 async fn task_smoketests() -> Result<()> {
+    let _ = env_logger::try_init();
     let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
     let state_sync = user.start_sync();
     state_sync.await_has_synced_history().await?;
@@ -208,7 +209,7 @@ async fn task_smoketests() -> Result<()> {
     task_list.refresh().await?;
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
-    assert_eq!(tasks[0].event_id, task_1_id);
+    assert_eq!(tasks[0].event_id(), task_1_id);
 
     let mut task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), &"Testing 1".to_owned());
@@ -241,7 +242,7 @@ async fn task_smoketests() -> Result<()> {
     task_list.refresh().await?;
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 2);
-    assert_eq!(tasks[1].event_id, task_2_id);
+    assert_eq!(tasks[1].event_id(), task_2_id);
 
     let task_2 = tasks[1].clone();
     assert_eq!(task_2.title(), &"Testing 2".to_owned());
@@ -276,5 +277,39 @@ async fn task_smoketests() -> Result<()> {
     // Update has been applied properly
     assert_eq!(task_1.title(), &"Replacement Name".to_owned());
     assert!(task_1.is_done());
+
+    let task_list_listener = task_list.subscribe();
+
+    task_list
+        .update_builder()?
+        .name("Setup".into())
+        .description("All done now".into())
+        .send()
+        .await?;
+
+    assert!(
+        wait_for(move || {
+            let mut task_list_listener = task_list_listener.clone();
+            async move {
+                if let Ok(t) = task_list_listener.try_recv() {
+                    Ok(Some(t))
+                } else {
+                    Ok(None)
+                }
+            }
+        })
+        .await?
+        .is_some(),
+        "Didn't receive the update on the task list"
+    );
+
+    task_list.refresh().await?;
+
+    assert_eq!(task_list.name(), &"Setup".to_owned());
+    assert_eq!(
+        task_list.description().as_ref().unwrap().body,
+        "All done now".to_owned()
+    );
+
     Ok(())
 }

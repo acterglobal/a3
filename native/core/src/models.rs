@@ -15,7 +15,7 @@ use matrix_sdk::ruma::{
 pub use news::News;
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
-pub use tasks::{Task, TaskList, TaskUpdate};
+pub use tasks::{Task, TaskList, TaskListUpdate, TaskUpdate};
 
 use enum_dispatch::enum_dispatch;
 
@@ -44,6 +44,7 @@ pub trait EffektioModel: Debug {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum AnyEffektioModel {
     TaskList,
+    TaskListUpdate,
     Task,
     TaskUpdate,
 }

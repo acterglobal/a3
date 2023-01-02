@@ -1,6 +1,7 @@
 use std::{
     collections::{hash_map::Entry, HashMap},
     convert::{TryFrom, TryInto},
+    ops::DerefMut,
 };
 
 use super::{client::Client, group::Group, RUNTIME};
@@ -36,7 +37,7 @@ impl Client {
         for mdl in self.store.get_list(KEYS::TASKS)? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
-                let room_id = t.room_id();
+                let room_id = t.room_id().to_owned();
                 let room = match rooms_map.entry(room_id) {
                     Entry::Occupied(t) => t.get().clone(),
                     Entry::Vacant(e) => {
@@ -67,7 +68,7 @@ impl Client {
         let AnyEffektioModel::TaskList(task_list) = mdl else  {
             bail!("Not a Tasklist model: {key}")
         };
-        let Some(room) = client.get_room(&task_list.room_id()) else {
+        let Some(room) = client.get_room(task_list.room_id()) else {
             bail!("Room not found for task_list item");
         };
 
@@ -86,7 +87,7 @@ impl Group {
         for mdl in self.client.store().get_list(KEYS::TASKS)? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
-                if t.room_id == room_id {
+                if t.room_id() == room_id {
                     task_lists.push(TaskList {
                         client: self.client.clone(),
                         room: self.room.clone(),
@@ -187,11 +188,21 @@ impl TaskList {
             bail!("Can only create tasks in joined rooms");
         };
         let mut content = TaskBuilder::default();
-        content.task_list_id(self.event_id());
+        content.task_list_id(self.event_id().to_owned());
         Ok(TaskDraft {
             client: self.client.clone(),
             room: joined.clone(),
             content,
+        })
+    }
+    pub fn update_builder(&self) -> Result<TaskListUpdateBuilder> {
+        let Room::Joined(joined) = &self.room else {
+            bail!("Can only update tasks in joined rooms");
+        };
+        Ok(TaskListUpdateBuilder {
+            client: self.client.clone(),
+            room: joined.clone(),
+            content: self.content.updater(),
         })
     }
 
@@ -323,6 +334,37 @@ impl TaskUpdateBuilder {
 
     pub fn mark_undone(&mut self) -> &mut Self {
         self.content.progress_percent(Some(None));
+        self
+    }
+
+    pub async fn send(&self) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let inner = self.content.build()?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(inner, None).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
+}
+
+#[derive(Clone)]
+pub struct TaskListUpdateBuilder {
+    client: Client,
+    room: Joined,
+    content: tasks::TaskListUpdateBuilder,
+}
+
+impl TaskListUpdateBuilder {
+    pub fn name(&mut self, name: String) -> &mut Self {
+        self.content.name(Some(name));
+        self
+    }
+
+    pub fn description(&mut self, description: String) -> &mut Self {
+        self.content
+            .description(Some(TextMessageEventContent::plain(description)));
         self
     }
 

@@ -1,6 +1,7 @@
 use super::TextMessageEventContent;
 use crate::util::deserialize_some;
 use derive_builder::Builder;
+use derive_getters::Getters;
 use matrix_sdk::ruma::{events::macros::EventContent, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -43,28 +44,164 @@ impl Default for Priority {
 /// The TaskList Event
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
-#[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent, Builder)]
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
 #[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
 #[builder(name = "TaskListBuilder", derive(Debug))]
 pub struct TaskListEventContent {
     pub name: String,
     #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub role: Option<SpecialTaskListRole>,
     #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
     #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Color>,
     #[builder(default)]
+    #[serde(default)]
     pub sort_order: u32,
     #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time_zone: Option<TimeZone>,
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
     #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub keywords: Vec<String>,
+    #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub categories: Vec<String>,
+    #[builder(setter(into, strip_option), default)]
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub subscribers: Vec<OwnedUserId>,
+}
+
+/// The TaskList Event
+///
+/// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
+#[ruma_event(type = "org.effektio.dev.tasklist.update", kind = MessageLike)]
+#[builder(name = "TaskListUpdateBuilder", derive(Debug))]
+pub struct TaskListUpdateEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub task_list: Update,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub name: Option<String>,
+    #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub role: Option<Option<SpecialTaskListRole>>,
+    #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub description: Option<Option<TextMessageEventContent>>,
+    #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub color: Option<Option<Color>>,
+    #[builder(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub sort_order: Option<u32>,
+    #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub time_zone: Option<Option<TimeZone>>,
+    // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
+    #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
     pub keywords: Option<Vec<String>>,
     #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
     pub categories: Option<Vec<String>>,
     #[builder(setter(into, strip_option), default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
     pub subscribers: Option<Vec<OwnedUserId>>,
+}
+
+impl TaskListUpdateEventContent {
+    pub fn apply(&self, task_list: &mut TaskListEventContent) -> crate::Result<bool> {
+        let mut updated = false;
+        if let Some(name) = &self.name {
+            task_list.name = name.clone();
+            updated = true;
+        }
+
+        if let Some(role) = &self.role {
+            task_list.role = role.clone();
+            updated = true;
+        }
+
+        if let Some(description) = &self.description {
+            task_list.description = description.clone();
+            updated = true;
+        }
+
+        if let Some(color) = &self.color {
+            task_list.color = color.clone();
+            updated = true;
+        }
+
+        if let Some(sort_order) = &self.sort_order {
+            task_list.sort_order = *sort_order;
+            updated = true;
+        }
+
+        if let Some(subscribers) = &self.subscribers {
+            task_list.subscribers = subscribers.clone();
+            updated = true;
+        }
+
+        if let Some(time_zone) = &self.time_zone {
+            task_list.time_zone = *time_zone;
+            updated = true;
+        }
+        if let Some(keywords) = &self.keywords {
+            task_list.keywords = keywords.clone();
+            updated = true;
+        }
+
+        if let Some(categories) = &self.categories {
+            task_list.categories = categories.clone();
+            updated = true;
+        }
+
+        tracing::trace!(update = ?self, ?updated, ?task_list, "TaskList updated");
+
+        Ok(updated)
+    }
 }
 
 /// The Task Event
@@ -72,7 +209,7 @@ pub struct TaskListEventContent {
 /// modeled after [JMAP Task](https://jmap.io/spec-tasks.html#tasks)
 /// see also the [IETF Task](https://www.rfc-editor.org/rfc/rfc8984.html#name-task)
 /// but all timezones have been dumbed down to UTC-only.
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
 #[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
 #[builder(name = "TaskBuilder", derive(Debug))]
 pub struct TaskEventContent {

@@ -787,6 +787,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive-getters"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c5905670fd9c320154f3a4a01c9e609733cd7b753f3c58777ab7d5ce26686b3"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "derive_builder"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1023,6 +1034,7 @@ dependencies = [
  "chrono-tz",
  "csscolorparser",
  "dashmap",
+ "derive-getters",
  "derive_builder 0.11.2",
  "enum_dispatch",
  "fake",

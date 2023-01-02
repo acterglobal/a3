@@ -4,7 +4,9 @@ use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    events::tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskUpdateEvent},
+    events::tasks::{
+        SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent,
+    },
     executor::Executor,
     models::AnyEffektioModel,
     ruma::{
@@ -63,6 +65,22 @@ impl Group {
                     // FIXME: handle redactions
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
                         executor.handle(AnyEffektioModel::TaskList(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncTaskListUpdateEvent,
+                  client: MatrixClient,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyEffektioModel::TaskListUpdate(t.into()))
+                            .await;
                     }
                 }
             },
