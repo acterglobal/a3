@@ -12,7 +12,9 @@ use effektio_core::{
 use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{future::try_join_all, pin_mut, stream, StreamExt};
-use futures_signals::signal::{channel, MutableSignalCloned, Receiver, SignalExt, SignalStream};
+use futures_signals::signal::{
+    channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
+};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
@@ -24,6 +26,7 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
+use tokio::task::JoinHandle;
 
 use super::{
     account::Account,
@@ -123,6 +126,7 @@ impl HistoryLoadState {
 
 #[derive(Clone)]
 pub struct SyncState {
+    handle: Mutable<Option<JoinHandle<()>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
     history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
 }
@@ -133,6 +137,7 @@ impl SyncState {
         Self {
             first_synced_rx,
             history_loading: Default::default(),
+            handle: Default::default(),
         }
     }
 
@@ -155,6 +160,26 @@ impl SyncState {
             }
         }
         unimplemented!("We never reach this state")
+    }
+
+    pub fn is_running(&self) -> bool {
+        if let Some(handle) = self.handle.lock_ref().as_ref() {
+            !handle.is_finished()
+        } else {
+            false
+        }
+    }
+
+    pub fn cancel(&self) {
+        if let Some(handle) = self.handle.replace(None) {
+            handle.abort();
+        }
+    }
+}
+
+impl Drop for SyncState {
+    fn drop(&mut self) {
+        self.cancel();
     }
 }
 
@@ -229,10 +254,10 @@ impl Client {
     }
 
     pub fn start_sync(&mut self) -> SyncState {
+        let state = self.state.clone();
         let me = self.clone();
         let executor = self.executor.clone();
         let client = self.client.clone();
-        let state = self.state.clone();
 
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
@@ -257,7 +282,7 @@ impl Client {
         let sync_state = SyncState::new(first_synced_rx);
         let sync_state_history = sync_state.history_loading.clone();
 
-        RUNTIME.spawn(async move {
+        let handle = RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
 
@@ -330,6 +355,7 @@ impl Client {
                 .await
                 .unwrap();
         });
+        sync_state.handle.set(Some(handle));
         sync_state
     }
 
