@@ -35,6 +35,12 @@ pub enum Priority {
     Lowest = 9,
 }
 
+impl Priority {
+    fn is_undefinied(&self) -> bool {
+        matches!(self, Priority::Undefined)
+    }
+}
+
 impl Default for Priority {
     fn default() -> Self {
         Priority::Undefined
@@ -248,8 +254,8 @@ pub struct TaskEventContent {
     pub sort_order: u32,
     /// the priority of the Task
     #[builder(default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub priority: Option<Priority>,
+    #[serde(default, skip_serializing_if = "Priority::is_undefinied")]
+    pub priority: Priority,
     /// Color this task
     #[builder(setter(into, strip_option), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -347,7 +353,7 @@ pub struct TaskUpdateEventContent {
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub priority: Option<Option<Priority>>,
+    pub priority: Option<Priority>,
     /// Color this task
     #[builder(default)]
     #[serde(

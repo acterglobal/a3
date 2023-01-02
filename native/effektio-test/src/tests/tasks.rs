@@ -170,7 +170,7 @@ async fn task_smoketests() -> Result<()> {
     let task_list_key = effektio_core::models::TaskList::key_from_event(&task_list_id);
 
     let wait_for_group = group.clone();
-    let Some(mut task_list) = wait_for(move || {
+    let Some(task_list) = wait_for(move || {
         let group = wait_for_group.clone();
         let task_list_key = task_list_key.clone();
         async move {
@@ -206,12 +206,12 @@ async fn task_smoketests() -> Result<()> {
         "Didn't receive any update on the list for the first event"
     );
 
-    task_list.refresh().await?;
+    let task_list = task_list.refresh().await?;
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 1);
     assert_eq!(tasks[0].event_id(), task_1_id);
 
-    let mut task_1 = tasks[0].clone();
+    let task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), &"Testing 1".to_owned());
     assert!(!task_1.is_done());
 
@@ -239,7 +239,7 @@ async fn task_smoketests() -> Result<()> {
         "Didn't receive any update on the list for the second event"
     );
 
-    task_list.refresh().await?;
+    let task_list = task_list.refresh().await?;
     let tasks = task_list.tasks().await?;
     assert_eq!(tasks.len(), 2);
     assert_eq!(tasks[1].event_id(), task_2_id);
@@ -273,7 +273,7 @@ async fn task_smoketests() -> Result<()> {
         "Didn't receive any update on the task"
     );
 
-    task_1.refresh().await?;
+    let task_1 = task_1.refresh().await?;
     // Update has been applied properly
     assert_eq!(task_1.title(), &"Replacement Name".to_owned());
     assert!(task_1.is_done());
@@ -303,7 +303,7 @@ async fn task_smoketests() -> Result<()> {
         "Didn't receive the update on the task list"
     );
 
-    task_list.refresh().await?;
+    let task_list = task_list.refresh().await?;
 
     assert_eq!(task_list.name(), &"Setup".to_owned());
     assert_eq!(

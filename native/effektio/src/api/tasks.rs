@@ -10,7 +10,7 @@ use async_broadcast::Receiver;
 use effektio_core::{
     events::{
         self,
-        tasks::{self, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
+        tasks::{self, Priority, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
         TextMessageEventContent,
     },
     executor::Executor,
@@ -165,17 +165,49 @@ impl std::ops::Deref for TaskList {
 }
 
 impl TaskList {
+    pub fn description_text(&self) -> Option<String> {
+        self.description.as_ref().map(|t| t.body.clone())
+    }
+
+    pub fn sort_order(&self) -> u32 {
+        self.content.sort_order.clone()
+    }
+
+    pub fn role(&self) -> Option<String> {
+        self.content
+            .role
+            .as_ref()
+            .map(|t| serde_json::to_string(t).ok())
+            .flatten()
+    }
+
+    pub fn time_zone(&self) -> Option<String> {
+        self.content.time_zone.as_ref().map(ToString::to_string)
+    }
+}
+
+impl TaskList {
     pub fn client(&self) -> &Client {
         &self.client
     }
 
-    pub async fn refresh(&mut self) -> Result<()> {
+    pub async fn refresh(&self) -> Result<TaskList> {
         let key = self.content.key();
-        let AnyEffektioModel::TaskList(content) = self.client.store().get(&key).await? else {
-            bail!("Refreshing failed. {key} not a task")
-        };
-        self.content = content;
-        Ok(())
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let AnyEffektioModel::TaskList(content) = client.store().get(&key).await? else {
+                    bail!("Refreshing failed. {key} not a task")
+                };
+                Ok(TaskList {
+                    client,
+                    room,
+                    content,
+                })
+            })
+            .await?
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
@@ -252,15 +284,57 @@ impl std::ops::Deref for Task {
     }
 }
 
+/// helpers for content
 impl Task {
-    pub async fn refresh(&mut self) -> Result<()> {
-        let key = self.content.key();
-        let AnyEffektioModel::Task(content) = self.client.store().get(&key).await? else {
-            bail!("Refreshing failed. {key} not a task")
-        };
-        self.content = content;
-        Ok(())
+    pub fn description_text(&self) -> Option<String> {
+        self.content.description.as_ref().map(|t| t.body.clone())
     }
+
+    pub fn progress_percent(&self) -> Option<u8> {
+        self.content.progress_percent.clone()
+    }
+
+    pub fn sort_order(&self) -> u32 {
+        self.content.sort_order.clone()
+    }
+
+    pub fn priority(&self) -> Option<u8> {
+        Some(match self.content.priority {
+            Priority::Undefined => return None,
+            Priority::Highest => 1,
+            Priority::SecondHighest => 2,
+            Priority::Three => 3,
+            Priority::Four => 4,
+            Priority::Five => 5,
+            Priority::Six => 6,
+            Priority::Seven => 7,
+            Priority::SecondLowest => 8,
+            Priority::Lowest => 9,
+        })
+    }
+}
+
+/// Custom functions
+impl Task {
+    pub async fn refresh(&self) -> Result<Task> {
+        let key = self.content.key();
+        let client = self.client.clone();
+        let room = self.room.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let AnyEffektioModel::Task(content) = client.store().get(&key).await? else {
+                    bail!("Refreshing failed. {key} not a task")
+                };
+                Ok(Task {
+                    client,
+                    room,
+                    content,
+                })
+            })
+            .await?
+    }
+
     pub fn update_builder(&self) -> Result<TaskUpdateBuilder> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only update tasks in joined rooms");
@@ -271,6 +345,7 @@ impl Task {
             content: self.content.updater(),
         })
     }
+
     pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.key();
         self.client.executor().subscribe(key)

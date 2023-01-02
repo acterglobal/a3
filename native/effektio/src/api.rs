@@ -35,7 +35,10 @@ pub use auth::{
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
-pub use effektio_core::models::{Color, Faq, News, Tag};
+pub use effektio_core::{
+    events::UtcDateTime,
+    models::{Color, Faq, News, Tag},
+};
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;
 pub use message::{
@@ -45,7 +48,9 @@ pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
 pub use stream::{TimelineDiff, TimelineStream};
-pub use tasks::{Task, TaskDraft, TaskList, TaskListDraft};
+pub use tasks::{
+    Task, TaskDraft, TaskList, TaskListDraft, TaskListUpdateBuilder, TaskUpdateBuilder,
+};
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
 
