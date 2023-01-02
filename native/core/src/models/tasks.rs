@@ -6,7 +6,7 @@ use crate::{
     },
     statics::KEYS,
 };
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, OwnedEventId, OwnedRoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
 
 use super::AnyEffektioModel;
@@ -38,25 +38,27 @@ impl Task {
             .task(self.inner.event_id.to_owned())
             .to_owned()
     }
+
+    pub fn key_from_event(event_id: &EventId) -> String {
+        format!("task-{event_id}")
+    }
 }
 
 impl super::EffektioModel for Task {
-    /// The indizes this model should be added to
     fn indizes(&self) -> Vec<String> {
         vec![]
     }
-    /// The key to store this model under
+
     fn key(&self) -> String {
-        format!("task-{:}", self.event_id)
+        Self::key_from_event(&self.event_id)
     }
-    /// The models to inform about this model as it belongs to that
+
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![format!(
-            "tasklist-{:}",
-            self.inner.content.task_list_id.event_id
+        Some(vec![TaskList::key_from_event(
+            &self.inner.content.task_list_id.event_id,
         )])
     }
-    /// handle transition
+
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
         let AnyEffektioModel::TaskUpdate(update) = model else {
             return Ok(false)
@@ -85,20 +87,27 @@ pub struct TaskUpdate {
 }
 
 impl super::EffektioModel for TaskUpdate {
-    /// The indizes this model should be added to
     fn indizes(&self) -> Vec<String> {
         vec![format!(
             "task-{:}::history",
             self.inner.content.task.event_id
         )]
     }
-    /// The key to store this model under
+
     fn key(&self) -> String {
-        format!("task-update-{:}", self.event_id)
+        Self::key_from_event(&self.event_id)
     }
-    /// The models to inform about this model as it belongs to that
+
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![format!("task-{:}", self.inner.content.task.event_id)])
+        Some(vec![Task::key_from_event(
+            &self.inner.content.task.event_id,
+        )])
+    }
+}
+
+impl TaskUpdate {
+    fn key_from_event(event_id: &EventId) -> String {
+        format!("task-update-{event_id}")
     }
 }
 
@@ -138,6 +147,9 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
 }
 
 impl TaskList {
+    pub fn key_from_event(event_id: &EventId) -> String {
+        format!("tasklist-{event_id}")
+    }
     pub fn redacted(&self) -> bool {
         false
     }
@@ -153,15 +165,14 @@ impl TaskList {
 }
 
 impl super::EffektioModel for TaskList {
-    /// The indizes this model should be added to
     fn indizes(&self) -> Vec<String> {
         vec![KEYS::TASKS.to_owned()]
     }
-    /// The key to store this model under
+
     fn key(&self) -> String {
-        format!("tasklist-{:}", self.inner.event_id)
+        Self::key_from_event(&self.event_id)
     }
-    /// handle transition
+
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
         let super::AnyEffektioModel::Task(task) = model else {
             return Ok(false)

@@ -112,6 +112,11 @@ impl TaskList {
         &self.client
     }
 
+    pub fn subscribe(&self) -> Receiver<()> {
+        let key = self.content.key();
+        self.client.executor().subscribe(key)
+    }
+
     pub fn task_builder(&self) -> TaskDraft {
         let mut content = TaskBuilder::default();
         content.task_list_id(self.event_id());

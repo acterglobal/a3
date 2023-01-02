@@ -1044,6 +1044,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "effektio",
+ "effektio-core",
  "env_logger 0.9.3",
  "futures",
  "log",

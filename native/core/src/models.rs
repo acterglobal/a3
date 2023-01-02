@@ -26,7 +26,6 @@ use crate::events::tasks::{
 
 #[enum_dispatch(AnyEffektioModel)]
 pub trait EffektioModel: Debug {
-    /// The indizes this model should be added to
     fn indizes(&self) -> Vec<String>;
     /// The key to store this model under
     fn key(&self) -> String;

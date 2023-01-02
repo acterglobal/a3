@@ -1,64 +1,115 @@
-use anyhow::Result;
-use effektio::api::login_new_client;
-use tempfile::TempDir;
+use anyhow::{bail, Result};
+use effektio::{matrix_sdk::config::StoreConfig, testing::ensure_user};
+use effektio_core::models::EffektioModel;
+use tokio::time::{sleep, Duration};
 
 #[tokio::test]
-async fn tasks_smoketest() -> Result<()> {
+async fn odos_tasks() -> Result<()> {
     let _ = env_logger::try_init();
-    let tmp_dir = TempDir::new()?;
-    let client = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
-        None,
+    let list_name = "Daily Security Brief".to_owned();
+    let mut odo = ensure_user(
+        option_env!("HOMESERVER").unwrap_or("http://localhost:8118"),
+        "odo".to_owned(),
+        "effektio-integration-tests".to_owned(),
+        StoreConfig::default(),
     )
     .await?;
-    client
-        .sync_once(Default::default())
-        .await
-        .expect("sync works");
-    let ops = client
-        .get_group("#ops:ds9.effektio.org".to_owned())
-        .await
-        .expect("Promenade exists");
 
-    let mut task_list_draft = ops
-        .task_list_draft()
-        .expect("we are in and admin, we can create news drafts");
-    task_list_draft.name("Daily Standup".to_owned());
-    let task_list_id = task_list_draft.send().await?;
-    client
-        .sync_once(Default::default())
-        .await
-        .expect("sync works");
-    // we should have
-    let task_list = client
-        .task_lists()
+    let state_sync = odo.start_sync();
+    state_sync.await_has_synced_history().await?;
+
+    let task_lists = odo.task_lists().await?;
+    let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) else {
+        bail!("TaskList not found");
+    };
+
+    assert!(
+        task_list.tasks().await?.len() >= 3,
+        "Number of tasks too low",
+    );
+
+    let mut list_subscription = task_list.subscribe();
+
+    let new_task_event_id = task_list
+        .task_builder()
+        .title("Integation Test Task".into())
+        .description("Integration Test Task Description".into())
+        .send()
+        .await?;
+    let task_key = effektio_core::models::Task::key_from_event(&new_task_event_id);
+
+    let mut remaining = 3;
+
+    let task = loop {
+        if remaining == 0 {
+            bail!("tried to find the new task 3 seconds");
+        }
+        remaining -= 1;
+
+        if Ok(()) == list_subscription.try_recv() {
+            if let Some(task) = task_list
+                .tasks()
+                .await?
+                .into_iter()
+                .find(|t| t.key() == task_key)
+            {
+                break task;
+            }
+        }
+
+        sleep(Duration::from_secs(1)).await;
+    };
+
+    assert_eq!(*task.title(), "Integation Test Task".to_string());
+    assert_eq!(task.is_done(), false, "Task is already done");
+
+    let mut task_update = task.subscribe();
+    let update = task
+        .update_builder()
+        .title("New Test title".to_owned())
+        .mark_done()
+        .send()
+        .await?;
+
+    let mut remaining = 3;
+    loop {
+        if remaining == 0 {
+            bail!("even after 3 seconds, no task update has been reported");
+        }
+        remaining -= 1;
+
+        if task_update.try_recv().is_ok() {
+            break;
+        }
+
+        sleep(Duration::from_secs(1)).await;
+    }
+
+    // we can expect a signal on the list, too
+    let mut remaining = 3;
+    loop {
+        if remaining == 0 {
+            bail!("even after 3 seconds, no task list update has been reported");
+        }
+        remaining -= 1;
+
+        if list_subscription.try_recv().is_ok() {
+            break;
+        }
+
+        sleep(Duration::from_secs(1)).await;
+    }
+
+    let Some(task) = task_list
+        .tasks()
         .await?
         .into_iter()
-        .next()
-        .expect("we should have a task list");
-    assert_eq!(
-        task_list.event_id(),
-        task_list_id,
-        "Latest task list isn't the item, we just sent",
-    );
+        .find(|t| t.key() == task_key) else {
+            bail!("Task not found?!?")
+        };
 
-    assert_eq!(
-        task_list.tasks().await?.len(),
-        0,
-        "There are already tasks in the new list"
-    );
+    assert_eq!(*task.title(), "New Test title".to_string());
+    assert_eq!(task.is_done(), true, "Task is not be marked as done");
 
-    let mut task_draft = task_list.task_builder();
-    task_draft.title("Check in with station security".to_owned());
-    let task_id = task_draft.send().await?;
-
-    client
-        .sync_once(Default::default())
-        .await
-        .expect("sync works");
-
-    assert_eq!(task_list.tasks().await?.len(), 1, "Task is on our list");
     Ok(())
 }
