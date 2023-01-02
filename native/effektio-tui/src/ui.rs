@@ -7,9 +7,9 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use dialoguer::{Input, Select};
-use effektio::{matrix_sdk::StoreError, Conversation, Group, HistoryLoadState, Task, TaskList};
-use futures::future::join_all;
+
+use effektio::{Conversation, Group, HistoryLoadState, Task, TaskList};
+
 use std::{io, time::Duration};
 use std::{sync::mpsc::Receiver, time::Instant};
 use tui::{
@@ -107,7 +107,7 @@ impl TasksState {
         if update {
             tracing::trace!("refreshing upon tick");
             if let Some(t) = &self.selected.clone() {
-                self.refresh(&t).await;
+                self.refresh(t).await;
             }
         }
     }
@@ -134,10 +134,10 @@ impl TasksState {
 
                 let resp = if task.is_done() {
                     tracing::trace!(?task, "marking undone");
-                    task.update_builder().mark_undone().send().await
+                    task.update_builder().unwrap().mark_undone().send().await
                 } else {
                     tracing::trace!(?task, "marking done");
-                    task.update_builder().mark_done().send().await
+                    task.update_builder().unwrap().mark_done().send().await
                 };
 
                 match resp {
@@ -149,17 +149,14 @@ impl TasksState {
                     }
                 }
             }
-        } else {
-            if let Some(selected) = self
-                .task_lists_list_state
-                .selected()
-                .map(|idx| self.task_lists.get(idx).cloned())
-                .flatten()
-            {
-                tracing::trace!(?selected, "selecting");
-                self.refresh(&selected).await;
-                self.selected = Some(selected.clone());
-            }
+        } else if let Some(selected) = self
+            .task_lists_list_state
+            .selected()
+            .and_then(|idx| self.task_lists.get(idx).cloned())
+        {
+            tracing::trace!(?selected, "selecting");
+            self.refresh(&selected).await;
+            self.selected = Some(selected.clone());
         }
     }
 
@@ -395,9 +392,8 @@ impl App {
     }
 
     async fn on_tick(&mut self) {
-        match self.selected_tool_mut() {
-            Tool::Tasks(t) => t.tick().await,
-            _ => {}
+        if let Tool::Tasks(t) = self.selected_tool_mut() {
+            t.tick().await;
         };
     }
 
@@ -527,7 +523,7 @@ pub async fn run_ui(rx: Receiver<AppUpdate>, logs_fullscreen: bool) -> Result<()
     terminal.show_cursor()?;
 
     if let Err(err) = res {
-        println!("{:?}", err)
+        println!("{err:?}")
     }
 
     Ok(())
@@ -603,12 +599,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
     let titles = app
         .tools
         .iter()
-        .map(|t| {
-            Spans::from(vec![Span::styled(
-                String::from(t.name()),
-                Style::default().fg(TERTIARY),
-            )])
-        })
+        .map(|t| Spans::from(vec![Span::styled(t.name(), Style::default().fg(TERTIARY))]))
         .collect();
 
     let mut block = Block::default().borders(Borders::ALL).title(" Tool ");

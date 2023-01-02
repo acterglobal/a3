@@ -49,7 +49,7 @@ async fn load_pending_invitation() -> Result<()> {
     loop {
         match receiver.next().await {
             Some(invitations) => {
-                println!("received: {:?}", invitations);
+                println!("received: {invitations:?}");
                 break;
             }
             None => {

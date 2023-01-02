@@ -3,7 +3,6 @@ use effektio::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateGrou
 use effektio_core::{models::EffektioModel, ruma::OwnedRoomId};
 use futures::Future;
 use tokio::time::{sleep, Duration};
-use uuid;
 
 async fn wait_for<F, T, O>(fun: F) -> Result<Option<T>>
 where
@@ -109,7 +108,7 @@ async fn odos_tasks() -> Result<()> {
     };
 
     assert_eq!(*task.title(), "Integation Test Task".to_string());
-    assert_eq!(task.is_done(), false, "Task is already done");
+    assert!(!task.is_done(), "Task is already done");
 
     let mut task_update = task.subscribe();
     let _update_id = task
@@ -143,7 +142,7 @@ async fn odos_tasks() -> Result<()> {
         };
 
     assert_eq!(*task.title(), "New Test title".to_string());
-    assert_eq!(task.is_done(), true, "Task is not be marked as done");
+    assert!(task.is_done(), "Task is not be marked as done");
 
     Ok(())
 }
@@ -213,7 +212,7 @@ async fn task_smoketests() -> Result<()> {
 
     let mut task_1 = tasks[0].clone();
     assert_eq!(task_1.title(), &"Testing 1".to_owned());
-    assert_eq!(task_1.is_done(), false);
+    assert!(!task_1.is_done());
 
     let task_list_listener = task_list.subscribe();
 
@@ -246,7 +245,7 @@ async fn task_smoketests() -> Result<()> {
 
     let task_2 = tasks[1].clone();
     assert_eq!(task_2.title(), &"Testing 2".to_owned());
-    assert_eq!(task_2.is_done(), false);
+    assert!(!task_2.is_done());
 
     let task_1_updater = task_1.subscribe();
 
@@ -276,6 +275,6 @@ async fn task_smoketests() -> Result<()> {
     task_1.refresh().await?;
     // Update has been applied properly
     assert_eq!(task_1.title(), &"Replacement Name".to_owned());
-    assert_eq!(task_1.is_done(), true);
+    assert!(task_1.is_done());
     Ok(())
 }

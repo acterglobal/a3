@@ -11,7 +11,7 @@ use futures::future::Either;
 use futures::pin_mut;
 use futures::StreamExt;
 use std::sync::mpsc::channel;
-use tui_logger;
+
 use ui::AppUpdate;
 
 use app_dirs2::{app_root, AppDataType, AppInfo};
@@ -32,7 +32,10 @@ async fn main() -> Result<()> {
         .parse_filters(&cli.log)
         .format(move |_buf, record|
             // patch the env-logger entry through our drain to the tui-logger
-            Ok(drain.log(record)))
+            {
+                drain.log(record);
+                Ok(())
+            })
         .init(); // make this the global logger
 
     let (sender, rx) = channel::<AppUpdate>();
@@ -50,24 +53,14 @@ async fn main() -> Result<()> {
     let sync_state = client.start_sync();
 
     tokio::spawn(async move {
-        let username = client.user_id().await.unwrap();
+        let username = client.user_id().unwrap();
         sender
             .send(AppUpdate::SetUsername(username.to_string()))
             .unwrap();
 
-        let dp = client
-            .account()
-            .await
-            .unwrap()
-            .display_name()
-            .await
-            .unwrap();
+        let dp = client.account().unwrap().display_name().await.unwrap();
         sender
-            .send(AppUpdate::SetUsername(format!(
-                "{:} ({:})",
-                dp,
-                username.to_string()
-            )))
+            .send(AppUpdate::SetUsername(format!("{dp:} ({username:})")))
             .unwrap();
 
         let sync_stream = sync_state.first_synced_rx().unwrap();
