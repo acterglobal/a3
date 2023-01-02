@@ -19,7 +19,7 @@ async fn odos_tasks() -> Result<()> {
     state_sync.await_has_synced_history().await?;
 
     let task_lists = odo.task_lists().await?;
-    let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) else {
+    let Some(mut task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) else {
         bail!("TaskList not found");
     };
 
@@ -47,6 +47,12 @@ async fn odos_tasks() -> Result<()> {
         remaining -= 1;
 
         if Ok(()) == list_subscription.try_recv() {
+            task_list = odo
+                .task_lists()
+                .await?
+                .into_iter()
+                .find(|t| t.name() == &list_name)
+                .expect("TaskList not found again");
             if let Some(task) = task_list
                 .tasks()
                 .await?
@@ -64,7 +70,7 @@ async fn odos_tasks() -> Result<()> {
     assert_eq!(task.is_done(), false, "Task is already done");
 
     let mut task_update = task.subscribe();
-    let update = task
+    let update_id = task
         .update_builder()
         .title("New Test title".to_owned())
         .mark_done()
