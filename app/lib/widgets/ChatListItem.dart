@@ -8,7 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -153,10 +153,8 @@ class _ChatListItemState extends State<ChatListItem> {
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: Html(
         data: '''${simplifyUserId(sender)}: $body''',
-        style: {
-          'body': Style(color: Colors.white, maxLines: 2),
-          'a': Style(textDecoration: TextDecoration.none)
-        },
+        maxLines: 2,
+        defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
       ),
     );
   }

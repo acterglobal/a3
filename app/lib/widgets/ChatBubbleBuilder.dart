@@ -10,7 +10,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class ChatBubbleBuilder extends StatefulWidget {
@@ -217,15 +217,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     if (message.repliedMessage is types.TextMessage) {
       return Html(
         data: """${message.repliedMessage!.metadata?['content']}""",
-        shrinkWrap: true,
-        style: {
-          'body': Style(
-            color: ChatTheme01.chatReplyTextColor,
-            fontWeight: FontWeight.w400,
-            fontSize: FontSize(14),
-          ),
-          'a': Style(textDecoration: TextDecoration.none),
-        },
+        defaultTextStyle:
+            const TextStyle(color: ChatTheme01.chatReplyTextColor),
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       Uint8List data =

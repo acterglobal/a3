@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
@@ -300,10 +300,7 @@ class _ChatScreenState extends State<ChatScreen> {
       child: Html(
         // ignore: prefer_single_quotes, unnecessary_string_interpolations
         data: """${p1.text}""",
-        style: {
-          'body': Style(color: Colors.white),
-          'a': Style(textDecoration: TextDecoration.none)
-        },
+        defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
       ),
     );
   }
