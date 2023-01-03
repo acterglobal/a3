@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class ToDoTaskAssignScreen extends StatelessWidget {
   final List<ImageProvider<Object>> avatars;
@@ -156,7 +155,7 @@ class ToDoTaskAssignScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     decoration: BoxDecoration(
                       color: AppCommonTheme.secondaryColor,
-                      borderRadius: BorderRadius.circular(8)
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -232,7 +231,7 @@ class ToDoTaskAssignScreen extends StatelessWidget {
                               onTap: (){
                                 Navigator.pop(context);
                               },
-                              child: Text('Cancel', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16, color: Colors.red)))
+                              child: Text('Cancel', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16, color: Colors.red)),)
                         ],
                       ),
                     ],

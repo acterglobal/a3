@@ -111,13 +111,6 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                         width: MediaQuery.of(context).size.width * 0.8,
                         height: MediaQuery.of(context).size.height * 0.09,
                         child: TextFormField(
-                          /*onFieldSubmitted: (val) {
-                            subtitleController.text = val;
-                            controller.updateNotes(
-                              widget.item,
-                              subtitleController,
-                            );
-                          },*/
                           maxLines: null,
                           controller: subtitleController,
                           style: ToDoTheme.listTitleTextStyle,
@@ -896,7 +889,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   width: 80,
                   decoration: BoxDecoration(
                       color: ToDoTheme.secondaryCardColor,
-                      borderRadius: BorderRadius.circular(12)
+                      borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -917,7 +910,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   width: 80,
                   decoration: BoxDecoration(
                       color: ToDoTheme.secondaryCardColor,
-                      borderRadius: BorderRadius.circular(12)
+                      borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -938,7 +931,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   width: 80,
                   decoration: BoxDecoration(
                       color: ToDoTheme.secondaryCardColor,
-                      borderRadius: BorderRadius.circular(12)
+                      borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -959,7 +952,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   width: 80,
                   decoration: BoxDecoration(
                       color: ToDoTheme.secondaryCardColor,
-                      borderRadius: BorderRadius.circular(12)
+                      borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

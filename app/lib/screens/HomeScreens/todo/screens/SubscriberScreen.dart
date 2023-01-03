@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoSubscriberScreen extends StatefulWidget {
+
   const ToDoSubscriberScreen({Key? key}) : super(key: key);
 
   @override
@@ -40,14 +41,14 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                   const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
               decoration: BoxDecoration(
                   color: AppCommonTheme.primaryColor,
-                  borderRadius: BorderRadius.circular(8.0)),
+                  borderRadius: BorderRadius.circular(8.0),),
               child: Center(
                 child: Text(
                   'Save',
                   style: ToDoTheme.buttonTextStyle
                       .copyWith(color: ToDoTheme.primaryTextColor),
                 ),
-              ))
+              ),)
         ],
       ),
       body: Padding(
@@ -72,26 +73,24 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                   activeColor: AppCommonTheme.secondaryColor,
                   side: MaterialStateBorderSide.resolveWith(
                     (states) => const BorderSide(
-                        width: 1.0, color: AppCommonTheme.secondaryColor),
+                        width: 1.0, color: AppCommonTheme.secondaryColor,),
                   ),
                   onChanged: (newValue) {
-                    setState(() {
-                      allSelected = newValue!;
-                    });
                   },
                 ),
                 Text('Select everyone',
                     style: ToDoTheme.subtitleTextStyle
-                        .copyWith(color: AppCommonTheme.secondaryColor)),
+                        .copyWith(color: AppCommonTheme.secondaryColor),),
               ],
             ),
             GetBuilder<ToDoController>(
+              id: 'subscribeUser',
               builder: (ToDoController controller) {
                 return ListView.separated(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: CircleAvatar(),
+                      leading: const CircleAvatar(),
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -99,7 +98,7 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                             controller.listSubscribers[index].name,
                             style: ToDoTheme.listTitleTextStyle,
                           ),
-                          Text(
+                          const Text(
                             'On this project',
                             style: ToDoTheme.listSubtitleTextStyle,
                           ),
@@ -111,7 +110,7 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                         activeColor: AppCommonTheme.secondaryColor,
                         side: MaterialStateBorderSide.resolveWith(
                           (states) => const BorderSide(
-                              width: 1.0, color: AppCommonTheme.secondaryColor),
+                              width: 1.0, color: AppCommonTheme.secondaryColor,),
                         ),
                         onChanged: (newValue) {
                           setState(() {
@@ -122,7 +121,7 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                     );
                   },
                   separatorBuilder: (BuildContext context, int index) {
-                    return Divider(
+                    return const Divider(
                       indent: 8,
                       endIndent: 8,
                     );
@@ -131,8 +130,8 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                 );
               },
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 22.0),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 22.0),
               child: Divider(
                 indent: 8,
                 endIndent: 8,
@@ -144,7 +143,7 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
                   value: true,
                   groupValue: true,
                   fillColor: MaterialStateColor.resolveWith(
-                      (states) => AppCommonTheme.primaryColor),
+                      (states) => AppCommonTheme.primaryColor,),
                   onChanged: (value) {},
                 ),
                 Flexible(

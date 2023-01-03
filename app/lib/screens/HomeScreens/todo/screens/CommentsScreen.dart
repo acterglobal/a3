@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/news_comment_controller.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/CommentView.dart';
 import 'package:effektio/widgets/ToDoCommentView.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';

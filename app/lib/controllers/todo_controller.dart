@@ -325,7 +325,7 @@ class ToDoController extends GetxController {
     } else {
       subscribeModel.isSelected = true;
     }
-    update();
+    update(['subscribeUser']);
   }
 
   void updateIndex(int index) {

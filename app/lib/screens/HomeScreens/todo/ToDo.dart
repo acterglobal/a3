@@ -5,7 +5,6 @@ import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
@@ -134,7 +133,6 @@ class _ToDoScreenState extends State<ToDoScreen> {
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
         todoController.updateIndex(index);
-        // showNotYetImplementedMsg(context, 'Task filters not yet implemented');
       },
       child: GetBuilder<ToDoController>(
         id: 'radiobtn',

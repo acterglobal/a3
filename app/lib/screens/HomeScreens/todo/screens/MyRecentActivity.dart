@@ -38,19 +38,19 @@ class _MyAssignmentScreenState extends State<MyRecentActivityScreen> {
                 style:
                 ToDoTheme.listTitleTextStyle,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               Timeline.tileBuilder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 theme: TimelineThemeData(
                   nodePosition: 0,
                   nodeItemOverlap: true,
-                  indicatorTheme: IndicatorThemeData(
-                    color: ToDoTheme.calendarColor
+                  indicatorTheme: const IndicatorThemeData(
+                    color: ToDoTheme.calendarColor,
                   ),
-                  connectorTheme: ConnectorThemeData(
+                  connectorTheme: const ConnectorThemeData(
                     color: ToDoTheme.calendarColor,
                     thickness: 2.0,
                   ),
@@ -63,9 +63,9 @@ class _MyAssignmentScreenState extends State<MyRecentActivityScreen> {
                       children: [
                         Text('Oct 19, 06:30', style: ToDoTheme.listSubtitleTextStyle.copyWith(
                           color: ToDoTheme.inactiveTextColor,
-                          fontSize: 13
+                          fontSize: 13,
                         ),),
-                        Text('David Chunli posted this ToDo', style: ToDoTheme.listTitleTextStyle,),
+                        const Text('David Chunli posted this ToDo', style: ToDoTheme.listTitleTextStyle,),
                       ],
                     ),
                   ),

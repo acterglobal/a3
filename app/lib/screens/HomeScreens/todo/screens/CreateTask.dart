@@ -31,7 +31,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         child: Container(
           decoration: ToDoTheme.toDoDecoration,
           height: MediaQuery.of(context).size.height -
-              MediaQuery.of(context).size.height * 12 / 100,
+              MediaQuery.of(context).size.height * 0.12,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +116,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Transform.rotate(
                               angle: 45,
-                              child: Icon(FlutterIcons.flow_branch_ent, color: ToDoTheme.calendarColor,)),
+                              child: const Icon(FlutterIcons.flow_branch_ent, color: ToDoTheme.calendarColor,),),
                         )
                       ],
                     ),
@@ -137,25 +137,4 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
     );
   }
 
-  void _showPopupMenu() async {
-    await showMenu(
-      context: context,
-      position: const RelativeRect.fromLTRB(100, 100, 100, 100),
-      items: [
-        const PopupMenuItem(
-          value: 1,
-          child: Text('View'),
-        ),
-        const PopupMenuItem(
-          value: 2,
-          child: Text('Edit'),
-        ),
-        const PopupMenuItem(
-          value: 3,
-          child: Text('Delete'),
-        ),
-      ],
-      elevation: 8.0,
-    ).then((value) {});
-  }
 }

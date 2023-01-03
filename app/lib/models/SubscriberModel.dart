@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 class SubscriberModel {
   String avatar;
   String name;
@@ -8,6 +6,6 @@ class SubscriberModel {
   SubscriberModel(
     this.avatar,
     this.name,
-    this.isSelected
+    this.isSelected,
   );
 }
