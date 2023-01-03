@@ -11,9 +11,9 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 
 ## Build
 
-![Native Build](https://img.shields.io/github/workflow/status/effektio/effektio/Native?label=Rust%20Build&style=for-the-badge)
-![App Build](https://img.shields.io/github/workflow/status/effektio/effektio/App?label=App%20Build&style=for-the-badge) 
-![Docs](https://img.shields.io/github/workflow/status/effektio/effektio/Docs?label=Docs&style=for-the-badge)
+![Native Build](https://img.shields.io/github/workflow/status/effektio/effektio/native.yml?branch=main&label=Rust%20Build&style=for-the-badge)
+![App Build](https://img.shields.io/github/workflow/status/effektio/effektio/app.yml?branch=main&label=App%20Build&style=for-the-badge) 
+![Docs](https://img.shields.io/github/workflow/status/effektio/effektio/docs.yml?branch=main&label=Docs&style=for-the-badge)
 
 
 [![Matrix: #News](https://img.shields.io/badge/Matrix-gray?style=for-the-badge)](https://matrix.to/#/#news:effektio.org)
