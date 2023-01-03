@@ -761,11 +761,12 @@ class ChatRoomController extends GetxController {
       // user should be able to get original event as RoomMessage
       RoomEventItem orgEventItem = roomMsg.eventItem()!;
       String? orgMsgType = orgEventItem.msgtype();
-      Map<String, String> repliedToContent = {};
+      Map<String, dynamic> repliedToContent = {};
       types.Message? repliedTo;
       if (orgMsgType == 'm.text') {
         repliedToContent = {
           'content': orgEventItem.textDesc()!.body(),
+          'messageLength': orgEventItem.textDesc()!.body().length,
         };
         repliedTo = types.TextMessage(
           author: types.User(id: orgEventItem.sender()),

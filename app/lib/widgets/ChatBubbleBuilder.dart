@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bubble/bubble.dart';
@@ -170,27 +171,29 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               ? buildOriginalBubble(widget.message)
               : const SizedBox(),
           const SizedBox(height: 4),
-          Bubble(
-            child: widget.child,
-            color: !isAuthor() || widget.message is types.ImageMessage
-                ? AppCommonTheme.backgroundColorLight
-                : AppCommonTheme.primaryColor,
-            margin: widget.nextMessageInGroup
-                ? const BubbleEdges.symmetric(horizontal: 2)
-                : null,
-            radius: const Radius.circular(22),
-            padding: widget.message is types.ImageMessage
-                ? const BubbleEdges.all(0)
-                : null,
-            nip: (widget.nextMessageInGroup ||
-                    widget.message is types.ImageMessage)
-                ? BubbleNip.no
-                : !isAuthor()
-                    ? BubbleNip.leftBottom
-                    : BubbleNip.rightBottom,
-            nipHeight: 18,
-            nipWidth: 0.5,
-            nipRadius: 0,
+          Flexible(
+            child: Bubble(
+              child: widget.child,
+              color: !isAuthor() || widget.message is types.ImageMessage
+                  ? AppCommonTheme.backgroundColorLight
+                  : AppCommonTheme.primaryColor,
+              margin: widget.nextMessageInGroup
+                  ? const BubbleEdges.symmetric(horizontal: 2)
+                  : null,
+              radius: const Radius.circular(22),
+              padding: widget.message is types.ImageMessage
+                  ? const BubbleEdges.all(0)
+                  : null,
+              nip: (widget.nextMessageInGroup ||
+                      widget.message is types.ImageMessage)
+                  ? BubbleNip.no
+                  : !isAuthor()
+                      ? BubbleNip.leftBottom
+                      : BubbleNip.rightBottom,
+              nipHeight: 18,
+              nipWidth: 0.5,
+              nipRadius: 0,
+            ),
           ),
         ],
       ),
@@ -215,10 +218,18 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
 
   Widget originalMessageBuilder(types.Message message) {
     if (message.repliedMessage is types.TextMessage) {
-      return Html(
-        data: """${message.repliedMessage!.metadata?['content']}""",
-        defaultTextStyle:
-            const TextStyle(color: ChatTheme01.chatReplyTextColor),
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth:
+              sqrt(message.repliedMessage!.metadata!['messageLength']) * 38.5,
+          maxHeight: double.infinity,
+        ),
+        child: Html(
+          data: """${message.repliedMessage!.metadata?['content']}""",
+          defaultTextStyle:
+              const TextStyle(color: ChatTheme01.chatReplyTextColor),
+          padding: const EdgeInsets.all(8),
+        ),
       );
     } else if (message.repliedMessage is types.ImageMessage) {
       Uint8List data =

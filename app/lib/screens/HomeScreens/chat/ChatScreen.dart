@@ -293,13 +293,15 @@ class _ChatScreenState extends State<ChatScreen> {
     required int messageWidth,
     required bool showName,
   }) {
-    return Container(
-      width: sqrt(p1.metadata!['messageLength']) * 38.5,
-      padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(minWidth: 57),
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: sqrt(p1.metadata!['messageLength']) * 38.5,
+        maxHeight: double.infinity,
+      ),
       child: Html(
         // ignore: prefer_single_quotes, unnecessary_string_interpolations
         data: """${p1.text}""",
+        padding: const EdgeInsets.all(8),
         defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
       ),
     );

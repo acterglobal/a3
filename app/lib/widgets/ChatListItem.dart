@@ -63,6 +63,7 @@ class _ChatListItemState extends State<ChatListItem> {
     String roomId = widget.room.getRoomId();
     // ToDo: UnreadCounter
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
           onTap: () => handleTap(context),
@@ -116,15 +117,9 @@ class _ChatListItemState extends State<ChatListItem> {
         style: ChatTheme01.chatTitleStyle,
       );
     }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          displayName!,
-          style: ChatTheme01.chatTitleStyle,
-        ),
-      ],
+    return Text(
+      displayName!,
+      style: ChatTheme01.chatTitleStyle,
     );
   }
 
@@ -149,14 +144,30 @@ class _ChatListItemState extends State<ChatListItem> {
     }
     String sender = eventItem.sender();
     String body = eventItem.textDesc()?.body() ?? 'Unknown item';
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: Html(
-        data: '''${simplifyUserId(sender)}: $body''',
-        maxLines: 2,
-        defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
-        onLinkTap: (url) => {},
-      ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            '${simplifyUserId(sender)}: ',
+            style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ),
+        Flexible(
+          child: Html(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            // ignore: unnecessary_string_interpolations
+            data: '''$body''',
+            maxLines: 1,
+            defaultTextStyle: const TextStyle(
+              color: ChatTheme01.chatBodyTextColor,
+              overflow: TextOverflow.ellipsis,
+            ),
+            onLinkTap: (url) => {},
+          ),
+        ),
+      ],
     );
   }
 
