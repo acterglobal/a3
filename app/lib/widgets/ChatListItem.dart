@@ -155,6 +155,7 @@ class _ChatListItemState extends State<ChatListItem> {
         data: '''${simplifyUserId(sender)}: $body''',
         maxLines: 2,
         defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+        onLinkTap: (url) => {},
       ),
     );
   }
