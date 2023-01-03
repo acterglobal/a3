@@ -74,7 +74,7 @@ async fn odos_tasks() -> Result<()> {
     let new_task_event_id = task_list
         .task_builder()?
         .title("Integation Test Task".into())
-        .description("Integration Test Task Description".into())
+        .description_text("Integration Test Task Description".into())
         .send()
         .await?;
     let task_key = effektio_core::models::Task::key_from_event(&new_task_event_id);
@@ -161,11 +161,11 @@ async fn task_smoketests() -> Result<()> {
         "Why are there tasks in our fresh space!?!"
     );
 
-    let task_list_id = group
-        .task_list_draft()?
-        .name("Starting up".to_owned())
-        .send()
-        .await?;
+    let task_list_id = {
+        let mut draft = group.task_list_draft()?;
+        draft.name("Starting up".to_owned());
+        draft.send().await?
+    };
 
     let task_list_key = effektio_core::models::TaskList::key_from_event(&task_list_id);
 
@@ -283,7 +283,7 @@ async fn task_smoketests() -> Result<()> {
     task_list
         .update_builder()?
         .name("Setup".into())
-        .description("All done now".into())
+        .description_text("All done now".into())
         .send()
         .await?;
 

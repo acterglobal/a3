@@ -289,7 +289,7 @@ impl Mock {
 
                 let task_list_id = draft
                     .name(list_name)
-                    .description("The tops of the daily security briefing with kyra".into())
+                    .description_text("The tops of the daily security briefing with kyra".into())
                     .send()
                     .await?;
 
@@ -304,7 +304,7 @@ impl Mock {
         task_list
             .task_builder()?
             .title("Holding Cells review".into())
-            .description(
+            .description_text(
                 "What is the occupancy rate? Who is in the holding cells, for how much longer?"
                     .into(),
             )
@@ -314,14 +314,14 @@ impl Mock {
         task_list
             .task_builder()?
             .title("Special guests".into())
-            .description("Any special guests expected, needing special attention?".into())
+            .description_text("Any special guests expected, needing special attention?".into())
             .send()
             .await?;
 
         task_list
             .task_builder()?
             .title("Federation reports".into())
-            .description("Daily status report from the federation".into())
+            .description_text("Daily status report from the federation".into())
             .send()
             .await?;
 

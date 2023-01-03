@@ -390,10 +390,66 @@ object Task {
 object TaskUpdateBuilder {
     /// set the title for this task
     fn title(title: string);
+    fn unset_title_update();
 
-    /// set the description for this task
-    fn description(description: string);
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    fn unset_description_update();
 
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    fn unset_sort_order_update();
+
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+    fn unset_color_update();
+
+    /// set the utc_due for this task list in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    /// set the utc_due for this task list in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    /// set the utc_due for this task list in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn unset_utc_due();
+    fn unset_utc_due_update();
+
+    /// set the utc_start for this task list in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    /// set the utc_start for this task list in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    /// set the utc_start for this task list in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn unset_utc_start();
+    fn unset_utc_start_update();
+
+    /// set the sort order for this task list
+    fn progress_percent(progress_percent: u8);
+    fn unset_progress_percent();
+    fn unset_progress_percent_update();
+
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    fn unset_keywords_update();
+
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    fn unset_categories_update();
+
+    /// set the assignees for this task list
+    fn assignees(assignees: Vec<UserId>);
+    fn unset_assignees();
+    fn unset_assignees_update();
+
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    fn unset_subscribers_update();
+
+    /// send this task list draft
     /// mark it done
     fn mark_done();
 
@@ -408,8 +464,52 @@ object TaskDraft {
     /// set the title for this task
     fn title(title: string);
 
-    /// set the description for this task
-    fn description(description: string);
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+
+    /// set the utc_due for this task list in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    /// set the utc_due for this task list in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    /// set the utc_due for this task list in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn unset_utc_due();
+
+    /// set the utc_start for this task list in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    /// set the utc_start for this task list in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    /// set the utc_start for this task list in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn unset_utc_start();
+
+
+    /// set the sort order for this task list
+    fn progress_percent(progress_percent: u8);
+    fn unset_progress_percent();
+    
+
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    /// set the assignees for this task list
+    fn assignees(assignees: Vec<UserId>);
+    fn unset_assignees();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    /// send this task list draft
 
     /// create this task
     fn send() -> Future<Result<EventId>>;
@@ -460,8 +560,23 @@ object TaskListDraft {
     /// set the name for this task list
     fn name(name: string);
     /// set the description for this task list
-    fn description(description: string);
-    /// send this task update
+    fn description_text(text: string);
+    fn unset_description();
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    /// send this task list draft
     fn send() -> Future<Result<EventId>>;
 }
 
@@ -469,7 +584,27 @@ object TaskListUpdateBuilder {
     /// set the name for this task list
     fn name(name: string);
     /// set the description for this task list
-    fn description(description: string);
+    fn description_text(text: string);
+    fn unset_description();
+    fn unset_description_update();
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+    fn unset_color_update();
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    fn unset_keywords_update();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    fn unset_categories_update();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    fn unset_subscribers_update();
     /// send this task update
     fn send() -> Future<Result<EventId>>;
 }

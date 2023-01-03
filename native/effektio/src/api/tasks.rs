@@ -1,8 +1,11 @@
 use std::{
     collections::{hash_map::Entry, HashMap},
     convert::{TryFrom, TryInto},
+    ops::Deref,
     ops::DerefMut,
 };
+
+use crate::UserId;
 
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
@@ -11,10 +14,10 @@ use effektio_core::{
     events::{
         self,
         tasks::{self, Priority, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
-        TextMessageEventContent,
+        TextMessageEventContent, UtcDateTime,
     },
     executor::Executor,
-    models::{self, AnyEffektioModel, EffektioModel},
+    models::{self, AnyEffektioModel, Color, EffektioModel},
     // models::,
     ruma::{
         events::{
@@ -25,6 +28,7 @@ use effektio_core::{
     },
     statics::KEYS,
     store::Store,
+    util::DateTime,
 };
 use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
@@ -132,9 +136,59 @@ impl TaskListDraft {
         self
     }
 
-    pub fn description(&mut self, description: String) -> &mut Self {
+    pub fn description_text(&mut self, body: String) -> &mut Self {
         self.content
-            .description(TextMessageEventContent::plain(description));
+            .description(Some(TextMessageEventContent::plain(body)));
+        self
+    }
+
+    pub fn unset_description(&mut self) -> &mut Self {
+        self.content.description(None);
+        self
+    }
+
+    pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
+        self.content.sort_order(sort_order);
+        self
+    }
+
+    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
+        self.content.color(Some(Box::into_inner(color)));
+        self
+    }
+
+    pub fn unset_color(&mut self) -> &mut Self {
+        self.content.color(None);
+        self
+    }
+
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+        self.content.keywords(keywords.to_vec());
+        self
+    }
+
+    pub fn unset_keywords(&mut self) -> &mut Self {
+        self.content.keywords(vec![]);
+        self
+    }
+
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+        self.content.categories(categories.to_vec());
+        self
+    }
+
+    pub fn unset_categories(&mut self) -> &mut Self {
+        self.content.categories(vec![]);
+        self
+    }
+
+    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+        self.content.subscribers(subscribers.to_vec());
+        self
+    }
+
+    pub fn unset_subscribers(&mut self) -> &mut Self {
+        self.content.subscribers(vec![]);
         self
     }
 
@@ -170,15 +224,14 @@ impl TaskList {
     }
 
     pub fn sort_order(&self) -> u32 {
-        self.content.sort_order.clone()
+        self.content.sort_order
     }
 
     pub fn role(&self) -> Option<String> {
         self.content
             .role
             .as_ref()
-            .map(|t| serde_json::to_string(t).ok())
-            .flatten()
+            .and_then(|t| serde_json::to_string(t).ok())
     }
 
     pub fn time_zone(&self) -> Option<String> {
@@ -291,11 +344,11 @@ impl Task {
     }
 
     pub fn progress_percent(&self) -> Option<u8> {
-        self.content.progress_percent.clone()
+        self.content.progress_percent
     }
 
     pub fn sort_order(&self) -> u32 {
-        self.content.sort_order.clone()
+        self.content.sort_order
     }
 
     pub fn priority(&self) -> Option<u8> {
@@ -365,9 +418,129 @@ impl TaskDraft {
         self
     }
 
-    pub fn description(&mut self, description: String) -> &mut Self {
+    pub fn description_text(&mut self, body: String) -> &mut Self {
         self.content
-            .description(TextMessageEventContent::plain(description));
+            .description(Some(TextMessageEventContent::plain(body)));
+        self
+    }
+
+    pub fn unset_description(&mut self) -> &mut Self {
+        self.content.description(None);
+        self
+    }
+
+    pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
+        self.content.sort_order(sort_order);
+        self
+    }
+
+    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
+        self.content.color(Some(Box::into_inner(color)));
+        self
+    }
+
+    pub fn unset_color(&mut self) -> &mut Self {
+        self.content.color(None);
+        self
+    }
+
+    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<bool> {
+        self.content
+            .utc_due(Some(DateTime::parse_from_rfc3339(&utc_due)?.into()));
+        Ok(true)
+    }
+
+    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<bool> {
+        self.content
+            .utc_due(Some(DateTime::parse_from_rfc2822(&utc_due)?.into()));
+        Ok(true)
+    }
+
+    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<bool> {
+        self.content
+            .utc_due(Some(DateTime::parse_from_str(&utc_due, &format)?.into()));
+        Ok(true)
+    }
+
+    pub fn unset_utc_due(&mut self) -> &mut Self {
+        self.content.utc_due(None);
+        self
+    }
+
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<bool> {
+        self.content
+            .utc_start(Some(DateTime::parse_from_rfc3339(&utc_start)?.into()));
+        Ok(true)
+    }
+
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<bool> {
+        self.content
+            .utc_start(Some(DateTime::parse_from_rfc2822(&utc_start)?.into()));
+        Ok(true)
+    }
+
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<bool> {
+        self.content
+            .utc_start(Some(DateTime::parse_from_str(&utc_start, &format)?.into()));
+        Ok(true)
+    }
+
+    pub fn unset_utc_start(&mut self) -> &mut Self {
+        self.content.utc_start(None);
+        self
+    }
+
+    pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
+        if progress_percent > 100 {
+            // ensure the builder won't kill us later
+            progress_percent = 100;
+        }
+        self.content.progress_percent(Some(progress_percent));
+        self
+    }
+
+    pub fn unset_progress_percent(&mut self) -> &mut Self {
+        self.content.progress_percent(None);
+        self
+    }
+
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+        self.content.keywords(keywords.to_vec());
+        self
+    }
+
+    pub fn unset_keywords(&mut self) -> &mut Self {
+        self.content.keywords(vec![]);
+        self
+    }
+
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+        self.content.categories(categories.to_vec());
+        self
+    }
+
+    pub fn unset_categories(&mut self) -> &mut Self {
+        self.content.categories(vec![]);
+        self
+    }
+
+    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+        self.content.subscribers(subscribers.to_vec());
+        self
+    }
+
+    pub fn unset_subscribers(&mut self) -> &mut Self {
+        self.content.subscribers(vec![]);
+        self
+    }
+
+    pub fn assignees(&mut self, assignees: &mut [UserId]) -> &mut Self {
+        self.content.assignees(assignees.to_vec());
+        self
+    }
+
+    pub fn unset_assignees(&mut self) -> &mut Self {
+        self.content.assignees(vec![]);
         self
     }
 
@@ -396,9 +569,110 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn description(&mut self, description: String) -> &mut Self {
+    pub fn unset_title_update(&mut self) -> &mut Self {
+        self.content.title(None);
+        self
+    }
+
+    pub fn description_text(&mut self, body: String) -> &mut Self {
         self.content
-            .description(Some(Some(TextMessageEventContent::plain(description))));
+            .description(Some(Some(TextMessageEventContent::plain(body))));
+        self
+    }
+
+    pub fn unset_description(&mut self) -> &mut Self {
+        self.content.description(Some(None));
+        self
+    }
+
+    pub fn unset_description_update(&mut self) -> &mut Self {
+        self.content
+            .description(None::<Option<TextMessageEventContent>>);
+        self
+    }
+
+    pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
+        self.content.sort_order(Some(sort_order));
+        self
+    }
+
+    pub fn unset_sort_order_update(&mut self) -> &mut Self {
+        self.content.sort_order(None);
+        self
+    }
+
+    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
+        self.content.color(Some(Some(Box::into_inner(color))));
+        self
+    }
+
+    pub fn unset_color(&mut self) -> &mut Self {
+        self.content.color(Some(None));
+        self
+    }
+
+    pub fn unset_color_update(&mut self) -> &mut Self {
+        self.content.color(None::<Option<Color>>);
+        self
+    }
+
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+        self.content.keywords(Some(keywords.to_vec()));
+        self
+    }
+
+    pub fn unset_keywords(&mut self) -> &mut Self {
+        self.content.keywords(Some(vec![]));
+        self
+    }
+
+    pub fn unset_keywords_update(&mut self) -> &mut Self {
+        self.content.keywords(None);
+        self
+    }
+
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+        self.content.categories(Some(categories.to_vec()));
+        self
+    }
+
+    pub fn unset_categories(&mut self) -> &mut Self {
+        self.content.categories(Some(vec![]));
+        self
+    }
+
+    pub fn unset_categories_update(&mut self) -> &mut Self {
+        self.content.categories(None);
+        self
+    }
+
+    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+        self.content.subscribers(Some(subscribers.to_vec()));
+        self
+    }
+
+    pub fn unset_subscribers(&mut self) -> &mut Self {
+        self.content.subscribers(Some(vec![]));
+        self
+    }
+
+    pub fn unset_subscribers_update(&mut self) -> &mut Self {
+        self.content.subscribers(None);
+        self
+    }
+
+    pub fn assignees(&mut self, assignees: &mut [UserId]) -> &mut Self {
+        self.content.assignees(Some(assignees.to_vec()));
+        self
+    }
+
+    pub fn unset_assignees(&mut self) -> &mut Self {
+        self.content.assignees(Some(vec![]));
+        self
+    }
+
+    pub fn unset_assignees_update(&mut self) -> &mut Self {
+        self.content.assignees(None);
         self
     }
 
@@ -409,6 +683,81 @@ impl TaskUpdateBuilder {
 
     pub fn mark_undone(&mut self) -> &mut Self {
         self.content.progress_percent(Some(None));
+        self
+    }
+
+    pub fn utc_due_from_rfc3339(&mut self, utc_due: String) -> Result<bool> {
+        self.content
+            .utc_due(Some(Some(DateTime::parse_from_rfc3339(&utc_due)?.into())));
+        Ok(true)
+    }
+
+    pub fn utc_due_from_rfc2822(&mut self, utc_due: String) -> Result<bool> {
+        self.content
+            .utc_due(Some(Some(DateTime::parse_from_rfc2822(&utc_due)?.into())));
+        Ok(true)
+    }
+
+    pub fn utc_due_from_format(&mut self, utc_due: String, format: String) -> Result<bool> {
+        self.content.utc_due(Some(Some(
+            DateTime::parse_from_str(&utc_due, &format)?.into(),
+        )));
+        Ok(true)
+    }
+    pub fn unset_utc_due(&mut self) -> &mut Self {
+        self.content.utc_due(Some(None));
+        self
+    }
+
+    pub fn unset_utc_due_update(&mut self) -> &mut Self {
+        self.content.utc_due(None);
+        self
+    }
+
+    pub fn utc_start_from_rfc3339(&mut self, utc_start: String) -> Result<bool> {
+        self.content
+            .utc_start(Some(Some(DateTime::parse_from_rfc3339(&utc_start)?.into())));
+        Ok(true)
+    }
+
+    pub fn utc_start_from_rfc2822(&mut self, utc_start: String) -> Result<bool> {
+        self.content
+            .utc_start(Some(Some(DateTime::parse_from_rfc2822(&utc_start)?.into())));
+        Ok(true)
+    }
+
+    pub fn utc_start_from_format(&mut self, utc_start: String, format: String) -> Result<bool> {
+        self.content.utc_start(Some(Some(
+            DateTime::parse_from_str(&utc_start, &format)?.into(),
+        )));
+        Ok(true)
+    }
+
+    pub fn unset_utc_start(&mut self) -> &mut Self {
+        self.content.utc_start(Some(None));
+        self
+    }
+    pub fn unset_utc_start_update(&mut self) -> &mut Self {
+        self.content.utc_start(None);
+        self
+    }
+
+    pub fn progress_percent(&mut self, mut progress_percent: u8) -> &mut Self {
+        if progress_percent > 100 {
+            // ensure the builder won't kill us later
+            progress_percent = 100;
+        }
+        self.content.progress_percent(Some(Some(progress_percent)));
+        self
+    }
+
+    pub fn unset_progress_percent(&mut self) -> &mut Self {
+        self.content.progress_percent(Some(None));
+        self
+    }
+
+    pub fn unset_progress_percent_update(&mut self) -> &mut Self {
+        self.content.progress_percent(None);
         self
     }
 
@@ -437,9 +786,90 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn description(&mut self, description: String) -> &mut Self {
+    pub fn unset_name(&mut self) -> &mut Self {
+        self.content.name(None);
+        self
+    }
+
+    pub fn description_text(&mut self, body: String) -> &mut Self {
         self.content
-            .description(Some(TextMessageEventContent::plain(description)));
+            .description(Some(TextMessageEventContent::plain(body)));
+        self
+    }
+
+    pub fn unset_description(&mut self) -> &mut Self {
+        self.content.description(Some(None));
+        self
+    }
+
+    pub fn unset_description_update(&mut self) -> &mut Self {
+        self.content
+            .description(None::<Option<TextMessageEventContent>>);
+        self
+    }
+
+    pub fn sort_order(&mut self, sort_order: u32) -> &mut Self {
+        self.content.sort_order(Some(sort_order));
+        self
+    }
+
+    pub fn color(&mut self, color: Box<Color>) -> &mut Self {
+        self.content.color(Some(Box::into_inner(color)));
+        self
+    }
+
+    pub fn unset_color(&mut self) -> &mut Self {
+        self.content.color(Some(None));
+        self
+    }
+
+    pub fn unset_color_update(&mut self) -> &mut Self {
+        self.content.color(None::<Option<Color>>);
+        self
+    }
+
+    pub fn keywords(&mut self, keywords: &mut [String]) -> &mut Self {
+        self.content.keywords(Some(keywords.to_vec()));
+        self
+    }
+
+    pub fn unset_keywords(&mut self) -> &mut Self {
+        self.content.keywords(Some(vec![]));
+        self
+    }
+
+    pub fn unset_keywords_update(&mut self) -> &mut Self {
+        self.content.keywords(None);
+        self
+    }
+
+    pub fn categories(&mut self, categories: &mut [String]) -> &mut Self {
+        self.content.categories(Some(categories.to_vec()));
+        self
+    }
+
+    pub fn unset_categories(&mut self) -> &mut Self {
+        self.content.categories(Some(vec![]));
+        self
+    }
+
+    pub fn unset_categories_update(&mut self) -> &mut Self {
+        self.content.categories(None);
+        self
+    }
+
+    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+        self.content.subscribers(Some(subscribers.to_vec()));
+        self
+    }
+
+    pub fn unset_subscribers(&mut self) -> &mut Self {
+        self.content.subscribers(Some(vec![]));
+        self
+    }
+
+    pub fn unset_subscribers_update(&mut self) -> &mut Self {
+        self.content.subscribers(None);
         self
     }
 

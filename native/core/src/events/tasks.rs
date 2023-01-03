@@ -55,31 +55,37 @@ impl Default for Priority {
 #[builder(name = "TaskListBuilder", derive(Debug))]
 pub struct TaskListEventContent {
     pub name: String,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub role: Option<SpecialTaskListRole>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Color>,
     #[builder(default)]
     #[serde(default)]
     pub sort_order: u32,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub time_zone: Option<TimeZone>,
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub keywords: Vec<String>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub subscribers: Vec<OwnedUserId>,
+}
+
+impl TaskListBuilder {
+    pub fn description_text(&mut self, text: String) -> &mut Self {
+        self.description(Some(TextMessageEventContent::plain(text)))
+    }
 }
 
 /// The TaskList Event
@@ -98,21 +104,21 @@ pub struct TaskListUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub name: Option<String>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
     pub role: Option<Option<SpecialTaskListRole>>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
     pub description: Option<Option<TextMessageEventContent>>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
@@ -126,7 +132,7 @@ pub struct TaskListUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub sort_order: Option<u32>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
@@ -134,21 +140,21 @@ pub struct TaskListUpdateEventContent {
     )]
     pub time_zone: Option<Option<TimeZone>>,
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
     pub keywords: Option<Vec<String>>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
     pub categories: Option<Vec<String>>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(
         default,
         skip_serializing_if = "Option::is_none",
@@ -217,7 +223,11 @@ impl TaskListUpdateEventContent {
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
 #[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
-#[builder(name = "TaskBuilder", derive(Debug))]
+#[builder(
+    name = "TaskBuilder",
+    build_fn(validate = "Self::validate"),
+    derive(Debug)
+)]
 pub struct TaskEventContent {
     /// The title of the Task
     pub title: String,
@@ -226,7 +236,7 @@ pub struct TaskEventContent {
     #[serde(rename = "m.relates_to")]
     pub task_list_id: BelongsTo,
     /// Further information describing the task
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<TextMessageEventContent>,
     /// The users this task is assigned to
@@ -234,15 +244,15 @@ pub struct TaskEventContent {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub assignees: Vec<OwnedUserId>,
     /// Other users subscribed to updates of this item
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub subscribers: Vec<OwnedUserId>,
     /// When is this task due
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub utc_due: Option<UtcDateTime>,
     /// When was this task started?
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub utc_start: Option<UtcDateTime>,
     /// How far along is this task in percent (everything > 100: = 100)
@@ -257,16 +267,27 @@ pub struct TaskEventContent {
     #[serde(default, skip_serializing_if = "Priority::is_undefinied")]
     pub priority: Priority,
     /// Color this task
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<Color>,
     // FIXME: manage through `label` as in [MSC2326](https://github.com/matrix-org/matrix-doc/pull/2326)
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub keywords: Vec<String>,
-    #[builder(setter(into, strip_option), default)]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub categories: Vec<String>,
+}
+
+impl TaskBuilder {
+    fn validate(&self) -> Result<(), String> {
+        if let Some(Some(percent)) = &self.progress_percent {
+            if *percent > 100 {
+                return Err("Progress Precent can't be higher than 100".to_string());
+            }
+        }
+        Ok(())
+    }
 }
 
 /// The Task Update Event
