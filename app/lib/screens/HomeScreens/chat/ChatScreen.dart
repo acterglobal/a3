@@ -758,6 +758,34 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Text(text, style: ChatTheme01.chatReplyTextStyle),
       );
     }
+    if (customMessage.metadata?['itemContentType'] == 'RedactedMessage') {
+      String text = '***This message has been deleted.***';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    if (customMessage.metadata?['itemContentType'] ==
+        'FailedToParseMessageLike') {
+      String text = 'FailedToParseMessageLike';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    if (customMessage.metadata?['itemContentType'] == 'FailedToParseState') {
+      String text = 'FailedToParseState';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
     return const SizedBox();
   }
 }
