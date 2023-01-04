@@ -55,14 +55,14 @@ async fn sisko_detects_kyra_read() -> Result<()> {
                     }
                 }
                 if found {
-                    println!("received: {:?}", event);
+                    println!("received: {event:?}");
                     break;
                 }
             }
             Ok(None) => {
                 println!("received: none");
             }
-            Err(e) => {}
+            Err(_e) => {}
         }
     }
 
