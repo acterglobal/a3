@@ -2178,7 +2178,7 @@ class Api {
     return tmp7;
   }
 
-  bool? __conversationSendTextReplyFuturePoll(
+  String? __conversationSendTextReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2203,6 +2203,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2216,11 +2218,17 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
-  bool? __conversationSendImageReplyFuturePoll(
+  String? __conversationSendImageReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2245,6 +2253,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2258,11 +2268,17 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
-  bool? __conversationSendFileReplyFuturePoll(
+  String? __conversationSendFileReplyFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2287,6 +2303,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2300,11 +2318,17 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
-  bool? __conversationRedactMessageFuturePoll(
+  String? __conversationRedactMessageFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -2329,6 +2353,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -2342,7 +2368,13 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -10988,7 +11020,7 @@ class Conversation {
   }
 
   /// send reply as text
-  Future<bool> sendTextReply(
+  Future<String> sendTextReply(
     String msg,
     String eventId,
     String? txnId,
@@ -11059,7 +11091,7 @@ class Conversation {
   }
 
   /// send reply as image
-  Future<bool> sendImageReply(
+  Future<String> sendImageReply(
     String uri,
     String name,
     String mimetype,
@@ -11199,7 +11231,7 @@ class Conversation {
   }
 
   /// send reply as file
-  Future<bool> sendFileReply(
+  Future<String> sendFileReply(
     String uri,
     String name,
     String mimetype,
@@ -11313,7 +11345,7 @@ class Conversation {
   }
 
   /// redact any message (including text/image/file and reaction)
-  Future<bool> redactMessage(
+  Future<String> redactMessage(
     String eventId,
     String? reason,
     String? txnId,
@@ -14578,8 +14610,12 @@ class _ConversationSendTextReplyFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
@@ -14593,8 +14629,12 @@ class _ConversationSendImageReplyFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
@@ -14608,8 +14648,12 @@ class _ConversationSendFileReplyFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
@@ -14623,8 +14667,12 @@ class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _GroupGetProfileFuturePollReturn extends ffi.Struct {
