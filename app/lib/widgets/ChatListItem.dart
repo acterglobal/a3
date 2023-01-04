@@ -143,7 +143,15 @@ class _ChatListItemState extends State<ChatListItem> {
       return const SizedBox();
     }
     String sender = eventItem.sender();
-    String body = eventItem.textDesc()?.body() ?? 'Unknown item';
+    TextDesc? textDesc = eventItem.textDesc();
+    if (textDesc == null) {
+      return const SizedBox();
+    }
+    String body = textDesc.body();
+    String? formattedBody = textDesc.formattedBody();
+    if (formattedBody != null) {
+      body = simplifyBody(formattedBody);
+    }
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

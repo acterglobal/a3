@@ -884,7 +884,6 @@ dependencies = [
  "matrix-sdk",
  "mime",
  "parking_lot 0.11.2",
- "regex",
  "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=ed100afddb5fb30f1ccf368d7e712a3a483e63bf)",
  "sanitize-filename-reader-friendly",
  "serde",

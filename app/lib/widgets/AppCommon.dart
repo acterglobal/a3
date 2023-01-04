@@ -51,6 +51,12 @@ String? simplifyRoomId(String name) {
   return null;
 }
 
+String simplifyBody(String formattedBody) {
+  // strip out parent msg from reply msg
+  RegExp re = RegExp(r'^<mx-reply>[\s\S]+</mx-reply>');
+  return formattedBody.replaceAll(re, '');
+}
+
 String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
