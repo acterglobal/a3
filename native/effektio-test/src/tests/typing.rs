@@ -23,7 +23,7 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         .await
         .expect("sisko should belong to ops");
     let sent = group.typing_notice(true).await?;
-    println!("sent: {:?}", sent);
+    println!("sent: {sent:?}");
 
     let tmp_dir = TempDir::new()?;
     let mut kyra = login_new_client(
@@ -33,19 +33,19 @@ async fn kyra_detects_sisko_typing() -> Result<()> {
         Some("KYRA_DEV".to_string()),
     )
     .await?;
-    let kyra_syncer = kyra.start_sync();
+    let _kyra_syncer = kyra.start_sync();
     let mut event_rx = kyra.typing_event_rx().unwrap();
 
     loop {
         match event_rx.try_next() {
             Ok(Some(event)) => {
-                println!("received: {:?}", event);
+                println!("received: {event:?}");
                 break;
             }
             Ok(None) => {
                 println!("received: none");
             }
-            Err(e) => {}
+            Err(_e) => {}
         }
     }
 

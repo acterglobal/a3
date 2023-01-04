@@ -10,10 +10,14 @@ publish = false
 [dependencies.effektio]
 path = "../effektio"
 default-features = false
-features = ["with-mocks"]
+features = ["with-mocks", "testing"]
+
+[dependencies.effektio-core]
+path = "../core"
 
 [dependencies]
 anyhow = "1"
+uuid = "1.2.2"
 env_logger = "0.9"
 futures = "0.3.17"
 log = "0.4"

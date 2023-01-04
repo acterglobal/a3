@@ -2378,6 +2378,322 @@ class Api {
     return tmp7;
   }
 
+  Task? __taskRefreshFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskRefreshFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Task");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Task._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __taskUpdateBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskUpdateBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __taskDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListTask? __taskListTasksFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListTasksFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListTask");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListTask._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  TaskList? __taskListRefreshFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListRefreshFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = TaskList._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __taskListDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __taskListUpdateBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskListUpdateBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   RoomProfile? __groupGetProfileFuturePoll(
     int boxed,
     int postCobject,
@@ -2553,6 +2869,52 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  FfiListTaskList? __groupTaskListsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _groupTaskListsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListTaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListTaskList._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -3232,6 +3594,52 @@ class Api {
       throw tmp9_0;
     }
     final tmp7 = tmp13 > 0;
+    return tmp7;
+  }
+
+  FfiListTaskList? __clientTaskListsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientTaskListsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListTaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListTaskList._(this, tmp13_1);
+    final tmp7 = tmp14;
     return tmp7;
   }
 
@@ -4263,6 +4671,68 @@ class Api {
     return tmp9;
   }
 
+  void __taskSubscribeStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _taskSubscribeStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8;
+    if (tmp10 == 0) {
+      return null;
+    }
+    return;
+  }
+
+  void __taskListSubscribeStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _taskListSubscribeStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8;
+    if (tmp10 == 0) {
+      return null;
+    }
+    return;
+  }
+
   bool? __syncStateFirstSyncedRxStreamPoll(
     int boxed,
     int postCobject,
@@ -4737,6 +5207,36 @@ class Api {
 
   late final _colorRgbaU8 = _colorRgbaU8Ptr.asFunction<
       _ColorRgbaU8Return Function(
+    int,
+  )>();
+  late final _utcDateTimeTimestampPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__UtcDateTime_timestamp");
+
+  late final _utcDateTimeTimestamp = _utcDateTimeTimestampPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _utcDateTimeToRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _UtcDateTimeToRfc2822Return Function(
+    ffi.Int64,
+  )>>("__UtcDateTime_to_rfc2822");
+
+  late final _utcDateTimeToRfc2822 = _utcDateTimeToRfc2822Ptr.asFunction<
+      _UtcDateTimeToRfc2822Return Function(
+    int,
+  )>();
+  late final _utcDateTimeToRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _UtcDateTimeToRfc3339Return Function(
+    ffi.Int64,
+  )>>("__UtcDateTime_to_rfc3339");
+
+  late final _utcDateTimeToRfc3339 = _utcDateTimeToRfc3339Ptr.asFunction<
+      _UtcDateTimeToRfc3339Return Function(
     int,
   )>();
   late final _newsIdPtr = _lookup<
@@ -5902,6 +6402,1499 @@ class Api {
     int,
     int,
   )>();
+  late final _taskTitlePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskTitleReturn Function(
+    ffi.Int64,
+  )>>("__Task_title");
+
+  late final _taskTitle = _taskTitlePtr.asFunction<
+      _TaskTitleReturn Function(
+    int,
+  )>();
+  late final _taskDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskDescriptionTextReturn Function(
+    ffi.Int64,
+  )>>("__Task_description_text");
+
+  late final _taskDescriptionText = _taskDescriptionTextPtr.asFunction<
+      _TaskDescriptionTextReturn Function(
+    int,
+  )>();
+  late final _taskAssigneesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_assignees");
+
+  late final _taskAssignees = _taskAssigneesPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_subscribers");
+
+  late final _taskSubscribers = _taskSubscribersPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskSortOrderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__Task_sort_order");
+
+  late final _taskSortOrder = _taskSortOrderPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskPriorityPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskPriorityReturn Function(
+    ffi.Int64,
+  )>>("__Task_priority");
+
+  late final _taskPriority = _taskPriorityPtr.asFunction<
+      _TaskPriorityReturn Function(
+    int,
+  )>();
+  late final _taskUtcDuePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUtcDueReturn Function(
+    ffi.Int64,
+  )>>("__Task_utc_due");
+
+  late final _taskUtcDue = _taskUtcDuePtr.asFunction<
+      _TaskUtcDueReturn Function(
+    int,
+  )>();
+  late final _taskUtcStartPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUtcStartReturn Function(
+    ffi.Int64,
+  )>>("__Task_utc_start");
+
+  late final _taskUtcStart = _taskUtcStartPtr.asFunction<
+      _TaskUtcStartReturn Function(
+    int,
+  )>();
+  late final _taskColorPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskColorReturn Function(
+    ffi.Int64,
+  )>>("__Task_color");
+
+  late final _taskColor = _taskColorPtr.asFunction<
+      _TaskColorReturn Function(
+    int,
+  )>();
+  late final _taskIsDonePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__Task_is_done");
+
+  late final _taskIsDone = _taskIsDonePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskProgressPercentPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskProgressPercentReturn Function(
+    ffi.Int64,
+  )>>("__Task_progress_percent");
+
+  late final _taskProgressPercent = _taskProgressPercentPtr.asFunction<
+      _TaskProgressPercentReturn Function(
+    int,
+  )>();
+  late final _taskKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_keywords");
+
+  late final _taskKeywords = _taskKeywordsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_categories");
+
+  late final _taskCategories = _taskCategoriesPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderReturn Function(
+    ffi.Int64,
+  )>>("__Task_update_builder");
+
+  late final _taskUpdateBuilder = _taskUpdateBuilderPtr.asFunction<
+      _TaskUpdateBuilderReturn Function(
+    int,
+  )>();
+  late final _taskSubscribePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_subscribe");
+
+  late final _taskSubscribe = _taskSubscribePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskRefreshPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_refresh");
+
+  late final _taskRefresh = _taskRefreshPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_title");
+
+  late final _taskUpdateBuilderTitle = _taskUpdateBuilderTitlePtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetTitleUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_title_update");
+
+  late final _taskUpdateBuilderUnsetTitleUpdate =
+      _taskUpdateBuilderUnsetTitleUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_description_text");
+
+  late final _taskUpdateBuilderDescriptionText =
+      _taskUpdateBuilderDescriptionTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_description");
+
+  late final _taskUpdateBuilderUnsetDescription =
+      _taskUpdateBuilderUnsetDescriptionPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetDescriptionUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_description_update");
+
+  late final _taskUpdateBuilderUnsetDescriptionUpdate =
+      _taskUpdateBuilderUnsetDescriptionUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderSortOrderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Uint32,
+  )>>("__TaskUpdateBuilder_sort_order");
+
+  late final _taskUpdateBuilderSortOrder =
+      _taskUpdateBuilderSortOrderPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetSortOrderUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_sort_order_update");
+
+  late final _taskUpdateBuilderUnsetSortOrderUpdate =
+      _taskUpdateBuilderUnsetSortOrderUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_color");
+
+  late final _taskUpdateBuilderColor = _taskUpdateBuilderColorPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_color");
+
+  late final _taskUpdateBuilderUnsetColor =
+      _taskUpdateBuilderUnsetColorPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetColorUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_color_update");
+
+  late final _taskUpdateBuilderUnsetColorUpdate =
+      _taskUpdateBuilderUnsetColorUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUtcDueFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderUtcDueFromRfc3339Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_utc_due_from_rfc3339");
+
+  late final _taskUpdateBuilderUtcDueFromRfc3339 =
+      _taskUpdateBuilderUtcDueFromRfc3339Ptr.asFunction<
+          _TaskUpdateBuilderUtcDueFromRfc3339Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUtcDueFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderUtcDueFromRfc2822Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_utc_due_from_rfc2822");
+
+  late final _taskUpdateBuilderUtcDueFromRfc2822 =
+      _taskUpdateBuilderUtcDueFromRfc2822Ptr.asFunction<
+          _TaskUpdateBuilderUtcDueFromRfc2822Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUtcDueFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderUtcDueFromFormatReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_utc_due_from_format");
+
+  late final _taskUpdateBuilderUtcDueFromFormat =
+      _taskUpdateBuilderUtcDueFromFormatPtr.asFunction<
+          _TaskUpdateBuilderUtcDueFromFormatReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetUtcDuePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_utc_due");
+
+  late final _taskUpdateBuilderUnsetUtcDue =
+      _taskUpdateBuilderUnsetUtcDuePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetUtcDueUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_utc_due_update");
+
+  late final _taskUpdateBuilderUnsetUtcDueUpdate =
+      _taskUpdateBuilderUnsetUtcDueUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUtcStartFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_utc_start_from_rfc3339");
+
+  late final _taskUpdateBuilderUtcStartFromRfc3339 =
+      _taskUpdateBuilderUtcStartFromRfc3339Ptr.asFunction<
+          _TaskUpdateBuilderUtcStartFromRfc3339Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUtcStartFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderUtcStartFromRfc2822Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_utc_start_from_rfc2822");
+
+  late final _taskUpdateBuilderUtcStartFromRfc2822 =
+      _taskUpdateBuilderUtcStartFromRfc2822Ptr.asFunction<
+          _TaskUpdateBuilderUtcStartFromRfc2822Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUtcStartFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderUtcStartFromFormatReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskUpdateBuilder_utc_start_from_format");
+
+  late final _taskUpdateBuilderUtcStartFromFormat =
+      _taskUpdateBuilderUtcStartFromFormatPtr.asFunction<
+          _TaskUpdateBuilderUtcStartFromFormatReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetUtcStartPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_utc_start");
+
+  late final _taskUpdateBuilderUnsetUtcStart =
+      _taskUpdateBuilderUnsetUtcStartPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetUtcStartUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_utc_start_update");
+
+  late final _taskUpdateBuilderUnsetUtcStartUpdate =
+      _taskUpdateBuilderUnsetUtcStartUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderProgressPercentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Uint8,
+  )>>("__TaskUpdateBuilder_progress_percent");
+
+  late final _taskUpdateBuilderProgressPercent =
+      _taskUpdateBuilderProgressPercentPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetProgressPercentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_progress_percent");
+
+  late final _taskUpdateBuilderUnsetProgressPercent =
+      _taskUpdateBuilderUnsetProgressPercentPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetProgressPercentUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_progress_percent_update");
+
+  late final _taskUpdateBuilderUnsetProgressPercentUpdate =
+      _taskUpdateBuilderUnsetProgressPercentUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_keywords");
+
+  late final _taskUpdateBuilderKeywords =
+      _taskUpdateBuilderKeywordsPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_keywords");
+
+  late final _taskUpdateBuilderUnsetKeywords =
+      _taskUpdateBuilderUnsetKeywordsPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetKeywordsUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_keywords_update");
+
+  late final _taskUpdateBuilderUnsetKeywordsUpdate =
+      _taskUpdateBuilderUnsetKeywordsUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_categories");
+
+  late final _taskUpdateBuilderCategories =
+      _taskUpdateBuilderCategoriesPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_categories");
+
+  late final _taskUpdateBuilderUnsetCategories =
+      _taskUpdateBuilderUnsetCategoriesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetCategoriesUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_categories_update");
+
+  late final _taskUpdateBuilderUnsetCategoriesUpdate =
+      _taskUpdateBuilderUnsetCategoriesUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderAssigneesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_assignees");
+
+  late final _taskUpdateBuilderAssignees =
+      _taskUpdateBuilderAssigneesPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetAssigneesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_assignees");
+
+  late final _taskUpdateBuilderUnsetAssignees =
+      _taskUpdateBuilderUnsetAssigneesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetAssigneesUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_assignees_update");
+
+  late final _taskUpdateBuilderUnsetAssigneesUpdate =
+      _taskUpdateBuilderUnsetAssigneesUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_subscribers");
+
+  late final _taskUpdateBuilderSubscribers =
+      _taskUpdateBuilderSubscribersPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_subscribers");
+
+  late final _taskUpdateBuilderUnsetSubscribers =
+      _taskUpdateBuilderUnsetSubscribersPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderUnsetSubscribersUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_unset_subscribers_update");
+
+  late final _taskUpdateBuilderUnsetSubscribersUpdate =
+      _taskUpdateBuilderUnsetSubscribersUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderMarkDonePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_mark_done");
+
+  late final _taskUpdateBuilderMarkDone =
+      _taskUpdateBuilderMarkDonePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderMarkUndonePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_mark_undone");
+
+  late final _taskUpdateBuilderMarkUndone =
+      _taskUpdateBuilderMarkUndonePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskUpdateBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_send");
+
+  late final _taskUpdateBuilderSend = _taskUpdateBuilderSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskDraftTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_title");
+
+  late final _taskDraftTitle = _taskDraftTitlePtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_description_text");
+
+  late final _taskDraftDescriptionText =
+      _taskDraftDescriptionTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_description");
+
+  late final _taskDraftUnsetDescription =
+      _taskDraftUnsetDescriptionPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskDraftSortOrderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Uint32,
+  )>>("__TaskDraft_sort_order");
+
+  late final _taskDraftSortOrder = _taskDraftSortOrderPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskDraft_color");
+
+  late final _taskDraftColor = _taskDraftColorPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_color");
+
+  late final _taskDraftUnsetColor = _taskDraftUnsetColorPtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _taskDraftUtcDueFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftUtcDueFromRfc3339Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_utc_due_from_rfc3339");
+
+  late final _taskDraftUtcDueFromRfc3339 =
+      _taskDraftUtcDueFromRfc3339Ptr.asFunction<
+          _TaskDraftUtcDueFromRfc3339Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUtcDueFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftUtcDueFromRfc2822Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_utc_due_from_rfc2822");
+
+  late final _taskDraftUtcDueFromRfc2822 =
+      _taskDraftUtcDueFromRfc2822Ptr.asFunction<
+          _TaskDraftUtcDueFromRfc2822Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUtcDueFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftUtcDueFromFormatReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_utc_due_from_format");
+
+  late final _taskDraftUtcDueFromFormat =
+      _taskDraftUtcDueFromFormatPtr.asFunction<
+          _TaskDraftUtcDueFromFormatReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetUtcDuePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_utc_due");
+
+  late final _taskDraftUnsetUtcDue = _taskDraftUnsetUtcDuePtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _taskDraftUtcStartFromRfc3339Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftUtcStartFromRfc3339Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_utc_start_from_rfc3339");
+
+  late final _taskDraftUtcStartFromRfc3339 =
+      _taskDraftUtcStartFromRfc3339Ptr.asFunction<
+          _TaskDraftUtcStartFromRfc3339Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUtcStartFromRfc2822Ptr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftUtcStartFromRfc2822Return Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_utc_start_from_rfc2822");
+
+  late final _taskDraftUtcStartFromRfc2822 =
+      _taskDraftUtcStartFromRfc2822Ptr.asFunction<
+          _TaskDraftUtcStartFromRfc2822Return Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUtcStartFromFormatPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftUtcStartFromFormatReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskDraft_utc_start_from_format");
+
+  late final _taskDraftUtcStartFromFormat =
+      _taskDraftUtcStartFromFormatPtr.asFunction<
+          _TaskDraftUtcStartFromFormatReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetUtcStartPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_utc_start");
+
+  late final _taskDraftUnsetUtcStart = _taskDraftUnsetUtcStartPtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _taskDraftProgressPercentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Uint8,
+  )>>("__TaskDraft_progress_percent");
+
+  late final _taskDraftProgressPercent =
+      _taskDraftProgressPercentPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetProgressPercentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_progress_percent");
+
+  late final _taskDraftUnsetProgressPercent =
+      _taskDraftUnsetProgressPercentPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskDraftKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskDraft_keywords");
+
+  late final _taskDraftKeywords = _taskDraftKeywordsPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_keywords");
+
+  late final _taskDraftUnsetKeywords = _taskDraftUnsetKeywordsPtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _taskDraftCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskDraft_categories");
+
+  late final _taskDraftCategories = _taskDraftCategoriesPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_categories");
+
+  late final _taskDraftUnsetCategories =
+      _taskDraftUnsetCategoriesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskDraftAssigneesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskDraft_assignees");
+
+  late final _taskDraftAssignees = _taskDraftAssigneesPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetAssigneesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_assignees");
+
+  late final _taskDraftUnsetAssignees = _taskDraftUnsetAssigneesPtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _taskDraftSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskDraft_subscribers");
+
+  late final _taskDraftSubscribers = _taskDraftSubscribersPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskDraftUnsetSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskDraft_unset_subscribers");
+
+  late final _taskDraftUnsetSubscribers =
+      _taskDraftUnsetSubscribersPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskDraft_send");
+
+  late final _taskDraftSend = _taskDraftSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListNamePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListNameReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_name");
+
+  late final _taskListName = _taskListNamePtr.asFunction<
+      _TaskListNameReturn Function(
+    int,
+  )>();
+  late final _taskListDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListDescriptionTextReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_description_text");
+
+  late final _taskListDescriptionText = _taskListDescriptionTextPtr.asFunction<
+      _TaskListDescriptionTextReturn Function(
+    int,
+  )>();
+  late final _taskListSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_subscribers");
+
+  late final _taskListSubscribers = _taskListSubscribersPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListRolePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListRoleReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_role");
+
+  late final _taskListRole = _taskListRolePtr.asFunction<
+      _TaskListRoleReturn Function(
+    int,
+  )>();
+  late final _taskListSortOrderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__TaskList_sort_order");
+
+  late final _taskListSortOrder = _taskListSortOrderPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListColorPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListColorReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_color");
+
+  late final _taskListColor = _taskListColorPtr.asFunction<
+      _TaskListColorReturn Function(
+    int,
+  )>();
+  late final _taskListTimeZonePtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListTimeZoneReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_time_zone");
+
+  late final _taskListTimeZone = _taskListTimeZonePtr.asFunction<
+      _TaskListTimeZoneReturn Function(
+    int,
+  )>();
+  late final _taskListKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_keywords");
+
+  late final _taskListKeywords = _taskListKeywordsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_categories");
+
+  late final _taskListCategories = _taskListCategoriesPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListTasksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_tasks");
+
+  late final _taskListTasks = _taskListTasksPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListUpdateBuilderReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_update_builder");
+
+  late final _taskListUpdateBuilder = _taskListUpdateBuilderPtr.asFunction<
+      _TaskListUpdateBuilderReturn Function(
+    int,
+  )>();
+  late final _taskListSubscribePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_subscribe");
+
+  late final _taskListSubscribe = _taskListSubscribePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListRefreshPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskList_refresh");
+
+  late final _taskListRefresh = _taskListRefreshPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListDraftNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskListDraft_name");
+
+  late final _taskListDraftName = _taskListDraftNamePtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListDraftDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskListDraft_description_text");
+
+  late final _taskListDraftDescriptionText =
+      _taskListDraftDescriptionTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListDraftUnsetDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListDraft_unset_description");
+
+  late final _taskListDraftUnsetDescription =
+      _taskListDraftUnsetDescriptionPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListDraftSortOrderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Uint32,
+  )>>("__TaskListDraft_sort_order");
+
+  late final _taskListDraftSortOrder = _taskListDraftSortOrderPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskListDraftColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListDraft_color");
+
+  late final _taskListDraftColor = _taskListDraftColorPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskListDraftUnsetColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListDraft_unset_color");
+
+  late final _taskListDraftUnsetColor = _taskListDraftUnsetColorPtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _taskListDraftKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListDraft_keywords");
+
+  late final _taskListDraftKeywords = _taskListDraftKeywordsPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskListDraftUnsetKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListDraft_unset_keywords");
+
+  late final _taskListDraftUnsetKeywords =
+      _taskListDraftUnsetKeywordsPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListDraftCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListDraft_categories");
+
+  late final _taskListDraftCategories = _taskListDraftCategoriesPtr.asFunction<
+      void Function(
+    int,
+    int,
+  )>();
+  late final _taskListDraftUnsetCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListDraft_unset_categories");
+
+  late final _taskListDraftUnsetCategories =
+      _taskListDraftUnsetCategoriesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListDraftSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListDraft_subscribers");
+
+  late final _taskListDraftSubscribers =
+      _taskListDraftSubscribersPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskListDraftUnsetSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListDraft_unset_subscribers");
+
+  late final _taskListDraftUnsetSubscribers =
+      _taskListDraftUnsetSubscribersPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskListDraft_send");
+
+  late final _taskListDraftSend = _taskListDraftSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderNamePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskListUpdateBuilder_name");
+
+  late final _taskListUpdateBuilderName =
+      _taskListUpdateBuilderNamePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderDescriptionTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__TaskListUpdateBuilder_description_text");
+
+  late final _taskListUpdateBuilderDescriptionText =
+      _taskListUpdateBuilderDescriptionTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetDescriptionPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_description");
+
+  late final _taskListUpdateBuilderUnsetDescription =
+      _taskListUpdateBuilderUnsetDescriptionPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetDescriptionUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_description_update");
+
+  late final _taskListUpdateBuilderUnsetDescriptionUpdate =
+      _taskListUpdateBuilderUnsetDescriptionUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderSortOrderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Uint32,
+  )>>("__TaskListUpdateBuilder_sort_order");
+
+  late final _taskListUpdateBuilderSortOrder =
+      _taskListUpdateBuilderSortOrderPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_color");
+
+  late final _taskListUpdateBuilderColor =
+      _taskListUpdateBuilderColorPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetColorPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_color");
+
+  late final _taskListUpdateBuilderUnsetColor =
+      _taskListUpdateBuilderUnsetColorPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetColorUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_color_update");
+
+  late final _taskListUpdateBuilderUnsetColorUpdate =
+      _taskListUpdateBuilderUnsetColorUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_keywords");
+
+  late final _taskListUpdateBuilderKeywords =
+      _taskListUpdateBuilderKeywordsPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetKeywordsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_keywords");
+
+  late final _taskListUpdateBuilderUnsetKeywords =
+      _taskListUpdateBuilderUnsetKeywordsPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetKeywordsUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_keywords_update");
+
+  late final _taskListUpdateBuilderUnsetKeywordsUpdate =
+      _taskListUpdateBuilderUnsetKeywordsUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_categories");
+
+  late final _taskListUpdateBuilderCategories =
+      _taskListUpdateBuilderCategoriesPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetCategoriesPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_categories");
+
+  late final _taskListUpdateBuilderUnsetCategories =
+      _taskListUpdateBuilderUnsetCategoriesPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetCategoriesUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_categories_update");
+
+  late final _taskListUpdateBuilderUnsetCategoriesUpdate =
+      _taskListUpdateBuilderUnsetCategoriesUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_subscribers");
+
+  late final _taskListUpdateBuilderSubscribers =
+      _taskListUpdateBuilderSubscribersPtr.asFunction<
+          void Function(
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetSubscribersPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_subscribers");
+
+  late final _taskListUpdateBuilderUnsetSubscribers =
+      _taskListUpdateBuilderUnsetSubscribersPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderUnsetSubscribersUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_unset_subscribers_update");
+
+  late final _taskListUpdateBuilderUnsetSubscribersUpdate =
+      _taskListUpdateBuilderUnsetSubscribersUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _taskListUpdateBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_send");
+
+  late final _taskListUpdateBuilderSend =
+      _taskListUpdateBuilderSendPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _groupGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -5946,6 +7939,26 @@ class Api {
 
   late final _groupIsEncrypted = _groupIsEncryptedPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _groupTaskListsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Group_task_lists");
+
+  late final _groupTaskLists = _groupTaskListsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _groupTaskListDraftPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupTaskListDraftReturn Function(
+    ffi.Int64,
+  )>>("__Group_task_list_draft");
+
+  late final _groupTaskListDraft = _groupTaskListDraftPtr.asFunction<
+      _GroupTaskListDraftReturn Function(
     int,
   )>();
   late final _memberGetProfilePtr = _lookup<
@@ -6044,6 +8057,16 @@ class Api {
 
   late final _syncStateFirstSyncedRx = _syncStateFirstSyncedRxPtr.asFunction<
       _SyncStateFirstSyncedRxReturn Function(
+    int,
+  )>();
+  late final _syncStateCancelPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__SyncState_cancel");
+
+  late final _syncStateCancel = _syncStateCancelPtr.asFunction<
+      void Function(
     int,
   )>();
   late final _clientStartSyncPtr = _lookup<
@@ -6325,6 +8348,16 @@ class Api {
 
   late final _clientIncomingMessageRx = _clientIncomingMessageRxPtr.asFunction<
       _ClientIncomingMessageRxReturn Function(
+    int,
+  )>();
+  late final _clientTaskListsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_task_lists");
+
+  late final _clientTaskLists = _clientTaskListsPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _userProfileUserIdPtr = _lookup<
@@ -7398,6 +9431,108 @@ class Api {
     int,
     int,
   )>();
+  late final _taskRefreshFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskRefreshFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Task_refresh_future_poll");
+
+  late final _taskRefreshFuturePoll = _taskRefreshFuturePollPtr.asFunction<
+      _TaskRefreshFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskUpdateBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskUpdateBuilderSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskUpdateBuilder_send_future_poll");
+
+  late final _taskUpdateBuilderSendFuturePoll =
+      _taskUpdateBuilderSendFuturePollPtr.asFunction<
+          _TaskUpdateBuilderSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskDraft_send_future_poll");
+
+  late final _taskDraftSendFuturePoll = _taskDraftSendFuturePollPtr.asFunction<
+      _TaskDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListTasksFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListTasksFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskList_tasks_future_poll");
+
+  late final _taskListTasksFuturePoll = _taskListTasksFuturePollPtr.asFunction<
+      _TaskListTasksFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListRefreshFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListRefreshFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskList_refresh_future_poll");
+
+  late final _taskListRefreshFuturePoll =
+      _taskListRefreshFuturePollPtr.asFunction<
+          _TaskListRefreshFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListDraft_send_future_poll");
+
+  late final _taskListDraftSendFuturePoll =
+      _taskListDraftSendFuturePollPtr.asFunction<
+          _TaskListDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListUpdateBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListUpdateBuilderSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskListUpdateBuilder_send_future_poll");
+
+  late final _taskListUpdateBuilderSendFuturePoll =
+      _taskListUpdateBuilderSendFuturePollPtr.asFunction<
+          _TaskListUpdateBuilderSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _groupGetProfileFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _GroupGetProfileFuturePollReturn Function(
@@ -7454,6 +9589,21 @@ class Api {
   late final _groupIsEncryptedFuturePoll =
       _groupIsEncryptedFuturePollPtr.asFunction<
           _GroupIsEncryptedFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _groupTaskListsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupTaskListsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Group_task_lists_future_poll");
+
+  late final _groupTaskListsFuturePoll =
+      _groupTaskListsFuturePollPtr.asFunction<
+          _GroupTaskListsFuturePollReturn Function(
     int,
     int,
     int,
@@ -7675,6 +9825,21 @@ class Api {
 
   late final _clientLogoutFuturePoll = _clientLogoutFuturePollPtr.asFunction<
       _ClientLogoutFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientTaskListsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientTaskListsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_task_lists_future_poll");
+
+  late final _clientTaskListsFuturePoll =
+      _clientTaskListsFuturePollPtr.asFunction<
+          _ClientTaskListsFuturePollReturn Function(
     int,
     int,
     int,
@@ -8053,6 +10218,39 @@ class Api {
   late final _timelineStreamDiffRxStreamPoll =
       _timelineStreamDiffRxStreamPollPtr.asFunction<
           _TimelineStreamDiffRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskSubscribeStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Task_subscribe_stream_poll");
+
+  late final _taskSubscribeStreamPoll = _taskSubscribeStreamPollPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _taskListSubscribeStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__TaskList_subscribe_stream_poll");
+
+  late final _taskListSubscribeStreamPoll =
+      _taskListSubscribeStreamPollPtr.asFunction<
+          int Function(
     int,
     int,
     int,
@@ -8794,6 +10992,152 @@ class Api {
 
   late final _ffiListTagInsert =
       _ffiListTagInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListTask createFfiListTask() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListTaskCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListTask");
+    return FfiListTask._(this, list_box);
+  }
+
+  late final _ffiListTaskCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListTaskCreate");
+
+  late final _ffiListTaskCreate =
+      _ffiListTaskCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListTaskLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListTaskLen");
+
+  late final _ffiListTaskLen =
+      _ffiListTaskLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListTaskElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListTaskElementAt");
+
+  late final _ffiListTaskElementAt =
+      _ffiListTaskElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListTaskRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListTaskRemove");
+
+  late final _ffiListTaskRemove =
+      _ffiListTaskRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListTaskAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListTaskAdd");
+
+  late final _ffiListTaskAdd =
+      _ffiListTaskAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListTaskInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListTaskInsert");
+
+  late final _ffiListTaskInsert =
+      _ffiListTaskInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListTaskList createFfiListTaskList() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListTaskListCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListTaskList");
+    return FfiListTaskList._(this, list_box);
+  }
+
+  late final _ffiListTaskListCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListTaskListCreate");
+
+  late final _ffiListTaskListCreate =
+      _ffiListTaskListCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListTaskListLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListTaskListLen");
+
+  late final _ffiListTaskListLen =
+      _ffiListTaskListLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListTaskListElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListTaskListElementAt");
+
+  late final _ffiListTaskListElementAt =
+      _ffiListTaskListElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListTaskListRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListTaskListRemove");
+
+  late final _ffiListTaskListRemove =
+      _ffiListTaskListRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListTaskListAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListTaskListAdd");
+
+  late final _ffiListTaskListAdd =
+      _ffiListTaskListAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListTaskListInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListTaskListInsert");
+
+  late final _ffiListTaskListInsert =
+      _ffiListTaskListInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListUserId createFfiListUserId() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListUserIdCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListUserId");
+    return FfiListUserId._(this, list_box);
+  }
+
+  late final _ffiListUserIdCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListUserIdCreate");
+
+  late final _ffiListUserIdCreate =
+      _ffiListUserIdCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListUserIdLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListUserIdLen");
+
+  late final _ffiListUserIdLen =
+      _ffiListUserIdLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListUserIdElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserIdElementAt");
+
+  late final _ffiListUserIdElementAt =
+      _ffiListUserIdElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserIdRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListUserIdRemove");
+
+  late final _ffiListUserIdRemove =
+      _ffiListUserIdRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListUserIdAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListUserIdAdd");
+
+  late final _ffiListUserIdAdd =
+      _ffiListUserIdAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListUserIdInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListUserIdInsert");
+
+  late final _ffiListUserIdInsert =
+      _ffiListUserIdInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListUserProfile createFfiListUserProfile() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListUserProfileCreate());
@@ -8923,6 +11267,67 @@ class Color {
     tmp2.add(tmp5);
     tmp2.add(tmp7);
     tmp2.add(tmp9);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class UtcDateTime {
+  final Api _api;
+  final _Box _box;
+
+  UtcDateTime._(this._api, this._box);
+
+  int timestamp() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._utcDateTimeTimestamp(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  String toRfc2822() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._utcDateTimeToRfc2822(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  String toRfc3339() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._utcDateTimeToRfc3339(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -11429,6 +13834,2248 @@ class Conversation {
   }
 }
 
+class Task {
+  final Api _api;
+  final _Box _box;
+
+  Task._(this._api, this._box);
+
+  /// the name of this task
+  String title() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskTitle(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the name of this task
+  String? descriptionText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskDescriptionText(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the users assigned
+  FfiListUserId assignees() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskAssignees(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListUserId._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// other users to inform about updates
+  FfiListUserId subscribers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskSubscribers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListUserId._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// order in the list
+  int sortOrder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskSortOrder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// does this list have a special role?
+  /// Highest = 1,
+  /// SecondHighest = 2,
+  /// Three = 3,
+  /// Four = 4,
+  /// Five = 5,
+  /// Six = 6,
+  /// Seven = 7,
+  /// --- No value
+  /// SecondLowest = 8,
+  /// Lowest = 9,
+  int? priority() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskPriority(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// When this is due
+  UtcDateTime? utcDue() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskUtcDue(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// When this was started
+  UtcDateTime? utcStart() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskUtcStart(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_UtcDateTime");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = UtcDateTime._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Has this been colored in?
+  Color? color() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskColor(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Color._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// is this task already done?
+  bool isDone() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskIsDone(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// if it has been started, haw far is it in percent 0->100
+  /// None if not yet started
+  int? progressPercent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskProgressPercent(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// tags on this task
+  FfiListFfiString keywords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskKeywords(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// categories this task is in
+  FfiListFfiString categories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskCategories(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// make a builder for updating the task
+  TaskUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TaskUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  Stream<void> subscribe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskSubscribe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_subscribe_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__taskSubscribeStreamPoll);
+    return tmp2;
+  }
+
+  /// replace the current task with one with the latest state
+  Future<Task> refresh() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskRefresh(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_refresh_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskRefreshFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TaskUpdateBuilder {
+  final Api _api;
+  final _Box _box;
+
+  TaskUpdateBuilder._(this._api, this._box);
+
+  /// set the title for this task
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskUpdateBuilderTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetTitleUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetTitleUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the description for this task list
+  void descriptionText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskUpdateBuilderDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetDescription() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetDescription(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetDescriptionUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetDescriptionUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the sort order for this task list
+  void sortOrder(
+    int sortOrder,
+  ) {
+    final tmp1 = sortOrder;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._taskUpdateBuilderSortOrder(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetSortOrderUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetSortOrderUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the color for this task list
+  void color(
+    Color color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskUpdateBuilderColor(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColor() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetColor(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetColorUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetColorUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the utc_due for this task list in rfc3339 format
+  bool utcDueFromRfc3339(
+    String utcDue,
+  ) {
+    final tmp1 = utcDue;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskUpdateBuilderUtcDueFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_due for this task list in rfc2822 format
+  bool utcDueFromRfc2822(
+    String utcDue,
+  ) {
+    final tmp1 = utcDue;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskUpdateBuilderUtcDueFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_due for this task list in custom format
+  bool utcDueFromFormat(
+    String utcDue,
+    String format,
+  ) {
+    final tmp1 = utcDue;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._taskUpdateBuilderUtcDueFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final tmp10 = tmp15 > 0;
+    return tmp10;
+  }
+
+  void unsetUtcDue() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetUtcDue(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetUtcDueUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetUtcDueUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the utc_start for this task list in rfc3339 format
+  bool utcStartFromRfc3339(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskUpdateBuilderUtcStartFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_start for this task list in rfc2822 format
+  bool utcStartFromRfc2822(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskUpdateBuilderUtcStartFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_start for this task list in custom format
+  bool utcStartFromFormat(
+    String utcStart,
+    String format,
+  ) {
+    final tmp1 = utcStart;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._taskUpdateBuilderUtcStartFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final tmp10 = tmp15 > 0;
+    return tmp10;
+  }
+
+  void unsetUtcStart() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetUtcStart(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetUtcStartUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetUtcStartUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the sort order for this task list
+  void progressPercent(
+    int progressPercent,
+  ) {
+    final tmp1 = progressPercent;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._taskUpdateBuilderProgressPercent(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetProgressPercent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetProgressPercent(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetProgressPercentUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetProgressPercentUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the keywords for this task list
+  void keywords(
+    FfiListFfiString keywords,
+  ) {
+    final tmp1 = keywords;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskUpdateBuilderKeywords(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetKeywords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetKeywords(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetKeywordsUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetKeywordsUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the categories for this task list
+  void categories(
+    FfiListFfiString categories,
+  ) {
+    final tmp1 = categories;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskUpdateBuilderCategories(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetCategories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetCategories(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetCategoriesUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetCategoriesUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the assignees for this task list
+  void assignees(
+    FfiListUserId assignees,
+  ) {
+    final tmp1 = assignees;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskUpdateBuilderAssignees(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetAssignees() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetAssignees(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetAssigneesUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetAssigneesUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the subscribers for this task list
+  void subscribers(
+    FfiListUserId subscribers,
+  ) {
+    final tmp1 = subscribers;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskUpdateBuilderSubscribers(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetSubscribers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetSubscribers(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetSubscribersUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderUnsetSubscribersUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// send this task list draft
+  /// mark it done
+  void markDone() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderMarkDone(
+      tmp0,
+    );
+    return;
+  }
+
+  /// mark as not done
+  void markUndone() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskUpdateBuilderMarkUndone(
+      tmp0,
+    );
+    return;
+  }
+
+  /// send this task update
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskUpdateBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskUpdateBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskUpdateBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TaskDraft {
+  final Api _api;
+  final _Box _box;
+
+  TaskDraft._(this._api, this._box);
+
+  /// set the title for this task
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskDraftTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the description for this task list
+  void descriptionText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskDraftDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetDescription() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetDescription(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the sort order for this task list
+  void sortOrder(
+    int sortOrder,
+  ) {
+    final tmp1 = sortOrder;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._taskDraftSortOrder(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the color for this task list
+  void color(
+    Color color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskDraftColor(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColor() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetColor(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the utc_due for this task list in rfc3339 format
+  bool utcDueFromRfc3339(
+    String utcDue,
+  ) {
+    final tmp1 = utcDue;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskDraftUtcDueFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_due for this task list in rfc2822 format
+  bool utcDueFromRfc2822(
+    String utcDue,
+  ) {
+    final tmp1 = utcDue;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskDraftUtcDueFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_due for this task list in custom format
+  bool utcDueFromFormat(
+    String utcDue,
+    String format,
+  ) {
+    final tmp1 = utcDue;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._taskDraftUtcDueFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final tmp10 = tmp15 > 0;
+    return tmp10;
+  }
+
+  void unsetUtcDue() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetUtcDue(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the utc_start for this task list in rfc3339 format
+  bool utcStartFromRfc3339(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskDraftUtcStartFromRfc3339(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_start for this task list in rfc2822 format
+  bool utcStartFromRfc2822(
+    String utcStart,
+  ) {
+    final tmp1 = utcStart;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._taskDraftUtcStartFromRfc2822(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5.arg0;
+    final tmp8 = tmp5.arg1;
+    final tmp9 = tmp5.arg2;
+    final tmp10 = tmp5.arg3;
+    final tmp11 = tmp5.arg4;
+    if (tmp7 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+      final tmp7_0 = utf8.decode(tmp8_0.asTypedList(tmp9));
+      if (tmp9 > 0) {
+        final ffi.Pointer<ffi.Void> tmp8_0;
+        tmp8_0 = ffi.Pointer.fromAddress(tmp8);
+        _api.__deallocate(tmp8_0, tmp10, 1);
+      }
+      throw tmp7_0;
+    }
+    final tmp6 = tmp11 > 0;
+    return tmp6;
+  }
+
+  /// set the utc_start for this task list in custom format
+  bool utcStartFromFormat(
+    String utcStart,
+    String format,
+  ) {
+    final tmp1 = utcStart;
+    final tmp5 = format;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    final tmp9 = _api._taskDraftUtcStartFromFormat(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    final tmp11 = tmp9.arg0;
+    final tmp12 = tmp9.arg1;
+    final tmp13 = tmp9.arg2;
+    final tmp14 = tmp9.arg3;
+    final tmp15 = tmp9.arg4;
+    if (tmp11 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      final tmp11_0 = utf8.decode(tmp12_0.asTypedList(tmp13));
+      if (tmp13 > 0) {
+        final ffi.Pointer<ffi.Void> tmp12_0;
+        tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+        _api.__deallocate(tmp12_0, tmp14, 1);
+      }
+      throw tmp11_0;
+    }
+    final tmp10 = tmp15 > 0;
+    return tmp10;
+  }
+
+  void unsetUtcStart() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetUtcStart(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the sort order for this task list
+  void progressPercent(
+    int progressPercent,
+  ) {
+    final tmp1 = progressPercent;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._taskDraftProgressPercent(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetProgressPercent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetProgressPercent(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the keywords for this task list
+  void keywords(
+    FfiListFfiString keywords,
+  ) {
+    final tmp1 = keywords;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskDraftKeywords(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetKeywords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetKeywords(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the categories for this task list
+  void categories(
+    FfiListFfiString categories,
+  ) {
+    final tmp1 = categories;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskDraftCategories(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetCategories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetCategories(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the assignees for this task list
+  void assignees(
+    FfiListUserId assignees,
+  ) {
+    final tmp1 = assignees;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskDraftAssignees(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetAssignees() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetAssignees(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the subscribers for this task list
+  void subscribers(
+    FfiListUserId subscribers,
+  ) {
+    final tmp1 = subscribers;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskDraftSubscribers(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetSubscribers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskDraftUnsetSubscribers(
+      tmp0,
+    );
+    return;
+  }
+
+  /// send this task list draft
+  /// create this task
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TaskList {
+  final Api _api;
+  final _Box _box;
+
+  TaskList._(this._api, this._box);
+
+  /// the name of this task list
+  String name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// the name of this task list
+  String? descriptionText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListDescriptionText(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// who wants to be informed on updates about this?
+  FfiListUserId subscribers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListSubscribers(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListUserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListUserId._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// does this list have a special role?
+  String? role() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListRole(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// order in the list
+  int sortOrder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListSortOrder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// Has this been colored in?
+  Color? color() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListColor(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = Color._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Does this have any special time zone
+  String? timeZone() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListTimeZone(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// tags on this task
+  FfiListFfiString keywords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListKeywords(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// categories this task is in
+  FfiListFfiString categories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListCategories(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListFfiString");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp4 = FfiListFfiString._(_api, tmp3_1);
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// The tasks belonging to this tasklist
+  Future<FfiListTask> tasks() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListTasks(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_tasks_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListTasksFuturePoll);
+    return tmp2;
+  }
+
+  /// make a builder for updating the task list
+  TaskListUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TaskListUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  Stream<void> subscribe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListSubscribe(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_subscribe_stream_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeStream(tmp3_1, _api.__taskListSubscribeStreamPoll);
+    return tmp2;
+  }
+
+  /// replace the current task with one with the latest state
+  Future<TaskList> refresh() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListRefresh(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_refresh_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListRefreshFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TaskListDraft {
+  final Api _api;
+  final _Box _box;
+
+  TaskListDraft._(this._api, this._box);
+
+  /// set the name for this task list
+  void name(
+    String name,
+  ) {
+    final tmp1 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskListDraftName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the description for this task list
+  void descriptionText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskListDraftDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetDescription() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListDraftUnsetDescription(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the sort order for this task list
+  void sortOrder(
+    int sortOrder,
+  ) {
+    final tmp1 = sortOrder;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._taskListDraftSortOrder(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the color for this task list
+  void color(
+    Color color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListDraftColor(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColor() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListDraftUnsetColor(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the keywords for this task list
+  void keywords(
+    FfiListFfiString keywords,
+  ) {
+    final tmp1 = keywords;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListDraftKeywords(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetKeywords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListDraftUnsetKeywords(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the categories for this task list
+  void categories(
+    FfiListFfiString categories,
+  ) {
+    final tmp1 = categories;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListDraftCategories(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetCategories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListDraftUnsetCategories(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the subscribers for this task list
+  void subscribers(
+    FfiListUserId subscribers,
+  ) {
+    final tmp1 = subscribers;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListDraftSubscribers(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetSubscribers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListDraftUnsetSubscribers(
+      tmp0,
+    );
+    return;
+  }
+
+  /// send this task list draft
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__TaskListDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskListDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class TaskListUpdateBuilder {
+  final Api _api;
+  final _Box _box;
+
+  TaskListUpdateBuilder._(this._api, this._box);
+
+  /// set the name for this task list
+  void name(
+    String name,
+  ) {
+    final tmp1 = name;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskListUpdateBuilderName(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the description for this task list
+  void descriptionText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._taskListUpdateBuilderDescriptionText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetDescription() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetDescription(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetDescriptionUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetDescriptionUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the sort order for this task list
+  void sortOrder(
+    int sortOrder,
+  ) {
+    final tmp1 = sortOrder;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    _api._taskListUpdateBuilderSortOrder(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  /// set the color for this task list
+  void color(
+    Color color,
+  ) {
+    final tmp1 = color;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListUpdateBuilderColor(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetColor() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetColor(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetColorUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetColorUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the keywords for this task list
+  void keywords(
+    FfiListFfiString keywords,
+  ) {
+    final tmp1 = keywords;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListUpdateBuilderKeywords(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetKeywords() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetKeywords(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetKeywordsUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetKeywordsUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the categories for this task list
+  void categories(
+    FfiListFfiString categories,
+  ) {
+    final tmp1 = categories;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListUpdateBuilderCategories(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetCategories() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetCategories(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetCategoriesUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetCategoriesUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the subscribers for this task list
+  void subscribers(
+    FfiListUserId subscribers,
+  ) {
+    final tmp1 = subscribers;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    _api._taskListUpdateBuilderSubscribers(
+      tmp0,
+      tmp2,
+    );
+    return;
+  }
+
+  void unsetSubscribers() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetSubscribers(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetSubscribersUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._taskListUpdateBuilderUnsetSubscribersUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// send this task update
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListUpdateBuilderSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 =
+        _Box(_api, tmp3_0, "__TaskListUpdateBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__taskListUpdateBuilderSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Group {
   final Api _api;
   final _Box _box;
@@ -11507,6 +16154,50 @@ class Group {
     final tmp3_1 = _Box(_api, tmp3_0, "__Group_is_encrypted_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__groupIsEncryptedFuturePoll);
+    return tmp2;
+  }
+
+  /// the Tasks lists of this Group
+  Future<FfiListTaskList> taskLists() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupTaskLists(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Group_task_lists_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__groupTaskListsFuturePoll);
+    return tmp2;
+  }
+
+  /// task list draft builder
+  TaskListDraft taskListDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupTaskListDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskListDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TaskListDraft._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -11726,6 +16417,16 @@ class SyncState {
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = _nativeStream(tmp4_1, _api.__syncStateFirstSyncedRxStreamPoll);
     return tmp2;
+  }
+
+  /// stop the sync loop
+  void cancel() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._syncStateCancel(
+      tmp0,
+    );
+    return;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -12246,6 +16947,21 @@ class Client {
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 =
         _nativeStream(tmp4_1, _api.__clientIncomingMessageRxStreamPoll);
+    return tmp2;
+  }
+
+  /// the Tasks lists of this Group
+  Future<FfiListTaskList> taskLists() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientTaskLists(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_task_lists_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientTaskListsFuturePoll);
     return tmp2;
   }
 
@@ -13438,6 +18154,24 @@ class _ColorRgbaU8Return extends ffi.Struct {
   external int arg3;
 }
 
+class _UtcDateTimeToRfc2822Return extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _UtcDateTimeToRfc3339Return extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
 class _NewsIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -13826,6 +18560,305 @@ class _ConversationRoomTypeReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _TaskTitleReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _TaskDescriptionTextReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _TaskPriorityReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _TaskUtcDueReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TaskUtcStartReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TaskColorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TaskProgressPercentReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+}
+
+class _TaskUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _TaskUpdateBuilderUtcDueFromRfc3339Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskUpdateBuilderUtcDueFromRfc2822Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskUpdateBuilderUtcDueFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskUpdateBuilderUtcStartFromRfc3339Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskUpdateBuilderUtcStartFromRfc2822Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskUpdateBuilderUtcStartFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskDraftUtcDueFromRfc3339Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskDraftUtcDueFromRfc2822Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskDraftUtcDueFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskDraftUtcStartFromRfc3339Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskDraftUtcStartFromRfc2822Return extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskDraftUtcStartFromFormatReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint8()
+  external int arg4;
+}
+
+class _TaskListNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _TaskListDescriptionTextReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _TaskListRoleReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _TaskListColorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _TaskListTimeZoneReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _TaskListUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
+class _GroupTaskListDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _MemberUserIdReturn extends ffi.Struct {
@@ -14675,6 +19708,111 @@ class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
+class _TaskRefreshFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskUpdateBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListTasksFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListRefreshFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskListUpdateBuilderSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _GroupGetProfileFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -14732,6 +19870,21 @@ class _GroupIsEncryptedFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _GroupTaskListsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 
@@ -14965,6 +20118,21 @@ class _ClientLogoutFuturePollReturn extends ffi.Struct {
   @ffi.Uint64()
   external int arg4;
   @ffi.Uint8()
+  external int arg5;
+}
+
+class _ClientTaskListsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
   external int arg5;
 }
 
@@ -16108,6 +21276,184 @@ class FfiListTag extends Iterable<Tag> implements CustomIterable<Tag> {
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Tag element) {
     _api._ffiListTagInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListTask extends Iterable<Task> implements CustomIterable<Task> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListTask._(this._api, this._box);
+
+  @override
+  Iterator<Task> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListTaskLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Task elementAt(int index) {
+    final address = _api._ffiListTaskElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Task._(_api, reference);
+  }
+
+  Task operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Task remove(int index) {
+    final address = _api._ffiListTaskRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Task");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Task._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(Task element) {
+    _api._ffiListTaskAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Task element) {
+    _api._ffiListTaskInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListTaskList extends Iterable<TaskList>
+    implements CustomIterable<TaskList> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListTaskList._(this._api, this._box);
+
+  @override
+  Iterator<TaskList> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListTaskListLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  TaskList elementAt(int index) {
+    final address = _api._ffiListTaskListElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return TaskList._(_api, reference);
+  }
+
+  TaskList operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  TaskList remove(int index) {
+    final address = _api._ffiListTaskListRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_TaskList");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return TaskList._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(TaskList element) {
+    _api._ffiListTaskListAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, TaskList element) {
+    _api._ffiListTaskListInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListUserId extends Iterable<UserId> implements CustomIterable<UserId> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListUserId._(this._api, this._box);
+
+  @override
+  Iterator<UserId> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListUserIdLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  UserId elementAt(int index) {
+    final address = _api._ffiListUserIdElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return UserId._(_api, reference);
+  }
+
+  UserId operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  UserId remove(int index) {
+    final address = _api._ffiListUserIdRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_UserId");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return UserId._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(UserId element) {
+    _api._ffiListUserIdAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, UserId element) {
+    _api._ffiListUserIdInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

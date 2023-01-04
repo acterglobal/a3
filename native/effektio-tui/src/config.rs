@@ -1,18 +1,16 @@
+use std::path::PathBuf;
+
 use anyhow::Result;
-use clap::{crate_version, Parser};
+use clap::Parser;
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
+use effektio::api::login_new_client;
+use effektio::Client;
 use effektio_core::matrix_sdk::ruma::OwnedUserId;
-use effektio_core::matrix_sdk::{Client, ClientBuilder};
-
-use crate::action::Action;
-
-use tracing::warn;
 
 pub const ENV_USER: &str = "EFFEKTIO_USER";
 pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";
-pub const ENV_ROOM: &str = "EFFEKTIO_ROOM";
 
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
@@ -21,24 +19,24 @@ pub struct LoginConfig {
     #[clap(
         short = 'u',
         long = "user",
-        value_hint = clap::ValueHint::Username,
         parse(try_from_str),
         env = ENV_USER
     )]
     login_username: OwnedUserId,
-    #[clap(env = ENV_PASSWORD)]
+    #[clap(
+        short = 'p',
+        long = "password",
+        parse(try_from_str),
+        env = ENV_PASSWORD
+    )]
     login_password: Option<String>,
 }
 
-async fn default_client_config() -> Result<ClientBuilder> {
-    Ok(Client::builder().user_agent(format!("effektio-cli/{}", crate_version!())))
-}
-
 impl LoginConfig {
-    pub async fn client(&self) -> Result<Client> {
+    pub async fn client(&self, path: PathBuf) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        warn!("Logging in as {}", username);
+        tracing::info!("Logging in as {}", username);
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
             _ => Password::with_theme(&theme)
@@ -46,16 +44,13 @@ impl LoginConfig {
                 .interact()?,
         };
 
-        let client = default_client_config()
-            .await?
-            .server_name(username.server_name())
-            .build()
-            .await?;
-
-        client
-            .login_username(username.localpart(), &password)
-            .send()
-            .await?;
+        let client = login_new_client(
+            String::from(path.to_string_lossy()),
+            username.to_string(),
+            password,
+            Some("effektio-tui".to_owned()),
+        )
+        .await?;
 
         Ok(client)
     }
@@ -63,12 +58,24 @@ impl LoginConfig {
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
-pub struct EffektioCliConfig {
+pub struct EffektioTuiConfig {
     /// Logging configuration
-    #[clap(short, long, default_value = "effektio_cli=info,warn")]
+    #[clap(short, long, default_value = "effektio_tui=info,warn")]
     pub log: String,
 
+    /// Start logger in fullscreen
+    #[clap(long)]
+    pub fullscreen_logs: bool,
+
+    /// drop and delete any existing database
+    #[clap(short, long)]
+    pub fresh: bool,
+
+    /// use .local as the starting point for the database
+    #[clap(long)]
+    pub local: bool,
+
     /// The action to perform
-    #[clap(subcommand)]
-    pub action: Action,
+    #[clap(flatten)]
+    pub login: LoginConfig,
 }

@@ -5,10 +5,12 @@ export SYNAPSE_REPORT_STATS=no
 echo " ====== Generating config  ====== "
 /start.py generate
 echo " ====== Patching for CI  ====== "
-sed -i 's/^#allow_guest_access:.*$/allow_guest_access: true/g' /data/homeserver.yaml
-sed -i 's/^#enable_registration_without_verification:.*$/enable_registration_without_verification: true/g' /data/homeserver.yaml
-sed -i 's/^#enable_registration:.*$/enable_registration: true/g' /data/homeserver.yaml
 echo """
+
+allow_guest_access: true
+enable_registration_without_verification: true
+enable_registration: true
+suppress_key_server_warning: true
 
 rc_message:
   per_second: 1000
