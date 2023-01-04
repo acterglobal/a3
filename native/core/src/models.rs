@@ -132,13 +132,10 @@ mod test {
     use crate::Result;
     use serde_json;
     #[test]
-    fn ensure_tasklist_parses() -> Result<()> {
+    fn ensure_minimal_tasklist_parses() -> Result<()> {
         let json_raw = r#"{"type":"org.effektio.dev.tasklist",
             "room_id":"!euhIDqDVvVXulrhWgN:ds9.effektio.org","sender":"@odo:ds9.effektio.org",
-            "content":{"categories":null,"color":null,"description":
-            {"body":"The tops of the daily security briefing with kyra","msgtype":"m.text"},
-            "keywords":null,"name":"Daily Security Brief","role":null,"sort_order":0,
-            "subscribers":null,"time_zone":null},"origin_server_ts":1672407531453,
+            "content":{"name":"Daily Security Brief"},"origin_server_ts":1672407531453,
             "unsigned":{"age":11523850},
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.effektio.org","age":11523850}"#;
