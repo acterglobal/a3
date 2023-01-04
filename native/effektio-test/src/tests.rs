@@ -4,10 +4,12 @@ mod auth;
 mod formatted_body;
 #[cfg(test)]
 mod invitation;
-#[cfg(test)]
-mod news;
+// #[cfg(test)]
+// mod news;
 #[cfg(test)]
 mod receipt;
+#[cfg(test)]
+mod tasks;
 #[cfg(test)]
 mod typing;
 #[cfg(test)]

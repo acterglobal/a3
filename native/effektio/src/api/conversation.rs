@@ -108,7 +108,7 @@ impl std::ops::Deref for Conversation {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
     incoming_event_tx: Sender<RoomMessage>,
@@ -361,7 +361,7 @@ impl Client {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                if let Ok(room) = me.room(name_or_id) {
+                if let Ok(room) = me.room(name_or_id).await {
                     if !room.is_effektio_group().await {
                         Ok(Conversation::new(room))
                     } else {

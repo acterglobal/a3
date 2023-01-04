@@ -559,7 +559,7 @@ impl VerificationEmoji {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct VerificationController {
     event_tx: Sender<VerificationEvent>,
     event_rx: Arc<Mutex<Option<Receiver<VerificationEvent>>>>,

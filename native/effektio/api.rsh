@@ -22,6 +22,12 @@ object Color {
     fn rgba_u8() -> (u8, u8, u8, u8);
 }
 
+object UtcDateTime { 
+    fn timestamp() -> i64;
+    fn to_rfc2822() -> string;
+    fn to_rfc3339() -> string;
+}
+
 /// A news object
 object News {
     /// the id of this news
@@ -320,6 +326,289 @@ object Conversation {
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
+object Task {
+    /// the name of this task
+    fn title() -> string;
+
+    /// the name of this task
+    fn description_text() -> Option<string>;
+
+    /// the users assigned
+    fn assignees() -> Vec<UserId>;
+
+    /// other users to inform about updates
+    fn subscribers() -> Vec<UserId>;
+
+    /// order in the list
+    fn sort_order() -> u32;
+
+    /// does this list have a special role?
+    /// Highest = 1,
+    /// SecondHighest = 2,
+    /// Three = 3,
+    /// Four = 4,
+    /// Five = 5,
+    /// Six = 6,
+    /// Seven = 7,
+    ///  --- No value
+    /// SecondLowest = 8,
+    /// Lowest = 9,
+    fn priority() -> Option<u8>;
+
+    /// When this is due
+    fn utc_due() -> Option<UtcDateTime>;
+
+    /// When this was started
+    fn utc_start() -> Option<UtcDateTime>;
+    
+    /// Has this been colored in?
+    fn color() -> Option<Color>;
+
+    /// is this task already done?
+    fn is_done() -> bool;
+
+    /// if it has been started, haw far is it in percent 0->100
+    /// None if not yet started
+    fn progress_percent() -> Option<u8>;
+
+    /// tags on this task
+    fn keywords() -> Vec<string>;
+
+    /// categories this task is in
+    fn categories() -> Vec<string>;
+
+    /// make a builder for updating the task
+    fn update_builder() -> Result<TaskUpdateBuilder>;
+
+    // get informed about changes to this task
+    fn subscribe() -> Stream<()>;
+
+    /// replace the current task with one with the latest state
+    fn refresh() -> Future<Result<Task>>;
+}
+
+object TaskUpdateBuilder {
+    /// set the title for this task
+    fn title(title: string);
+    fn unset_title_update();
+
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    fn unset_description_update();
+
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    fn unset_sort_order_update();
+
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+    fn unset_color_update();
+
+    /// set the utc_due for this task list in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    /// set the utc_due for this task list in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    /// set the utc_due for this task list in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn unset_utc_due();
+    fn unset_utc_due_update();
+
+    /// set the utc_start for this task list in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    /// set the utc_start for this task list in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    /// set the utc_start for this task list in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn unset_utc_start();
+    fn unset_utc_start_update();
+
+    /// set the sort order for this task list
+    fn progress_percent(progress_percent: u8);
+    fn unset_progress_percent();
+    fn unset_progress_percent_update();
+
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    fn unset_keywords_update();
+
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    fn unset_categories_update();
+
+    /// set the assignees for this task list
+    fn assignees(assignees: Vec<UserId>);
+    fn unset_assignees();
+    fn unset_assignees_update();
+
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    fn unset_subscribers_update();
+
+    /// send this task list draft
+    /// mark it done
+    fn mark_done();
+
+    /// mark as not done
+    fn mark_undone();
+
+    /// send this task update
+    fn send() -> Future<Result<EventId>>;
+}
+
+object TaskDraft {
+    /// set the title for this task
+    fn title(title: string);
+
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+
+    /// set the utc_due for this task list in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    /// set the utc_due for this task list in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    /// set the utc_due for this task list in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn unset_utc_due();
+
+    /// set the utc_start for this task list in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    /// set the utc_start for this task list in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    /// set the utc_start for this task list in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn unset_utc_start();
+
+
+    /// set the sort order for this task list
+    fn progress_percent(progress_percent: u8);
+    fn unset_progress_percent();
+    
+
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    /// set the assignees for this task list
+    fn assignees(assignees: Vec<UserId>);
+    fn unset_assignees();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    /// send this task list draft
+
+    /// create this task
+    fn send() -> Future<Result<EventId>>;
+}
+
+object TaskList {
+    /// the name of this task list
+    fn name() -> string;
+
+    /// the name of this task list
+    fn description_text() -> Option<string>;
+
+    /// who wants to be informed on updates about this?
+    fn subscribers() -> Vec<UserId>;
+
+    /// does this list have a special role?
+    fn role() -> Option<string>;
+
+    /// order in the list
+    fn sort_order() -> u32;
+    
+    /// Has this been colored in?
+    fn color() -> Option<Color>;
+    
+    /// Does this have any special time zone
+    fn time_zone() -> Option<string>;
+
+    /// tags on this task
+    fn keywords() -> Vec<string>;
+
+    /// categories this task is in
+    fn categories() -> Vec<string>;
+
+    /// The tasks belonging to this tasklist
+    fn tasks() -> Future<Result<Vec<Task>>>;
+
+    /// make a builder for updating the task list
+    fn update_builder() -> Result<TaskListUpdateBuilder>;
+
+    // get informed about changes to this task
+    fn subscribe() -> Stream<()>;
+
+    /// replace the current task with one with the latest state
+    fn refresh() -> Future<Result<TaskList>>;
+}
+
+object TaskListDraft {
+    /// set the name for this task list
+    fn name(name: string);
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    /// send this task list draft
+    fn send() -> Future<Result<EventId>>;
+}
+
+object TaskListUpdateBuilder {
+    /// set the name for this task list
+    fn name(name: string);
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    fn unset_description_update();
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    /// set the color for this task list
+    fn color(color: Color);
+    fn unset_color();
+    fn unset_color_update();
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    fn unset_keywords_update();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    fn unset_categories_update();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    fn unset_subscribers_update();
+    /// send this task update
+    fn send() -> Future<Result<EventId>>;
+}
+
 object Group {
     /// get the room profile that contains avatar and display name
     fn get_profile() -> Future<Result<RoomProfile>>;
@@ -332,6 +621,12 @@ object Group {
 
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
+
+    /// the Tasks lists of this Group
+    fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    /// task list draft builder
+    fn task_list_draft() -> Result<TaskListDraft>;
 }
 
 object Member {
@@ -363,6 +658,9 @@ object Account {
 object SyncState {
     /// Get event handler of first synchronization on every launch
     fn first_synced_rx() -> Option<Stream<bool>>;
+
+    /// stop the sync loop
+    fn cancel();
 }
 
 /// Main entry point for `effektio`.
@@ -448,6 +746,9 @@ object Client {
 
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
+
+    /// the Tasks lists of this Group
+    fn task_lists() -> Future<Result<Vec<TaskList>>>;
 }
 
 object UserProfile {
