@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
@@ -10,7 +11,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class ImageSelection extends StatefulWidget {
-  final List imageList;
+  final List<PlatformFile> imageList;
   final String roomName;
 
   const ImageSelection({
@@ -39,8 +40,9 @@ class _ImageSelectionState extends State<ImageSelection> {
               itemCount: widget.imageList.length,
               scrollPhysics: const BouncingScrollPhysics(),
               builder: (context, index) {
+                PlatformFile file = widget.imageList[index];
                 return PhotoViewGalleryPageOptions(
-                  imageProvider: FileImage(File(widget.imageList[index].path)),
+                  imageProvider: FileImage(File(file.path!)),
                   initialScale: PhotoViewComputedScale.contained * 0.8,
                 );
               },
@@ -60,10 +62,10 @@ class _ImageSelectionState extends State<ImageSelection> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (var item in widget.imageList)
+                  for (PlatformFile file in widget.imageList)
                     Padding(
                       padding: const EdgeInsets.only(top: 10, left: 8),
-                      child: buildImageItem(item),
+                      child: buildImageItem(file),
                     ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
@@ -80,8 +82,8 @@ class _ImageSelectionState extends State<ImageSelection> {
             roomName: widget.roomName,
             onButtonPressed: () async {
               Navigator.of(context).pop();
-              for (var image in widget.imageList) {
-                await controller.sendImage(image);
+              for (PlatformFile file in widget.imageList) {
+                await controller.sendImage(file);
               }
             },
           )
@@ -90,11 +92,11 @@ class _ImageSelectionState extends State<ImageSelection> {
     );
   }
 
-  Widget buildImageItem(item) {
+  Widget buildImageItem(PlatformFile file) {
     return InkWell(
       onTap: () {
         setState(() {
-          selectedIndex = widget.imageList.indexOf(item);
+          selectedIndex = widget.imageList.indexOf(file);
           pageController.jumpToPage(selectedIndex);
         });
       },
@@ -107,10 +109,10 @@ class _ImageSelectionState extends State<ImageSelection> {
               borderRadius: BorderRadius.circular(3),
               image: DecorationImage(
                 fit: BoxFit.fill,
-                image: FileImage(File(item.path)),
+                image: FileImage(File(file.path!)),
               ),
               color: AppCommonTheme.backgroundColor,
-              border: getItemBorder(item),
+              border: getItemBorder(file),
             ),
           ),
           Positioned(
@@ -118,7 +120,7 @@ class _ImageSelectionState extends State<ImageSelection> {
             top: 4,
             child: InkWell(
               onTap: () {
-                int idx = widget.imageList.indexOf(item);
+                int idx = widget.imageList.indexOf(file);
                 widget.imageList.removeAt(idx);
                 if (widget.imageList.isEmpty) {
                   Navigator.of(context).pop();
@@ -138,8 +140,8 @@ class _ImageSelectionState extends State<ImageSelection> {
     );
   }
 
-  BoxBorder? getItemBorder(item) {
-    if (selectedIndex != widget.imageList.indexOf(item)) {
+  BoxBorder? getItemBorder(PlatformFile file) {
+    if (selectedIndex != widget.imageList.indexOf(file)) {
       return null;
     }
     return Border.all(
