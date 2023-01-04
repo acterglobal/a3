@@ -213,7 +213,9 @@ impl ConversationController {
                 room: room.clone(),
             });
             if let Ok(decrypted) = joined.decrypt_event(&raw_event).await {
-                let ev = raw_event.deserialize_as::<OriginalSyncRoomEncryptedEvent>().unwrap();
+                let ev = raw_event
+                    .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
+                    .unwrap();
                 let msg = RoomMessage::from_sync_event(
                     None,
                     None,
