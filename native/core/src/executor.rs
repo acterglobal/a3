@@ -1,5 +1,5 @@
 use crate::{
-    models::{AnyEffektioModel, EffektioModel},
+    models::{AnyEffektioModel, CommentsManager, EffektioModel},
     store::Store,
     Result,
 };
@@ -81,7 +81,7 @@ impl Executor {
         let mut models = self.transition_tree(belongs_to, &model).await?;
         models.push(model);
         // models.dedup();
-        let keys = models.iter().map(|m| m.key()).collect();
+        let keys = models.iter().map(|m| m.event_id().to_string()).collect();
         self.store.save_many(models).await?;
         self.notifv(keys);
 
@@ -94,16 +94,33 @@ impl Executor {
         model: &AnyEffektioModel,
     ) -> Result<Vec<AnyEffektioModel>> {
         let mut models = vec![];
+        let is_comment = model.is_comment();
         for p in parents {
             let mut parent = self.store.get(&p).await?;
-            if parent.transition(model)? {
-                if let Some(grandparents) = parent.belongs_to() {
-                    let mut parent_models = self.transition_tree(grandparents, &parent).await?;
-                    if !parent_models.is_empty() {
-                        models.append(&mut parent_models);
-                    }
+            if is_comment {
+                if !parent.supports_comments() {
+                    tracing::error!(?parent, ?model, "doesn't support comments. can't apply");
+                    return Ok(vec![]);
                 }
-                models.push(parent);
+                let AnyEffektioModel::Comment(ref comment) = model else {
+                    unreachable!("match just checked before");
+                };
+
+                let mut manager =
+                    CommentsManager::from_store_and_event_id(&self.store, parent.event_id()).await;
+                if manager.add_comment(comment).await? {
+                    manager.save().await?;
+                }
+            } else {
+                if parent.transition(model)? {
+                    if let Some(grandparents) = parent.belongs_to() {
+                        let mut parent_models = self.transition_tree(grandparents, &parent).await?;
+                        if !parent_models.is_empty() {
+                            models.append(&mut parent_models);
+                        }
+                    }
+                    models.push(parent);
+                }
             }
         }
         Ok(models)

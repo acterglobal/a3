@@ -7,29 +7,15 @@ use crate::{
     },
     statics::KEYS,
 };
-use matrix_sdk::ruma::{
-    events::OriginalMessageLikeEvent, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId,
-    OwnedRoomId, OwnedUserId, RoomId,
-};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId};
 use serde::{Deserialize, Serialize};
 
-use super::AnyEffektioModel;
+use super::{AnyEffektioModel, EventMeta};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
     inner: TaskEventContent,
-
-    /// The globally unique event identifier attached to this task
-    pub event_id: OwnedEventId,
-
-    /// The fully-qualified ID of the user who sent created this task
-    pub sender: OwnedUserId,
-
-    /// Timestamp in milliseconds on originating homeserver when the task was created
-    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
-
-    /// The ID of the room of this task
-    pub room_id: OwnedRoomId,
+    meta: EventMeta,
 }
 impl Deref for Task {
     type Target = TaskEventContent;
@@ -54,13 +40,9 @@ impl Task {
         self.inner.progress_percent
     }
 
-    pub fn event_id(&self) -> &EventId {
-        &self.event_id
-    }
-
     pub fn updater(&self) -> TaskUpdateBuilder {
         TaskUpdateBuilder::default()
-            .task(self.event_id.clone())
+            .task(self.meta.event_id.clone())
             .to_owned()
     }
 
@@ -74,8 +56,8 @@ impl super::EffektioModel for Task {
         vec![]
     }
 
-    fn key(&self) -> String {
-        Self::key_from_event(&self.event_id)
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -105,10 +87,12 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
         } = outer;
         Task {
             inner: content,
-            room_id,
-            event_id,
-            sender,
-            origin_server_ts,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
         }
     }
 }
@@ -116,18 +100,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskUpdate {
     inner: TaskUpdateEventContent,
-
-    /// The globally unique event identifier attached to this task update
-    pub event_id: OwnedEventId,
-
-    /// The fully-qualified ID of the user who sent created this task update
-    pub sender: OwnedUserId,
-
-    /// Timestamp in milliseconds on originating homeserver when the task update was created
-    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
-
-    /// The ID of the room of this task update
-    pub room_id: OwnedRoomId,
+    meta: EventMeta,
 }
 
 impl super::EffektioModel for TaskUpdate {
@@ -135,18 +108,12 @@ impl super::EffektioModel for TaskUpdate {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
-    fn key(&self) -> String {
-        Self::key_from_event(&self.event_id)
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![Task::key_from_event(&self.inner.task.event_id)])
-    }
-}
-
-impl TaskUpdate {
-    fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
     }
 }
 
@@ -169,30 +136,26 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
         } = outer;
         TaskUpdate {
             inner: content,
-            room_id,
-            event_id,
-            sender,
-            origin_server_ts,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
         }
     }
+}
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+pub struct TaskStats {
+    has_tasks: bool,
+    tasks_count: u32,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskList {
     inner: TaskListEventContent,
-
-    /// The globally unique event identifier attached to this task
-    pub event_id: OwnedEventId,
-
-    /// The fully-qualified ID of the user who sent created this task
-    pub sender: OwnedUserId,
-
-    /// Timestamp in milliseconds on originating homeserver when the task was created
-    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
-
-    /// The ID of the room of this task
-    pub room_id: OwnedRoomId,
-    pub tasks: Vec<String>,
+    meta: EventMeta,
+    task_stats: TaskStats,
 }
 
 impl Deref for TaskList {
@@ -214,11 +177,13 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
         } = outer;
         TaskList {
             inner: content,
-            room_id,
-            event_id,
-            sender,
-            origin_server_ts,
-            tasks: Default::default(),
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
+            task_stats: Default::default(),
         }
     }
 }
@@ -230,15 +195,9 @@ impl TaskList {
     pub fn redacted(&self) -> bool {
         false
     }
-    pub fn event_id(&self) -> &EventId {
-        &self.event_id
-    }
-    pub fn room_id(&self) -> &RoomId {
-        &self.room_id
-    }
     pub fn updater(&self) -> TaskListUpdateBuilder {
         TaskListUpdateBuilder::default()
-            .task_list(self.event_id.to_owned())
+            .task_list(self.meta.event_id.to_owned())
             .to_owned()
     }
 }
@@ -248,24 +207,19 @@ impl super::EffektioModel for TaskList {
         vec![KEYS::TASKS.to_owned()]
     }
 
-    fn key(&self) -> String {
-        Self::key_from_event(&self.event_id)
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
     }
 
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
         match model {
             super::AnyEffektioModel::TaskListUpdate(update) => update.apply(&mut self.inner),
             super::AnyEffektioModel::Task(task) => {
-                tracing::trace!(key = self.key(), ?task, "adding task to list");
-                let key = task.key();
-
-                if !self.tasks.iter().any(|k| k == &key) {
-                    // new item, add it
-                    self.tasks.push(key);
-                    Ok(true)
-                } else {
-                    Ok(false)
-                }
+                let key = self.event_id().to_owned();
+                tracing::trace!(?key, ?task, "adding task to list");
+                self.task_stats.tasks_count += 1;
+                self.task_stats.has_tasks = true;
+                Ok(true)
             }
             _ => {
                 tracing::warn!(?model, "Trying to transition with an unknown model");
@@ -278,18 +232,7 @@ impl super::EffektioModel for TaskList {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct TaskListUpdate {
     inner: TaskListUpdateEventContent,
-
-    /// The globally unique event identifier attached to this task
-    pub event_id: OwnedEventId,
-
-    /// The fully-qualified ID of the user who sent created this task
-    pub sender: OwnedUserId,
-
-    /// Timestamp in milliseconds on originating homeserver when the task was created
-    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
-
-    /// The ID of the room of this task
-    pub room_id: OwnedRoomId,
+    meta: EventMeta,
 }
 
 impl super::EffektioModel for TaskListUpdate {
@@ -299,21 +242,14 @@ impl super::EffektioModel for TaskListUpdate {
             self.inner.task_list.event_id
         )]
     }
-
-    fn key(&self) -> String {
-        Self::key_from_event(&self.event_id)
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![TaskList::key_from_event(
             &self.inner.task_list.event_id,
         )])
-    }
-}
-
-impl TaskListUpdate {
-    fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
     }
 }
 
@@ -336,10 +272,12 @@ impl From<OriginalMessageLikeEvent<TaskListUpdateEventContent>> for TaskListUpda
         } = outer;
         TaskListUpdate {
             inner: content,
-            room_id,
-            event_id,
-            sender,
-            origin_server_ts,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
         }
     }
 }

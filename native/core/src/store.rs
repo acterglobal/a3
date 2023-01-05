@@ -42,6 +42,20 @@ impl Store {
         }
         get_from_store(self.client.clone(), key).await
     }
+
+    pub async fn set_raw<T: serde::Serialize>(&self, key: &str, value: &T) -> Result<()> {
+        if self.fresh {
+            return Err(Error::ModelNotFound);
+        }
+        self.client
+            .store()
+            .set_custom_value(
+                format!("effektio:{key}").as_bytes(),
+                serde_json::to_vec(value)?,
+            )
+            .await?;
+        Ok(())
+    }
     pub async fn new(client: MatrixClient) -> Result<Self> {
         if client
             .store()
@@ -95,7 +109,7 @@ impl Store {
         let indizes = Arc::new(DashMap::new());
         let mut models_sources = Vec::new();
         for m in models_vec {
-            let key = m.key();
+            let key = m.event_id().to_string();
             for idx in m.indizes() {
                 let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
                 r.value_mut().push(key.clone())
@@ -115,7 +129,7 @@ impl Store {
     }
 
     #[tracing::instrument(skip(self))]
-    pub fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
+    pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
         } else {
@@ -141,8 +155,8 @@ impl Store {
     }
 
     #[tracing::instrument(skip(self))]
-    pub async fn save_raw(&self, mdl: AnyEffektioModel) -> Result<()> {
-        let key = mdl.key();
+    pub async fn save_model_inner(&self, mdl: AnyEffektioModel) -> Result<()> {
+        let key = mdl.event_id().to_string();
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
             tracing::trace!(user=?self.client.user_id(), key, "previous model found");
@@ -177,14 +191,14 @@ impl Store {
 
     pub async fn save_many(&self, models: Vec<AnyEffektioModel>) -> Result<()> {
         for mdl in models.into_iter() {
-            self.save_raw(mdl).await?;
+            self.save_model_inner(mdl).await?;
         }
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(())
     }
 
     pub async fn save(&self, mdl: AnyEffektioModel) -> Result<()> {
-        self.save_raw(mdl).await?;
+        self.save_model_inner(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(())
     }

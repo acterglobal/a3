@@ -5,14 +5,15 @@ mod news;
 mod tag;
 mod tasks;
 
+pub use crate::store::Store;
 pub use color::Color;
-pub use comments::{Comment, CommentUpdate};
+pub use comments::{Comment, CommentUpdate, CommentsManager};
 pub use core::fmt::Debug;
 pub use faq::Faq;
 use matrix_sdk::ruma::{
     events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},
     serde::Raw,
-    RoomId,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
 };
 pub use news::News;
 use serde::{Deserialize, Serialize};
@@ -35,16 +36,36 @@ use crate::events::{
 pub trait EffektioModel: Debug {
     fn indizes(&self) -> Vec<String>;
     /// The key to store this model under
-    fn key(&self) -> String;
+    fn event_id(&self) -> &EventId;
     /// The models to inform about this model as it belongs to that
     fn belongs_to(&self) -> Option<Vec<String>> {
         None
+    }
+
+    /// activate to enable commenting support for this type of model
+    fn supports_comments(&self) -> bool {
+        false
     }
     /// handle transition
     fn transition(&mut self, model: &AnyEffektioModel) -> crate::Result<bool> {
         tracing::error!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct EventMeta {
+    /// The globally unique event identifier attached to this task
+    pub event_id: OwnedEventId,
+
+    /// The fully-qualified ID of the user who sent created this task
+    pub sender: OwnedUserId,
+
+    /// Timestamp in milliseconds on originating homeserver when the task was created
+    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
+
+    /// The ID of the room of this task
+    pub room_id: OwnedRoomId,
 }
 
 #[enum_dispatch]
@@ -60,6 +81,9 @@ pub enum AnyEffektioModel {
 }
 
 impl AnyEffektioModel {
+    pub fn is_comment(&self) -> bool {
+        matches!(self, AnyEffektioModel::Comment(_))
+    }
     pub fn from_raw_tlevent(raw: &Raw<AnyTimelineEvent>) -> Option<Self> {
         let Ok(Some(m_type)) = raw.get_field("type") else {
             return None;

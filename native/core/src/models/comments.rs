@@ -3,30 +3,87 @@ use std::ops::Deref;
 use crate::events::comments::{
     CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
 };
-use matrix_sdk::ruma::{
-    events::OriginalMessageLikeEvent, EventId, MilliSecondsSinceUnixEpoch, OwnedEventId,
-    OwnedRoomId, OwnedUserId,
-};
+use crate::store::Store;
+use derive_getters::Getters;
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId};
 use serde::{Deserialize, Serialize};
 
-use super::AnyEffektioModel;
+use super::{AnyEffektioModel, EventMeta};
+
+static COMMENTS_FIELD: &str = "comments";
+static COMMENTS_STATS_FIELD: &str = "comments_stats";
+
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
+pub struct CommentsStats {
+    has_comments: bool,
+    total_comments_count: u32,
+}
+
+#[derive(Clone, Debug)]
+pub struct CommentsManager {
+    stats: CommentsStats,
+    event_id: OwnedEventId,
+    store: Store,
+}
+
+impl CommentsManager {
+    pub(crate) async fn from_store_and_event_id(
+        store: &Store,
+        event_id: &EventId,
+    ) -> CommentsManager {
+        let store = store.clone();
+        let stats = store
+            .get_raw(&format!("{}::{COMMENTS_FIELD}", event_id))
+            .await
+            .unwrap_or_default();
+        CommentsManager {
+            store,
+            stats,
+            event_id: event_id.to_owned(),
+        }
+    }
+
+    pub async fn comments(&self) -> crate::Result<Vec<Comment>> {
+        Ok(self
+            .store
+            .get_list(&format!("{}::{COMMENTS_FIELD}", self.event_id))
+            .await?
+            .filter_map(|e| match e {
+                AnyEffektioModel::Comment(c) => Some(c),
+                _ => None,
+            })
+            .collect())
+    }
+
+    pub async fn add_comment(&mut self, _comment: &Comment) -> crate::Result<bool> {
+        self.stats.has_comments = true;
+        self.stats.total_comments_count += 1;
+        Ok(true)
+    }
+
+    pub async fn save(&self) -> crate::Result<()> {
+        self.store
+            .set_raw(
+                &format!("{}::{COMMENTS_STATS_FIELD}", self.event_id),
+                &self.stats,
+            )
+            .await
+    }
+}
+
+impl Deref for CommentsManager {
+    type Target = CommentsStats;
+    fn deref(&self) -> &Self::Target {
+        &self.stats
+    }
+}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Comment {
     inner: CommentEventContent,
-
-    /// The globally unique event identifier attached to this task
-    pub event_id: OwnedEventId,
-
-    /// The fully-qualified ID of the user who sent created this task
-    pub sender: OwnedUserId,
-
-    /// Timestamp in milliseconds on originating homeserver when the task was created
-    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
-
-    /// The ID of the room of this task
-    pub room_id: OwnedRoomId,
+    meta: EventMeta,
 }
+
 impl Deref for Comment {
     type Target = CommentEventContent;
     fn deref(&self) -> &Self::Target {
@@ -35,18 +92,10 @@ impl Deref for Comment {
 }
 
 impl Comment {
-    pub fn event_id(&self) -> &EventId {
-        &self.event_id
-    }
-
     pub fn updater(&self) -> CommentUpdateBuilder {
         CommentUpdateBuilder::default()
-            .comment(self.event_id.clone())
+            .comment(self.meta.event_id.to_owned())
             .to_owned()
-    }
-
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
     }
 }
 
@@ -55,12 +104,16 @@ impl super::EffektioModel for Comment {
         self.belongs_to()
             .unwrap() // we always have some as comments
             .into_iter()
-            .map(|v| format!("{v}::comments"))
+            .map(|v| format!("{v}::{COMMENTS_FIELD}"))
             .collect()
     }
 
-    fn key(&self) -> String {
-        Self::key_from_event(&self.event_id)
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    fn supports_comments(&self) -> bool {
+        true
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -95,10 +148,12 @@ impl From<OriginalMessageLikeEvent<CommentEventContent>> for Comment {
         } = outer;
         Comment {
             inner: content,
-            room_id,
-            event_id,
-            sender,
-            origin_server_ts,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
         }
     }
 }
@@ -106,37 +161,18 @@ impl From<OriginalMessageLikeEvent<CommentEventContent>> for Comment {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CommentUpdate {
     inner: CommentUpdateEventContent,
-
-    /// The globally unique event identifier attached to this task update
-    pub event_id: OwnedEventId,
-
-    /// The fully-qualified ID of the user who sent created this task update
-    pub sender: OwnedUserId,
-
-    /// Timestamp in milliseconds on originating homeserver when the task update was created
-    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
-
-    /// The ID of the room of this task update
-    pub room_id: OwnedRoomId,
+    meta: EventMeta,
 }
 
 impl super::EffektioModel for CommentUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.comment.event_id)]
     }
-
-    fn key(&self) -> String {
-        Self::key_from_event(&self.event_id)
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
     }
-
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![Comment::key_from_event(&self.inner.comment.event_id)])
-    }
-}
-
-impl CommentUpdate {
-    fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
+        Some(vec![self.inner.comment.event_id.to_string()])
     }
 }
 
@@ -159,10 +195,12 @@ impl From<OriginalMessageLikeEvent<CommentUpdateEventContent>> for CommentUpdate
         } = outer;
         CommentUpdate {
             inner: content,
-            room_id,
-            event_id,
-            sender,
-            origin_server_ts,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
         }
     }
 }
