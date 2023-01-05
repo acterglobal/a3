@@ -2,6 +2,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/MyAssignments.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/MyRecentActivity.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/ToDoBookmarks.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 
@@ -68,12 +69,15 @@ class _ToDoMineScreenState extends State<ToDoMineScreen> {
             style: ToDoTheme.taskTitleTextStyle,
           ),
         ),
-        const ListTile(
-          leading: Icon(
+        ListTile(
+          onTap: (){
+            showNotYetImplementedMsg(context, 'Upcoming events is not yet Implemented');
+          },
+          leading: const Icon(
             FlutterIcons.event_mdi,
             color: Colors.white,
           ),
-          title: Text(
+          title: const Text(
             'Upcoming event',
             style: ToDoTheme.taskTitleTextStyle,
           ),

@@ -239,7 +239,7 @@ class _IncompleteTaskCardState extends State<IncompleteTaskCard> {
                         Padding(
                           padding: const EdgeInsets.only(left: 5),
                           child: Text(
-                            '$widget.messageCount',
+                            '$messageCount',
                             style: ToDoTheme.buttonTextStyle
                                 .copyWith(
                               color: ToDoTheme.primaryTextColor,
