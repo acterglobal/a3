@@ -13,12 +13,15 @@ use matrix_sdk::Client as MatrixClient;
 #[derive(Clone, Debug)]
 pub struct Store {
     client: MatrixClient,
+    fresh: bool,
     models: Arc<dashmap::DashMap<String, AnyEffektioModel>>,
     indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
     dirty: Arc<dashmap::DashSet<String>>,
 }
 
 static ALL_MODELS_KEY: &str = "EFFEKTIO::ALL";
+static DB_VERSION_KEY: &str = "EFFEKTIO::DB_VERSION";
+static CURRENT_DB_VERSION: u32 = 1;
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(
     client: MatrixClient,
@@ -34,9 +37,45 @@ async fn get_from_store<T: serde::de::DeserializeOwned>(
 
 impl Store {
     pub async fn get_raw<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T> {
+        if self.fresh {
+            return Err(Error::ModelNotFound);
+        }
         get_from_store(self.client.clone(), key).await
     }
     pub async fn new(client: MatrixClient) -> Result<Self> {
+        if client
+            .store()
+            .get_custom_value(DB_VERSION_KEY.as_bytes())
+            .await?
+            .map(|u| u32::from_le_bytes(u.as_chunks().0[0]))
+            .unwrap_or_default()
+            < CURRENT_DB_VERSION
+        {
+            // "upgrading" by resetting
+            client
+                .store()
+                .set_custom_value(ALL_MODELS_KEY.as_bytes(), vec![])
+                .await?;
+
+            client
+                .store()
+                .set_custom_value(
+                    DB_VERSION_KEY.as_bytes(),
+                    CURRENT_DB_VERSION.to_le_bytes().to_vec(),
+                )
+                .await?;
+
+            return Ok(Store {
+                fresh: true,
+                client,
+                indizes: Default::default(),
+                models: Default::default(),
+                dirty: Default::default(),
+            });
+        }
+
+        // current DB version, attempt to load models
+
         let models_vec = if let Some(v) = client
             .store()
             .get_custom_value(ALL_MODELS_KEY.as_bytes())
@@ -67,6 +106,7 @@ impl Store {
         let models = Arc::new(DashMap::from_iter(models_sources));
 
         Ok(Store {
+            fresh: false,
             client,
             indizes,
             models,
