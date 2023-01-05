@@ -7,10 +7,13 @@ use crate::{
     },
     statics::KEYS,
 };
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId};
+use derive_getters::Getters;
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 
 use super::{AnyEffektioModel, EventMeta};
+
+static TASKS_KEY: &str = "tasks";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
@@ -53,7 +56,7 @@ impl Task {
 
 impl super::EffektioModel for Task {
     fn indizes(&self) -> Vec<String> {
-        vec![]
+        vec![format!("{}::{TASKS_KEY}", self.meta.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -145,7 +148,7 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
         }
     }
 }
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize, Getters)]
 pub struct TaskStats {
     has_tasks: bool,
     tasks_count: u32,
@@ -162,6 +165,19 @@ impl Deref for TaskList {
     type Target = TaskListEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
+    }
+}
+
+impl TaskList {
+    pub fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
+    pub fn stats(&self) -> &TaskStats {
+        &self.task_stats
+    }
+
+    pub fn tasks_key(&self) -> String {
+        format!("{}::{TASKS_KEY}", self.meta.event_id)
     }
 }
 

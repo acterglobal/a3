@@ -17,7 +17,7 @@ use effektio_core::{
         TextMessageEventContent, UtcDateTime,
     },
     executor::Executor,
-    models::{self, AnyEffektioModel, Color, EffektioModel},
+    models::{self, AnyEffektioModel, Color, EffektioModel, TaskStats},
     // models::,
     ruma::{
         events::{
@@ -38,7 +38,7 @@ impl Client {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self.store.get_list(KEYS::TASKS)? {
+        for mdl in self.store.get_list(KEYS::TASKS).await? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
                 let room_id = t.room_id().to_owned();
@@ -88,7 +88,7 @@ impl Group {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let room_id = self.room_id();
-        for mdl in self.client.store().get_list(KEYS::TASKS)? {
+        for mdl in self.client.store().get_list(KEYS::TASKS).await? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
                 if t.room_id() == room_id {
@@ -245,7 +245,7 @@ impl TaskList {
     }
 
     pub async fn refresh(&self) -> Result<TaskList> {
-        let key = self.content.key();
+        let key = self.content.event_id().to_string();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -264,7 +264,7 @@ impl TaskList {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.key();
+        let key = self.content.event_id().to_string();
         self.client.executor().subscribe(key)
     }
 
@@ -291,18 +291,22 @@ impl TaskList {
         })
     }
 
+    pub fn tasks_stats(&self) -> Result<TaskStats> {
+        Ok(self.content.stats().clone())
+    }
+
     pub async fn tasks(&self) -> Result<Vec<Task>> {
-        let tasks = self.content.tasks.clone();
-        if tasks.is_empty() {
+        if !self.content.stats().has_tasks() {
             return Ok(vec![]);
         };
+        let tasks_key = self.content.tasks_key();
         let client = self.client.clone();
         let room = self.room.clone();
         Ok(RUNTIME
             .spawn(async move {
                 client
                     .store()
-                    .get_many(tasks)
+                    .get_list(&tasks_key)
                     .await
                     .into_iter()
                     .flatten()
@@ -370,7 +374,7 @@ impl Task {
 /// Custom functions
 impl Task {
     pub async fn refresh(&self) -> Result<Task> {
-        let key = self.content.key();
+        let key = self.content.event_id().to_string();
         let client = self.client.clone();
         let room = self.room.clone();
 
@@ -400,7 +404,7 @@ impl Task {
     }
 
     pub fn subscribe(&self) -> Receiver<()> {
-        let key = self.content.key();
+        let key = self.content.event_id().to_string();
         self.client.executor().subscribe(key)
     }
 }

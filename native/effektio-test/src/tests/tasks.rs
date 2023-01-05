@@ -77,7 +77,6 @@ async fn odos_tasks() -> Result<()> {
         .description_text("Integration Test Task Description".into())
         .send()
         .await?;
-    let task_key = effektio_core::models::Task::key_from_event(&new_task_event_id);
 
     let mut remaining = 3;
 
@@ -98,7 +97,7 @@ async fn odos_tasks() -> Result<()> {
                 .tasks()
                 .await?
                 .into_iter()
-                .find(|t| t.key() == task_key)
+                .find(|t| t.event_id() == new_task_event_id)
             {
                 break task;
             }
@@ -137,7 +136,7 @@ async fn odos_tasks() -> Result<()> {
         .tasks()
         .await?
         .into_iter()
-        .find(|t| t.key() == task_key) else {
+        .find(|t| t.event_id() == new_task_event_id) else {
             bail!("Task not found?!?")
         };
 

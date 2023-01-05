@@ -6,7 +6,10 @@ use clap::{crate_version, Parser};
 use effektio::{
     platform::sanitize, testing::ensure_user, Client as EfkClient, CreateGroupSettingsBuilder,
 };
-use effektio_core::ruma::{api::client::room::Visibility, OwnedUserId};
+use effektio_core::{
+    models::EffektioModel,
+    ruma::{api::client::room::Visibility, OwnedUserId},
+};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 

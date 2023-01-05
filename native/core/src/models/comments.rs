@@ -33,7 +33,7 @@ impl CommentsManager {
     ) -> CommentsManager {
         let store = store.clone();
         let stats = store
-            .get_raw(&format!("{}::{COMMENTS_FIELD}", event_id))
+            .get_raw(&format!("{event_id}::{COMMENTS_FIELD}"))
             .await
             .unwrap_or_default();
         CommentsManager {

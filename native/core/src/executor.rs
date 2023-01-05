@@ -111,16 +111,14 @@ impl Executor {
                 if manager.add_comment(comment).await? {
                     manager.save().await?;
                 }
-            } else {
-                if parent.transition(model)? {
-                    if let Some(grandparents) = parent.belongs_to() {
-                        let mut parent_models = self.transition_tree(grandparents, &parent).await?;
-                        if !parent_models.is_empty() {
-                            models.append(&mut parent_models);
-                        }
+            } else if parent.transition(model)? {
+                if let Some(grandparents) = parent.belongs_to() {
+                    let mut parent_models = self.transition_tree(grandparents, &parent).await?;
+                    if !parent_models.is_empty() {
+                        models.append(&mut parent_models);
                     }
-                    models.push(parent);
                 }
+                models.push(parent);
             }
         }
         Ok(models)

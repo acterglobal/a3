@@ -18,7 +18,7 @@ use matrix_sdk::ruma::{
 pub use news::News;
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
-pub use tasks::{Task, TaskList, TaskListUpdate, TaskUpdate};
+pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
 
 use enum_dispatch::enum_dispatch;
 
