@@ -11,6 +11,8 @@ mod reaction;
 #[cfg(test)]
 mod receipt;
 #[cfg(test)]
+mod redact;
+#[cfg(test)]
 mod reply;
 #[cfg(test)]
 mod tasks;

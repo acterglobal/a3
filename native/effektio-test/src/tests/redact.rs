@@ -2,7 +2,7 @@ use anyhow::Result;
 use effektio::{
     api::login_new_client,
     matrix_sdk::ruma::{
-        events::{AnyMessageLikeEvent, AnyTimelineEvent, MessageLikeEvent},
+        events::{AnyMessageLikeEvent, AnyTimelineEvent},
         EventId,
     },
 };
@@ -10,7 +10,7 @@ use futures::stream::StreamExt;
 use tempfile::TempDir;
 
 #[tokio::test]
-async fn sisko_replies_message() -> Result<()> {
+async fn sisko_redacts_message() -> Result<()> {
     let _ = env_logger::try_init();
 
     let tmp_dir = TempDir::new()?;
@@ -30,23 +30,23 @@ async fn sisko_replies_message() -> Result<()> {
         .await
         .expect("sisko should belong to ops");
     let event_id = group.send_plain_message("Hi, everyone".to_string()).await?;
+    println!("event id: {:?}", event_id);
 
-    let reply_id = group
-        .send_text_reply("Sorry, it's my bad".to_string(), event_id, None)
+    let redact_id = group
+        .redact_message(event_id.clone(), Some("redact-test".to_string()), None)
         .await?;
 
-    let reply_id = EventId::parse(reply_id)?;
-    let ev = group.event(&reply_id).await?;
-    println!("reply: {:?}", ev);
+    let redact_id = EventId::parse(redact_id)?;
+    let ev = group.event(&redact_id).await?;
+    println!("redact: {:?}", ev);
 
     if let Ok(AnyTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
-        println!("123");
-        if let AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(m)) = evt {
-            println!("456");
-            assert_eq!(
-                m.content.body(),
-                "> <@sisko:ds9.effektio.org> Hi, everyone\nSorry, it's my bad"
-            );
+        if let AnyMessageLikeEvent::RoomRedaction(r) = evt {
+            if let Some(e) = r.as_original() {
+                assert_eq!(e.redacts.to_string(), event_id);
+            } else {
+                assert!(false, "This should be m.room.redaction event");
+            }
         }
     }
 
