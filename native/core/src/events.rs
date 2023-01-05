@@ -6,13 +6,12 @@ pub use matrix_sdk::ruma::{
     EventId,
 };
 
-mod comments;
+pub mod comments;
 mod common;
 mod labels;
 mod news;
 pub mod tasks;
 
-pub use comments::CommentEvent;
 pub use common::{BelongsTo, Color, Colorize, Reference, TimeZone, Update, UtcDateTime};
 pub use labels::Labels;
 pub use news::{NewsContentType, NewsEvent, NewsEventDevContent};

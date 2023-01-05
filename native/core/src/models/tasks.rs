@@ -65,7 +65,7 @@ impl Task {
     }
 
     pub fn key_from_event(event_id: &EventId) -> String {
-        format!("task-{event_id}")
+        event_id.to_string()
     }
 }
 
@@ -132,7 +132,7 @@ pub struct TaskUpdate {
 
 impl super::EffektioModel for TaskUpdate {
     fn indizes(&self) -> Vec<String> {
-        vec![format!("task-{:}::history", self.inner.task.event_id)]
+        vec![format!("{:}::history", self.inner.task.event_id)]
     }
 
     fn key(&self) -> String {
@@ -146,7 +146,7 @@ impl super::EffektioModel for TaskUpdate {
 
 impl TaskUpdate {
     fn key_from_event(event_id: &EventId) -> String {
-        format!("task-update-{event_id}")
+        event_id.to_string()
     }
 }
 
@@ -225,7 +225,7 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
 
 impl TaskList {
     pub fn key_from_event(event_id: &EventId) -> String {
-        format!("tasklist-{event_id}")
+        event_id.to_string()
     }
     pub fn redacted(&self) -> bool {
         false
@@ -313,7 +313,7 @@ impl super::EffektioModel for TaskListUpdate {
 
 impl TaskListUpdate {
     fn key_from_event(event_id: &EventId) -> String {
-        format!("task_list-update-{event_id}")
+        event_id.to_string()
     }
 }
 

@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 pub struct CommentEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
-    pub task_list: BelongsTo,
+    pub on: BelongsTo,
     #[builder(setter(into))]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub reply_to: Vec<Reference>,
@@ -27,4 +27,11 @@ pub struct CommentUpdateEventContent {
     #[serde(rename = "m.relates_to")]
     pub comment: Update,
     pub text: TextMessageEventContent,
+}
+
+impl CommentUpdateEventContent {
+    pub fn apply(&self, task: &mut CommentEventContent) -> crate::Result<bool> {
+        task.text = self.text.clone();
+        Ok(true)
+    }
 }

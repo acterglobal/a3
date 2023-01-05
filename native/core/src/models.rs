@@ -1,10 +1,12 @@
 mod color;
+mod comments;
 mod faq;
 mod news;
 mod tag;
 mod tasks;
 
 pub use color::Color;
+pub use comments::{Comment, CommentUpdate};
 pub use core::fmt::Debug;
 pub use faq::Faq;
 use matrix_sdk::ruma::{
@@ -19,9 +21,14 @@ pub use tasks::{Task, TaskList, TaskListUpdate, TaskUpdate};
 
 use enum_dispatch::enum_dispatch;
 
-use crate::events::tasks::{
-    OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
-    SyncTaskListEvent, SyncTaskUpdateEvent,
+use crate::events::{
+    comments::{
+        OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
+    },
+    tasks::{
+        OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
+        SyncTaskListEvent, SyncTaskUpdateEvent,
+    },
 };
 
 #[enum_dispatch(AnyEffektioModel)]
@@ -47,6 +54,9 @@ pub enum AnyEffektioModel {
     TaskListUpdate,
     Task,
     TaskUpdate,
+    // more generics
+    Comment,
+    CommentUpdate,
 }
 
 impl AnyEffektioModel {
@@ -78,7 +88,33 @@ impl AnyEffektioModel {
                     .ok()?
                     .into(),
             )),
-            _ => None,
+
+            // generics
+
+            // comments
+            "org.effektio.dev.comment" => Some(AnyEffektioModel::Comment(
+                raw.deserialize_as::<OriginalCommentEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing task update event failed")
+                    })
+                    .ok()?
+                    .into(),
+            )),
+            "org.effektio.dev.comment.update" => Some(AnyEffektioModel::CommentUpdate(
+                raw.deserialize_as::<OriginalCommentUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing task update event failed")
+                    })
+                    .ok()?
+                    .into(),
+            )),
+
+            _ => {
+                if m_type.starts_with("org.effektio.") {
+                    tracing::error!(?raw, "{m_type} not implemented");
+                }
+                None
+            }
         }
     }
     pub fn from_raw_synctlevent(raw: &Raw<AnySyncTimelineEvent>, room_id: &RoomId) -> Option<Self> {
@@ -114,7 +150,36 @@ impl AnyEffektioModel {
                 MessageLikeEvent::Original(t) => Some(AnyEffektioModel::TaskUpdate(t.into())),
                 _ => None,
             },
-            _ => None,
+
+            // generic
+
+            // comments
+            "org.effektio.dev.comment" => match raw
+                .deserialize_as::<SyncCommentEvent>()
+                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
+                .ok()?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::Comment(t.into())),
+                _ => None,
+            },
+            "org.effektio.dev.comment.update" => match raw
+                .deserialize_as::<SyncCommentUpdateEvent>()
+                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
+                .ok()?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::CommentUpdate(t.into())),
+                _ => None,
+            },
+
+            // unimplemented cases
+            _ => {
+                if m_type.starts_with("org.effektio.") {
+                    tracing::error!(?raw, "{m_type} not implemented");
+                }
+                None
+            }
         }
     }
 }
