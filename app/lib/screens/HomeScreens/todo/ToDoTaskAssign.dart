@@ -183,11 +183,11 @@ class ToDoTaskAssignScreen extends StatelessWidget {
     );
   }
 
-  showDialogBox(BuildContext context) {
-    showDialog(
+  Future showDialogBox(BuildContext context) {
+    return showDialog(
       context: context,
       builder: (BuildContext ctx) {
-        return InviteUserDialog();
+        return const InviteUserDialog();
       },
     );
   }

@@ -35,7 +35,7 @@ class _ToDoBookmarkScreenState extends State<ToDoBookmarkScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: InkWell(
-              onTap: () => showDialogBox(),
+              onTap: () => buildAboutDialog(),
               child: const Icon(
                 FlutterIcons.exclamation_evi,
                 color: Colors.white,
@@ -101,8 +101,8 @@ class _ToDoBookmarkScreenState extends State<ToDoBookmarkScreen> {
     );
   }
 
-  showDialogBox() {
-    showDialog(
+  Future buildAboutDialog() {
+    return showDialog(
       context: context,
       builder: (BuildContext ctx) {
         return Dialog(
