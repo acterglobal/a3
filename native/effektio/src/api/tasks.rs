@@ -325,6 +325,21 @@ impl TaskList {
             })
             .await?)
     }
+
+    pub async fn comments(&self) -> Result<crate::CommentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(crate::CommentsManager::new(client, room, inner))
+            })
+            .await?
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -406,6 +421,21 @@ impl Task {
     pub fn subscribe(&self) -> Receiver<()> {
         let key = self.content.event_id().to_string();
         self.client.executor().subscribe(key)
+    }
+
+    pub async fn comments(&self) -> Result<crate::CommentsManager> {
+        let client = self.client.clone();
+        let room = self.room.clone();
+        let event_id = self.content.event_id().to_owned();
+
+        RUNTIME
+            .spawn(async move {
+                let inner =
+                    models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
+                        .await;
+                Ok(crate::CommentsManager::new(client, room, inner))
+            })
+            .await?
     }
 }
 

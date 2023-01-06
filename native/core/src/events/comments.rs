@@ -1,4 +1,4 @@
-use super::{BelongsTo, Reference, TextMessageEventContent, Update};
+use super::{BelongsTo, References, TextMessageEventContent, Update};
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
@@ -13,9 +13,9 @@ pub struct CommentEventContent {
     #[serde(rename = "m.relates_to")]
     pub on: BelongsTo,
     #[builder(setter(into))]
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub reply_to: Vec<Reference>,
-    pub text: TextMessageEventContent,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reply_to: Option<References>,
+    pub content: TextMessageEventContent,
 }
 
 /// The Comment Update Event
@@ -26,12 +26,12 @@ pub struct CommentUpdateEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub comment: Update,
-    pub text: TextMessageEventContent,
+    pub content: TextMessageEventContent,
 }
 
 impl CommentUpdateEventContent {
     pub fn apply(&self, task: &mut CommentEventContent) -> crate::Result<bool> {
-        task.text = self.text.clone();
+        task.content = self.content.clone();
         Ok(true)
     }
 }

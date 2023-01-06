@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use crate::events::comments::{
-    CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
+    CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
 };
 use crate::store::Store;
 use derive_getters::Getters;
@@ -27,10 +27,7 @@ pub struct CommentsManager {
 }
 
 impl CommentsManager {
-    pub(crate) async fn from_store_and_event_id(
-        store: &Store,
-        event_id: &EventId,
-    ) -> CommentsManager {
+    pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> CommentsManager {
         let store = store.clone();
         let stats = store
             .get_raw(&format!("{event_id}::{COMMENTS_FIELD}"))
@@ -55,19 +52,30 @@ impl CommentsManager {
             .collect())
     }
 
-    pub async fn add_comment(&mut self, _comment: &Comment) -> crate::Result<bool> {
+    pub(crate) async fn add_comment(&mut self, _comment: &Comment) -> crate::Result<bool> {
         self.stats.has_comments = true;
         self.stats.total_comments_count += 1;
         Ok(true)
     }
 
-    pub async fn save(&self) -> crate::Result<()> {
-        self.store
-            .set_raw(
-                &format!("{}::{COMMENTS_STATS_FIELD}", self.event_id),
-                &self.stats,
-            )
-            .await
+    pub fn stats(&self) -> &CommentsStats {
+        &self.stats
+    }
+
+    pub fn draft_builder(&self) -> CommentBuilder {
+        CommentBuilder::default()
+            .on(self.event_id.to_owned())
+            .to_owned()
+    }
+
+    pub fn update_key(&self) -> String {
+        format!("{}::{COMMENTS_STATS_FIELD}", self.event_id)
+    }
+
+    pub async fn save(&self) -> crate::Result<String> {
+        let update_key = self.update_key();
+        self.store.set_raw(&update_key, &self.stats).await?;
+        Ok(update_key)
     }
 }
 
@@ -97,6 +105,13 @@ impl Comment {
             .comment(self.meta.event_id.to_owned())
             .to_owned()
     }
+
+    pub fn reply_builder(&self) -> CommentBuilder {
+        CommentBuilder::default()
+            .on(self.on.event_id.to_owned())
+            .reply_to(Some(self.meta.event_id.to_owned().into()))
+            .to_owned()
+    }
 }
 
 impl super::EffektioModel for Comment {
@@ -120,9 +135,14 @@ impl super::EffektioModel for Comment {
         let mut references = self
             .inner
             .reply_to
-            .iter()
-            .map(|e| e.event_id.to_string())
-            .collect::<Vec<_>>();
+            .as_ref()
+            .map(|r| {
+                r.event_ids
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
         references.push(self.inner.on.event_id.to_string());
         Some(references)
     }

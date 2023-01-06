@@ -7,7 +7,7 @@ mod tasks;
 
 pub use crate::store::Store;
 pub use color::Color;
-pub use comments::{Comment, CommentUpdate, CommentsManager};
+pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use core::fmt::Debug;
 pub use faq::Faq;
 use matrix_sdk::ruma::{

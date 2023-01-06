@@ -44,6 +44,25 @@ impl From<OwnedEventId> for Reference {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "rel_type", rename = "m.references")]
+pub struct References {
+    /// The event this event archives.
+    pub event_ids: Vec<OwnedEventId>,
+}
+
+impl From<OwnedEventId> for References {
+    fn from(event_id: OwnedEventId) -> References {
+        vec![event_id].into()
+    }
+}
+
+impl From<Vec<OwnedEventId>> for References {
+    fn from(event_ids: Vec<OwnedEventId>) -> References {
+        References { event_ids }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "rel_type", rename = "org.effektio.dev.update")]
 pub struct Update {
     /// The event this event archives.
