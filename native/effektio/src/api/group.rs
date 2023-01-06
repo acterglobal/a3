@@ -32,11 +32,11 @@ use matrix_sdk::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::api::RUNTIME;
 use super::{
     client::{devide_groups_from_convos, Client},
     room::Room,
 };
+use crate::api::RUNTIME;
 
 #[derive(Debug, Clone)]
 pub struct Group {
