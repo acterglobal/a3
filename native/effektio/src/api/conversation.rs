@@ -109,7 +109,7 @@ impl std::ops::Deref for Conversation {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
     incoming_event_tx: Sender<RoomMessage>,
@@ -138,7 +138,7 @@ impl ConversationController {
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
-            |ev: OriginalSyncRoomEncryptedEvent,
+            |ev: Raw<OriginalSyncRoomEncryptedEvent>,
              room: MatrixRoom,
              c: MatrixClient,
              Ctx(me): Ctx<ConversationController>| async move {
@@ -199,11 +199,11 @@ impl ConversationController {
     // reorder room list on OriginalSyncRoomEncryptedEvent
     async fn process_room_encrypted(
         &mut self,
-        ev: OriginalSyncRoomEncryptedEvent,
+        raw_event: Raw<OriginalSyncRoomEncryptedEvent>,
         room: &MatrixRoom,
         client: &MatrixClient,
     ) {
-        info!("original sync room encrypted event: {:?}", ev);
+        info!("original sync room encrypted event: {:?}", raw_event);
         if let MatrixRoom::Joined(joined) = room {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
@@ -212,7 +212,10 @@ impl ConversationController {
                 client: client.clone(),
                 room: room.clone(),
             });
-            if let Ok(decrypted) = joined.decrypt_event(&Raw::new(&ev).unwrap()).await {
+            if let Ok(decrypted) = joined.decrypt_event(&raw_event).await {
+                let ev = raw_event
+                    .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
+                    .unwrap();
                 let msg = RoomMessage::from_sync_event(
                     None,
                     None,
@@ -358,11 +361,11 @@ impl Client {
             .await?
     }
 
-    pub(crate) async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
+    pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                if let Ok(room) = me.room(name_or_id) {
+                if let Ok(room) = me.room(name_or_id).await {
                     if !room.is_effektio_group().await {
                         Ok(Conversation::new(room))
                     } else {

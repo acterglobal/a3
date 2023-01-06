@@ -106,6 +106,7 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome>
     with SingleTickerProviderStateMixin {
   late Future<Client> client;
+  late SyncState syncState;
   int tabIndex = 0;
   late TabController tabController;
   String? displayName;
@@ -140,7 +141,7 @@ class _EffektioHomeState extends State<EffektioHome>
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
 
-    SyncState _ = client.startSync();
+    syncState = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
       await client.getUserProfile().then((value) {

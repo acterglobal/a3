@@ -8,7 +8,7 @@ use effektio_core::matrix_sdk::{Client, ClientBuilder};
 
 use crate::action::Action;
 
-use log::warn;
+use tracing::warn;
 
 pub const ENV_USER: &str = "EFFEKTIO_USER";
 pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";
@@ -65,7 +65,7 @@ impl LoginConfig {
 #[clap(author, version, about, long_about = None)]
 pub struct EffektioCliConfig {
     /// Logging configuration
-    #[clap(short, long, default_value = "warn")]
+    #[clap(short, long, default_value = "effektio_cli=info,warn")]
     pub log: String,
 
     /// The action to perform

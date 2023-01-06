@@ -34,7 +34,7 @@ impl TypingEvent {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct TypingController {
     event_tx: Sender<TypingEvent>,
     event_rx: Arc<Mutex<Option<Receiver<TypingEvent>>>>,
