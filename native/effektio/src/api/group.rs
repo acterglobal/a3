@@ -1,6 +1,3 @@
-use super::client::{devide_groups_from_convos, Client};
-use super::room::Room;
-use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
@@ -34,6 +31,12 @@ use matrix_sdk::{
     Client as MatrixClient,
 };
 use serde::{Deserialize, Serialize};
+
+use crate::api::RUNTIME;
+use super::{
+    client::{devide_groups_from_convos, Client},
+    room::Room,
+};
 
 #[derive(Debug, Clone)]
 pub struct Group {

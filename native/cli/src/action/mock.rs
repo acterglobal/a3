@@ -1,8 +1,5 @@
-use std::collections::HashMap;
-
 use anyhow::{bail, Result};
 use clap::{crate_version, Parser};
-
 use effektio::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
@@ -11,6 +8,7 @@ use effektio::{
 use effektio_core::ruma::{api::client::room::Visibility, OwnedUserId};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
+use std::collections::HashMap;
 
 #[derive(Parser, Debug)]
 pub struct MockOpts {
@@ -25,6 +23,7 @@ pub struct MockOpts {
     //// export crypto database to .local for each known client
     #[clap(long)]
     pub export: bool,
+
     #[clap(subcommand)]
     pub cmd: Option<MockCmd>,
 }
@@ -291,6 +290,7 @@ impl Mock {
                 let Some(odo_ops) = wait_for(move || {
                     let cloned_odo = cloned_odo.clone();
                     async move {
+                        tracing::trace!("tasks get_group #ops:ds9.effektio.org");
                         let group = cloned_odo.get_group("#ops:ds9.effektio.org".into()).await?;
                         Ok(Some(group))
                     }
