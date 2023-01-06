@@ -314,16 +314,16 @@ object Conversation {
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
     /// send reply as text
-    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
 
     /// send reply as image
-    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
 
     /// send reply as file
-    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
 
     /// redact any message (including text/image/file and reaction)
-    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<bool>>;
+    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<string>>;
 }
 
 object Task {
