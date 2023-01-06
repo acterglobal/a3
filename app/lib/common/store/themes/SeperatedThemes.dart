@@ -303,6 +303,8 @@ class CrossSigningSheetTheme {
 
 class NotificationPopUpTheme {
   static const overlayColor = ColorRef(Color(0xff33C481));
+  static const networkBackgroundColor = ColorRef(Color(0xff333540));
+  static const networkTextColor = ColorRef(Color(0xffC4C4C4));
   static const contentColor = ColorRef(Colors.white, id: 'ABT');
 
   static const contentTitleStyle = TextStyleRef(
@@ -318,6 +320,14 @@ class NotificationPopUpTheme {
       fontSize: 15,
       fontWeight: FontWeight.w500,
       color: contentColor,
+    ),
+  );
+
+  static const networkTitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w300,
+      color : networkTextColor,
     ),
   );
 }
