@@ -33,6 +33,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 class ChatRoomController extends GetxController {
   Client client;
+  late String userId;
   final List<types.Message> _messages = [];
   List<types.User> typingUsers = [];
   TimelineStream? _stream;
@@ -68,7 +69,7 @@ class ChatRoomController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-
+    userId = client.userId().toString();
     focusNode.addListener(() {
       if (focusNode.hasFocus) {
         isEmojiVisible.value = false;
@@ -723,6 +724,13 @@ class ChatRoomController extends GetxController {
         if (reactions.isNotEmpty) {
           metadata['reactions'] = reactions;
         }
+        //check whether string only contains emoji(s).
+        if (isOnlyEmojis(description.body())) {
+          metadata['enlargeEmoji'] = true;
+        } else {
+          metadata['enlargeEmoji'] = false;
+        }
+
         return types.TextMessage(
           author: author,
           createdAt: createdAt,

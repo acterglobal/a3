@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -47,9 +46,9 @@ class _TextMessageBuilderState extends State<TextMessageBuilder> {
       r'https://matrix\.to/#/@[A-Za-z0-9]+:[A-Za-z0-9]+\.[A-Za-z0-9]+',
       caseSensitive: false,
     );
+    final bool enlargeEmoji = widget.message.metadata!['enlargeEmoji'];
     //will return empty if link is other than mention
     final matches = urlRegexp.allMatches(parsedString);
-
     if (matches.isEmpty) {
       return _linkPreview(
         widget.message.author,
@@ -58,21 +57,32 @@ class _TextMessageBuilderState extends State<TextMessageBuilder> {
         parsedString,
       );
     }
-    return textWidget();
+    return textWidget(enlargeEmoji);
   }
 
-  Widget textWidget() {
+  Widget textWidget(bool enlargeEmoji) {
+    final emojiTextStyle = widget.controller.userId == widget.message.author.id
+        ? const EffektioChatTheme().sentEmojiMessageTextStyle
+        : const EffektioChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: sqrt(widget.message.metadata!['messageLength']) * 38.5,
+        maxWidth: enlargeEmoji
+            ? double.infinity
+            : sqrt(widget.message.metadata!['messageLength']) * 38.5,
         maxHeight: double.infinity,
       ),
-      child: Html(
-        // ignore: prefer_single_quotes, unnecessary_string_interpolations
-        data: """${widget.message.text}""",
-        padding: const EdgeInsets.all(8),
-        defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
-      ),
+      child: enlargeEmoji
+          ? Text(
+              widget.message.text,
+              style: emojiTextStyle,
+            )
+          : Html(
+              // ignore: prefer_single_quotes, unnecessary_string_interpolations
+              data: """${widget.message.text}""",
+              padding: const EdgeInsets.all(8),
+              defaultTextStyle:
+                  const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
     );
   }
 
@@ -105,7 +115,7 @@ class _TextMessageBuilderState extends State<TextMessageBuilder> {
       previewData: widget.message.previewData,
       text: parsedString,
       onPreviewDataFetched: _onPreviewDataFetched,
-      textWidget: textWidget(),
+      textWidget: textWidget(widget.message.metadata!['enlargeEmoji']),
       width: width,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
     );

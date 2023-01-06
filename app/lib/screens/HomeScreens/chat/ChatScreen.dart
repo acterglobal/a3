@@ -702,6 +702,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,
+          enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
         );
       },
     );

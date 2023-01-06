@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bubble/bubble.dart';
+import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
@@ -19,6 +20,7 @@ class ChatBubbleBuilder extends StatefulWidget {
   final Widget child;
   final types.Message message;
   final bool nextMessageInGroup;
+  final bool enlargeEmoji;
 
   const ChatBubbleBuilder({
     Key? key,
@@ -26,6 +28,7 @@ class ChatBubbleBuilder extends StatefulWidget {
     required this.message,
     required this.nextMessageInGroup,
     required this.userId,
+    required this.enlargeEmoji,
   }) : super(key: key);
 
   @override
@@ -174,25 +177,35 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           Flexible(
             child: Bubble(
               child: widget.child,
-              color: !isAuthor() || widget.message is types.ImageMessage
-                  ? AppCommonTheme.backgroundColorLight
-                  : AppCommonTheme.primaryColor,
-              margin: widget.nextMessageInGroup
-                  ? const BubbleEdges.symmetric(horizontal: 2)
-                  : null,
-              radius: const Radius.circular(22),
-              padding: widget.message is types.ImageMessage
-                  ? const BubbleEdges.all(0)
-                  : null,
-              nip: (widget.nextMessageInGroup ||
-                      widget.message is types.ImageMessage)
-                  ? BubbleNip.no
-                  : !isAuthor()
-                      ? BubbleNip.leftBottom
-                      : BubbleNip.rightBottom,
-              nipHeight: 18,
-              nipWidth: 0.5,
-              nipRadius: 0,
+              style: widget.enlargeEmoji
+                  ? const BubbleStyle(
+                      color: Colors.transparent,
+                      borderColor: Colors.transparent,
+                      borderWidth: null,
+                      showNip: false,
+                      elevation: 0,
+                    )
+                  : BubbleStyle(
+                      color: !isAuthor() || widget.message is types.ImageMessage
+                          ? AppCommonTheme.backgroundColorLight
+                          : AppCommonTheme.primaryColor,
+                      margin: widget.nextMessageInGroup
+                          ? const BubbleEdges.symmetric(horizontal: 2)
+                          : null,
+                      radius: const Radius.circular(22),
+                      padding: widget.message is types.ImageMessage
+                          ? const BubbleEdges.all(0)
+                          : null,
+                      nip: (widget.nextMessageInGroup ||
+                              widget.message is types.ImageMessage)
+                          ? BubbleNip.no
+                          : !isAuthor()
+                              ? BubbleNip.leftBottom
+                              : BubbleNip.rightBottom,
+                      nipHeight: 18,
+                      nipWidth: 0.5,
+                      nipRadius: 0,
+                    ),
             ),
           ),
         ],
