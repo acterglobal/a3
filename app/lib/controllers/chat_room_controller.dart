@@ -295,6 +295,7 @@ class ChatRoomController extends GetxController {
             break;
         }
       });
+
       if (_currentRoom == null) {
         // user may close chat screen before long loading completed
         isLoading.value = false;

@@ -4,7 +4,7 @@ use futures::stream::StreamExt;
 use tempfile::TempDir;
 
 #[tokio::test]
-async fn sisko_detects_kyra_read() -> Result<()> {
+async fn sisko_reads_msg_reactions() -> Result<()> {
     let _ = env_logger::try_init();
 
     let tmp_dir = TempDir::new()?;
