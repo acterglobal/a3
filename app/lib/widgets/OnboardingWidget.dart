@@ -20,7 +20,7 @@ class CustomOnbaordingButton extends StatelessWidget {
       child: MaterialButton(
         padding: const EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(12),
           side: const BorderSide(color: Colors.pink),
         ),
         child: Text(
