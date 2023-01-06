@@ -47,7 +47,7 @@ class _TextMessageBuilderState extends State<TextMessageBuilder> {
       r'https://matrix\.to/#/@[A-Za-z0-9]+:[A-Za-z0-9]+\.[A-Za-z0-9]+',
       caseSensitive: false,
     );
-    //will return empty if link is other than reply
+    //will return empty if link is other than mention
     final matches = urlRegexp.allMatches(parsedString);
 
     if (matches.isEmpty) {
