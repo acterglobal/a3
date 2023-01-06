@@ -139,7 +139,7 @@ bool isOnlyEmojis(String text) {
 
   // remove all emojis from the this
   for (final emoji in emojis) {
-    text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), "");
+    text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), '');
   }
 
   // remove all whitespace (optional)
