@@ -37,11 +37,9 @@ class NetworkController extends GetxController {
     switch (result) {
       case ConnectivityResult.wifi:
         connectionType.value = 1;
-        // Get.snackbar('Wifi Connected', "You're connected with Wifi");
         break;
       case  ConnectivityResult.mobile:
         connectionType.value = 2;
-        // Get.snackbar('Mobile Data Connected', "You're connected with Mobile Data");
         break;
       case ConnectivityResult.none:
         connectionType.value = 0;
