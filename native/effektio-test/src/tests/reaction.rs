@@ -143,7 +143,7 @@ async fn sisko_reads_msg_reactions() -> Result<()> {
 
     let event_id = EventId::parse(event_id)?;
     let event = sisko_group.event(&event_id).await?;
-    println!("reactions: {:?}", event);
+    println!("reactions: {event:?}");
 
     Ok(())
 }

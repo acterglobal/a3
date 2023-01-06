@@ -37,7 +37,7 @@ async fn sisko_replies_message() -> Result<()> {
 
     let reply_id = EventId::parse(reply_id)?;
     let ev = group.event(&reply_id).await?;
-    println!("reply: {:?}", ev);
+    println!("reply: {ev:?}");
 
     if let Ok(AnyTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
         println!("123");

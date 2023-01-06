@@ -4,7 +4,9 @@ use anyhow::Result;
 use clap::{crate_version, Parser};
 
 use effektio::{
-    platform::sanitize, testing::ensure_user, Client as EfkClient, CreateGroupSettingsBuilder,
+    platform::sanitize,
+    testing::{ensure_user, wait_for},
+    Client as EfkClient, CreateGroupSettingsBuilder,
 };
 use effektio_core::ruma::{api::client::room::Visibility, OwnedUserId};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
@@ -275,7 +277,8 @@ impl Mock {
         let mut odo = self.client("odo".to_owned()).await?;
         //let kyra = &self.kyra;
         //sisko.sync_once(Default::default()).await?;
-        odo.start_sync().await_has_synced_history().await?;
+        let syncer = odo.start_sync();
+        syncer.await_has_synced_history().await?;
 
         let task_lists = odo.task_lists().await?;
         let task_list =
@@ -293,12 +296,20 @@ impl Mock {
                     .send()
                     .await?;
 
-                // FIXME: this might fail if the sync hasn't finished yet.
-                odo.task_lists()
-                    .await?
-                    .into_iter()
-                    .find(|e| e.event_id() == task_list_id)
-                    .unwrap()
+                let cloned_odo = odo.clone();
+                wait_for(move || {
+                    let cloned_odo = cloned_odo.clone();
+                    let task_list_id = task_list_id.clone();
+                    async move {
+                        Ok(cloned_odo
+                            .task_lists()
+                            .await?
+                            .into_iter()
+                            .find(|e| e.event_id() == task_list_id))
+                    }
+                })
+                .await?
+                .expect("Task list not found even after polling for 3 seconds")
             };
 
         task_list

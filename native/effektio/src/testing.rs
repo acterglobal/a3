@@ -1,6 +1,7 @@
 //! Testing modules, don't use in production!
 
 use crate::Client as EfkClient;
+use core::{future::Future, time::Duration};
 use effektio_core::{
     matrix_sdk::{Client, ClientBuilder},
     ruma::{
@@ -11,6 +12,44 @@ use effektio_core::{
     },
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+use tokio::time::sleep;
+
+/// testing helper to give a task time to finish
+///
+/// alias for `wait_for_secs(3, 1, fun).await` - running up to 3 times with 1 second sleep
+/// in between
+pub async fn wait_for<F, T, O>(fun: F) -> anyhow::Result<Option<T>>
+where
+    F: Fn() -> O,
+    O: Future<Output = anyhow::Result<Option<T>>>,
+{
+    wait_for_secs(3, 1, fun).await
+}
+
+/// testing helper to give a task time to finish
+///
+/// Will call `fun().await` up to `count` times, checking wether that returned `Ok(Some(T))` and
+/// return `Ok(Some(T))` if it does. Sleep up to `secs` seconds in between each call. Return `Ok(None)`
+/// if even after all that time, it didn't succeed. Passes on any internally raised error
+pub async fn wait_for_secs<F, T, O>(count: u32, secs: u8, fun: F) -> anyhow::Result<Option<T>>
+where
+    F: Fn() -> O,
+    O: Future<Output = anyhow::Result<Option<T>>>,
+{
+    let duration = Duration::from_secs(secs as u64);
+    let mut remaining = count;
+    loop {
+        if let Some(t) = fun().await? {
+            return Ok(Some(t));
+        }
+        let Some(new) = remaining.checked_sub(1)  else {
+            break
+        };
+        remaining = new;
+        sleep(duration).await;
+    }
+    Ok(None)
+}
 
 pub async fn default_client_config(
     homeserver: &str,

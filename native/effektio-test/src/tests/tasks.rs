@@ -1,27 +1,13 @@
 use anyhow::{bail, Result};
-use effektio::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateGroupSettingsBuilder};
+use effektio::{
+    matrix_sdk::config::StoreConfig,
+    testing::{ensure_user, wait_for},
+    CreateGroupSettingsBuilder,
+};
 use effektio_core::{models::EffektioModel, ruma::OwnedRoomId};
-use futures::Future;
+
 use tokio::time::{sleep, Duration};
 
-async fn wait_for<F, T, O>(fun: F) -> Result<Option<T>>
-where
-    F: Fn() -> O,
-    O: Future<Output = Result<Option<T>>>,
-{
-    let duration = Duration::from_secs(1);
-    let mut remaining: u32 = 3;
-    loop {
-        if let Some(t) = fun().await? {
-            return Ok(Some(t));
-        }
-        let Some(new) = remaining.checked_sub(1)  else {
-            return Ok(None);
-        };
-        remaining = new;
-        sleep(duration).await;
-    }
-}
 pub async fn random_user_with_random_space(
     prefix: &str,
 ) -> Result<(effektio::Client, OwnedRoomId)> {
