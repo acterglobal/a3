@@ -48,7 +48,6 @@ dependencies:
   bubble: ^1.2.1
   colorize_text_avatar: ^1.0.2
   html_editor_enhanced: ^2.5.0
-  html: ^0.15.1
   themed: ^4.0.0
   effektio_flutter_sdk:
     path: packages/rust_sdk

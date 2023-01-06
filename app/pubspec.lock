@@ -475,7 +475,7 @@ packages:
     source: hosted
     version: "0.7.0"
   html:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: html
       url: "https://pub.dartlang.org"
