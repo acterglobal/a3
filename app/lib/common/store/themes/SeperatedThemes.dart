@@ -377,6 +377,12 @@ class ToDoTheme {
     fontWeight: FontWeight.w400,
   );
 
+  static const listTagTextStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
+
   static const taskTitleTextStyle = TextStyle(
     color: primaryTextColor,
     fontSize: 15,
@@ -391,6 +397,12 @@ class ToDoTheme {
 
   static const calendarTextStyle = TextStyle(
     color: calendarColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const completeCalendarTextStyle = TextStyle(
+    color: primaryColor,
     fontSize: 12,
     fontWeight: FontWeight.w500,
   );
