@@ -290,7 +290,7 @@ impl Mock {
                 let Some(odo_ops) = wait_for(move || {
                     let cloned_odo = cloned_odo.clone();
                     async move {
-                        tracing::trace!("tasks get_group #ops:ds9.effektio.org");
+                        println!("tasks get_group #ops:ds9.effektio.org");
                         let group = cloned_odo.get_group("#ops:ds9.effektio.org".into()).await?;
                         Ok(Some(group))
                     }
