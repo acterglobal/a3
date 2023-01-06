@@ -181,8 +181,6 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   ? const BubbleStyle(
                       color: Colors.transparent,
                       borderColor: Colors.transparent,
-                      borderWidth: null,
-                      showNip: false,
                       elevation: 0,
                     )
                   : BubbleStyle(
