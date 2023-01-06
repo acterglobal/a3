@@ -14,6 +14,7 @@ import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
+import 'package:effektio/widgets/TextMessageBuilder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_link_previewer/flutter_link_previewer.dart';
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -287,23 +289,38 @@ class _ChatScreenState extends State<ChatScreen> {
       },
     );
   }
+  //  Widget _linkPreview(
+  //   types.User user,
+  //   double width,
+  //   BuildContext context,
+  //   types.TextMessage message
+  // ) {
+
+  //   return LinkPreview(
+  //     enableAnimation: true,
+  //     previewData: message.previewData,
+  //     text:message.text,
+  //      onPreviewDataFetched: _onPreviewDataFetched,
+  //     textWidget:textMessageBuilder,
+  //     width: width,
+  //   );
+  // }
+  //  void _onPreviewDataFetched(types.PreviewData previewData,types.TextMessage message) {
+  //   if (message.previewData == null) {
+  //     roomController.handlePreviewDataFetched.call(message, previewData);
+  //   }
+  // }
 
   Widget textMessageBuilder(
     types.TextMessage p1, {
     required int messageWidth,
     required bool showName,
   }) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: sqrt(p1.metadata!['messageLength']) * 38.5,
-        maxHeight: double.infinity,
-      ),
-      child: Html(
-        // ignore: prefer_single_quotes, unnecessary_string_interpolations
-        data: """${p1.text}""",
-        padding: const EdgeInsets.all(8),
-        defaultTextStyle: const TextStyle(color: ChatTheme01.chatBodyTextColor),
-      ),
+    return TextMessageBuilder(
+      message: p1,
+      onPreviewDataFetched: roomController.handlePreviewDataFetched,
+      messageWidth: messageWidth,
+      controller: roomController,
     );
   }
 
