@@ -10,7 +10,7 @@ async fn sisko_posts_news() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
-        None,
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     client

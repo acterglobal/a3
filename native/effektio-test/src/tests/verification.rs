@@ -26,7 +26,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
         alice_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
-        None,
+        Some("ALICE_DEV".to_string()),
     )
     .await?;
 
@@ -38,7 +38,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
         bob_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
-        None,
+        Some("BOB_DEV".to_string()),
     )
     .await?;
 
