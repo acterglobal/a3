@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::{crate_version, Parser};
 
 use effektio::{
@@ -287,7 +287,16 @@ impl Mock {
             } else {
                 //kyra.sync_once(Default::default()).await?;
 
-                let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
+                let cloned_odo = odo.clone();
+                let Some(odo_ops) = wait_for(move || {
+                    let cloned_odo = cloned_odo.clone();
+                    async move {
+                        let group = cloned_odo.get_group("#ops:ds9.effektio.org".into()).await?;
+                        Ok(Some(group))
+                    }
+                }).await? else {
+                    bail!("Odo couldn't be found in Ops");
+                };
                 let mut draft = odo_ops.task_list_draft()?;
 
                 let task_list_id = draft

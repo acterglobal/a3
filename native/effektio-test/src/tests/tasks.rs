@@ -160,8 +160,10 @@ async fn task_smoketests() -> Result<()> {
         let group = wait_for_group.clone();
         let task_list_key = task_list_key.clone();
         async move {
-            Ok(group.task_list(&task_list_key).await.ok())
-    }}).await? else {
+            let result = group.task_list(&task_list_key).await.ok();
+            Ok(result)
+        }
+    }).await? else {
         bail!("freshly created Task List couldn't be found");
     };
 
