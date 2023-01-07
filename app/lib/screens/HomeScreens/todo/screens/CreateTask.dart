@@ -3,14 +3,8 @@ import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 
-class CreateTaskScreen extends StatefulWidget {
+class CreateTaskScreen extends StatelessWidget {
   const CreateTaskScreen({Key? key}) : super(key: key);
-
-  @override
-  State<CreateTaskScreen> createState() => _CreateTaskScreenState();
-}
-
-class _CreateTaskScreenState extends State<CreateTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +100,8 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
                             color: AppCommonTheme.textFieldColor,
-                            borderRadius: BorderRadius.circular(12.0),),
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
                           child: const Text(
                             'Select Team',
                             style: TextStyle(color: ToDoTheme.calendarColor),
@@ -115,8 +110,12 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 12.0),
                           child: Transform.rotate(
-                              angle: 45,
-                              child: const Icon(FlutterIcons.flow_branch_ent, color: ToDoTheme.calendarColor,),),
+                            angle: 45,
+                            child: const Icon(
+                              FlutterIcons.flow_branch_ent,
+                              color: ToDoTheme.calendarColor,
+                            ),
+                          ),
                         )
                       ],
                     ),
@@ -136,5 +135,4 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
       ),
     );
   }
-
 }
