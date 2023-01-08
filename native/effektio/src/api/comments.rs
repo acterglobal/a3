@@ -54,6 +54,25 @@ impl Comment {
             inner: self.inner.reply_builder(),
         })
     }
+
+    pub fn sender(&self) -> UserId {
+        self.inner.meta.sender.clone()
+    }
+
+    pub fn origin_server_ts(&self) -> u64 {
+        self.inner.meta.origin_server_ts.get().into()
+    }
+
+    pub fn content_text(&self) -> String {
+        self.inner.content.body.clone()
+    }
+    pub fn content_formatted(&self) -> Option<String> {
+        self.inner
+            .content
+            .formatted
+            .as_ref()
+            .map(|f| f.body.clone())
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -79,6 +98,12 @@ pub struct CommentDraft {
 impl CommentDraft {
     pub fn content_text(&mut self, body: String) -> &mut Self {
         self.inner.content(TextMessageEventContent::plain(body));
+        self
+    }
+
+    pub fn content_formatted(&mut self, body: String, html_body: String) -> &mut Self {
+        self.inner
+            .content(TextMessageEventContent::html(body, html_body));
         self
     }
 
@@ -111,7 +136,11 @@ impl CommentsManager {
     }
 
     pub fn has_comments(&self) -> bool {
-        *self.inner.stats().has_comments()
+        *self.stats().has_comments()
+    }
+
+    pub fn comments_count(&self) -> u32 {
+        *self.stats().total_comments_count()
     }
 
     pub async fn comments(&self) -> Result<Vec<Comment>> {
@@ -145,47 +174,8 @@ impl CommentsManager {
             inner: self.inner.draft_builder(),
         })
     }
-    // pub async fn refresh(&self) -> Result<CommentsManager> {
-    //     let key = self.inner.event_id();
-    //     let client = self.client.clone();
-    //     let room = self.room.clone();
-
-    //     RUNTIME
-    //         .spawn(async move {
-    //             let AnyEffektioModel::CommentsManager(inner) = client.store().get_raw(&key).await? else {
-    //                 bail!("Refreshing failed. {key} not a task")
-    //             };
-    //             Ok(CommentsManager {
-    //                 client,
-    //                 room,
-    //                 inner,
-    //             })
-    //         })
-    //         .await?
-    // }
 
     pub fn subscribe(&self) -> Receiver<()> {
         self.client.executor().subscribe(self.inner.update_key())
     }
 }
-
-// impl Group {
-//     pub async fn comments(&self, key: &str) -> Result<CommentsManager> {
-//         let client = self.client.clone();
-//         let room = self.room.clone();
-//         let event_id = EventId::parse(key)?;
-
-//         RUNTIME
-//             .spawn(async move {
-//                 let inner =
-//                     models::CommentsManager::from_store_and_event_id(client.store(), &event_id)
-//                         .await;
-//                 Ok(CommentsManager {
-//                     client,
-//                     room,
-//                     inner,
-//                 })
-//             })
-//             .await?
-//     }
-// }

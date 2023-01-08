@@ -326,6 +326,46 @@ object Conversation {
     fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<string>>;
 }
 
+object CommentDraft {
+    /// set the content of the draft to body 
+    fn content_text(body: string);
+
+    /// set the content to a formatted body of html_body, where body is the tag-stripped version
+    fn content_formatted(body: string, html_body: string);
+
+    // fire this comment over - the event_id is the confirmation
+    // from the server.
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Comment {
+    /// Who send this comment
+    fn sender() -> UserId;
+    /// When was this comment acknowledged by the server
+    fn origin_server_ts() -> u64;
+    /// what is the comment's content in raw text
+    fn content_text() -> string;
+    /// what is the comment's content in html text
+    fn content_formatted() -> Option<string>;
+    /// create a draft builder to reply to this comment
+    fn reply_builder() -> CommentDraft;
+}
+
+/// Reference to the comments section of a particular item
+object CommentsManager {
+    /// Get the list of comments (in arrival order)
+    fn comments() -> Future<Result<Vec<Comment>>>;
+
+    /// Does this item have any comments?
+    fn has_comments() -> bool;
+
+    /// How many comments does this item have 
+    fn comments_count() -> u32;
+
+    /// draft a new comment for this item
+    fn comment_draft() -> CommentDraft;
+}
+
 object Task {
     /// the name of this task
     fn title() -> string;
@@ -385,6 +425,9 @@ object Task {
 
     /// replace the current task with one with the latest state
     fn refresh() -> Future<Result<Task>>;
+
+    /// get the comments manager for this task
+    fn comments() -> Future<Result<CommentsManager>>;
 }
 
 object TaskUpdateBuilder {

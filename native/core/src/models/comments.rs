@@ -89,7 +89,7 @@ impl Deref for CommentsManager {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Comment {
     inner: CommentEventContent,
-    meta: EventMeta,
+    pub meta: EventMeta,
 }
 
 impl Deref for Comment {
