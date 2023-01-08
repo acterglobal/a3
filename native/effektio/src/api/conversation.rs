@@ -70,7 +70,6 @@ impl Conversation {
 
     fn set_latest_message(&mut self, mut msg: RoomMessage) {
         if let Some(mut event_item) = msg.event_item() {
-            event_item.simplify_body();
             msg.set_event_item(Some(event_item));
         }
         self.latest_message = Some(msg);
