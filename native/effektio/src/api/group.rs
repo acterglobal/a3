@@ -4,8 +4,9 @@ use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
-    events::tasks::{
-        SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent,
+    events::{
+        comments::{SyncCommentEvent, SyncCommentUpdateEvent},
+        tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
     executor::Executor,
     models::AnyEffektioModel,
@@ -53,7 +54,9 @@ impl Group {
             .client()
             .add_event_handler_context(self.client.executor.clone());
         let room_id = self.room_id().to_owned();
-        /// FIXME: combine into one handler
+        // FIXME: combine into one handler
+
+        // Tasks
         self.room.add_event_handler(
             move |ev: SyncTaskListEvent,
                   client: MatrixClient,
@@ -106,6 +109,36 @@ impl Group {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
                         executor
                             .handle(AnyEffektioModel::TaskUpdate(t.into()))
+                            .await;
+                    }
+                }
+            },
+        );
+
+        // Comments
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncCommentEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyEffektioModel::Comment(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncCommentUpdateEvent,
+                  client: MatrixClient,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyEffektioModel::CommentUpdate(t.into()))
                             .await;
                     }
                 }
