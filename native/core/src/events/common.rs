@@ -75,4 +75,15 @@ impl From<OwnedEventId> for Update {
     }
 }
 
-pub type BelongsTo = InThread;
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "rel_type", rename = "org.effektio.dev.belongs_to")]
+pub struct BelongsTo {
+    /// The event this event archives.
+    pub event_id: OwnedEventId,
+}
+
+impl From<OwnedEventId> for BelongsTo {
+    fn from(event_id: OwnedEventId) -> BelongsTo {
+        BelongsTo { event_id }
+    }
+}
