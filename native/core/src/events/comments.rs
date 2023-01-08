@@ -12,7 +12,7 @@ pub struct CommentEventContent {
     #[builder(setter(into))]
     #[serde(rename = "m.relates_to")]
     pub on: BelongsTo,
-    #[builder(setter(into))]
+    #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reply_to: Option<References>,
     pub content: TextMessageEventContent,

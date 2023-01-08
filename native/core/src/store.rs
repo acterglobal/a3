@@ -44,9 +44,7 @@ impl Store {
     }
 
     pub async fn set_raw<T: serde::Serialize>(&self, key: &str, value: &T) -> Result<()> {
-        if self.fresh {
-            return Err(Error::ModelNotFound);
-        }
+        tracing::trace!(key, "set_raw");
         self.client
             .store()
             .set_custom_value(
@@ -157,6 +155,7 @@ impl Store {
     #[tracing::instrument(skip(self))]
     pub async fn save_model_inner(&self, mdl: AnyEffektioModel) -> Result<()> {
         let key = mdl.event_id().to_string();
+        tracing::trace!(user=?self.client.user_id(), key, "saving");
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
             tracing::trace!(user=?self.client.user_id(), key, "previous model found");

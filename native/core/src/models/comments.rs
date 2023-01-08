@@ -30,7 +30,7 @@ impl CommentsManager {
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> CommentsManager {
         let store = store.clone();
         let stats = store
-            .get_raw(&format!("{event_id}::{COMMENTS_FIELD}"))
+            .get_raw(&format!("{event_id}::{COMMENTS_STATS_FIELD}"))
             .await
             .unwrap_or_default();
         CommentsManager {

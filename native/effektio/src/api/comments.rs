@@ -81,6 +81,17 @@ impl CommentDraft {
         self.inner.content(TextMessageEventContent::plain(body));
         self
     }
+
+    pub async fn send(&self) -> Result<OwnedEventId> {
+        let room = self.room.clone();
+        let inner = self.inner.build()?;
+        RUNTIME
+            .spawn(async move {
+                let resp = room.send(inner, None).await?;
+                Ok(resp.event_id)
+            })
+            .await?
+    }
 }
 
 impl CommentsManager {
@@ -100,7 +111,7 @@ impl CommentsManager {
     }
 
     pub fn has_comments(&self) -> bool {
-        self.inner.stats().has_comments().clone()
+        *self.inner.stats().has_comments()
     }
 
     pub async fn comments(&self) -> Result<Vec<Comment>> {

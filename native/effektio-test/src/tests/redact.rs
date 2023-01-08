@@ -30,7 +30,7 @@ async fn sisko_redacts_message() -> Result<()> {
         .await
         .expect("sisko should belong to ops");
     let event_id = group.send_plain_message("Hi, everyone".to_string()).await?;
-    println!("event id: {:?}", event_id);
+    println!("event id: {event_id:?}");
 
     let redact_id = group
         .redact_message(event_id.clone(), Some("redact-test".to_string()), None)
@@ -38,17 +38,16 @@ async fn sisko_redacts_message() -> Result<()> {
 
     let redact_id = EventId::parse(redact_id)?;
     let ev = group.event(&redact_id).await?;
-    println!("redact: {:?}", ev);
+    println!("redact: {ev:?}");
 
-    if let Ok(AnyTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
-        if let AnyMessageLikeEvent::RoomRedaction(r) = evt {
-            if let Some(e) = r.as_original() {
-                assert_eq!(e.redacts.to_string(), event_id);
-            } else {
-                assert!(false, "This should be m.room.redaction event");
-            }
-        }
-    }
+    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) = ev.event.deserialize() else {
+        panic!("not the proper room event");
+    };
+
+    let Some(e) = r.as_original() else {
+        panic!("can't read original");
+    };
+    assert_eq!(e.redacts.to_string(), event_id);
 
     Ok(())
 }

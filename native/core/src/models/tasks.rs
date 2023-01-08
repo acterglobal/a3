@@ -63,6 +63,10 @@ impl super::EffektioModel for Task {
         &self.meta.event_id
     }
 
+    fn supports_comments(&self) -> bool {
+        true
+    }
+
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![TaskList::key_from_event(
             &self.inner.task_list_id.event_id,
@@ -208,9 +212,11 @@ impl TaskList {
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
     }
+
     pub fn redacted(&self) -> bool {
         false
     }
+
     pub fn updater(&self) -> TaskListUpdateBuilder {
         TaskListUpdateBuilder::default()
             .task_list(self.meta.event_id.to_owned())
@@ -225,6 +231,10 @@ impl super::EffektioModel for TaskList {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+
+    fn supports_comments(&self) -> bool {
+        true
     }
 
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {

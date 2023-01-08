@@ -1,5 +1,5 @@
 use crate::{
-    models::{AnyEffektioModel, CommentsManager, EffektioModel},
+    models::{AnyEffektioModel, Comment, CommentsManager, EffektioModel},
     store::Store,
     Result,
 };
@@ -72,61 +72,81 @@ impl Executor {
     }
 
     pub async fn handle(&self, model: AnyEffektioModel) -> Result<()> {
-        tracing::trace!(?model, "handling");
+        tracing::trace!(event_id=?model.event_id(), ?model, "handling");
         let Some(belongs_to) = model.belongs_to() else {
+            tracing::trace!(event_id=?model.event_id(), "saving simple model");
             self.store.save(model).await?;
             return Ok(())
         };
 
-        let (mut models, extra_keys) = self.transition_tree(belongs_to, &model).await?;
+        if model.is_comment() {
+            tracing::trace!(event_id=?model.event_id(), ?belongs_to, "applying comment");
+            let AnyEffektioModel::Comment(ref comment) = model else {
+                unreachable!("match just checked before");
+            };
+            let managers = self.apply_comment(comment, belongs_to).await?;
+            self.store.save(model).await?;
+            let mut updates = vec![];
+            for manager in managers {
+                updates.push(manager.save().await?);
+            }
+            self.notify(updates);
+            return Ok(());
+        }
+
+        tracing::trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
+        let mut models = self.transition_tree(belongs_to, &model).await?;
         models.push(model);
         // models.dedup();
         let keys = models.iter().map(|m| m.event_id().to_string()).collect();
         self.store.save_many(models).await?;
         self.notify(keys);
-        self.notify(extra_keys);
 
         Ok(())
     }
+
+    async fn apply_comment(
+        &self,
+        comment: &Comment,
+        belongs_to: Vec<String>,
+    ) -> Result<Vec<CommentsManager>> {
+        let mut updates = vec![];
+        for p in belongs_to {
+            let parent = self.store.get(&p).await?;
+            if !parent.supports_comments() {
+                tracing::error!(?parent, ?comment, "doesn't support comments. can't apply");
+                return Ok(vec![]);
+            }
+
+            // FIXME: what if we have this twice in the same loop?
+            let mut manager =
+                CommentsManager::from_store_and_event_id(&self.store, parent.event_id()).await;
+            if manager.add_comment(comment).await? {
+                updates.push(manager);
+            }
+        }
+        Ok(updates)
+    }
+
     #[async_recursion]
     async fn transition_tree(
         &self,
         parents: Vec<String>,
         model: &AnyEffektioModel,
-    ) -> Result<(Vec<AnyEffektioModel>, Vec<String>)> {
+    ) -> Result<Vec<AnyEffektioModel>> {
         let mut models = vec![];
-        let mut updates = vec![];
-        let is_comment = model.is_comment();
         for p in parents {
             let mut parent = self.store.get(&p).await?;
-            if is_comment {
-                if !parent.supports_comments() {
-                    tracing::error!(?parent, ?model, "doesn't support comments. can't apply");
-                    return Ok((vec![], vec![]));
-                }
-                let AnyEffektioModel::Comment(ref comment) = model else {
-                    unreachable!("match just checked before");
-                };
-
-                let mut manager =
-                    CommentsManager::from_store_and_event_id(&self.store, parent.event_id()).await;
-                if manager.add_comment(comment).await? {
-                    updates.push(manager.save().await?);
-                }
-            } else if parent.transition(model)? {
+            if parent.transition(model)? {
                 if let Some(grandparents) = parent.belongs_to() {
-                    let (mut parent_models, mut parent_updates) =
-                        self.transition_tree(grandparents, &parent).await?;
+                    let mut parent_models = self.transition_tree(grandparents, &parent).await?;
                     if !parent_models.is_empty() {
                         models.append(&mut parent_models);
-                    }
-                    if !parent_updates.is_empty() {
-                        updates.append(&mut parent_updates);
                     }
                 }
                 models.push(parent);
             }
         }
-        Ok((models, updates))
+        Ok(models)
     }
 }
