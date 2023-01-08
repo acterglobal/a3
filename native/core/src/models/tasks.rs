@@ -56,7 +56,7 @@ impl Task {
 
 impl super::EffektioModel for Task {
     fn indizes(&self) -> Vec<String> {
-        vec![format!("{}::{TASKS_KEY}", self.meta.event_id)]
+        vec![format!("{}::{TASKS_KEY}", self.inner.task_list_id.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
