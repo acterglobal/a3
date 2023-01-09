@@ -266,10 +266,10 @@ impl CreateGroupSettings {
         }
     }
 
-    pub fn invites(&mut self, value: &mut Vec<String>) {
+    pub fn invites(&mut self, value: &mut [String]) {
         self.invites = value
             .iter()
-            .map(|x| UserId::parse(x))
+            .map(UserId::parse)
             .map(|x| x.expect("Wrong user id"))
             .collect();
     }
