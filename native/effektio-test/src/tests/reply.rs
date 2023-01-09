@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use effektio::{
     api::login_new_client,
     matrix_sdk::ruma::{
@@ -37,18 +37,15 @@ async fn sisko_replies_message() -> Result<()> {
 
     let reply_id = EventId::parse(reply_id)?;
     let ev = group.event(&reply_id).await?;
-    println!("reply: {:?}", ev);
+    println!("reply: {ev:?}");
+    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(m)))) = ev.event.deserialize() else {
+        bail!("Could not deserialize event");
+    };
 
-    if let Ok(AnyTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
-        println!("123");
-        if let AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(m)) = evt {
-            println!("456");
-            assert_eq!(
-                m.content.body(),
-                "> <@sisko:ds9.effektio.org> Hi, everyone\nSorry, it's my bad"
-            );
-        }
-    }
+    assert_eq!(
+        m.content.body(),
+        "> <@sisko:ds9.effektio.org> Hi, everyone\nSorry, it's my bad"
+    );
 
     Ok(())
 }

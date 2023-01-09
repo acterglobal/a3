@@ -14,6 +14,7 @@ lazy_static! {
 mod account;
 mod auth;
 mod client;
+mod comments;
 mod conversation;
 mod device;
 mod group;
@@ -33,6 +34,7 @@ pub use auth::{
     guest_client, login_new_client, login_with_token, register_with_registration_token,
 };
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
+pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::{
