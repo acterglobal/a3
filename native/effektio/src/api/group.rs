@@ -1,6 +1,3 @@
-use super::client::{devide_groups_from_convos, Client};
-use super::room::Room;
-use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
@@ -23,7 +20,7 @@ use effektio_core::{
         events::{AnySyncTimelineEvent, MessageLikeEvent},
         room::RoomType,
         serde::Raw,
-        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+        OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
     },
     statics::{default_effektio_group_states, initial_state_for_alias},
 };
@@ -35,6 +32,11 @@ use matrix_sdk::{
     Client as MatrixClient,
 };
 use serde::{Deserialize, Serialize};
+
+use super::client::{devide_groups_from_convos, Client};
+use super::room::Room;
+
+use crate::api::RUNTIME;
 
 #[derive(Debug, Clone)]
 pub struct Group {
@@ -247,16 +249,50 @@ pub struct CreateGroupSettings {
     alias: Option<String>,
 }
 
+impl CreateGroupSettings {
+    pub fn name(&mut self, value: String) {
+        self.name = Some(value);
+    }
+
+    pub fn visibility(&mut self, value: String) {
+        match value.as_str() {
+            "Public" => {
+                self.visibility = Visibility::Public;
+            }
+            "Private" => {
+                self.visibility = Visibility::Private;
+            }
+            _ => {}
+        }
+    }
+
+    pub fn invites(&mut self, value: &mut Vec<String>) {
+        self.invites = value
+            .iter()
+            .map(|x| UserId::parse(x))
+            .map(|x| x.expect("Wrong user id"))
+            .collect();
+    }
+
+    pub fn alias(&mut self, value: String) {
+        self.alias = Some(value);
+    }
+}
+
 // impl CreateGroupSettingsBuilder {
 //     pub fn add_invite(&mut self, user_id: OwnedUserId) {
 //         self.invites.get_or_insert_with(Vec::new).push(user_id);
 //     }
 // }
 
+pub fn new_group_settings() -> CreateGroupSettings {
+    CreateGroupSettingsBuilder::default().build().unwrap()
+}
+
 impl Client {
     pub async fn create_effektio_group(
         &self,
-        settings: CreateGroupSettings,
+        settings: Box<CreateGroupSettings>,
     ) -> Result<OwnedRoomId> {
         let c = self.client.clone();
         RUNTIME

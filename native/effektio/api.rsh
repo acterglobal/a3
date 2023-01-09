@@ -706,6 +706,22 @@ object SyncState {
     fn cancel();
 }
 
+object CreateGroupSettings {
+    /// set the name of group
+    fn name(value: string);
+
+    /// set the alias of group
+    fn alias(value: string);
+
+    /// set the group's visibility to either Public or Private
+    fn visibility(value: string);
+
+    /// set the id of users that will be invited to this group
+    fn invites(value: Vec<string>);
+}
+
+fn new_group_settings() -> CreateGroupSettings;
+
 /// Main entry point for `effektio`.
 object Client {
     // Special
@@ -792,6 +808,8 @@ object Client {
 
     /// the Tasks lists of this Group
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    fn create_effektio_group(settings: CreateGroupSettings) -> Future<Result<RoomId>>;
 }
 
 object UserProfile {
