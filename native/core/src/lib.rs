@@ -1,4 +1,5 @@
 #![warn(clippy::all)]
+#![feature(slice_as_chunks)]
 
 pub use matrix_sdk;
 pub use matrix_sdk::ruma;

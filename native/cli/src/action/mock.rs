@@ -5,7 +5,10 @@ use effektio::{
     testing::{ensure_user, wait_for},
     Client as EfkClient, CreateGroupSettingsBuilder,
 };
-use effektio_core::ruma::{api::client::room::Visibility, OwnedUserId};
+use effektio_core::{
+    models::EffektioModel,
+    ruma::{api::client::room::Visibility, OwnedUserId},
+};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;

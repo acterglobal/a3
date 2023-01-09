@@ -16,7 +16,6 @@ use matrix_sdk::{
         OwnedEventId, OwnedUserId,
     },
 };
-use regex::Regex;
 use std::{collections::HashMap, sync::Arc};
 
 #[derive(Clone, Debug)]
@@ -98,18 +97,6 @@ impl RoomEventItem {
 
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(|x| x.to_string())
-    }
-
-    pub(crate) fn simplify_body(&mut self) {
-        if let Some(mut text_desc) = self.text_desc.clone() {
-            if let Some(text) = text_desc.formatted_body() {
-                let re = Regex::new(r"^<mx-reply>[\s\S]+</mx-reply>").unwrap();
-                let simplified = re.replace(text.as_str(), "").to_string();
-                text_desc.set_body(simplified);
-                self.text_desc = Some(text_desc);
-                info!("regex replaced");
-            }
-        }
     }
 
     pub fn reaction_keys(&self) -> Vec<String> {

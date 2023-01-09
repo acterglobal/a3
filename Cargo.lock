@@ -995,7 +995,6 @@ dependencies = [
  "matrix-sdk-sled",
  "mime",
  "parking_lot 0.11.2",
- "regex",
  "ruma",
  "sanitize-filename-reader-friendly",
  "serde",

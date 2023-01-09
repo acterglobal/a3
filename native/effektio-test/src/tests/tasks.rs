@@ -63,7 +63,6 @@ async fn odos_tasks() -> Result<()> {
         .description_text("Integration Test Task Description".into())
         .send()
         .await?;
-    let task_key = effektio_core::models::Task::key_from_event(&new_task_event_id);
 
     let mut remaining = 3;
 
@@ -84,7 +83,7 @@ async fn odos_tasks() -> Result<()> {
                 .tasks()
                 .await?
                 .into_iter()
-                .find(|t| t.key() == task_key)
+                .find(|t| t.event_id() == new_task_event_id)
             {
                 break task;
             }
@@ -123,7 +122,7 @@ async fn odos_tasks() -> Result<()> {
         .tasks()
         .await?
         .into_iter()
-        .find(|t| t.key() == task_key) else {
+        .find(|t| t.event_id() == new_task_event_id) else {
             bail!("Task not found?!?")
         };
 
@@ -298,6 +297,184 @@ async fn task_smoketests() -> Result<()> {
         task_list.description().as_ref().unwrap().body,
         "All done now".to_owned()
     );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn task_lists_comments_smoketests() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, room_id) = random_user_with_random_space("tasklist_comments_smoketest").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+    let group = user.get_group(room_id.to_string()).await?;
+
+    assert_eq!(
+        group.task_lists().await?.len(),
+        0,
+        "Why are there tasks in our fresh space!?!"
+    );
+
+    let task_list_id = {
+        let mut draft = group.task_list_draft()?;
+        draft.name("Comments test".to_owned());
+        draft.send().await?
+    };
+
+    let task_list_key = effektio_core::models::TaskList::key_from_event(&task_list_id);
+
+    let wait_for_group = group.clone();
+    let Some(task_list) = wait_for(move || {
+        let group = wait_for_group.clone();
+        let task_list_key = task_list_key.clone();
+        async move {
+            Ok(group.task_list(&task_list_key).await.ok())
+    }}).await? else {
+        bail!("freshly created Task List couldn't be found");
+    };
+
+    let comments_manager = task_list.comments().await?;
+
+    assert_eq!(task_list.name(), &"Comments test".to_owned());
+    assert_eq!(task_list.tasks().await?.len(), 0);
+    assert!(!comments_manager.stats().has_comments());
+
+    // ---- let's make a comment
+
+    let comments_listener = comments_manager.subscribe();
+    let comment_1_id = comments_manager
+        .comment_draft()?
+        .content_text("I think this is very important".to_owned())
+        .send()
+        .await?;
+
+    assert!(
+        wait_for(move || {
+            let mut comments_listener = comments_listener.clone();
+            async move {
+                if let Ok(t) = comments_listener.try_recv() {
+                    Ok(Some(t))
+                } else {
+                    Ok(None)
+                }
+            }
+        })
+        .await?
+        .is_some(),
+        "Didn't receive any update on the list for the first event"
+    );
+
+    let comments = comments_manager.comments().await?;
+    assert_eq!(comments.len(), 1);
+    assert_eq!(comments[0].event_id(), comment_1_id);
+    assert_eq!(
+        comments[0].content().body,
+        "I think this is very important".to_owned()
+    );
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn task_comment_smoketests() -> Result<()> {
+    let _ = env_logger::try_init();
+    let (mut user, room_id) = random_user_with_random_space("tasks_smoketest").await?;
+    let state_sync = user.start_sync();
+    state_sync.await_has_synced_history().await?;
+    let group = user.get_group(room_id.to_string()).await?;
+
+    assert_eq!(
+        group.task_lists().await?.len(),
+        0,
+        "Why are there tasks in our fresh space!?!"
+    );
+
+    let task_list_id = {
+        let mut draft = group.task_list_draft()?;
+        draft.name("Starting up".to_owned());
+        draft.send().await?
+    };
+
+    let task_list_key = effektio_core::models::TaskList::key_from_event(&task_list_id);
+
+    let wait_for_group = group.clone();
+    let Some(task_list) = wait_for(move || {
+        let group = wait_for_group.clone();
+        let task_list_key = task_list_key.clone();
+        async move {
+            Ok(group.task_list(&task_list_key).await.ok())
+    }}).await? else {
+        bail!("freshly created Task List couldn't be found");
+    };
+
+    assert_eq!(task_list.name(), &"Starting up".to_owned());
+    assert_eq!(task_list.tasks().await?.len(), 0);
+
+    let task_list_listener = task_list.subscribe();
+
+    let task_1_id = task_list
+        .task_builder()?
+        .title("Testing 1".into())
+        .send()
+        .await?;
+
+    assert!(
+        wait_for(move || {
+            let mut task_list_listener = task_list_listener.clone();
+            async move {
+                if let Ok(t) = task_list_listener.try_recv() {
+                    Ok(Some(t))
+                } else {
+                    Ok(None)
+                }
+            }
+        })
+        .await?
+        .is_some(),
+        "Didn't receive any update on the list for the first event"
+    );
+
+    let task_list = task_list.refresh().await?;
+    let mut tasks = task_list.tasks().await?;
+    assert_eq!(tasks.len(), 1);
+    assert_eq!(tasks[0].event_id(), task_1_id);
+
+    let task = tasks.pop().unwrap();
+
+    // START actual comment on task
+
+    let comments_manager = task.comments().await?;
+    assert!(!comments_manager.stats().has_comments());
+
+    // ---- let's make a comment
+
+    let comments_listener = comments_manager.subscribe();
+    let comment_1_id = comments_manager
+        .comment_draft()?
+        .content_text("I updated the task".to_owned())
+        .send()
+        .await?;
+
+    assert!(
+        wait_for(move || {
+            let mut comments_listener = comments_listener.clone();
+            async move {
+                if let Ok(t) = comments_listener.try_recv() {
+                    Ok(Some(t))
+                } else {
+                    Ok(None)
+                }
+            }
+        })
+        .await?
+        .is_some(),
+        "Didn't receive any update on the list for the first event"
+    );
+
+    let comments = comments_manager.comments().await?;
+    assert_eq!(comments.len(), 1);
+    assert_eq!(comments[0].event_id(), comment_1_id);
+    assert_eq!(comments[0].content().body, "I updated the task".to_owned());
 
     Ok(())
 }

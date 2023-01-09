@@ -2378,6 +2378,97 @@ class Api {
     return tmp7;
   }
 
+  EventId? __commentDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _commentDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  FfiListComment? __commentsManagerCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _commentsManagerCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListComment");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListComment._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   Task? __taskRefreshFuturePoll(
     int boxed,
     int postCobject,
@@ -2420,6 +2511,51 @@ class Api {
     final tmp13_1 = _Box(this, tmp13_0, "drop_box_Task");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
     final tmp7 = Task._(this, tmp13_1);
+    return tmp7;
+  }
+
+  CommentsManager? __taskCommentsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _taskCommentsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_CommentsManager");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = CommentsManager._(this, tmp13_1);
     return tmp7;
   }
 
@@ -6402,6 +6538,148 @@ class Api {
     int,
     int,
   )>();
+  late final _commentDraftContentTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CommentDraft_content_text");
+
+  late final _commentDraftContentText = _commentDraftContentTextPtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _commentDraftContentFormattedPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CommentDraft_content_formatted");
+
+  late final _commentDraftContentFormatted =
+      _commentDraftContentFormattedPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _commentDraftSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CommentDraft_send");
+
+  late final _commentDraftSend = _commentDraftSendPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _commentSenderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Comment_sender");
+
+  late final _commentSender = _commentSenderPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _commentOriginServerTsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint64 Function(
+    ffi.Int64,
+  )>>("__Comment_origin_server_ts");
+
+  late final _commentOriginServerTs = _commentOriginServerTsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _commentContentTextPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentContentTextReturn Function(
+    ffi.Int64,
+  )>>("__Comment_content_text");
+
+  late final _commentContentText = _commentContentTextPtr.asFunction<
+      _CommentContentTextReturn Function(
+    int,
+  )>();
+  late final _commentContentFormattedPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentContentFormattedReturn Function(
+    ffi.Int64,
+  )>>("__Comment_content_formatted");
+
+  late final _commentContentFormatted = _commentContentFormattedPtr.asFunction<
+      _CommentContentFormattedReturn Function(
+    int,
+  )>();
+  late final _commentReplyBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Comment_reply_builder");
+
+  late final _commentReplyBuilder = _commentReplyBuilderPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _commentsManagerCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CommentsManager_comments");
+
+  late final _commentsManagerComments = _commentsManagerCommentsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _commentsManagerHasCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__CommentsManager_has_comments");
+
+  late final _commentsManagerHasComments =
+      _commentsManagerHasCommentsPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _commentsManagerCommentsCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__CommentsManager_comments_count");
+
+  late final _commentsManagerCommentsCount =
+      _commentsManagerCommentsCountPtr.asFunction<
+          int Function(
+    int,
+  )>();
+  late final _commentsManagerCommentDraftPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__CommentsManager_comment_draft");
+
+  late final _commentsManagerCommentDraft =
+      _commentsManagerCommentDraftPtr.asFunction<
+          int Function(
+    int,
+  )>();
   late final _taskTitlePtr = _lookup<
       ffi.NativeFunction<
           _TaskTitleReturn Function(
@@ -6559,6 +6837,16 @@ class Api {
   )>>("__Task_refresh");
 
   late final _taskRefresh = _taskRefreshPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _taskCommentsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Task_comments");
+
+  late final _taskComments = _taskCommentsPtr.asFunction<
       int Function(
     int,
   )>();
@@ -9431,6 +9719,36 @@ class Api {
     int,
     int,
   )>();
+  late final _commentDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__CommentDraft_send_future_poll");
+
+  late final _commentDraftSendFuturePoll =
+      _commentDraftSendFuturePollPtr.asFunction<
+          _CommentDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _commentsManagerCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _CommentsManagerCommentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__CommentsManager_comments_future_poll");
+
+  late final _commentsManagerCommentsFuturePoll =
+      _commentsManagerCommentsFuturePollPtr.asFunction<
+          _CommentsManagerCommentsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _taskRefreshFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TaskRefreshFuturePollReturn Function(
@@ -9441,6 +9759,20 @@ class Api {
 
   late final _taskRefreshFuturePoll = _taskRefreshFuturePollPtr.asFunction<
       _TaskRefreshFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _taskCommentsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskCommentsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Task_comments_future_poll");
+
+  late final _taskCommentsFuturePoll = _taskCommentsFuturePollPtr.asFunction<
+      _TaskCommentsFuturePollReturn Function(
     int,
     int,
     int,
@@ -10458,6 +10790,55 @@ class Api {
 
   late final _ffiListAccountInsert =
       _ffiListAccountInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListComment createFfiListComment() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListCommentCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListComment");
+    return FfiListComment._(this, list_box);
+  }
+
+  late final _ffiListCommentCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListCommentCreate");
+
+  late final _ffiListCommentCreate =
+      _ffiListCommentCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListCommentLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListCommentLen");
+
+  late final _ffiListCommentLen =
+      _ffiListCommentLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListCommentElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListCommentElementAt");
+
+  late final _ffiListCommentElementAt =
+      _ffiListCommentElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListCommentRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListCommentRemove");
+
+  late final _ffiListCommentRemove =
+      _ffiListCommentRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListCommentAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListCommentAdd");
+
+  late final _ffiListCommentAdd =
+      _ffiListCommentAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListCommentInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListCommentInsert");
+
+  late final _ffiListCommentInsert =
+      _ffiListCommentInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListConversation createFfiListConversation() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListConversationCreate());
@@ -13834,6 +14215,265 @@ class Conversation {
   }
 }
 
+class CommentDraft {
+  final Api _api;
+  final _Box _box;
+
+  CommentDraft._(this._api, this._box);
+
+  /// set the content of the draft to body
+  void contentText(
+    String body,
+  ) {
+    final tmp1 = body;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._commentDraftContentText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the content to a formatted body of html_body, where body is the tag-stripped version
+  void contentFormatted(
+    String body,
+    String htmlBody,
+  ) {
+    final tmp1 = body;
+    final tmp5 = htmlBody;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5_0 = utf8.encode(tmp5);
+    tmp7 = tmp5_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = _api.__allocate(tmp7 * 1, 1);
+    final Uint8List tmp6_1 = tmp6_0.asTypedList(tmp7);
+    tmp6_1.setAll(0, tmp5_0);
+    tmp6 = tmp6_0.address;
+    tmp8 = tmp7;
+    _api._commentDraftContentFormatted(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp7,
+      tmp8,
+    );
+    return;
+  }
+
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__CommentDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__commentDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class Comment {
+  final Api _api;
+  final _Box _box;
+
+  Comment._(this._api, this._box);
+
+  /// Who send this comment
+  UserId sender() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentSender(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_UserId");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = UserId._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// When was this comment acknowledged by the server
+  int originServerTs() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentOriginServerTs(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// what is the comment's content in raw text
+  String contentText() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentContentText(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// what is the comment's content in html text
+  String? contentFormatted() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentContentFormatted(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// create a draft builder to reply to this comment
+  CommentDraft replyBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentReplyBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CommentDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CommentDraft._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Reference to the comments section of a particular item
+class CommentsManager {
+  final Api _api;
+  final _Box _box;
+
+  CommentsManager._(this._api, this._box);
+
+  /// Get the list of comments (in arrival order)
+  Future<FfiListComment> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__CommentsManager_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 =
+        _nativeFuture(tmp3_1, _api.__commentsManagerCommentsFuturePoll);
+    return tmp2;
+  }
+
+  /// Does this item have any comments?
+  bool hasComments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerHasComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3 > 0;
+    return tmp2;
+  }
+
+  /// How many comments does this item have
+  int commentsCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerCommentsCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// draft a new comment for this item
+  CommentDraft commentDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._commentsManagerCommentDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_CommentDraft");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = CommentDraft._(_api, tmp3_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
 class Task {
   final Api _api;
   final _Box _box;
@@ -14127,6 +14767,21 @@ class Task {
     final tmp3_1 = _Box(_api, tmp3_0, "__Task_refresh_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskRefreshFuturePoll);
+    return tmp2;
+  }
+
+  /// get the comments manager for this task
+  Future<CommentsManager> comments() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskComments(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Task_comments_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__taskCommentsFuturePoll);
     return tmp2;
   }
 
@@ -18562,6 +19217,26 @@ class _ConversationRoomTypeReturn extends ffi.Struct {
   external int arg2;
 }
 
+class _CommentContentTextReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _CommentContentFormattedReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
 class _TaskTitleReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -19708,7 +20383,52 @@ class _ConversationRedactMessageFuturePollReturn extends ffi.Struct {
   external int arg7;
 }
 
+class _CommentDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _CommentsManagerCommentsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _TaskRefreshFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _TaskCommentsFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -20618,6 +21338,66 @@ class FfiListAccount extends Iterable<Account>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, Account element) {
     _api._ffiListAccountInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
+class FfiListComment extends Iterable<Comment>
+    implements CustomIterable<Comment> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListComment._(this._api, this._box);
+
+  @override
+  Iterator<Comment> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListCommentLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  Comment elementAt(int index) {
+    final address = _api._ffiListCommentElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return Comment._(_api, reference);
+  }
+
+  Comment operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  Comment remove(int index) {
+    final address = _api._ffiListCommentRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Comment");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return Comment._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(Comment element) {
+    _api._ffiListCommentAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, Comment element) {
+    _api._ffiListCommentInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

@@ -41,7 +41,7 @@ async fn sisko_redacts_message() -> Result<()> {
     println!("redact: {ev:?}");
 
     let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) = ev.event.deserialize() else {
-        panic!("not received the right event");
+        panic!("not the proper room event");
     };
 
     let Some(e) = r.as_original() else {
