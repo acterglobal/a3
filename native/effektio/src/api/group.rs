@@ -266,7 +266,7 @@ impl CreateGroupSettings {
         }
     }
 
-    pub fn invites(&mut self, value: &mut [String]) {
+    pub fn invites(&mut self, value: &mut Vec<String>) {
         self.invites = value
             .iter()
             .map(UserId::parse)
