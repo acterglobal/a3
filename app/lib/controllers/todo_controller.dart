@@ -1,7 +1,14 @@
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, CreateGroupSettings, FfiString, Task, TaskList;
+    show
+        Client,
+        CreateGroupSettings,
+        FfiListFfiString,
+        FfiString,
+        Task,
+        TaskList;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -23,14 +30,19 @@ class ToDoController extends GetxController {
     // createDefaultGroup();
   }
 
-  // Future<void> createDefaultGroup() async {
-  //   var groups = await client.groups().then((groups) => groups.toList());
-  //   late CreateGroupSettings settings;
+  Future<void> createDefaultGroup() async {
+    var groups = (await client.groups()).toList();
+    final sdk = await EffektioSdk.instance;
+    CreateGroupSettings settings = sdk.newGroupSettings();
+    settings.name('Bob');
+    settings.alias('bob');
+    settings.visibility('Public');
+    settings.addInvitee('@sisko:matrix.org');
 
-  //   if (groups.isEmpty && !client.isGuest()) {
-  //     await client.createEffektioGroup();
-  //   }
-  // }
+    if (groups.isEmpty && !client.isGuest()) {
+      await client.createEffektioGroup(settings);
+    }
+  }
 
   Future<List<ToDoList>> getTodoList() async {
     List<ToDoList> todoLists = [];

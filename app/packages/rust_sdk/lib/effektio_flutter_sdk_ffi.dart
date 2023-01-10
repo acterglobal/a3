@@ -8467,16 +8467,20 @@ class Api {
     int,
     int,
   )>();
-  late final _createGroupSettingsInvitesPtr = _lookup<
+  late final _createGroupSettingsAddInviteePtr = _lookup<
       ffi.NativeFunction<
           ffi.Void Function(
     ffi.Int64,
     ffi.Int64,
-  )>>("__CreateGroupSettings_invites");
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateGroupSettings_add_invitee");
 
-  late final _createGroupSettingsInvites =
-      _createGroupSettingsInvitesPtr.asFunction<
+  late final _createGroupSettingsAddInvitee =
+      _createGroupSettingsAddInviteePtr.asFunction<
           void Function(
+    int,
+    int,
     int,
     int,
   )>();
@@ -17325,18 +17329,28 @@ class CreateGroupSettings {
     return;
   }
 
-  /// set the id of users that will be invited to this group
-  void invites(
-    FfiListFfiString value,
+  /// add the id of user that will be invited to this group
+  void addInvitee(
+    String value,
   ) {
     final tmp1 = value;
     var tmp0 = 0;
     var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
     tmp0 = _box.borrow();
-    tmp2 = tmp1._box.move();
-    _api._createGroupSettingsInvites(
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createGroupSettingsAddInvitee(
       tmp0,
       tmp2,
+      tmp3,
+      tmp4,
     );
     return;
   }

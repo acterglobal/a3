@@ -266,12 +266,10 @@ impl CreateGroupSettings {
         }
     }
 
-    pub fn invites(&mut self, value: &mut Vec<String>) {
-        self.invites = value
-            .iter()
-            .map(UserId::parse)
-            .map(|x| x.expect("Wrong user id"))
-            .collect();
+    pub fn add_invitee(&mut self, value: String) {
+        if let Ok(user_id) = UserId::parse(value) {
+            self.invites.push(user_id);
+        }
     }
 
     pub fn alias(&mut self, value: String) {

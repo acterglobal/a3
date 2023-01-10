@@ -716,8 +716,8 @@ object CreateGroupSettings {
     /// set the group's visibility to either Public or Private
     fn visibility(value: string);
 
-    /// set the id of users that will be invited to this group
-    fn invites(value: Vec<string>);
+    /// add the id of user that will be invited to this group
+    fn add_invitee(value: string);
 }
 
 fn new_group_settings() -> CreateGroupSettings;
