@@ -250,10 +250,6 @@ pub struct CreateGroupSettings {
 }
 
 impl CreateGroupSettings {
-    pub fn name(&mut self, value: String) {
-        self.name = Some(value);
-    }
-
     pub fn visibility(&mut self, value: String) {
         match value.as_str() {
             "Public" => {
@@ -283,8 +279,11 @@ impl CreateGroupSettings {
 //     }
 // }
 
-pub fn new_group_settings() -> CreateGroupSettings {
-    CreateGroupSettingsBuilder::default().build().unwrap()
+pub fn new_group_settings(name: String) -> CreateGroupSettings {
+    CreateGroupSettingsBuilder::default()
+        .name(name)
+        .build()
+        .unwrap()
 }
 
 impl Client {

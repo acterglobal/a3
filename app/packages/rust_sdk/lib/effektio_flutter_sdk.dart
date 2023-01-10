@@ -228,7 +228,7 @@ class EffektioSdk {
     return _clients;
   }
 
-  ffi.CreateGroupSettings newGroupSettings() {
-    return _api.newGroupSettings();
+  ffi.CreateGroupSettings newGroupSettings(String name) {
+    return _api.newGroupSettings(name);
   }
 }

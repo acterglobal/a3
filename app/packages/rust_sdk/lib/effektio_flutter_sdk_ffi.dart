@@ -868,14 +868,31 @@ class Api {
     return tmp1;
   }
 
-  CreateGroupSettings newGroupSettings() {
-    final tmp0 = _newGroupSettings();
-    final tmp2 = tmp0;
-    final ffi.Pointer<ffi.Void> tmp2_0 = ffi.Pointer.fromAddress(tmp2);
-    final tmp2_1 = _Box(this, tmp2_0, "drop_box_CreateGroupSettings");
-    tmp2_1._finalizer = this._registerFinalizer(tmp2_1);
-    final tmp1 = CreateGroupSettings._(this, tmp2_1);
-    return tmp1;
+  CreateGroupSettings newGroupSettings(
+    String name,
+  ) {
+    final tmp0 = name;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4 = _newGroupSettings(
+      tmp1,
+      tmp2,
+      tmp3,
+    );
+    final tmp6 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+    final tmp6_1 = _Box(this, tmp6_0, "drop_box_CreateGroupSettings");
+    tmp6_1._finalizer = this._registerFinalizer(tmp6_1);
+    final tmp5 = CreateGroupSettings._(this, tmp6_1);
+    return tmp5;
   }
 
   late final _allocatePtr = _lookup<
@@ -5390,11 +5407,20 @@ class Api {
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>("__gen_mock_news");
 
   late final _genMockNews = _genMockNewsPtr.asFunction<int Function()>();
-  late final _newGroupSettingsPtr =
-      _lookup<ffi.NativeFunction<ffi.Int64 Function()>>("__new_group_settings");
+  late final _newGroupSettingsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__new_group_settings");
 
-  late final _newGroupSettings =
-      _newGroupSettingsPtr.asFunction<int Function()>();
+  late final _newGroupSettings = _newGroupSettingsPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+  )>();
   late final _colorRgbaU8Ptr = _lookup<
       ffi.NativeFunction<
           _ColorRgbaU8Return Function(
@@ -8415,22 +8441,6 @@ class Api {
 
   late final _syncStateCancel = _syncStateCancelPtr.asFunction<
       void Function(
-    int,
-  )>();
-  late final _createGroupSettingsNamePtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__CreateGroupSettings_name");
-
-  late final _createGroupSettingsName = _createGroupSettingsNamePtr.asFunction<
-      void Function(
-    int,
-    int,
-    int,
     int,
   )>();
   late final _createGroupSettingsAliasPtr = _lookup<
@@ -17250,32 +17260,6 @@ class CreateGroupSettings {
   final _Box _box;
 
   CreateGroupSettings._(this._api, this._box);
-
-  /// set the name of group
-  void name(
-    String value,
-  ) {
-    final tmp1 = value;
-    var tmp0 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp4 = 0;
-    tmp0 = _box.borrow();
-    final tmp1_0 = utf8.encode(tmp1);
-    tmp3 = tmp1_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
-    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
-    tmp2_1.setAll(0, tmp1_0);
-    tmp2 = tmp2_0.address;
-    tmp4 = tmp3;
-    _api._createGroupSettingsName(
-      tmp0,
-      tmp2,
-      tmp3,
-      tmp4,
-    );
-    return;
-  }
 
   /// set the alias of group
   void alias(

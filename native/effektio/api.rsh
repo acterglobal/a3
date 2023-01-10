@@ -707,9 +707,6 @@ object SyncState {
 }
 
 object CreateGroupSettings {
-    /// set the name of group
-    fn name(value: string);
-
     /// set the alias of group
     fn alias(value: string);
 
@@ -720,7 +717,7 @@ object CreateGroupSettings {
     fn add_invitee(value: string);
 }
 
-fn new_group_settings() -> CreateGroupSettings;
+fn new_group_settings(name: string) -> CreateGroupSettings;
 
 /// Main entry point for `effektio`.
 object Client {

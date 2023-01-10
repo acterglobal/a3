@@ -27,14 +27,13 @@ class ToDoController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // createDefaultGroup();
+    createDefaultGroup();
   }
 
   Future<void> createDefaultGroup() async {
     var groups = (await client.groups()).toList();
     final sdk = await EffektioSdk.instance;
-    CreateGroupSettings settings = sdk.newGroupSettings();
-    settings.name('Bob');
+    CreateGroupSettings settings = sdk.newGroupSettings('Bob');
     settings.alias('bob');
     settings.visibility('Public');
     settings.addInvitee('@sisko:matrix.org');
