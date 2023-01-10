@@ -44,7 +44,7 @@ class _MyAssignmentScreenState extends State<MyAssignmentScreen> {
                   children: [
                     Text(
                       'Oct 19 at 3:36am',
-                      style: ToDoTheme.subtitleTextStyle.copyWith(
+                      style: ToDoTheme.descriptionTextStyle.copyWith(
                         color: ToDoTheme.calendarColor,
                         fontSize: 13,
                       ),

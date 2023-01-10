@@ -359,8 +359,8 @@ class ToDoTheme {
     fontWeight: FontWeight.w700,
   );
 
-  static const subtitleTextStyle = TextStyle(
-    color: primaryTextColor,
+  static const descriptionTextStyle = TextStyle(
+    color: calendarColor,
     fontSize: 14,
     fontWeight: FontWeight.w500,
   );
@@ -372,7 +372,7 @@ class ToDoTheme {
   );
 
   static const listSubtitleTextStyle = TextStyle(
-    color: secondaryTextColor,
+    color: calendarColor,
     fontSize: 14,
     fontWeight: FontWeight.w400,
   );

@@ -1,27 +1,36 @@
-import 'dart:math';
-
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, FfiString, Task, TaskList;
+    show Client, CreateGroupSettings, FfiString, Task, TaskList;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
   final Client client;
   late final List<ToDoList>? todoList;
-  // List<RxList<ToDoTaskItem>> tasks = <RxList<ToDoTaskItem>>[].obs;
-  late int listCount;
-  late int taskCount;
-  late int likeCount;
-  late int messageCount;
-  RxBool initialExpand = true.obs;
+  int completedTasks = 0;
+  int pendingTasks = 0;
+  RxBool cardExpand = true.obs;
   RxBool expandBtn = false.obs;
   RxInt selectedValueIndex = 0.obs;
-  Random random = Random();
   FocusNode addTaskNode = FocusNode();
 
   ToDoController({required this.client}) : super();
+
+  @override
+  void onInit() {
+    super.onInit();
+    // createDefaultGroup();
+  }
+
+  // Future<void> createDefaultGroup() async {
+  //   var groups = await client.groups().then((groups) => groups.toList());
+  //   late CreateGroupSettings settings;
+
+  //   if (groups.isEmpty && !client.isGuest()) {
+  //     await client.createEffektioGroup();
+  //   }
+  // }
 
   Future<List<ToDoList>> getTodoList() async {
     List<ToDoList> todoLists = [];
@@ -35,11 +44,14 @@ class ToDoController extends GetxController {
         }
       }
       var tasks = await getTodoTasks(todoList);
+      calculateTasksRatio(tasks);
       ToDoList item = ToDoList(
         index: todoList.sortOrder(),
         name: todoList.name(),
         categories: asDartStringList(todoList.categories().toList()),
         tasks: tasks,
+        completedTasks: completedTasks,
+        pendingTasks: pendingTasks,
         subscribers: subscribers,
         color: todoList.color() as Color?,
         description: todoList.descriptionText() ?? '',
@@ -49,6 +61,10 @@ class ToDoController extends GetxController {
       );
       todoLists.add(item);
     }
+    todoLists.sort(((item1, item2) => item1.index.compareTo(item2.index)));
+    // reset count
+    completedTasks = 0;
+    pendingTasks = 0;
     return todoLists;
   }
 
@@ -92,11 +108,33 @@ class ToDoController extends GetxController {
       );
       todoTasks.add(item);
     }
+    todoTasks.sort(((item1, item2) => item1.index.compareTo(item2.index)));
     return todoTasks;
   }
 
   void updateButtonIndex(int index) {
     selectedValueIndex.value = index;
+  }
+
+  ///ToDo list card expand.
+  void toggleCardExpand() {
+    cardExpand.value = !cardExpand.value;
+  }
+
+  /// Completed tasks expand.
+  void toggleExpandBtn() {
+    expandBtn.value = !expandBtn.value;
+  }
+
+  //calculate completed and pending tasks
+  void calculateTasksRatio(List<ToDoTask> tasks) {
+    for (ToDoTask task in tasks) {
+      if (task.isDone) {
+        completedTasks += 1;
+      } else {
+        pendingTasks += 1;
+      }
+    }
   }
 
   //helper function to convert list ffiString object to DartString.
@@ -369,14 +407,6 @@ class ToDoController extends GetxController {
   //     subscribeModel.isSelected = true;
   //   }
   //   update(['subscribeUser']);
-  // }
-
-  // void toggleExpand() {
-  //   initialExpand.value = !initialExpand.value;
-  // }
-
-  // void toggleExpandBtn() {
-  //   expandBtn.value = !expandBtn.value;
   // }
 
   // bool toggleCheck(int idx, ToDoTaskItem item) {

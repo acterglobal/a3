@@ -1,8 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
-import 'package:effektio/models/ToDoList.dart';
-import 'package:effektio/screens/HomeScreens/faq/Editor.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
 import 'package:effektio/widgets/AppCommon.dart';
@@ -83,27 +81,20 @@ class _ToDoScreenState extends State<ToDoScreen> {
       child: Stack(
         alignment: Alignment.bottomCenter,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: Obx(
-              () => Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Wrap(
-                      direction: Axis.horizontal,
-                      spacing: 5.0,
-                      children: List.generate(buttonText.length, (int index) {
-                        return radioButton(
-                          text: buttonText[index],
-                          index: index,
-                        );
-                      }),
-                    ),
-                  ),
-                  buttonWidgets[todoController.selectedValueIndex.value],
-                ],
-              ),
+          Obx(
+            () => Column(
+              children: [
+                Row(
+                  children: <Widget>[
+                    radioButton(text: buttonText[0], index: 0),
+                    radioButton(text: buttonText[1], index: 1),
+                    radioButton(text: buttonText[2], index: 2),
+                    const Spacer(),
+                    radioButton(text: buttonText[3], index: 3),
+                  ],
+                ),
+                buttonWidgets[todoController.selectedValueIndex.value],
+              ],
             ),
           ),
         ],
@@ -120,6 +111,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
       child: Container(
         height: 35,
         width: 75,
+        margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: index == todoController.selectedValueIndex.value

@@ -9,6 +9,8 @@ class ToDoList {
   final Color? color;
   final String? description;
   final List<ToDoTask> tasks;
+  final int completedTasks;
+  final int pendingTasks;
   final List<String>? tags;
   final List<String> subscribers;
   final String? role;
@@ -20,6 +22,8 @@ class ToDoList {
     required this.categories,
     required this.tasks,
     required this.subscribers,
+    required this.completedTasks,
+    required this.pendingTasks,
     this.color,
     this.description,
     this.tags,

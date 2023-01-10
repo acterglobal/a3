@@ -34,9 +34,10 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
                   Text(
                     'You can invite your friends to ToDo today via',
                     textAlign: TextAlign.center,
-                    style: ToDoTheme.subtitleTextStyle.copyWith(
+                    style: ToDoTheme.descriptionTextStyle.copyWith(
                       color: ToDoTheme.calendarColor,
-                      fontSize: 15,),
+                      fontSize: 15,
+                    ),
                   ),
                   const SizedBox(
                     height: 16,
@@ -44,19 +45,30 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
                   Column(
                     children: [
                       buildDivider(),
-                      Text('Whatsapp', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
+                      Text('Whatsapp',
+                          style:
+                              ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
                       buildDivider(),
-                      Text('Email', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
+                      Text('Email',
+                          style:
+                              ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
                       buildDivider(),
-                      Text('SMS', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
+                      Text('SMS',
+                          style:
+                              ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
                       buildDivider(),
-                      Text('Invitation Link', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
+                      Text('Invitation Link',
+                          style:
+                              ToDoTheme.titleTextStyle.copyWith(fontSize: 16)),
                       buildDivider(),
                       GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Cancel', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16, color: Colors.red)),)
+                        child: Text('Cancel',
+                            style: ToDoTheme.titleTextStyle
+                                .copyWith(fontSize: 16, color: Colors.red)),
+                      )
                     ],
                   ),
                 ],
