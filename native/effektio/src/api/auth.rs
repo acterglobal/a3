@@ -53,17 +53,26 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         session,
         homeurl,
         is_guest,
-    } = serde_json::from_str(&restore_token)?;
+    } = serde_json::from_str(&restore_token).context("Deserializing Restore Token failed")?;
     let user_id = session.user_id.to_string();
-    let config = platform::new_client_config(base_path, user_id.clone())
-        .await?
-        .homeserver_url(homeurl);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = config.build().await?;
-            client.restore_session(session).await?;
-            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
+            let client = platform::new_client_config(base_path, user_id.clone())
+                .await
+                .context("can't build client")?
+                .homeserver_url(homeurl)
+                .build()
+                .await
+                .context("building client from config failed")?;
+            client
+                .restore_session(session)
+                .await
+                .context("restoring failed")?;
+            let state = ClientStateBuilder::default()
+                .is_guest(is_guest)
+                .build()
+                .context("building client state builder failed")?;
             let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",

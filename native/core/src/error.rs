@@ -8,7 +8,7 @@ pub enum Error {
     #[error("Not a known Effektio Event")]
     UnknownEvent,
 
-    #[error("Error De/serializing")]
+    #[error("Error De/serializing: {0}")]
     Serialization(#[from] serde_json::Error),
 
     #[error("Error with the matrix sdk Store")]
@@ -19,6 +19,9 @@ pub enum Error {
 
     #[error("Index not found.")]
     IndexNotFound,
+
+    #[error("{0}")]
+    Custom(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
