@@ -143,6 +143,42 @@ class _ChatListItemState extends State<ChatListItem> {
       return const SizedBox();
     }
     String sender = eventItem.sender();
+    String itemContentType = eventItem.itemContentType();
+    if (itemContentType == 'Encrypted') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'RoomEncryptedEvent',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    } else if (itemContentType == 'Redaction') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'RoomRedactionEvent',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
     TextDesc? textDesc = eventItem.textDesc();
     if (textDesc == null) {
       return const SizedBox();
