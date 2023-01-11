@@ -350,6 +350,7 @@ class ToDoTheme {
   static const subscribedIconColor = ColorRef(Color(0xFFFCE5E5));
   static const taskIconColor = ColorRef(Color(0xFFEAD0FF));
   static const todayCalendarColor = ColorRef(Color(0xFF23AFC2));
+  static const textFieldColor = ColorRef(Color(0xE6333540));
   static const unAssignedIconColor = ColorRef(Color(0xFFFFE9C9));
 
   // Text Scheme.
@@ -457,6 +458,12 @@ class ToDoTheme {
   static const listMemberTextStyle = TextStyle(
     color: primaryTextColor,
     fontSize: 15,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const textFieldCounterStyle = TextStyle(
+    color: secondaryTextColor,
+    fontSize: 12,
     fontWeight: FontWeight.w500,
   );
 

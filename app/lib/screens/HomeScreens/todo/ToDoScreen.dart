@@ -48,17 +48,24 @@ class _ToDoScreenState extends State<ToDoScreen> {
           : Scaffold(
               appBar: AppBar(
                 backgroundColor: ToDoTheme.backgroundGradient2Color,
-                title: const Text('Todo List', style: ToDoTheme.titleTextStyle),
+                title: const Padding(
+                  padding: EdgeInsets.only(top: 25),
+                  child: Text('Todos', style: ToDoTheme.titleTextStyle),
+                ),
                 centerTitle: false,
                 actions: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.only(
+                      top: 25,
+                      right: 8,
+                    ),
                     child: InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const CreateTaskScreen(),
+                            builder: (context) =>
+                                CreateTaskScreen(controller: todoController),
                           ),
                         );
                       },
@@ -82,19 +89,22 @@ class _ToDoScreenState extends State<ToDoScreen> {
         alignment: Alignment.bottomCenter,
         children: [
           Obx(
-            () => Column(
-              children: [
-                Row(
-                  children: <Widget>[
-                    radioButton(text: buttonText[0], index: 0),
-                    radioButton(text: buttonText[1], index: 1),
-                    radioButton(text: buttonText[2], index: 2),
-                    const Spacer(),
-                    radioButton(text: buttonText[3], index: 3),
-                  ],
-                ),
-                buttonWidgets[todoController.selectedValueIndex.value],
-              ],
+            () => Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Row(
+                    children: <Widget>[
+                      radioButton(text: buttonText[0], index: 0),
+                      radioButton(text: buttonText[1], index: 1),
+                      radioButton(text: buttonText[2], index: 2),
+                      const Spacer(),
+                      radioButton(text: buttonText[3], index: 3),
+                    ],
+                  ),
+                  buttonWidgets[todoController.selectedValueIndex.value],
+                ],
+              ),
             ),
           ),
         ],

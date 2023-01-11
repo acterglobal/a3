@@ -1,24 +1,28 @@
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
+import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
         CreateGroupSettings,
-        FfiListFfiString,
         FfiString,
+        Group,
         Task,
-        TaskList;
+        TaskList,
+        TaskListDraft;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
   final Client client;
+  late final Group defaultGroup;
   late final List<ToDoList>? todoList;
   int completedTasks = 0;
   int pendingTasks = 0;
   RxBool cardExpand = true.obs;
   RxBool expandBtn = false.obs;
+  RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
   FocusNode addTaskNode = FocusNode();
 
@@ -33,8 +37,9 @@ class ToDoController extends GetxController {
   Future<void> createDefaultGroup() async {
     var groups = (await client.groups()).toList();
     final sdk = await EffektioSdk.instance;
-    CreateGroupSettings settings = sdk.newGroupSettings('Bob');
-    settings.alias('bob');
+    CreateGroupSettings settings =
+        sdk.newGroupSettings(client.userId().toString());
+    settings.alias(simplifyUserId(client.userId().toString())!);
     settings.visibility('Public');
     settings.addInvitee('@sisko:matrix.org');
 
@@ -46,9 +51,15 @@ class ToDoController extends GetxController {
   Future<List<ToDoList>> getTodoList() async {
     List<ToDoList> todoLists = [];
     List<String> subscribers = [];
-    List<TaskList> groupTaskLists =
-        await client.taskLists().then((todos) => todos.toList());
-    for (TaskList todoList in groupTaskLists) {
+    List<Group> groupsList =
+        await client.groups().then((groups) => groups.toList());
+
+    /// only consider default group for testing purposes. Spaces design concept
+    /// is needed for implementation.
+    defaultGroup = groupsList[0];
+    List<TaskList> defaultGroupTaskLists =
+        await groupsList[0].taskLists().then((tasklists) => tasklists.toList());
+    for (TaskList todoList in defaultGroupTaskLists) {
       if (todoList.subscribers().isNotEmpty) {
         for (var user in todoList.subscribers().toList()) {
           subscribers.add(user.toString());
@@ -123,6 +134,13 @@ class ToDoController extends GetxController {
     return todoTasks;
   }
 
+  Future<void> createToDoList(String name, String? description) async {
+    TaskListDraft taskListDraft = defaultGroup.taskListDraft();
+    taskListDraft.name(name);
+    taskListDraft.descriptionText(description!);
+    await taskListDraft.send();
+  }
+
   void updateButtonIndex(int index) {
     selectedValueIndex.value = index;
   }
@@ -135,6 +153,14 @@ class ToDoController extends GetxController {
   /// Completed tasks expand.
   void toggleExpandBtn() {
     expandBtn.value = !expandBtn.value;
+  }
+
+  void updateWordCount(int val) {
+    if (val == 0) {
+      taskNameCount.value = 30;
+    } else {
+      taskNameCount.value = 30 - val;
+    }
   }
 
   //calculate completed and pending tasks
