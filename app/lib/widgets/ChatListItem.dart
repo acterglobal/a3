@@ -161,7 +161,8 @@ class _ChatListItemState extends State<ChatListItem> {
           ),
         ],
       );
-    } else if (itemContentType == 'Redaction') {
+    }
+    if (itemContentType == 'RedactedMessage') {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [

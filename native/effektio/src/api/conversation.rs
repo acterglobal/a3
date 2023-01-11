@@ -117,7 +117,7 @@ pub(crate) struct ConversationController {
     encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
-    redaction_event_handle: Option<EventHandlerHandle>,
+    redacted_event_handle: Option<EventHandlerHandle>,
 }
 
 impl ConversationController {
@@ -130,7 +130,7 @@ impl ConversationController {
             encrypted_event_handle: None,
             message_event_handle: None,
             member_event_handle: None,
-            redaction_event_handle: None,
+            redacted_event_handle: None,
         }
     }
 
@@ -197,9 +197,9 @@ impl ConversationController {
             client.remove_event_handler(handle);
             self.member_event_handle = None;
         }
-        if let Some(handle) = self.redaction_event_handle.clone() {
+        if let Some(handle) = self.redacted_event_handle.clone() {
             client.remove_event_handler(handle);
-            self.redaction_event_handle = None;
+            self.redacted_event_handle = None;
         }
     }
 
@@ -363,7 +363,7 @@ impl ConversationController {
                 ev.event_id.to_string(),
                 ev.sender.to_string(),
                 ev.origin_server_ts.get().into(),
-                "Redaction".to_string(),
+                "RedactedMessage".to_string(),
                 room,
                 false,
             );
