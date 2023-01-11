@@ -363,7 +363,7 @@ impl ConversationController {
                 ev.event_id.to_string(),
                 ev.sender.to_string(),
                 ev.origin_server_ts.get().into(),
-                "Redaction".to_string(),
+                "RedactedMessage".to_string(),
                 room,
                 false,
             );

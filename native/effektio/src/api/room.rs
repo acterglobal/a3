@@ -603,7 +603,7 @@ impl Room {
                                 e.event_id.to_string(),
                                 e.sender.to_string(),
                                 e.origin_server_ts.get().into(),
-                                "Redaction".to_string(),
+                                "RedactedMessage".to_string(),
                                 &r,
                                 false, // not needed for parent msg
                             );

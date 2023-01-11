@@ -606,7 +606,7 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
                     r.event_id().to_string(),
                     r.sender().to_string(),
                     r.origin_server_ts().get().into(),
-                    "Redaction".to_string(),
+                    "RedactedMessage".to_string(),
                     &room,
                     false,
                 ));
