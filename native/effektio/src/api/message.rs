@@ -575,7 +575,18 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
     info!("sync event to message: {:?}", ev);
     if let Ok(AnySyncTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
         match evt {
-            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {}
+            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {
+                return Some(RoomMessage::from_sync_event(
+                    None,
+                    None,
+                    m.event_id.to_string(),
+                    m.sender.to_string(),
+                    m.origin_server_ts.get().into(),
+                    "Encrypted".to_string(),
+                    &room,
+                    false,
+                ));
+            }
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
                 return Some(RoomMessage::from_sync_event(
                     Some(m.content.msgtype),
@@ -586,6 +597,18 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
                     "Message".to_string(),
                     &room,
                     true,
+                ));
+            }
+            AnySyncMessageLikeEvent::RoomRedaction(r) => {
+                return Some(RoomMessage::from_sync_event(
+                    None,
+                    None,
+                    r.event_id().to_string(),
+                    r.sender().to_string(),
+                    r.origin_server_ts().get().into(),
+                    "Redaction".to_string(),
+                    &room,
+                    false,
                 ));
             }
             _ => {}
