@@ -405,7 +405,7 @@ impl RoomMessage {
                 )
             }
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
-                info!("Edit event applies to event that couldn't be parsed, discarding");
+                info!("Edit event applies to message that couldn't be parsed, discarding");
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -425,7 +425,7 @@ impl RoomMessage {
                 state_key,
                 error,
             } => {
-                info!("Edit event applies to event that couldn't be parsed, discarding");
+                info!("Edit event applies to state that couldn't be parsed, discarding");
                 RoomEventItem::new(
                     event_id,
                     sender,
