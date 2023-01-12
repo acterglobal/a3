@@ -792,6 +792,8 @@ object Client {
 
     /// the Tasks lists of this Group
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    fn subscribe(key: string) -> Stream<bool>;
 }
 
 object UserProfile {

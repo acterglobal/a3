@@ -11,7 +11,7 @@ use effektio_core::{
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
 
-use futures::{future::try_join_all, pin_mut, stream, StreamExt};
+use futures::{future::try_join_all, pin_mut, stream, Stream, StreamExt};
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
@@ -430,6 +430,10 @@ impl Client {
                 bail!("Room not found")
             })
             .await?
+    }
+
+    pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
+        self.executor().subscribe(key).map(|()| true)
     }
 
     pub fn account(&self) -> Result<Account> {
