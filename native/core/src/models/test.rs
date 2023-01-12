@@ -1,5 +1,5 @@
 use derive_builder::Builder;
-use matrix_sdk::ruma::{event_id, OwnedEventId};
+use matrix_sdk::ruma::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
 use crate::models::EffektioModel;

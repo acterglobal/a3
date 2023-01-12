@@ -48,6 +48,18 @@ impl Executor {
         }
     }
 
+    pub async fn wait_for(&self, key: String) -> AnyEffektioModel {
+        let mut subscribe = self.subscribe(key.clone());
+        let Ok(model) = self.store.get(&key).await else {
+            if let Err(e) = subscribe.recv().await {
+                tracing::error!(key, "Receiving pong faild: {e}");
+            }
+            return self.store.get(&key).await.unwrap()
+        };
+
+        model
+    }
+
     pub fn notify(&self, keys: Vec<String>) {
         for key in keys {
             let span = tracing::trace_span!("Asked to notify", key = key);
@@ -156,7 +168,7 @@ impl Executor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::{TestModel, TestModelBuilder};
+    use crate::models::TestModelBuilder;
     use crate::ruma::{api::MatrixVersion, event_id};
     use env_logger;
     use matrix_sdk::Client;
@@ -190,7 +202,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let model_id = model.event_id();
-        let mut sub = executor.subscribe(model_id.to_string());
+        let sub = executor.subscribe(model_id.to_string());
         assert!(sub.is_empty());
 
         executor.handle(model.into()).await?;
@@ -223,6 +235,28 @@ mod tests {
 
         assert!(sub.recv().await.is_ok()); // we have one
         assert!(sub.is_empty());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn wait_for_simple_model() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id().to_string();
+        // nothing in the store
+        assert!(executor.store().get(&model_id).await.is_err());
+
+        let waiter = executor.wait_for(model_id);
+        executor.handle(model.clone().into()).await?;
+
+        let new_model = waiter.await;
+
+        let AnyEffektioModel::TestModel(inner_model) = new_model else {
+            panic!("Not a test model")
+        };
+
+        assert_eq!(inner_model, model);
         Ok(())
     }
 }
