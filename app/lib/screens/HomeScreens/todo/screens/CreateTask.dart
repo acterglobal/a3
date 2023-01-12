@@ -5,16 +5,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
-class CreateTaskScreen extends StatelessWidget {
+class CreateTaskScreen extends StatefulWidget {
   const CreateTaskScreen({Key? key, required this.controller})
       : super(key: key);
   final ToDoController controller;
+
+  @override
+  State<CreateTaskScreen> createState() => _CreateTaskScreenState();
+}
+
+class _CreateTaskScreenState extends State<CreateTaskScreen> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController descriptionController = TextEditingController();
-    controller.taskNameCount.value = 30;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ToDoTheme.backgroundGradient2Color,
@@ -73,14 +78,14 @@ class CreateTaskScreen extends StatelessWidget {
                     return null;
                   },
                   onChanged: (value) =>
-                      controller.updateWordCount(value.length),
+                      widget.controller.updateWordCount(value.length),
                 ),
               ),
               Obx(
                 () => Padding(
                   padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
                   child: Text(
-                    'Word Count: ${controller.taskNameCount.value}',
+                    'Word Count: ${widget.controller.taskNameCount.value}',
                     style: ToDoTheme.textFieldCounterStyle,
                   ),
                 ),
@@ -141,12 +146,16 @@ class CreateTaskScreen extends StatelessWidget {
                 () => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: CustomOnbaordingButton(
-                    onPressed: controller.taskNameCount < 30
+                    onPressed: widget.controller.taskNameCount < 30
                         ? () async {
-                            await controller.createToDoList(
-                              nameController.text,
-                              descriptionController.text,
-                            );
+                            await widget.controller
+                                .createToDoList(
+                                  nameController.text,
+                                  descriptionController.text,
+                                )
+                                .then(
+                                  (value) => debugPrint('TASK Created :$value'),
+                                );
                             Navigator.pop(context);
                           }
                         : null,

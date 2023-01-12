@@ -1,22 +1,13 @@
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show
-        Client,
-        CreateGroupSettings,
-        FfiString,
-        Group,
-        Task,
-        TaskList,
-        TaskListDraft;
+    show Client, FfiString, Group, Task, TaskList, TaskListDraft;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
   final Client client;
-  late final Group defaultGroup;
+  Group? defaultGroup;
   late final List<ToDoList>? todoList;
   int completedTasks = 0;
   int pendingTasks = 0;
@@ -28,65 +19,48 @@ class ToDoController extends GetxController {
 
   ToDoController({required this.client}) : super();
 
-  @override
-  void onInit() {
-    super.onInit();
-    createDefaultGroup();
-  }
-
-  Future<void> createDefaultGroup() async {
-    var groups = (await client.groups()).toList();
-    final sdk = await EffektioSdk.instance;
-    CreateGroupSettings settings =
-        sdk.newGroupSettings(client.userId().toString());
-    settings.alias(simplifyUserId(client.userId().toString())!);
-    settings.visibility('Public');
-    settings.addInvitee('@sisko:matrix.org');
-
-    if (groups.isEmpty && !client.isGuest()) {
-      await client.createEffektioGroup(settings);
-    }
-  }
-
   Future<List<ToDoList>> getTodoList() async {
     List<ToDoList> todoLists = [];
     List<String> subscribers = [];
-    List<Group> groupsList =
-        await client.groups().then((groups) => groups.toList());
+    client.startSync();
 
     /// only consider default group for testing purposes. Spaces design concept
     /// is needed for implementation.
-    defaultGroup = groupsList[0];
-    List<TaskList> defaultGroupTaskLists =
-        await groupsList[0].taskLists().then((tasklists) => tasklists.toList());
-    for (TaskList todoList in defaultGroupTaskLists) {
-      if (todoList.subscribers().isNotEmpty) {
-        for (var user in todoList.subscribers().toList()) {
-          subscribers.add(user.toString());
+    defaultGroup = (await client.groups().then((groups) => groups.toList()))[0];
+    if (defaultGroup != null) {
+      List<TaskList> defaultGroupTaskLists = await defaultGroup!
+          .taskLists()
+          .then((tasklists) => tasklists.toList());
+
+      for (TaskList todoList in defaultGroupTaskLists) {
+        if (todoList.subscribers().isNotEmpty) {
+          for (var user in todoList.subscribers().toList()) {
+            subscribers.add(user.toString());
+          }
         }
+        var tasks = await getTodoTasks(todoList);
+        calculateTasksRatio(tasks);
+        ToDoList item = ToDoList(
+          index: todoList.sortOrder(),
+          name: todoList.name(),
+          categories: asDartStringList(todoList.categories().toList()),
+          tasks: tasks,
+          completedTasks: completedTasks,
+          pendingTasks: pendingTasks,
+          subscribers: subscribers,
+          // color: todoList.color() as Color?,
+          description: todoList.descriptionText() ?? '',
+          tags: asDartStringList(todoList.keywords().toList()),
+          role: todoList.role() ?? '',
+          timezone: todoList.timeZone(),
+        );
+        todoLists.add(item);
       }
-      var tasks = await getTodoTasks(todoList);
-      calculateTasksRatio(tasks);
-      ToDoList item = ToDoList(
-        index: todoList.sortOrder(),
-        name: todoList.name(),
-        categories: asDartStringList(todoList.categories().toList()),
-        tasks: tasks,
-        completedTasks: completedTasks,
-        pendingTasks: pendingTasks,
-        subscribers: subscribers,
-        color: todoList.color() as Color?,
-        description: todoList.descriptionText() ?? '',
-        tags: asDartStringList(todoList.keywords().toList()),
-        role: todoList.role() ?? '',
-        timezone: todoList.timeZone(),
-      );
-      todoLists.add(item);
+      todoLists.sort(((item1, item2) => item1.index.compareTo(item2.index)));
+      // reset count
+      completedTasks = 0;
+      pendingTasks = 0;
     }
-    todoLists.sort(((item1, item2) => item1.index.compareTo(item2.index)));
-    // reset count
-    completedTasks = 0;
-    pendingTasks = 0;
     return todoLists;
   }
 
@@ -115,7 +89,7 @@ class ToDoController extends GetxController {
         isDone: task.isDone(),
         tags: asDartStringList(task.keywords().toList()),
         subscribers: subscribers,
-        color: task.color() as Color?,
+        // color: task.color() as Color?,
         description: task.descriptionText() ?? '',
         priority: task.priority() ?? 0,
         progressPercent: task.progressPercent() ?? 0,
@@ -134,11 +108,12 @@ class ToDoController extends GetxController {
     return todoTasks;
   }
 
-  Future<void> createToDoList(String name, String? description) async {
-    TaskListDraft taskListDraft = defaultGroup.taskListDraft();
+  Future<String> createToDoList(String name, String? description) async {
+    TaskListDraft taskListDraft = defaultGroup!.taskListDraft();
     taskListDraft.name(name);
     taskListDraft.descriptionText(description!);
-    await taskListDraft.send();
+    var eventId = await taskListDraft.send();
+    return eventId.toString();
   }
 
   void updateButtonIndex(int index) {
@@ -155,6 +130,7 @@ class ToDoController extends GetxController {
     expandBtn.value = !expandBtn.value;
   }
 
+  // max length counter for task name.
   void updateWordCount(int val) {
     if (val == 0) {
       taskNameCount.value = 30;
@@ -180,261 +156,6 @@ class ToDoController extends GetxController {
         list.map((ffiString) => ffiString.toDartString()).toList();
     return stringList;
   }
-  // // initialize todolist and tasks.
-  // void init() {
-  //   taskCount = random.nextInt(8) + 1;
-  //   listCount = random.nextInt(10) + 3;
-  //   likeCount = random.nextInt(100);
-  //   messageCount = random.nextInt(100);
-
-  //   // groceries
-  //   tasks.add(
-  //     [
-  //       ToDoTaskItem(
-  //         title: 'Milk',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(0, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Coffee',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(0, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Orange Juice',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(0, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Eggs',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(0, w),
-  //       ),
-  //     ].obs,
-  //   );
-  //   // uncle jacks
-  //   tasks.add(
-  //     [
-  //       ToDoTaskItem(
-  //         title: 'Buy Birthday cake',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Birthday decorations',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Clarify whether Erna is gonna be there',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Organize bus transport',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'for approx 40ppl',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Collect RSVPs',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Send invitations',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Create guest list',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(1, w),
-  //       ),
-  //     ].obs,
-  //   );
-  //   // sport club
-  //   tasks.add(
-  //     [
-  //       ToDoTaskItem(
-  //         title: 'Make Brownies',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(2, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Rent tent',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'for about 160ppl in case of rain',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(2, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Send invitations',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(2, w),
-  //       ),
-  //     ].obs,
-  //   );
-
-  //   // errands
-  //   tasks.add(
-  //     [
-  //       ToDoTaskItem(
-  //         title: 'Bring the car to the shop',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'for general inspection',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(3, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Answer the city counsel request',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'about the new construction project',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(3, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Make an vet appointment for the doc',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'yearly checkup',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(3, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Replace the trash can',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'for general inspection',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(3, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Fix the door handle',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'for general inspection',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(3, w),
-  //       ),
-  //     ].obs,
-  //   );
-
-  //   // kids & school
-  //   tasks.add(
-  //     [
-  //       ToDoTaskItem(
-  //         title: 'Answer the school secretary',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: 'about the passport',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(4, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Put up nanny job ad',
-  //         isCompleted: false,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(4, w),
-  //       ),
-  //       ToDoTaskItem(
-  //         title: 'Get Kim new soccer excercise cloths',
-  //         isCompleted: true,
-  //         hasMessage: random.nextBool(),
-  //         dateTime: taskDue[random.nextInt(taskDue.length)],
-  //         subtitle: '',
-  //         notes: null,
-  //         lastUpdated: DateTime.now(),
-  //         toggleCompletion: (w) => toggleCheck(4, w),
-  //       ),
-  //     ].obs,
-  //   );
-  // }
 
   // void handleCheckClick(int position) {
   //   var subscribeModel = listSubscribers[position];

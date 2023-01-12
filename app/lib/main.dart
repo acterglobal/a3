@@ -24,7 +24,7 @@ import 'package:effektio/widgets/SideMenu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show FfiBufferUint8, SyncState;
+    show CreateGroupSettings, FfiBufferUint8, SyncState;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -137,6 +137,18 @@ class _EffektioHomeState extends State<EffektioHome>
     syncState = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
+      await client.groups().then(
+        (groups) async {
+          if (groups.toList().isEmpty && !client.isGuest()) {
+            final sdk = await EffektioSdk.instance;
+            CreateGroupSettings settings = sdk.newGroupSettings('test space');
+            settings.alias(UniqueKey().toString());
+            settings.visibility('Public');
+            settings.addInvitee('@sisko:matrix.org');
+            await client.createEffektioGroup(settings);
+          }
+        },
+      );
       await client.getUserProfile().then((value) {
         if (mounted) {
           setState(() {

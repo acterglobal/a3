@@ -33,7 +33,6 @@ class ToDoListView extends StatelessWidget {
             }
             return ListView.builder(
               shrinkWrap: true,
-              itemCount: snapshot.data!.length,
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
                   onTap: () => controller.toggleCardExpand(),

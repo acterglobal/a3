@@ -47,10 +47,11 @@ class _ToDoScreenState extends State<ToDoScreen> {
           ? noInternetWidget()
           : Scaffold(
               appBar: AppBar(
+                automaticallyImplyLeading: false,
                 backgroundColor: ToDoTheme.backgroundGradient2Color,
                 title: const Padding(
                   padding: EdgeInsets.only(top: 25),
-                  child: Text('Todos', style: ToDoTheme.titleTextStyle),
+                  child: Text('Todo', style: ToDoTheme.titleTextStyle),
                 ),
                 centerTitle: false,
                 actions: [
