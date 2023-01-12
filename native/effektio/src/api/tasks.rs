@@ -331,20 +331,20 @@ impl TaskList {
         RUNTIME
             .spawn(async move {
                 let mut users: Vec<OwnedUserId> = vec![];
-                // client
-                //     .store()
-                //     .get_list(&tasks_key)
-                //     .await
-                //     .into_iter()
-                //     .flatten()
-                //     .map(|e| {
-                //         if let AnyEffektioModel::Task(content) = e {
-                //             let mut subscribers = content.subscribers();
-                //             while let Some(user_id) = subscribers.pop() {
-                //                 users.push(user_id);
-                //             }
-                //         }
-                //     });
+                client
+                    .store()
+                    .get_list(&tasks_key)
+                    .await
+                    .into_iter()
+                    .flatten()
+                    .map(|e| {
+                        if let AnyEffektioModel::Task(content) = e {
+                            let mut subscribers = content.subscribers();
+                            while let Some(user_id) = subscribers.pop() {
+                                users.push(user_id);
+                            }
+                        }
+                    });
                 Ok(users)
             })
             .await?
