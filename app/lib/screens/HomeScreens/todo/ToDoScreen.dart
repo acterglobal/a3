@@ -3,7 +3,6 @@ import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
-import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ToDoListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
@@ -42,44 +41,40 @@ class _ToDoScreenState extends State<ToDoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: networkController.connectionType.value == '0'
-          ? noInternetWidget()
-          : Scaffold(
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                backgroundColor: ToDoTheme.backgroundGradient2Color,
-                title: const Padding(
-                  padding: EdgeInsets.only(top: 25),
-                  child: Text('Todo', style: ToDoTheme.titleTextStyle),
-                ),
-                centerTitle: false,
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      top: 25,
-                      right: 8,
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                CreateTaskScreen(controller: todoController),
-                          ),
-                        );
-                      },
-                      child: const Icon(
-                        Icons.add,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              body: buildBody(),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: ToDoTheme.backgroundGradient2Color,
+        title: const Padding(
+          padding: EdgeInsets.only(top: 25),
+          child: Text('Todo', style: ToDoTheme.titleTextStyle),
+        ),
+        centerTitle: false,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 25,
+              right: 8,
             ),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CreateTaskScreen(controller: todoController),
+                  ),
+                );
+              },
+              child: const Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            ),
+          )
+        ],
+      ),
+      body: buildBody(),
     );
   }
 
