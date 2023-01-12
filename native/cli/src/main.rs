@@ -3,16 +3,18 @@
 use anyhow::Result;
 use clap::Parser;
 
+use effektio_core::ruma;
+
 mod action;
 mod config;
 
 use config::EffektioCliConfig;
-use flexi_logger::Logger;
+use env_logger::Builder;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let cli = EffektioCliConfig::parse();
-    Logger::try_with_str(cli.log)?.start()?;
+    Builder::default().parse_filters(&cli.log).try_init()?;
     cli.action.run().await?;
     Ok(())
 }

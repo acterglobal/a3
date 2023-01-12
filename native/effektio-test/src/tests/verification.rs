@@ -10,7 +10,7 @@ fn wait_for_verification_event(
 ) -> VerificationEvent {
     loop {
         if let Ok(Some(event)) = rx.try_next() {
-            if event.get_event_name().as_str() == name {
+            if event.event_type() == name {
                 return event;
             }
         }
@@ -22,10 +22,11 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let _ = env_logger::try_init();
 
     let alice_dir = TempDir::new()?;
-    let alice = login_new_client(
+    let mut alice = login_new_client(
         alice_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
+        Some("ALICE_DEV".to_string()),
     )
     .await?;
 
@@ -33,10 +34,11 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     info!("alice device id: {}", alice_device_id);
 
     let bob_dir = TempDir::new()?;
-    let bob = login_new_client(
+    let mut bob = login_new_client(
         bob_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
+        Some("BOB_DEV".to_string()),
     )
     .await?;
 
@@ -45,17 +47,16 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // we have two devices logged in
 
     // sync both up to ensure they've seen the other device
-    let alice_dlc = alice.get_device_lists_controller().await?;
-    let mut alice_device_changed_rx = alice_dlc.get_changed_event_rx()?;
+    let mut alice_device_changed_rx = alice.device_changed_event_rx().unwrap();
     let syncer = alice.start_sync();
     let mut first_synced = syncer.first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut alice_rx = alice.verification_event_rx()?;
+    let mut alice_rx = alice.verification_event_rx().unwrap();
 
     let syncer = bob.start_sync();
     let mut first_synced = syncer.first_synced_rx().expect("not yet read");
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
-    let mut bob_rx = bob.verification_event_rx()?;
+    let mut bob_rx = bob.verification_event_rx().unwrap();
 
     // according to alice bob is not verfied:
     assert!(!alice.verified_device(bob_device_id.clone()).await?);
@@ -69,7 +70,7 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     // Alice gets notified that new device (Bob) was logged in
     loop {
         if let Ok(Some(event)) = alice_device_changed_rx.try_next() {
-            if let Ok(devices) = event.device_records(false).await {
+            if let Ok(_devices) = event.device_records(false).await {
                 // Alice sends a verification request with her desired methods to Bob
                 event
                     .request_verification_to_device_with_methods(

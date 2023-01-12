@@ -25,19 +25,16 @@ import 'package:effektio/widgets/emoji_picker_widget.dart';
 import 'package:effektio/widgets/reaction_popup_configuration.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 typedef StringsCallBack = void Function(String emoji, String messageId);
 
-class ActionRow extends StatelessWidget {
-  ActionRow({
+class EmojiRow extends StatelessWidget {
+  EmojiRow({
     Key? key,
     required this.onEmojiTap,
     this.emojiConfiguration,
-    required this.isClient,
   }) : super(key: key);
 
-  final bool isClient;
   final StringCallback onEmojiTap;
   final EmojiConfiguration? emojiConfiguration;
   final List<String> _emojiUnicodes = [
@@ -53,54 +50,30 @@ class ActionRow extends StatelessWidget {
     final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
     final size = emojiConfiguration?.size;
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Visibility(
-          visible: isClient,
-          child: Flexible(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: GestureDetector(
-                onTap: () => {},
-                child: SvgPicture.asset(
-                  'assets/images/edit.svg',
-                  color: Colors.grey.shade600,
-                  height: 22,
-                  width: 22,
-                ),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 5.0,
+          children: List.generate(
+            emojiList.length,
+            (index) => InkWell(
+              onTap: () => onEmojiTap(emojiList[index]),
+              child: Text(
+                emojiList[index],
+                style: TextStyle(fontSize: size ?? 18),
               ),
             ),
           ),
         ),
-        Flexible(
-          flex: 5,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(
-              emojiList.length,
-              (index) => GestureDetector(
-                onTap: () => onEmojiTap(emojiList[index]),
-                child: Text(
-                  emojiList[index],
-                  style: TextStyle(fontSize: size ?? 18),
-                ),
-              ),
-            ),
+        IconButton(
+          padding: const EdgeInsets.only(bottom: 5.0),
+          icon: Icon(
+            Icons.add,
+            color: Colors.grey.shade600,
+            size: size ?? 28,
           ),
-        ),
-        Flexible(
-          flex: 1,
-          child: GestureDetector(
-            onTap: () => _showBottomSheet(context),
-            child: Icon(
-              Icons.add,
-              color: Colors.grey.shade600,
-              size: size ?? 22,
-            ),
-          ),
+          onPressed: () => _showBottomSheet(context),
         ),
       ],
     );

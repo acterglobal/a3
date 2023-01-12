@@ -733,15 +733,20 @@ impl Room {
                     Ok(AnyTimelineEvent::State(s)) => {
                         bail!("Invalid AnyTimelineEvent::State: {:?}", s)
                     }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) => {
-                        if let Some(r) = r.as_original() {
-                            info!("RoomRedaction: {:?}", r.content);
-                        }
-                        bail!("Invalid AnyMessageLikeEvent::RoomRedaction: {:?}", r)
-                    }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomEncrypted(e))) => {
                         if let Some(e) = e.as_original() {
                             info!("RoomEncrypted: {:?}", e.content);
+                            let msg = RoomMessage::from_sync_event(
+                                None,
+                                None,
+                                e.event_id.to_string(),
+                                e.sender.to_string(),
+                                e.origin_server_ts.get().into(),
+                                "Encrypted".to_string(),
+                                &r,
+                                false, // not needed for parent msg
+                            );
+                            return Ok(msg);
                         }
                         bail!("Invalid AnyMessageLikeEvent::RoomEncrypted: {:?}", e)
                     }
@@ -775,6 +780,23 @@ impl Room {
                             }
                         }
                     }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(e))) => {
+                        if let Some(e) = e.as_original() {
+                            info!("RoomRedaction: {:?}", e.content);
+                            let msg = RoomMessage::from_sync_event(
+                                None,
+                                None,
+                                e.event_id.to_string(),
+                                e.sender.to_string(),
+                                e.origin_server_ts.get().into(),
+                                "RedactedMessage".to_string(),
+                                &r,
+                                false, // not needed for parent msg
+                            );
+                            return Ok(msg);
+                        }
+                        bail!("Invalid AnyMessageLikeEvent::RoomRedaction: {:?}", r)
+                    }
                     Ok(AnyTimelineEvent::MessageLike(_)) => {
                         bail!("Invalid AnyTimelineEvent::MessageLike: other")
                     }
@@ -792,7 +814,7 @@ impl Room {
         msg: String,
         event_id: String,
         txn_id: Option<String>,
-    ) -> Result<bool> {
+    ) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -802,7 +824,6 @@ impl Room {
         // any variable in self can't be called directly in spawn
         RUNTIME
             .spawn(async move {
-                let timeline = Arc::new(room.timeline().await);
                 let event_id = EventId::parse(event_id)?;
                 let timeline_event = room
                     .event(&event_id)
@@ -821,11 +842,12 @@ impl Room {
                 let text_content = TextMessageEventContent::markdown(msg);
                 let reply_content = RoomMessageEventContent::new(MessageType::Text(text_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
+                let content = AnyMessageLikeEventContent::RoomMessage(reply_content);
 
-                timeline
-                    .send(reply_content.into(), txn_id.as_deref().map(Into::into))
+                let response = room
+                    .send(content, txn_id.as_deref().map(Into::into))
                     .await?;
-                Ok(true)
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -841,7 +863,7 @@ impl Room {
         height: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
-    ) -> Result<bool> {
+    ) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -856,7 +878,6 @@ impl Room {
                 let path = PathBuf::from(uri);
                 let mut image_buf = std::fs::read(path)?;
 
-                let timeline = Arc::new(room.timeline().await);
                 let event_id = EventId::parse(event_id)?;
                 let timeline_event = room
                     .event(&event_id)
@@ -888,11 +909,12 @@ impl Room {
                 );
                 let reply_content = RoomMessageEventContent::new(MessageType::Image(image_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
+                let content = AnyMessageLikeEventContent::RoomMessage(reply_content);
 
-                timeline
-                    .send(reply_content.into(), txn_id.as_deref().map(Into::into))
+                let response = room
+                    .send(content, txn_id.as_deref().map(Into::into))
                     .await?;
-                Ok(true)
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -905,7 +927,7 @@ impl Room {
         size: Option<u32>,
         event_id: String,
         txn_id: Option<String>,
-    ) -> Result<bool> {
+    ) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -920,7 +942,6 @@ impl Room {
                 let path = PathBuf::from(uri);
                 let mut file_buf = std::fs::read(path)?;
 
-                let timeline = Arc::new(room.timeline().await);
                 let event_id = EventId::parse(event_id)?;
                 let timeline_event = room
                     .event(&event_id)
@@ -950,11 +971,12 @@ impl Room {
                 );
                 let reply_content = RoomMessageEventContent::new(MessageType::File(file_content))
                     .make_reply_to(original_message, ForwardThread::Yes);
+                let content = AnyMessageLikeEventContent::RoomMessage(reply_content);
 
-                timeline
-                    .send(reply_content.into(), txn_id.as_deref().map(Into::into))
+                let response = room
+                    .send(content, txn_id.as_deref().map(Into::into))
                     .await?;
-                Ok(true)
+                Ok(response.event_id.to_string())
             })
             .await?
     }
@@ -964,7 +986,7 @@ impl Room {
         event_id: String,
         reason: Option<String>,
         txn_id: Option<String>,
-    ) -> Result<bool> {
+    ) -> Result<String> {
         let room = if let MatrixRoom::Joined(r) = &self.room {
             r.clone()
         } else {
@@ -975,9 +997,10 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let event_id = EventId::parse(event_id)?;
-                room.redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
+                let response = room
+                    .redact(&event_id, reason.as_deref(), txn_id.map(Into::into))
                     .await?;
-                Ok(true)
+                Ok(response.event_id.to_string())
             })
             .await?
     }

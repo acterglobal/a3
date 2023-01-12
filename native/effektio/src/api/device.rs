@@ -248,7 +248,7 @@ impl DeviceRecord {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct DeviceController {
     changed_event_tx: Sender<DeviceChangedEvent>,
     changed_event_rx: Arc<Mutex<Option<Receiver<DeviceChangedEvent>>>>,

@@ -51,6 +51,12 @@ String? simplifyRoomId(String name) {
   return null;
 }
 
+String simplifyBody(String formattedBody) {
+  // strip out parent msg from reply msg
+  RegExp re = RegExp(r'^<mx-reply>[\s\S]+</mx-reply>');
+  return formattedBody.replaceAll(re, '');
+}
+
 String randomString() {
   final random = Random.secure();
   final values = List<int>.generate(16, (i) => random.nextInt(255));
@@ -119,4 +125,26 @@ int hexOfRGBA(int r, int g, int b, {double opacity = 1}) {
   return int.parse(
     '0x${a.toRadixString(16)}${r.toRadixString(16)}${g.toRadixString(16)}${b.toRadixString(16)}',
   );
+}
+
+bool isOnlyEmojis(String text) {
+  final emojisRegExp = RegExp(
+    r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])',
+  );
+  // find all emojis
+  final emojis = emojisRegExp.allMatches(text);
+
+  // return if none found
+  if (emojis.isEmpty) return false;
+
+  // remove all emojis from the this
+  for (final emoji in emojis) {
+    text = text.replaceAll(emoji.input.substring(emoji.start, emoji.end), '');
+  }
+
+  // remove all whitespace (optional)
+  text = text.replaceAll('', '');
+
+  // return true if nothing else left
+  return text.isEmpty;
 }

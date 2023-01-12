@@ -1,18 +1,37 @@
-use super::TextMessageEventContent;
+use super::{BelongsTo, References, TextMessageEventContent, Update};
+use derive_builder::Builder;
+use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-/// The payload for our Comment event.
-#[derive(Clone, Debug, Deserialize, Serialize, EventContent)]
+/// Comment Event
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
 #[ruma_event(type = "org.effektio.dev.comment", kind = MessageLike)]
-pub struct CommentEventDevContent {
-    pub text: TextMessageEventContent,
+#[builder(name = "CommentBuilder", derive(Debug))]
+pub struct CommentEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub on: BelongsTo,
+    #[builder(setter(into), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reply_to: Option<References>,
+    pub content: TextMessageEventContent,
 }
 
-/// The content that is specific to each Comment type variant.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(untagged)]
-#[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
-pub enum CommentEvent {
-    Dev(CommentEventDevContent),
+/// The Comment Update Event
+#[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
+#[ruma_event(type = "org.effektio.dev.comment.update", kind = MessageLike)]
+#[builder(name = "CommentUpdateBuilder", derive(Debug))]
+pub struct CommentUpdateEventContent {
+    #[builder(setter(into))]
+    #[serde(rename = "m.relates_to")]
+    pub comment: Update,
+    pub content: TextMessageEventContent,
+}
+
+impl CommentUpdateEventContent {
+    pub fn apply(&self, task: &mut CommentEventContent) -> crate::Result<bool> {
+        task.content = self.content.clone();
+        Ok(true)
+    }
 }

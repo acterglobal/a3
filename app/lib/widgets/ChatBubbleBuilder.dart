@@ -1,16 +1,17 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
-import 'package:effektio/widgets/ActionRow.dart';
+import 'package:effektio/widgets/emoji_row.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class ChatBubbleBuilder extends StatefulWidget {
@@ -18,6 +19,7 @@ class ChatBubbleBuilder extends StatefulWidget {
   final Widget child;
   final types.Message message;
   final bool nextMessageInGroup;
+  final bool enlargeEmoji;
 
   const ChatBubbleBuilder({
     Key? key,
@@ -25,6 +27,7 @@ class ChatBubbleBuilder extends StatefulWidget {
     required this.message,
     required this.nextMessageInGroup,
     required this.userId,
+    required this.enlargeEmoji,
   }) : super(key: key);
 
   @override
@@ -44,6 +47,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     tabBarController = TabController(length: reactionTabs.length, vsync: this);
   }
 
+  // A helper function to get bubble widget size to set constraints beforehand
+  //for emoji container.
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ChatRoomController>(
@@ -55,21 +61,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 6),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.start,
-              textDirection:
-                  !isAuthor() ? TextDirection.ltr : TextDirection.rtl,
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                Flexible(
-                  child: Column(
-                    children: [
-                      buildEmojiRow(),
-                      buildChatBubble(),
-                    ],
-                  ),
-                ),
+                buildChatBubble(),
+                buildEmojiRow(),
               ],
             ),
             Align(
@@ -158,82 +154,96 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          ...buildInReplyToBubble(),
-          Bubble(
-            child: widget.child,
-            color: !isAuthor() || widget.message is types.ImageMessage
-                ? AppCommonTheme.backgroundColorLight
-                : AppCommonTheme.primaryColor,
-            margin: widget.nextMessageInGroup
-                ? const BubbleEdges.symmetric(horizontal: 2)
-                : null,
-            radius: const Radius.circular(22),
-            padding: widget.message is types.ImageMessage
-                ? const BubbleEdges.all(0)
-                : null,
-            nip: (widget.nextMessageInGroup ||
-                    widget.message is types.ImageMessage)
-                ? BubbleNip.no
-                : !isAuthor()
-                    ? BubbleNip.leftBottom
-                    : BubbleNip.rightBottom,
-            nipHeight: 18,
-            nipWidth: 0.5,
-            nipRadius: 0,
+          (widget.message.repliedMessage != null)
+              ? widget.userId == widget.message.repliedMessage!.author.id
+                  ? const Text(
+                      'Replied to yourself',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    )
+                  : Text(
+                      roomController.client.userId().toString() ==
+                              widget.message.repliedMessage!.author.id
+                          ? 'Replied to you'
+                          : 'Replied to ${widget.message.repliedMessage!.author.id}',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    )
+              : const SizedBox(),
+          const SizedBox(height: 8),
+          (widget.message.repliedMessage != null)
+              ? buildOriginalBubble(widget.message)
+              : const SizedBox(),
+          const SizedBox(height: 4),
+          Flexible(
+            child: Bubble(
+              child: widget.child,
+              style: widget.enlargeEmoji
+                  ? const BubbleStyle(
+                      color: Colors.transparent,
+                      borderColor: Colors.transparent,
+                      elevation: 0,
+                    )
+                  : BubbleStyle(
+                      color: !isAuthor() || widget.message is types.ImageMessage
+                          ? AppCommonTheme.backgroundColorLight
+                          : AppCommonTheme.primaryColor,
+                      margin: widget.nextMessageInGroup
+                          ? const BubbleEdges.symmetric(horizontal: 2)
+                          : null,
+                      radius: const Radius.circular(22),
+                      padding: widget.message is types.ImageMessage
+                          ? const BubbleEdges.all(0)
+                          : null,
+                      nip: (widget.nextMessageInGroup ||
+                              widget.message is types.ImageMessage)
+                          ? BubbleNip.no
+                          : !isAuthor()
+                              ? BubbleNip.leftBottom
+                              : BubbleNip.rightBottom,
+                      nipHeight: 18,
+                      nipWidth: 0.5,
+                      nipRadius: 0,
+                    ),
+            ),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> buildInReplyToBubble() {
-    types.Message? msg = widget.message.repliedMessage;
-    if (msg == null) {
-      return [];
-    }
-    return [
-      widget.userId == msg.author.id
-          ? const Text(
-              'Replied to you',
-              style: TextStyle(color: Colors.white, fontSize: 12),
-            )
-          : Text(
-              roomController.client.userId().toString() == msg.author.id
-                  ? 'Replied to you'
-                  : 'Replied to ${msg.author.id}',
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-            ),
-      const SizedBox(height: 8),
-      Bubble(
-        child: inReplyToMessageBuilder(),
-        color: AppCommonTheme.backgroundColorLight,
-        margin: widget.nextMessageInGroup
-            ? const BubbleEdges.symmetric(horizontal: 2)
-            : null,
-        radius: const Radius.circular(22),
-        padding: msg is types.ImageMessage ? const BubbleEdges.all(0) : null,
-        nip: BubbleNip.no,
-      ),
-      const SizedBox(height: 4),
-    ];
+  //Custom original bubble
+  Widget buildOriginalBubble(types.Message message) {
+    return Bubble(
+      child: originalMessageBuilder(message),
+      color: AppCommonTheme.backgroundColorLight,
+      margin: widget.nextMessageInGroup
+          ? const BubbleEdges.symmetric(horizontal: 2)
+          : null,
+      radius: const Radius.circular(22),
+      padding: message.repliedMessage is types.ImageMessage
+          ? const BubbleEdges.all(0)
+          : null,
+      nip: BubbleNip.no,
+    );
   }
 
-  Widget inReplyToMessageBuilder() {
-    types.Message? msg = widget.message.repliedMessage;
-    if (msg is types.TextMessage) {
-      return Html(
-        data: """${msg.metadata?['content']}""",
-        shrinkWrap: true,
-        style: {
-          'body': Style(
-            color: ChatTheme01.chatReplyTextColor,
-            fontWeight: FontWeight.w400,
-            fontSize: FontSize(14),
-          ),
-        },
+  Widget originalMessageBuilder(types.Message message) {
+    if (message.repliedMessage is types.TextMessage) {
+      return ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth:
+              sqrt(message.repliedMessage!.metadata!['messageLength']) * 38.5,
+          maxHeight: double.infinity,
+        ),
+        child: Html(
+          data: """${message.repliedMessage!.metadata?['content']}""",
+          defaultTextStyle:
+              const TextStyle(color: ChatTheme01.chatReplyTextColor),
+          padding: const EdgeInsets.all(8),
+        ),
       );
-    } else if (msg is types.ImageMessage) {
-      Uint8List data = base64Decode(msg.metadata?['content']);
+    } else if (message.repliedMessage is types.ImageMessage) {
+      Uint8List data =
+          base64Decode(message.repliedMessage!.metadata?['content']);
       return ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: data.isNotEmpty
@@ -249,9 +259,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
               )
             : const SizedBox(),
       );
-    } else if (msg is types.FileMessage) {
+    } else if (message.repliedMessage is types.FileMessage) {
       return Text(
-        msg.metadata?['content'],
+        message.repliedMessage!.metadata?['content'],
         style: const TextStyle(color: Colors.white, fontSize: 12),
       );
     } else {
@@ -330,8 +340,9 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     return Visibility(
       visible: roomController.emojiCurrentId == widget.message.id &&
           roomController.isEmojiContainerVisible,
-      replacement: const SizedBox.shrink(),
       child: Container(
+        width: 198,
+        height: 42,
         padding: const EdgeInsets.all(8),
         margin: !isAuthor()
             ? const EdgeInsets.only(bottom: 8, left: 8)
@@ -341,16 +352,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
           color: AppCommonTheme.backgroundColor,
           border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
         ),
-        child: ActionRow(
-          isClient: roomController.isAuthor(),
-          onEmojiTap: (String value) {
-            roomController.toggleEmojiContainer();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('$value tapped'),
-                backgroundColor: AuthTheme.authSuccess,
-                duration: const Duration(seconds: 1),
-              ),
+        child: EmojiRow(
+          onEmojiTap: (String value) async {
+            await roomController.sendEmojiReaction(
+              roomController.repliedToMessage!.id,
+              value,
             );
           },
         ),

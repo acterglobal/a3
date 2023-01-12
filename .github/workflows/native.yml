@@ -18,12 +18,15 @@ jobs:
             clippy_extras: --tests
           - name: CLI
             package: effektio-cli
+          - name: TUI
+            package: effektio-tui
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          override: true
           components: clippy
           target: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v1
@@ -59,6 +62,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          override: true
           components: clippy
           target: ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v1

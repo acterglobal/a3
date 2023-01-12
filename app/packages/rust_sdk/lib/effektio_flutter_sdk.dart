@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:core';
+import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
-import 'dart:async';
-import 'dart:developer' as developer;
 
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
 import 'package:flutter/services.dart';

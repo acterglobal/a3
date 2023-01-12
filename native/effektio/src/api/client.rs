@@ -1,16 +1,20 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::{
+    executor::Executor,
     models::Faq,
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
+    store::Store,
     RestoreToken,
 };
 
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
 
-use futures::{stream, StreamExt};
-use futures_signals::signal::{channel, Receiver, SignalExt, SignalStream};
+use futures::{future::try_join_all, pin_mut, stream, StreamExt};
+use futures_signals::signal::{
+    channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
+};
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
@@ -22,6 +26,7 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
 };
+use tokio::task::JoinHandle;
 
 use super::{
     account::Account,
@@ -50,9 +55,11 @@ pub struct ClientState {
     pub should_stop_syncing: bool,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Client {
     pub(crate) client: MatrixClient,
+    pub(crate) store: Store,
+    pub(crate) executor: Executor,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
@@ -69,49 +76,128 @@ impl std::ops::Deref for Client {
     }
 }
 
-pub(crate) async fn divide_rooms_from_common(
-    client: MatrixClient,
-) -> (Vec<Group>, Vec<Conversation>) {
-    let (groups, convos, _) = stream::iter(client.clone().joined_rooms().into_iter())
+pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Vec<Conversation>) {
+    let (groups, convos, _) = stream::iter(client.clone().rooms().into_iter())
         .fold(
             (Vec::new(), Vec::new(), client),
-            async move |(mut groups, mut convos, client), room| {
-                let r = Room {
-                    room: room.into(),
-                    client: client.clone(),
+            async move |(mut groups, mut conversations, client), room| {
+                let inner = Room {
+                    room: room.clone(),
+                    client: client.client.clone(),
                 };
-                if r.is_effektio_group().await {
-                    groups.push(Group { inner: r });
+
+                if inner.is_effektio_group().await {
+                    groups.push(Group {
+                        client: client.clone(),
+                        inner,
+                    });
                 } else {
-                    convos.push(Conversation::new(r));
+                    conversations.push(Conversation::new(inner));
                 }
-                (groups, convos, client)
+
+                (groups, conversations, client)
             },
         )
         .await;
     (groups, convos)
 }
 
+#[derive(Clone, Debug, Default)]
+pub struct HistoryLoadState {
+    pub has_started: bool,
+    pub total_groups: usize,
+    pub loaded_groups: usize,
+}
+
+impl HistoryLoadState {
+    pub fn is_done_loading(&self) -> bool {
+        self.has_started && self.total_groups == self.loaded_groups
+    }
+
+    pub fn start(&mut self, total: usize) {
+        self.has_started = true;
+        self.total_groups = total;
+    }
+
+    fn group_loaded(&mut self) {
+        self.loaded_groups = self.loaded_groups.checked_add(1).unwrap_or(usize::MAX)
+    }
+}
+
 #[derive(Clone)]
 pub struct SyncState {
+    handle: Mutable<Option<JoinHandle<()>>>,
     first_synced_rx: Arc<Mutex<Option<Receiver<bool>>>>,
+    history_loading: futures_signals::signal::Mutable<HistoryLoadState>,
 }
 
 impl SyncState {
     pub fn new(first_synced_rx: Receiver<bool>) -> Self {
         let first_synced_rx = Arc::new(Mutex::new(Some(first_synced_rx)));
-        Self { first_synced_rx }
+        Self {
+            first_synced_rx,
+            history_loading: Default::default(),
+            handle: Default::default(),
+        }
     }
 
     pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         self.first_synced_rx.lock().take().map(|t| t.to_stream())
     }
+
+    pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
+        self.history_loading.signal_cloned().to_stream()
+    }
+
+    pub async fn await_has_synced_history(&self) -> Result<u32> {
+        tracing::trace!("Waiting for history to sync");
+        let signal = self.history_loading.signal_cloned().to_stream();
+        pin_mut!(signal);
+        while let Some(next_state) = signal.next().await {
+            if next_state.is_done_loading() {
+                tracing::trace!(?next_state, "History sync completed");
+                return Ok(next_state.loaded_groups as u32);
+            }
+        }
+        unimplemented!("We never reach this state")
+    }
+
+    pub fn is_running(&self) -> bool {
+        if let Some(handle) = self.handle.lock_ref().as_ref() {
+            !handle.is_finished()
+        } else {
+            false
+        }
+    }
+
+    pub fn cancel(&self) {
+        if let Some(handle) = self.handle.replace(None) {
+            handle.abort();
+        }
+    }
+}
+
+impl Drop for SyncState {
+    fn drop(&mut self) {
+        self.cancel();
+    }
 }
 
 impl Client {
-    pub fn new(client: MatrixClient, state: ClientState) -> Self {
-        Client {
+    fn user_id_ref(&self) -> Option<&matrix_sdk::ruma::UserId> {
+        self.client.user_id()
+    }
+}
+
+impl Client {
+    pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
+        let store = Store::new(client.clone()).await?;
+        let executor = Executor::new(store.clone()).await?;
+        client.add_event_handler_context(executor.clone());
+        let cl = Client {
             client,
+            store,
+            executor,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
@@ -119,12 +205,59 @@ impl Client {
             typing_controller: TypingController::new(),
             receipt_controller: ReceiptController::new(),
             conversation_controller: ConversationController::new(),
-        }
+        };
+        Ok(cl)
+    }
+
+    pub fn store(&self) -> &Store {
+        &self.store
+    }
+
+    /// Get access to the internal state
+    pub fn executor(&self) -> &Executor {
+        &self.executor
+    }
+
+    async fn refresh_history(
+        &self,
+        history: futures_signals::signal::Mutable<HistoryLoadState>,
+    ) -> anyhow::Result<()> {
+        let me = self.clone();
+        RUNTIME
+            .spawn(async move {
+                tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
+                let groups = me.groups().await?;
+                history.lock_mut().start(groups.len());
+
+                try_join_all(groups.iter().map(|g| async {
+                    g.add_handlers().await;
+                    let x = g.refresh_history().await;
+                    history.lock_mut().group_loaded();
+                    x
+                }))
+                .await?;
+                Ok(())
+            })
+            .await?
+    }
+
+    fn refresh_history_on_start(
+        &self,
+        history: futures_signals::signal::Mutable<HistoryLoadState>,
+    ) {
+        let me = self.clone();
+        RUNTIME.spawn(async move {
+            if let Err(e) = me.refresh_history(history).await {
+                tracing::error!("Refreshing history failed: {:}", e);
+            }
+        });
     }
 
     pub fn start_sync(&mut self) -> SyncState {
-        let client = self.client.clone();
         let state = self.state.clone();
+        let me = self.clone();
+        let executor = self.executor.clone();
+        let client = self.client.clone();
 
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
@@ -147,8 +280,9 @@ impl Client {
 
         let initial_arc = Arc::new(AtomicBool::from(true));
         let sync_state = SyncState::new(first_synced_rx);
+        let sync_state_history = sync_state.history_loading.clone();
 
-        RUNTIME.spawn(async move {
+        let handle = RUNTIME.spawn(async move {
             let client = client.clone();
             let state = state.clone();
 
@@ -156,11 +290,15 @@ impl Client {
             let mut device_controller = device_controller.clone();
             let mut conversation_controller = conversation_controller.clone();
 
+            let sync_state_history = sync_state_history.clone();
+
             // fetch the events that received when offline
             client
                 .clone()
                 .sync_with_result_callback(SyncSettings::new(), |result| {
                     let client = client.clone();
+                    let me = me.clone();
+                    let executor = executor.clone();
                     let state = state.clone();
 
                     let mut invitation_controller = invitation_controller.clone();
@@ -168,26 +306,34 @@ impl Client {
                     let mut conversation_controller = conversation_controller.clone();
 
                     let first_synced_arc = first_synced_arc.clone();
+                    let sync_state_history = sync_state_history.clone();
                     let initial = initial_arc.clone();
 
                     async move {
                         Ok(if let Ok(response) = result {
                             device_controller.process_device_lists(&client, &response);
 
-                            if initial.load(Ordering::SeqCst) {
-                                // divide_rooms_from_common must be called after first sync
-                                let (_, convos) = divide_rooms_from_common(client.clone()).await;
+                            if initial.compare_exchange(
+                                true,
+                                false,
+                                Ordering::Relaxed,
+                                Ordering::Relaxed,
+                            ) == Ok(true)
+                            {
+                                tracing::trace!(user_id=?client.user_id(), "initial synced");
+                                // devide_groups_from_convos must be called after first sync
+                                let (_, convos) = devide_groups_from_convos(me.clone()).await;
                                 conversation_controller.load_rooms(&convos).await;
                                 // load invitations after first sync
                                 invitation_controller.load_invitations(&client).await;
-                            }
 
-                            initial.store(false, Ordering::SeqCst);
-                            let _ = first_synced_arc.send(true);
+                                me.refresh_history_on_start(sync_state_history.clone());
 
-                            if !state.read().has_first_synced {
+                                initial.store(false, Ordering::SeqCst);
+                                let _ = first_synced_arc.send(true);
                                 state.write().has_first_synced = true;
                             }
+
                             if state.read().should_stop_syncing {
                                 state.write().is_syncing = false;
                                 return Ok(LoopCtrl::Break);
@@ -209,6 +355,7 @@ impl Client {
                 .await
                 .unwrap();
         });
+        sync_state.handle.set(Some(handle));
         sync_state
     }
 
@@ -240,10 +387,10 @@ impl Client {
     }
 
     pub async fn conversations(&self) -> Result<Vec<Conversation>> {
-        let client = self.client.clone();
+        let client = self.clone();
         RUNTIME
             .spawn(async move {
-                let (groups, conversations) = divide_rooms_from_common(client).await;
+                let (groups, conversations) = devide_groups_from_convos(client).await;
                 Ok(conversations)
             })
             .await?
@@ -263,28 +410,33 @@ impl Client {
     // }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {
-        let user_id = self
-            .client
+        self.client
             .user_id()
-            .context("No User ID found")?
-            .to_owned();
-        Ok(user_id)
+            .map(|x| x.to_owned())
+            .context("UserId not found. Not logged in?")
     }
 
-    pub(crate) fn room(&self, room_name: String) -> Result<Room> {
+    pub async fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        if let Some(room) = self.client.get_room(&room_id) {
-            return Ok(Room {
-                room,
-                client: self.client.clone(),
-            });
-        }
-        bail!("Room not found")
+        let l = self.client.clone();
+        RUNTIME
+            .spawn(async move {
+                if let Some(room) = l.get_room(&room_id) {
+                    return Ok(Room {
+                        room,
+                        client: l.clone(),
+                    });
+                }
+                bail!("Room not found")
+            })
+            .await?
     }
 
     pub fn account(&self) -> Result<Account> {
-        let user_id = self.client.user_id().unwrap();
-        Ok(Account::new(self.client.account(), user_id.to_string()))
+        Ok(Account::new(
+            self.client.account(),
+            self.user_id()?.to_string(),
+        ))
     }
 
     pub fn device_id(&self) -> Result<String> {
@@ -305,17 +457,15 @@ impl Client {
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
-        let client = self.client.clone();
+        let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = client
-                    .user_id()
-                    .context("guest user cannot request verification")?;
-                let dev = client
+                let user_id = c.user_id().expect("guest user cannot request verification");
+                let dev = c
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
                     .await
-                    .context("client should get device")?
+                    .expect("client should get device")
                     .unwrap();
                 Ok(dev.is_verified())
             })
