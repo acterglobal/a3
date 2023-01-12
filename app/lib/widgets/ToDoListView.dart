@@ -32,6 +32,7 @@ class ToDoListView extends StatelessWidget {
               );
             }
             return ListView.builder(
+              itemCount: snapshot.data!.length,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
                 return InkWell(
