@@ -566,7 +566,7 @@ object TaskList {
     fn description_text() -> Option<string>;
 
     /// who wants to be informed on updates about this?
-    fn subscribers() -> Vec<UserId>;
+    fn subscribers() -> Future<Result<Vec<UserId>>>;
 
     /// does this list have a special role?
     fn role() -> Option<string>;

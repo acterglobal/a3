@@ -21,41 +21,37 @@ class ToDoController extends GetxController {
 
   Future<List<ToDoList>> getTodoList() async {
     List<ToDoList> todoLists = [];
-    // List<String> subscribers = [];
-    client.startSync();
+    List<String> subscribers = [];
 
     /// only consider default group for testing purposes. Spaces design concept
     /// is needed for implementation.
-    defaultGroup = (await client.groups().then((groups) => groups.toList()))[0];
+    defaultGroup = (await client.groups()).toList()[0];
     if (defaultGroup != null) {
-      List<TaskList> defaultGroupTaskLists = await defaultGroup!
-          .taskLists()
-          .then((tasklists) => tasklists.toList());
+      List<TaskList> defaultGroupTaskLists =
+          (await defaultGroup!.taskLists()).toList();
 
       for (TaskList todoList in defaultGroupTaskLists) {
-        /////////////code literally  breaks at this point//////////////
-        // if (todoList.subscribers().toList().isNotEmpty) {
-        //   for (var user in todoList.subscribers().toList()) {
-        //     subscribers.add(user.toString());
-        //   }
-        // }
-        //////////////////////////////////////////////////////////////
-
-        List<ToDoTask> tasks = await getTodoTasks(todoList);
+        var users = await todoList.subscribers();
+        if (users.isNotEmpty) {
+          for (var user in users.toList()) {
+            subscribers.add(user.toString());
+          }
+        }
+        var tasks = await getTodoTasks(todoList);
         calculateTasksRatio(tasks);
         ToDoList item = ToDoList(
           index: todoList.sortOrder(),
           name: todoList.name(),
-          categories: [],
+          categories: asDartStringList(todoList.categories().toList()),
           tasks: tasks,
           completedTasks: completedTasks,
           pendingTasks: pendingTasks,
-          subscribers: [],
-          color: todoList.color() as Color? ?? Colors.blue,
+          subscribers: subscribers,
+          // color: todoList.color() as Color?,
           description: todoList.descriptionText() ?? '',
-          tags: [],
+          tags: asDartStringList(todoList.keywords().toList()),
           role: todoList.role() ?? '',
-          timezone: todoList.timeZone() ?? '',
+          timezone: todoList.timeZone(),
         );
         todoLists.add(item);
       }
@@ -69,33 +65,29 @@ class ToDoController extends GetxController {
 
   Future<List<ToDoTask>> getTodoTasks(TaskList list) async {
     List<ToDoTask> todoTasks = [];
-    // List<String> assignees = [];
-    // List<String> subscribers = [];
+    List<String> assignees = [];
+    List<String> subscribers = [];
 
-    List<Task> tasksList = await list.tasks().then((tasks) => tasks.toList());
+    var tasksList = await list.tasks().then((tasks) => tasks.toList());
     for (Task task in tasksList) {
-      /////////////code literally  breaks at this point//////////////
-      // if (task.assignees().isNotEmpty) {
-      //   for (var user in task.subscribers().toList()) {
-      //     assignees.add(user.toString());
-      //   }
-      // }
-      // if (task.subscribers().isNotEmpty) {
-      //   for (var user in task.subscribers().toList()) {
-      //     subscribers.add(user.toString());
-      //   }
-      // }
-      //////////////////////////////////////////////////////////////
-      ///
-      ///
+      if (task.assignees().isNotEmpty) {
+        for (var user in task.subscribers().toList()) {
+          assignees.add(user.toString());
+        }
+      }
+      if (task.subscribers().isNotEmpty) {
+        for (var user in task.subscribers().toList()) {
+          subscribers.add(user.toString());
+        }
+      }
       ToDoTask item = ToDoTask(
         index: task.sortOrder(),
         name: task.title(),
-        assignees: [],
-        categories: [],
+        assignees: assignees,
+        categories: asDartStringList(task.categories().toList()),
         isDone: task.isDone(),
-        tags: [],
-        subscribers: [],
+        tags: asDartStringList(task.keywords().toList()),
+        subscribers: subscribers,
         // color: task.color() as Color?,
         description: task.descriptionText() ?? '',
         priority: task.priority() ?? 0,

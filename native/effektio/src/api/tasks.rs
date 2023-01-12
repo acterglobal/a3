@@ -1,30 +1,18 @@
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    convert::{TryFrom, TryInto},
-    ops::Deref,
-    ops::DerefMut,
-};
-
-use crate::UserId;
-
-use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use effektio_core::{
     events::{
-        self,
         tasks::{self, Priority, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
         TextMessageEventContent, UtcDateTime,
     },
     executor::Executor,
     models::{self, AnyEffektioModel, Color, EffektioModel, TaskStats},
-    // models::,
     ruma::{
         events::{
             room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
             MessageLikeEvent,
         },
-        OwnedEventId, OwnedRoomId,
+        OwnedEventId, OwnedRoomId, OwnedUserId,
     },
     statics::KEYS,
     store::Store,
@@ -32,6 +20,13 @@ use effektio_core::{
 };
 use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    convert::{TryFrom, TryInto},
+    ops::{Deref, DerefMut},
+};
+
+use super::{client::Client, group::Group, RUNTIME};
 
 impl Client {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
@@ -182,7 +177,7 @@ impl TaskListDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -324,6 +319,35 @@ impl TaskList {
                     .collect()
             })
             .await?)
+    }
+
+    pub async fn subscribers(&self) -> Result<Vec<OwnedUserId>> {
+        if !self.content.stats().has_tasks() {
+            return Ok(vec![]);
+        };
+        let tasks_key = self.content.tasks_key();
+        let client = self.client.clone();
+        let room = self.room.clone();
+        RUNTIME
+            .spawn(async move {
+                let mut users: Vec<OwnedUserId> = vec![];
+                // client
+                //     .store()
+                //     .get_list(&tasks_key)
+                //     .await
+                //     .into_iter()
+                //     .flatten()
+                //     .map(|e| {
+                //         if let AnyEffektioModel::Task(content) = e {
+                //             let mut subscribers = content.subscribers();
+                //             while let Some(user_id) = subscribers.pop() {
+                //                 users.push(user_id);
+                //             }
+                //         }
+                //     });
+                Ok(users)
+            })
+            .await?
     }
 
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
@@ -558,7 +582,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -568,7 +592,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut [UserId]) -> &mut Self {
+    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
         self.content.assignees(assignees.to_vec());
         self
     }
@@ -680,7 +704,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }
@@ -695,7 +719,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut [UserId]) -> &mut Self {
+    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
         self.content.assignees(Some(assignees.to_vec()));
         self
     }
@@ -892,7 +916,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }

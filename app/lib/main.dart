@@ -140,7 +140,6 @@ class _EffektioHomeState extends State<EffektioHome>
       await client.groups().then(
         (groups) async {
           if (groups.toList().isEmpty && !client.isGuest()) {
-            final sdk = await EffektioSdk.instance;
             CreateGroupSettings settings = sdk.newGroupSettings('test space');
             settings.alias(UniqueKey().toString());
             settings.visibility('Public');
