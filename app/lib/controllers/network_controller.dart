@@ -1,14 +1,17 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class NetworkController extends GetxController {
   static NetworkController to = Get.find();
 
-  var connectionType = ''.obs;
+  var connectionType = 0.obs;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription _streamSubscription;
 
@@ -33,21 +36,42 @@ class NetworkController extends GetxController {
   void _updateState(ConnectivityResult result) {
     switch (result) {
       case ConnectivityResult.wifi:
-        connectionType = '1'.obs;
-        update();
+        connectionType.value = 1;
         break;
-      case ConnectivityResult.mobile:
-        connectionType = '2'.obs;
-        update();
+      case  ConnectivityResult.mobile:
+        connectionType.value = 2;
         break;
       case ConnectivityResult.none:
-        connectionType = '0'.obs;
-        update();
+        connectionType.value = 0;
+        _showNoInternetNotification();
         break;
       default:
-        Get.snackbar('Network Error', 'Failed to get Network Status');
-        break;
+        _showNoInternetNotification();
     }
+  }
+
+  OverlaySupportEntry _showNoInternetNotification(){
+
+    return showSimpleNotification(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(
+            FlutterIcons.loader_fea, color: NotificationPopUpTheme.networkTextColor,
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Text(
+            'Network connectivity limited or unavailable',
+            style: NotificationPopUpTheme.networkTitleStyle,
+          ),
+        ],
+      ),
+      background: NotificationPopUpTheme.networkBackgroundColor,
+      slideDismissDirection: DismissDirection.up,
+      duration: const Duration(seconds: 10),
+    );
   }
 
   @override

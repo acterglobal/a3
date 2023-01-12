@@ -5,6 +5,7 @@ import 'package:effektio/common/store/themes/AppTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
@@ -110,11 +111,11 @@ class _EffektioHomeState extends State<EffektioHome>
   late TabController tabController;
   String? displayName;
   Future<FfiBufferUint8>? displayAvatar;
+  final networkController = Get.put(NetworkController());
 
   @override
   void initState() {
     super.initState();
-
     client = makeClient();
     tabController = TabController(length: 4, vsync: this);
     tabController.addListener(() {
@@ -274,48 +275,52 @@ class _EffektioHomeState extends State<EffektioHome>
       length: 4,
       key: const Key('bottom-bar'),
       child: SafeArea(
-        child: Scaffold(
-          appBar: buildAppBar(),
-          body: TabBarView(
-            controller: tabController,
-            children: [
-              NewsScreen(
-                client: client,
+        child: Stack(
+          children: [
+            Scaffold(
+              appBar: buildAppBar(),
+              body: TabBarView(
+                controller: tabController,
+                children: [
+                  NewsScreen(
+                    client: client,
+                    displayName: displayName,
+                    displayAvatar: displayAvatar,
+                  ),
+                  FaqOverviewScreen(client: client),
+                  const ToDoScreen(),
+                  ChatOverview(client: client),
+                ],
+              ),
+              drawer: SideDrawer(
+                isGuest: client.isGuest(),
+                userId: client.userId().toString(),
                 displayName: displayName,
                 displayAvatar: displayAvatar,
               ),
-              FaqOverviewScreen(client: client),
-              const ToDoScreen(),
-              ChatOverview(client: client),
-            ],
-          ),
-          drawer: SideDrawer(
-            isGuest: client.isGuest(),
-            userId: client.userId().toString(),
-            displayName: displayName,
-            displayAvatar: displayAvatar,
-          ),
-          bottomNavigationBar: TabBar(
-            labelColor: AppCommonTheme.primaryColor,
-            unselectedLabelColor: AppCommonTheme.svgIconColor,
-            controller: tabController,
-            indicator: const MaterialIndicator(
-              height: 5,
-              bottomLeftRadius: 8,
-              bottomRightRadius: 8,
-              topLeftRadius: 0,
-              topRightRadius: 0,
-              horizontalPadding: 12,
-              tabPosition: TabPosition.top,
-              color: AppCommonTheme.primaryColor,
+              bottomNavigationBar: TabBar(
+                labelColor: AppCommonTheme.primaryColor,
+                unselectedLabelColor: AppCommonTheme.svgIconColor,
+                controller: tabController,
+                indicator: const MaterialIndicator(
+                  height: 5,
+                  bottomLeftRadius: 8,
+                  bottomRightRadius: 8,
+                  topLeftRadius: 0,
+                  topRightRadius: 0,
+                  horizontalPadding: 12,
+                  tabPosition: TabPosition.top,
+                  color: AppCommonTheme.primaryColor,
+                ),
+                tabs: [
+                  buildNewsFeedTab(),
+                  buildPinsTab(),
+                  buildTasksTab(),
+                  buildChatTab(),
+                ],
+              ),
             ),
-            tabs: [
-              buildNewsFeedTab(),
-              buildPinsTab(),
-              buildTasksTab(),
-              buildChatTab(),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -350,4 +355,5 @@ class _EffektioHomeState extends State<EffektioHome>
       },
     );
   }
+
 }
