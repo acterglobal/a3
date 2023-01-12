@@ -13,6 +13,7 @@ import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
+import 'package:effektio/widgets/TextMessageBuilder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
@@ -20,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
@@ -290,18 +290,11 @@ class _ChatScreenState extends State<ChatScreen> {
     required int messageWidth,
     required bool showName,
   }) {
-    return Container(
-      width: sqrt(p1.metadata!['messageLength']) * 38.5,
-      padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(minWidth: 57),
-      child: Html(
-        // ignore: prefer_single_quotes, unnecessary_string_interpolations
-        data: """${p1.text}""",
-        style: {
-          'body': Style(color: Colors.white),
-          'a': Style(textDecoration: TextDecoration.none)
-        },
-      ),
+    return TextMessageBuilder(
+      message: p1,
+      onPreviewDataFetched: roomController.handlePreviewDataFetched,
+      messageWidth: messageWidth,
+      controller: roomController,
     );
   }
 
@@ -699,6 +692,7 @@ class _ChatScreenState extends State<ChatScreen> {
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,
+          enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
         );
       },
     );

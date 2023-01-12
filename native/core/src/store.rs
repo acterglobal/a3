@@ -13,12 +13,15 @@ use matrix_sdk::Client as MatrixClient;
 #[derive(Clone, Debug)]
 pub struct Store {
     client: MatrixClient,
+    fresh: bool,
     models: Arc<dashmap::DashMap<String, AnyEffektioModel>>,
     indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
     dirty: Arc<dashmap::DashSet<String>>,
 }
 
 static ALL_MODELS_KEY: &str = "EFFEKTIO::ALL";
+static DB_VERSION_KEY: &str = "EFFEKTIO::DB_VERSION";
+static CURRENT_DB_VERSION: u32 = 1;
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(
     client: MatrixClient,
@@ -34,16 +37,77 @@ async fn get_from_store<T: serde::de::DeserializeOwned>(
 
 impl Store {
     pub async fn get_raw<T: serde::de::DeserializeOwned>(&self, key: &str) -> Result<T> {
+        if self.fresh {
+            return Err(Error::ModelNotFound);
+        }
         get_from_store(self.client.clone(), key).await
     }
+
+    pub async fn set_raw<T: serde::Serialize>(&self, key: &str, value: &T) -> Result<()> {
+        tracing::trace!(key, "set_raw");
+        self.client
+            .store()
+            .set_custom_value(
+                format!("effektio:{key}").as_bytes(),
+                serde_json::to_vec(value)?,
+            )
+            .await?;
+        Ok(())
+    }
     pub async fn new(client: MatrixClient) -> Result<Self> {
+        if client
+            .store()
+            .get_custom_value(DB_VERSION_KEY.as_bytes())
+            .await
+            .map_err(|e| crate::Error::Custom(format!("failed to find DB version key: {e}")))?
+            .map(|u| u32::from_le_bytes(u.as_chunks().0[0]))
+            .unwrap_or_default()
+            < CURRENT_DB_VERSION
+        {
+            // "upgrading" by resetting
+            client
+                .store()
+                .set_custom_value(ALL_MODELS_KEY.as_bytes(), vec![])
+                .await
+                .map_err(|e| {
+                    crate::Error::Custom(format!("setting all models to [] failed: {e}"))
+                })?;
+
+            client
+                .store()
+                .set_custom_value(
+                    DB_VERSION_KEY.as_bytes(),
+                    CURRENT_DB_VERSION.to_le_bytes().to_vec(),
+                )
+                .await
+                .map_err(|e| crate::Error::Custom(format!("setting db version failed: {e}")))?;
+
+            return Ok(Store {
+                fresh: true,
+                client,
+                indizes: Default::default(),
+                models: Default::default(),
+                dirty: Default::default(),
+            });
+        }
+
+        // current DB version, attempt to load models
+
         let models_vec = if let Some(v) = client
             .store()
             .get_custom_value(ALL_MODELS_KEY.as_bytes())
             .await?
-            .map(|v| serde_json::from_slice::<Vec<String>>(&v))
-            .transpose()?
-        {
+            .map(|v| {
+                if v.is_empty() {
+                    Ok(vec![])
+                } else {
+                    serde_json::from_slice::<Vec<String>>(&v)
+                }
+            })
+            .transpose()
+            .map_err(|e| {
+                crate::Error::Custom(format!("deserializing all models index failed: {e}"))
+            })? {
             try_join_all(
                 v.iter()
                     .map(|k| get_from_store::<AnyEffektioModel>(client.clone(), k)),
@@ -56,7 +120,7 @@ impl Store {
         let indizes = Arc::new(DashMap::new());
         let mut models_sources = Vec::new();
         for m in models_vec {
-            let key = m.key();
+            let key = m.event_id().to_string();
             for idx in m.indizes() {
                 let mut r: RefMut<String, Vec<String>> = indizes.entry(idx).or_default();
                 r.value_mut().push(key.clone())
@@ -67,6 +131,7 @@ impl Store {
         let models = Arc::new(DashMap::from_iter(models_sources));
 
         Ok(Store {
+            fresh: false,
             client,
             indizes,
             models,
@@ -75,7 +140,7 @@ impl Store {
     }
 
     #[tracing::instrument(skip(self))]
-    pub fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
+    pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
         } else {
@@ -101,8 +166,9 @@ impl Store {
     }
 
     #[tracing::instrument(skip(self))]
-    pub async fn save_raw(&self, mdl: AnyEffektioModel) -> Result<()> {
-        let key = mdl.key();
+    pub async fn save_model_inner(&self, mdl: AnyEffektioModel) -> Result<()> {
+        let key = mdl.event_id().to_string();
+        tracing::trace!(user=?self.client.user_id(), key, "saving");
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
             tracing::trace!(user=?self.client.user_id(), key, "previous model found");
@@ -137,14 +203,14 @@ impl Store {
 
     pub async fn save_many(&self, models: Vec<AnyEffektioModel>) -> Result<()> {
         for mdl in models.into_iter() {
-            self.save_raw(mdl).await?;
+            self.save_model_inner(mdl).await?;
         }
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(())
     }
 
     pub async fn save(&self, mdl: AnyEffektioModel) -> Result<()> {
-        self.save_raw(mdl).await?;
+        self.save_model_inner(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(())
     }

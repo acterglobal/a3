@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
@@ -10,8 +8,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_link_previewer/flutter_link_previewer.dart';
-import 'package:flutter_parsed_text/flutter_parsed_text.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -66,6 +63,7 @@ class _ChatListItemState extends State<ChatListItem> {
     String roomId = widget.room.getRoomId();
     // ToDo: UnreadCounter
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ListTile(
           onTap: () => handleTap(context),
@@ -119,15 +117,9 @@ class _ChatListItemState extends State<ChatListItem> {
         style: ChatTheme01.chatTitleStyle,
       );
     }
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          displayName!,
-          style: ChatTheme01.chatTitleStyle,
-        ),
-      ],
+    return Text(
+      displayName!,
+      style: ChatTheme01.chatTitleStyle,
     );
   }
 
@@ -151,71 +143,76 @@ class _ChatListItemState extends State<ChatListItem> {
       return const SizedBox();
     }
     String sender = eventItem.sender();
-    String body = eventItem.textDesc()?.body() ?? 'Unknown item';
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      child: ParsedText(
-        text: '${simplifyUserId(sender)}: $body',
-        style: ChatTheme01.latestChatStyle,
-        regexOptions: const RegexOptions(multiLine: true, dotAll: true),
-        maxLines: 2,
-        parse: [
-          MatchText(
-            pattern: '(\\*\\*|\\*)(.*?)(\\*\\*|\\*)',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              fontWeight: FontWeight.bold,
+    String itemContentType = eventItem.itemContentType();
+    if (itemContentType == 'Encrypted') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
             ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll(RegExp('(\\*\\*|\\*)'), '')};
-            },
-            onTap: (String value) => handleTap(context),
           ),
-          MatchText(
-            pattern: '_(.*?)_',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              fontStyle: FontStyle.italic,
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll('_', '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: '~(.*?)~',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              decoration: TextDecoration.lineThrough,
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll('~', '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: '`(.*?)`',
-            style: ChatTheme01.latestChatStyle.copyWith(
-              fontFamily: Platform.isIOS ? 'Courier' : 'monospace',
-            ),
-            renderText: ({required String str, required String pattern}) {
-              return {'display': str.replaceAll('`', '')};
-            },
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: regexEmail,
-            style: ChatTheme01.latestChatStyle.copyWith(
-              decoration: TextDecoration.underline,
-            ),
-            onTap: (String value) => handleTap(context),
-          ),
-          MatchText(
-            pattern: regexLink,
-            style: ChatTheme01.latestChatStyle.copyWith(
-              decoration: TextDecoration.underline,
-            ),
-            onTap: (String value) => handleTap(context),
+          const Text(
+            'RoomEncryptedEvent',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
           ),
         ],
-      ),
+      );
+    }
+    if (itemContentType == 'RedactedMessage') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'RoomRedactionEvent',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    TextDesc? textDesc = eventItem.textDesc();
+    if (textDesc == null) {
+      return const SizedBox();
+    }
+    String body = textDesc.body();
+    String? formattedBody = textDesc.formattedBody();
+    if (formattedBody != null) {
+      body = simplifyBody(formattedBody);
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(
+            '${simplifyUserId(sender)}: ',
+            style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ),
+        Flexible(
+          child: Html(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            // ignore: unnecessary_string_interpolations
+            data: '''$body''',
+            maxLines: 1,
+            defaultTextStyle: const TextStyle(
+              color: ChatTheme01.chatBodyTextColor,
+              overflow: TextOverflow.ellipsis,
+            ),
+            onLinkTap: (url) => {},
+          ),
+        ),
+      ],
     );
   }
 

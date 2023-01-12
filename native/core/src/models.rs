@@ -1,43 +1,71 @@
 mod color;
+mod comments;
 mod faq;
 mod news;
 mod tag;
 mod tasks;
 
+pub use crate::store::Store;
 pub use color::Color;
+pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use core::fmt::Debug;
 pub use faq::Faq;
 use matrix_sdk::ruma::{
     events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},
     serde::Raw,
-    RoomId,
+    EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
 };
 pub use news::News;
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
-pub use tasks::{Task, TaskList, TaskListUpdate, TaskUpdate};
+pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
 
 use enum_dispatch::enum_dispatch;
 
-use crate::events::tasks::{
-    OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
-    SyncTaskListEvent, SyncTaskUpdateEvent,
+use crate::events::{
+    comments::{
+        OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
+    },
+    tasks::{
+        OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
+        SyncTaskListEvent, SyncTaskUpdateEvent,
+    },
 };
 
 #[enum_dispatch(AnyEffektioModel)]
 pub trait EffektioModel: Debug {
     fn indizes(&self) -> Vec<String>;
     /// The key to store this model under
-    fn key(&self) -> String;
+    fn event_id(&self) -> &EventId;
     /// The models to inform about this model as it belongs to that
     fn belongs_to(&self) -> Option<Vec<String>> {
         None
+    }
+
+    /// activate to enable commenting support for this type of model
+    fn supports_comments(&self) -> bool {
+        false
     }
     /// handle transition
     fn transition(&mut self, model: &AnyEffektioModel) -> crate::Result<bool> {
         tracing::error!(?self, ?model, "Transition has not been implemented");
         Ok(false)
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct EventMeta {
+    /// The globally unique event identifier attached to this task
+    pub event_id: OwnedEventId,
+
+    /// The fully-qualified ID of the user who sent created this task
+    pub sender: OwnedUserId,
+
+    /// Timestamp in milliseconds on originating homeserver when the task was created
+    pub origin_server_ts: MilliSecondsSinceUnixEpoch,
+
+    /// The ID of the room of this task
+    pub room_id: OwnedRoomId,
 }
 
 #[enum_dispatch]
@@ -47,9 +75,15 @@ pub enum AnyEffektioModel {
     TaskListUpdate,
     Task,
     TaskUpdate,
+    // more generics
+    Comment,
+    CommentUpdate,
 }
 
 impl AnyEffektioModel {
+    pub fn is_comment(&self) -> bool {
+        matches!(self, AnyEffektioModel::Comment(_))
+    }
     pub fn from_raw_tlevent(raw: &Raw<AnyTimelineEvent>) -> Option<Self> {
         let Ok(Some(m_type)) = raw.get_field("type") else {
             return None;
@@ -78,7 +112,33 @@ impl AnyEffektioModel {
                     .ok()?
                     .into(),
             )),
-            _ => None,
+
+            // generics
+
+            // comments
+            "org.effektio.dev.comment" => Some(AnyEffektioModel::Comment(
+                raw.deserialize_as::<OriginalCommentEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing task update event failed")
+                    })
+                    .ok()?
+                    .into(),
+            )),
+            "org.effektio.dev.comment.update" => Some(AnyEffektioModel::CommentUpdate(
+                raw.deserialize_as::<OriginalCommentUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing task update event failed")
+                    })
+                    .ok()?
+                    .into(),
+            )),
+
+            _ => {
+                if m_type.starts_with("org.effektio.") {
+                    tracing::error!(?raw, "{m_type} not implemented");
+                }
+                None
+            }
         }
     }
     pub fn from_raw_synctlevent(raw: &Raw<AnySyncTimelineEvent>, room_id: &RoomId) -> Option<Self> {
@@ -114,7 +174,36 @@ impl AnyEffektioModel {
                 MessageLikeEvent::Original(t) => Some(AnyEffektioModel::TaskUpdate(t.into())),
                 _ => None,
             },
-            _ => None,
+
+            // generic
+
+            // comments
+            "org.effektio.dev.comment" => match raw
+                .deserialize_as::<SyncCommentEvent>()
+                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
+                .ok()?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::Comment(t.into())),
+                _ => None,
+            },
+            "org.effektio.dev.comment.update" => match raw
+                .deserialize_as::<SyncCommentUpdateEvent>()
+                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
+                .ok()?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::CommentUpdate(t.into())),
+                _ => None,
+            },
+
+            // unimplemented cases
+            _ => {
+                if m_type.starts_with("org.effektio.") {
+                    tracing::error!(?raw, "{m_type} not implemented");
+                }
+                None
+            }
         }
     }
 }
