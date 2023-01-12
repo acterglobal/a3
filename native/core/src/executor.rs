@@ -74,8 +74,10 @@ impl Executor {
     pub async fn handle(&self, model: AnyEffektioModel) -> Result<()> {
         tracing::trace!(event_id=?model.event_id(), ?model, "handling");
         let Some(belongs_to) = model.belongs_to() else {
-            tracing::trace!(event_id=?model.event_id(), "saving simple model");
+            let event_id = model.event_id().to_string();
+            tracing::trace!(?event_id, "saving simple model");
             self.store.save(model).await?;
+            self.notify(vec![event_id]);
             return Ok(())
         };
 
@@ -148,5 +150,79 @@ impl Executor {
             }
         }
         Ok(models)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::models::{TestModel, TestModelBuilder};
+    use crate::ruma::{api::MatrixVersion, event_id};
+    use env_logger;
+    use matrix_sdk::Client;
+
+    async fn fresh_executor() -> crate::Result<Executor> {
+        let client = Client::builder()
+            .homeserver_url("http://localhost")
+            .server_versions([MatrixVersion::V1_5])
+            .store_config(
+                matrix_sdk_base::store::StoreConfig::default()
+                    .state_store(matrix_sdk_base::store::MemoryStore::new()),
+            )
+            .build()
+            .await
+            .unwrap();
+
+        let store = Store::new(client).await?;
+        Executor::new(store).await
+    }
+
+    #[tokio::test]
+    async fn smoke_test() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let _ = fresh_executor().await?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribe_simle_model() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id();
+        let mut sub = executor.subscribe(model_id.to_string());
+        assert!(sub.is_empty());
+
+        executor.handle(model.into()).await?;
+        assert!(!sub.is_empty());
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribe_referenced_model() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id().to_owned();
+        let mut sub = executor.subscribe(model_id.to_string());
+        assert!(sub.is_empty());
+
+        executor.handle(model.into()).await?;
+        assert!(sub.recv().await.is_ok()); // we have one
+        assert!(sub.is_empty());
+
+        let child = TestModelBuilder::default()
+            .simple()
+            .belongs_to(vec![model_id.to_string()])
+            .event_id(event_id!("$advf93m").to_owned())
+            .build()
+            .unwrap();
+
+        executor.handle(child.into()).await?;
+
+        assert!(sub.recv().await.is_ok()); // we have one
+        assert!(sub.is_empty());
+        Ok(())
     }
 }
