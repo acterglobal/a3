@@ -10,6 +10,7 @@ use crate::UserId;
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
+use core::time::Duration;
 use effektio_core::{
     events::{self, comments::CommentBuilder, TextMessageEventContent, UtcDateTime},
     executor::Executor,
@@ -28,6 +29,27 @@ use effektio_core::{
 };
 use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
+
+impl Client {
+    pub async fn wait_for_comment(
+        &self,
+        key: String,
+        timeout: Option<Box<Duration>>,
+    ) -> Result<Comment> {
+        let AnyEffektioModel::Comment(comment) = self.wait_for(key.clone(), timeout).await? else {
+            bail!("{key} is not a comment");
+        };
+        let room = self
+            .client
+            .get_room(&comment.meta.room_id)
+            .context("Room not found")?;
+        Ok(Comment {
+            client: self.clone(),
+            room,
+            inner: comment,
+        })
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct Comment {

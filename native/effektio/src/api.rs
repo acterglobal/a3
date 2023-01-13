@@ -15,6 +15,7 @@ mod account;
 mod auth;
 mod client;
 mod comments;
+mod common;
 mod conversation;
 mod device;
 mod group;
@@ -35,7 +36,9 @@ pub use auth::{
 };
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
+pub use common::duration_from_secs;
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
+pub use core::time::Duration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::{
     events::UtcDateTime,

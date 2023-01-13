@@ -48,16 +48,16 @@ impl Executor {
         }
     }
 
-    pub async fn wait_for(&self, key: String) -> AnyEffektioModel {
+    pub async fn wait_for(&self, key: String) -> crate::Result<AnyEffektioModel> {
         let mut subscribe = self.subscribe(key.clone());
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
                 tracing::error!(key, "Receiving pong faild: {e}");
             }
-            return self.store.get(&key).await.unwrap()
+            return self.store.get(&key).await
         };
 
-        model
+        Ok(model)
     }
 
     pub fn notify(&self, keys: Vec<String>) {
@@ -250,7 +250,7 @@ mod tests {
         let waiter = executor.wait_for(model_id);
         executor.handle(model.clone().into()).await?;
 
-        let new_model = waiter.await;
+        let new_model = waiter.await?;
 
         let AnyEffektioModel::TestModel(inner_model) = new_model else {
             panic!("Not a test model")

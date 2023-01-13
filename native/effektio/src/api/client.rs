@@ -1,8 +1,9 @@
 use anyhow::{bail, Context, Result};
+use core::time::Duration;
 use derive_builder::Builder;
 use effektio_core::{
     executor::Executor,
-    models::Faq,
+    models::{AnyEffektioModel, Faq},
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     store::Store,
     RestoreToken,
@@ -434,6 +435,24 @@ impl Client {
 
     pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
         self.executor().subscribe(key).map(|()| true)
+    }
+
+    pub(crate) async fn wait_for(
+        &self,
+        key: String,
+        timeout: Option<Box<Duration>>,
+    ) -> Result<AnyEffektioModel> {
+        let executor = self.executor.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let waiter = executor.wait_for(key);
+                let Some(tm) = timeout else {
+                    return Ok(waiter.await?);
+                };
+                Ok(tokio::time::timeout(*Box::leak(tm), waiter).await??)
+            })
+            .await?
     }
 
     pub fn account(&self) -> Result<Account> {
