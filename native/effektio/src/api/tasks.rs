@@ -214,6 +214,10 @@ impl std::ops::Deref for TaskList {
 }
 
 impl TaskList {
+    pub fn categories(&self) -> Vec<String> {
+        self.content.categories.clone()
+    }
+
     pub fn description_text(&self) -> Option<String> {
         self.description.as_ref().map(|t| t.body.clone())
     }

@@ -48,9 +48,9 @@ class ToDoController extends GetxController {
           pendingTasks: pendingTasks,
           subscribers: subscribers,
           // color: todoList.color() as Color?,
-          description: todoList.descriptionText() ?? '',
+          description: todoList.descriptionText(),
           tags: asDartStringList(todoList.keywords().toList()),
-          role: todoList.role() ?? '',
+          role: todoList.role(),
           timezone: todoList.timeZone(),
         );
         todoLists.add(item);
