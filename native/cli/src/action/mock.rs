@@ -288,7 +288,7 @@ impl Mock {
 
         let task_lists = odo.task_lists().await?;
         let task_list =
-            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) {
+            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == list_name) {
                 task_list
             } else {
                 //kyra.sync_once(Default::default()).await?;
