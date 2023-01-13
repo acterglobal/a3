@@ -38,6 +38,14 @@ use crate::events::{
     },
 };
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum Capability {
+    // someone can comment on this
+    Commentable,
+    // another custom capability
+    Custom(&'static str),
+}
+
 #[async_recursion]
 pub async fn transition_tree(
     store: &Store,
@@ -92,8 +100,8 @@ pub trait EffektioModel: Debug {
     }
 
     /// activate to enable commenting support for this type of model
-    fn supports_comments(&self) -> bool {
-        false
+    fn capabilities(&self) -> &[Capability] {
+        &[]
     }
     /// The execution to run when this model is found.
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>>;

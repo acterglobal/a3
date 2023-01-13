@@ -127,8 +127,8 @@ impl super::EffektioModel for Comment {
         &self.meta.event_id
     }
 
-    fn supports_comments(&self) -> bool {
-        true
+    fn capabilities(&self) -> &[super::Capability] {
+        &[super::Capability::Commentable]
     }
 
     async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
@@ -138,7 +138,10 @@ impl super::EffektioModel for Comment {
         let mut managers = vec![];
         for p in belongs_to {
             let parent = store.get(&p).await?;
-            if !parent.supports_comments() {
+            if !parent
+                .capabilities()
+                .contains(&super::Capability::Commentable)
+            {
                 tracing::error!(?parent, comment = ?self, "doesn't support comments. can't apply");
                 continue;
             }

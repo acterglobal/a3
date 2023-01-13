@@ -67,8 +67,8 @@ impl super::EffektioModel for Task {
         &self.meta.event_id
     }
 
-    fn supports_comments(&self) -> bool {
-        true
+    fn capabilities(&self) -> &[super::Capability] {
+        &[super::Capability::Commentable]
     }
 
     async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
@@ -242,8 +242,8 @@ impl super::EffektioModel for TaskList {
         &self.meta.event_id
     }
 
-    fn supports_comments(&self) -> bool {
-        true
+    fn capabilities(&self) -> &[super::Capability] {
+        &[super::Capability::Commentable]
     }
 
     async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
