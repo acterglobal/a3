@@ -71,6 +71,10 @@ impl super::EffektioModel for Task {
         true
     }
 
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
+    }
+
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![TaskList::key_from_event(
             &self.inner.task_list_id.event_id,
@@ -121,6 +125,10 @@ impl super::EffektioModel for TaskUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -238,6 +246,10 @@ impl super::EffektioModel for TaskList {
         true
     }
 
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
+    }
+
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
         match model {
             super::AnyEffektioModel::TaskListUpdate(update) => update.apply(&mut self.inner),
@@ -269,8 +281,13 @@ impl super::EffektioModel for TaskListUpdate {
             self.inner.task_list.event_id
         )]
     }
+
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {

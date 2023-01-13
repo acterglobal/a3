@@ -131,6 +131,33 @@ impl super::EffektioModel for Comment {
         true
     }
 
+    async fn execute(self, store: &Store) -> crate::Result<Vec<String>> {
+        let belongs_to = self.belongs_to().unwrap();
+        tracing::trace!(event_id=?self.event_id(), ?belongs_to, "applying comment");
+
+        let mut managers = vec![];
+        for p in belongs_to {
+            let parent = store.get(&p).await?;
+            if !parent.supports_comments() {
+                tracing::error!(?parent, comment = ?self, "doesn't support comments. can't apply");
+                continue;
+            }
+
+            // FIXME: what if we have this twice in the same loop?
+            let mut manager =
+                CommentsManager::from_store_and_event_id(store, parent.event_id()).await;
+            if manager.add_comment(&self).await? {
+                managers.push(manager);
+            }
+        }
+        store.save(self.into()).await?;
+        let mut updates = vec![];
+        for manager in managers {
+            updates.push(manager.save().await?);
+        }
+        Ok(updates)
+    }
+
     fn belongs_to(&self) -> Option<Vec<String>> {
         let mut references = self
             .inner
@@ -193,6 +220,9 @@ impl super::EffektioModel for CommentUpdate {
     }
     fn belongs_to(&self) -> Option<Vec<String>> {
         Some(vec![self.inner.comment.event_id.to_string()])
+    }
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 }
 

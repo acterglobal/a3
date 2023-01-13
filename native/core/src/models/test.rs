@@ -35,4 +35,7 @@ impl EffektioModel for TestModel {
     fn transition(&mut self, _model: &super::AnyEffektioModel) -> crate::Result<bool> {
         Ok(true)
     }
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
+    }
 }
