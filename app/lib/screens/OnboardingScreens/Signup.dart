@@ -190,7 +190,7 @@ class _SignupScreentate extends State<SignupScreen> {
     return CustomOnbaordingButton(
       onPressed: () async {
         if (formKey.currentState!.validate()) {
-          if (networkController.connectionType.value == '0') {
+          if (networkController.connectionType.value == 0) {
             Get.snackbar(
               'No internet',
               'Please turn on internet to continue',

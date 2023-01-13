@@ -58,7 +58,8 @@ impl Store {
         if client
             .store()
             .get_custom_value(DB_VERSION_KEY.as_bytes())
-            .await?
+            .await
+            .map_err(|e| crate::Error::Custom(format!("failed to find DB version key: {e}")))?
             .map(|u| u32::from_le_bytes(u.as_chunks().0[0]))
             .unwrap_or_default()
             < CURRENT_DB_VERSION
@@ -67,7 +68,10 @@ impl Store {
             client
                 .store()
                 .set_custom_value(ALL_MODELS_KEY.as_bytes(), vec![])
-                .await?;
+                .await
+                .map_err(|e| {
+                    crate::Error::Custom(format!("setting all models to [] failed: {e}"))
+                })?;
 
             client
                 .store()
@@ -75,7 +79,8 @@ impl Store {
                     DB_VERSION_KEY.as_bytes(),
                     CURRENT_DB_VERSION.to_le_bytes().to_vec(),
                 )
-                .await?;
+                .await
+                .map_err(|e| crate::Error::Custom(format!("setting db version failed: {e}")))?;
 
             return Ok(Store {
                 fresh: true,
@@ -92,9 +97,17 @@ impl Store {
             .store()
             .get_custom_value(ALL_MODELS_KEY.as_bytes())
             .await?
-            .map(|v| serde_json::from_slice::<Vec<String>>(&v))
-            .transpose()?
-        {
+            .map(|v| {
+                if v.is_empty() {
+                    Ok(vec![])
+                } else {
+                    serde_json::from_slice::<Vec<String>>(&v)
+                }
+            })
+            .transpose()
+            .map_err(|e| {
+                crate::Error::Custom(format!("deserializing all models index failed: {e}"))
+            })? {
             try_join_all(
                 v.iter()
                     .map(|k| get_from_store::<AnyEffektioModel>(client.clone(), k)),

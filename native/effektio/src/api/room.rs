@@ -547,15 +547,20 @@ impl Room {
                     Ok(AnyTimelineEvent::State(s)) => {
                         bail!("Invalid AnyTimelineEvent::State: {:?}", s)
                     }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) => {
-                        if let Some(r) = r.as_original() {
-                            info!("RoomRedaction: {:?}", r.content);
-                        }
-                        bail!("Invalid AnyMessageLikeEvent::RoomRedaction: {:?}", r)
-                    }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomEncrypted(e))) => {
                         if let Some(e) = e.as_original() {
                             info!("RoomEncrypted: {:?}", e.content);
+                            let msg = RoomMessage::from_sync_event(
+                                None,
+                                None,
+                                e.event_id.to_string(),
+                                e.sender.to_string(),
+                                e.origin_server_ts.get().into(),
+                                "Encrypted".to_string(),
+                                &r,
+                                false, // not needed for parent msg
+                            );
+                            return Ok(msg);
                         }
                         bail!("Invalid AnyMessageLikeEvent::RoomEncrypted: {:?}", e)
                     }
@@ -588,6 +593,23 @@ impl Room {
                                 Ok(msg)
                             }
                         }
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(e))) => {
+                        if let Some(e) = e.as_original() {
+                            info!("RoomRedaction: {:?}", e.content);
+                            let msg = RoomMessage::from_sync_event(
+                                None,
+                                None,
+                                e.event_id.to_string(),
+                                e.sender.to_string(),
+                                e.origin_server_ts.get().into(),
+                                "RedactedMessage".to_string(),
+                                &r,
+                                false, // not needed for parent msg
+                            );
+                            return Ok(msg);
+                        }
+                        bail!("Invalid AnyMessageLikeEvent::RoomRedaction: {:?}", r)
                     }
                     Ok(AnyTimelineEvent::MessageLike(_)) => {
                         bail!("Invalid AnyTimelineEvent::MessageLike: other")
