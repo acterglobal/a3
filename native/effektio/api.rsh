@@ -16,6 +16,12 @@ fn register_with_registration_token(basepath: string, username: string, password
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
 
+/// Representing a time frame
+object Duration {}
+
+fn duration_from_secs(secs: u64) -> Duration;
+
+
 /// Representing a color
 object Color {
     /// as rgba in u8
@@ -804,7 +810,20 @@ object Client {
     /// the Tasks lists of this Group
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
 
+    /// create default group
     fn create_effektio_group(settings: CreateGroupSettings) -> Future<Result<RoomId>>;
+
+    /// listen to updates to any model key
+    fn subscribe(key: string) -> Stream<bool>;
+
+    /// Fetch the Comment or use its event_id to wait for it to come down the wire
+    fn wait_for_comment(key: string, timeout: Option<Duration>) -> Future<Result<Comment>>;
+
+    /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
+    fn wait_for_task_list(key: string, timeout: Option<Duration>) -> Future<Result<TaskList>>;
+
+    /// Fetch the Task or use its event_id to wait for it to come down the wire
+    fn wait_for_task(key: string, timeout: Option<Duration>) -> Future<Result<Task>>;
 }
 
 object UserProfile {

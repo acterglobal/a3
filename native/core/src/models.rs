@@ -4,6 +4,8 @@ mod faq;
 mod news;
 mod tag;
 mod tasks;
+#[cfg(test)]
+mod test;
 
 pub use crate::store::Store;
 pub use color::Color;
@@ -19,6 +21,9 @@ pub use news::News;
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
+
+#[cfg(test)]
+pub use test::{TestModel, TestModelBuilder, TestModelBuilderError};
 
 use enum_dispatch::enum_dispatch;
 
@@ -78,6 +83,8 @@ pub enum AnyEffektioModel {
     // more generics
     Comment,
     CommentUpdate,
+    #[cfg(test)]
+    TestModel,
 }
 
 impl AnyEffektioModel {
@@ -216,7 +223,7 @@ pub mod mocks {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
     use crate::Result;
     use serde_json;
