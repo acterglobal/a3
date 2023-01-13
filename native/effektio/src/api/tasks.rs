@@ -10,6 +10,7 @@ use crate::UserId;
 use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
+use core::time::Duration;
 use effektio_core::{
     events::{
         self,
@@ -34,6 +35,40 @@ use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
 
 impl Client {
+    pub async fn wait_for_task_list(
+        &self,
+        key: String,
+        timeout: Option<Box<Duration>>,
+    ) -> Result<TaskList> {
+        let AnyEffektioModel::TaskList(content) = self.wait_for(key.clone(), timeout).await? else {
+            bail!("{key} is not a task");
+        };
+        let room = self
+            .client
+            .get_room(content.room_id())
+            .context("Room not found")?;
+        Ok(TaskList {
+            client: self.clone(),
+            room,
+            content,
+        })
+    }
+
+    pub async fn wait_for_task(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Task> {
+        let AnyEffektioModel::Task(content) = self.wait_for(key.clone(), timeout).await? else {
+            bail!("{key} is not a task");
+        };
+        let room = self
+            .client
+            .get_room(content.room_id())
+            .context("Room not found")?;
+        Ok(Task {
+            client: self.clone(),
+            room,
+            content,
+        })
+    }
+
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();

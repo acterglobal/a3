@@ -32,6 +32,10 @@ impl Task {
         &self.inner.title
     }
 
+    pub fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
+    }
+
     pub fn is_done(&self) -> bool {
         self.inner
             .progress_percent
@@ -183,6 +187,20 @@ impl TaskList {
     pub fn tasks_key(&self) -> String {
         format!("{}::{TASKS_KEY}", self.meta.event_id)
     }
+
+    pub fn key_from_event(event_id: &EventId) -> String {
+        event_id.to_string()
+    }
+
+    pub fn redacted(&self) -> bool {
+        false
+    }
+
+    pub fn updater(&self) -> TaskListUpdateBuilder {
+        TaskListUpdateBuilder::default()
+            .task_list(self.meta.event_id.to_owned())
+            .to_owned()
+    }
 }
 
 impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
@@ -208,27 +226,10 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
     }
 }
 
-impl TaskList {
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
-
-    pub fn redacted(&self) -> bool {
-        false
-    }
-
-    pub fn updater(&self) -> TaskListUpdateBuilder {
-        TaskListUpdateBuilder::default()
-            .task_list(self.meta.event_id.to_owned())
-            .to_owned()
-    }
-}
-
 impl super::EffektioModel for TaskList {
     fn indizes(&self) -> Vec<String> {
         vec![KEYS::TASKS.to_owned()]
     }
-
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }

@@ -29,7 +29,7 @@ serde = "1.0.136"
 serde_json = "1.0.82"
 serde_repr = "0.1"
 thiserror = "1.0"
-tracing = "0.1.36"
+tracing = "0.1.37"
 url = { version = "2.2.2", features = ["serde"] }
 
 # with-mocks
@@ -40,7 +40,17 @@ rand = { version = "0.8", optional = true }
 workspace = true
 default-features = false
 
+[dev-dependencies]
+tokio = { version = "1", features = ["rt", "macros"]}
+tracing = { version = "0.1.37", default-features = false, features = ["log"] }
+env_logger = { version = "0.10.0" }
+
 [dev-dependencies.matrix-sdk]
 workspace = true
 features = ["rustls-tls"]
 default-features = false
+
+[dev-dependencies.matrix-sdk-base]
+workspace = true
+default-features = false
+

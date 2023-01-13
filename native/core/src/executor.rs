@@ -48,6 +48,18 @@ impl Executor {
         }
     }
 
+    pub async fn wait_for(&self, key: String) -> crate::Result<AnyEffektioModel> {
+        let mut subscribe = self.subscribe(key.clone());
+        let Ok(model) = self.store.get(&key).await else {
+            if let Err(e) = subscribe.recv().await {
+                tracing::error!(key, "Receiving pong faild: {e}");
+            }
+            return self.store.get(&key).await
+        };
+
+        Ok(model)
+    }
+
     pub fn notify(&self, keys: Vec<String>) {
         for key in keys {
             let span = tracing::trace_span!("Asked to notify", key = key);
@@ -74,8 +86,10 @@ impl Executor {
     pub async fn handle(&self, model: AnyEffektioModel) -> Result<()> {
         tracing::trace!(event_id=?model.event_id(), ?model, "handling");
         let Some(belongs_to) = model.belongs_to() else {
-            tracing::trace!(event_id=?model.event_id(), "saving simple model");
+            let event_id = model.event_id().to_string();
+            tracing::trace!(?event_id, "saving simple model");
             self.store.save(model).await?;
+            self.notify(vec![event_id]);
             return Ok(())
         };
 
@@ -148,5 +162,101 @@ impl Executor {
             }
         }
         Ok(models)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::models::TestModelBuilder;
+    use crate::ruma::{api::MatrixVersion, event_id};
+    use env_logger;
+    use matrix_sdk::Client;
+
+    async fn fresh_executor() -> crate::Result<Executor> {
+        let client = Client::builder()
+            .homeserver_url("http://localhost")
+            .server_versions([MatrixVersion::V1_5])
+            .store_config(
+                matrix_sdk_base::store::StoreConfig::default()
+                    .state_store(matrix_sdk_base::store::MemoryStore::new()),
+            )
+            .build()
+            .await
+            .unwrap();
+
+        let store = Store::new(client).await?;
+        Executor::new(store).await
+    }
+
+    #[tokio::test]
+    async fn smoke_test() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let _ = fresh_executor().await?;
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribe_simle_model() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id();
+        let sub = executor.subscribe(model_id.to_string());
+        assert!(sub.is_empty());
+
+        executor.handle(model.into()).await?;
+        assert!(!sub.is_empty());
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribe_referenced_model() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id().to_owned();
+        let mut sub = executor.subscribe(model_id.to_string());
+        assert!(sub.is_empty());
+
+        executor.handle(model.into()).await?;
+        assert!(sub.recv().await.is_ok()); // we have one
+        assert!(sub.is_empty());
+
+        let child = TestModelBuilder::default()
+            .simple()
+            .belongs_to(vec![model_id.to_string()])
+            .event_id(event_id!("$advf93m").to_owned())
+            .build()
+            .unwrap();
+
+        executor.handle(child.into()).await?;
+
+        assert!(sub.recv().await.is_ok()); // we have one
+        assert!(sub.is_empty());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn wait_for_simple_model() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let model_id = model.event_id().to_string();
+        // nothing in the store
+        assert!(executor.store().get(&model_id).await.is_err());
+
+        let waiter = executor.wait_for(model_id);
+        executor.handle(model.clone().into()).await?;
+
+        let new_model = waiter.await?;
+
+        let AnyEffektioModel::TestModel(inner_model) = new_model else {
+            panic!("Not a test model")
+        };
+
+        assert_eq!(inner_model, model);
+        Ok(())
     }
 }
