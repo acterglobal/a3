@@ -447,11 +447,11 @@ impl Task {
     }
 
     pub fn utc_due(&self) -> Option<UtcDateTime> {
-        self.content.utc_due.clone()
+        self.content.utc_due
     }
 
     pub fn utc_start(&self) -> Option<UtcDateTime> {
-        self.content.utc_start.clone()
+        self.content.utc_start
     }
 
     pub fn color(&self) -> Option<Color> {
