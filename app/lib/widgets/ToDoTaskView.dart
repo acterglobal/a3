@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:avatar_stack/positions.dart';
+// import 'package:avatar_stack/positions.dart';
 import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio/screens/HomeScreens/todo/ToDoTaskEditor.dart';
-import 'package:effektio/widgets/CompletedTaskCard.dart';
-import 'package:effektio/widgets/IncompleteTaskCard.dart';
+// import 'package:effektio/screens/HomeScreens/todo/ToDoTaskEditor.dart';
+// import 'package:effektio/widgets/CompletedTaskCard.dart';
+// import 'package:effektio/widgets/IncompleteTaskCard.dart';
 import 'package:flutter/material.dart';
 
 class ToDoTaskView extends StatelessWidget {

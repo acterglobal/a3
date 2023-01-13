@@ -1,5 +1,5 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/todo_controller.dart';
+// import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -38,7 +38,9 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: ToDoTheme.secondaryColor,
@@ -50,9 +52,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                                 color: ToDoTheme.calendarColor,
                                 size: 16,
                               ),
-                              const SizedBox(
-                                width: 4,
-                              ),
+                              const SizedBox(width: 4),
                               Text(
                                 'Today',
                                 style: ToDoTheme.calendarTextStyle.copyWith(
@@ -65,7 +65,9 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: ToDoTheme.secondaryColor,
@@ -77,9 +79,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                                 color: ToDoTheme.calendarColor,
                                 size: 16,
                               ),
-                              const SizedBox(
-                                width: 4,
-                              ),
+                              const SizedBox(width: 4),
                               Text(
                                 'Tomorrow',
                                 style: ToDoTheme.calendarTextStyle.copyWith(
@@ -92,7 +92,9 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 8, horizontal: 16),
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: ToDoTheme.secondaryColor,
@@ -104,9 +106,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                                 color: ToDoTheme.calendarColor,
                                 size: 16,
                               ),
-                              const SizedBox(
-                                width: 4,
-                              ),
+                              const SizedBox(width: 4),
                               Text(
                                 'Pick a day',
                                 style: ToDoTheme.calendarTextStyle.copyWith(
@@ -135,15 +135,14 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                                     color: ToDoTheme.secondaryColor,
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 8),
+                                  child: const Padding(
+                                    padding: EdgeInsets.only(left: 8),
                                     child: TextField(
-                                      style:
-                                          const TextStyle(color: Colors.white),
+                                      style: TextStyle(color: Colors.white),
                                       cursorColor: Colors.grey,
                                       // focusNode: todoController.addTaskNode,
                                       autofocus: true,
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         hintText: 'Add a comment',
                                         hintStyle: TextStyle(
                                           color: Colors.grey,
@@ -162,8 +161,10 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                                   ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
                                 },
-                                icon: const Icon(FlutterIcons.send_fea,
-                                    color: Colors.pink),
+                                icon: const Icon(
+                                  FlutterIcons.send_fea,
+                                  color: Colors.pink,
+                                ),
                               )
                             ],
                           ),

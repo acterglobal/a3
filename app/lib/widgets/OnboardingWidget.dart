@@ -20,7 +20,8 @@ class CustomOnbaordingButton extends StatelessWidget {
       child: ElevatedButton(
         style: ButtonStyle(
           padding: MaterialStateProperty.all<EdgeInsets>(
-              const EdgeInsets.symmetric(vertical: 18)),
+            const EdgeInsets.symmetric(vertical: 18),
+          ),
           shape: MaterialStateProperty.resolveWith<OutlinedBorder>(
             (Set<MaterialState> states) {
               if (states.contains(MaterialState.pressed)) {
