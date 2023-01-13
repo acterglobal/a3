@@ -60,6 +60,7 @@ impl Client {
         }
         Ok(task_lists)
     }
+
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let client = self.clone();
         let mdl = self.store.get(key).await?;
@@ -99,6 +100,7 @@ impl Group {
         }
         Ok(task_lists)
     }
+
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let mdl = self.client.store().get(key).await?;
 
@@ -214,16 +216,16 @@ impl std::ops::Deref for TaskList {
 }
 
 impl TaskList {
-    pub fn categories(&self) -> Vec<String> {
-        self.content.categories.clone()
+    pub fn name(&self) -> String {
+        self.content.name.clone()
     }
 
     pub fn description_text(&self) -> Option<String> {
         self.description.as_ref().map(|t| t.body.clone())
     }
 
-    pub fn sort_order(&self) -> u32 {
-        self.content.sort_order
+    pub fn subscribers(&self) -> Vec<OwnedUserId> {
+        self.content.subscribers.clone()
     }
 
     pub fn role(&self) -> Option<String> {
@@ -233,8 +235,24 @@ impl TaskList {
             .and_then(|t| serde_json::to_string(t).ok())
     }
 
+    pub fn sort_order(&self) -> u32 {
+        self.content.sort_order
+    }
+
+    pub fn color(&self) -> Option<Color> {
+        self.content.color.clone()
+    }
+
     pub fn time_zone(&self) -> Option<String> {
         self.content.time_zone.as_ref().map(ToString::to_string)
+    }
+
+    pub fn keywords(&self) -> Vec<String> {
+        self.content.keywords.clone()
+    }
+
+    pub fn categories(&self) -> Vec<String> {
+        self.content.categories.clone()
     }
 }
 
@@ -279,6 +297,7 @@ impl TaskList {
             content,
         })
     }
+
     pub fn update_builder(&self) -> Result<TaskListUpdateBuilder> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only update tasks in joined rooms");
@@ -325,35 +344,6 @@ impl TaskList {
             .await?)
     }
 
-    pub async fn subscribers(&self) -> Result<Vec<OwnedUserId>> {
-        if !self.content.stats().has_tasks() {
-            return Ok(vec![]);
-        };
-        let tasks_key = self.content.tasks_key();
-        let client = self.client.clone();
-        let room = self.room.clone();
-        RUNTIME
-            .spawn(async move {
-                let mut users: Vec<OwnedUserId> = vec![];
-                client
-                    .store()
-                    .get_list(&tasks_key)
-                    .await
-                    .into_iter()
-                    .flatten()
-                    .map(|e| {
-                        if let AnyEffektioModel::Task(content) = e {
-                            let mut subscribers = content.subscribers();
-                            while let Some(user_id) = subscribers.pop() {
-                                users.push(user_id);
-                            }
-                        }
-                    });
-                Ok(users)
-            })
-            .await?
-    }
-
     pub async fn comments(&self) -> Result<crate::CommentsManager> {
         let client = self.client.clone();
         let room = self.room.clone();
@@ -386,12 +376,20 @@ impl std::ops::Deref for Task {
 
 /// helpers for content
 impl Task {
+    pub fn title(&self) -> String {
+        self.content.title.clone()
+    }
+
     pub fn description_text(&self) -> Option<String> {
         self.content.description.as_ref().map(|t| t.body.clone())
     }
 
-    pub fn progress_percent(&self) -> Option<u8> {
-        self.content.progress_percent
+    pub fn assignees(&self) -> Vec<OwnedUserId> {
+        self.content.assignees.clone()
+    }
+
+    pub fn subscribers(&self) -> Vec<OwnedUserId> {
+        self.content.subscribers.clone()
     }
 
     pub fn sort_order(&self) -> u32 {
@@ -411,6 +409,34 @@ impl Task {
             Priority::SecondLowest => 8,
             Priority::Lowest => 9,
         })
+    }
+
+    pub fn utc_due(&self) -> Option<UtcDateTime> {
+        self.content.utc_due.clone()
+    }
+
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
+        self.content.utc_start.clone()
+    }
+
+    pub fn color(&self) -> Option<Color> {
+        self.content.color.clone()
+    }
+
+    pub fn is_done(&self) -> bool {
+        self.content.is_done()
+    }
+
+    pub fn progress_percent(&self) -> Option<u8> {
+        self.content.progress_percent
+    }
+
+    pub fn keywords(&self) -> Vec<String> {
+        self.content.keywords.clone()
+    }
+
+    pub fn categories(&self) -> Vec<String> {
+        self.content.categories.clone()
     }
 }
 
@@ -958,6 +984,7 @@ impl Group {
             content: Default::default(),
         })
     }
+
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create tasks for groups we are not part on")

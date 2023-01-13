@@ -22,7 +22,7 @@ object Color {
     fn rgba_u8() -> (u8, u8, u8, u8);
 }
 
-object UtcDateTime { 
+object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
@@ -41,11 +41,11 @@ object News {
     /// the number of comments on this item
     fn comments_count() -> u32;
     /// if given, the specific foreground color
-    fn fg_color() -> Option<Color>; 
+    fn fg_color() -> Option<Color>;
     /// if given, the specific background color
-    fn bg_color() -> Option<Color>; 
+    fn bg_color() -> Option<Color>;
     /// if given, the image
-    fn image() -> Option<Vec<u8>>; 
+    fn image() -> Option<Vec<u8>>;
 }
 
 object Tag {
@@ -54,7 +54,7 @@ object Tag {
     /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
     fn hash_tag() -> string;
     /// if given, the specific color for this tag
-    fn color() -> Option<Color>; 
+    fn color() -> Option<Color>;
 }
 
 /// A news object
@@ -327,7 +327,7 @@ object Conversation {
 }
 
 object CommentDraft {
-    /// set the content of the draft to body 
+    /// set the content of the draft to body
     fn content_text(body: string);
 
     /// set the content to a formatted body of html_body, where body is the tag-stripped version
@@ -359,7 +359,7 @@ object CommentsManager {
     /// Does this item have any comments?
     fn has_comments() -> bool;
 
-    /// How many comments does this item have 
+    /// How many comments does this item have
     fn comments_count() -> u32;
 
     /// draft a new comment for this item
@@ -400,7 +400,7 @@ object Task {
 
     /// When this was started
     fn utc_start() -> Option<UtcDateTime>;
-    
+
     /// Has this been colored in?
     fn color() -> Option<Color>;
 
@@ -534,11 +534,9 @@ object TaskDraft {
     fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
     fn unset_utc_start();
 
-
     /// set the sort order for this task list
     fn progress_percent(progress_percent: u8);
     fn unset_progress_percent();
-    
 
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -566,17 +564,17 @@ object TaskList {
     fn description_text() -> Option<string>;
 
     /// who wants to be informed on updates about this?
-    fn subscribers() -> Future<Result<Vec<UserId>>>;
+    fn subscribers() -> Vec<UserId>;
 
     /// does this list have a special role?
     fn role() -> Option<string>;
 
     /// order in the list
     fn sort_order() -> u32;
-    
+
     /// Has this been colored in?
     fn color() -> Option<Color>;
-    
+
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
 

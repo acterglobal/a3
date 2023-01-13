@@ -31,7 +31,7 @@ class ToDoController extends GetxController {
           (await defaultGroup!.taskLists()).toList();
 
       for (TaskList todoList in defaultGroupTaskLists) {
-        var users = await todoList.subscribers();
+        var users = todoList.subscribers();
         if (users.isNotEmpty) {
           for (var user in users.toList()) {
             subscribers.add(user.toString());
@@ -55,7 +55,7 @@ class ToDoController extends GetxController {
         );
         todoLists.add(item);
       }
-      todoLists.sort(((item1, item2) => item1.index.compareTo(item2.index)));
+      todoLists.sort((item1, item2) => item1.index.compareTo(item2.index));
       // reset count
       completedTasks = 0;
       pendingTasks = 0;
