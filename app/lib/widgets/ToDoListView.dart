@@ -126,10 +126,10 @@ class ToDoListView extends StatelessWidget {
   Widget buildDescription(String? description) {
     return SizedBox(
       child: (description != null || description!.isNotEmpty)
-          ? const SizedBox.shrink()
-          : description.length > 80
+          ? description.length > 80
               ? ExpandableText(description)
-              : Text(description, style: ToDoTheme.descriptionTextStyle),
+              : Text(description, style: ToDoTheme.descriptionTextStyle)
+          : const SizedBox.shrink(),
     );
   }
 

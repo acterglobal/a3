@@ -12,7 +12,7 @@ class AddTaskDialogBox extends StatefulWidget {
 }
 
 class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
-  // ToDoController todoController = ToDoController.instance;
+  final titleInputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,142 +35,13 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: ToDoTheme.secondaryColor,
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                FlutterIcons.calendar_weekend_outline_mco,
-                                color: ToDoTheme.calendarColor,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Today',
-                                style: ToDoTheme.calendarTextStyle.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: ToDoTheme.secondaryColor,
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                FlutterIcons.calendar_weekend_outline_mco,
-                                color: ToDoTheme.calendarColor,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Tomorrow',
-                                style: ToDoTheme.calendarTextStyle.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: ToDoTheme.secondaryColor,
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                FlutterIcons.calendar_weekend_outline_mco,
-                                color: ToDoTheme.calendarColor,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Pick a day',
-                                style: ToDoTheme.calendarTextStyle.copyWith(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
+                      children: <Widget>[
+                        _buildScheduleBtn('Today'),
+                        _buildScheduleBtn('Tomorrow'),
+                        _buildScheduleBtn('Pick a Day')
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    color: ToDoTheme.secondaryColor,
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  child: const Padding(
-                                    padding: EdgeInsets.only(left: 8),
-                                    child: TextField(
-                                      style: TextStyle(color: Colors.white),
-                                      cursorColor: Colors.grey,
-                                      // focusNode: todoController.addTaskNode,
-                                      autofocus: true,
-                                      decoration: InputDecoration(
-                                        hintText: 'Add a comment',
-                                        hintStyle: TextStyle(
-                                          color: Colors.grey,
-                                        ),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  const snackBar = SnackBar(
-                                    content: Text('Send icon tapped'),
-                                  );
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(snackBar);
-                                },
-                                icon: const Icon(
-                                  FlutterIcons.send_fea,
-                                  color: Colors.pink,
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
+                    _buildInput(),
                   ],
                 ),
               ),
@@ -178,6 +49,107 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildInput() {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Column(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: ToDoTheme.secondaryColor,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: TextField(
+                      controller: titleInputController,
+                      onChanged: (val) {
+                        setState(() {
+                          titleInputController.text = val;
+                          //prevent setting cursor position
+                          titleInputController.selection =
+                              TextSelection.fromPosition(
+                            TextPosition(
+                              offset: titleInputController.text.length,
+                            ),
+                          );
+                        });
+                      },
+                      style: const TextStyle(color: Colors.white),
+                      cursorColor: Colors.grey,
+                      // focusNode: todoController.addTaskNode,
+                      autofocus: true,
+                      decoration: const InputDecoration(
+                        hintText: 'What is the title of task?',
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                        ),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: titleInputController.text.isEmpty
+                    ? null
+                    : () {
+                        const snackBar = SnackBar(
+                          content: Text('Send icon tapped'),
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      },
+                icon: Icon(
+                  FlutterIcons.send_fea,
+                  color: titleInputController.text.isEmpty
+                      ? Colors.grey
+                      : Colors.pink,
+                ),
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScheduleBtn(String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        vertical: 8,
+        horizontal: 16,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: ToDoTheme.secondaryColor,
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            FlutterIcons.calendar_weekend_outline_mco,
+            color: ToDoTheme.calendarColor,
+            size: 16,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            value,
+            style: ToDoTheme.calendarTextStyle.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          )
+        ],
+      ),
     );
   }
 }

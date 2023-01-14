@@ -327,7 +327,7 @@ class NotificationPopUpTheme {
     TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.w300,
-      color : networkTextColor,
+      color: networkTextColor,
     ),
   );
 }
@@ -475,6 +475,12 @@ class ToDoTheme {
     color: secondaryTextColor,
     fontSize: 12,
     fontWeight: FontWeight.w500,
+  );
+
+  static const selectTeamTextStyle = TextStyle(
+    color: primaryTextColor,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
   );
 
   // Background Scheme.

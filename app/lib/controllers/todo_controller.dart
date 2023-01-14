@@ -15,6 +15,7 @@ class ToDoController extends GetxController {
   RxBool expandBtn = false.obs;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
+  RxString selectedTeam = ''.obs;
   FocusNode addTaskNode = FocusNode();
 
   ToDoController({required this.client}) : super();
@@ -47,7 +48,7 @@ class ToDoController extends GetxController {
           completedTasks: completedTasks,
           pendingTasks: pendingTasks,
           subscribers: subscribers,
-          // color: todoList.color() as Color?,
+          color: todoList.color() as Color? ?? Colors.blue,
           description: todoList.descriptionText(),
           tags: asDartStringList(todoList.keywords().toList()),
           role: todoList.role(),
@@ -88,7 +89,7 @@ class ToDoController extends GetxController {
         isDone: task.isDone(),
         tags: asDartStringList(task.keywords().toList()),
         subscribers: subscribers,
-        // color: task.color() as Color?,
+        color: task.color() as Color? ?? Colors.blue,
         description: task.descriptionText() ?? '',
         priority: task.priority() ?? 0,
         progressPercent: task.progressPercent() ?? 0,
@@ -119,14 +120,19 @@ class ToDoController extends GetxController {
     selectedValueIndex.value = index;
   }
 
-  ///ToDo list card expand.
+  //ToDo list card expand.
   void toggleCardExpand() {
     cardExpand.value = !cardExpand.value;
   }
 
-  /// Completed tasks expand.
+  // Completed tasks expand.
   void toggleExpandBtn() {
     expandBtn.value = !expandBtn.value;
+  }
+
+  // setter for selected team.
+  void setSelectedTeam(String val) {
+    selectedTeam.value = val;
   }
 
   // max length counter for task name.
