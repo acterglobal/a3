@@ -2,7 +2,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
-import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/CreateTodo.dart';
 import 'package:effektio/widgets/ToDoListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
@@ -62,7 +62,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        CreateTaskScreen(controller: todoController),
+                        CreateTodoScreen(controller: todoController),
                   ),
                 );
               },
@@ -87,19 +87,21 @@ class _ToDoScreenState extends State<ToDoScreen> {
           Obx(
             () => Padding(
               padding: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Row(
-                    children: <Widget>[
-                      radioButton(text: buttonText[0], index: 0),
-                      radioButton(text: buttonText[1], index: 1),
-                      radioButton(text: buttonText[2], index: 2),
-                      const Spacer(),
-                      radioButton(text: buttonText[3], index: 3),
-                    ],
-                  ),
-                  buttonWidgets[todoController.selectedValueIndex.value],
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
+                      children: <Widget>[
+                        radioButton(text: buttonText[0], index: 0),
+                        radioButton(text: buttonText[1], index: 1),
+                        radioButton(text: buttonText[2], index: 2),
+                        const Spacer(),
+                        radioButton(text: buttonText[3], index: 3),
+                      ],
+                    ),
+                    buttonWidgets[todoController.selectedValueIndex.value],
+                  ],
+                ),
               ),
             ),
           ),

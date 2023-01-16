@@ -151,7 +151,7 @@ class ToDoListView extends StatelessWidget {
           style: ToDoTheme.listSubtitleTextStyle,
         ),
         Text(
-          '${todo.pendingTasks}/${todo.completedTasks + todo.pendingTasks} completed',
+          '${todo.pendingTasks}/${todo.completedTasks! + todo.pendingTasks!} completed',
           style: ToDoTheme.listSubtitleTextStyle.copyWith(
             color: ToDoTheme.calendarColor,
           ),

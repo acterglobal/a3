@@ -139,8 +139,11 @@ class _EffektioHomeState extends State<EffektioHome>
     if (!client.isGuest()) {
       await client.groups().then(
         (groups) async {
-          if (groups.toList().isEmpty && !client.isGuest()) {
-            CreateGroupSettings settings = sdk.newGroupSettings('test space');
+          if (groups.toList().isEmpty) {
+            // Create default effektio group when client synced.
+            CreateGroupSettings settings = sdk.newGroupSettings(
+              '${simplifyUserId(client.userId().toString())} Team',
+            );
             settings.alias(UniqueKey().toString());
             settings.visibility('Public');
             settings.addInvitee('@sisko:matrix.org');

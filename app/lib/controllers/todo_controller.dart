@@ -1,14 +1,23 @@
+import 'package:effektio/models/Team.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, FfiString, Group, Task, TaskList, TaskListDraft;
+    show
+        Client,
+        CreateGroupSettings,
+        FfiString,
+        Group,
+        RoomProfile,
+        Task,
+        TaskList;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
   final Client client;
-  Group? defaultGroup;
   late final List<ToDoList>? todoList;
+  RxList<ToDoTask> draftToDoTasks = <ToDoTask>[].obs;
   int completedTasks = 0;
   int pendingTasks = 0;
   RxBool cardExpand = true.obs;
@@ -20,47 +29,66 @@ class ToDoController extends GetxController {
 
   ToDoController({required this.client}) : super();
 
+  Future<void> createTeam(String name) async {
+    final sdk = await EffektioSdk.instance;
+    CreateGroupSettings settings = sdk.newGroupSettings(name);
+    settings.alias(UniqueKey().toString());
+    settings.visibility('Public');
+    settings.addInvitee('@sisko:matrix.org');
+    await client.createEffektioGroup(settings);
+  }
+
+  Future<List<Team>> getTeams() async {
+    List<Team> teams = [];
+    List<Group> listTeams =
+        await client.groups().then((groups) => groups.toList());
+    if (listTeams.isNotEmpty) {
+      for (var team in listTeams) {
+        RoomProfile teamProfile = await team.getProfile();
+        // Team avatars are yet to be implemented.
+        Team item = Team(
+          name: teamProfile.getDisplayName(),
+        );
+        teams.add(item);
+      }
+    }
+    return teams;
+  }
+
   Future<List<ToDoList>> getTodoList() async {
     List<ToDoList> todoLists = [];
     List<String> subscribers = [];
-
-    /// only consider default group for testing purposes. Spaces design concept
-    /// is needed for implementation.
-    defaultGroup = (await client.groups()).toList()[0];
-    if (defaultGroup != null) {
-      List<TaskList> defaultGroupTaskLists =
-          (await defaultGroup!.taskLists()).toList();
-
-      for (TaskList todoList in defaultGroupTaskLists) {
-        var users = todoList.subscribers();
-        if (users.isNotEmpty) {
-          for (var user in users.toList()) {
-            subscribers.add(user.toString());
-          }
+    List<TaskList> taskLists =
+        await client.taskLists().then((data) => data.toList());
+    for (TaskList todoList in taskLists) {
+      var users = todoList.subscribers();
+      if (users.isNotEmpty) {
+        for (var user in users.toList()) {
+          subscribers.add(user.toString());
         }
-        var tasks = await getTodoTasks(todoList);
-        calculateTasksRatio(tasks);
-        ToDoList item = ToDoList(
-          index: todoList.sortOrder(),
-          name: todoList.name(),
-          categories: asDartStringList(todoList.categories().toList()),
-          tasks: tasks,
-          completedTasks: completedTasks,
-          pendingTasks: pendingTasks,
-          subscribers: subscribers,
-          color: todoList.color() as Color? ?? Colors.blue,
-          description: todoList.descriptionText(),
-          tags: asDartStringList(todoList.keywords().toList()),
-          role: todoList.role(),
-          timezone: todoList.timeZone(),
-        );
-        todoLists.add(item);
       }
-      todoLists.sort((item1, item2) => item1.index.compareTo(item2.index));
-      // reset count
-      completedTasks = 0;
-      pendingTasks = 0;
+      List<ToDoTask> tasks = await getTodoTasks(todoList);
+      calculateTasksRatio(tasks);
+      ToDoList item = ToDoList(
+        index: todoList.sortOrder(),
+        name: todoList.name(),
+        categories: asDartStringList(todoList.categories().toList()) ?? [],
+        tasks: tasks,
+        completedTasks: completedTasks,
+        pendingTasks: pendingTasks,
+        subscribers: subscribers,
+        color: todoList.color() as Color?,
+        description: todoList.descriptionText() ?? '',
+        tags: asDartStringList(todoList.keywords().toList()) ?? [],
+        role: todoList.role() ?? '',
+        timezone: todoList.timeZone() ?? '',
+      );
+      todoLists.add(item);
     }
+    // reset count
+    completedTasks = 0;
+    pendingTasks = 0;
+
     return todoLists;
   }
 
@@ -85,11 +113,11 @@ class ToDoController extends GetxController {
         index: task.sortOrder(),
         name: task.title(),
         assignees: assignees,
-        categories: asDartStringList(task.categories().toList()),
+        categories: asDartStringList(task.categories().toList()) ?? [],
         isDone: task.isDone(),
-        tags: asDartStringList(task.keywords().toList()),
+        tags: asDartStringList(task.keywords().toList()) ?? [],
         subscribers: subscribers,
-        color: task.color() as Color? ?? Colors.blue,
+        color: task.color() as Color?,
         description: task.descriptionText() ?? '',
         priority: task.priority() ?? 0,
         progressPercent: task.progressPercent() ?? 0,
@@ -104,16 +132,50 @@ class ToDoController extends GetxController {
       );
       todoTasks.add(item);
     }
-    todoTasks.sort(((item1, item2) => item1.index.compareTo(item2.index)));
     return todoTasks;
   }
 
-  Future<String> createToDoList(String name, String? description) async {
-    TaskListDraft taskListDraft = defaultGroup!.taskListDraft();
-    taskListDraft.name(name);
-    taskListDraft.descriptionText(description!);
-    var eventId = await taskListDraft.send();
-    return eventId.toString();
+  // Future<String> createToDoList(String name, String? description) async {
+  //   TaskListDraft taskListDraft = defaultGroup!.taskListDraft();
+  //   taskListDraft.name(name);
+  //   taskListDraft.descriptionText(description!);
+  //   var eventId = await taskListDraft.send();
+
+  //   return eventId.toString();
+  // }
+
+  void createToDoTaskDraft(String name, String? description, bool isDone) {
+    ToDoTask item = ToDoTask(
+      index: 0,
+      name: name,
+      description: description ?? '',
+      isDone: isDone,
+      assignees: [],
+      categories: [],
+      tags: [],
+      subscribers: [],
+    );
+    draftToDoTasks.add(item);
+  }
+
+  void updateToDoTaskDraft(
+    String name,
+    String? description,
+    bool isDone,
+    int idx,
+  ) {
+    ToDoTask item = ToDoTask(
+      index: 0,
+      name: name,
+      description: description ?? '',
+      isDone: isDone,
+      assignees: [],
+      categories: [],
+      tags: [],
+      subscribers: [],
+    );
+    draftToDoTasks.remove(draftToDoTasks[idx]);
+    draftToDoTasks.insert(idx, item);
   }
 
   void updateButtonIndex(int index) {
@@ -139,6 +201,7 @@ class ToDoController extends GetxController {
   void updateWordCount(int val) {
     if (val == 0) {
       taskNameCount.value = 30;
+      selectedTeam.value = '';
     } else {
       taskNameCount.value = 30 - val;
     }
@@ -156,10 +219,13 @@ class ToDoController extends GetxController {
   }
 
   //helper function to convert list ffiString object to DartString.
-  List<String> asDartStringList(List<FfiString> list) {
-    final List<String> stringList =
-        list.map((ffiString) => ffiString.toDartString()).toList();
-    return stringList;
+  List<String>? asDartStringList(List<FfiString> list) {
+    if (list.isNotEmpty) {
+      final List<String> stringList =
+          list.map((ffiString) => ffiString.toDartString()).toList();
+      return stringList;
+    }
+    return null;
   }
 
   // void handleCheckClick(int position) {

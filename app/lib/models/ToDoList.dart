@@ -3,27 +3,27 @@ import 'package:flutter/widgets.dart';
 
 //Todo List model.
 class ToDoList {
-  final int index;
+  final int? index;
   final String name;
-  final List<String> categories;
-  final Color? color;
   final String? description;
   final List<ToDoTask> tasks;
-  final int completedTasks;
-  final int pendingTasks;
+  final int? completedTasks;
+  final int? pendingTasks;
+  final Color? color;
   final List<String>? tags;
-  final List<String> subscribers;
+  final List<String>? subscribers;
+  final List<String>? categories;
   final String? role;
   final String? timezone;
 
   ToDoList({
-    required this.index,
+    this.index,
     required this.name,
-    required this.categories,
     required this.tasks,
-    required this.subscribers,
-    required this.completedTasks,
-    required this.pendingTasks,
+    this.completedTasks,
+    this.pendingTasks,
+    this.categories,
+    this.subscribers,
     this.color,
     this.description,
     this.tags,
