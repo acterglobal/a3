@@ -97,9 +97,12 @@ impl Executor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::models::TestModelBuilder;
+    use crate::events::comments::CommentEventContent;
+    use crate::events::BelongsTo;
+    use crate::models::{Comment, TestModelBuilder};
     use crate::ruma::{api::MatrixVersion, event_id};
     use env_logger;
+    use matrix_sdk::ruma::events::room::message::TextMessageEventContent;
     use matrix_sdk::Client;
 
     async fn fresh_executor() -> crate::Result<Executor> {
@@ -173,7 +176,7 @@ mod tests {
         let executor = fresh_executor().await?;
         let model = TestModelBuilder::default().simple().build().unwrap();
         let parent_id = model.event_id().to_owned();
-        let parent_idx = format!("{parent_id}:comments");
+        let parent_idx = format!("{parent_id}:custom");
         let mut sub = executor.subscribe(parent_idx.clone());
         assert!(sub.is_empty());
 
@@ -189,6 +192,37 @@ mod tests {
             .unwrap();
 
         executor.handle(child.into()).await?;
+
+        assert!(sub.recv().await.is_ok()); // we have one
+        assert!(sub.is_empty());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribe_models_comments_index() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let parent_id = model.event_id().to_owned();
+        let parent_idx = Comment::index_for(&parent_id);
+        let mut sub = executor.subscribe(parent_idx.clone());
+        assert!(sub.is_empty());
+
+        executor.handle(model.into()).await?;
+        assert!(sub.is_empty());
+
+        let comment = Comment {
+            inner: CommentEventContent {
+                content: TextMessageEventContent::plain("First"),
+                on: BelongsTo {
+                    event_id: parent_id,
+                },
+                reply_to: None,
+            },
+            meta: TestModelBuilder::fake_meta(),
+        };
+
+        executor.handle(comment.into()).await?;
 
         assert!(sub.recv().await.is_ok()); // we have one
         assert!(sub.is_empty());

@@ -27,10 +27,14 @@ pub struct CommentsManager {
 }
 
 impl CommentsManager {
+    pub fn stats_field_for<T: AsRef<str>>(parent: &T) -> String {
+        let r = parent.as_ref();
+        format!("{r}::{COMMENTS_STATS_FIELD}")
+    }
     pub async fn from_store_and_event_id(store: &Store, event_id: &EventId) -> CommentsManager {
         let store = store.clone();
         let stats = store
-            .get_raw(&format!("{event_id}::{COMMENTS_STATS_FIELD}"))
+            .get_raw(&Self::stats_field_for(&event_id))
             .await
             .unwrap_or_default();
         CommentsManager {
@@ -43,7 +47,7 @@ impl CommentsManager {
     pub async fn comments(&self) -> crate::Result<Vec<Comment>> {
         Ok(self
             .store
-            .get_list(&format!("{}::{COMMENTS_FIELD}", self.event_id))
+            .get_list(&Comment::index_for(&self.event_id))
             .await?
             .filter_map(|e| match e {
                 AnyEffektioModel::Comment(c) => Some(c),
@@ -69,7 +73,7 @@ impl CommentsManager {
     }
 
     pub fn update_key(&self) -> String {
-        format!("{}::{COMMENTS_STATS_FIELD}", self.event_id)
+        Self::stats_field_for(&self.event_id)
     }
 
     pub async fn save(&self) -> crate::Result<String> {
@@ -88,7 +92,7 @@ impl Deref for CommentsManager {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Comment {
-    inner: CommentEventContent,
+    pub(crate) inner: CommentEventContent,
     pub meta: EventMeta,
 }
 
@@ -100,6 +104,10 @@ impl Deref for Comment {
 }
 
 impl Comment {
+    pub fn index_for<T: AsRef<str>>(parent: &T) -> String {
+        let r = parent.as_ref();
+        format!("{r}::{COMMENTS_FIELD}")
+    }
     pub fn updater(&self) -> CommentUpdateBuilder {
         CommentUpdateBuilder::default()
             .comment(self.meta.event_id.to_owned())
@@ -119,7 +127,7 @@ impl super::EffektioModel for Comment {
         self.belongs_to()
             .unwrap() // we always have some as comments
             .into_iter()
-            .map(|v| format!("{v}::{COMMENTS_FIELD}"))
+            .map(|v| Comment::index_for(&v))
             .collect()
     }
 
@@ -153,8 +161,7 @@ impl super::EffektioModel for Comment {
                 managers.push(manager);
             }
         }
-        store.save(self.into()).await?;
-        let mut updates = vec![];
+        let mut updates = store.save(self.into()).await?;
         for manager in managers {
             updates.push(manager.save().await?);
         }
