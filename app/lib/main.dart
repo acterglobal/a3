@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:beamer/beamer.dart';
+import 'package:effektio/common/routes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
@@ -9,15 +11,11 @@ import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
+
 // import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
-import 'package:effektio/screens/HomeScreens/todo/AddToDo.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDo.dart';
-import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
-import 'package:effektio/screens/OnboardingScreens/Signup.dart';
-import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
-import 'package:effektio/screens/UserScreens/SocialProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
@@ -55,11 +53,15 @@ Future<void> startApp() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(const Effektio());
+  runApp(Effektio());
 }
 
 class Effektio extends StatelessWidget {
-  const Effektio({Key? key}) : super(key: key);
+  Effektio({Key? key}) : super(key: key);
+
+  final routerDelegate = BeamerDelegate(
+    locationBuilder: Routes.getRoutes(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +69,7 @@ class Effektio extends StatelessWidget {
     return Portal(
       child: Themed(
         child: OverlaySupport.global(
-          child: GetMaterialApp(
+          child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
             theme: AppTheme.theme,
             title: 'Effektio',
@@ -77,18 +79,9 @@ class Effektio extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
+            routeInformationParser: BeamerParser(),
             supportedLocales: ApplicationLocalizations.supportedLocales,
-            // MaterialApp contains our top-level Navigator
-            initialRoute: '/',
-            routes: <String, WidgetBuilder>{
-              '/': (BuildContext context) => const EffektioHome(),
-              '/login': (BuildContext context) => const LoginScreen(),
-              '/profile': (BuildContext context) => const SocialProfileScreen(),
-              '/signup': (BuildContext context) => const SignupScreen(),
-              '/gallery': (BuildContext context) => const GalleryScreen(),
-              '/todo': (BuildContext context) => const ToDoScreen(),
-              '/addTodo': (BuildContext context) => const AddToDoScreen(),
-            },
+            routerDelegate: routerDelegate,
           ),
         ),
       ),
@@ -166,6 +159,7 @@ class _EffektioHomeState extends State<EffektioHome>
     if (tabIndex <= 3) {
       return null;
     }
+
     return AppBar(
       centerTitle: true,
       primary: true,
@@ -257,6 +251,7 @@ class _EffektioHomeState extends State<EffektioHome>
             : SvgPicture.asset('assets/images/notification_linear.svg'),
       ),
     );
+
   }
 
   Widget buildHomeScreen(BuildContext context, Client client) {
@@ -355,5 +350,4 @@ class _EffektioHomeState extends State<EffektioHome>
       },
     );
   }
-
 }
