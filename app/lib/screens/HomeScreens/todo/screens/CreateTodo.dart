@@ -29,7 +29,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   @override
   void initState() {
     super.initState();
-    widget.controller.setSelectedTeam('');
     widget.controller.taskNameCount.value = 30;
     widget.controller.draftToDoTasks.clear();
   }
@@ -177,33 +176,36 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Row(
           children: <Widget>[
-            Obx(
-              () => InkWell(
-                onTap: () => nameController.text.isNotEmpty
-                    ? _showPopupMenu(context)
-                    : null,
-                onTapDown: widget.controller.taskNameCount.value < 30
-                    ? getPosition
-                    : null,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.06,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: ToDoTheme.textFieldColor,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                  child: Text(
-                    widget.controller.selectedTeam.value.isNotEmpty
-                        ? widget.controller.selectedTeam.value
-                        : 'Select Team',
-                    style: ToDoTheme.selectTeamTextStyle.copyWith(
-                      color: widget.controller.taskNameCount.value < 30
-                          ? null
-                          : const Color(0xFF898A8D),
+            GetBuilder<ToDoController>(
+              id: 'teams',
+              builder: (_) {
+                return InkWell(
+                  onTap: () => nameController.text.isNotEmpty
+                      ? _showPopupMenu(context)
+                      : null,
+                  onTapDown: widget.controller.taskNameCount.value < 30
+                      ? getPosition
+                      : null,
+                  child: Container(
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: ToDoTheme.textFieldColor,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Text(
+                      widget.controller.selectedTeam != null
+                          ? widget.controller.selectedTeam!.name!
+                          : 'Select Team',
+                      style: ToDoTheme.selectTeamTextStyle.copyWith(
+                        color: widget.controller.taskNameCount.value < 30
+                            ? null
+                            : const Color(0xFF898A8D),
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             Padding(
               padding: const EdgeInsets.only(left: 12.0),
@@ -276,83 +278,86 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         ),
       );
 
-  Widget _buildTaskDraftInput() => Obx(
-        () => Visibility(
-          visible: widget.controller.selectedTeam.value.isNotEmpty,
-          child: ListTile(
-            leading: Visibility(
-              visible: taskInputController.text.isNotEmpty,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    check = !check;
-                  });
-                },
-                child: CircleAvatar(
-                  backgroundColor: AppCommonTheme.transparentColor,
-                  radius: 18,
-                  child: Container(
-                    height: 25,
-                    width: 25,
-                    decoration: BoxDecoration(
-                      color: check
-                          ? ToDoTheme.activeCheckColor
-                          : ToDoTheme.inactiveCheckColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey,
+  Widget _buildTaskDraftInput() => GetBuilder<ToDoController>(
+        id: 'teams',
+        builder: (_) {
+          return Visibility(
+            visible: widget.controller.selectedTeam != null,
+            child: ListTile(
+              leading: Visibility(
+                visible: taskInputController.text.isNotEmpty,
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      check = !check;
+                    });
+                  },
+                  child: CircleAvatar(
+                    backgroundColor: AppCommonTheme.transparentColor,
+                    radius: 18,
+                    child: Container(
+                      height: 25,
+                      width: 25,
+                      decoration: BoxDecoration(
+                        color: check
+                            ? ToDoTheme.activeCheckColor
+                            : ToDoTheme.inactiveCheckColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.grey,
+                        ),
                       ),
+                      child: checkBuilder(check),
                     ),
-                    child: checkBuilder(check),
                   ),
                 ),
               ),
-            ),
-            title: TextField(
-              controller: taskInputController,
-              cursorColor: ToDoTheme.primaryTextColor,
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Input here the task',
-                hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w400,
+              title: TextField(
+                controller: taskInputController,
+                cursorColor: ToDoTheme.primaryTextColor,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Input here the task',
+                  hintStyle: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              ),
-              style: const TextStyle(color: Colors.white),
-              onChanged: (val) {
-                setState(() {
-                  taskInputController.text = val;
-                  taskInputController.selection = TextSelection.fromPosition(
-                    TextPosition(
-                      offset: taskInputController.text.length,
-                    ),
-                  );
-                });
-              },
-              onEditingComplete: () => widget.controller.createToDoTaskDraft(
-                taskInputController.text,
-                '',
-                check,
-              ),
-            ),
-            trailing: Visibility(
-              visible: taskInputController.text.isNotEmpty,
-              child: IconButton(
-                onPressed: () {
+                style: const TextStyle(color: Colors.white),
+                onChanged: (val) {
                   setState(() {
-                    taskInputController.text = '';
+                    taskInputController.text = val;
+                    taskInputController.selection = TextSelection.fromPosition(
+                      TextPosition(
+                        offset: taskInputController.text.length,
+                      ),
+                    );
                   });
                 },
-                icon: const Icon(FlutterIcons.cross_ent),
-                color: Colors.grey,
-                iconSize: 18,
+                onEditingComplete: () => widget.controller.createToDoTaskDraft(
+                  taskInputController.text,
+                  '',
+                  check,
+                ),
+              ),
+              trailing: Visibility(
+                visible: taskInputController.text.isNotEmpty,
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      taskInputController.text = '';
+                    });
+                  },
+                  icon: const Icon(FlutterIcons.cross_ent),
+                  color: Colors.grey,
+                  iconSize: 18,
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       );
 
   Widget _createToDoListBtn() => Obx(
@@ -361,14 +366,15 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           child: CustomOnbaordingButton(
             onPressed: widget.controller.taskNameCount < 30
                 ? () async {
-                    // await widget.controller
-                    //     .createToDoList(
-                    //       nameController.text,
-                    //       descriptionController.text,
-                    //     )
-                    //     .then(
-                    //       (value) => debugPrint('TASK Created :$value'),
-                    //     );
+                    await widget.controller
+                        .createToDoList(
+                          widget.controller.selectedTeam!.id,
+                          nameController.text,
+                          descriptionController.text,
+                        )
+                        .then(
+                          (value) => debugPrint('TASK Created :$value'),
+                        );
                     Navigator.pop(context);
                   }
                 : null,
@@ -390,7 +396,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   void _showPopupMenu(BuildContext ctx) async {
     final List<Team> teams = await widget.controller.getTeams();
-    showMenu<String>(
+    showMenu(
       constraints:
           BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
       context: ctx,
@@ -402,7 +408,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
       items: [
         for (var team in teams)
           PopupMenuItem(
-            onTap: () => widget.controller.setSelectedTeam(team.name!),
+            onTap: () => widget.controller.setSelectedTeam(team),
             height: 24,
             child: Text(
               team.name!,

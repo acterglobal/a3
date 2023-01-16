@@ -10,7 +10,8 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Group,
         RoomProfile,
         Task,
-        TaskList;
+        TaskList,
+        TaskListDraft;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -24,7 +25,7 @@ class ToDoController extends GetxController {
   RxBool expandBtn = false.obs;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
-  RxString selectedTeam = ''.obs;
+  Team? selectedTeam;
   FocusNode addTaskNode = FocusNode();
 
   ToDoController({required this.client}) : super();
@@ -47,6 +48,7 @@ class ToDoController extends GetxController {
         RoomProfile teamProfile = await team.getProfile();
         // Team avatars are yet to be implemented.
         Team item = Team(
+          id: team.getRoomId(),
           name: teamProfile.getDisplayName(),
         );
         teams.add(item);
@@ -135,14 +137,18 @@ class ToDoController extends GetxController {
     return todoTasks;
   }
 
-  // Future<String> createToDoList(String name, String? description) async {
-  //   TaskListDraft taskListDraft = defaultGroup!.taskListDraft();
-  //   taskListDraft.name(name);
-  //   taskListDraft.descriptionText(description!);
-  //   var eventId = await taskListDraft.send();
-
-  //   return eventId.toString();
-  // }
+  Future<String> createToDoList(
+    String teamId,
+    String name,
+    String? description,
+  ) async {
+    Group group = await client.getGroup(teamId);
+    TaskListDraft listDraft = group.taskListDraft();
+    listDraft.name(name);
+    listDraft.descriptionText(description!);
+    var eventId = await listDraft.send();
+    return eventId.toString();
+  }
 
   void createToDoTaskDraft(String name, String? description, bool isDone) {
     ToDoTask item = ToDoTask(
@@ -150,10 +156,6 @@ class ToDoController extends GetxController {
       name: name,
       description: description ?? '',
       isDone: isDone,
-      assignees: [],
-      categories: [],
-      tags: [],
-      subscribers: [],
     );
     draftToDoTasks.add(item);
   }
@@ -169,10 +171,6 @@ class ToDoController extends GetxController {
       name: name,
       description: description ?? '',
       isDone: isDone,
-      assignees: [],
-      categories: [],
-      tags: [],
-      subscribers: [],
     );
     draftToDoTasks.remove(draftToDoTasks[idx]);
     draftToDoTasks.insert(idx, item);
@@ -193,17 +191,20 @@ class ToDoController extends GetxController {
   }
 
   // setter for selected team.
-  void setSelectedTeam(String val) {
-    selectedTeam.value = val;
+  void setSelectedTeam(Team? val) {
+    selectedTeam = val;
+    update(['teams']);
   }
 
   // max length counter for task name.
   void updateWordCount(int val) {
     if (val == 0) {
       taskNameCount.value = 30;
-      selectedTeam.value = '';
+      selectedTeam = null;
+      update(['teams']);
     } else {
       taskNameCount.value = 30 - val;
+      update(['teams']);
     }
   }
 
