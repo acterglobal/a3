@@ -38,11 +38,11 @@ pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::duration_from_secs;
 pub use conversation::{Conversation, CreateConversationSettingsBuilder};
-pub use core::time::Duration;
+pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::{
     events::UtcDateTime,
-    models::{Color, Faq, News, Tag},
+    models::{Color as EfkColor, Faq, News, Tag},
 };
 pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;

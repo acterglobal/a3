@@ -868,6 +868,23 @@ class Api {
     return tmp1;
   }
 
+  EfkDuration durationFromSecs(
+    int secs,
+  ) {
+    final tmp0 = secs;
+    var tmp1 = 0;
+    tmp1 = tmp0;
+    final tmp2 = _durationFromSecs(
+      tmp1,
+    );
+    final tmp4 = tmp2;
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(this, tmp4_0, "drop_box_EfkDuration");
+    tmp4_1._finalizer = this._registerFinalizer(tmp4_1);
+    final tmp3 = EfkDuration._(this, tmp4_1);
+    return tmp3;
+  }
+
   late final _allocatePtr = _lookup<
       ffi.NativeFunction<
           ffi.Pointer<ffi.Uint8> Function(ffi.IntPtr, ffi.IntPtr)>>("allocate");
@@ -3779,6 +3796,141 @@ class Api {
     return tmp7;
   }
 
+  Comment? __clientWaitForCommentFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForCommentFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Comment");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Comment._(this, tmp13_1);
+    return tmp7;
+  }
+
+  TaskList? __clientWaitForTaskListFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForTaskListFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_TaskList");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = TaskList._(this, tmp13_1);
+    return tmp7;
+  }
+
+  Task? __clientWaitForTaskFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientWaitForTaskFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_Task");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = Task._(this, tmp13_1);
+    return tmp7;
+  }
+
   FfiBufferUint8? __userProfileGetAvatarFuturePoll(
     int boxed,
     int postCobject,
@@ -5192,6 +5344,39 @@ class Api {
     return tmp9;
   }
 
+  bool? __clientSubscribeStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _clientSubscribeStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    if (tmp10 == 0) {
+      return null;
+    }
+    final tmp9 = tmp11 > 0;
+    return tmp9;
+  }
+
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
           _InitLoggingReturn Function(
@@ -5335,14 +5520,24 @@ class Api {
       _lookup<ffi.NativeFunction<ffi.Int64 Function()>>("__gen_mock_news");
 
   late final _genMockNews = _genMockNewsPtr.asFunction<int Function()>();
-  late final _colorRgbaU8Ptr = _lookup<
+  late final _durationFromSecsPtr = _lookup<
       ffi.NativeFunction<
-          _ColorRgbaU8Return Function(
-    ffi.Int64,
-  )>>("__Color_rgba_u8");
+          ffi.Int64 Function(
+    ffi.Uint64,
+  )>>("__duration_from_secs");
 
-  late final _colorRgbaU8 = _colorRgbaU8Ptr.asFunction<
-      _ColorRgbaU8Return Function(
+  late final _durationFromSecs = _durationFromSecsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _efkColorRgbaU8Ptr = _lookup<
+      ffi.NativeFunction<
+          _EfkColorRgbaU8Return Function(
+    ffi.Int64,
+  )>>("__EfkColor_rgba_u8");
+
+  late final _efkColorRgbaU8 = _efkColorRgbaU8Ptr.asFunction<
+      _EfkColorRgbaU8Return Function(
     int,
   )>();
   late final _utcDateTimeTimestampPtr = _lookup<
@@ -8648,6 +8843,82 @@ class Api {
       int Function(
     int,
   )>();
+  late final _clientSubscribePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__Client_subscribe");
+
+  late final _clientSubscribe = _clientSubscribePtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForCommentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+  )>>("__Client_wait_for_comment");
+
+  late final _clientWaitForComment = _clientWaitForCommentPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForTaskListPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+  )>>("__Client_wait_for_task_list");
+
+  late final _clientWaitForTaskList = _clientWaitForTaskListPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForTaskPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Uint8,
+    ffi.Int64,
+  )>>("__Client_wait_for_task");
+
+  late final _clientWaitForTask = _clientWaitForTaskPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _userProfileUserIdPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -10176,6 +10447,51 @@ class Api {
     int,
     int,
   )>();
+  late final _clientWaitForCommentFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForCommentFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_wait_for_comment_future_poll");
+
+  late final _clientWaitForCommentFuturePoll =
+      _clientWaitForCommentFuturePollPtr.asFunction<
+          _ClientWaitForCommentFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForTaskListFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForTaskListFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_wait_for_task_list_future_poll");
+
+  late final _clientWaitForTaskListFuturePoll =
+      _clientWaitForTaskListFuturePollPtr.asFunction<
+          _ClientWaitForTaskListFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientWaitForTaskFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientWaitForTaskFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_wait_for_task_future_poll");
+
+  late final _clientWaitForTaskFuturePoll =
+      _clientWaitForTaskFuturePollPtr.asFunction<
+          _ClientWaitForTaskFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _userProfileGetAvatarFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _UserProfileGetAvatarFuturePollReturn Function(
@@ -10736,6 +11052,23 @@ class Api {
   late final _clientIncomingMessageRxStreamPoll =
       _clientIncomingMessageRxStreamPollPtr.asFunction<
           _ClientIncomingMessageRxStreamPollReturn Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _clientSubscribeStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientSubscribeStreamPollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_subscribe_stream_poll");
+
+  late final _clientSubscribeStreamPoll =
+      _clientSubscribeStreamPollPtr.asFunction<
+          _ClientSubscribeStreamPollReturn Function(
     int,
     int,
     int,
@@ -11621,18 +11954,31 @@ class Api {
           .asFunction<void Function(int, int, int)>();
 }
 
-/// Representing a color
-class Color {
+/// Representing a time frame
+class EfkDuration {
   final Api _api;
   final _Box _box;
 
-  Color._(this._api, this._box);
+  EfkDuration._(this._api, this._box);
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// Representing a color
+class EfkColor {
+  final Api _api;
+  final _Box _box;
+
+  EfkColor._(this._api, this._box);
 
   /// as rgba in u8
   List<dynamic> rgbaU8() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._colorRgbaU8(
+    final tmp1 = _api._efkColorRgbaU8(
       tmp0,
     );
     final tmp4 = tmp1.arg0;
@@ -11810,7 +12156,7 @@ class News {
   }
 
   /// if given, the specific foreground color
-  Color? fgColor() {
+  EfkColor? fgColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsFgColor(
@@ -11822,14 +12168,14 @@ class News {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
   /// if given, the specific background color
-  Color? bgColor() {
+  EfkColor? bgColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsBgColor(
@@ -11841,9 +12187,9 @@ class News {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -11924,7 +12270,7 @@ class Tag {
   }
 
   /// if given, the specific color for this tag
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._tagColor(
@@ -11936,9 +12282,9 @@ class Tag {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -14633,7 +14979,7 @@ class Task {
   }
 
   /// Has this been colored in?
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskColor(
@@ -14645,9 +14991,9 @@ class Task {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -14903,7 +15249,7 @@ class TaskUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -15550,7 +15896,7 @@ class TaskDraft {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -16123,7 +16469,7 @@ class TaskList {
   }
 
   /// Has this been colored in?
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListColor(
@@ -16135,9 +16481,9 @@ class TaskList {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -16361,7 +16707,7 @@ class TaskListDraft {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -16574,7 +16920,7 @@ class TaskListUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -17618,6 +17964,172 @@ class Client {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__clientTaskListsFuturePoll);
     return tmp2;
+  }
+
+  /// listen to updates to any model key
+  Stream<bool> subscribe(
+    String key,
+  ) {
+    final tmp1 = key;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    final tmp5 = _api._clientSubscribe(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "__Client_subscribe_stream_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 = _nativeStream(tmp7_1, _api.__clientSubscribeStreamPoll);
+    return tmp6;
+  }
+
+  /// Fetch the Comment or use its event_id to wait for it to come down the wire
+  Future<Comment> waitForComment(
+    String key,
+    EfkDuration? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._clientWaitForComment(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_wait_for_comment_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForCommentFuturePoll);
+    return tmp10;
+  }
+
+  /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
+  Future<TaskList> waitForTaskList(
+    String key,
+    EfkDuration? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._clientWaitForTaskList(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 =
+        _Box(_api, tmp11_0, "__Client_wait_for_task_list_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 =
+        _nativeFuture(tmp11_1, _api.__clientWaitForTaskListFuturePoll);
+    return tmp10;
+  }
+
+  /// Fetch the Task or use its event_id to wait for it to come down the wire
+  Future<Task> waitForTask(
+    String key,
+    EfkDuration? timeout,
+  ) {
+    final tmp1 = key;
+    final tmp5 = timeout;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    var tmp6 = 0;
+    var tmp8 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    if (tmp5 == null) {
+      tmp6 = 0;
+    } else {
+      tmp6 = 1;
+      final tmp7 = tmp5;
+      tmp8 = tmp7._box.move();
+    }
+    final tmp9 = _api._clientWaitForTask(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+      tmp6,
+      tmp8,
+    );
+    final tmp11 = tmp9;
+    final ffi.Pointer<ffi.Void> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+    final tmp11_1 = _Box(_api, tmp11_0, "__Client_wait_for_task_future_drop");
+    tmp11_1._finalizer = _api._registerFinalizer(tmp11_1);
+    final tmp10 = _nativeFuture(tmp11_1, _api.__clientWaitForTaskFuturePoll);
+    return tmp10;
   }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
@@ -18798,7 +19310,7 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ColorRgbaU8Return extends ffi.Struct {
+class _EfkColorRgbaU8Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -20856,6 +21368,51 @@ class _ClientTaskListsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientWaitForCommentFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientWaitForTaskListFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientWaitForTaskFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _UserProfileGetAvatarFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -21283,6 +21840,13 @@ class _ClientIncomingMessageRxStreamPollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
+  external int arg1;
+}
+
+class _ClientSubscribeStreamPollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
   external int arg1;
 }
 
