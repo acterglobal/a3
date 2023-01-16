@@ -1,6 +1,6 @@
 //! Testing modules, don't use in production!
 
-use crate::Client as EfkClient;
+use anyhow::Result;
 use effektio_core::{
     matrix_sdk::{Client, ClientBuilder},
     ruma::{
@@ -12,12 +12,14 @@ use effektio_core::{
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 
+use crate::Client as EfkClient;
+
 pub async fn default_client_config(
     homeserver: &str,
     username: &str,
     user_agent: String,
     store_cfg: StoreConfig,
-) -> anyhow::Result<ClientBuilder> {
+) -> Result<ClientBuilder> {
     Ok(Client::builder()
         .user_agent(user_agent)
         .store_config(store_cfg)
@@ -29,7 +31,7 @@ pub async fn register(
     username: String,
     user_agent: String,
     store_config: StoreConfig,
-) -> anyhow::Result<Client> {
+) -> Result<Client> {
     let client = default_client_config(homeserver, &username, user_agent, store_config)
         .await?
         .build()
@@ -58,7 +60,7 @@ pub async fn ensure_user(
     username: String,
     user_agent: String,
     store_config: StoreConfig,
-) -> anyhow::Result<EfkClient> {
+) -> Result<EfkClient> {
     let cl = match register(
         homeserver,
         username.clone(),
