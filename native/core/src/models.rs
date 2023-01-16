@@ -76,13 +76,13 @@ pub async fn default_model_execute(
     let Some(belongs_to) = model.belongs_to() else {
         let event_id = model.event_id().to_string();
         tracing::trace!(?event_id, "saving simple model");
-        return Ok(store.save(model).await?);
+        return store.save(model).await
     };
 
     tracing::trace!(event_id=?model.event_id(), ?belongs_to, "transitioning tree");
     let mut models = transition_tree(store, belongs_to, &model).await?;
     models.push(model);
-    Ok(store.save_many(models).await?)
+    store.save_many(models).await
 }
 
 #[enum_dispatch(AnyEffektioModel)]
