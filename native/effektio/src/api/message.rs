@@ -2,7 +2,10 @@ use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::{
-        timeline::{EventTimelineItem, TimelineItem, TimelineItemContent, VirtualTimelineItem},
+        timeline::{
+            EventTimelineItem, TimelineDetails, TimelineItem, TimelineItemContent,
+            VirtualTimelineItem,
+        },
         Room,
     },
     ruma::{
@@ -10,10 +13,9 @@ use matrix_sdk::{
             room::message::{MessageFormat, MessageType, Relation},
             AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
         },
-        OwnedEventId,
+        OwnedEventId, OwnedUserId,
     },
 };
-use regex::Regex;
 use std::{collections::HashMap, sync::Arc};
 
 #[derive(Clone, Debug)]
@@ -95,18 +97,6 @@ impl RoomEventItem {
 
     pub fn in_reply_to(&self) -> Option<String> {
         self.in_reply_to.as_ref().map(|x| x.to_string())
-    }
-
-    pub(crate) fn simplify_body(&mut self) {
-        if let Some(mut text_desc) = self.text_desc.clone() {
-            if let Some(text) = text_desc.formatted_body() {
-                let re = Regex::new(r"^<mx-reply>[\s\S]+</mx-reply>").unwrap();
-                let simplified = re.replace(text.as_str(), "").to_string();
-                text_desc.set_body(simplified);
-                self.text_desc = Some(text_desc);
-                info!("regex replaced");
-            }
-        }
     }
 
     pub fn reaction_keys(&self) -> Vec<String> {
@@ -266,7 +256,13 @@ impl RoomMessage {
         let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
         for (key, value) in event.reactions().iter() {
-            reactions.insert(key.to_string(), ReactionDesc::new(value.count.into()));
+            let senders = if let TimelineDetails::Ready(senders) = value.senders.clone() {
+                senders
+            } else {
+                vec![]
+            };
+            let description = ReactionDesc::new(value.count.into(), senders);
+            reactions.insert(key.clone(), description);
         }
 
         let event_item = match event.content() {
@@ -409,7 +405,7 @@ impl RoomMessage {
                 )
             }
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
-                info!("Edit event applies to event that couldn't be parsed, discarding");
+                info!("Edit event applies to message that couldn't be parsed, discarding");
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -429,7 +425,7 @@ impl RoomMessage {
                 state_key,
                 error,
             } => {
-                info!("Edit event applies to event that couldn't be parsed, discarding");
+                info!("Edit event applies to state that couldn't be parsed, discarding");
                 RoomEventItem::new(
                     event_id,
                     sender,
@@ -558,15 +554,20 @@ impl FileDesc {
 #[derive(Clone, Debug)]
 pub struct ReactionDesc {
     count: u64,
+    senders: Vec<OwnedUserId>,
 }
 
 impl ReactionDesc {
-    pub(crate) fn new(count: u64) -> Self {
-        ReactionDesc { count }
+    pub(crate) fn new(count: u64, senders: Vec<OwnedUserId>) -> Self {
+        ReactionDesc { count, senders }
     }
 
     pub fn count(&self) -> u64 {
         self.count
+    }
+
+    pub fn senders(&self) -> Vec<String> {
+        self.senders.iter().map(|x| x.to_string()).collect()
     }
 }
 
@@ -574,7 +575,18 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
     info!("sync event to message: {:?}", ev);
     if let Ok(AnySyncTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
         match evt {
-            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {}
+            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {
+                return Some(RoomMessage::from_sync_event(
+                    None,
+                    None,
+                    m.event_id.to_string(),
+                    m.sender.to_string(),
+                    m.origin_server_ts.get().into(),
+                    "Encrypted".to_string(),
+                    &room,
+                    false,
+                ));
+            }
             AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
                 return Some(RoomMessage::from_sync_event(
                     Some(m.content.msgtype),
@@ -585,6 +597,18 @@ pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option
                     "Message".to_string(),
                     &room,
                     true,
+                ));
+            }
+            AnySyncMessageLikeEvent::RoomRedaction(r) => {
+                return Some(RoomMessage::from_sync_event(
+                    None,
+                    None,
+                    r.event_id().to_string(),
+                    r.sender().to_string(),
+                    r.origin_server_ts().get().into(),
+                    "RedactedMessage".to_string(),
+                    &room,
+                    false,
                 ));
             }
             _ => {}

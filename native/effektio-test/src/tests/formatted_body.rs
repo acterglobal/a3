@@ -11,10 +11,11 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // initialize sisko's client
     let tmp_dir = TempDir::new()?;
-    let sisko = login_new_client(
+    let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
+        Some("SISKO_DEV".to_string()),
     )
     .await?;
     let sisko_syncer = sisko.start_sync();
@@ -29,10 +30,11 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // initialize kyra's client
     let tmp_dir = TempDir::new()?;
-    let kyra = login_new_client(
+    let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     let kyra_syncer = kyra.start_sync();
@@ -40,7 +42,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     while first_synced.next().await != Some(true) {} // let's wait for it to have synced
 
     // kyra accepts invitation from sisko
-    let invited = kyra.get_invited_room(&sisko_kyra_dm_id)?;
+    let invited = kyra.get_invited_room(&sisko_kyra_dm_id).unwrap();
     let mut delay = 2;
     while let Err(e) = invited.accept_invitation().await {
         sleep(Duration::from_secs(delay)).await;
@@ -53,22 +55,26 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // sisko sends the formatted text message to kyra
     let convo = sisko.conversation(sisko_kyra_dm_id.to_string()).await?;
-    let event_id = convo.send_formatted_message("**Hello**".to_string()).await?;
+    let _event_id = convo
+        .send_formatted_message("**Hello**".to_string())
+        .await?;
 
     // kyra receives the formatted text message from sisko
     let mut convos_rx = kyra.conversations_rx();
     loop {
+        #[allow(clippy::single_match)]
         match convos_rx.next().await {
             Some(convos) => {
-                if let Some(convo) = convos
-                    .iter()
-                    .find(|x| x.room_id().to_owned() == sisko_kyra_dm_id)
-                {
+                if let Some(convo) = convos.iter().find(|x| *x.room_id() == sisko_kyra_dm_id) {
                     if let Some(msg) = convo.latest_message() {
-                        if let Some(formatted) = msg.formatted_body() {
-                            let idx = formatted.find("<strong>Hello</strong>");
-                            assert!(idx.is_some(), "formatted body not found");
-                            break;
+                        if let Some(event_item) = msg.event_item() {
+                            if let Some(text_desc) = event_item.text_desc() {
+                                if let Some(formatted) = text_desc.formatted_body() {
+                                    let idx = formatted.find("<strong>Hello</strong>");
+                                    assert!(idx.is_some(), "formatted body not found");
+                                    break;
+                                }
+                            }
                         }
                     }
                 }

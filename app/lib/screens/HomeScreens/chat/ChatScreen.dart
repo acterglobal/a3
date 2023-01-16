@@ -7,13 +7,13 @@ import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
-import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
+import 'package:effektio/widgets/TextMessageBuilder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
@@ -48,15 +47,13 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   ChatRoomController roomController = Get.find<ChatRoomController>();
   ChatListController listController = Get.find<ChatListController>();
-  final networkController = Get.put(NetworkController());
 
   @override
   void initState() {
     super.initState();
 
-    if (networkController.connectionType.value != '0') {
-      roomController.setCurrentRoom(widget.room);
-    }
+    roomController.setCurrentRoom(widget.room);
+
   }
 
   @override
@@ -173,9 +170,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   if (controller.isAuthor()) {
-                    // TODO add unsent message call
+                    // redact message call
+                    await roomController
+                        .redactRoomMessage(roomController.repliedToMessage!.id);
+                    roomController.toggleEmojiContainer();
                   } else {
                     showDialog(
                       context: context,
@@ -290,18 +290,11 @@ class _ChatScreenState extends State<ChatScreen> {
     required int messageWidth,
     required bool showName,
   }) {
-    return Container(
-      width: sqrt(p1.metadata!['messageLength']) * 38.5,
-      padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(minWidth: 57),
-      child: Html(
-        // ignore: prefer_single_quotes, unnecessary_string_interpolations
-        data: """${p1.text}""",
-        style: {
-          'body': Style(color: Colors.white),
-          'a': Style(textDecoration: TextDecoration.none)
-        },
-      ),
+    return TextMessageBuilder(
+      message: p1,
+      onPreviewDataFetched: roomController.handlePreviewDataFetched,
+      messageWidth: messageWidth,
+      controller: roomController,
     );
   }
 
@@ -442,14 +435,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ],
           ),
-          body: Obx(
-            () => SafeArea(
-              bottom: false,
-              child: networkController.connectionType.value == '0'
-                  ? noInternetWidget()
-                  : buildBody(context),
-            ),
-          ),
+          body: buildBody(context),
         );
       },
     );
@@ -548,6 +534,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
+              customStatusBuilder: customStatusBuilder,
               messages: controller.getMessages(),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
@@ -587,8 +574,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 attachmentButtonIcon:
                     SvgPicture.asset('assets/images/attachment.svg'),
                 sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
-                seenIcon: SvgPicture.asset('assets/images/seenIcon.svg'),
-                deliveredIcon: SvgPicture.asset('assets/images/sentIcon.svg'),
               ),
             ),
           ],
@@ -710,9 +695,41 @@ class _ChatScreenState extends State<ChatScreen> {
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,
+          enlargeEmoji: message.metadata!['enlargeEmoji'] ?? false,
         );
       },
     );
+  }
+
+  Widget customStatusBuilder(
+    types.Message message, {
+    required BuildContext context,
+  }) {
+    if (message.status == types.Status.delivered) {
+      return SvgPicture.asset('assets/images/deliveredIcon.svg');
+    } else if (message.status == types.Status.seen) {
+      return SvgPicture.asset('assets/images/seenIcon.svg');
+    } else if (message.status == types.Status.sending) {
+      return const Center(
+        child: SizedBox(
+          height: 10,
+          width: 10,
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.transparent,
+            strokeWidth: 1.5,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              AppCommonTheme.primaryColor,
+            ),
+          ),
+        ),
+      );
+    } else {
+      return SvgPicture.asset(
+        'assets/images/sentIcon.svg',
+        width: 12,
+        height: 12,
+      );
+    }
   }
 
   Widget customMessageBuilder(
@@ -721,6 +738,34 @@ class _ChatScreenState extends State<ChatScreen> {
   }) {
     if (customMessage.metadata?['itemContentType'] == 'UnableToDecrypt') {
       String text = 'Failed to decrypt message. Re-request session keys.';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    if (customMessage.metadata?['itemContentType'] == 'RedactedMessage') {
+      String text = '***This message has been deleted.***';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    if (customMessage.metadata?['itemContentType'] ==
+        'FailedToParseMessageLike') {
+      String text = 'FailedToParseMessageLike';
+      return Container(
+        width: sqrt(text.length) * 38.5,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 57),
+        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+      );
+    }
+    if (customMessage.metadata?['itemContentType'] == 'FailedToParseState') {
+      String text = 'FailedToParseState';
       return Container(
         width: sqrt(text.length) * 38.5,
         padding: const EdgeInsets.all(8),

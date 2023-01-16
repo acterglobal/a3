@@ -1,11 +1,20 @@
 use anyhow::Result;
 use flexi_logger;
-use matrix_sdk::ClientBuilder;
+use matrix_sdk::{Client, ClientBuilder};
+use std::{fs, path};
 
 use super::native;
 
-pub fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
-    Ok(native::new_client_config(base_path, home)?.user_agent("effektio-desktop"))
+pub use super::native::sanitize;
+
+pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
+    Ok(native::new_client_config(base_path, home)
+        .await?
+        .user_agent(format!(
+            "{:}/effektio@{:}",
+            option_env!("CARGO_BIN_NAME").unwrap_or("effektio-desktop"),
+            env!("CARGO_PKG_VERSION")
+        )))
 }
 
 pub fn init_logging(filter: Option<String>) -> anyhow::Result<()> {
