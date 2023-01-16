@@ -1,8 +1,9 @@
 use anyhow::{bail, Context, Result};
+use core::time::Duration;
 use derive_builder::Builder;
 use effektio_core::{
     executor::Executor,
-    models::Faq,
+    models::{AnyEffektioModel, Faq},
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     store::Store,
     RestoreToken,
@@ -11,7 +12,7 @@ use effektio_core::{
 #[cfg(feature = "with-mocks")]
 use effektio_core::mocks::gen_mock_faqs;
 
-use futures::{future::try_join_all, pin_mut, stream, StreamExt};
+use futures::{future::try_join_all, pin_mut, stream, Stream, StreamExt};
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
 };
@@ -428,6 +429,28 @@ impl Client {
                     });
                 }
                 bail!("Room not found")
+            })
+            .await?
+    }
+
+    pub fn subscribe(&self, key: String) -> impl Stream<Item = bool> {
+        self.executor().subscribe(key).map(|()| true)
+    }
+
+    pub(crate) async fn wait_for(
+        &self,
+        key: String,
+        timeout: Option<Box<Duration>>,
+    ) -> Result<AnyEffektioModel> {
+        let executor = self.executor.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let waiter = executor.wait_for(key);
+                let Some(tm) = timeout else {
+                    return Ok(waiter.await?);
+                };
+                Ok(tokio::time::timeout(*Box::leak(tm), waiter).await??)
             })
             .await?
     }
