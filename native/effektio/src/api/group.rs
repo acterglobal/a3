@@ -147,6 +147,11 @@ impl Group {
             },
         );
     }
+
+    pub fn get_room_id(&self) -> String {
+        self.room_id().to_string()
+    }
+
     pub(crate) async fn refresh_history(&self) -> anyhow::Result<()> {
         let name = self.inner.name();
         tracing::trace!(name, "refreshing history");

@@ -666,6 +666,9 @@ object Group {
     /// the members currently in the group
     fn active_members() -> Future<Result<Vec<Member>>>;
 
+    /// the room id
+    fn get_room_id() -> string;
+
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
 
