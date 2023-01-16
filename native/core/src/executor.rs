@@ -59,8 +59,10 @@ impl Executor {
         Ok(model)
     }
 
-    pub fn notify(&self, keys: Vec<String>) -> u32 {
+    pub fn notify(&self, mut keys: Vec<String>) -> u32 {
         let mut counter = 0u32;
+        keys.dedup();
+        tracing::trace!(?keys, "notify");
         for key in keys {
             let span = tracing::trace_span!("Asked to notify", key = key);
             let _enter = span.enter();
@@ -155,6 +157,34 @@ mod tests {
             .simple()
             .belongs_to(vec![model_id.to_string()])
             .event_id(event_id!("$advf93m").to_owned())
+            .build()
+            .unwrap();
+
+        executor.handle(child.into()).await?;
+
+        assert!(sub.recv().await.is_ok()); // we have one
+        assert!(sub.is_empty());
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn subscribe_models_index() -> crate::Result<()> {
+        let _ = env_logger::try_init();
+        let executor = fresh_executor().await?;
+        let model = TestModelBuilder::default().simple().build().unwrap();
+        let parent_id = model.event_id().to_owned();
+        let parent_idx = format!("{parent_id}:comments");
+        let mut sub = executor.subscribe(parent_idx.clone());
+        assert!(sub.is_empty());
+
+        executor.handle(model.into()).await?;
+        assert!(sub.is_empty());
+
+        let child = TestModelBuilder::default()
+            .simple()
+            .belongs_to(vec![parent_id.to_string()])
+            .event_id(event_id!("$advf93m").to_owned())
+            .indizes(vec![parent_idx.clone()])
             .build()
             .unwrap();
 
