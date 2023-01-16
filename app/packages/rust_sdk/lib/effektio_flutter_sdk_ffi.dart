@@ -8056,6 +8056,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _taskListTaskBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListTaskBuilderReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_task_builder");
+
+  late final _taskListTaskBuilder = _taskListTaskBuilderPtr.asFunction<
+      _TaskListTaskBuilderReturn Function(
+    int,
+  )>();
   late final _taskListUpdateBuilderPtr = _lookup<
       ffi.NativeFunction<
           _TaskListUpdateBuilderReturn Function(
@@ -16723,6 +16733,35 @@ class TaskList {
     return tmp2;
   }
 
+  /// make a builder for creating the task draft
+  TaskDraft taskBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListTaskBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TaskDraft._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// make a builder for updating the task list
   TaskListUpdateBuilder updateBuilder() {
     var tmp0 = 0;
@@ -20298,6 +20337,19 @@ class _TaskListTimeZoneReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+}
+
+class _TaskListTaskBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _TaskListUpdateBuilderReturn extends ffi.Struct {

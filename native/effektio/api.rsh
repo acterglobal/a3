@@ -593,6 +593,9 @@ object TaskList {
     /// The tasks belonging to this tasklist
     fn tasks() -> Future<Result<Vec<Task>>>;
 
+    /// make a builder for creating the task draft
+    fn task_builder() -> Result<TaskDraft>;
+
     /// make a builder for updating the task list
     fn update_builder() -> Result<TaskListUpdateBuilder>;
 
