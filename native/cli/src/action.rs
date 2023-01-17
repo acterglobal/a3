@@ -8,7 +8,7 @@ mod mock;
 mod post_news;
 
 pub use fetch_news::FetchNews;
-pub use mock::Mock;
+pub use mock::MockOpts;
 pub use post_news::PostNews;
 
 #[derive(clap::Subcommand, Debug)]
@@ -18,7 +18,7 @@ pub enum Action {
     /// Fetch News of the use
     FetchNews(FetchNews),
     /// Mock Data on fresh server
-    Mock(Mock),
+    Mock(MockOpts),
     /// Room Management
     Manage(Manage),
 }

@@ -64,7 +64,7 @@ class CustomChatInput extends StatelessWidget {
                               children: [
                                 Text(
                                   controller.isAuthor()
-                                      ? 'Replying to yourself'
+                                      ? 'Replying to you'
                                       : 'Replying to ${toBeginningOfSentenceCase(controller.repliedToMessage?.author.firstName)}',
                                   style: const TextStyle(
                                     color: Colors.grey,
@@ -403,7 +403,7 @@ class AttachmentWidget extends StatelessWidget {
             _roomController.handleMultipleImageSelection(context, roomName);
             break;
           case 'gif':
-            //gif handle
+            _roomController.handleImageSelection(context);
             break;
           case 'document':
             _roomController.handleFileSelection(context);

@@ -19,7 +19,9 @@ pub async fn guest_client(
     homeurl: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, homeurl.clone())?.homeserver_url(homeurl);
+    let config = platform::new_client_config(base_path, homeurl.clone())
+        .await?
+        .homeserver_url(homeurl);
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
@@ -39,7 +41,7 @@ pub async fn guest_client(
             };
             client.restore_session(session).await?;
             let state = ClientStateBuilder::default().is_guest(true).build()?;
-            let c = Client::new(client, state);
+            let c = Client::new(client, state).await?;
             info!("Successfully created guest login: {:?}", response.user_id);
             Ok(c)
         })
@@ -51,16 +53,27 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         session,
         homeurl,
         is_guest,
-    } = serde_json::from_str(&restore_token)?;
+    } = serde_json::from_str(&restore_token).context("Deserializing Restore Token failed")?;
     let user_id = session.user_id.to_string();
-    let config = platform::new_client_config(base_path, user_id.clone())?.homeserver_url(homeurl);
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = config.build().await?;
-            client.restore_session(session).await?;
-            let state = ClientStateBuilder::default().is_guest(is_guest).build()?;
-            let c = Client::new(client.clone(), state);
+            let client = platform::new_client_config(base_path, user_id.clone())
+                .await
+                .context("can't build client")?
+                .homeserver_url(homeurl)
+                .build()
+                .await
+                .context("building client from config failed")?;
+            client
+                .restore_session(session)
+                .await
+                .context("restoring failed")?;
+            let state = ClientStateBuilder::default()
+                .is_guest(is_guest)
+                .build()
+                .context("building client state builder failed")?;
+            let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {:?}, device {:?} with token.",
                 user_id,
@@ -78,8 +91,9 @@ pub async fn login_new_client(
     device_name: Option<String>,
 ) -> Result<Client> {
     let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let mut config =
-        platform::new_client_config(base_path, username)?.server_name(user_id.server_name());
+    let mut config = platform::new_client_config(base_path, username)
+        .await?
+        .server_name(user_id.server_name());
 
     match user_id.server_name().as_str() {
         "effektio.org" => {
@@ -106,7 +120,7 @@ pub async fn login_new_client(
             };
             login_builder.send().await?;
             let state = ClientStateBuilder::default().is_guest(false).build()?;
-            let c = Client::new(client.clone(), state);
+            let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully logged in user {:?}, device {:?}",
                 user_id,
@@ -125,7 +139,8 @@ pub async fn register_with_registration_token(
     device_name: Option<String>,
 ) -> Result<Client> {
     let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let config = platform::new_client_config(base_path, username.clone())?
+    let config = platform::new_client_config(base_path, username.clone())
+        .await?
         .server_name(user_id.server_name());
     // First we need to log in.
     RUNTIME
@@ -150,7 +165,7 @@ pub async fn register_with_registration_token(
                 bail!("Server is not set up to allow registration.");
             }
             let state = ClientStateBuilder::default().is_guest(false).build()?;
-            let c = Client::new(client.clone(), state);
+            let c = Client::new(client.clone(), state).await?;
             info!(
                 "Successfully registered user {:?}, device {:?}",
                 username,

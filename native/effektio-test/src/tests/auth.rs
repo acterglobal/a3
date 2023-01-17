@@ -11,6 +11,7 @@ async fn guest_can_login() -> Result<()> {
         option_env!("HOMESERVER")
             .unwrap_or("http://localhost:8118")
             .to_string(),
+        Some("GUEST_DEV".to_string()),
     )
     .await?;
     Ok(())
@@ -24,6 +25,7 @@ async fn sisko_can_login() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
+        Some("SISKO_DEV".to_string()),
     )
     .await?;
     Ok(())
@@ -37,6 +39,7 @@ async fn kyra_can_login() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     Ok(())
@@ -50,6 +53,7 @@ async fn kyra_can_restore() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     let token = client.restore_token().await?;

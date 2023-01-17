@@ -17,6 +17,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
+          override: true
           components: rustfmt,clippy
       - uses: Swatinem/rust-cache@v1
       - uses: actions-rs/cargo@v1

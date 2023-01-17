@@ -4,7 +4,6 @@ use effektio_core::statics::default_effektio_conversation_states;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use log::{error, info, warn};
-
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
@@ -19,6 +18,7 @@ use matrix_sdk::{
             encrypted::OriginalSyncRoomEncryptedEvent,
             member::{MembershipState, OriginalSyncRoomMemberEvent},
             message::OriginalSyncRoomMessageEvent,
+            redaction::OriginalSyncRoomRedactionEvent,
         },
         serde::Raw,
         OwnedRoomId, OwnedUserId,
@@ -70,7 +70,6 @@ impl Conversation {
 
     fn set_latest_message(&mut self, mut msg: RoomMessage) {
         if let Some(mut event_item) = msg.event_item() {
-            event_item.simplify_body();
             msg.set_event_item(Some(event_item));
         }
         self.latest_message = Some(msg);
@@ -109,7 +108,7 @@ impl std::ops::Deref for Conversation {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub(crate) struct ConversationController {
     conversations: Mutable<Vec<Conversation>>,
     incoming_event_tx: Sender<RoomMessage>,
@@ -117,6 +116,7 @@ pub(crate) struct ConversationController {
     encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
+    redacted_event_handle: Option<EventHandlerHandle>,
 }
 
 impl ConversationController {
@@ -129,6 +129,7 @@ impl ConversationController {
             encrypted_event_handle: None,
             message_event_handle: None,
             member_event_handle: None,
+            redacted_event_handle: None,
         }
     }
 
@@ -138,7 +139,7 @@ impl ConversationController {
 
         client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
-            |ev: OriginalSyncRoomEncryptedEvent,
+            |ev: Raw<OriginalSyncRoomEncryptedEvent>,
              room: MatrixRoom,
              c: MatrixClient,
              Ctx(me): Ctx<ConversationController>| async move {
@@ -158,7 +159,7 @@ impl ConversationController {
         );
         self.message_event_handle = Some(handle);
 
-        client.add_event_handler_context(me);
+        client.add_event_handler_context(me.clone());
         let handle = client.add_event_handler(
             |ev: OriginalSyncRoomMemberEvent,
              room: MatrixRoom,
@@ -166,6 +167,17 @@ impl ConversationController {
              Ctx(me): Ctx<ConversationController>| async move {
                 // user accepted invitation or left room
                 me.clone().process_room_member(ev, &room, &c);
+            },
+        );
+        self.member_event_handle = Some(handle);
+
+        client.add_event_handler_context(me);
+        let handle = client.add_event_handler(
+            |ev: OriginalSyncRoomRedactionEvent,
+             room: MatrixRoom,
+             c: MatrixClient,
+             Ctx(me): Ctx<ConversationController>| async move {
+                me.clone().process_room_redaction(ev, &room, &c);
             },
         );
         self.member_event_handle = Some(handle);
@@ -184,6 +196,10 @@ impl ConversationController {
             client.remove_event_handler(handle);
             self.member_event_handle = None;
         }
+        if let Some(handle) = self.redacted_event_handle.clone() {
+            client.remove_event_handler(handle);
+            self.redacted_event_handle = None;
+        }
     }
 
     pub async fn load_rooms(&mut self, convos: &Vec<Conversation>) {
@@ -199,11 +215,11 @@ impl ConversationController {
     // reorder room list on OriginalSyncRoomEncryptedEvent
     async fn process_room_encrypted(
         &mut self,
-        ev: OriginalSyncRoomEncryptedEvent,
+        raw_event: Raw<OriginalSyncRoomEncryptedEvent>,
         room: &MatrixRoom,
         client: &MatrixClient,
     ) {
-        info!("original sync room encrypted event: {:?}", ev);
+        info!("original sync room encrypted event: {:?}", raw_event);
         if let MatrixRoom::Joined(joined) = room {
             let mut convos = self.conversations.lock_mut();
             let room_id = room.room_id();
@@ -212,14 +228,17 @@ impl ConversationController {
                 client: client.clone(),
                 room: room.clone(),
             });
-            if let Ok(decrypted) = joined.decrypt_event(&Raw::new(&ev).unwrap()).await {
+            if let Ok(decrypted) = joined.decrypt_event(&raw_event).await {
+                let ev = raw_event
+                    .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
+                    .unwrap();
                 let msg = RoomMessage::from_sync_event(
                     None,
                     None,
                     ev.event_id.to_string(),
                     ev.sender.to_string(),
                     ev.origin_server_ts.get().into(),
-                    "Message".to_string(),
+                    "Encrypted".to_string(),
                     room,
                     false,
                 );
@@ -320,6 +339,46 @@ impl ConversationController {
             }
         }
     }
+
+    // reorder room list on OriginalSyncRoomRedactionEvent
+    async fn process_room_redaction(
+        &mut self,
+        ev: OriginalSyncRoomRedactionEvent,
+        room: &MatrixRoom,
+        client: &MatrixClient,
+    ) {
+        info!("original sync room redaction event: {:?}", ev);
+        if let MatrixRoom::Joined(joined) = room {
+            let mut convos = self.conversations.lock_mut();
+            let room_id = room.room_id();
+
+            let mut convo = Conversation::new(Room {
+                client: client.clone(),
+                room: room.clone(),
+            });
+            let msg = RoomMessage::from_sync_event(
+                None,
+                None,
+                ev.event_id.to_string(),
+                ev.sender.to_string(),
+                ev.origin_server_ts.get().into(),
+                "RedactedMessage".to_string(),
+                room,
+                false,
+            );
+            convo.set_latest_message(msg.clone());
+
+            if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                convos.remove(idx);
+                convos.insert(0, convo);
+                if let Err(e) = self.incoming_event_tx.try_send(msg) {
+                    warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                }
+            } else {
+                convos.insert(0, convo);
+            }
+        }
+    }
 }
 
 #[derive(Builder, Default, Clone)]
@@ -358,11 +417,11 @@ impl Client {
             .await?
     }
 
-    pub(crate) async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
+    pub async fn conversation(&self, name_or_id: String) -> Result<Conversation> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {
-                if let Ok(room) = me.room(name_or_id) {
+                if let Ok(room) = me.room(name_or_id).await {
                     if !room.is_effektio_group().await {
                         Ok(Conversation::new(room))
                     } else {

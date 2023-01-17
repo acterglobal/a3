@@ -14,7 +14,7 @@ async fn load_pending_invitation() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko:ds9.effektio.org".to_string(),
         "sisko".to_string(),
-        Some("load_pending_invitation".to_string()),
+        Some("SISKO_DEV".to_string()),
     )
     .await?;
     let _sisko_syncer = sisko.start_sync();
@@ -24,7 +24,7 @@ async fn load_pending_invitation() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@kyra:ds9.effektio.org".to_string(),
         "kyra".to_string(),
-        Some("load_pending_invitation".to_string()),
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     let _kyra_syncer = kyra.start_sync();
@@ -49,7 +49,7 @@ async fn load_pending_invitation() -> Result<()> {
     loop {
         match receiver.next().await {
             Some(invitations) => {
-                println!("received: {:?}", invitations);
+                println!("received: {invitations:?}");
                 break;
             }
             None => {

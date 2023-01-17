@@ -1,87 +1,155 @@
 use anyhow::Result;
 use clap::{crate_version, Parser};
-
-use effektio::{Client as EfkClient, CreateGroupSettingsBuilder};
+use effektio::{
+    platform::sanitize, testing::ensure_user, Client as EfkClient, CreateGroupSettingsBuilder,
+};
 use effektio_core::{
-    matrix_sdk::{Client, ClientBuilder},
-    ruma::{
-        api::client::{
-            account::register::v3::Request as RegistrationRequest, room::Visibility, uiaa,
-        },
-        assign, OwnedUserId,
-    },
+    models::EffektioModel,
+    ruma::{api::client::room::Visibility, OwnedUserId},
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
+use matrix_sdk_sled::make_store_config;
+use std::collections::HashMap;
 
-fn default_client_config(homeserver: &str) -> Result<ClientBuilder> {
-    let store_config = StoreConfig::new().state_store(MemoryStore::new());
+#[derive(Parser, Debug)]
+pub struct MockOpts {
+    /// Which homeserver are we running against
+    #[clap(env = "EFFEKTIO_HOMESERVER")]
+    pub homeserver: String,
 
-    Ok(Client::builder()
-        .user_agent(format!("effektio-cli/{}", crate_version!()))
-        .store_config(store_config)
-        .homeserver_url(homeserver))
+    /// Persist the store in .local/{user_id}
+    #[clap(long)]
+    pub persist: bool,
+
+    //// export crypto database to .local for each known client
+    #[clap(long)]
+    pub export: bool,
+    #[clap(subcommand)]
+    pub cmd: Option<MockCmd>,
 }
 
-async fn register(homeserver: &str, username: &str, password: &str) -> Result<Client> {
-    let client = default_client_config(homeserver)?.build().await?;
-    if let Err(resp) = client.register(RegistrationRequest::new()).await {
-        // FIXME: do actually check the registration types...
-        if let Some(_response) = resp.as_uiaa_response() {
-            let request = assign!(RegistrationRequest::new(), {
-                username: Some(username.to_string()),
-                password: Some(password.to_string()),
-                auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
-            });
-            client.register(request).await?;
+#[derive(clap::Subcommand, Debug)]
+pub enum MockCmd {
+    All,
+    Users,
+    Spaces,
+    AcceptInvites,
+    Tasks,
+    // Conversations,
+}
+
+impl MockOpts {
+    pub async fn run(&self) -> Result<()> {
+        let homeserver = self.homeserver.clone();
+        let mut m = Mock::new(homeserver, self.persist).await?;
+        match self.cmd {
+            Some(MockCmd::Users) => {
+                m.everyone().await;
+            }
+            Some(MockCmd::Spaces) => m.spaces().await?,
+            Some(MockCmd::AcceptInvites) => m.accept_invitations().await?,
+            Some(MockCmd::Tasks) => m.tasks().await?,
+            Some(MockCmd::All) | None => {
+                m.spaces().await?;
+                m.accept_invitations().await?;
+                m.sync_up().await?;
+                m.tasks().await?;
+            }
+        };
+        if self.export {
+            m.export().await?;
         }
+        Ok(())
     }
-
-    Ok(client)
-}
-
-async fn ensure_user(homeserver: &str, username: &str, password: &str) -> Result<EfkClient> {
-    let cl = match register(homeserver, username, password).await {
-        Ok(cl) => cl,
-        Err(e) => {
-            log::warn!("Could not register {:}, {:}", username, e);
-            default_client_config(homeserver)?.build().await?
-        }
-    };
-    cl.login_username(username, password).send().await?;
-    Ok(EfkClient::new(cl, Default::default()))
 }
 
 /// Posting a news item to a given room
-#[derive(Parser, Debug)]
+#[derive(Debug, Clone)]
 pub struct Mock {
-    #[clap()]
-    pub homeserver: String,
+    persist: bool,
+    users: HashMap<String, EfkClient>,
+    homeserver: String,
 }
 
 impl Mock {
-    pub async fn run(&self) -> Result<()> {
-        let homeserver = self.homeserver.as_str();
+    async fn client(&mut self, username: String) -> Result<EfkClient> {
+        match self.users.get(&username) {
+            Some(c) => Ok(c.clone()),
+            None => {
+                tracing::trace!("client not found. creating for {:}", username);
 
-        // FIXME: would be better if we used the effektio API for this...
+                let store_config = if self.persist {
+                    let path = sanitize(".local".to_string(), username.clone());
+                    make_store_config(path, Some(&username)).await?
+                } else {
+                    StoreConfig::new().state_store(MemoryStore::new())
+                };
 
-        let admin = ensure_user(homeserver, "admin", "admin").await?;
+                let user_agent = format!("effektio-cli/{}", crate_version!());
 
-        let sisko = ensure_user(homeserver, "sisko", "sisko").await?;
-        let kyra = ensure_user(homeserver, "kyra", "kyra").await?;
-        let worf = ensure_user(homeserver, "worf", "worf").await?;
-        let bashir = ensure_user(homeserver, "bashir", "bashir").await?;
-        let miles = ensure_user(homeserver, "miles", "miles").await?;
-        let jadzia = ensure_user(homeserver, "jadzia", "jadzia").await?;
-        let odo = ensure_user(homeserver, "odo", "odo").await?;
+                let client = ensure_user(
+                    self.homeserver.as_str(),
+                    username.clone(),
+                    user_agent,
+                    store_config,
+                )
+                .await?;
+                self.users.insert(username, client.clone());
+                Ok(client)
+            }
+        }
+    }
+    pub async fn new(homeserver: String, persist: bool) -> Result<Self> {
+        Ok(Mock {
+            homeserver,
+            persist,
+            users: Default::default(),
+        })
+    }
 
-        let quark = ensure_user(homeserver, "quark", "quark").await?;
-        let rom = ensure_user(homeserver, "rom", "rom").await?;
-        let morn = ensure_user(homeserver, "morn", "morn").await?;
-        let keiko = ensure_user(homeserver, "keiko", "keiko").await?;
+    async fn team(&mut self) -> [EfkClient; 7] {
+        [
+            self.client("sisko".to_owned()).await.unwrap(),
+            self.client("kyra".to_owned()).await.unwrap(),
+            self.client("worf".to_owned()).await.unwrap(),
+            self.client("bashir".to_owned()).await.unwrap(),
+            self.client("miles".to_owned()).await.unwrap(),
+            self.client("jadzia".to_owned()).await.unwrap(),
+            self.client("odo".to_owned()).await.unwrap(),
+        ]
+    }
+    async fn civilians(&mut self) -> [EfkClient; 4] {
+        [
+            self.client("quark".to_owned()).await.unwrap(),
+            self.client("rom".to_owned()).await.unwrap(),
+            self.client("morn".to_owned()).await.unwrap(),
+            self.client("keiko".to_owned()).await.unwrap(),
+        ]
+    }
 
-        let team = [&sisko, &kyra, &worf, &bashir, &miles, &jadzia, &odo];
-        let civilians = [&quark, &rom, &morn, &keiko];
-        let quark_customers = [&quark, &rom, &morn, &jadzia, &kyra, &miles, &bashir];
+    async fn quark_customers(&mut self) -> [EfkClient; 7] {
+        [
+            self.client("quark".to_owned()).await.unwrap(),
+            self.client("rom".to_owned()).await.unwrap(),
+            self.client("morn".to_owned()).await.unwrap(),
+            self.client("jadzia".to_owned()).await.unwrap(),
+            self.client("kyra".to_owned()).await.unwrap(),
+            self.client("miles".to_owned()).await.unwrap(),
+            self.client("bashir".to_owned()).await.unwrap(),
+        ]
+    }
+
+    async fn everyone(&mut self) -> Vec<EfkClient> {
+        let mut everyone = Vec::new();
+        everyone.extend_from_slice(&self.team().await);
+        everyone.extend_from_slice(&self.civilians().await);
+        everyone
+    }
+
+    pub async fn spaces(&mut self) -> Result<()> {
+        let team = self.team().await;
+        let civilians = self.civilians().await;
+        let quark_customers = self.quark_customers().await;
 
         let team_ids: Vec<OwnedUserId> = team
             .iter()
@@ -101,9 +169,7 @@ impl Mock {
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let mut everyone = Vec::new();
-        everyone.extend_from_slice(&team);
-        everyone.extend_from_slice(&civilians);
+        let everyone = self.everyone().await;
 
         let _everyones_ids: Vec<OwnedUserId> = everyone
             .iter()
@@ -111,26 +177,26 @@ impl Mock {
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        log::warn!("Done ensuring users");
-
         let ops_settings = CreateGroupSettingsBuilder::default()
             .name("Ops".to_owned())
             .alias("ops".to_owned())
             .invites(team_ids)
             .build()?;
 
+        let admin = self.client("admin".to_owned()).await.unwrap();
+
         match admin.create_effektio_group(ops_settings).await {
             Ok(ops_id) => {
-                log::info!("Ops Room Id: {:?}", ops_id);
+                tracing::info!("Ops Room Id: {:?}", ops_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                log::warn!("Problem creating Ops Room: {:?}", inner);
+                tracing::warn!("Problem creating Ops Room: {:?}", inner);
             }
             Err(e) => {
-                log::error!("Creating Ops Room failed: {:?}", e);
+                tracing::error!("Creating Ops Room failed: {:?}", e);
             }
         }
 
@@ -143,16 +209,16 @@ impl Mock {
 
         match admin.create_effektio_group(promenade_settings).await {
             Ok(promenade_room_id) => {
-                log::info!("Promenade Room Id: {:?}", promenade_room_id);
+                tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                log::warn!("Problem creating Promenade Room: {:?}", inner);
+                tracing::warn!("Problem creating Promenade Room: {:?}", inner);
             }
             Err(e) => {
-                log::error!("Creating Promenade Room failed: {:?}", e);
+                tracing::error!("Creating Promenade Room failed: {:?}", e);
             }
         }
 
@@ -165,32 +231,125 @@ impl Mock {
 
         match admin.create_effektio_group(quarks_settings).await {
             Ok(quarks_id) => {
-                log::info!("Quarks Room Id: {:?}", quarks_id);
+                tracing::info!("Quarks Room Id: {:?}", quarks_id);
             }
             Err(x) if x.is::<matrix_sdk::HttpError>() => {
                 let inner = x
                     .downcast::<matrix_sdk::HttpError>()
                     .expect("already checked");
-                log::warn!("Problem creating Quarks Room: {:?}", inner);
+                tracing::warn!("Problem creating Quarks Room: {:?}", inner);
             }
             Err(e) => {
-                log::error!("Creating Quarks Room failed: {:?}", e);
+                tracing::error!("Creating Quarks Room failed: {:?}", e);
             }
         }
 
-        log::warn!("Done creating spaces");
+        tracing::info!("Done creating spaces");
+        Ok(())
+    }
 
-        let mut everyone = Vec::new();
-        everyone.extend_from_slice(&team);
-        everyone.extend_from_slice(&civilians);
-
-        for member in everyone.iter() {
+    pub async fn accept_invitations(&mut self) -> Result<()> {
+        for member in self.everyone().await.iter() {
+            tracing::info!("Accepting invites for {:}", member.user_id()?);
             member.sync_once(Default::default()).await?;
             for invited in member.invited_rooms().iter() {
+                tracing::trace!("accepting {:#?}", invited);
                 invited.accept_invitation().await?;
             }
         }
-        log::warn!("Done accepting invites");
+        tracing::info!("Done accepting invites");
+
+        Ok(())
+    }
+
+    pub async fn sync_up(&mut self) -> Result<()> {
+        for member in self.everyone().await.iter() {
+            member.sync_once(Default::default()).await?;
+            tracing::info!("Synced {:}", member.user_id()?);
+        }
+        Ok(())
+    }
+
+    pub async fn tasks(&mut self) -> Result<()> {
+        let list_name = "Daily Security Brief".to_owned();
+        //let sisko = &self.sisko;
+        let mut odo = self.client("odo".to_owned()).await?;
+        //let kyra = &self.kyra;
+        //sisko.sync_once(Default::default()).await?;
+        odo.start_sync().await_has_synced_history().await?;
+
+        let task_lists = odo.task_lists().await?;
+        let task_list =
+            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) {
+                task_list
+            } else {
+                //kyra.sync_once(Default::default()).await?;
+
+                let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
+                let mut draft = odo_ops.task_list_draft()?;
+
+                let task_list_id = draft
+                    .name(list_name)
+                    .description_text("The tops of the daily security briefing with kyra".into())
+                    .send()
+                    .await?;
+
+                // FIXME: this might fail if the sync hasn't finished yet.
+                odo.task_lists()
+                    .await?
+                    .into_iter()
+                    .find(|e| e.event_id() == task_list_id)
+                    .unwrap()
+            };
+
+        task_list
+            .task_builder()?
+            .title("Holding Cells review".into())
+            .description_text(
+                "What is the occupancy rate? Who is in the holding cells, for how much longer?"
+                    .into(),
+            )
+            .send()
+            .await?;
+
+        task_list
+            .task_builder()?
+            .title("Special guests".into())
+            .description_text("Any special guests expected, needing special attention?".into())
+            .send()
+            .await?;
+
+        task_list
+            .task_builder()?
+            .title("Federation reports".into())
+            .description_text("Daily status report from the federation".into())
+            .send()
+            .await?;
+
+        tracing::info!("Creating task lists and tasks done.");
+
+        Ok(())
+    }
+
+    pub async fn export(&mut self) -> Result<()> {
+        std::fs::create_dir_all(".local")?;
+
+        futures::future::try_join_all(self.users.values().map(|cl| async move {
+            let full_username = cl.user_id().unwrap();
+            let user_export_file = sanitize(
+                ".local".to_string(),
+                format!("mock_export_{full_username:}"),
+            );
+
+            cl.sync_once(Default::default()).await?;
+
+            cl.encryption()
+                .export_room_keys(user_export_file, "mock", |_| true)
+                .await
+        }))
+        .await?;
+
+        tracing::info!("Encryption keys exported to .local");
 
         Ok(())
     }
