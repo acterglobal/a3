@@ -7,83 +7,90 @@ import 'package:effektio/widgets/ExpandableText.dart';
 import 'package:effektio/widgets/ToDoTaskView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:get/get.dart';
 
 class ToDoListView extends StatelessWidget {
   const ToDoListView({Key? key, required this.controller}) : super(key: key);
   final ToDoController controller;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<ToDoList>>(
-      future: controller.getTodoList(),
-      builder: (BuildContext context, AsyncSnapshot<List<ToDoList>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          if (snapshot.hasData) {
-            if (snapshot.data!.isEmpty) {
-              return Center(
-                heightFactor: MediaQuery.of(context).size.height * 0.02,
-                child: const Text(
-                  'You do not have any todos yet',
-                  style: ToDoTheme.titleTextStyle,
-                ),
-              );
-            }
-            return ListView.builder(
-              itemCount: snapshot.data!.length,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () => controller.toggleCardExpand(),
-                  child: Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.all(8),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    color: ToDoTheme.secondaryColor,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 15.0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          buildHeaderContent(
-                            snapshot.data![index].name,
-                            snapshot.data![index].tags,
-                          ),
-                          buildDescription(snapshot.data![index].description),
-                          buildDivider(),
-                          buildComments(context),
-                          buildDivider(),
-                          buildTasksRatio(snapshot.data![index]),
-                          buildTasksSection(
-                            context,
-                            snapshot.data![index],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
+    return GetBuilder<ToDoController>(
+        id: 'refresh-list',
+        builder: (context) {
+          return FutureBuilder<List<ToDoList>>(
+            future: controller.getTodoList(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<ToDoList>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Could not load lists due to ${snapshot.error}',
-                style: ToDoTheme.taskListTextStyle,
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        }
-      },
-    );
+              } else {
+                if (snapshot.hasData) {
+                  if (snapshot.data!.isEmpty) {
+                    return Center(
+                      heightFactor: MediaQuery.of(context).size.height * 0.02,
+                      child: const Text(
+                        'You do not have any todos yet',
+                        style: ToDoTheme.titleTextStyle,
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    itemCount: snapshot.data!.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return InkWell(
+                        onTap: () => controller.toggleCardExpand(),
+                        child: Card(
+                          elevation: 0,
+                          margin: const EdgeInsets.all(8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          color: ToDoTheme.secondaryColor,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                              horizontal: 15.0,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                buildHeaderContent(
+                                  snapshot.data![index].name,
+                                  snapshot.data![index].tags,
+                                ),
+                                buildDescription(
+                                    snapshot.data![index].description),
+                                buildDivider(),
+                                buildComments(context),
+                                buildDivider(),
+                                buildTasksRatio(snapshot.data![index]),
+                                buildTasksSection(
+                                  context,
+                                  snapshot.data![index],
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                      'Could not load lists due to ${snapshot.error}',
+                      style: ToDoTheme.taskListTextStyle,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              }
+            },
+          );
+        });
   }
 
   Widget buildHeaderContent(String title, List<String>? tags) {

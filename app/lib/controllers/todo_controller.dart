@@ -18,7 +18,6 @@ import 'package:get/get.dart';
 class ToDoController extends GetxController {
   final Client client;
   late final List<ToDoList>? todoList;
-  RxList<ToDoTask> draftToDoTasks = <ToDoTask>[].obs;
   int completedTasks = 0;
   int pendingTasks = 0;
   RxBool cardExpand = true.obs;
@@ -147,33 +146,9 @@ class ToDoController extends GetxController {
     listDraft.name(name);
     listDraft.descriptionText(description!);
     var eventId = await listDraft.send();
+    await client.waitForTaskList(eventId.toString(), null);
+    update(['refresh-list']);
     return eventId.toString();
-  }
-
-  void createToDoTaskDraft(String name, String? description, bool isDone) {
-    ToDoTask item = ToDoTask(
-      index: 0,
-      name: name,
-      description: description ?? '',
-      isDone: isDone,
-    );
-    draftToDoTasks.add(item);
-  }
-
-  void updateToDoTaskDraft(
-    String name,
-    String? description,
-    bool isDone,
-    int idx,
-  ) {
-    ToDoTask item = ToDoTask(
-      index: 0,
-      name: name,
-      description: description ?? '',
-      isDone: isDone,
-    );
-    draftToDoTasks.remove(draftToDoTasks[idx]);
-    draftToDoTasks.insert(idx, item);
   }
 
   void updateButtonIndex(int index) {

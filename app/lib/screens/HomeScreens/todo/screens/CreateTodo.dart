@@ -30,7 +30,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   void initState() {
     super.initState();
     widget.controller.taskNameCount.value = 30;
-    widget.controller.draftToDoTasks.clear();
   }
 
   RelativeRect get relRectSize =>
@@ -68,16 +67,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
             _buildDescriptionInput(),
             _buildSelectTeamBtn(),
             _buildDivider(),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.2,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  _buildTaskDraft(),
-                  _buildTaskDraftInput(),
-                ],
-              ),
-            ),
             const Spacer(),
             _createToDoListBtn(),
           ],
@@ -112,7 +101,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           controller: nameController,
           keyboardType: TextInputType.text,
           inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp('[0-9a-zA-Z]')),
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]+|\s')),
           ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
@@ -157,7 +146,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           controller: descriptionController,
           keyboardType: TextInputType.text,
           inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp('[0-9a-zA-Z]')),
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]+|\s')),
           ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
@@ -219,145 +208,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
             )
           ],
         ),
-      );
-
-  Widget _buildTaskDraft() => Obx(
-        () => Visibility(
-          visible: widget.controller.draftToDoTasks.isNotEmpty,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-              widget.controller.draftToDoTasks.length,
-              (index) => Flexible(
-                child: ListTile(
-                  leading: GestureDetector(
-                    onTap: () => widget.controller.updateToDoTaskDraft(
-                      widget.controller.draftToDoTasks[index].name,
-                      widget.controller.draftToDoTasks[index].description,
-                      !widget.controller.draftToDoTasks[index].isDone,
-                      index,
-                    ),
-                    child: CircleAvatar(
-                      backgroundColor: AppCommonTheme.transparentColor,
-                      radius: 18,
-                      child: Container(
-                        height: 25,
-                        width: 25,
-                        decoration: BoxDecoration(
-                          color: widget.controller.draftToDoTasks[index].isDone
-                              ? ToDoTheme.activeCheckColor
-                              : ToDoTheme.inactiveCheckColor,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        child: checkBuilder(
-                          widget.controller.draftToDoTasks[index].isDone,
-                        ),
-                      ),
-                    ),
-                  ),
-                  title: Text(
-                    widget.controller.draftToDoTasks[index].name,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  trailing: IconButton(
-                    onPressed: () => widget.controller.draftToDoTasks.remove(
-                      widget.controller.draftToDoTasks[index],
-                    ),
-                    icon: const Icon(FlutterIcons.cross_ent),
-                    color: Colors.grey,
-                    iconSize: 18,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-  Widget _buildTaskDraftInput() => GetBuilder<ToDoController>(
-        id: 'teams',
-        builder: (_) {
-          return Visibility(
-            visible: widget.controller.selectedTeam != null,
-            child: ListTile(
-              leading: Visibility(
-                visible: taskInputController.text.isNotEmpty,
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      check = !check;
-                    });
-                  },
-                  child: CircleAvatar(
-                    backgroundColor: AppCommonTheme.transparentColor,
-                    radius: 18,
-                    child: Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                        color: check
-                            ? ToDoTheme.activeCheckColor
-                            : ToDoTheme.inactiveCheckColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      child: checkBuilder(check),
-                    ),
-                  ),
-                ),
-              ),
-              title: TextField(
-                controller: taskInputController,
-                cursorColor: ToDoTheme.primaryTextColor,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Input here the task',
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-                style: const TextStyle(color: Colors.white),
-                onChanged: (val) {
-                  setState(() {
-                    taskInputController.text = val;
-                    taskInputController.selection = TextSelection.fromPosition(
-                      TextPosition(
-                        offset: taskInputController.text.length,
-                      ),
-                    );
-                  });
-                },
-                onEditingComplete: () => widget.controller.createToDoTaskDraft(
-                  taskInputController.text,
-                  '',
-                  check,
-                ),
-              ),
-              trailing: Visibility(
-                visible: taskInputController.text.isNotEmpty,
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      taskInputController.text = '';
-                    });
-                  },
-                  icon: const Icon(FlutterIcons.cross_ent),
-                  color: Colors.grey,
-                  iconSize: 18,
-                ),
-              ),
-            ),
-          );
-        },
       );
 
   Widget _createToDoListBtn() => Obx(
