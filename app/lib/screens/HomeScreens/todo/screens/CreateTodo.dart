@@ -30,6 +30,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   void initState() {
     super.initState();
     widget.controller.taskNameCount.value = 30;
+    widget.controller.setSelectedTeam(null);
   }
 
   RelativeRect get relRectSize =>
