@@ -5,7 +5,6 @@ import 'package:effektio/widgets/searchWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:searchbar_animation/searchbar_animation.dart';
 
 class FaqOverviewScreen extends StatefulWidget {
   final Client client;
