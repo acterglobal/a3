@@ -17,13 +17,13 @@ fn register_with_registration_token(basepath: string, username: string, password
 fn gen_mock_news() -> Vec<News>;
 
 /// Representing a time frame
-object Duration {}
+object EfkDuration {}
 
-fn duration_from_secs(secs: u64) -> Duration;
+fn duration_from_secs(secs: u64) -> EfkDuration;
 
 
 /// Representing a color
-object Color {
+object EfkColor {
     /// as rgba in u8
     fn rgba_u8() -> (u8, u8, u8, u8);
 }
@@ -47,9 +47,9 @@ object News {
     /// the number of comments on this item
     fn comments_count() -> u32;
     /// if given, the specific foreground color
-    fn fg_color() -> Option<Color>;
+    fn fg_color() -> Option<EfkColor>; 
     /// if given, the specific background color
-    fn bg_color() -> Option<Color>;
+    fn bg_color() -> Option<EfkColor>; 
     /// if given, the image
     fn image() -> Option<Vec<u8>>;
 }
@@ -60,7 +60,7 @@ object Tag {
     /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
     fn hash_tag() -> string;
     /// if given, the specific color for this tag
-    fn color() -> Option<Color>;
+    fn color() -> Option<EfkColor>; 
 }
 
 /// A news object
@@ -408,7 +408,7 @@ object Task {
     fn utc_start() -> Option<UtcDateTime>;
 
     /// Has this been colored in?
-    fn color() -> Option<Color>;
+    fn color() -> Option<EfkColor>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -451,7 +451,7 @@ object TaskUpdateBuilder {
     fn unset_sort_order_update();
 
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
     fn unset_color_update();
 
@@ -521,7 +521,7 @@ object TaskDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
 
     /// set the utc_due for this task list in rfc3339 format
@@ -579,8 +579,8 @@ object TaskList {
     fn sort_order() -> u32;
 
     /// Has this been colored in?
-    fn color() -> Option<Color>;
-
+    fn color() -> Option<EfkColor>;
+    
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
 
@@ -615,7 +615,7 @@ object TaskListDraft {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -640,7 +640,7 @@ object TaskListUpdateBuilder {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
     fn unset_color_update();
     /// set the keywords for this task list
@@ -823,13 +823,13 @@ object Client {
     fn subscribe(key: string) -> Stream<bool>;
 
     /// Fetch the Comment or use its event_id to wait for it to come down the wire
-    fn wait_for_comment(key: string, timeout: Option<Duration>) -> Future<Result<Comment>>;
+    fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
 
     /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
-    fn wait_for_task_list(key: string, timeout: Option<Duration>) -> Future<Result<TaskList>>;
+    fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;
 
     /// Fetch the Task or use its event_id to wait for it to come down the wire
-    fn wait_for_task(key: string, timeout: Option<Duration>) -> Future<Result<Task>>;
+    fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
 }
 
 object UserProfile {
