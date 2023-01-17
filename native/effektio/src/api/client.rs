@@ -191,7 +191,7 @@ impl Client {
 }
 
 impl Client {
-    pub async fn new(client: MatrixClient, state: ClientState) -> anyhow::Result<Self> {
+    pub async fn new(client: MatrixClient, state: ClientState) -> Result<Self> {
         let store = Store::new(client.clone()).await?;
         let executor = Executor::new(store.clone()).await?;
         client.add_event_handler_context(executor.clone());
@@ -222,7 +222,7 @@ impl Client {
     async fn refresh_history(
         &self,
         history: futures_signals::signal::Mutable<HistoryLoadState>,
-    ) -> anyhow::Result<()> {
+    ) -> Result<()> {
         let me = self.clone();
         RUNTIME
             .spawn(async move {

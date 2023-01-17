@@ -1,8 +1,5 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 use clap::{crate_version, Parser};
-
 use effektio::{
     platform::sanitize, testing::ensure_user, Client as EfkClient, CreateGroupSettingsBuilder,
 };
@@ -12,6 +9,7 @@ use effektio_core::{
 };
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
+use std::collections::HashMap;
 
 #[derive(Parser, Debug)]
 pub struct MockOpts {
@@ -339,7 +337,7 @@ impl Mock {
         Ok(())
     }
 
-    pub async fn export(&mut self) -> anyhow::Result<()> {
+    pub async fn export(&mut self) -> Result<()> {
         std::fs::create_dir_all(".local")?;
 
         futures::future::try_join_all(self.users.values().map(|cl| async move {
