@@ -1,3 +1,4 @@
+import 'package:duration/duration.dart';
 import 'package:effektio/common/animations/LikeAnimation.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/NewsItem.dart';
@@ -31,7 +32,7 @@ class _NewsScreenState extends State<NewsScreen>
 
     controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 1),
+      duration: seconds(1),
     );
   }
 

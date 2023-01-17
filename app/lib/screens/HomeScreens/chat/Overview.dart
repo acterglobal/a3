@@ -25,82 +25,138 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            pinned: false,
-            snap: false,
-            floating: true,
-            leading: TextButton(
-              onPressed: () {},
-              child: Container(
-                margin: const EdgeInsets.only(right: 15),
-                child: Text(
-                  AppLocalizations.of(context)!.chat,
-                  style: AppCommonTheme.appBarTitleStyle,
+      body: GetBuilder<ChatListController>(
+        id: 'chatlist',
+        builder: (ChatListController controller) {
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                pinned: false,
+                snap: false,
+                floating: true,
+                leading: TextButton(
+                  onPressed: () {},
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 15),
+                    child: Text(
+                      AppLocalizations.of(context)!.chat,
+                      style: AppCommonTheme.appBarTitleStyle,
+                    ),
+                  ),
                 ),
+                leadingWidth: 100,
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      controller.toggleSearchView();
+                    },
+                    padding: const EdgeInsets.only(right: 10, left: 5),
+                    icon: const Icon(
+                      FlutterIcons.search1_ant,
+                      color: AppCommonTheme.svgIconColor,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showNotYetImplementedMsg(
+                        context,
+                        'Multiselect is not implemented yet',
+                      );
+                    },
+                    padding: const EdgeInsets.only(right: 10, left: 5),
+                    icon: const Icon(
+                      FlutterIcons.select_mco,
+                      color: AppCommonTheme.svgIconColor,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showNotYetImplementedMsg(
+                        context,
+                        'Starting a new chat is not implemented yet',
+                      );
+                    },
+                    padding: const EdgeInsets.only(right: 10, left: 10),
+                    icon: const Icon(
+                      FlutterIcons.md_add_ion,
+                      color: AppCommonTheme.svgIconColor,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            leadingWidth: 100,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Chat Search is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 5),
-                icon: const Icon(
-                  FlutterIcons.search1_ant,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Multiselect is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 5),
-                icon: const Icon(
-                  FlutterIcons.select_mco,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Starting a new chat is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                icon: const Icon(
-                  FlutterIcons.md_add_ion,
-                  color: AppCommonTheme.svgIconColor,
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (controller.showSearch)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                          bottom: 6,
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: TextField(
+                          onChanged: (value) {
+                            controller.searchedData(
+                                value, controller.joinedRooms,);
+                          },
+                          controller: controller.searchController,
+                          style: ToDoTheme.taskTitleTextStyle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          cursorColor: ToDoTheme.primaryTextColor,
+                          decoration: InputDecoration(
+                            hintStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                controller.toggleSearchView();
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              left: 12,
+                              bottom: 2,
+                              top: 2,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (widget.client.isGuest()) empty else buildList(context),
+                  ],
                 ),
               ),
             ],
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (widget.client.isGuest())
-                  empty
-                else
-                  buildList(context),
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -170,7 +226,9 @@ class _ChatOverviewState extends State<ChatOverview> {
         }
         return ImplicitlyAnimatedReorderableList<JoinedRoom>(
           header: buildListHeader(context),
-          items: controller.joinedRooms,
+          items: controller.showSearch
+              ? controller.searchData
+              : controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
           // Remember to update the underlying data when the list has been reordered.
