@@ -1,6 +1,6 @@
 //! Testing modules, don't use in production!
 
-use crate::Client as EfkClient;
+use anyhow::{bail, Result};
 use core::{future::Future, time::Duration};
 use effektio_core::{
     matrix_sdk::{Client, ClientBuilder},
@@ -14,14 +14,16 @@ use effektio_core::{
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use tokio::time::sleep;
 
+use crate::Client as EfkClient;
+
 /// testing helper to give a task time to finish
 ///
 /// alias for `wait_for_secs(3, 1, fun).await` - running up to 3 times with 1 second sleep
 /// in between
-pub async fn wait_for<F, T, O>(fun: F) -> anyhow::Result<Option<T>>
+pub async fn wait_for<F, T, O>(fun: F) -> Result<Option<T>>
 where
     F: Fn() -> O,
-    O: Future<Output = anyhow::Result<Option<T>>>,
+    O: Future<Output = Result<Option<T>>>,
 {
     wait_for_secs(3, 1, fun).await
 }
@@ -31,10 +33,10 @@ where
 /// Will call `fun().await` up to `count` times, checking wether that returned `Ok(Some(T))` and
 /// return `Ok(Some(T))` if it does. Sleep up to `secs` seconds in between each call. Return `Ok(None)`
 /// if even after all that time, it didn't succeed. Passes on any internally raised error
-pub async fn wait_for_secs<F, T, O>(count: u32, secs: u8, fun: F) -> anyhow::Result<Option<T>>
+pub async fn wait_for_secs<F, T, O>(count: u32, secs: u8, fun: F) -> Result<Option<T>>
 where
     F: Fn() -> O,
-    O: Future<Output = anyhow::Result<Option<T>>>,
+    O: Future<Output = Result<Option<T>>>,
 {
     let duration = Duration::from_secs(secs as u64);
     let mut remaining = count;
@@ -56,7 +58,7 @@ pub async fn default_client_config(
     username: &str,
     user_agent: String,
     store_cfg: StoreConfig,
-) -> anyhow::Result<ClientBuilder> {
+) -> Result<ClientBuilder> {
     Ok(Client::builder()
         .user_agent(user_agent)
         .store_config(store_cfg)
@@ -68,7 +70,7 @@ pub async fn register(
     username: String,
     user_agent: String,
     store_config: StoreConfig,
-) -> anyhow::Result<Client> {
+) -> Result<Client> {
     let client = default_client_config(homeserver, &username, user_agent, store_config)
         .await?
         .build()
@@ -85,7 +87,7 @@ pub async fn register(
             client.register(request).await?;
         } else {
             tracing::error!(?resp, "Not a UIAA response");
-            anyhow::bail!("No a uiaa response");
+            bail!("No a uiaa response");
         }
     }
 
@@ -97,7 +99,7 @@ pub async fn ensure_user(
     username: String,
     user_agent: String,
     store_config: StoreConfig,
-) -> anyhow::Result<EfkClient> {
+) -> Result<EfkClient> {
     let cl = match register(
         homeserver,
         username.clone(),

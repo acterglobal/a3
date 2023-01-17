@@ -353,7 +353,7 @@ impl Mock {
         Ok(())
     }
 
-    pub async fn export(&mut self) -> anyhow::Result<()> {
+    pub async fn export(&mut self) -> Result<()> {
         std::fs::create_dir_all(".local")?;
 
         futures::future::try_join_all(self.users.values().map(|cl| async move {
