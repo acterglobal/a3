@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -31,7 +32,7 @@ class _AddToDoScreenState extends State<AddToDoScreen> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Beamer.of(context).beamBack();
                     },
                     icon: const Icon(Icons.arrow_back),
                     color: ToDoTheme.primaryTextColor,

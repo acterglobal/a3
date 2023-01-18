@@ -1,7 +1,7 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
-import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,12 +41,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CreateTaskScreen(),
-                  ),
-                );
+                Beamer.of(context).beamToNamed('/createTask');
               },
               child: const Icon(
                 Icons.add,

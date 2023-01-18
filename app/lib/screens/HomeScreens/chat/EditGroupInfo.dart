@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/models/EditGroupInfoModel.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -7,15 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EditGroupInfoScreen extends StatefulWidget {
-  final Conversation room;
-  final String name;
-  final String description;
+
+  final EditGroupInfoModel editGroupInfoModel;
 
   const EditGroupInfoScreen({
-    Key? key,
-    required this.room,
-    required this.name,
-    required this.description,
+    Key? key, required this.editGroupInfoModel,
   }) : super(key: key);
 
   @override
@@ -33,9 +30,9 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
   void initState() {
     super.initState();
 
-    nameController.text = widget.name;
-    descController.text = widget.description;
-    widget.room.getProfile().then((value) {
+    nameController.text = widget.editGroupInfoModel.name;
+    descController.text = widget.editGroupInfoModel.description;
+    widget.editGroupInfoModel.room.getProfile().then((value) {
       if (mounted) {
         setState(() {
           if (value.hasAvatar()) {
@@ -72,12 +69,12 @@ class _EditGroupInfoState extends State<EditGroupInfoScreen> {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
-                        uniqueKey: widget.room.getRoomId(),
+                        uniqueKey: widget.editGroupInfoModel.room.getRoomId(),
                         avatar: avatar,
                         displayName: displayName,
                         radius: 20,
                         isGroup: true,
-                        stringName: simplifyRoomId(widget.room.getRoomId())!,
+                        stringName: simplifyRoomId(widget.editGroupInfoModel.room.getRoomId())!,
                       ),
                     ),
                   ),

@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class _CreateTaskScreenState extends State<CreateTaskScreen> {
         backgroundColor: ToDoTheme.backgroundGradient2Color,
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            Beamer.of(context).beamBack();
           },
           child: const Icon(
             Icons.arrow_back_ios_new,
