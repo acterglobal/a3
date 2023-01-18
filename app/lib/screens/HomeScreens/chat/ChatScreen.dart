@@ -300,8 +300,11 @@ class _ChatScreenState extends State<ChatScreen> {
           borderRadius: BorderRadius.circular(15),
           child: Image.memory(
             base64Decode(imageMessage.metadata?['base64']),
-            errorBuilder:
-                (BuildContext context, Object url, StackTrace? error) {
+            errorBuilder: (
+              BuildContext context,
+              Object url,
+              StackTrace? error,
+            ) {
               return Text('Could not load image due to $error');
             },
             frameBuilder: (

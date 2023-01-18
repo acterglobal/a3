@@ -1,6 +1,3 @@
-use super::client::{devide_groups_from_convos, Client};
-use super::room::Room;
-use crate::api::RUNTIME;
 use anyhow::{bail, Result};
 use derive_builder::Builder;
 use effektio_core::{
@@ -14,7 +11,7 @@ use effektio_core::{
         api::client::{
             account::register::v3::Request as RegistrationRequest,
             room::{
-                create_room::v3::CreationContent, create_room::v3::Request as CreateRoomRequest,
+                create_room::v3::{CreationContent, Request as CreateRoomRequest},
                 Visibility,
             },
             uiaa,
@@ -35,6 +32,13 @@ use matrix_sdk::{
     Client as MatrixClient,
 };
 use serde::{Deserialize, Serialize};
+
+use super::{
+    client::{devide_groups_from_convos, Client},
+    room::Room,
+};
+
+use crate::api::RUNTIME;
 
 #[derive(Debug, Clone)]
 pub struct Group {
@@ -145,7 +149,8 @@ impl Group {
             },
         );
     }
-    pub(crate) async fn refresh_history(&self) -> anyhow::Result<()> {
+
+    pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.inner.name();
         tracing::trace!(name, "refreshing history");
         let room = self.inner.clone();

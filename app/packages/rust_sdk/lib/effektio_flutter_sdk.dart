@@ -23,7 +23,7 @@ const defaultServer = String.fromEnvironment(
   defaultValue: 'https://matrix.effektio.org',
 );
 
-Color convertColor(ffi.Color? primary, Color fallback) {
+Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
     return fallback;
   }
