@@ -10,10 +10,12 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Group,
         RoomProfile,
         Task,
+        TaskDraft,
         TaskList,
         TaskListDraft;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ToDoController extends GetxController {
   final Client client;
@@ -74,6 +76,7 @@ class ToDoController extends GetxController {
         index: todoList.sortOrder(),
         name: todoList.name(),
         categories: asDartStringList(todoList.categories().toList()) ?? [],
+        taskDraft: todoList.taskBuilder(),
         tasks: tasks,
         completedTasks: completedTasks,
         pendingTasks: pendingTasks,
@@ -149,6 +152,19 @@ class ToDoController extends GetxController {
     await client.waitForTaskList(eventId.toString(), null);
     update(['refresh-list']);
     return eventId.toString();
+  }
+
+  Future<String> createToDoTask({
+    required String name,
+    required TaskDraft taskDraft,
+    required DateTime? dueDate,
+  }) async {
+    taskDraft.title(name);
+    taskDraft.utcDueFromRfc3339(dueDate!.toIso8601String());
+    String eventId = await taskDraft.send().then((res) => res.toString());
+    await client.waitForTask(eventId, null);
+    update(['refresh-list']);
+    return eventId;
   }
 
   void updateButtonIndex(int index) {

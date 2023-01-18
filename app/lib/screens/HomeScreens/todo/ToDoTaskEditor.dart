@@ -2,6 +2,7 @@
 // import 'package:avatar_stack/positions.dart';
 // import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 // import 'package:effektio/controllers/todo_controller.dart';
+// import 'package:effektio/models/ToDoTask.dart';
 // import 'package:effektio/screens/HomeScreens/todo/ToDoTaskAssign.dart';
 // import 'package:effektio/screens/HomeScreens/todo/screens/SubscriberScreen.dart';
 // import 'package:effektio/widgets/AppCommon.dart';
@@ -14,11 +15,8 @@
 // import 'package:get_time_ago/get_time_ago.dart';
 
 // class ToDoTaskEditor extends StatefulWidget {
-//   const ToDoTaskEditor({Key? key, required this.item, required this.avatars})
-//       : super(key: key);
-
-//   final ToDoTaskItem item;
-//   final List<ImageProvider<Object>> avatars;
+//   const ToDoTaskEditor({Key? key, required this.task}) : super(key: key);
+//   final ToDoTask task;
 
 //   @override
 //   State<ToDoTaskEditor> createState() => _ToDoTaskEditorState();
@@ -39,9 +37,9 @@
 //   void initState() {
 //     super.initState();
 
-//     lastUpdated = GetTimeAgo.parse(widget.item.lastUpdated!).obs;
-//     notesController.text = widget.item.notes ?? 'Add Notes';
-//     subtitleController.text = widget.item.title;
+//     // lastUpdated = GetTimeAgo.parse(widget.item.lastUpdated!).obs;
+//     // notesController.text = widget.item.notes ?? 'Add Notes';
+//     // subtitleController.text = widget.item.title;
 //   }
 
 //   @override
@@ -127,13 +125,13 @@
 //               ),
 //               const Padding(
 //                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-//                 child: Text('Added by:', style: ToDoTheme.subtitleTextStyle),
+//                 child: Text('Added by:', style: ToDoTheme.descriptionTextStyle),
 //               ),
 //               const Padding(
 //                 padding: EdgeInsets.symmetric(horizontal: 8.0),
 //                 child: Text(
 //                   'David Chunli on 12 May',
-//                   style: ToDoTheme.subtitleTextStyle,
+//                   style: ToDoTheme.descriptionTextStyle,
 //                 ),
 //               ),
 //               const Padding(

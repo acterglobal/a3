@@ -1,11 +1,20 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/models/ToDoList.dart';
 // import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:intl/intl.dart';
 
 class AddTaskDialogBox extends StatefulWidget {
-  const AddTaskDialogBox({Key? key}) : super(key: key);
+  const AddTaskDialogBox({
+    Key? key,
+    required this.toDoList,
+    required this.controller,
+  }) : super(key: key);
+  final ToDoList toDoList;
+  final ToDoController controller;
 
   @override
   State<AddTaskDialogBox> createState() => _AddTaskDialogBoxState();
@@ -13,6 +22,9 @@ class AddTaskDialogBox extends StatefulWidget {
 
 class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
   final titleInputController = TextEditingController();
+
+  DateTime _selectedDate = DateTime.now().toUtc();
+  int idx = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +48,24 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _buildScheduleBtn('Today'),
-                        _buildScheduleBtn('Tomorrow'),
-                        _buildScheduleBtn('Pick a Day')
+                        _buildScheduleBtn(
+                          ctx: context,
+                          text: 'Today',
+                          index: 0,
+                        ),
+                        _buildScheduleBtn(
+                          ctx: context,
+                          text: 'Tomorrow',
+                          index: 1,
+                        ),
+                        _buildScheduleBtn(
+                          ctx: context,
+                          text: (idx > 1)
+                              ? DateFormat('EEEE, d MMM, yyyy')
+                                  .format(_selectedDate)
+                              : 'Pick a Day',
+                          index: 2,
+                        )
                       ],
                     ),
                     _buildInput(),
@@ -101,13 +128,15 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                 ),
               ),
               IconButton(
-                onPressed: titleInputController.text.isEmpty
+                onPressed: (titleInputController.text.isEmpty)
                     ? null
-                    : () {
-                        const snackBar = SnackBar(
-                          content: Text('Send icon tapped'),
+                    : () async {
+                        await widget.controller.createToDoTask(
+                          name: titleInputController.text,
+                          taskDraft: widget.toDoList.taskDraft,
+                          dueDate: _selectedDate,
                         );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        Navigator.pop(context);
                       },
                 icon: Icon(
                   FlutterIcons.send_fea,
@@ -123,33 +152,101 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
     );
   }
 
-  Widget _buildScheduleBtn(String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: 16,
-      ),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: ToDoTheme.secondaryColor,
-      ),
-      child: Row(
-        children: [
-          const Icon(
-            FlutterIcons.calendar_weekend_outline_mco,
-            color: ToDoTheme.calendarColor,
-            size: 16,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            value,
-            style: ToDoTheme.calendarTextStyle.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+  Widget _buildScheduleBtn({
+    required BuildContext ctx,
+    required String text,
+    required int index,
+  }) {
+    return InkWell(
+      onTap: () {
+        final now = DateTime.now().toUtc();
+        setState(() {
+          idx = index;
+          if (index == 0) {
+            _selectedDate = now;
+          } else if (index == 1) {
+            _selectedDate = DateTime(now.year, now.month, now.day + 1);
+          } else {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => _showDatePicker(ctx),
+            );
+          }
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8,
+          horizontal: 16,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: idx == index
+              ? ToDoTheme.floatingABColor
+              : ToDoTheme.secondaryColor,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              FlutterIcons.calendar_weekend_outline_mco,
+              color: idx == index
+                  ? ToDoTheme.primaryTextColor
+                  : ToDoTheme.calendarColor,
+              size: 16,
             ),
-          )
-        ],
+            const SizedBox(width: 4),
+            Text(
+              text,
+              style: idx == index
+                  ? ToDoTheme.calendarTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: ToDoTheme.primaryTextColor,
+                    )
+                  : ToDoTheme.calendarTextStyle.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+            )
+          ],
+        ),
       ),
     );
+  }
+
+  void _showDatePicker(BuildContext ctx) async {
+    await showDatePicker(
+      context: ctx,
+      initialDatePickerMode: DatePickerMode.day,
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      initialDate: DateTime.now().toUtc(),
+      firstDate: DateTime.now().toUtc(),
+      lastDate: DateTime(DateTime.now().toUtc().year + 10),
+      confirmText: 'Done',
+      cancelText: 'Cancel',
+      builder: (BuildContext ctx, child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            dialogBackgroundColor: ToDoTheme.bottomSheetColor,
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+              primary: ToDoTheme.primaryColor,
+              onSurface: ToDoTheme.primaryTextColor,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    ).then((_pickedDate) {
+      if (_pickedDate != null) {
+        setState(() {
+          _selectedDate = _pickedDate;
+        });
+      } else {
+        setState(() {
+          _selectedDate = DateTime.now().toUtc();
+          idx = 0;
+        });
+      }
+    });
   }
 }
