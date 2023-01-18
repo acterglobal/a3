@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/models/ImageSelectionModel.dart';
 import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +13,11 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class ImageSelection extends StatefulWidget {
-  final List<PlatformFile> imageList;
-  final String roomName;
+ final ImageSelectionModel imageSelectionModel;
 
   const ImageSelection({
     Key? key,
-    required this.imageList,
-    required this.roomName,
+    required this.imageSelectionModel,
   }) : super(key: key);
 
   @override
@@ -37,10 +37,10 @@ class _ImageSelectionState extends State<ImageSelection> {
         children: [
           Expanded(
             child: PhotoViewGallery.builder(
-              itemCount: widget.imageList.length,
+              itemCount: widget.imageSelectionModel.imageList.length,
               scrollPhysics: const BouncingScrollPhysics(),
               builder: (context, index) {
-                PlatformFile file = widget.imageList[index];
+                PlatformFile file = widget.imageSelectionModel.imageList[index];
                 return PhotoViewGalleryPageOptions(
                   imageProvider: FileImage(File(file.path!)),
                   initialScale: PhotoViewComputedScale.contained * 0.8,
@@ -62,7 +62,7 @@ class _ImageSelectionState extends State<ImageSelection> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  for (PlatformFile file in widget.imageList)
+                  for (PlatformFile file in widget.imageSelectionModel.imageList)
                     Padding(
                       padding: const EdgeInsets.only(top: 10, left: 8),
                       child: buildImageItem(file),
@@ -79,10 +79,10 @@ class _ImageSelectionState extends State<ImageSelection> {
           ),
           CustomChatInput(
             isChatScreen: false,
-            roomName: widget.roomName,
+            roomName: widget.imageSelectionModel.roomName,
             onButtonPressed: () async {
-              Navigator.of(context).pop();
-              for (PlatformFile file in widget.imageList) {
+              Beamer.of(context).beamBack();
+              for (PlatformFile file in widget.imageSelectionModel.imageList) {
                 await controller.sendImage(file);
               }
             },
@@ -96,7 +96,7 @@ class _ImageSelectionState extends State<ImageSelection> {
     return InkWell(
       onTap: () {
         setState(() {
-          selectedIndex = widget.imageList.indexOf(file);
+          selectedIndex = widget.imageSelectionModel.imageList.indexOf(file);
           pageController.jumpToPage(selectedIndex);
         });
       },
@@ -120,10 +120,10 @@ class _ImageSelectionState extends State<ImageSelection> {
             top: 4,
             child: InkWell(
               onTap: () {
-                int idx = widget.imageList.indexOf(file);
-                widget.imageList.removeAt(idx);
-                if (widget.imageList.isEmpty) {
-                  Navigator.of(context).pop();
+                int idx = widget.imageSelectionModel.imageList.indexOf(file);
+                widget.imageSelectionModel.imageList.removeAt(idx);
+                if (widget.imageSelectionModel.imageList.isEmpty) {
+                  Beamer.of(context).beamBack();
                 }
               },
               child: CircleAvatar(
@@ -141,7 +141,7 @@ class _ImageSelectionState extends State<ImageSelection> {
   }
 
   BoxBorder? getItemBorder(PlatformFile file) {
-    if (selectedIndex != widget.imageList.indexOf(file)) {
+    if (selectedIndex != widget.imageSelectionModel.imageList.indexOf(file)) {
       return null;
     }
     return Border.all(

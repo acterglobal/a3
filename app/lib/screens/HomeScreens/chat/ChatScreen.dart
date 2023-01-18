@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:beamer/beamer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/ChatTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
-import 'package:effektio/screens/HomeScreens/chat/ChatProfile.dart';
+import 'package:effektio/models/ChatModel.dart';
+import 'package:effektio/models/ChatProfileModel.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatBubbleBuilder.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
@@ -15,8 +17,6 @@ import 'package:effektio/widgets/CustomChatInput.dart';
 import 'package:effektio/widgets/EmptyHistoryPlaceholder.dart';
 import 'package:effektio/widgets/TextMessageBuilder.dart';
 import 'package:effektio/widgets/TypeIndicator.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
@@ -27,17 +27,11 @@ import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Future<FfiBufferUint8>? roomAvatar;
-  final String? roomName;
-  final Conversation room;
-  final Client client;
+  final ChatModel chatModel;
 
   const ChatScreen({
     Key? key,
-    required this.room,
-    required this.client,
-    this.roomAvatar,
-    this.roomName,
+    required this.chatModel,
   }) : super(key: key);
 
   @override
@@ -51,9 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
-    roomController.setCurrentRoom(widget.room);
-
+    roomController.setCurrentRoom(widget.chatModel.room);
   }
 
   @override
@@ -148,7 +140,7 @@ class _ChatScreenState extends State<ChatScreen> {
         if (!controller.isEmojiContainerVisible) {
           return CustomChatInput(
             isChatScreen: true,
-            roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
+            roomName: widget.chatModel.roomName ?? AppLocalizations.of(context)!.noName,
             onButtonPressed: () => onSendButtonPressed(controller),
           );
         }
@@ -198,7 +190,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     children: [
                                       GestureDetector(
                                         onTap: () {
-                                          Navigator.pop(ctx);
+                                          Beamer.of(context).beamBack();
                                         },
                                         child: const Icon(
                                           Icons.close,
@@ -227,7 +219,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                         'Report feature not yet implemented',
                                       );
                                       controller.update(['emoji-reaction']);
-                                      Navigator.pop(ctx);
+                                      Beamer.of(context).beamBack();
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.all(20),
@@ -401,7 +393,7 @@ class _ChatScreenState extends State<ChatScreen> {
             centerTitle: true,
             toolbarHeight: 70,
             leading: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Beamer.of(context).beamBack(),
               icon: SvgPicture.asset(
                 'assets/images/back_button.svg',
                 color: AppCommonTheme.svgIconColor,
@@ -444,19 +436,14 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget buildProfileAction() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatProfileScreen(
-              client: widget.client,
-              room: widget.room,
-              roomName: widget.roomName,
-              roomAvatar: widget.roomAvatar,
-              isGroup: true,
-              isAdmin: true,
-            ),
-          ),
-        );
+        Beamer.of(context).beamToNamed('/chatProfile',data: ChatProfileModel(
+          client: widget.chatModel.client,
+          room: widget.chatModel.room,
+          roomName: widget.chatModel.roomName,
+          roomAvatar: widget.chatModel.roomAvatar,
+          isGroup: true,
+          isAdmin: true,
+        ),);
       },
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
@@ -466,14 +453,14 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              uniqueKey: widget.room.getRoomId(),
-              avatar: widget.roomAvatar,
-              displayName: widget.roomName,
+              uniqueKey: widget.chatModel.room.getRoomId(),
+              avatar: widget.chatModel.roomAvatar,
+              displayName: widget.chatModel.roomName,
               radius: 20,
               cacheHeight: 120,
               cacheWidth: 120,
               isGroup: true,
-              stringName: simplifyRoomId(widget.room.getRoomId())!,
+              stringName: simplifyRoomId(widget.chatModel.room.getRoomId())!,
             ),
           ),
         ),
@@ -482,11 +469,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget buildRoomName(BuildContext context) {
-    if (widget.roomName == null) {
+    if (widget.chatModel.roomName == null) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
     return Text(
-      widget.roomName!,
+      widget.chatModel.roomName!,
       overflow: TextOverflow.clip,
       style: ChatTheme01.chatTitleStyle,
     );
@@ -517,7 +504,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     int invitedIndex = listController.invitations.indexWhere((x) {
-      return x.roomId() == widget.room.getRoomId();
+      return x.roomId() == widget.chatModel.room.getRoomId();
     });
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
@@ -540,7 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 customTypingIndicator: buildTypingIndicator(),
               ),
               onSendPressed: (types.PartialText partialText) {},
-              user: types.User(id: widget.client.userId().toString()),
+              user: types.User(id: widget.chatModel.client.userId().toString()),
               // disable image preview
               disableImageGallery: true,
               //custom avatar builder
@@ -664,7 +651,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                Beamer.of(context).beamBack();
               },
               child: const Padding(
                 padding: EdgeInsets.all(16),
@@ -691,7 +678,7 @@ class _ChatScreenState extends State<ChatScreen> {
       id: 'chat-bubble',
       builder: (context) {
         return ChatBubbleBuilder(
-          userId: widget.client.userId().toString(),
+          userId: widget.chatModel.client.userId().toString(),
           child: child,
           message: message,
           nextMessageInGroup: nextMessageInGroup,

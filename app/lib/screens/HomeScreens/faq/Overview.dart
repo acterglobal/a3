@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/FaqController.dart';
+import 'package:effektio/models/FaqModel.dart';
 import 'package:effektio/widgets/FaqListItem.dart';
 import 'package:effektio/widgets/searchWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -85,10 +86,68 @@ class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
                                 );
                               },
                             ),
-                          );
-                        },
-                      ),
-                    ],
+                            cursorColor: ToDoTheme.primaryTextColor,
+                            decoration: InputDecoration(
+                              hintStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                              ),
+                              suffixIcon: const Icon(
+                                Icons.search,
+                                color: Colors.white,
+                              ),
+                              contentPadding: const EdgeInsets.only(
+                                left: 12,
+                                bottom: 2,
+                                top: 2,
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.circular(20.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.white,
+                                ),
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        GetBuilder<FaqController>(
+                          builder: (FaqController controller) {
+                            return Expanded(
+                              child: ListView.builder(
+                                padding: const EdgeInsets.all(8),
+                                shrinkWrap: true,
+                                itemCount: controller.searchData.isEmpty
+                                    ? snapshot.requireData.length
+                                    : controller.searchData.length,
+                                itemBuilder: (
+                                  BuildContext context,
+                                  int index,
+                                ) {
+                                  return FaqListItem(
+                                    faqModel: FaqModel(client: widget.client,
+                                      faq: controller.searchData.isEmpty
+                                          ? snapshot.requireData[index]
+                                          : controller.searchData[index],),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
