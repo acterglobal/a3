@@ -868,7 +868,7 @@ class Api {
     return tmp1;
   }
 
-  Duration durationFromSecs(
+  EfkDuration durationFromSecs(
     int secs,
   ) {
     final tmp0 = secs;
@@ -879,9 +879,9 @@ class Api {
     );
     final tmp4 = tmp2;
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(this, tmp4_0, "drop_box_Duration");
+    final tmp4_1 = _Box(this, tmp4_0, "drop_box_EfkDuration");
     tmp4_1._finalizer = this._registerFinalizer(tmp4_1);
-    final tmp3 = Duration._(this, tmp4_1);
+    final tmp3 = EfkDuration._(this, tmp4_1);
     return tmp3;
   }
 
@@ -5530,14 +5530,14 @@ class Api {
       int Function(
     int,
   )>();
-  late final _colorRgbaU8Ptr = _lookup<
+  late final _efkColorRgbaU8Ptr = _lookup<
       ffi.NativeFunction<
-          _ColorRgbaU8Return Function(
+          _EfkColorRgbaU8Return Function(
     ffi.Int64,
-  )>>("__Color_rgba_u8");
+  )>>("__EfkColor_rgba_u8");
 
-  late final _colorRgbaU8 = _colorRgbaU8Ptr.asFunction<
-      _ColorRgbaU8Return Function(
+  late final _efkColorRgbaU8 = _efkColorRgbaU8Ptr.asFunction<
+      _EfkColorRgbaU8Return Function(
     int,
   )>();
   late final _utcDateTimeTimestampPtr = _lookup<
@@ -11955,11 +11955,11 @@ class Api {
 }
 
 /// Representing a time frame
-class Duration {
+class EfkDuration {
   final Api _api;
   final _Box _box;
 
-  Duration._(this._api, this._box);
+  EfkDuration._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -11968,17 +11968,17 @@ class Duration {
 }
 
 /// Representing a color
-class Color {
+class EfkColor {
   final Api _api;
   final _Box _box;
 
-  Color._(this._api, this._box);
+  EfkColor._(this._api, this._box);
 
   /// as rgba in u8
   List<dynamic> rgbaU8() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._colorRgbaU8(
+    final tmp1 = _api._efkColorRgbaU8(
       tmp0,
     );
     final tmp4 = tmp1.arg0;
@@ -12156,7 +12156,7 @@ class News {
   }
 
   /// if given, the specific foreground color
-  Color? fgColor() {
+  EfkColor? fgColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsFgColor(
@@ -12168,14 +12168,14 @@ class News {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
   /// if given, the specific background color
-  Color? bgColor() {
+  EfkColor? bgColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsBgColor(
@@ -12187,9 +12187,9 @@ class News {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -12270,7 +12270,7 @@ class Tag {
   }
 
   /// if given, the specific color for this tag
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._tagColor(
@@ -12282,9 +12282,9 @@ class Tag {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -14979,7 +14979,7 @@ class Task {
   }
 
   /// Has this been colored in?
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskColor(
@@ -14991,9 +14991,9 @@ class Task {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -15249,7 +15249,7 @@ class TaskUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -15896,7 +15896,7 @@ class TaskDraft {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -16469,7 +16469,7 @@ class TaskList {
   }
 
   /// Has this been colored in?
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListColor(
@@ -16481,9 +16481,9 @@ class TaskList {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -16707,7 +16707,7 @@ class TaskListDraft {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -16920,7 +16920,7 @@ class TaskListUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -18000,7 +18000,7 @@ class Client {
   /// Fetch the Comment or use its event_id to wait for it to come down the wire
   Future<Comment> waitForComment(
     String key,
-    Duration? timeout,
+    EfkDuration? timeout,
   ) {
     final tmp1 = key;
     final tmp5 = timeout;
@@ -18045,7 +18045,7 @@ class Client {
   /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
   Future<TaskList> waitForTaskList(
     String key,
-    Duration? timeout,
+    EfkDuration? timeout,
   ) {
     final tmp1 = key;
     final tmp5 = timeout;
@@ -18091,7 +18091,7 @@ class Client {
   /// Fetch the Task or use its event_id to wait for it to come down the wire
   Future<Task> waitForTask(
     String key,
-    Duration? timeout,
+    EfkDuration? timeout,
   ) {
     final tmp1 = key;
     final tmp5 = timeout;
@@ -19310,7 +19310,7 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ColorRgbaU8Return extends ffi.Struct {
+class _EfkColorRgbaU8Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

@@ -6,9 +6,10 @@ use matrix_sdk::ClientBuilder;
 use super::native;
 
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
-    Ok(native::new_client_config(base_path, home)
+    let builder = native::new_client_config(base_path, home)
         .await?
-        .user_agent(format!("effektio-android/{:}", env!("CARGO_PKG_VERSION"))))
+        .user_agent(format!("effektio-android/{:}", env!("CARGO_PKG_VERSION")));
+    Ok(builder)
 }
 
 pub fn init_logging(filter: Option<String>) -> Result<()> {
