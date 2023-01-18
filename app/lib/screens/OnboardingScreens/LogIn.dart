@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/login_controller.dart';
 import 'package:effektio/controllers/network_controller.dart';
@@ -122,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               } else {
                                 if (await validateLogin()) {
-                                  Beamer.of(context).beamToNamed('/');
+                                  Navigator.pushReplacementNamed(context, '/');
                                 }
                               }
                             }
@@ -140,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       InkWell(
                         onTap: () {
                           Get.delete<LoginController>();
-                          Beamer.of(context).beamToReplacementNamed('/signup');
+                          Navigator.pushReplacementNamed(context, '/signup');
                         },
                         child: Text(
                           AppLocalizations.of(context)!.signUp,

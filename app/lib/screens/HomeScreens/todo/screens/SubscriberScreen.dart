@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,7 @@ class _ToDoSubscriberScreenState extends State<ToDoSubscriberScreen> {
         backgroundColor: AppCommonTheme.backgroundColorLight,
         leading: GestureDetector(
           onTap: () {
-            Beamer.of(context).beamBack();
+            Navigator.pop(context);
           },
           child: const Icon(
             Icons.close,

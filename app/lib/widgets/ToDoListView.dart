@@ -1,6 +1,6 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/CommentsScreen.dart';
 import 'package:effektio/widgets/AddTaskDialog.dart';
 import 'package:effektio/widgets/ExpandableText.dart';
 import 'package:effektio/widgets/ToDoTaskItem.dart';
@@ -116,7 +116,12 @@ class _ToDoListViewState extends State<ToDoListView> {
                         ),
                         InkWell(
                           onTap: () {
-                            Beamer.of(context).beamToNamed('/todoComment');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ToDoCommentScreen(),
+                              ),
+                            );
                           },
                           child: Row(
                             children: [

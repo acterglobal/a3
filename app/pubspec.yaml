@@ -80,7 +80,6 @@ dependencies:
     git:
       url: https://github.com/google/flutter-desktop-embedding.git
       path: plugins/window_size
-  beamer: ^1.5.3
 
 dev_dependencies:
   flutter_test:

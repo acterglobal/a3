@@ -1,8 +1,7 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
-import 'package:effektio/models/ChatModel.dart';
+import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -98,12 +97,17 @@ class _ChatListItemState extends State<ChatListItem> {
   }
 
   void handleTap(BuildContext context) {
-    Beamer.of(context).beamToNamed('/chat', data: ChatModel(
-      client: widget.client,
-      room: widget.room,
-      roomName: displayName,
-      roomAvatar: avatar,
-    ),);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatScreen(
+          client: widget.client,
+          room: widget.room,
+          roomName: displayName,
+          roomAvatar: avatar,
+        ),
+      ),
+    );
   }
 
   Widget buildTitle(BuildContext context) {

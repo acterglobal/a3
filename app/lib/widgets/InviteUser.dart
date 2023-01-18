@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:flutter/material.dart';
 
@@ -55,7 +54,7 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
                       buildDivider(),
                       GestureDetector(
                         onTap: (){
-                          Beamer.of(context).beamBack();
+                          Navigator.pop(context);
                         },
                         child: Text('Cancel', style : ToDoTheme.titleTextStyle.copyWith(fontSize: 16, color: Colors.red)),)
                     ],

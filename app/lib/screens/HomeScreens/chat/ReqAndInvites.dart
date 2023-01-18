@@ -1,16 +1,17 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/models/RequestScreenModel.dart';
 import 'package:effektio/widgets/PendingReqListView.dart';
 import 'package:effektio/widgets/ReqListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class RequestScreen extends StatefulWidget {
-  final RequestScreenModel requestScreenModel;
+  final Client client;
+  final Conversation room;
 
   const RequestScreen({
     Key? key,
-    required this.requestScreenModel,
+    required this.client,
+    required this.room,
   }) : super(key: key);
 
   @override
@@ -24,8 +25,8 @@ class _RequestScreenState extends State<RequestScreen> {
   void initState() {
     super.initState();
 
-    String roomId = widget.requestScreenModel.room.getRoomId();
-    widget.requestScreenModel.client.suggestedUsersToInvite(roomId).then((value) {
+    String roomId = widget.room.getRoomId();
+    widget.client.suggestedUsersToInvite(roomId).then((value) {
       if (mounted) {
         setState(() => userProfiles = value.toList());
       }
@@ -56,10 +57,10 @@ class _RequestScreenState extends State<RequestScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TabBar(
-              labelColor: Colors.white,
+              labelColor: Colors.white, //<-- selected text color
               unselectedLabelColor: Colors.white,
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(15), // Creates border
                 color: AppCommonTheme.primaryColor,
               ),
               indicatorPadding: const EdgeInsets.symmetric(vertical: 6),

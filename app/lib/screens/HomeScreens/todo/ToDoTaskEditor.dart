@@ -1,10 +1,11 @@
 import 'package:avatar_stack/avatar_stack.dart';
 import 'package:avatar_stack/positions.dart';
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
-import 'package:effektio/models/TodoTaskEditorModel.dart';
+import 'package:effektio/screens/HomeScreens/todo/ToDoTaskAssign.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/SubscriberScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -13,10 +14,11 @@ import 'package:get/get.dart';
 import 'package:get_time_ago/get_time_ago.dart';
 
 class ToDoTaskEditor extends StatefulWidget {
-  const ToDoTaskEditor({Key? key, required this.todoTaskEditorModel})
+  const ToDoTaskEditor({Key? key, required this.item, required this.avatars})
       : super(key: key);
 
-  final TodoTaskEditorModel todoTaskEditorModel;
+  final ToDoTaskItem item;
+  final List<ImageProvider<Object>> avatars;
 
   @override
   State<ToDoTaskEditor> createState() => _ToDoTaskEditorState();
@@ -37,9 +39,9 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
   void initState() {
     super.initState();
 
-    lastUpdated = GetTimeAgo.parse(widget.todoTaskEditorModel.item.lastUpdated!).obs;
-    notesController.text = widget.todoTaskEditorModel.item.notes ?? 'Add Notes';
-    subtitleController.text = widget.todoTaskEditorModel.item.title;
+    lastUpdated = GetTimeAgo.parse(widget.item.lastUpdated!).obs;
+    notesController.text = widget.item.notes ?? 'Add Notes';
+    subtitleController.text = widget.item.title;
   }
 
   @override
@@ -58,7 +60,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
         backgroundColor: ToDoTheme.secondaryColor,
         leading: IconButton(
           onPressed: () {
-            Beamer.of(context).beamBack();
+            Navigator.pop(context);
           },
           icon: const Icon(Icons.close),
           color: ToDoTheme.primaryTextColor,
@@ -151,7 +153,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                       child: AvatarStack(
                         borderWidth: 0,
                         settings: settings,
-                        avatars: widget.todoTaskEditorModel.avatars,
+                        avatars: widget.avatars,
                         infoWidgetBuilder: infoAvatarBuilder,
                         width: 28,
                         height: 28,
@@ -160,7 +162,14 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   ),
                   const Spacer(flex: 2),
                   TextButton(
-                    onPressed: () => Beamer.of(context).beamToNamed('/todoTaskAssign', data : widget.todoTaskEditorModel.avatars),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return ToDoTaskAssignScreen(avatars: widget.avatars);
+                        },
+                      ),
+                    ),
                     child: const Text(
                       '+ Assign',
                       style: ToDoTheme.addTaskTextStyle,
@@ -430,7 +439,12 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                     ),
                     InkWell(
                       onTap: (){
-                        Beamer.of(context).beamToNamed('/todoSubscriber');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ToDoSubscriberScreen(),
+                          ),
+                        );
                       },
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 12),
@@ -555,7 +569,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                     child: TextButton(
-                      onPressed: () => Beamer.of(context).beamBack(),
+                      onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Done',
                         style: ToDoTheme.taskSubtitleTextStyle.copyWith(
@@ -770,7 +784,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
           actions: <CupertinoActionSheetAction>[
             CupertinoActionSheetAction(
               onPressed: () {
-                Beamer.of(context).beamBack();
+                Navigator.pop(context);
               },
               child: Row(
                 children: [
@@ -794,7 +808,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
             ),
             CupertinoActionSheetAction(
               onPressed: () {
-                Beamer.of(context).beamBack();
+                Navigator.pop(context);
               },
               child: Row(
                 children: [
@@ -818,7 +832,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
             ),
             CupertinoActionSheetAction(
               onPressed: () {
-                Beamer.of(context).beamBack();
+                Navigator.pop(context);
               },
               child: Row(
                 children: [
@@ -847,7 +861,7 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
               style: ToDoTheme.listTitleTextStyle,
             ),
             onPressed: () {
-              Beamer.of(context).beamBack();
+              Navigator.pop(context);
             },
           ),
         ),
