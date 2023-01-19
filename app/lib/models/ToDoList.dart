@@ -1,6 +1,6 @@
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show TaskDraft;
+    show TaskDraft, TaskListUpdateBuilder;
 import 'package:flutter/widgets.dart';
 
 //Todo List model.
@@ -9,9 +9,8 @@ class ToDoList {
   final String name;
   final String? description;
   final TaskDraft taskDraft;
+  final TaskListUpdateBuilder taskUpdateDraft;
   final List<ToDoTask> tasks;
-  final int? completedTasks;
-  final int? pendingTasks;
   final Color? color;
   final List<String>? tags;
   final List<String>? subscribers;
@@ -24,8 +23,7 @@ class ToDoList {
     required this.name,
     required this.tasks,
     required this.taskDraft,
-    this.completedTasks,
-    this.pendingTasks,
+    required this.taskUpdateDraft,
     this.categories,
     this.subscribers,
     this.color,

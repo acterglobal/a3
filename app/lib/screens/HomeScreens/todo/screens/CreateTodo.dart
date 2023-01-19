@@ -224,7 +224,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           descriptionController.text,
                         )
                         .then(
-                          (value) => debugPrint('TASK Created :$value'),
+                          (value) => debugPrint('TodoList Created :$value'),
                         );
                     Navigator.pop(context);
                   }

@@ -1,8 +1,8 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
-import 'package:effektio/screens/HomeScreens/todo/screens/CreateTodo.dart';
 import 'package:effektio/widgets/ToDoListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
@@ -57,15 +57,8 @@ class _ToDoScreenState extends State<ToDoScreen> {
               right: 8,
             ),
             child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CreateTodoScreen(controller: todoController),
-                  ),
-                );
-              },
+              onTap: () => Beamer.of(context)
+                  .beamToNamed('/createTask', data: todoController),
               child: const Icon(
                 Icons.add,
                 color: Colors.white,

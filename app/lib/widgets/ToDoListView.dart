@@ -40,42 +40,17 @@ class ToDoListView extends StatelessWidget {
                   itemCount: snapshot.data!.length,
                   shrinkWrap: true,
                   itemBuilder: (BuildContext context, int index) {
-                    return InkWell(
-                      onTap: () => controller.toggleCardExpand(),
-                      child: Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.all(8),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        color: ToDoTheme.secondaryColor,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 8.0,
-                            horizontal: 15.0,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              buildHeaderContent(
-                                snapshot.data![index].name,
-                                snapshot.data![index].tags,
-                              ),
-                              buildDescription(
-                                snapshot.data![index].description,
-                              ),
-                              buildDivider(),
-                              buildComments(context),
-                              buildDivider(),
-                              buildTasksRatio(snapshot.data![index]),
-                              buildTasksSection(
-                                context,
-                                snapshot.data![index],
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
+                    return GetBuilder<ToDoController>(
+                      id: 'list-item-$index',
+                      builder: (_) {
+                        return TodoCard(
+                          controller: controller,
+                          snapshot: snapshot,
+                          index: index,
+                          isExpanded: controller.cardExpand,
+                          expandBtn: controller.expandBtn,
+                        );
+                      },
                     );
                   },
                 );
@@ -92,6 +67,59 @@ class ToDoListView extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+class TodoCard extends StatelessWidget {
+  const TodoCard({
+    super.key,
+    required this.controller,
+    required this.snapshot,
+    required this.index,
+    required this.isExpanded,
+    required this.expandBtn,
+  });
+  final int index;
+  final bool isExpanded;
+  final bool expandBtn;
+  final ToDoController controller;
+  final AsyncSnapshot<List<ToDoList>> snapshot;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      color: ToDoTheme.secondaryColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 8.0,
+          horizontal: 15.0,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            buildHeaderContent(
+              snapshot.data![index].name,
+              snapshot.data![index].tags,
+            ),
+            buildDescription(snapshot.data![index].description),
+            buildDivider(),
+            buildComments(context),
+            buildDivider(),
+            buildTasksRatio(snapshot.data![index]),
+            buildTasksSection(
+              context,
+              snapshot.data![index],
+              isExpanded: isExpanded,
+              expandBtn: expandBtn,
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -160,14 +188,19 @@ class ToDoListView extends StatelessWidget {
           style: ToDoTheme.listSubtitleTextStyle,
         ),
         Text(
-          '${todo.pendingTasks}/${todo.completedTasks! + todo.pendingTasks!} completed',
+          '${controller.getCompletedTasks(todo)}/${todo.tasks.length} completed',
           style: ToDoTheme.listSubtitleTextStyle.copyWith(
             color: ToDoTheme.calendarColor,
           ),
         ),
         const Spacer(),
-        const Icon(
-          FlutterIcons.ios_arrow_down_ion,
+        IconButton(
+          onPressed: () => controller.toggleCardExpand(index),
+          icon: Icon(
+            controller.cardExpand == true
+                ? FlutterIcons.ios_arrow_up_ion
+                : FlutterIcons.ios_arrow_down_ion,
+          ),
           color: ToDoTheme.primaryTextColor,
         ),
       ],
@@ -184,10 +217,6 @@ class ToDoListView extends StatelessWidget {
               FlutterIcons.heart_evi,
               color: ToDoTheme.primaryTextColor,
             ),
-            // Text(
-            //   '${todoController.likeCount}',
-            //   style: ToDoTheme.calendarTextStyle,
-            // ),
             const SizedBox(
               width: 8,
             ),
@@ -206,13 +235,6 @@ class ToDoListView extends StatelessWidget {
                     FlutterIcons.comment_evi,
                     color: ToDoTheme.primaryTextColor,
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 5),
-                  //   child: Text(
-                  //     '${todoController.messageCount}',
-                  //     style: ToDoTheme.calendarTextStyle,
-                  //   ),
-                  // ),
                 ],
               ),
             )
@@ -226,9 +248,14 @@ class ToDoListView extends StatelessWidget {
     );
   }
 
-  Widget buildTasksSection(BuildContext context, ToDoList todo) {
+  Widget buildTasksSection(
+    BuildContext context,
+    ToDoList todo, {
+    required isExpanded,
+    required expandBtn,
+  }) {
     return Visibility(
-      visible: controller.cardExpand.value,
+      visible: isExpanded,
       child: Column(
         children: <Widget>[
           ListView(
@@ -241,40 +268,36 @@ class ToDoListView extends StatelessWidget {
           ),
           Row(
             children: <Widget>[
-              SizedBox(
-                height: 30,
-                width: 109,
-                child: ElevatedButton(
-                  onPressed: () => controller.expandBtn,
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all<Color>(
-                      ToDoTheme.floatingABColor,
-                    ),
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                      ToDoTheme.secondaryCardColor,
-                    ),
-                    padding: MaterialStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.only(left: 8),
+              ElevatedButton(
+                onPressed: () => controller.toggleExpandBtn(index),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    ToDoTheme.secondaryCardColor,
+                  ),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
                     ),
                   ),
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'Completed ${todo.completedTasks}',
-                        style: ToDoTheme.buttonTextStyle,
-                        softWrap: false,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Completed (${controller.getCompletedTasks(todo)})',
+                      style: ToDoTheme.buttonTextStyle.copyWith(
+                        color: ToDoTheme.floatingABColor,
                       ),
-                      Expanded(
-                        child: Icon(
-                          controller.expandBtn.value
-                              ? Icons.expand_more
-                              : Icons.keyboard_arrow_right,
-                          size: 14,
-                          color: ToDoTheme.floatingABColor,
-                        ),
-                      ),
-                    ],
-                  ),
+                      softWrap: false,
+                    ),
+                    Icon(
+                      controller.expandBtn
+                          ? Icons.expand_more
+                          : Icons.keyboard_arrow_right,
+                      size: 14,
+                      color: ToDoTheme.floatingABColor,
+                    ),
+                  ],
                 ),
               ),
               const Spacer(),
@@ -307,17 +330,6 @@ class ToDoListView extends StatelessWidget {
               ),
             ],
           ),
-          // if (controller.expandBtn.value)
-          //   Padding(
-          //     padding: const EdgeInsets.symmetric(vertical: 10),
-          //     child: ListView(
-          //       shrinkWrap: true,
-          //       physics: const NeverScrollableScrollPhysics(),
-          //       children: List.generate(todo.completedTasks, (index) {
-          //         todo.tasks.
-          //       }),
-          //     ),
-          //   ),
         ],
       ),
     );

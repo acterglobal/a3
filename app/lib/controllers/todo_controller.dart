@@ -12,18 +12,16 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Task,
         TaskDraft,
         TaskList,
-        TaskListDraft;
+        TaskListDraft,
+        TaskUpdateBuilder;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class ToDoController extends GetxController {
   final Client client;
   late final List<ToDoList>? todoList;
-  int completedTasks = 0;
-  int pendingTasks = 0;
-  RxBool cardExpand = true.obs;
-  RxBool expandBtn = false.obs;
+  bool cardExpand = false;
+  bool expandBtn = false;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
   Team? selectedTeam;
@@ -70,16 +68,15 @@ class ToDoController extends GetxController {
           subscribers.add(user.toString());
         }
       }
+
       List<ToDoTask> tasks = await getTodoTasks(todoList);
-      calculateTasksRatio(tasks);
       ToDoList item = ToDoList(
         index: todoList.sortOrder(),
         name: todoList.name(),
         categories: asDartStringList(todoList.categories().toList()) ?? [],
         taskDraft: todoList.taskBuilder(),
+        taskUpdateDraft: todoList.updateBuilder(),
         tasks: tasks,
-        completedTasks: completedTasks,
-        pendingTasks: pendingTasks,
         subscribers: subscribers,
         color: todoList.color() as Color?,
         description: todoList.descriptionText() ?? '',
@@ -89,9 +86,6 @@ class ToDoController extends GetxController {
       );
       todoLists.add(item);
     }
-    // reset count
-    completedTasks = 0;
-    pendingTasks = 0;
 
     return todoLists;
   }
@@ -116,6 +110,7 @@ class ToDoController extends GetxController {
       ToDoTask item = ToDoTask(
         index: task.sortOrder(),
         name: task.title(),
+        taskUpdateDraft: task.updateBuilder(),
         assignees: assignees,
         categories: asDartStringList(task.categories().toList()) ?? [],
         isDone: task.isDone(),
@@ -125,14 +120,7 @@ class ToDoController extends GetxController {
         description: task.descriptionText() ?? '',
         priority: task.priority() ?? 0,
         progressPercent: task.progressPercent() ?? 0,
-        start: DateTime.fromMillisecondsSinceEpoch(
-          task.utcStart()!.timestamp(),
-          isUtc: true,
-        ),
-        due: DateTime.fromMillisecondsSinceEpoch(
-          task.utcDue()!.timestamp(),
-          isUtc: true,
-        ),
+        due: DateTime.parse(task.utcDue()!.toRfc3339()),
       );
       todoTasks.add(item);
     }
@@ -146,6 +134,7 @@ class ToDoController extends GetxController {
   ) async {
     Group group = await client.getGroup(teamId);
     TaskListDraft listDraft = group.taskListDraft();
+
     listDraft.name(name);
     listDraft.descriptionText(description!);
     var eventId = await listDraft.send();
@@ -167,18 +156,31 @@ class ToDoController extends GetxController {
     return eventId;
   }
 
+  Future<String> markToDoTask(TaskUpdateBuilder taskDraft, bool check) async {
+    if (check) {
+      taskDraft.markDone();
+    } else {
+      taskDraft.markUndone();
+    }
+    String eventId =
+        await taskDraft.send().then((eventId) => eventId.toString());
+    return eventId;
+  }
+
   void updateButtonIndex(int index) {
     selectedValueIndex.value = index;
   }
 
   //ToDo list card expand.
-  void toggleCardExpand() {
-    cardExpand.value = !cardExpand.value;
+  void toggleCardExpand(int index) {
+    cardExpand = !cardExpand;
+    update(['list-item-$index']);
   }
 
   // Completed tasks expand.
-  void toggleExpandBtn() {
-    expandBtn.value = !expandBtn.value;
+  void toggleExpandBtn(index) {
+    expandBtn = !expandBtn;
+    update(['list-item-$index']);
   }
 
   // setter for selected team.
@@ -199,15 +201,15 @@ class ToDoController extends GetxController {
     }
   }
 
-  //calculate completed and pending tasks
-  void calculateTasksRatio(List<ToDoTask> tasks) {
-    for (ToDoTask task in tasks) {
-      if (task.isDone) {
-        completedTasks += 1;
-      } else {
-        pendingTasks += 1;
+  // get completed tasks.
+  int getCompletedTasks(ToDoList list) {
+    int count = 0;
+    for (var item in list.tasks) {
+      if (item.isDone) {
+        count += 1;
       }
     }
+    return count;
   }
 
   //helper function to convert list ffiString object to DartString.

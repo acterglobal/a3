@@ -18,6 +18,7 @@ class SideDrawer extends StatelessWidget {
   final String? displayName;
   final String userId;
   final Future<FfiBufferUint8>? displayAvatar;
+  final Client client;
 
   const SideDrawer({
     Key? key,
@@ -25,6 +26,7 @@ class SideDrawer extends StatelessWidget {
     required this.userId,
     this.displayName,
     this.displayAvatar,
+    required this.client,
   }) : super(key: key);
 
   @override
@@ -75,7 +77,7 @@ class SideDrawer extends StatelessWidget {
               ),
               onPressed: () {
                 Beamer.of(context).beamToNamed('/login');
-                },
+              },
               child: Text(AppLocalizations.of(context)!.login),
             ),
           ),
@@ -90,7 +92,7 @@ class SideDrawer extends StatelessWidget {
               ),
               onPressed: () {
                 Beamer.of(context).beamToNamed('/signup');
-                },
+              },
               child: Text(AppLocalizations.of(context)!.signUp),
             ),
           ),
@@ -167,7 +169,7 @@ class SideDrawer extends StatelessWidget {
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
       onTap: () {
-        Beamer.of(context).beamToNamed('/todo');
+        Beamer.of(context).beamToNamed('/todo', data: client);
       },
     );
   }

@@ -1,7 +1,7 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoList.dart';
-// import 'package:effektio/controllers/todo_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -131,11 +131,13 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                 onPressed: (titleInputController.text.isEmpty)
                     ? null
                     : () async {
-                        await widget.controller.createToDoTask(
-                          name: titleInputController.text,
-                          taskDraft: widget.toDoList.taskDraft,
-                          dueDate: _selectedDate,
-                        );
+                        await widget.controller
+                            .createToDoTask(
+                              name: titleInputController.text,
+                              taskDraft: widget.toDoList.taskDraft,
+                              dueDate: _selectedDate,
+                            )
+                            .then((res) => debugPrint('TASK CREATED: $res'));
                         Navigator.pop(context);
                       },
                 icon: Icon(
@@ -165,7 +167,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
           if (index == 0) {
             _selectedDate = now;
           } else if (index == 1) {
-            _selectedDate = DateTime(now.year, now.month, now.day + 1);
+            _selectedDate = DateTime(now.year, now.month, now.day + 1).toUtc();
           } else {
             Future.delayed(
               const Duration(seconds: 0),
@@ -239,7 +241,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
     ).then((_pickedDate) {
       if (_pickedDate != null) {
         setState(() {
-          _selectedDate = _pickedDate;
+          _selectedDate = _pickedDate.toUtc();
         });
       } else {
         setState(() {
