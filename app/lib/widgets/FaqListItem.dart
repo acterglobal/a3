@@ -1,33 +1,22 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/screens/HomeScreens/faq/Item.dart';
+import 'package:effektio/models/FaqModel.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/TagItem.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Faq;
 import 'package:flutter/material.dart';
 
 class FaqListItem extends StatelessWidget {
-  final Client client;
-  final Faq faq;
+  final FaqModel faqModel;
 
   const FaqListItem({
-    Key? key,
-    required this.client,
-    required this.faq,
+    Key? key, required this.faqModel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (BuildContext context) {
-              return FaqItemScreen(client: client, faq: faq);
-            },
-          ),
-        );
+        Beamer.of(context).beamToNamed('/faqListItem', data: FaqModel(client: faqModel.client, faq: faqModel.faq));
       },
       child: Card(
         child: Padding(
@@ -43,7 +32,7 @@ class FaqListItem extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        faq.title(),
+                        faqModel.faq.title(),
                         style: FAQTheme.titleStyle,
                       ),
                     ),
@@ -108,7 +97,7 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                faq.likesCount().toString(),
+                                faqModel.faq.likesCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -122,7 +111,7 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                faq.commentsCount().toString(),
+                                faqModel.faq.commentsCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -157,9 +146,9 @@ class FaqListItem extends StatelessWidget {
   Widget _buildTagList() {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: faq.tags().length,
+      itemCount: faqModel.faq.tags().length,
       itemBuilder: (context, index) {
-        var color = faq.tags().elementAt(index).color();
+        var color = faqModel.faq.tags().elementAt(index).color();
         var colorToShow = 0;
         if (color != null) {
           var colorList = color.rgbaU8();
@@ -171,7 +160,7 @@ class FaqListItem extends StatelessWidget {
           );
         }
         return TagListItem(
-          tagTitle: faq.tags().elementAt(index).title(),
+          tagTitle: faqModel.faq.tags().elementAt(index).title(),
           tagColor: colorToShow > 0 ? Color(colorToShow) : Colors.white,
         );
       },

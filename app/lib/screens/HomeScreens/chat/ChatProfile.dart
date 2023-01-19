@@ -1,34 +1,24 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
-import 'package:effektio/screens/HomeScreens/chat/EditGroupInfo.dart';
-import 'package:effektio/screens/HomeScreens/chat/GroupLinkScreen.dart';
-import 'package:effektio/screens/HomeScreens/chat/ReqAndInvites.dart';
-import 'package:effektio/screens/HomeScreens/chat/RoomLinkSetting.dart';
+import 'package:effektio/models/ChatProfileModel.dart';
+import 'package:effektio/models/EditGroupInfoModel.dart';
+import 'package:effektio/models/RequestScreenModel.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio/widgets/GroupMember.dart';
 import 'package:effektio/widgets/InviteListView.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:get/get.dart';
 
 class ChatProfileScreen extends StatelessWidget {
-  final Client client;
-  final Conversation room;
-  final String? roomName;
-  final Future<FfiBufferUint8>? roomAvatar;
-  final bool isGroup;
-  final bool isAdmin;
+
+  final ChatProfileModel chatProfileModel;
 
   const ChatProfileScreen({
     Key? key,
-    required this.client,
-    required this.room,
-    required this.isGroup,
-    required this.isAdmin,
-    this.roomName,
-    this.roomAvatar,
+    required this.chatProfileModel,
   }) : super(key: key);
 
   @override
@@ -42,7 +32,7 @@ class ChatProfileScreen extends StatelessWidget {
         backgroundColor: AppCommonTheme.backgroundColor,
         actions: <Widget>[
           Visibility(
-            visible: isAdmin,
+            visible: chatProfileModel.isAdmin,
             child: PopupMenuButton<int>(
               color: AppCommonTheme.darkShade,
               onSelected: (item) => handleItemClick(item, context),
@@ -74,16 +64,11 @@ class ChatProfileScreen extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditGroupInfoScreen(
-                      room: room,
-                      name: roomName ?? AppLocalizations.of(context)!.noName,
-                      description: chatDesc,
-                    ),
-                  ),
-                );
+                Beamer.of(context).beamToNamed('/editGroupInfoScreen', data : EditGroupInfoModel(
+                  room: chatProfileModel.room,
+                  name: chatProfileModel.roomName ?? AppLocalizations.of(context)!.noName,
+                  description: chatDesc,
+                ),);
               },
               child: Center(
                 child: Padding(
@@ -94,57 +79,47 @@ class ChatProfileScreen extends StatelessWidget {
                     child: FittedBox(
                       fit: BoxFit.contain,
                       child: CustomAvatar(
-                        uniqueKey: room.getRoomId(),
-                        avatar: roomAvatar,
-                        displayName: roomName,
+                        uniqueKey: chatProfileModel.room.getRoomId(),
+                        avatar: chatProfileModel.roomAvatar,
+                        displayName: chatProfileModel.roomName,
                         radius: 20,
                         cacheHeight: 120,
                         cacheWidth: 120,
                         isGroup: true,
-                        stringName: simplifyRoomId(room.getRoomId())!,
+                        stringName: simplifyRoomId(chatProfileModel.room.getRoomId())!,
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-            if (roomName == null)
+            if (chatProfileModel.roomName == null)
               const Text('Loading Name')
             else
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditGroupInfoScreen(
-                        room: room,
-                        name: roomName ?? AppLocalizations.of(context)!.noName,
-                        description: chatDesc,
-                      ),
-                    ),
-                  );
+                  Beamer.of(context).beamToNamed('/editGroupInfoScreen', data : EditGroupInfoModel(
+                    room: chatProfileModel.room,
+                    name: chatProfileModel.roomName ?? AppLocalizations.of(context)!.noName,
+                    description: chatDesc,
+                  ),);
                 },
                 child: Text(
-                  roomName!,
+                  chatProfileModel.roomName!,
                   overflow: TextOverflow.clip,
                   style: ChatTheme01.chatProfileTitleStyle,
                 ),
               ),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditGroupInfoScreen(
-                      room: room,
-                      name: roomName ?? AppLocalizations.of(context)!.noName,
-                      description: chatDesc,
-                    ),
-                  ),
-                );
+                Beamer.of(context).beamToNamed('/editGroupInfoScreen', data : EditGroupInfoModel(
+                  room: chatProfileModel.room,
+                  name: chatProfileModel.roomName ?? AppLocalizations.of(context)!.noName,
+                  description: chatDesc,
+                ),);
               },
               child: Visibility(
-                visible: isGroup,
+                visible: chatProfileModel.isGroup,
                 child: const Padding(
                   padding: EdgeInsets.fromLTRB(16, 12, 16, 20),
                   child: Text(
@@ -156,7 +131,7 @@ class ChatProfileScreen extends StatelessWidget {
               ),
             ),
             Visibility(
-              visible: !isGroup,
+              visible: !chatProfileModel.isGroup,
               child: const Padding(
                 padding: EdgeInsets.fromLTRB(16, 8, 16, 20),
                 child: Text(
@@ -175,7 +150,7 @@ class ChatProfileScreen extends StatelessWidget {
               ],
             ),
             Visibility(
-              visible: isGroup,
+              visible: chatProfileModel.isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: Card(
@@ -214,21 +189,21 @@ class ChatProfileScreen extends StatelessWidget {
               ),
             ),
             Visibility(
-              visible: !isGroup,
+              visible: !chatProfileModel.isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: buildGroupLabel(),
               ),
             ),
             Visibility(
-              visible: !isGroup,
+              visible: !chatProfileModel.isGroup,
               child: Padding(
                 padding: const EdgeInsets.all(8),
                 child: buildBlockButton(),
               ),
             ),
             Visibility(
-              visible: isGroup,
+              visible: chatProfileModel.isGroup,
               child: Container(
                 alignment: Alignment.centerLeft,
                 padding: const EdgeInsets.all(16),
@@ -236,14 +211,14 @@ class ChatProfileScreen extends StatelessWidget {
               ),
             ),
             Visibility(
-              visible: isGroup,
+              visible: chatProfileModel.isGroup,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                 child: buildMemberList(roomController),
               ),
             ),
             Visibility(
-              visible: isGroup,
+              visible: chatProfileModel.isGroup,
               child: buildLeaveButton(context),
             )
           ],
@@ -331,15 +306,7 @@ class ChatProfileScreen extends StatelessWidget {
   Widget buildRequestsAndInvites(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RequestScreen(
-              client: client,
-              room: room,
-            ),
-          ),
-        );
+        Beamer.of(context).beamToNamed('/requestScreen', data: RequestScreenModel(client: chatProfileModel.client, room: chatProfileModel.room,));
       },
       child: Row(
         children: [
@@ -366,10 +333,7 @@ class ChatProfileScreen extends StatelessWidget {
   Widget buildGroupLinkSwitch(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const GroupLinkScreen()),
-        );
+        Beamer.of(context).beamToNamed('/groupLink');
       },
       child: Row(
         children: [
@@ -484,14 +448,7 @@ class ChatProfileScreen extends StatelessWidget {
                           const SizedBox(width: 5),
                           GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => RoomLinkSettingsScreen(
-                                    room: room,
-                                  ),
-                                ),
-                              );
+                             Beamer.of(context).beamToNamed('/roomLinkSettings', data: chatProfileModel.room);
                             },
                             child: const Text(
                               'Edit invite link',
@@ -994,7 +951,7 @@ class ChatProfileScreen extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pop();
+                          Beamer.of(context).beamBack();
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8),
@@ -1023,7 +980,7 @@ class ChatProfileScreen extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pop();
+                          Beamer.of(context).beamBack();
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(8),

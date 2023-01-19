@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/InviteUser.dart';
@@ -23,7 +24,7 @@ class ToDoTaskAssignScreen extends StatelessWidget {
         backgroundColor: ToDoTheme.secondaryColor,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Beamer.of(context).beamBack();
           },
           icon: const Icon(Icons.close),
           color: ToDoTheme.primaryTextColor,

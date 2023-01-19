@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/constants.dart';
 import 'package:effektio/widgets/emoji_picker_widget.dart';
 import 'package:effektio/widgets/reaction_popup_configuration.dart';
@@ -83,7 +84,7 @@ class EmojiRow extends StatelessWidget {
         context: context,
         builder: (context) => EmojiPickerWidget(
           onSelected: (emoji) {
-            Navigator.pop(context);
+            Beamer.of(context).beamBack();
             onEmojiTap(emoji);
           },
         ),

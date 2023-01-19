@@ -1,5 +1,6 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/FaqController.dart';
+import 'package:effektio/models/FaqModel.dart';
 import 'package:effektio/widgets/FaqListItem.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
@@ -120,10 +121,10 @@ class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
                                   int index,
                                 ) {
                                   return FaqListItem(
-                                    client: widget.client,
-                                    faq: controller.searchData.isEmpty
-                                        ? snapshot.requireData[index]
-                                        : controller.searchData[index],
+                                    faqModel: FaqModel(client: widget.client,
+                                      faq: controller.searchData.isEmpty
+                                          ? snapshot.requireData[index]
+                                          : controller.searchData[index],),
                                   );
                                 },
                               ),
