@@ -1,5 +1,7 @@
 import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,21 +9,38 @@ import 'package:intl/intl.dart';
 
 class ToDoTaskView extends StatelessWidget {
   final ToDoTask task;
-
-  const ToDoTaskView({Key? key, required this.task}) : super(key: key);
+  final ToDoList todoList;
+  final ToDoController controller;
+  const ToDoTaskView({
+    Key? key,
+    required this.task,
+    required this.todoList,
+    required this.controller,
+  }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () =>
           Beamer.of(context).beamToNamed('/todoTaskEditor', data: task),
-      child: TaskCard(task: task),
+      child: TaskCard(
+        task: task,
+        controller: controller,
+        todoList: todoList,
+      ),
     );
   }
 }
 
 class TaskCard extends StatefulWidget {
-  const TaskCard({super.key, required this.task});
+  const TaskCard({
+    super.key,
+    required this.task,
+    required this.todoList,
+    required this.controller,
+  });
   final ToDoTask task;
+  final ToDoList todoList;
+  final ToDoController controller;
   @override
   State<TaskCard> createState() => _TaskCardState();
 }
@@ -43,7 +62,9 @@ class _TaskCardState extends State<TaskCard> {
               children: <Widget>[
                 Flexible(
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () async => await widget.controller
+                        .markToDoTask(widget.task, widget.todoList)
+                        .then((res) => debugPrint('TOGGLE CHECK')),
                     child: CircleAvatar(
                       backgroundColor: AppCommonTheme.transparentColor,
                       radius: 18,
@@ -51,7 +72,7 @@ class _TaskCardState extends State<TaskCard> {
                         height: 25,
                         width: 25,
                         decoration: BoxDecoration(
-                          color: widget.task.isDone
+                          color: (widget.task.progressPercent >= 100)
                               ? ToDoTheme.activeCheckColor
                               : ToDoTheme.inactiveCheckColor,
                           shape: BoxShape.circle,
@@ -71,7 +92,7 @@ class _TaskCardState extends State<TaskCard> {
                     child: Text(
                       widget.task.name,
                       style: ToDoTheme.taskTitleTextStyle.copyWith(
-                        decoration: widget.task.isDone
+                        decoration: (widget.task.progressPercent >= 100)
                             ? TextDecoration.lineThrough
                             : null,
                       ),
@@ -107,7 +128,7 @@ class _TaskCardState extends State<TaskCard> {
   }
 
   Widget? checkBuilder() {
-    if (!widget.task.isDone) {
+    if ((widget.task.progressPercent < 100)) {
       return null;
     }
     return const Icon(

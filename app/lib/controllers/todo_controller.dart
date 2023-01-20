@@ -10,16 +10,15 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Group,
         RoomProfile,
         Task,
-        TaskDraft,
         TaskList,
-        TaskListDraft,
-        TaskUpdateBuilder;
+        TaskListDraft;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
   final Client client;
-  late final List<ToDoList>? todoList;
+  final RxList<ToDoList> todos = <ToDoList>[].obs;
   bool cardExpand = false;
   bool expandBtn = false;
   RxInt taskNameCount = 0.obs;
@@ -29,6 +28,13 @@ class ToDoController extends GetxController {
 
   ToDoController({required this.client}) : super();
 
+  @override
+  void onInit() {
+    super.onInit();
+    getTodoList();
+  }
+
+  /// creates team (group).
   Future<void> createTeam(String name) async {
     final sdk = await EffektioSdk.instance;
     CreateGroupSettings settings = sdk.newGroupSettings(name);
@@ -38,6 +44,7 @@ class ToDoController extends GetxController {
     await client.createEffektioGroup(settings);
   }
 
+  /// fetches teams (groups) for client.
   Future<List<Team>> getTeams() async {
     List<Team> teams = [];
     List<Group> listTeams =
@@ -56,8 +63,8 @@ class ToDoController extends GetxController {
     return teams;
   }
 
-  Future<List<ToDoList>> getTodoList() async {
-    List<ToDoList> todoLists = [];
+  /// fetches todos for client.
+  void getTodoList() async {
     List<String> subscribers = [];
     List<TaskList> taskLists =
         await client.taskLists().then((data) => data.toList());
@@ -84,12 +91,11 @@ class ToDoController extends GetxController {
         role: todoList.role() ?? '',
         timezone: todoList.timeZone() ?? '',
       );
-      todoLists.add(item);
+      todos.add(item);
     }
-
-    return todoLists;
   }
 
+  /// fetches todo tasks.
   Future<List<ToDoTask>> getTodoTasks(TaskList list) async {
     List<ToDoTask> todoTasks = [];
     List<String> assignees = [];
@@ -113,7 +119,6 @@ class ToDoController extends GetxController {
         taskUpdateDraft: task.updateBuilder(),
         assignees: assignees,
         categories: asDartStringList(task.categories().toList()) ?? [],
-        isDone: task.isDone(),
         tags: asDartStringList(task.keywords().toList()) ?? [],
         subscribers: subscribers,
         color: task.color() as Color?,
@@ -127,6 +132,7 @@ class ToDoController extends GetxController {
     return todoTasks;
   }
 
+  /// creates todo for team (group).
   Future<String> createToDoList(
     String teamId,
     String name,
@@ -138,32 +144,83 @@ class ToDoController extends GetxController {
     listDraft.name(name);
     listDraft.descriptionText(description!);
     var eventId = await listDraft.send();
-    await client.waitForTaskList(eventId.toString(), null);
-    update(['refresh-list']);
+    TaskList list = await client.waitForTaskList(eventId.toString(), null);
+    List<ToDoTask> tasksList = await getTodoTasks(list);
+    final ToDoList newItem = ToDoList(
+      name: list.name(),
+      description: list.descriptionText() ?? '',
+      tasks: tasksList,
+      taskDraft: list.taskBuilder(),
+      taskUpdateDraft: list.updateBuilder(),
+    );
+    todos.add(newItem);
+    todos.refresh();
     return eventId.toString();
   }
 
+  /// creates todo task.
   Future<String> createToDoTask({
     required String name,
-    required TaskDraft taskDraft,
     required DateTime? dueDate,
+    required ToDoList list,
   }) async {
-    taskDraft.title(name);
-    taskDraft.utcDueFromRfc3339(dueDate!.toIso8601String());
-    String eventId = await taskDraft.send().then((res) => res.toString());
-    await client.waitForTask(eventId, null);
-    update(['refresh-list']);
+    list.taskDraft.title(name);
+    list.taskDraft.utcDueFromRfc3339(dueDate!.toIso8601String());
+    String eventId = await list.taskDraft.send().then((res) => res.toString());
+    // wait for task to come down to wire.
+    Task task = await client.waitForTask(eventId, null);
+
+    ToDoTask newItem = ToDoTask(
+      name: task.title(),
+      progressPercent: task.progressPercent() ?? 0,
+      taskUpdateDraft: task.updateBuilder(),
+      due: DateTime.parse(
+        task.utcDue()!.toRfc3339(),
+      ),
+    );
+    // append new task to existing list.
+    List<ToDoTask> tasksList = [...list.tasks, newItem];
+    int idx = todos.indexOf(list);
+
+    // update todos.
+    todos[idx] = list.copyWith(
+      name: list.name,
+      taskDraft: list.taskDraft,
+      taskUpdateDraft: list.taskUpdateDraft,
+      tasks: tasksList,
+    );
     return eventId;
   }
 
-  Future<String> markToDoTask(TaskUpdateBuilder taskDraft, bool check) async {
-    if (check) {
-      taskDraft.markDone();
+  /// updates todo task progress.
+  Future<String> markToDoTask(ToDoTask task, ToDoList list) async {
+    int updateVal = 0;
+    if (task.progressPercent < 100) {
+      task.taskUpdateDraft.markDone();
+      updateVal = 100;
     } else {
-      taskDraft.markUndone();
+      task.taskUpdateDraft.markUndone();
     }
+    // send task update.
     String eventId =
-        await taskDraft.send().then((eventId) => eventId.toString());
+        await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
+    ToDoTask updateItem = ToDoTask(
+      name: task.name,
+      progressPercent: updateVal,
+      taskUpdateDraft: task.taskUpdateDraft,
+      due: task.due,
+    );
+    // update todos.
+    int idx = list.tasks.indexOf(task);
+    int listIdx = todos.indexOf(list);
+    ToDoList newList = list;
+    newList.tasks[idx] = task.copyWith(
+      name: updateItem.name,
+      taskUpdateDraft: updateItem.taskUpdateDraft,
+      progressPercent: updateItem.progressPercent,
+      due: updateItem.due,
+    );
+    todos[listIdx] = newList;
     return eventId;
   }
 
@@ -205,14 +262,14 @@ class ToDoController extends GetxController {
   int getCompletedTasks(ToDoList list) {
     int count = 0;
     for (var item in list.tasks) {
-      if (item.isDone) {
+      if (item.progressPercent >= 100) {
         count += 1;
       }
     }
     return count;
   }
 
-  //helper function to convert list ffiString object to DartString.
+  ///helper function to convert list ffiString object to DartString.
   List<String>? asDartStringList(List<FfiString> list) {
     if (list.isNotEmpty) {
       final List<String> stringList =
@@ -221,82 +278,4 @@ class ToDoController extends GetxController {
     }
     return null;
   }
-
-  // void handleCheckClick(int position) {
-  //   var subscribeModel = listSubscribers[position];
-  //   if (subscribeModel.isSelected) {
-  //     subscribeModel.isSelected = false;
-  //   } else {
-  //     subscribeModel.isSelected = true;
-  //   }
-  //   update(['subscribeUser']);
-  // }
-
-  // bool toggleCheck(int idx, ToDoTaskItem item) {
-  //   if (item.isCompleted == true) {
-  //     ToDoTaskItem newItem = ToDoTaskItem(
-  //       title: item.title,
-  //       isCompleted: false,
-  //       hasMessage: item.hasMessage,
-  //       dateTime: item.dateTime,
-  //       subtitle: item.subtitle,
-  //       notes: item.notes,
-  //       lastUpdated: item.lastUpdated,
-  //       toggleCompletion: (w) => toggleCheck(idx, w),
-  //     );
-  //     tasks[idx].remove(item);
-  //     tasks[idx].add(newItem);
-  //     return false;
-  //   } else {
-  //     ToDoTaskItem newItem = ToDoTaskItem(
-  //       title: item.title,
-  //       isCompleted: true,
-  //       hasMessage: item.hasMessage,
-  //       dateTime: item.dateTime,
-  //       subtitle: item.subtitle,
-  //       notes: item.notes,
-  //       lastUpdated: item.lastUpdated,
-  //       toggleCompletion: (w) => toggleCheck(idx, w),
-  //     );
-  //     tasks[idx].remove(item);
-  //     tasks[idx].add(newItem);
-  //     return true;
-  //   }
-  // }
-
-  // void updateNotes(ToDoTaskItem item, TextEditingController textController) {
-  //   var idx = 0;
-  //   var dateTime = DateTime.now();
-  //   ToDoTaskItem newItem = ToDoTaskItem(
-  //     title: item.title,
-  //     isCompleted: item.isCompleted,
-  //     hasMessage: item.hasMessage,
-  //     dateTime: item.dateTime,
-  //     subtitle: item.subtitle,
-  //     notes: textController.text,
-  //     lastUpdated: dateTime,
-  //     toggleCompletion: (w) => toggleCheck(idx, w),
-  //   );
-  //   update(['notes']);
-  //   tasks[idx].remove(item);
-  //   tasks[idx].add(newItem);
-  // }
-
-  // void updateSubtitle(ToDoTaskItem item, TextEditingController textController) {
-  //   var idx = 0;
-  //   var dateTime = DateTime.now();
-  //   ToDoTaskItem newItem = ToDoTaskItem(
-  //     title: item.title,
-  //     isCompleted: item.isCompleted,
-  //     hasMessage: item.hasMessage,
-  //     dateTime: item.dateTime,
-  //     subtitle: textController.text,
-  //     notes: item.notes,
-  //     lastUpdated: dateTime,
-  //     toggleCompletion: (w) => toggleCheck(idx, w),
-  //   );
-  //   update(['subtitle']);
-  //   tasks[idx].remove(item);
-  //   tasks[idx].add(newItem);
-  // }
 }

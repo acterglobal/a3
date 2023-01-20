@@ -134,8 +134,8 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                         await widget.controller
                             .createToDoTask(
                               name: titleInputController.text,
-                              taskDraft: widget.toDoList.taskDraft,
                               dueDate: _selectedDate,
+                              list: widget.toDoList,
                             )
                             .then((res) => debugPrint('TASK CREATED: $res'));
                         Navigator.pop(context);

@@ -14,59 +14,24 @@ class ToDoListView extends StatelessWidget {
   final ToDoController controller;
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ToDoController>(
-      id: 'refresh-list',
-      builder: (context) {
-        return FutureBuilder<List<ToDoList>>(
-          future: controller.getTodoList(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<ToDoList>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
+    return Obx(
+      () => ListView.builder(
+        itemCount: controller.todos.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return GetBuilder<ToDoController>(
+            id: 'list-item-$index',
+            builder: (_) {
+              return TodoCard(
+                controller: controller,
+                index: index,
+                isExpanded: controller.cardExpand,
+                expandBtn: controller.expandBtn,
               );
-            } else {
-              if (snapshot.hasData) {
-                if (snapshot.data!.isEmpty) {
-                  return Center(
-                    heightFactor: MediaQuery.of(context).size.height * 0.02,
-                    child: const Text(
-                      'You do not have any todos yet',
-                      style: ToDoTheme.titleTextStyle,
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  shrinkWrap: true,
-                  itemBuilder: (BuildContext context, int index) {
-                    return GetBuilder<ToDoController>(
-                      id: 'list-item-$index',
-                      builder: (_) {
-                        return TodoCard(
-                          controller: controller,
-                          snapshot: snapshot,
-                          index: index,
-                          isExpanded: controller.cardExpand,
-                          expandBtn: controller.expandBtn,
-                        );
-                      },
-                    );
-                  },
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                    'Could not load lists due to ${snapshot.error}',
-                    style: ToDoTheme.taskListTextStyle,
-                  ),
-                );
-              }
-              return const SizedBox.shrink();
-            }
-          },
-        );
-      },
+            },
+          );
+        },
+      ),
     );
   }
 }
@@ -75,7 +40,6 @@ class TodoCard extends StatelessWidget {
   const TodoCard({
     super.key,
     required this.controller,
-    required this.snapshot,
     required this.index,
     required this.isExpanded,
     required this.expandBtn,
@@ -84,7 +48,6 @@ class TodoCard extends StatelessWidget {
   final bool isExpanded;
   final bool expandBtn;
   final ToDoController controller;
-  final AsyncSnapshot<List<ToDoList>> snapshot;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -103,17 +66,17 @@ class TodoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             buildHeaderContent(
-              snapshot.data![index].name,
-              snapshot.data![index].tags,
+              controller.todos[index].name,
+              controller.todos[index].tags,
             ),
-            buildDescription(snapshot.data![index].description),
+            buildDescription(controller.todos[index].description),
             buildDivider(),
             buildComments(context),
             buildDivider(),
-            buildTasksRatio(snapshot.data![index]),
+            buildTasksRatio(controller.todos[index]),
             buildTasksSection(
               context,
-              snapshot.data![index],
+              controller.todos[index],
               isExpanded: isExpanded,
               expandBtn: expandBtn,
             )
@@ -263,7 +226,11 @@ class TodoCard extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             children: List.generate(
               todo.tasks.length,
-              (index) => ToDoTaskView(task: todo.tasks[index]),
+              (index) => ToDoTaskView(
+                task: todo.tasks[index],
+                controller: controller,
+                todoList: todo,
+              ),
             ),
           ),
           Row(

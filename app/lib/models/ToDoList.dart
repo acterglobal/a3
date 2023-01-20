@@ -32,4 +32,35 @@ class ToDoList {
     this.role,
     this.timezone,
   });
+
+  /// creates copy of object with updated data.
+  ToDoList copyWith({
+    int? index,
+    required String name,
+    String? description,
+    required TaskDraft taskDraft,
+    required TaskListUpdateBuilder taskUpdateDraft,
+    required List<ToDoTask> tasks,
+    Color? color,
+    List<String>? tags,
+    List<String>? subscribers,
+    List<String>? categories,
+    String? role,
+    String? timezone,
+  }) {
+    return ToDoList(
+      index: index ?? this.index,
+      name: name,
+      tasks: tasks,
+      taskDraft: taskDraft,
+      taskUpdateDraft: taskUpdateDraft,
+      description: description ?? this.description,
+      color: color ?? this.color,
+      tags: tags ?? this.tags,
+      subscribers: subscribers ?? this.subscribers,
+      categories: categories ?? this.categories,
+      role: role ?? this.role,
+      timezone: timezone ?? this.timezone,
+    );
+  }
 }
