@@ -29,7 +29,7 @@ jobs:
             cargo_make_args: android-arm
             with_ndk_version: r23c
             flutter_build_args: "build apk --target-platform android-arm64"
-            appcenter_cli: "distribute publish --targets appcenter --appcenter-distribution-group Nightly --appcenter-app-name Android-Nightly --appcenter-owner-name effektio"
+            appcenter_cli: "distribute release --group Nightly --app effektio/Android-Nightly"
             artifact_prefix: effektio-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
             artifact_files: "app-release.apk"
@@ -143,11 +143,14 @@ jobs:
           EFFEKTIO_ANDROID_APP_SECRET: ${{secrets.EFFEKTIO_ANDROID_APP_SECRET}}
           EFFEKTIO_IOS_APP_SECRET: ${{secrets.EFFEKTIO_IOS_APP_SECRET}}
 
+      #  appcenter stuff
+      - uses: actions/setup-node@v3
+        if: matrix.appcenter_cli
+      - run: "npm install --location=global appcenter-cli"
+        if: matrix.appcenter_cli
       - name: Publish to appcenter
         if: matrix.appcenter_cli
-        uses: grndvl1/appcenter-distribute-action@master
-        with:
-          args: ${{matrix.appcenter_cli}} -f ${{ matrix.artifact_path }}/${{ matrix.artifact_files }}
+        run: "appcenter -f ${{ matrix.artifact_path }}/${{ matrix.artifact_files }} ${{matrix.appcenter_cli}}"
         env:
           APPCENTER_ACCESS_TOKEN: ${{ secrets.APPCENTER_KEY }}
 
