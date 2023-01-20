@@ -29,7 +29,7 @@ jobs:
             cargo_make_args: android-arm
             with_ndk_version: r23c
             flutter_build_args: "build apk --target-platform android-arm64"
-            appcenter_cli: "distribute release --distribution-group Nightly --app-name Android-Nightly --owner-name effektio"
+            appcenter_cli: "distribute publish --targets appcenter --appcenter-distribution-group Nightly --appcenter-app-name Android-Nightly --appcenter-owner-name effektio"
             artifact_prefix: effektio-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
             artifact_files: "app-release.apk"
