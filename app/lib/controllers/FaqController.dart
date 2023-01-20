@@ -10,10 +10,17 @@ class FaqController extends GetxController {
   void searchedData(String value, AsyncSnapshot<FfiListFaq> snapshot) {
     searchData.clear();
     for (var element in snapshot.requireData) {
-      for (var tagElement in element.tags()) {
-        if (tagElement.title() == (value.toLowerCase().trim())) {
-          searchData.add(element);
+      bool isTitleContains =
+          element.title().toLowerCase().contains(value.toLowerCase().trim());
+      for (var tag in element.tags()) {
+        if (tag.title().toLowerCase() == value.toLowerCase().trim()) {
+          if (!isTitleContains) {
+            searchData.add(element);
+          }
         }
+      }
+      if (isTitleContains) {
+        searchData.add(element);
       }
     }
     update();

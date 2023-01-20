@@ -1,24 +1,35 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/models/FaqModel.dart';
+import 'package:effektio/screens/HomeScreens/faq/Item.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/TagItem.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show Client, Faq;
 import 'package:flutter/material.dart';
 
 class FaqListItem extends StatelessWidget {
-  final FaqModel faqModel;
+  final Client client;
+  final Faq faq;
 
   const FaqListItem({
-    Key? key, required this.faqModel,
+    Key? key,
+    required this.client,
+    required this.faq,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Beamer.of(context).beamToNamed('/faqListItem', data: FaqModel(client: faqModel.client, faq: faqModel.faq));
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              return FaqItemScreen(client: client, faq: faq);
+            },
+          ),
+        );
       },
-      child: Card(
+      child: Container(
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
@@ -29,24 +40,21 @@ class FaqListItem extends StatelessWidget {
                   vertical: 4,
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
+                    Expanded(
                       child: Text(
-                        faqModel.faq.title(),
+                        faq.title(),
                         style: FAQTheme.titleStyle,
                       ),
                     ),
-                    // new Spacer(),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => {
-                          const SnackBar(content: Text('Bookmark Icon tapped'))
-                        },
-                        child: Image.asset(
-                          'assets/images/bookmark.png',
-                          color: AppCommonTheme.svgIconColor,
-                        ),
+                    GestureDetector(
+                      onTap: () => {
+                        const SnackBar(content: Text('Bookmark Icon tapped'))
+                      },
+                      child: Image.asset(
+                        'assets/images/bookmark.png',
+                        color: AppCommonTheme.svgIconColor,
                       ),
                     )
                   ],
@@ -97,7 +105,7 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                faqModel.faq.likesCount().toString(),
+                                faq.likesCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -111,7 +119,7 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                faqModel.faq.commentsCount().toString(),
+                                faq.commentsCount().toString(),
                                 style: FAQTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -132,12 +140,10 @@ class FaqListItem extends StatelessWidget {
             ],
           ),
         ),
-        elevation: 8,
         margin: const EdgeInsets.only(top: 20),
-        color: FAQTheme.faqCardColor,
-        shape: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white),
+        decoration: BoxDecoration(
+          color: PinsTheme.cardBackgroundColor,
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );
@@ -146,9 +152,9 @@ class FaqListItem extends StatelessWidget {
   Widget _buildTagList() {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: faqModel.faq.tags().length,
+      itemCount: faq.tags().length,
       itemBuilder: (context, index) {
-        var color = faqModel.faq.tags().elementAt(index).color();
+        var color = faq.tags().elementAt(index).color();
         var colorToShow = 0;
         if (color != null) {
           var colorList = color.rgbaU8();
@@ -160,7 +166,7 @@ class FaqListItem extends StatelessWidget {
           );
         }
         return TagListItem(
-          tagTitle: faqModel.faq.tags().elementAt(index).title(),
+          tagTitle: faq.tags().elementAt(index).title(),
           tagColor: colorToShow > 0 ? Color(colorToShow) : Colors.white,
         );
       },

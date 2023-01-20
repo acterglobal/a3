@@ -1,7 +1,7 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/signup_controller.dart';
+import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -157,7 +157,12 @@ class _SignupScreentate extends State<SignupScreen> {
                       InkWell(
                         onTap: () {
                           Get.delete<SignUpController>();
-                          Beamer.of(context).beamToReplacementNamed('/login');
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginScreen(),
+                            ),
+                          );
                         },
                         child: Text(
                           AppLocalizations.of(context)!.login,
@@ -193,7 +198,7 @@ class _SignupScreentate extends State<SignupScreen> {
             );
           } else {
             if (await validateSignUp()) {
-              Beamer.of(context).beamToNamed('/');
+              Navigator.pushReplacementNamed(context, '/');
             }
           }
         }

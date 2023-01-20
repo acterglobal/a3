@@ -1,5 +1,7 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/MyAssignments.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/MyRecentActivity.dart';
+import 'package:effektio/screens/HomeScreens/todo/screens/ToDoBookmarks.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -18,7 +20,11 @@ class _ToDoMineScreenState extends State<ToDoMineScreen> {
       children: [
         ListTile(
           onTap: () {
-            Beamer.of(context).beamToNamed('/myAssignment');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const MyAssignmentScreen(),
+              ),
+            );
           },
           leading: const Icon(
             FlutterIcons.check_circle_faw,
@@ -31,7 +37,11 @@ class _ToDoMineScreenState extends State<ToDoMineScreen> {
         ),
         ListTile(
           onTap: () {
-            Beamer.of(context).beamToNamed('/todoBookmarks');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ToDoBookmarkScreen(),
+              ),
+            );
           },
           leading: const Icon(
             FlutterIcons.bookmark_mdi,
@@ -44,7 +54,11 @@ class _ToDoMineScreenState extends State<ToDoMineScreen> {
         ),
         ListTile(
           onTap: () {
-            Beamer.of(context).beamToNamed('/myRecentActivity');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const MyRecentActivityScreen(),
+              ),
+            );
           },
           leading: const Icon(
             FlutterIcons.pie_chart_ent,
