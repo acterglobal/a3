@@ -1,4 +1,3 @@
-import 'package:duration/duration.dart';
 import 'package:effektio/models/Team.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
@@ -7,7 +6,6 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
         CreateGroupSettings,
-        EfkDuration,
         FfiString,
         Group,
         RoomProfile,
