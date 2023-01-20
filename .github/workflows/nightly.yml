@@ -72,7 +72,6 @@ jobs:
     needs: check_date
     if: ${{ needs.check_date.outputs.should_run != 'false' }}
 
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - id: tag
