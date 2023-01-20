@@ -18,6 +18,9 @@ pub struct MockOpts {
     /// Which homeserver are we running against
     #[clap(env = "EFFEKTIO_HOMESERVER")]
     pub homeserver: String,
+    /// Which homeserver are we running against
+    #[clap(env = "EFFEKTIO_SERVERNAME", default_value = "ds9.effektio.org")]
+    pub server_name: String,
 
     /// Persist the store in .local/{user_id}
     #[clap(long)]
@@ -44,7 +47,8 @@ pub enum MockCmd {
 impl MockOpts {
     pub async fn run(&self) -> Result<()> {
         let homeserver = self.homeserver.clone();
-        let mut m = Mock::new(homeserver, self.persist).await?;
+        let server_name = self.server_name.clone();
+        let mut m = Mock::new(homeserver, server_name, self.persist).await?;
         match self.cmd {
             Some(MockCmd::Users) => {
                 m.everyone().await;
@@ -71,6 +75,7 @@ impl MockOpts {
 pub struct Mock {
     persist: bool,
     users: HashMap<String, EfkClient>,
+    server_name: String,
     homeserver: String,
 }
 
@@ -102,10 +107,11 @@ impl Mock {
             }
         }
     }
-    pub async fn new(homeserver: String, persist: bool) -> Result<Self> {
+    pub async fn new(homeserver: String, server_name: String, persist: bool) -> Result<Self> {
         Ok(Mock {
             homeserver,
             persist,
+            server_name,
             users: Default::default(),
         })
     }
@@ -273,6 +279,10 @@ impl Mock {
         Ok(())
     }
 
+    fn local_alias(&self, name: &str) -> String {
+        format!("{name}:{0}", self.server_name)
+    }
+
     pub async fn tasks(&mut self) -> Result<()> {
         let list_name = "Daily Security Brief".to_owned();
         //let sisko = &self.sisko;
@@ -283,6 +293,7 @@ impl Mock {
         syncer.await_has_synced_history().await?;
 
         let task_lists = odo.task_lists().await?;
+        let alias = self.local_alias("#ops");
         let task_list =
             if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) {
                 task_list
@@ -292,9 +303,10 @@ impl Mock {
                 let cloned_odo = odo.clone();
                 let Some(odo_ops) = wait_for(move || {
                     let cloned_odo = cloned_odo.clone();
+                    let alias = alias.clone();
                     async move {
-                        println!("tasks get_group #ops:ds9.effektio.org");
-                        let group = cloned_odo.get_group("#ops:ds9.effektio.org".into()).await?;
+                        println!("tasks get_group {alias}");
+                        let group = cloned_odo.get_group(alias).await?;
                         Ok(Some(group))
                     }
                 }).await? else {
