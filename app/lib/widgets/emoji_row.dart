@@ -20,6 +20,7 @@
  * SOFTWARE.
  */
 
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/constants.dart';
 import 'package:effektio/widgets/emoji_picker_widget.dart';
 import 'package:effektio/widgets/reaction_popup_configuration.dart';
@@ -50,25 +51,24 @@ class EmojiRow extends StatelessWidget {
     final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
     final size = emojiConfiguration?.size;
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(
-              emojiList.length,
-              (index) => GestureDetector(
-                onTap: () => onEmojiTap(emojiList[index]),
-                child: Text(
-                  emojiList[index],
-                  style: TextStyle(fontSize: size ?? 18),
-                ),
+        Wrap(
+          direction: Axis.horizontal,
+          spacing: 5.0,
+          children: List.generate(
+            emojiList.length,
+            (index) => InkWell(
+              onTap: () => onEmojiTap(emojiList[index]),
+              child: Text(
+                emojiList[index],
+                style: TextStyle(fontSize: size ?? 18),
               ),
             ),
           ),
         ),
         IconButton(
-          constraints: const BoxConstraints(),
+          padding: const EdgeInsets.only(bottom: 5.0),
           icon: Icon(
             Icons.add,
             color: Colors.grey.shade600,
@@ -84,7 +84,7 @@ class EmojiRow extends StatelessWidget {
         context: context,
         builder: (context) => EmojiPickerWidget(
           onSelected: (emoji) {
-            Navigator.pop(context);
+            Beamer.of(context).beamBack();
             onEmojiTap(emoji);
           },
         ),

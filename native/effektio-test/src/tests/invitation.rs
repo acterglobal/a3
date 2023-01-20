@@ -11,20 +11,20 @@ async fn load_pending_invitation() -> Result<()> {
 
     let tmp_dir = TempDir::new()?;
     let mut sisko = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
-        Some("load_pending_invitation".to_owned()),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@sisko:ds9.effektio.org".to_string(),
+        "sisko".to_string(),
+        Some("SISKO_DEV".to_string()),
     )
     .await?;
     let _sisko_syncer = sisko.start_sync();
 
     let tmp_dir = TempDir::new()?;
     let mut kyra = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@kyra:ds9.effektio.org".to_owned(),
-        "kyra".to_owned(),
-        Some("load_pending_invitation".to_owned()),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@kyra:ds9.effektio.org".to_string(),
+        "kyra".to_string(),
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     let _kyra_syncer = kyra.start_sync();
@@ -49,7 +49,7 @@ async fn load_pending_invitation() -> Result<()> {
     loop {
         match receiver.next().await {
             Some(invitations) => {
-                println!("received: {:?}", invitations);
+                println!("received: {invitations:?}");
                 break;
             }
             None => {

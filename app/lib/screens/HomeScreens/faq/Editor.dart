@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/TagItem.dart';
 import 'package:file_picker/file_picker.dart';
@@ -70,7 +71,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
             backgroundColor: AppCommonTheme.backgroundColor,
             leading: TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Beamer.of(context).beamBack();
               },
               child: const Icon(Icons.close, color: Colors.white),
             ),
@@ -291,7 +292,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                               tagColor == null ? Colors.white : tagColor!,
                             );
                             debugPrint(_tagColorList.length.toString());
-                            Navigator.of(context).pop();
+                            Beamer.of(context).beamBack();
                             tagTitleController.clear();
                           });
                         } else {

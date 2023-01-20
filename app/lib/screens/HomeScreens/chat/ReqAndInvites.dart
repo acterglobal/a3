@@ -1,10 +1,36 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/models/RequestScreenModel.dart';
 import 'package:effektio/widgets/PendingReqListView.dart';
 import 'package:effektio/widgets/ReqListView.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
-class RequestScreen extends StatelessWidget {
-  const RequestScreen({Key? key}) : super(key: key);
+class RequestScreen extends StatefulWidget {
+  final RequestScreenModel requestScreenModel;
+
+  const RequestScreen({
+    Key? key,
+    required this.requestScreenModel,
+  }) : super(key: key);
+
+  @override
+  State<RequestScreen> createState() => _RequestScreenState();
+}
+
+class _RequestScreenState extends State<RequestScreen> {
+  List<UserProfile> userProfiles = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    String roomId = widget.requestScreenModel.room.getRoomId();
+    widget.requestScreenModel.client.suggestedUsersToInvite(roomId).then((value) {
+      if (mounted) {
+        setState(() => userProfiles = value.toList());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +42,12 @@ class RequestScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: Container(
-        child: _buildTabBar(context, 5, 3),
+        child: buildTabBar(context, 5, 3),
       ),
     );
   }
 
-  Widget _buildTabBar(BuildContext context, int reqLength, int pendingLength) {
+  Widget buildTabBar(BuildContext context, int reqLength, int pendingLength) {
     return DefaultTabController(
       length: 2,
       child: Column(
@@ -30,10 +56,10 @@ class RequestScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: TabBar(
-              labelColor: Colors.white, //<-- selected text color
+              labelColor: Colors.white,
               unselectedLabelColor: Colors.white,
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(15), // Creates border
+                borderRadius: BorderRadius.circular(15),
                 color: AppCommonTheme.primaryColor,
               ),
               indicatorPadding: const EdgeInsets.symmetric(vertical: 6),
@@ -49,14 +75,19 @@ class RequestScreen extends StatelessWidget {
                 Column(
                   children: [
                     Visibility(
-                      visible: (pendingLength > 0) ? true : false,
+                      visible: userProfiles.isNotEmpty,
                       child: ListView.builder(
-                        itemCount: pendingLength,
+                        itemCount: userProfiles.length,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          return const Padding(
-                            padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                            child: PendingReqListView(name: 'Ben'),
+                          var p = userProfiles[index];
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                            child: PendingReqListView(
+                              userId: p.userId().toString(),
+                              avatar: p.hasAvatar() ? p.getAvatar() : null,
+                              displayName: p.getDisplayName(),
+                            ),
                           );
                         },
                       ),

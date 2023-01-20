@@ -121,10 +121,12 @@ class ChatTheme01 {
   static const chatListTextColor = ColorRef(Colors.white, id: 'CLT');
   static const latestChatTextColor = ColorRef(Colors.white, id: 'LCT');
   static const chatBodyTextColor = ColorRef(Colors.white, id: 'CBT');
+  static const chatReplyTextColor = ColorRef(Color(0xFF969696));
   static const leaveBtnBg = ColorRef(Color(0xff594848));
   static const redText = ColorRef(Color(0xffFF4B4B));
   static const chatInputTextColor = ColorRef(Colors.white, id: 'CITXC');
   static const chatSelectedImageBorderColor = ColorRef(Color(0xff23AFC2));
+  static const chatEmojiContainerColor = ColorRef(Color(0xff242632));
 
   static const chatTitleStyle = TextStyleRef(
     TextStyle(
@@ -175,11 +177,27 @@ class ChatTheme01 {
     ),
   );
 
+  static const chatReplyTextStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: chatReplyTextColor,
+    ),
+  );
+
   static const emptyMsgTitle = TextStyleRef(
     TextStyle(
       fontSize: 17,
       fontWeight: FontWeight.w500,
       color: chatBodyTextColor,
+    ),
+  );
+
+  static const emojiCountStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      color: chatListTextColor,
     ),
   );
 }
@@ -283,6 +301,37 @@ class CrossSigningSheetTheme {
   );
 }
 
+class NotificationPopUpTheme {
+  static const overlayColor = ColorRef(Color(0xff33C481));
+  static const networkBackgroundColor = ColorRef(Color(0xff333540));
+  static const networkTextColor = ColorRef(Color(0xffC4C4C4));
+  static const contentColor = ColorRef(Colors.white, id: 'ABT');
+
+  static const contentTitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+      color: contentColor,
+    ),
+  );
+
+  static const contentSubtitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+      color: contentColor,
+    ),
+  );
+
+  static const networkTitleStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w300,
+      color : networkTextColor,
+    ),
+  );
+}
+
 class ToDoTheme {
   // Color Scheme.
   static const activeCheckColor = ColorRef(Color(0xFF1CF18F));
@@ -338,6 +387,12 @@ class ToDoTheme {
     fontWeight: FontWeight.w400,
   );
 
+  static const listTagTextStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+  );
+
   static const taskTitleTextStyle = TextStyle(
     color: primaryTextColor,
     fontSize: 15,
@@ -352,6 +407,12 @@ class ToDoTheme {
 
   static const calendarTextStyle = TextStyle(
     color: calendarColor,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const completeCalendarTextStyle = TextStyle(
+    color: primaryColor,
     fontSize: 12,
     fontWeight: FontWeight.w500,
   );

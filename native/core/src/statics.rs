@@ -5,6 +5,11 @@ pub static PURPOSE_FIELD: &str = "m.room.purpose";
 pub static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
 pub static PURPOSE_TEAM_VALUE: &str = "org.effektio.team";
 
+#[allow(non_snake_case)]
+pub mod KEYS {
+    pub static TASKS: &str = "tasks";
+}
+
 const HISTORY: &str = r#"{
     "type": "m.room.history_visibility",
     "state_key": "",
@@ -25,7 +30,7 @@ const ENCRYPTION: &str = r#"{
 
 /// Generate the default set ot initial states for effektio teams
 pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
-    let mut v: Vec<Raw<AnyInitialStateEvent>> = [HISTORY, ENCRYPTION]
+    let mut v: Vec<Raw<AnyInitialStateEvent>> = [HISTORY]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
         .collect();

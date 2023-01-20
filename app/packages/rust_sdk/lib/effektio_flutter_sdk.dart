@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:core';
+import 'dart:developer' as developer;
 import 'dart:ffi';
 import 'dart:io';
 
@@ -22,7 +24,7 @@ const defaultServer = String.fromEnvironment(
   defaultValue: 'https://matrix.effektio.org',
 );
 
-Color convertColor(ffi.Color? primary, Color fallback) {
+Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
     return fallback;
   }
@@ -127,7 +129,7 @@ class EffektioSdk {
   }
 
   static String get deviceName {
-    return 'Effektio ${Platform.operatingSystem} ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')}  (${Platform.operatingSystemVersion}) on ${Platform.localHostname}';
+    return 'Effektio ${Platform.operatingSystem} ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')}';
   }
 
   static Future<EffektioSdk> get instance async {
@@ -135,7 +137,15 @@ class EffektioSdk {
       final api = Platform.isAndroid
           ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
           : ffi.Api.load();
-      api.initLogging('warn,effektio=debug');
+      try {
+        api.initLogging('warn,effektio=debug');
+      } catch (e) {
+        developer.log(
+          'Setting logging failed',
+          level: 900, // warning
+          error: e,
+        );
+      }
       _instance = EffektioSdk._(api);
       await _instance!._restore();
     }
@@ -156,7 +166,18 @@ class EffektioSdk {
         await _api.loginNewClient(appDocPath, username, password, deviceName);
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
-      _clients.removeAt(0);
+      var client = _clients.removeAt(0);
+      unawaited(
+        client.logout().catchError(
+          (e) {
+            developer.log(
+              'Logout of Guest failed',
+              level: 900, // warning
+              error: e,
+            );
+          },
+        ),
+      ); // Explicitly-ignored fire-and-forget.
     }
     _clients.add(client);
     await _persistSessions();
@@ -165,13 +186,23 @@ class EffektioSdk {
 
   Future<void> logout() async {
     // remove current client from list
-    await _clients[0].logout();
-    _clients.removeAt(0);
-    // reset session
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('sessions', []);
-    // login as guest
-    await _restore();
+    var client = _clients.removeAt(0);
+    await _persistSessions();
+    unawaited(
+      client.logout().catchError(
+        (e) {
+          developer.log(
+            'Logout failed',
+            level: 900, // warning
+            error: e,
+          );
+        },
+      ),
+    ); // Explicitly-ignored fire-and-forget.
+    if (_clients.isEmpty) {
+      // login as guest
+      await _restore();
+    }
   }
 
   Future<ffi.Client> signUp(

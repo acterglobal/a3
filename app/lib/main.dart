@@ -1,23 +1,22 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:beamer/beamer.dart';
+import 'package:effektio/common/routes.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
 import 'package:effektio/l10n/l10n.dart';
+import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
+
 // import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
-import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
-import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
-import 'package:effektio/screens/OnboardingScreens/Signup.dart';
-import 'package:effektio/screens/SideMenuScreens/AddToDo.dart';
-import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
-import 'package:effektio/screens/SideMenuScreens/ToDo.dart';
-import 'package:effektio/screens/UserScreens/SocialProfile.dart';
+import 'package:effektio/screens/HomeScreens/todo/ToDo.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-// import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/MaterialIndicator.dart';
 import 'package:effektio/widgets/SideMenu.dart';
@@ -29,13 +28,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:themed/themed.dart';
+import 'package:window_size/window_size.dart';
 
 void main() async {
   await startApp();
@@ -43,43 +44,45 @@ void main() async {
 
 Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  if (isDesktop) {
+    setWindowTitle('Effektio');
+  }
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(const Effektio());
+  runApp(Effektio());
 }
 
 class Effektio extends StatelessWidget {
-  const Effektio({Key? key}) : super(key: key);
+  Effektio({Key? key}) : super(key: key);
+
+  final routerDelegate = BeamerDelegate(
+    locationBuilder: Routes.getRoutes(),
+  );
 
   @override
   Widget build(BuildContext context) {
+    debugInvertOversizedImages = true; // detect non-optimized images
     return Portal(
       child: Themed(
-        child: GetMaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.theme,
-          title: 'Effektio',
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: ApplicationLocalizations.supportedLocales,
-          // MaterialApp contains our top-level Navigator
-          initialRoute: '/',
-          routes: <String, WidgetBuilder>{
-            '/': (BuildContext context) => const EffektioHome(),
-            '/login': (BuildContext context) => const LoginScreen(),
-            '/profile': (BuildContext context) => const SocialProfileScreen(),
-            '/signup': (BuildContext context) => const SignupScreen(),
-            '/gallery': (BuildContext context) => const GalleryScreen(),
-            '/todo': (BuildContext context) => const ToDoScreen(),
-            '/addTodo': (BuildContext context) => const AddToDoScreen(),
-          },
+        child: OverlaySupport.global(
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.theme,
+            title: 'Effektio',
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            routeInformationParser: BeamerParser(),
+            supportedLocales: ApplicationLocalizations.supportedLocales,
+            routerDelegate: routerDelegate,
+          ),
         ),
       ),
     );
@@ -96,15 +99,16 @@ class EffektioHome extends StatefulWidget {
 class _EffektioHomeState extends State<EffektioHome>
     with SingleTickerProviderStateMixin {
   late Future<Client> client;
+  late SyncState syncState;
   int tabIndex = 0;
   late TabController tabController;
   String? displayName;
   Future<FfiBufferUint8>? displayAvatar;
+  final networkController = Get.put(NetworkController());
 
   @override
   void initState() {
     super.initState();
-
     client = makeClient();
     tabController = TabController(length: 4, vsync: this);
     tabController.addListener(() {
@@ -130,7 +134,7 @@ class _EffektioHomeState extends State<EffektioHome>
     final sdk = await EffektioSdk.instance;
     Client client = await sdk.currentClient;
 
-    SyncState _ = client.startSync();
+    syncState = client.startSync();
     //Start listening for cross signing events
     if (!client.isGuest()) {
       await client.getUserProfile().then((value) {
@@ -155,6 +159,7 @@ class _EffektioHomeState extends State<EffektioHome>
     if (tabIndex <= 3) {
       return null;
     }
+
     return AppBar(
       centerTitle: true,
       primary: true,
@@ -246,6 +251,7 @@ class _EffektioHomeState extends State<EffektioHome>
             : SvgPicture.asset('assets/images/notification_linear.svg'),
       ),
     );
+
   }
 
   Widget buildHomeScreen(BuildContext context, Client client) {
@@ -264,48 +270,52 @@ class _EffektioHomeState extends State<EffektioHome>
       length: 4,
       key: const Key('bottom-bar'),
       child: SafeArea(
-        child: Scaffold(
-          appBar: buildAppBar(),
-          body: TabBarView(
-            controller: tabController,
-            children: [
-              NewsScreen(
-                client: client,
+        child: Stack(
+          children: [
+            Scaffold(
+              appBar: buildAppBar(),
+              body: TabBarView(
+                controller: tabController,
+                children: [
+                  NewsScreen(
+                    client: client,
+                    displayName: displayName,
+                    displayAvatar: displayAvatar,
+                  ),
+                  FaqOverviewScreen(client: client),
+                  const ToDoScreen(),
+                  ChatOverview(client: client),
+                ],
+              ),
+              drawer: SideDrawer(
+                isGuest: client.isGuest(),
+                userId: client.userId().toString(),
                 displayName: displayName,
                 displayAvatar: displayAvatar,
               ),
-              FaqOverviewScreen(client: client),
-              const ToDoScreen(),
-              ChatOverview(client: client),
-            ],
-          ),
-          drawer: SideDrawer(
-            isGuest: client.isGuest(),
-            userId: client.userId().toString(),
-            displayName: displayName,
-            displayAvatar: displayAvatar,
-          ),
-          bottomNavigationBar: TabBar(
-            labelColor: AppCommonTheme.primaryColor,
-            unselectedLabelColor: AppCommonTheme.svgIconColor,
-            controller: tabController,
-            indicator: const MaterialIndicator(
-              height: 5,
-              bottomLeftRadius: 8,
-              bottomRightRadius: 8,
-              topLeftRadius: 0,
-              topRightRadius: 0,
-              horizontalPadding: 12,
-              tabPosition: TabPosition.top,
-              color: AppCommonTheme.primaryColor,
+              bottomNavigationBar: TabBar(
+                labelColor: AppCommonTheme.primaryColor,
+                unselectedLabelColor: AppCommonTheme.svgIconColor,
+                controller: tabController,
+                indicator: const MaterialIndicator(
+                  height: 5,
+                  bottomLeftRadius: 8,
+                  bottomRightRadius: 8,
+                  topLeftRadius: 0,
+                  topRightRadius: 0,
+                  horizontalPadding: 12,
+                  tabPosition: TabPosition.top,
+                  color: AppCommonTheme.primaryColor,
+                ),
+                tabs: [
+                  buildNewsFeedTab(),
+                  buildPinsTab(),
+                  buildTasksTab(),
+                  buildChatTab(),
+                ],
+              ),
             ),
-            tabs: [
-              buildNewsFeedTab(),
-              buildPinsTab(),
-              buildTasksTab(),
-              buildChatTab(),
-            ],
-          ),
+          ],
         ),
       ),
     );

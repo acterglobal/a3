@@ -7,9 +7,10 @@ async fn sisko_posts_news() -> Result<()> {
     let _ = env_logger::try_init();
     let tmp_dir = TempDir::new()?;
     let client = login_new_client(
-        tmp_dir.path().to_str().expect("always works").to_owned(),
-        "@sisko:ds9.effektio.org".to_owned(),
-        "sisko".to_owned(),
+        tmp_dir.path().to_str().expect("always works").to_string(),
+        "@sisko:ds9.effektio.org".to_string(),
+        "sisko".to_string(),
+        Some("KYRA_DEV".to_string()),
     )
     .await?;
     client
@@ -17,14 +18,14 @@ async fn sisko_posts_news() -> Result<()> {
         .await
         .expect("sync works");
     let ops = client
-        .get_group("#ops:ds9.effektio.org".to_owned())
+        .get_group("#ops:ds9.effektio.org".to_string())
         .await
         .expect("Promenade exists");
 
     let news_draft = ops
         .news_draft()
         .expect("we are in, we can create news drafts");
-    news_draft.add_text("This is a simple text example".to_owned())?;
+    news_draft.add_text("This is a simple text example".to_string())?;
     let event_id = news_draft.send().await?;
     client
         .sync_once(Default::default())

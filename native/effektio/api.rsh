@@ -16,10 +16,22 @@ fn register_with_registration_token(basepath: string, username: string, password
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
 
+/// Representing a time frame
+object EfkDuration {}
+
+fn duration_from_secs(secs: u64) -> EfkDuration;
+
+
 /// Representing a color
-object Color {
+object EfkColor {
     /// as rgba in u8
     fn rgba_u8() -> (u8, u8, u8, u8);
+}
+
+object UtcDateTime { 
+    fn timestamp() -> i64;
+    fn to_rfc2822() -> string;
+    fn to_rfc3339() -> string;
 }
 
 /// A news object
@@ -35,9 +47,9 @@ object News {
     /// the number of comments on this item
     fn comments_count() -> u32;
     /// if given, the specific foreground color
-    fn fg_color() -> Option<Color>; 
+    fn fg_color() -> Option<EfkColor>; 
     /// if given, the specific background color
-    fn bg_color() -> Option<Color>; 
+    fn bg_color() -> Option<EfkColor>; 
     /// if given, the image
     fn image() -> Option<Vec<u8>>; 
 }
@@ -48,7 +60,7 @@ object Tag {
     /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
     fn hash_tag() -> string;
     /// if given, the specific color for this tag
-    fn color() -> Option<Color>; 
+    fn color() -> Option<EfkColor>; 
 }
 
 /// A news object
@@ -92,37 +104,70 @@ object UserId {
 }
 
 /// A room Message metadata and content
-object RoomMessage {
+object RoomEventItem {
     /// Unique ID of this event
     fn event_id() -> string;
-
-    /// room ID of this event
-    fn room_id() -> string;
 
     /// The User, who sent that event
     fn sender() -> string;
 
-    /// the body of the massage - fallback string reprensentation
-    fn body() -> string;
-
-    /// get html body
-    fn formatted_body() -> Option<string>;
-
     /// the server receiving timestamp in milliseconds
-    fn origin_server_ts() -> Option<u64>;
+    fn origin_server_ts() -> u64;
+
+    /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+    fn item_content_type() -> string;
 
     /// the type of massage, like audio, text, image, file, etc
-    fn msgtype() -> string;
+    fn msgtype() -> Option<string>;
+
+    /// contains text fallback and formatted text
+    fn text_desc() -> Option<TextDesc>;
 
     /// contains source data, name, mimetype, size, width and height
-    fn image_description() -> Option<ImageDescription>;
+    fn image_desc() -> Option<ImageDesc>;
 
     /// contains source data, name, mimetype and size
-    fn file_description() -> Option<FileDescription>;
+    fn file_desc() -> Option<FileDesc>;
+
+    /// original event id, if this msg is reply to another msg
+    fn in_reply_to() -> Option<string>;
+
+    /// the emote key list that users reacted about this message
+    fn reaction_keys() -> Vec<string>;
+
+    /// the details that users reacted using this emote key in this message
+    fn reaction_desc(key: string) -> Option<ReactionDesc>;
+
+    /// Whether this message is editable
+    fn is_editable() -> bool;
 }
 
-object ImageDescription {
+object RoomVirtualItem {}
 
+/// A room Message metadata and content
+object RoomMessage {
+    /// one of event/virtual
+    fn item_type() -> string;
+
+    /// room ID of this event
+    fn room_id() -> string;
+
+    /// valid only if item_type is "event"
+    fn event_item() -> Option<RoomEventItem>;
+
+    /// valid only if item_type is "virtual"
+    fn virtual_item() -> Option<RoomVirtualItem>;
+}
+
+object TextDesc {
+    /// fallback text
+    fn body() -> string;
+
+    /// formatted text
+    fn formatted_body() -> Option<string>;
+}
+
+object ImageDesc {
     /// file name
     fn name() -> string;
 
@@ -139,8 +184,7 @@ object ImageDescription {
     fn height() -> Option<u64>;
 }
 
-object FileDescription {
-
+object FileDesc {
     /// file name
     fn name() -> string;
 
@@ -151,13 +195,47 @@ object FileDescription {
     fn size() -> Option<u64>;
 }
 
+object ReactionDesc {
+    /// how many times this key was clicked
+    fn count() -> u64;
+
+    /// which users selected this key
+    fn senders() -> Vec<string>;
+}
+
+object TimelineDiff {
+    /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+    fn action() -> string;
+
+    /// for Replace
+    fn values() -> Option<Vec<RoomMessage>>;
+
+    /// for InsertAt/UpdateAt/RemoveAt
+    fn index() -> Option<usize>;
+
+    /// for InsertAt/UpdateAt/Push
+    fn value() -> Option<RoomMessage>;
+
+    /// for Move
+    fn new_index() -> Option<usize>;
+
+    /// for Move
+    fn old_index() -> Option<usize>;
+}
+
 /// Timeline with Room Events
 object TimelineStream {
-    /// Fires whenever a new event arrived
+    /// Fires whenever new diff found
+    fn diff_rx() -> Stream<TimelineDiff>;
+
+    /// Fires whenever new event arrived
     fn next() -> Future<Result<RoomMessage>>;
 
     /// Get the next count messages backwards,
-    fn paginate_backwards(count: u32) -> Future<Result<Vec<RoomMessage>>>;
+    fn paginate_backwards(count: u16) -> Future<Result<bool>>;
+
+    /// modify the room message
+    fn edit(new_msg: string, original_event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
 }
 
 object Conversation {
@@ -167,11 +245,11 @@ object Conversation {
     /// the members currently in the room
     fn active_members() -> Future<Result<Vec<Member>>>;
 
-    /// Get the timeline for the room
-    fn timeline() -> Result<TimelineStream>;
-
     /// get the room member by user id
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// Get the timeline for the room
+    fn timeline_stream() -> Future<Result<TimelineStream>>;
 
     /// The last message sent to the room
     fn latest_message() -> Option<RoomMessage>;
@@ -194,11 +272,20 @@ object Conversation {
     /// received over timeline().next()
     fn send_plain_message(text_message: string) -> Future<Result<string>>;
 
-    /// invite the new user to this room
-    fn invite_user(user_id: string) -> Future<Result<bool>>;
+    /// Send a text message in MarkDown format to the room
+    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
+
+    /// Send reaction about existing event
+    fn send_reaction(event_id: string, key: string) -> Future<Result<string>>;
+
+    /// send the image message to this room
+    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// get the user status on this room
     fn room_type() -> string;
+
+    /// invite the new user to this room
+    fn invite_user(user_id: string) -> Future<Result<bool>>;
 
     /// join this room
     fn join() -> Future<Result<bool>>;
@@ -208,12 +295,6 @@ object Conversation {
 
     /// get the users that were invited to this room
     fn get_invitees() -> Future<Result<Vec<Account>>>;
-
-    /// Send a text message in MarkDown format to the room
-    fn send_formatted_message(markdown_message: string) -> Future<Result<string>>;
-
-    /// send the image message to this room
-    fn send_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>) -> Future<Result<string>>;
 
     /// decrypted image file data
     /// The reason that this function belongs to room object is because ChatScreen keeps it as member variable
@@ -231,6 +312,350 @@ object Conversation {
 
     /// initially called to get receipt status of room members
     fn user_receipts() -> Future<Result<Vec<ReceiptRecord>>>;
+
+    /// whether this room is encrypted one
+    fn is_encrypted() -> Future<Result<bool>>;
+
+    /// get original of reply msg
+    fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
+
+    /// send reply as text
+    fn send_text_reply(msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
+
+    /// send reply as image
+    fn send_image_reply(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
+
+    /// send reply as file
+    fn send_file_reply(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<string>>;
+
+    /// redact any message (including text/image/file and reaction)
+    fn redact_message(event_id: string, reason: Option<string>, txn_id: Option<string>) -> Future<Result<string>>;
+}
+
+object CommentDraft {
+    /// set the content of the draft to body 
+    fn content_text(body: string);
+
+    /// set the content to a formatted body of html_body, where body is the tag-stripped version
+    fn content_formatted(body: string, html_body: string);
+
+    // fire this comment over - the event_id is the confirmation
+    // from the server.
+    fn send() -> Future<Result<EventId>>;
+}
+
+object Comment {
+    /// Who send this comment
+    fn sender() -> UserId;
+    /// When was this comment acknowledged by the server
+    fn origin_server_ts() -> u64;
+    /// what is the comment's content in raw text
+    fn content_text() -> string;
+    /// what is the comment's content in html text
+    fn content_formatted() -> Option<string>;
+    /// create a draft builder to reply to this comment
+    fn reply_builder() -> CommentDraft;
+}
+
+/// Reference to the comments section of a particular item
+object CommentsManager {
+    /// Get the list of comments (in arrival order)
+    fn comments() -> Future<Result<Vec<Comment>>>;
+
+    /// Does this item have any comments?
+    fn has_comments() -> bool;
+
+    /// How many comments does this item have 
+    fn comments_count() -> u32;
+
+    /// draft a new comment for this item
+    fn comment_draft() -> CommentDraft;
+}
+
+object Task {
+    /// the name of this task
+    fn title() -> string;
+
+    /// the name of this task
+    fn description_text() -> Option<string>;
+
+    /// the users assigned
+    fn assignees() -> Vec<UserId>;
+
+    /// other users to inform about updates
+    fn subscribers() -> Vec<UserId>;
+
+    /// order in the list
+    fn sort_order() -> u32;
+
+    /// does this list have a special role?
+    /// Highest = 1,
+    /// SecondHighest = 2,
+    /// Three = 3,
+    /// Four = 4,
+    /// Five = 5,
+    /// Six = 6,
+    /// Seven = 7,
+    ///  --- No value
+    /// SecondLowest = 8,
+    /// Lowest = 9,
+    fn priority() -> Option<u8>;
+
+    /// When this is due
+    fn utc_due() -> Option<UtcDateTime>;
+
+    /// When this was started
+    fn utc_start() -> Option<UtcDateTime>;
+    
+    /// Has this been colored in?
+    fn color() -> Option<EfkColor>;
+
+    /// is this task already done?
+    fn is_done() -> bool;
+
+    /// if it has been started, haw far is it in percent 0->100
+    /// None if not yet started
+    fn progress_percent() -> Option<u8>;
+
+    /// tags on this task
+    fn keywords() -> Vec<string>;
+
+    /// categories this task is in
+    fn categories() -> Vec<string>;
+
+    /// make a builder for updating the task
+    fn update_builder() -> Result<TaskUpdateBuilder>;
+
+    // get informed about changes to this task
+    fn subscribe() -> Stream<()>;
+
+    /// replace the current task with one with the latest state
+    fn refresh() -> Future<Result<Task>>;
+
+    /// get the comments manager for this task
+    fn comments() -> Future<Result<CommentsManager>>;
+}
+
+object TaskUpdateBuilder {
+    /// set the title for this task
+    fn title(title: string);
+    fn unset_title_update();
+
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    fn unset_description_update();
+
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    fn unset_sort_order_update();
+
+    /// set the color for this task list
+    fn color(color: EfkColor);
+    fn unset_color();
+    fn unset_color_update();
+
+    /// set the utc_due for this task list in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    /// set the utc_due for this task list in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    /// set the utc_due for this task list in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn unset_utc_due();
+    fn unset_utc_due_update();
+
+    /// set the utc_start for this task list in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    /// set the utc_start for this task list in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    /// set the utc_start for this task list in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn unset_utc_start();
+    fn unset_utc_start_update();
+
+    /// set the sort order for this task list
+    fn progress_percent(progress_percent: u8);
+    fn unset_progress_percent();
+    fn unset_progress_percent_update();
+
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    fn unset_keywords_update();
+
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    fn unset_categories_update();
+
+    /// set the assignees for this task list
+    fn assignees(assignees: Vec<UserId>);
+    fn unset_assignees();
+    fn unset_assignees_update();
+
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    fn unset_subscribers_update();
+
+    /// send this task list draft
+    /// mark it done
+    fn mark_done();
+
+    /// mark as not done
+    fn mark_undone();
+
+    /// send this task update
+    fn send() -> Future<Result<EventId>>;
+}
+
+object TaskDraft {
+    /// set the title for this task
+    fn title(title: string);
+
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+
+    /// set the color for this task list
+    fn color(color: EfkColor);
+    fn unset_color();
+
+    /// set the utc_due for this task list in rfc3339 format
+    fn utc_due_from_rfc3339(utc_due: string) -> Result<bool>;
+    /// set the utc_due for this task list in rfc2822 format
+    fn utc_due_from_rfc2822(utc_due: string)-> Result<bool>;
+    /// set the utc_due for this task list in custom format
+    fn utc_due_from_format(utc_due: string, format: string)-> Result<bool>;
+    fn unset_utc_due();
+
+    /// set the utc_start for this task list in rfc3339 format
+    fn utc_start_from_rfc3339(utc_start: string) -> Result<bool>;
+    /// set the utc_start for this task list in rfc2822 format
+    fn utc_start_from_rfc2822(utc_start: string)-> Result<bool>;
+    /// set the utc_start for this task list in custom format
+    fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
+    fn unset_utc_start();
+
+
+    /// set the sort order for this task list
+    fn progress_percent(progress_percent: u8);
+    fn unset_progress_percent();
+    
+
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    /// set the assignees for this task list
+    fn assignees(assignees: Vec<UserId>);
+    fn unset_assignees();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    /// send this task list draft
+
+    /// create this task
+    fn send() -> Future<Result<EventId>>;
+}
+
+object TaskList {
+    /// the name of this task list
+    fn name() -> string;
+
+    /// the name of this task list
+    fn description_text() -> Option<string>;
+
+    /// who wants to be informed on updates about this?
+    fn subscribers() -> Vec<UserId>;
+
+    /// does this list have a special role?
+    fn role() -> Option<string>;
+
+    /// order in the list
+    fn sort_order() -> u32;
+    
+    /// Has this been colored in?
+    fn color() -> Option<EfkColor>;
+    
+    /// Does this have any special time zone
+    fn time_zone() -> Option<string>;
+
+    /// tags on this task
+    fn keywords() -> Vec<string>;
+
+    /// categories this task is in
+    fn categories() -> Vec<string>;
+
+    /// The tasks belonging to this tasklist
+    fn tasks() -> Future<Result<Vec<Task>>>;
+
+    /// make a builder for updating the task list
+    fn update_builder() -> Result<TaskListUpdateBuilder>;
+
+    // get informed about changes to this task
+    fn subscribe() -> Stream<()>;
+
+    /// replace the current task with one with the latest state
+    fn refresh() -> Future<Result<TaskList>>;
+}
+
+object TaskListDraft {
+    /// set the name for this task list
+    fn name(name: string);
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    /// set the color for this task list
+    fn color(color: EfkColor);
+    fn unset_color();
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    /// send this task list draft
+    fn send() -> Future<Result<EventId>>;
+}
+
+object TaskListUpdateBuilder {
+    /// set the name for this task list
+    fn name(name: string);
+    /// set the description for this task list
+    fn description_text(text: string);
+    fn unset_description();
+    fn unset_description_update();
+    /// set the sort order for this task list
+    fn sort_order(sort_order: u32);
+    /// set the color for this task list
+    fn color(color: EfkColor);
+    fn unset_color();
+    fn unset_color_update();
+    /// set the keywords for this task list
+    fn keywords(keywords: Vec<string>);
+    fn unset_keywords();
+    fn unset_keywords_update();
+    /// set the categories for this task list
+    fn categories(categories: Vec<string>);
+    fn unset_categories();
+    fn unset_categories_update();
+    /// set the subscribers for this task list
+    fn subscribers(subscribers: Vec<UserId>);
+    fn unset_subscribers();
+    fn unset_subscribers_update();
+    /// send this task update
+    fn send() -> Future<Result<EventId>>;
 }
 
 object Group {
@@ -242,6 +667,15 @@ object Group {
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
+
+    /// whether this room is encrypted one
+    fn is_encrypted() -> Future<Result<bool>>;
+
+    /// the Tasks lists of this Group
+    fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    /// task list draft builder
+    fn task_list_draft() -> Result<TaskListDraft>;
 }
 
 object Member {
@@ -273,6 +707,9 @@ object Account {
 object SyncState {
     /// Get event handler of first synchronization on every launch
     fn first_synced_rx() -> Option<Stream<bool>>;
+
+    /// stop the sync loop
+    fn cancel();
 }
 
 /// Main entry point for `effektio`.
@@ -332,6 +769,9 @@ object Client {
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
 
+    /// the users out of room
+    fn suggested_users_to_invite(room_name: string) -> Future<Result<Vec<UserProfile>>>;
+
     /// Whether the user already verified the device
     fn verified_device(dev_id: string) -> Future<Result<bool>>;
 
@@ -355,9 +795,27 @@ object Client {
 
     /// Return the message receiver
     fn incoming_message_rx() -> Option<Stream<RoomMessage>>;
+
+    /// the Tasks lists of this Group
+    fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    /// listen to updates to any model key
+    fn subscribe(key: string) -> Stream<bool>;
+
+    /// Fetch the Comment or use its event_id to wait for it to come down the wire
+    fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
+
+    /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
+    fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;
+
+    /// Fetch the Task or use its event_id to wait for it to come down the wire
+    fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
 }
 
 object UserProfile {
+    /// get user id
+    fn user_id() -> UserId;
+
     /// whether to have avatar
     fn has_avatar() -> bool;
 

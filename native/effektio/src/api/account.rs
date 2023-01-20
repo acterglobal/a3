@@ -26,17 +26,20 @@ impl Account {
     }
 
     pub async fn display_name(&self) -> Result<String> {
-        let l = self.account.clone();
+        let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let display_name = l.get_display_name().await?.context("No User ID found")?;
+                let display_name = account
+                    .get_display_name()
+                    .await?
+                    .context("No User ID found")?;
                 Ok(display_name)
             })
             .await?
     }
 
     pub async fn set_display_name(&self, new_name: String) -> Result<bool> {
-        let l = self.account.clone();
+        let account = self.account.clone();
         RUNTIME
             .spawn(async move {
                 let name = if new_name.is_empty() {
@@ -44,30 +47,30 @@ impl Account {
                 } else {
                     Some(new_name.as_str())
                 };
-                l.set_display_name(name).await?;
+                account.set_display_name(name).await?;
                 Ok(true)
             })
             .await?
     }
 
     pub async fn avatar(&self) -> Result<FfiBuffer<u8>> {
-        let l = self.account.clone();
+        let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let data = l
+                let data = account
                     .get_avatar(MediaFormat::File)
                     .await?
-                    .context("No avatar Url given")?;
+                    .context("No avatar URL given")?;
                 Ok(FfiBuffer::new(data))
             })
             .await?
     }
 
     pub async fn set_avatar(&self, c_type: String, data: Vec<u8>) -> Result<bool> {
-        let l = self.account.clone();
+        let account = self.account.clone();
         RUNTIME
             .spawn(async move {
-                let new_url = l.upload_avatar(&c_type.parse()?, &data).await?;
+                let new_url = account.upload_avatar(&c_type.parse()?, data).await?;
                 Ok(true)
             })
             .await?

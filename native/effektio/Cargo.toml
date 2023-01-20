@@ -11,6 +11,7 @@ license-file = "../../LICENSE.txt"
 [features]
 default = [ "with-mocks", "dart" ]
 with-mocks = [ "effektio-core/with-mocks" ]
+testing = [ "dep:matrix-sdk-base" ]
 dart = [ "with-mocks" ]
 
 [build-dependencies]
@@ -28,13 +29,14 @@ log = "0.4"
 log-panics = "2.0.0"
 mime = "0.3.16"
 parking_lot = "0.11.2"
-ruma = "0.6.1"
+ruma = { workspace = true }
 sanitize-filename-reader-friendly = "2.2.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 tokio = "1"
 tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"
+async-broadcast = { workspace = true }
 
 [dev-dependencies]
 env_logger = "0.9.0"
@@ -45,8 +47,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 path = "../core"
 
 [dependencies.matrix-sdk]
-git = "https://github.com/matrix-org/matrix-rust-sdk/"
-default-features = false
+workspace = true
 features = [
     "anyhow",
     "e2e-encryption",
@@ -57,6 +58,10 @@ features = [
     "sled",
 ]
 
+[dependencies.matrix-sdk-base]
+workspace = true
+optional = true
+
 [dependencies.js_int]
 version = "0.2.2"
 features = ["lax_deserialize"]
@@ -65,6 +70,10 @@ features = ["lax_deserialize"]
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 tracing-wasm = "0.2.1"
 wasm-bindgen-futures = "0.4.28"
+
+#   ----   WASM
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+matrix-sdk-sled = { workspace = true }
 
 #   ----  ANDROID
 [target.'cfg(target_os = "android")'.dependencies]

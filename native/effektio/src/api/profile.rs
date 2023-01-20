@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::Result;
 use log::info;
 use matrix_sdk::{
     media::{MediaFormat, MediaRequest},
@@ -20,12 +20,17 @@ pub struct UserProfile {
 }
 
 impl UserProfile {
-    pub(crate) fn new(client: Client, user_id: OwnedUserId) -> Self {
+    pub(crate) fn new(
+        client: Client,
+        user_id: OwnedUserId,
+        avatar_url: Option<OwnedMxcUri>,
+        display_name: Option<String>,
+    ) -> Self {
         UserProfile {
             client,
             user_id,
-            avatar_url: None,
-            display_name: None,
+            avatar_url,
+            display_name,
         }
     }
 
@@ -33,11 +38,15 @@ impl UserProfile {
         // use low-level api request so that non-member can see member in room
         let client = self.client.clone();
         let user_id = self.user_id.clone();
-        let req = GetProfileRequest::new(&user_id);
-        let res = client.send(req, None).await?;
-        self.avatar_url = res.avatar_url;
-        self.display_name = res.displayname;
+        let request = GetProfileRequest::new(user_id);
+        let response = client.send(request, None).await?;
+        self.avatar_url = response.avatar_url;
+        self.display_name = response.displayname;
         Ok(())
+    }
+
+    pub fn user_id(&self) -> OwnedUserId {
+        self.user_id.clone()
     }
 
     pub fn has_avatar(&self) -> bool {
@@ -49,14 +58,16 @@ impl UserProfile {
         let avatar_url = self.avatar_url.clone().unwrap();
         RUNTIME
             .spawn(async move {
-                let req = MediaRequest {
+                let request = MediaRequest {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                if let Ok(res) = client.media().get_media_content(&req, true).await {
-                    return Ok(FfiBuffer::new(res));
+                if let Ok(result) = client.media().get_media_content(&request, true).await {
+                    return Ok(FfiBuffer::new(result));
                 }
-                bail!("Could not get media content from user profile");
+                // sometimes fetching failed, i don't know that reason
+                info!("Could not get media content from user profile");
+                Ok(FfiBuffer::new(vec![]))
             })
             .await?
     }
@@ -104,14 +115,16 @@ impl RoomProfile {
         let avatar_url = self.avatar_url.clone().unwrap();
         RUNTIME
             .spawn(async move {
-                let req = MediaRequest {
+                let request = MediaRequest {
                     source: MediaSource::Plain(avatar_url),
                     format: MediaFormat::File,
                 };
-                if let Ok(res) = client.media().get_media_content(&req, true).await {
-                    return Ok(FfiBuffer::new(res));
+                if let Ok(result) = client.media().get_media_content(&request, true).await {
+                    return Ok(FfiBuffer::new(result));
                 }
-                bail!("Could not get media content from room profile");
+                // sometimes fetching failed, i don't know that reason
+                info!("Could not get media content from room profile");
+                Ok(FfiBuffer::new(vec![]))
             })
             .await?
     }
