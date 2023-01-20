@@ -1,3 +1,4 @@
+import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/Team.dart';
@@ -22,7 +23,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   final TextEditingController teamInputController = TextEditingController();
   final TextEditingController taskInputController = TextEditingController();
   final formGlobalKey = GlobalKey<FormState>();
-  bool check = false;
+  bool disableBtn = false;
   Offset? tapXY;
   RenderBox? overlay;
 
@@ -214,23 +215,27 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   Widget _createToDoListBtn() => Obx(
         () => Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: CustomOnbaordingButton(
-            onPressed: widget.controller.taskNameCount < 30
-                ? () async {
-                    await widget.controller
-                        .createToDoList(
-                          widget.controller.selectedTeam!.id,
-                          nameController.text,
-                          descriptionController.text,
-                        )
-                        .then(
-                          (value) => debugPrint('TodoList Created :$value'),
-                        );
-                    Navigator.pop(context);
-                  }
-                : null,
-            title: 'Create',
-          ),
+          child: widget.controller.isLoading.isTrue
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppCommonTheme.primaryColor,
+                  ),
+                )
+              : CustomOnbaordingButton(
+                  onPressed: (widget.controller.taskNameCount < 30)
+                      ? () async {
+                          widget.controller.isLoading.value = true;
+                          await widget.controller.createToDoList(
+                            widget.controller.selectedTeam!.id,
+                            nameController.text,
+                            descriptionController.text,
+                          );
+                          widget.controller.isLoading.value = false;
+                          Beamer.of(context).beamBack();
+                        }
+                      : null,
+                  title: 'Create',
+                ),
         ),
       );
 
@@ -315,21 +320,28 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                   ),
                 ),
                 TextButton(
-                  onPressed: teamInputController.text.isEmpty
+                  onPressed: (!disableBtn && teamInputController.text.isEmpty)
                       ? null
                       : () async {
                           if (formGlobalKey.currentState!.validate()) {
+                            setState(() {
+                              disableBtn = true;
+                            });
                             await widget.controller
                                 .createTeam(teamInputController.text);
+                            setState(() {
+                              disableBtn = false;
+                            });
                             Navigator.pop(ctx);
                           }
                         },
                   child: Text(
                     'Save',
                     style: TextStyle(
-                      color: teamInputController.text.isNotEmpty
-                          ? ToDoTheme.secondaryTextColor
-                          : ToDoTheme.secondaryTextColor.withOpacity(0.45),
+                      color:
+                          (!disableBtn && teamInputController.text.isNotEmpty)
+                              ? ToDoTheme.secondaryTextColor
+                              : ToDoTheme.secondaryTextColor.withOpacity(0.45),
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -341,7 +353,9 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                 child: TextFormField(
                   controller: teamInputController,
                   inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp('[0-9a-zA-Z]')),
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[0-9a-zA-Z]+|\s'),
+                    ),
                   ],
                   maxLines: 5,
                   maxLength: 50,

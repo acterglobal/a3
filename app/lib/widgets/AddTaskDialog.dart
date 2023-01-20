@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoList.dart';
@@ -161,13 +160,13 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
   }) {
     return InkWell(
       onTap: () {
-        final now = DateTime.now().toUtc();
+        final now = DateTime.now();
         setState(() {
           idx = index;
           if (index == 0) {
             _selectedDate = now;
           } else if (index == 1) {
-            _selectedDate = DateTime(now.year, now.month, now.day + 1).toUtc();
+            _selectedDate = DateTime(now.year, now.month, now.day + 1);
           } else {
             Future.delayed(
               const Duration(seconds: 0),
@@ -188,6 +187,8 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
               : ToDoTheme.secondaryColor,
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Icon(
               FlutterIcons.calendar_weekend_outline_mco,
@@ -199,6 +200,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
             const SizedBox(width: 4),
             Text(
               text,
+              textAlign: TextAlign.center,
               style: idx == index
                   ? ToDoTheme.calendarTextStyle.copyWith(
                       fontSize: 14,
@@ -221,9 +223,10 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
       context: ctx,
       initialDatePickerMode: DatePickerMode.day,
       initialEntryMode: DatePickerEntryMode.calendarOnly,
-      initialDate: DateTime.now().toUtc(),
-      firstDate: DateTime.now().toUtc(),
-      lastDate: DateTime(DateTime.now().toUtc().year + 10),
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      currentDate: DateTime.now(),
+      lastDate: DateTime(DateTime.now().year + 10),
       confirmText: 'Done',
       cancelText: 'Cancel',
       builder: (BuildContext ctx, child) {
@@ -241,11 +244,11 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
     ).then((_pickedDate) {
       if (_pickedDate != null) {
         setState(() {
-          _selectedDate = _pickedDate.toUtc();
+          _selectedDate = _pickedDate;
         });
       } else {
         setState(() {
-          _selectedDate = DateTime.now().toUtc();
+          _selectedDate = DateTime.now();
           idx = 0;
         });
       }

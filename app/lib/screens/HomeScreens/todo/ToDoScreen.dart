@@ -80,21 +80,21 @@ class _ToDoScreenState extends State<ToDoScreen> {
           Obx(
             () => Padding(
               padding: const EdgeInsets.all(8),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Row(
-                      children: <Widget>[
-                        radioButton(text: buttonText[0], index: 0),
-                        radioButton(text: buttonText[1], index: 1),
-                        radioButton(text: buttonText[2], index: 2),
-                        const Spacer(),
-                        radioButton(text: buttonText[3], index: 3),
-                      ],
-                    ),
-                    buttonWidgets[todoController.selectedValueIndex.value],
-                  ],
-                ),
+              child: Column(
+                children: [
+                  Row(
+                    children: <Widget>[
+                      radioButton(text: buttonText[0], index: 0),
+                      radioButton(text: buttonText[1], index: 1),
+                      radioButton(text: buttonText[2], index: 2),
+                      const Spacer(),
+                      radioButton(text: buttonText[3], index: 3),
+                    ],
+                  ),
+                  Expanded(
+                      child: buttonWidgets[
+                          todoController.selectedValueIndex.value]),
+                ],
               ),
             ),
           ),

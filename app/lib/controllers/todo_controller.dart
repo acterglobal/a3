@@ -1,3 +1,4 @@
+import 'package:duration/duration.dart';
 import 'package:effektio/models/Team.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
@@ -6,6 +7,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
         CreateGroupSettings,
+        EfkDuration,
         FfiString,
         Group,
         RoomProfile,
@@ -18,9 +20,10 @@ import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
   final Client client;
-  final RxList<ToDoList> todos = <ToDoList>[].obs;
+  RxList<ToDoList> todos = <ToDoList>[].obs;
   bool cardExpand = false;
   bool expandBtn = false;
+  RxBool isLoading = false.obs;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
   Team? selectedTeam;
@@ -32,21 +35,24 @@ class ToDoController extends GetxController {
   void onInit() {
     super.onInit();
     getTodoList();
+    getTeams();
   }
 
   /// creates team (group).
-  Future<void> createTeam(String name) async {
+  Future<String> createTeam(String name) async {
     final sdk = await EffektioSdk.instance;
     CreateGroupSettings settings = sdk.newGroupSettings(name);
     settings.alias(UniqueKey().toString());
     settings.visibility('Public');
     settings.addInvitee('@sisko:matrix.org');
-    await client.createEffektioGroup(settings);
+    String roomId =
+        await client.createEffektioGroup(settings).then((id) => id.toString());
+    return roomId;
   }
 
   /// fetches teams (groups) for client.
   Future<List<Team>> getTeams() async {
-    List<Team> teams = [];
+    final List<Team> teams = [];
     List<Group> listTeams =
         await client.groups().then((groups) => groups.toList());
     if (listTeams.isNotEmpty) {
@@ -65,33 +71,35 @@ class ToDoController extends GetxController {
 
   /// fetches todos for client.
   void getTodoList() async {
-    List<String> subscribers = [];
-    List<TaskList> taskLists =
-        await client.taskLists().then((data) => data.toList());
-    for (TaskList todoList in taskLists) {
-      var users = todoList.subscribers();
-      if (users.isNotEmpty) {
-        for (var user in users.toList()) {
-          subscribers.add(user.toString());
-        }
-      }
-
-      List<ToDoTask> tasks = await getTodoTasks(todoList);
-      ToDoList item = ToDoList(
-        index: todoList.sortOrder(),
-        name: todoList.name(),
-        categories: asDartStringList(todoList.categories().toList()) ?? [],
-        taskDraft: todoList.taskBuilder(),
-        taskUpdateDraft: todoList.updateBuilder(),
-        tasks: tasks,
-        subscribers: subscribers,
-        color: todoList.color() as Color?,
-        description: todoList.descriptionText() ?? '',
-        tags: asDartStringList(todoList.keywords().toList()) ?? [],
-        role: todoList.role() ?? '',
-        timezone: todoList.timeZone() ?? '',
+    List<Group> groups =
+        await client.groups().then((groups) => groups.toList());
+    for (var group in groups) {
+      RoomProfile grpProfile = await group.getProfile();
+      Team team = Team(
+        id: group.getRoomId(),
+        name: grpProfile.getDisplayName(),
       );
-      todos.add(item);
+      List<TaskList> taskList =
+          await group.taskLists().then((ffiList) => ffiList.toList());
+      for (var todo in taskList) {
+        List<ToDoTask> tasks = await getTodoTasks(todo);
+        ToDoList item = ToDoList(
+          index: todo.sortOrder(),
+          name: todo.name(),
+          team: team,
+          categories: [],
+          taskDraft: todo.taskBuilder(),
+          taskUpdateDraft: todo.updateBuilder(),
+          tasks: tasks,
+          subscribers: [],
+          color: todo.color() as Color?,
+          description: todo.descriptionText() ?? '',
+          tags: [],
+          role: todo.role() ?? '',
+          timezone: todo.timeZone() ?? '',
+        );
+        todos.add(item);
+      }
     }
   }
 
@@ -102,33 +110,35 @@ class ToDoController extends GetxController {
     List<String> subscribers = [];
 
     var tasksList = await list.tasks().then((tasks) => tasks.toList());
-    for (Task task in tasksList) {
-      if (task.assignees().isNotEmpty) {
-        for (var user in task.subscribers().toList()) {
-          assignees.add(user.toString());
+    if (tasksList.isNotEmpty) {
+      for (Task task in tasksList) {
+        if (task.assignees().isNotEmpty) {
+          for (var user in task.subscribers().toList()) {
+            assignees.add(user.toString());
+          }
         }
-      }
-      if (task.subscribers().isNotEmpty) {
-        for (var user in task.subscribers().toList()) {
-          subscribers.add(user.toString());
+        if (task.subscribers().isNotEmpty) {
+          for (var user in task.subscribers().toList()) {
+            subscribers.add(user.toString());
+          }
         }
+        ToDoTask item = ToDoTask(
+          index: task.sortOrder(),
+          name: task.title(),
+          taskUpdateDraft: task.updateBuilder(),
+          assignees: assignees,
+          categories: asDartStringList(task.categories().toList()) ?? [],
+          tags: asDartStringList(task.keywords().toList()) ?? [],
+          subscribers: subscribers,
+          description: task.descriptionText() ?? '',
+          priority: task.priority() ?? 0,
+          progressPercent: task.progressPercent() ?? 0,
+          due: DateTime.parse(task.utcDue()!.toRfc3339()),
+        );
+        todoTasks.add(item);
       }
-      ToDoTask item = ToDoTask(
-        index: task.sortOrder(),
-        name: task.title(),
-        taskUpdateDraft: task.updateBuilder(),
-        assignees: assignees,
-        categories: asDartStringList(task.categories().toList()) ?? [],
-        tags: asDartStringList(task.keywords().toList()) ?? [],
-        subscribers: subscribers,
-        color: task.color() as Color?,
-        description: task.descriptionText() ?? '',
-        priority: task.priority() ?? 0,
-        progressPercent: task.progressPercent() ?? 0,
-        due: DateTime.parse(task.utcDue()!.toRfc3339()),
-      );
-      todoTasks.add(item);
     }
+
     return todoTasks;
   }
 
@@ -138,23 +148,26 @@ class ToDoController extends GetxController {
     String name,
     String? description,
   ) async {
-    Group group = await client.getGroup(teamId);
-    TaskListDraft listDraft = group.taskListDraft();
-
+    final Group group = await client.getGroup(teamId);
+    final RoomProfile teamProfile = await group.getProfile();
+    final Team team = Team(
+      id: group.getRoomId(),
+      name: teamProfile.getDisplayName(),
+    );
+    final TaskListDraft listDraft = group.taskListDraft();
     listDraft.name(name);
-    listDraft.descriptionText(description!);
-    var eventId = await listDraft.send();
-    TaskList list = await client.waitForTaskList(eventId.toString(), null);
-    List<ToDoTask> tasksList = await getTodoTasks(list);
+    listDraft.descriptionText(description ?? '');
+    String eventId = await listDraft.send().then((res) => res.toString());
+    TaskList list = await client.waitForTaskList(eventId, null);
     final ToDoList newItem = ToDoList(
       name: list.name(),
+      team: team,
       description: list.descriptionText() ?? '',
-      tasks: tasksList,
+      tasks: [],
       taskDraft: list.taskBuilder(),
       taskUpdateDraft: list.updateBuilder(),
     );
     todos.add(newItem);
-    todos.refresh();
     return eventId.toString();
   }
 
@@ -165,18 +178,25 @@ class ToDoController extends GetxController {
     required ToDoList list,
   }) async {
     list.taskDraft.title(name);
-    list.taskDraft.utcDueFromRfc3339(dueDate!.toIso8601String());
-    String eventId = await list.taskDraft.send().then((res) => res.toString());
+    list.taskDraft.utcDueFromRfc3339(dueDate!.toUtc().toIso8601String());
+    final String eventId =
+        await list.taskDraft.send().then((res) => res.toString());
     // wait for task to come down to wire.
-    Task task = await client.waitForTask(eventId, null);
+    final Task task = await client.waitForTask(eventId, null);
 
-    ToDoTask newItem = ToDoTask(
+    final ToDoTask newItem = ToDoTask(
       name: task.title(),
       progressPercent: task.progressPercent() ?? 0,
       taskUpdateDraft: task.updateBuilder(),
       due: DateTime.parse(
         task.utcDue()!.toRfc3339(),
       ),
+      description: task.descriptionText() ?? '',
+      assignees: [],
+      subscribers: [],
+      categories: [],
+      tags: [],
+      priority: 0,
     );
     // append new task to existing list.
     List<ToDoTask> tasksList = [...list.tasks, newItem];
@@ -185,6 +205,7 @@ class ToDoController extends GetxController {
     // update todos.
     todos[idx] = list.copyWith(
       name: list.name,
+      team: list.team,
       taskDraft: list.taskDraft,
       taskUpdateDraft: list.taskUpdateDraft,
       tasks: tasksList,

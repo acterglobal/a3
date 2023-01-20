@@ -1,6 +1,8 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/models/Team.dart';
 import 'package:effektio/models/ToDoList.dart';
+import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio/screens/HomeScreens/todo/screens/CommentsScreen.dart';
 import 'package:effektio/widgets/AddTaskDialog.dart';
 import 'package:effektio/widgets/ExpandableText.dart';
@@ -15,23 +17,31 @@ class ToDoListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => ListView.builder(
-        itemCount: controller.todos.length,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          return GetBuilder<ToDoController>(
-            id: 'list-item-$index',
-            builder: (_) {
-              return TodoCard(
-                controller: controller,
-                index: index,
-                isExpanded: controller.cardExpand,
-                expandBtn: controller.expandBtn,
-              );
-            },
-          );
-        },
-      ),
+      () => controller.todos.isEmpty
+          ? const Center(
+              heightFactor: 10,
+              child: Text(
+                'You do not have any todos!',
+                style: ToDoTheme.titleTextStyle,
+              ),
+            )
+          : ListView.builder(
+              itemCount: controller.todos.length,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return GetBuilder<ToDoController>(
+                  id: 'list-item-$index',
+                  builder: (_) {
+                    return TodoCard(
+                      controller: controller,
+                      index: index,
+                      isExpanded: controller.cardExpand,
+                      expandBtn: controller.expandBtn,
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }
@@ -67,7 +77,7 @@ class TodoCard extends StatelessWidget {
           children: <Widget>[
             buildHeaderContent(
               controller.todos[index].name,
-              controller.todos[index].tags,
+              controller.todos[index].team,
             ),
             buildDescription(controller.todos[index].description),
             buildDivider(),
@@ -86,7 +96,7 @@ class TodoCard extends StatelessWidget {
     );
   }
 
-  Widget buildHeaderContent(String title, List<String>? tags) {
+  Widget buildHeaderContent(String title, Team? team) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: Row(
@@ -100,24 +110,19 @@ class TodoCard extends StatelessWidget {
           const SizedBox(
             width: 8.0,
           ),
-          Wrap(
-            direction: Axis.horizontal,
-            spacing: 8.0,
-            children: List.generate(
-              tags!.length,
-              (index) => Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: const BoxDecoration(
-                  color: AppCommonTheme.secondaryColor,
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                ),
-                child: Text(
-                  tags[index],
-                  style: ToDoTheme.listTagTextStyle,
-                ),
-              ),
-            ),
-          )
+          team != null
+              ? Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: const BoxDecoration(
+                    color: AppCommonTheme.secondaryColor,
+                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                  ),
+                  child: Text(
+                    team.name!,
+                    style: ToDoTheme.listTagTextStyle,
+                  ),
+                )
+              : const SizedBox(),
         ],
       ),
     );
@@ -217,6 +222,10 @@ class TodoCard extends StatelessWidget {
     required isExpanded,
     required expandBtn,
   }) {
+    List<ToDoTask> _pendingTasks =
+        todo.tasks.where((element) => element.progressPercent < 100).toList();
+    List<ToDoTask> _completedTasks =
+        todo.tasks.where((element) => element.progressPercent >= 100).toList();
     return Visibility(
       visible: isExpanded,
       child: Column(
@@ -225,9 +234,9 @@ class TodoCard extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             children: List.generate(
-              todo.tasks.length,
+              _pendingTasks.length,
               (index) => ToDoTaskView(
-                task: todo.tasks[index],
+                task: _pendingTasks[index],
                 controller: controller,
                 todoList: todo,
               ),
@@ -296,6 +305,24 @@ class TodoCard extends StatelessWidget {
                 child: const Text('+ Add Task'),
               ),
             ],
+          ),
+          Visibility(
+            visible: expandBtn,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: List.generate(
+                  _completedTasks.length,
+                  (index) => ToDoTaskView(
+                    task: _completedTasks[index],
+                    controller: controller,
+                    todoList: todo,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:effektio/models/Team.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show TaskDraft, TaskListUpdateBuilder;
@@ -7,6 +8,7 @@ import 'package:flutter/widgets.dart';
 class ToDoList {
   final int? index;
   final String name;
+  final Team? team;
   final String? description;
   final TaskDraft taskDraft;
   final TaskListUpdateBuilder taskUpdateDraft;
@@ -21,6 +23,7 @@ class ToDoList {
   ToDoList({
     this.index,
     required this.name,
+    this.team,
     required this.tasks,
     required this.taskDraft,
     required this.taskUpdateDraft,
@@ -37,6 +40,7 @@ class ToDoList {
   ToDoList copyWith({
     int? index,
     required String name,
+    Team? team,
     String? description,
     required TaskDraft taskDraft,
     required TaskListUpdateBuilder taskUpdateDraft,
@@ -51,6 +55,7 @@ class ToDoList {
     return ToDoList(
       index: index ?? this.index,
       name: name,
+      team: team ?? this.team,
       tasks: tasks,
       taskDraft: taskDraft,
       taskUpdateDraft: taskUpdateDraft,
