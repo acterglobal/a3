@@ -1,7 +1,9 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use clap::{crate_version, Parser};
 use effektio::{
-    platform::sanitize, testing::ensure_user, Client as EfkClient, CreateGroupSettingsBuilder,
+    platform::sanitize,
+    testing::{ensure_user, wait_for},
+    Client as EfkClient, CreateGroupSettingsBuilder,
 };
 use effektio_core::{
     models::EffektioModel,
@@ -16,6 +18,9 @@ pub struct MockOpts {
     /// Which homeserver are we running against
     #[clap(env = "EFFEKTIO_HOMESERVER")]
     pub homeserver: String,
+    /// Which homeserver are we running against
+    #[clap(env = "EFFEKTIO_SERVERNAME", default_value = "ds9.effektio.org")]
+    pub server_name: String,
 
     /// Persist the store in .local/{user_id}
     #[clap(long)]
@@ -24,6 +29,7 @@ pub struct MockOpts {
     //// export crypto database to .local for each known client
     #[clap(long)]
     pub export: bool,
+
     #[clap(subcommand)]
     pub cmd: Option<MockCmd>,
 }
@@ -41,7 +47,8 @@ pub enum MockCmd {
 impl MockOpts {
     pub async fn run(&self) -> Result<()> {
         let homeserver = self.homeserver.clone();
-        let mut m = Mock::new(homeserver, self.persist).await?;
+        let server_name = self.server_name.clone();
+        let mut m = Mock::new(homeserver, server_name, self.persist).await?;
         match self.cmd {
             Some(MockCmd::Users) => {
                 m.everyone().await;
@@ -68,6 +75,7 @@ impl MockOpts {
 pub struct Mock {
     persist: bool,
     users: HashMap<String, EfkClient>,
+    server_name: String,
     homeserver: String,
 }
 
@@ -99,10 +107,11 @@ impl Mock {
             }
         }
     }
-    pub async fn new(homeserver: String, persist: bool) -> Result<Self> {
+    pub async fn new(homeserver: String, server_name: String, persist: bool) -> Result<Self> {
         Ok(Mock {
             homeserver,
             persist,
+            server_name,
             users: Default::default(),
         })
     }
@@ -270,22 +279,39 @@ impl Mock {
         Ok(())
     }
 
+    fn local_alias(&self, name: &str) -> String {
+        format!("{name}:{0}", self.server_name)
+    }
+
     pub async fn tasks(&mut self) -> Result<()> {
         let list_name = "Daily Security Brief".to_owned();
         //let sisko = &self.sisko;
         let mut odo = self.client("odo".to_owned()).await?;
         //let kyra = &self.kyra;
         //sisko.sync_once(Default::default()).await?;
-        odo.start_sync().await_has_synced_history().await?;
+        let syncer = odo.start_sync();
+        syncer.await_has_synced_history().await?;
 
         let task_lists = odo.task_lists().await?;
+        let alias = self.local_alias("#ops");
         let task_list =
             if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) {
                 task_list
             } else {
                 //kyra.sync_once(Default::default()).await?;
 
-                let odo_ops = odo.get_group("#ops:ds9.effektio.org".into()).await?;
+                let cloned_odo = odo.clone();
+                let Some(odo_ops) = wait_for(move || {
+                    let cloned_odo = cloned_odo.clone();
+                    let alias = alias.clone();
+                    async move {
+                        println!("tasks get_group {alias}");
+                        let group = cloned_odo.get_group(alias).await?;
+                        Ok(Some(group))
+                    }
+                }).await? else {
+                    bail!("Odo couldn't be found in Ops");
+                };
                 let mut draft = odo_ops.task_list_draft()?;
 
                 let task_list_id = draft
@@ -294,12 +320,20 @@ impl Mock {
                     .send()
                     .await?;
 
-                // FIXME: this might fail if the sync hasn't finished yet.
-                odo.task_lists()
-                    .await?
-                    .into_iter()
-                    .find(|e| e.event_id() == task_list_id)
-                    .unwrap()
+                let cloned_odo = odo.clone();
+                wait_for(move || {
+                    let cloned_odo = cloned_odo.clone();
+                    let task_list_id = task_list_id.clone();
+                    async move {
+                        Ok(cloned_odo
+                            .task_lists()
+                            .await?
+                            .into_iter()
+                            .find(|e| e.event_id() == task_list_id))
+                    }
+                })
+                .await?
+                .expect("Task list not found even after polling for 3 seconds")
             };
 
         task_list

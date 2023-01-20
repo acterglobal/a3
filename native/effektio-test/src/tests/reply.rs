@@ -38,6 +38,7 @@ async fn sisko_replies_message() -> Result<()> {
     let reply_id = EventId::parse(reply_id)?;
     let ev = group.event(&reply_id).await?;
     println!("reply: {ev:?}");
+
     let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(MessageLikeEvent::Original(m)))) = ev.event.deserialize() else {
         bail!("Could not deserialize event");
     };
