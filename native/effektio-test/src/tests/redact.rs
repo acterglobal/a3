@@ -45,9 +45,10 @@ async fn sisko_redacts_message() -> Result<()> {
     };
 
     let Some(e) = r.as_original() else {
-        panic!("can't read original");
-    };
-    assert_eq!(e.redacts.to_string(), event_id);
+        panic!("This should be m.room.redaction event");
 
+    };
+
+    assert_eq!(e.redacts.to_string(), event_id);
     Ok(())
 }

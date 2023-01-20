@@ -106,6 +106,24 @@ dependencies = [
 ]
 
 
+[tasks.mock-data]
+command = "cargo"
+args = ["run", "-p", "effektio-cli", "mock", "http://localhost:8118"]
+
+[tasks.fixup]
+dependencies = [
+    "format-fixup",
+    "clippy-fixup",
+]
+
+[tasks.format-fixup]
+command = "cargo"
+args = ["fmt", "--all"]
+
+[tasks.clippy-fixup]
+command = "cargo"
+args = ["clippy", "--all", "--tests", "--allow-dirty", "--allow-staged", "--fix"]
+
 [tasks.build]
 # Runs the rust compiler.
 dependencies = ["android"]

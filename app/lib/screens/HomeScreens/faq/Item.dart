@@ -1,19 +1,21 @@
 import 'dart:io';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/models/FaqModel.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/TagItem.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as m_colors;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
 class FaqItemScreen extends StatefulWidget {
-
-  final FaqModel faqModel;
+  final Client client;
+  final Faq faq;
 
   const FaqItemScreen({
-    Key? key, required this.faqModel,
+    Key? key,
+    required this.client,
+    required this.faq,
   }) : super(key: key);
 
   @override
@@ -34,7 +36,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
 
     commentShowing = false;
     editFaqTitle = false;
-    faqController.text = widget.faqModel.faq.title();
+    faqController.text = widget.faq.title();
   }
 
   void onEmojiSelected(Emoji emoji) {
@@ -125,7 +127,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         Flexible(
                           fit: FlexFit.loose,
                           child: Text(
-                            widget.faqModel.faq.title(),
+                            widget.faq.title(),
                             style: FAQTheme.titleStyle,
                           ),
                         ),
@@ -186,7 +188,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8),
                                 child: Text(
-                                  widget.faqModel.faq.likesCount().toString(),
+                                  widget.faq.likesCount().toString(),
                                   style: FAQTheme.likeAndCommentStyle,
                                 ),
                               ),
@@ -207,7 +209,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                                     Padding(
                                       padding: const EdgeInsets.only(left: 8),
                                       child: Text(
-                                        widget.faqModel.faq.commentsCount().toString(),
+                                        widget.faq.commentsCount().toString(),
                                         style: FAQTheme.likeAndCommentStyle,
                                       ),
                                     ),
@@ -234,9 +236,9 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                     height: 40,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: widget.faqModel.faq.tags().length,
+                      itemCount: widget.faq.tags().length,
                       itemBuilder: (context, index) {
-                        var color = widget.faqModel.faq.tags().elementAt(index).color();
+                        var color = widget.faq.tags().elementAt(index).color();
                         var colorToShow = 0;
                         if (color != null) {
                           var colorList = color.rgbaU8();
@@ -249,7 +251,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                         }
 
                         return TagListItem(
-                          tagTitle: widget.faqModel.faq.tags().elementAt(index).title(),
+                          tagTitle: widget.faq.tags().elementAt(index).title(),
                           tagColor: colorToShow > 0
                               ? m_colors.Color(colorToShow)
                               : Colors.white,

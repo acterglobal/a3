@@ -501,6 +501,7 @@ class PinsTheme {
   static const backgroundGradientColor = ColorRef(Color(0xFF242632));
   static const backgroundGradient2Color = ColorRef(Color(0x885C2A80));
   static const primaryTextColor = Color.fromARGB(255, 255, 255, 255);
+  static const cardBackgroundColor = ColorRef(Color(0xff2F313E));
 
   // Text Scheme.
   // Background Scheme.

@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/Team.dart';
@@ -231,7 +230,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                             descriptionController.text,
                           );
                           widget.controller.isLoading.value = false;
-                          Beamer.of(context).beamBack();
+                          Navigator.pop(context);
                         }
                       : null,
                   title: 'Create',

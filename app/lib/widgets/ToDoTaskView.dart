@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoList.dart';
@@ -20,8 +19,7 @@ class ToDoTaskView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          Beamer.of(context).beamToNamed('/todoTaskEditor', data: task),
+      onTap: () => {},
       child: TaskCard(
         task: task,
         controller: controller,

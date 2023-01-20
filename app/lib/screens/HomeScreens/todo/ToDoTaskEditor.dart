@@ -1,15 +1,12 @@
-import 'package:avatar_stack/positions.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio/screens/HomeScreens/todo/ToDoTaskAssign.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:get_time_ago/get_time_ago.dart';
 
 class ToDoTaskEditor extends StatefulWidget {
   const ToDoTaskEditor({Key? key, required this.task}) : super(key: key);
@@ -27,10 +24,6 @@ class _ToDoTaskEditorState extends State<ToDoTaskEditor> {
   @override
   void initState() {
     super.initState();
-
-    // lastUpdated = GetTimeAgo.parse(widget.item.lastUpdated!).obs;
-    // notesController.text = widget.item.notes ?? 'Add Notes';
-    // subtitleController.text = widget.item.title;
   }
 
   @override

@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:beamer/beamer.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
-import 'package:effektio/models/ImageSelectionModel.dart';
+import 'package:effektio/screens/HomeScreens/chat/ImageSelectionScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
@@ -422,7 +421,15 @@ class ChatRoomController extends GetxController {
       return;
     }
     _imageFileList.addAll(result.files);
-    Beamer.of(context).beamToNamed('/imageSelection', data: ImageSelectionModel(imageList: _imageFileList, roomName: roomName));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ImageSelection(
+          imageList: _imageFileList,
+          roomName: roomName,
+        ),
+      ),
+    );
   }
 
   Future<void> sendImage(PlatformFile file) async {

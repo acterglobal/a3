@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:beamer/beamer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/news_comment_controller.dart';
@@ -47,7 +46,7 @@ class _ToDoCommentScreenState extends State<ToDoCommentScreen> {
         backgroundColor: AppCommonTheme.backgroundColorLight,
         leading: GestureDetector(
           onTap: () {
-            Beamer.of(context).beamBack();
+            Navigator.pop(context);
           },
           child: const Icon(
             Icons.arrow_back_ios,

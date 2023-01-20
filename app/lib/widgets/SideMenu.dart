@@ -1,4 +1,3 @@
-import 'package:beamer/beamer.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
@@ -76,7 +75,7 @@ class SideDrawer extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                Beamer.of(context).beamToNamed('/login');
+                Navigator.pushNamed(context, '/login');
               },
               child: Text(AppLocalizations.of(context)!.login),
             ),
@@ -91,7 +90,7 @@ class SideDrawer extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                Beamer.of(context).beamToNamed('/signup');
+                Navigator.pushNamed(context, '/signup');
               },
               child: Text(AppLocalizations.of(context)!.signUp),
             ),
@@ -99,7 +98,6 @@ class SideDrawer extends StatelessWidget {
         ],
       );
     }
-
     return GestureDetector(
       onTap: () {
         showNotYetImplementedMsg(
@@ -169,7 +167,7 @@ class SideDrawer extends StatelessWidget {
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
       onTap: () {
-        Beamer.of(context).beamToNamed('/todo', data: client);
+        Navigator.pushNamed(context, '/todo');
       },
     );
   }
@@ -187,7 +185,7 @@ class SideDrawer extends StatelessWidget {
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
       onTap: () {
-        Beamer.of(context).beamToNamed('/gallery');
+        Navigator.pushNamed(context, '/gallery');
       },
     );
   }
@@ -355,7 +353,7 @@ class SideDrawer extends StatelessWidget {
         }
         final sdk = await EffektioSdk.instance;
         await sdk.logout();
-        Beamer.of(context).beamToNamed('/');
+        Navigator.pushReplacementNamed(context, '/');
       },
     );
   }
