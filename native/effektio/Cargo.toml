@@ -62,10 +62,6 @@ features = [
 workspace = true
 optional = true
 
-[dependencies.js_int]
-version = "0.2.2"
-features = ["lax_deserialize"]
-
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 tracing-wasm = "0.2.1"

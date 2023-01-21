@@ -404,6 +404,38 @@ impl RoomMessage {
                     false,
                 )
             }
+            TimelineItemContent::RoomMember(m) => {
+                info!("Edit event applies to a state event, discarding");
+                RoomEventItem::new(
+                    event_id,
+                    sender,
+                    origin_server_ts,
+                    "RoomMember".to_string(),
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    Default::default(),
+                    false,
+                )
+            }
+            TimelineItemContent::OtherState(s) => {
+                info!("Edit event applies to a state event, discarding");
+                RoomEventItem::new(
+                    event_id,
+                    sender,
+                    origin_server_ts,
+                    "OtherState".to_string(),
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    Default::default(),
+                    false,
+                )
+            }
             TimelineItemContent::FailedToParseMessageLike { event_type, error } => {
                 info!("Edit event applies to message that couldn't be parsed, discarding");
                 RoomEventItem::new(
