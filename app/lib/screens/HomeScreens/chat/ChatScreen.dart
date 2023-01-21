@@ -53,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     roomController.setCurrentRoom(widget.room);
-
   }
 
   @override
@@ -435,7 +434,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ],
           ),
-          body: buildBody(context),
+          body: Obx(() => buildBody(context)),
         );
       },
     );
