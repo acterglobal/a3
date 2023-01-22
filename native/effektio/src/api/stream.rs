@@ -187,11 +187,8 @@ impl TimelineStream {
 
                 let mut is_loading_indicator = false;
                 if let Some(VecDiff::InsertAt { index: 0, value }) = timeline_stream.next().await {
-                    match value.as_ref() {
-                        TimelineItem::Virtual(VirtualTimelineItem::LoadingIndicator) => {
-                            is_loading_indicator = true;
-                        }
-                        _ => {}
+                    if let TimelineItem::Virtual(VirtualTimelineItem::LoadingIndicator) = value.as_ref() {
+                        is_loading_indicator = true;
                     }
                 }
                 if !is_loading_indicator {
@@ -200,11 +197,8 @@ impl TimelineStream {
 
                 let mut is_timeline_start = false;
                 if let Some(VecDiff::UpdateAt { index: 0, value }) = timeline_stream.next().await {
-                    match value.as_ref() {
-                        TimelineItem::Virtual(VirtualTimelineItem::TimelineStart) => {
-                            is_timeline_start = true;
-                        }
-                        _ => {}
+                    if let TimelineItem::Virtual(VirtualTimelineItem::TimelineStart) = value.as_ref() {
+                        is_timeline_start = true;
                     }
                 }
                 if !is_timeline_start {
