@@ -5811,15 +5811,14 @@ class Api {
           int Function(
     int,
   )>();
-  late final _roomEventItemItemContentTypePtr = _lookup<
+  late final _roomEventItemEventTypePtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemItemContentTypeReturn Function(
+          _RoomEventItemEventTypeReturn Function(
     ffi.Int64,
-  )>>("__RoomEventItem_item_content_type");
+  )>>("__RoomEventItem_event_type");
 
-  late final _roomEventItemItemContentType =
-      _roomEventItemItemContentTypePtr.asFunction<
-          _RoomEventItemItemContentTypeReturn Function(
+  late final _roomEventItemEventType = _roomEventItemEventTypePtr.asFunction<
+      _RoomEventItemEventTypeReturn Function(
     int,
   )>();
   late final _roomEventItemMsgtypePtr = _lookup<
@@ -12583,10 +12582,10 @@ class RoomEventItem {
   }
 
   /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
-  String itemContentType() {
+  String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemItemContentType(
+    final tmp1 = _api._roomEventItemEventType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -19481,7 +19480,7 @@ class _RoomEventItemSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemItemContentTypeReturn extends ffi.Struct {
+class _RoomEventItemEventTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()

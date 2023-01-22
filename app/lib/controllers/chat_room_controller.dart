@@ -750,7 +750,7 @@ class ChatRoomController extends GetxController {
       id: eventId,
       metadata: {
         'itemType': 'event',
-        'itemContentType': eventItem.itemContentType(),
+        'eventType': eventItem.eventType(),
       },
     );
   }

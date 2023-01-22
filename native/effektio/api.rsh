@@ -115,7 +115,7 @@ object RoomEventItem {
     fn origin_server_ts() -> u64;
 
     /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
-    fn item_content_type() -> string;
+    fn event_type() -> string;
 
     /// the type of massage, like audio, text, image, file, etc
     fn msgtype() -> Option<string>;

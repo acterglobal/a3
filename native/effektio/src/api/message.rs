@@ -23,7 +23,7 @@ pub struct RoomEventItem {
     event_id: String,
     sender: String,
     origin_server_ts: u64,
-    item_content_type: String,
+    event_type: String,
     msgtype: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
@@ -39,7 +39,7 @@ impl RoomEventItem {
         event_id: String,
         sender: String,
         origin_server_ts: u64,
-        item_content_type: String,
+        event_type: String,
         msgtype: Option<String>,
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
@@ -52,7 +52,7 @@ impl RoomEventItem {
             event_id,
             sender,
             origin_server_ts,
-            item_content_type,
+            event_type,
             msgtype,
             text_desc,
             image_desc,
@@ -75,8 +75,8 @@ impl RoomEventItem {
         self.origin_server_ts
     }
 
-    pub fn item_content_type(&self) -> String {
-        self.item_content_type.clone()
+    pub fn event_type(&self) -> String {
+        self.event_type.clone()
     }
 
     pub fn msgtype(&self) -> Option<String> {

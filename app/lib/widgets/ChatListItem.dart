@@ -143,8 +143,8 @@ class _ChatListItemState extends State<ChatListItem> {
       return const SizedBox();
     }
     String sender = eventItem.sender();
-    String itemContentType = eventItem.itemContentType();
-    if (itemContentType == 'Encrypted') {
+    String eventType = eventItem.eventType();
+    if (eventType == 'Encrypted') {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -162,7 +162,7 @@ class _ChatListItemState extends State<ChatListItem> {
         ],
       );
     }
-    if (itemContentType == 'RedactedMessage') {
+    if (eventType == 'RedactedMessage') {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
