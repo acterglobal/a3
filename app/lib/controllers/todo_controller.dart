@@ -1,411 +1,300 @@
-import 'dart:math';
+import 'package:effektio/models/Team.dart';
+import 'package:effektio/models/ToDoList.dart';
+import 'package:effektio/models/ToDoTask.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show
+        Client,
+        CreateGroupSettings,
+        FfiString,
+        Group,
+        RoomProfile,
+        Task,
+        TaskList,
+        TaskListDraft;
 
-import 'package:effektio/common/store/MockData.dart';
-import 'package:effektio/models/SubscriberModel.dart';
-import 'package:effektio/widgets/ToDoListView.dart';
-import 'package:effektio/widgets/ToDoTaskItem.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoController extends GetxController {
-  static ToDoController get instance =>
-      Get.put<ToDoController>(ToDoController());
-  late final List<ToDoListView>? todoList;
-  late final List<ToDoTaskItem>? tasksList;
-  List<RxList<ToDoTaskItem>> tasks = <RxList<ToDoTaskItem>>[].obs;
-  late int listCount;
-  late int taskCount;
-  late int likeCount;
-  late int messageCount;
-  RxBool initialExpand = true.obs;
-  RxBool expandBtn = false.obs;
-  int selectedValueIndex = 0;
-  Random random = Random();
+  final Client client;
+  RxList<ToDoList> todos = <ToDoList>[].obs;
+  bool cardExpand = false;
+  bool expandBtn = false;
+  RxBool isLoading = false.obs;
+  RxInt taskNameCount = 0.obs;
+  RxInt selectedValueIndex = 0.obs;
+  Team? selectedTeam;
   FocusNode addTaskNode = FocusNode();
 
-  // initialize todolist and tasks.
-  void init() {
-    taskCount = random.nextInt(8) + 1;
-    listCount = random.nextInt(10) + 3;
-    likeCount = random.nextInt(100);
-    messageCount = random.nextInt(100);
-    todoList = [
-      const ToDoListView(
-        title: 'Groceries',
-        subtitle: 'General shopping list',
-        idx: 0,
-      ),
-      const ToDoListView(
-        title: 'Uncle Jack\'s 65th Birthday party',
-        subtitle: 'Things to do for organizing the birthday party no the 17th.',
-        idx: 1,
-      ),
-      const ToDoListView(
-        title: '25th Anniversary of Club Sporting',
-        subtitle:
-            'Party on the 3rd, 4pm @ Club House. All unassigned tasks are up for grabs - take it and do it. Sync-Call every tuesday and thursday at 6pm.',
-        idx: 2,
-      ),
-      const ToDoListView(
-        title: 'Errands',
-        subtitle: 'General family errands',
-        idx: 3,
-      ),
-      const ToDoListView(
-        title: 'Kids & School',
-        subtitle:
-            'Everything around the kids and school, that needs to be done, listed here',
-        idx: 4,
-      ),
-    ];
+  ToDoController({required this.client}) : super();
 
-    // groceries
-    tasks.add(
-      [
-        ToDoTaskItem(
-          title: 'Milk',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(0, w),
-        ),
-        ToDoTaskItem(
-          title: 'Coffee',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(0, w),
-        ),
-        ToDoTaskItem(
-          title: 'Orange Juice',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(0, w),
-        ),
-        ToDoTaskItem(
-          title: 'Eggs',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(0, w),
-        ),
-      ].obs,
-    );
-    // uncle jacks
-    tasks.add(
-      [
-        ToDoTaskItem(
-          title: 'Buy Birthday cake',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-        ToDoTaskItem(
-          title: 'Birthday decorations',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-        ToDoTaskItem(
-          title: 'Clarify whether Erna is gonna be there',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-        ToDoTaskItem(
-          title: 'Organize bus transport',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'for approx 40ppl',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-        ToDoTaskItem(
-          title: 'Collect RSVPs',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-        ToDoTaskItem(
-          title: 'Send invitations',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-        ToDoTaskItem(
-          title: 'Create guest list',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(1, w),
-        ),
-      ].obs,
-    );
-    // sport club
-    tasks.add(
-      [
-        ToDoTaskItem(
-          title: 'Make Brownies',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(2, w),
-        ),
-        ToDoTaskItem(
-          title: 'Rent tent',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'for about 160ppl in case of rain',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(2, w),
-        ),
-        ToDoTaskItem(
-          title: 'Send invitations',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(2, w),
-        ),
-      ].obs,
-    );
-
-    // errands
-    tasks.add(
-      [
-        ToDoTaskItem(
-          title: 'Bring the car to the shop',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'for general inspection',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(3, w),
-        ),
-        ToDoTaskItem(
-          title: 'Answer the city counsel request',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'about the new construction project',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(3, w),
-        ),
-        ToDoTaskItem(
-          title: 'Make an vet appointment for the doc',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'yearly checkup',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(3, w),
-        ),
-        ToDoTaskItem(
-          title: 'Replace the trash can',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'for general inspection',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(3, w),
-        ),
-        ToDoTaskItem(
-          title: 'Fix the door handle',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'for general inspection',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(3, w),
-        ),
-      ].obs,
-    );
-
-    // kids & school
-    tasks.add(
-      [
-        ToDoTaskItem(
-          title: 'Answer the school secretary',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: 'about the passport',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(4, w),
-        ),
-        ToDoTaskItem(
-          title: 'Put up nanny job ad',
-          isCompleted: false,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(4, w),
-        ),
-        ToDoTaskItem(
-          title: 'Get Kim new soccer excercise cloths',
-          isCompleted: true,
-          hasMessage: random.nextBool(),
-          dateTime: taskDue[random.nextInt(taskDue.length)],
-          subtitle: '',
-          notes: null,
-          lastUpdated: DateTime.now(),
-          toggleCompletion: (w) => toggleCheck(4, w),
-        ),
-      ].obs,
-    );
+  @override
+  void onInit() {
+    super.onInit();
+    getTodoList();
+    getTeams();
   }
 
-  // Mock data for subscribed users
-  List<SubscriberModel> listSubscribers = <SubscriberModel>[
-    SubscriberModel('', 'Okon Invincible', false),
-    SubscriberModel('', 'Floym Dore', false),
-    SubscriberModel('', 'Raveena Tondon', false),
-    SubscriberModel('', 'Karishma Kapoor', false),
-    SubscriberModel('', 'Hema Malini', false),
-    SubscriberModel('', 'John Doe', false),
-  ];
+  /// creates team (group).
+  Future<String> createTeam(String name) async {
+    final sdk = await EffektioSdk.instance;
+    CreateGroupSettings settings = sdk.newGroupSettings(name);
+    settings.alias(UniqueKey().toString());
+    settings.visibility('Public');
+    settings.addInvitee('@sisko:matrix.org');
+    String roomId =
+        await client.createEffektioGroup(settings).then((id) => id.toString());
+    return roomId;
+  }
 
-  void handleCheckClick(int position) {
-    var subscribeModel = listSubscribers[position];
-    if (subscribeModel.isSelected) {
-      subscribeModel.isSelected = false;
-    } else {
-      subscribeModel.isSelected = true;
+  /// fetches teams (groups) for client.
+  Future<List<Team>> getTeams() async {
+    final List<Team> teams = [];
+    List<Group> listTeams =
+        await client.groups().then((groups) => groups.toList());
+    if (listTeams.isNotEmpty) {
+      for (var team in listTeams) {
+        RoomProfile teamProfile = await team.getProfile();
+        // Team avatars are yet to be implemented.
+        Team item = Team(
+          id: team.getRoomId(),
+          name: teamProfile.getDisplayName(),
+        );
+        teams.add(item);
+      }
     }
-    update(['subscribeUser']);
+    return teams;
   }
 
-  void updateIndex(int index) {
-    selectedValueIndex = index;
-    update(['radiobtn']);
-  }
-
-  void toggleExpand() {
-    initialExpand.value = !initialExpand.value;
-  }
-
-  void toggleExpandBtn() {
-    expandBtn.value = !expandBtn.value;
-  }
-
-  bool toggleCheck(int idx, ToDoTaskItem item) {
-    if (item.isCompleted == true) {
-      ToDoTaskItem newItem = ToDoTaskItem(
-        title: item.title,
-        isCompleted: false,
-        hasMessage: item.hasMessage,
-        dateTime: item.dateTime,
-        subtitle: item.subtitle,
-        notes: item.notes,
-        lastUpdated: item.lastUpdated,
-        toggleCompletion: (w) => toggleCheck(idx, w),
+  /// fetches todos for client.
+  void getTodoList() async {
+    List<Group> groups =
+        await client.groups().then((groups) => groups.toList());
+    for (var group in groups) {
+      RoomProfile grpProfile = await group.getProfile();
+      Team team = Team(
+        id: group.getRoomId(),
+        name: grpProfile.getDisplayName(),
       );
-      tasks[idx].remove(item);
-      tasks[idx].add(newItem);
-      return false;
-    } else {
-      ToDoTaskItem newItem = ToDoTaskItem(
-        title: item.title,
-        isCompleted: true,
-        hasMessage: item.hasMessage,
-        dateTime: item.dateTime,
-        subtitle: item.subtitle,
-        notes: item.notes,
-        lastUpdated: item.lastUpdated,
-        toggleCompletion: (w) => toggleCheck(idx, w),
-      );
-      tasks[idx].remove(item);
-      tasks[idx].add(newItem);
-      return true;
+      List<TaskList> taskList =
+          await group.taskLists().then((ffiList) => ffiList.toList());
+      for (var todo in taskList) {
+        List<ToDoTask> tasks = await getTodoTasks(todo);
+        ToDoList item = ToDoList(
+          index: todo.sortOrder(),
+          name: todo.name(),
+          team: team,
+          categories: [],
+          taskDraft: todo.taskBuilder(),
+          taskUpdateDraft: todo.updateBuilder(),
+          tasks: tasks,
+          subscribers: [],
+          color: todo.color() as Color?,
+          description: todo.descriptionText() ?? '',
+          tags: [],
+          role: todo.role() ?? '',
+          timezone: todo.timeZone() ?? '',
+        );
+        todos.add(item);
+      }
     }
   }
 
-  void updateNotes(ToDoTaskItem item, TextEditingController textController) {
-    var idx = 0;
-    var dateTime = DateTime.now();
-    ToDoTaskItem newItem = ToDoTaskItem(
-      title: item.title,
-      isCompleted: item.isCompleted,
-      hasMessage: item.hasMessage,
-      dateTime: item.dateTime,
-      subtitle: item.subtitle,
-      notes: textController.text,
-      lastUpdated: dateTime,
-      toggleCompletion: (w) => toggleCheck(idx, w),
-    );
-    update(['notes']);
-    tasks[idx].remove(item);
-    tasks[idx].add(newItem);
+  /// fetches todo tasks.
+  Future<List<ToDoTask>> getTodoTasks(TaskList list) async {
+    List<ToDoTask> todoTasks = [];
+    List<String> assignees = [];
+    List<String> subscribers = [];
+
+    var tasksList = await list.tasks().then((tasks) => tasks.toList());
+    if (tasksList.isNotEmpty) {
+      for (Task task in tasksList) {
+        if (task.assignees().isNotEmpty) {
+          for (var user in task.subscribers().toList()) {
+            assignees.add(user.toString());
+          }
+        }
+        if (task.subscribers().isNotEmpty) {
+          for (var user in task.subscribers().toList()) {
+            subscribers.add(user.toString());
+          }
+        }
+        ToDoTask item = ToDoTask(
+          index: task.sortOrder(),
+          name: task.title(),
+          taskUpdateDraft: task.updateBuilder(),
+          assignees: assignees,
+          categories: asDartStringList(task.categories().toList()) ?? [],
+          tags: asDartStringList(task.keywords().toList()) ?? [],
+          subscribers: subscribers,
+          description: task.descriptionText() ?? '',
+          priority: task.priority() ?? 0,
+          progressPercent: task.progressPercent() ?? 0,
+          due: DateTime.parse(task.utcDue()!.toRfc3339()),
+        );
+        todoTasks.add(item);
+      }
+    }
+
+    return todoTasks;
   }
 
-  void updateSubtitle(ToDoTaskItem item, TextEditingController textController) {
-    var idx = 0;
-    var dateTime = DateTime.now();
-    ToDoTaskItem newItem = ToDoTaskItem(
-      title: item.title,
-      isCompleted: item.isCompleted,
-      hasMessage: item.hasMessage,
-      dateTime: item.dateTime,
-      subtitle: textController.text,
-      notes: item.notes,
-      lastUpdated: dateTime,
-      toggleCompletion: (w) => toggleCheck(idx, w),
+  /// creates todo for team (group).
+  Future<String> createToDoList(
+    String teamId,
+    String name,
+    String? description,
+  ) async {
+    final Group group = await client.getGroup(teamId);
+    final RoomProfile teamProfile = await group.getProfile();
+    final Team team = Team(
+      id: group.getRoomId(),
+      name: teamProfile.getDisplayName(),
     );
-    update(['subtitle']);
-    tasks[idx].remove(item);
-    tasks[idx].add(newItem);
+    final TaskListDraft listDraft = group.taskListDraft();
+    listDraft.name(name);
+    listDraft.descriptionText(description ?? '');
+    String eventId = await listDraft.send().then((res) => res.toString());
+    TaskList list = await client.waitForTaskList(eventId, null);
+    final ToDoList newItem = ToDoList(
+      name: list.name(),
+      team: team,
+      description: list.descriptionText() ?? '',
+      tasks: [],
+      taskDraft: list.taskBuilder(),
+      taskUpdateDraft: list.updateBuilder(),
+    );
+    todos.add(newItem);
+    return eventId.toString();
+  }
+
+  /// creates todo task.
+  Future<String> createToDoTask({
+    required String name,
+    required DateTime? dueDate,
+    required ToDoList list,
+  }) async {
+    list.taskDraft.title(name);
+    list.taskDraft.utcDueFromRfc3339(dueDate!.toUtc().toIso8601String());
+    final String eventId =
+        await list.taskDraft.send().then((res) => res.toString());
+    // wait for task to come down to wire.
+    final Task task = await client.waitForTask(eventId, null);
+
+    final ToDoTask newItem = ToDoTask(
+      name: task.title(),
+      progressPercent: task.progressPercent() ?? 0,
+      taskUpdateDraft: task.updateBuilder(),
+      due: DateTime.parse(
+        task.utcDue()!.toRfc3339(),
+      ),
+      description: task.descriptionText() ?? '',
+      assignees: [],
+      subscribers: [],
+      categories: [],
+      tags: [],
+      priority: 0,
+    );
+    // append new task to existing list.
+    List<ToDoTask> tasksList = [...list.tasks, newItem];
+    int idx = todos.indexOf(list);
+
+    // update todos.
+    todos[idx] = list.copyWith(
+      name: list.name,
+      team: list.team,
+      taskDraft: list.taskDraft,
+      taskUpdateDraft: list.taskUpdateDraft,
+      tasks: tasksList,
+    );
+    return eventId;
+  }
+
+  /// updates todo task progress.
+  Future<String> markToDoTask(ToDoTask task, ToDoList list) async {
+    int updateVal = 0;
+    if (task.progressPercent < 100) {
+      task.taskUpdateDraft.markDone();
+      updateVal = 100;
+    } else {
+      task.taskUpdateDraft.markUndone();
+    }
+    // send task update.
+    String eventId =
+        await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
+    ToDoTask updateItem = ToDoTask(
+      name: task.name,
+      progressPercent: updateVal,
+      taskUpdateDraft: task.taskUpdateDraft,
+      due: task.due,
+    );
+    // update todos.
+    int idx = list.tasks.indexOf(task);
+    int listIdx = todos.indexOf(list);
+    ToDoList newList = list;
+    newList.tasks[idx] = task.copyWith(
+      name: updateItem.name,
+      taskUpdateDraft: updateItem.taskUpdateDraft,
+      progressPercent: updateItem.progressPercent,
+      due: updateItem.due,
+    );
+    todos[listIdx] = newList;
+    return eventId;
+  }
+
+  void updateButtonIndex(int index) {
+    selectedValueIndex.value = index;
+  }
+
+  //ToDo list card expand.
+  void toggleCardExpand(int index) {
+    cardExpand = !cardExpand;
+    update(['list-item-$index']);
+  }
+
+  // Completed tasks expand.
+  void toggleExpandBtn(index) {
+    expandBtn = !expandBtn;
+    update(['list-item-$index']);
+  }
+
+  // setter for selected team.
+  void setSelectedTeam(Team? val) {
+    selectedTeam = val;
+    update(['teams']);
+  }
+
+  // max length counter for task name.
+  void updateWordCount(int val) {
+    if (val == 0) {
+      taskNameCount.value = 30;
+      selectedTeam = null;
+      update(['teams']);
+    } else {
+      taskNameCount.value = 30 - val;
+      update(['teams']);
+    }
+  }
+
+  // get completed tasks.
+  int getCompletedTasks(ToDoList list) {
+    int count = 0;
+    for (var item in list.tasks) {
+      if (item.progressPercent >= 100) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+
+  ///helper function to convert list ffiString object to DartString.
+  List<String>? asDartStringList(List<FfiString> list) {
+    if (list.isNotEmpty) {
+      final List<String> stringList =
+          list.map((ffiString) => ffiString.toDartString()).toList();
+      return stringList;
+    }
+    return null;
   }
 }

@@ -20,7 +20,7 @@ use effektio_core::{
         events::{AnySyncTimelineEvent, MessageLikeEvent},
         room::RoomType,
         serde::Raw,
-        OwnedRoomAliasId, OwnedRoomId, OwnedUserId,
+        OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
     },
     statics::{default_effektio_group_states, initial_state_for_alias},
 };
@@ -150,6 +150,10 @@ impl Group {
         );
     }
 
+    pub fn get_room_id(&self) -> String {
+        self.room_id().to_string()
+    }
+
     pub(crate) async fn refresh_history(&self) -> Result<()> {
         let name = self.inner.name();
         tracing::trace!(name, "refreshing history");
@@ -252,16 +256,47 @@ pub struct CreateGroupSettings {
     alias: Option<String>,
 }
 
+impl CreateGroupSettings {
+    pub fn visibility(&mut self, value: String) {
+        match value.as_str() {
+            "Public" => {
+                self.visibility = Visibility::Public;
+            }
+            "Private" => {
+                self.visibility = Visibility::Private;
+            }
+            _ => {}
+        }
+    }
+
+    pub fn add_invitee(&mut self, value: String) {
+        if let Ok(user_id) = UserId::parse(value) {
+            self.invites.push(user_id);
+        }
+    }
+
+    pub fn alias(&mut self, value: String) {
+        self.alias = Some(value);
+    }
+}
+
 // impl CreateGroupSettingsBuilder {
 //     pub fn add_invite(&mut self, user_id: OwnedUserId) {
 //         self.invites.get_or_insert_with(Vec::new).push(user_id);
 //     }
 // }
 
+pub fn new_group_settings(name: String) -> CreateGroupSettings {
+    CreateGroupSettingsBuilder::default()
+        .name(name)
+        .build()
+        .unwrap()
+}
+
 impl Client {
     pub async fn create_effektio_group(
         &self,
-        settings: CreateGroupSettings,
+        settings: Box<CreateGroupSettings>,
     ) -> Result<OwnedRoomId> {
         let c = self.client.clone();
         RUNTIME

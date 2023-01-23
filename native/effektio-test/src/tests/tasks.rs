@@ -20,13 +20,12 @@ pub async fn random_user_with_random_space(
     )
     .await?;
 
-    let room_id = user
-        .create_effektio_group(
-            CreateGroupSettingsBuilder::default()
-                .name(format!("it-room-{prefix}-{uuid}"))
-                .build()?,
-        )
-        .await?;
+    let settings = Box::new(
+        CreateGroupSettingsBuilder::default()
+            .name(format!("it-room-{prefix}-{uuid}"))
+            .build()?,
+    );
+    let room_id = user.create_effektio_group(settings).await?;
     Ok((user, room_id))
 }
 

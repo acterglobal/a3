@@ -44,7 +44,7 @@ pub use effektio_core::{
     events::UtcDateTime,
     models::{Color as EfkColor, Faq, News, Tag},
 };
-pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
+pub use group::{new_group_settings, CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;
 pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,

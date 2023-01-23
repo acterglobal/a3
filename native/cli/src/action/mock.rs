@@ -186,11 +186,13 @@ impl Mock {
             .map(|a| a.expect("everyone here has an id"))
             .collect();
 
-        let ops_settings = CreateGroupSettingsBuilder::default()
-            .name("Ops".to_owned())
-            .alias("ops".to_owned())
-            .invites(team_ids)
-            .build()?;
+        let ops_settings = Box::new(
+            CreateGroupSettingsBuilder::default()
+                .name("Ops".to_owned())
+                .alias("ops".to_owned())
+                .invites(team_ids)
+                .build()?,
+        );
 
         let admin = self.client("admin".to_owned()).await.unwrap();
 
@@ -209,12 +211,14 @@ impl Mock {
             }
         }
 
-        let promenade_settings = CreateGroupSettingsBuilder::default()
-            .name("Promenade".to_owned())
-            .alias("promenade".to_owned())
-            .visibility(Visibility::Public)
-            .invites(civilians_ids)
-            .build()?;
+        let promenade_settings = Box::new(
+            CreateGroupSettingsBuilder::default()
+                .name("Promenade".to_owned())
+                .alias("promenade".to_owned())
+                .visibility(Visibility::Public)
+                .invites(civilians_ids)
+                .build()?,
+        );
 
         match admin.create_effektio_group(promenade_settings).await {
             Ok(promenade_room_id) => {
@@ -231,12 +235,14 @@ impl Mock {
             }
         }
 
-        let quarks_settings = CreateGroupSettingsBuilder::default()
-            .name("Quarks'".to_owned())
-            .alias("quarks".to_owned())
-            .visibility(Visibility::Public)
-            .invites(quark_customer_ids)
-            .build()?;
+        let quarks_settings = Box::new(
+            CreateGroupSettingsBuilder::default()
+                .name("Quarks'".to_owned())
+                .alias("quarks".to_owned())
+                .visibility(Visibility::Public)
+                .invites(quark_customer_ids)
+                .build()?,
+        );
 
         match admin.create_effektio_group(quarks_settings).await {
             Ok(quarks_id) => {
@@ -295,7 +301,7 @@ impl Mock {
         let task_lists = odo.task_lists().await?;
         let alias = self.local_alias("#ops");
         let task_list =
-            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == &list_name) {
+            if let Some(task_list) = task_lists.into_iter().find(|t| t.name() == list_name) {
                 task_list
             } else {
                 //kyra.sync_once(Default::default()).await?;
