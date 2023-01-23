@@ -303,7 +303,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("changed candidates to {}", candidates),
+            body: format!("changed candidates to {candidates}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -339,7 +339,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("changed candidates to {}", candidates),
+            body: format!("changed candidates to {candidates}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -394,7 +394,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = event.content.reason.map(|x| TextDesc {
-            body: format!("hangup this call because {}", x.to_string()),
+            body: format!("hangup this call because {}", x),
             formatted_body: None,
         });
         RoomMessage::new(
@@ -480,7 +480,7 @@ impl RoomMessage {
         let body = if let AcceptMethod::SasV1(content) = event.content.method {
             format!(
                 "accepted verification with {}",
-                content.message_authentication_code.to_string(),
+                content.message_authentication_code,
             )
         } else {
             "accepted verification".to_string()
@@ -517,7 +517,7 @@ impl RoomMessage {
         let body = if let AcceptMethod::SasV1(content) = event.content.method {
             format!(
                 "accepted verification with {}",
-                content.message_authentication_code.to_string(),
+                content.message_authentication_code,
             )
         } else {
             "accepted verification".to_string()
@@ -797,7 +797,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("ready verification with {}", methods),
+            body: format!("ready verification with {methods}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -839,7 +839,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("ready verification with {}", methods),
+            body: format!("ready verification with {methods}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -873,7 +873,7 @@ impl RoomMessage {
             _ => "Unknown".to_string(),
         };
         let text_desc = TextDesc {
-            body: format!("started verification with {}", method),
+            body: format!("started verification with {method}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -907,7 +907,7 @@ impl RoomMessage {
             _ => "Unknown".to_string(),
         };
         let text_desc = TextDesc {
-            body: format!("started verification with {}", method),
+            body: format!("started verification with {method}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -937,9 +937,7 @@ impl RoomMessage {
     ) -> Self {
         let body = format!(
             "recommended {} about {} because {}",
-            event.content.0.recommendation.to_string(),
-            event.content.0.entity,
-            event.content.0.reason,
+            event.content.0.recommendation, event.content.0.entity, event.content.0.reason,
         );
         let text_desc = TextDesc {
             body,
@@ -1172,7 +1170,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("changed room aliases to {}", aliases),
+            body: format!("changed room aliases to {aliases}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1208,7 +1206,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("changed room aliases to {}", aliases),
+            body: format!("changed room aliases to {aliases}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1369,7 +1367,7 @@ impl RoomMessage {
 
     pub(crate) fn room_create_from_event(event: OriginalRoomCreateEvent, room: &Room) -> Self {
         let text_desc = TextDesc {
-            body: format!("{} created this room", event.content.creator.to_string()),
+            body: format!("{} created this room", event.content.creator),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1398,7 +1396,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: format!("{} created this room", event.content.creator.to_string()),
+            body: format!("{} created this room", event.content.creator),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1432,7 +1430,7 @@ impl RoomMessage {
             _ => "Unknown".to_string(),
         };
         let text_desc = TextDesc {
-            body: format!("encrypted by {}", scheme),
+            body: format!("encrypted by {scheme}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1466,7 +1464,7 @@ impl RoomMessage {
             _ => "Unknown".to_string(),
         };
         let text_desc = TextDesc {
-            body: format!("encrypted by {}", scheme),
+            body: format!("encrypted by {scheme}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1495,10 +1493,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: format!(
-                "changed encryption to {}",
-                event.content.algorithm.to_string(),
-            ),
+            body: format!("changed encryption to {}", event.content.algorithm),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1527,10 +1522,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: format!(
-                "changed encryption to {}",
-                event.content.algorithm.to_string(),
-            ),
+            body: format!("changed encryption to {}", event.content.algorithm),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1561,7 +1553,7 @@ impl RoomMessage {
         let text_desc = TextDesc {
             body: format!(
                 "changed room's guest access to {}",
-                event.content.guest_access.to_string(),
+                event.content.guest_access,
             ),
             formatted_body: None,
         };
@@ -1593,7 +1585,7 @@ impl RoomMessage {
         let text_desc = TextDesc {
             body: format!(
                 "changed room's guest access to {}",
-                event.content.guest_access.to_string(),
+                event.content.guest_access,
             ),
             formatted_body: None,
         };
@@ -1625,7 +1617,7 @@ impl RoomMessage {
         let text_desc = TextDesc {
             body: format!(
                 "changed room's history visibility to {}",
-                event.content.history_visibility.to_string(),
+                event.content.history_visibility,
             ),
             formatted_body: None,
         };
@@ -1657,7 +1649,7 @@ impl RoomMessage {
         let text_desc = TextDesc {
             body: format!(
                 "changed room's history visibility to {}",
-                event.content.history_visibility.to_string(),
+                event.content.history_visibility,
             ),
             formatted_body: None,
         };
@@ -1689,7 +1681,7 @@ impl RoomMessage {
         let text_desc = TextDesc {
             body: format!(
                 "changed room's join rules to {}",
-                event.content.join_rule.as_str().to_string(),
+                event.content.join_rule.as_str(),
             ),
             formatted_body: None,
         };
@@ -1721,7 +1713,7 @@ impl RoomMessage {
         let text_desc = TextDesc {
             body: format!(
                 "changed room's join rules to {}",
-                event.content.join_rule.as_str().to_string(),
+                event.content.join_rule.as_str(),
             ),
             formatted_body: None,
         };
@@ -1749,11 +1741,11 @@ impl RoomMessage {
     pub(crate) fn room_member_from_event(event: OriginalRoomMemberEvent, room: &Room) -> Self {
         let mut terms = vec![];
         if let Some(displayname) = event.content.displayname {
-            terms.push(format!("({})", displayname));
+            terms.push(format!("({displayname})"));
         }
         terms.push(format!(
             "changed its membership to {}",
-            event.content.membership.to_string(),
+            event.content.membership,
         ));
         let text_desc = TextDesc {
             body: terms.join(" "),
@@ -1786,11 +1778,11 @@ impl RoomMessage {
     ) -> Self {
         let mut terms = vec![];
         if let Some(displayname) = event.content.displayname {
-            terms.push(format!("({})", displayname));
+            terms.push(format!("({displayname})"));
         }
         terms.push(format!(
             "changed its membership to {}",
-            event.content.membership.to_string(),
+            event.content.membership,
         ));
         let text_desc = TextDesc {
             body: terms.join(" "),
@@ -1832,13 +1824,13 @@ impl RoomMessage {
         }
         let fallback = match event.content.msgtype.clone() {
             MessageType::Audio(content) => "sent an audio.".to_string(),
-            MessageType::Emote(content) => content.body.clone(),
+            MessageType::Emote(content) => content.body,
             MessageType::File(content) => "sent a file.".to_string(),
             MessageType::Image(content) => "sent an image.".to_string(),
-            MessageType::Location(content) => content.body.clone(),
-            MessageType::Notice(content) => content.body.clone(),
-            MessageType::ServerNotice(content) => content.body.clone(),
-            MessageType::Text(content) => content.body.clone(),
+            MessageType::Location(content) => content.body,
+            MessageType::Notice(content) => content.body,
+            MessageType::ServerNotice(content) => content.body,
+            MessageType::Text(content) => content.body,
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
@@ -1880,7 +1872,7 @@ impl RoomMessage {
                         width: info.width.map(u64::from),
                         height: info.height.map(u64::from),
                         blurhash: info.blurhash.clone(),
-                        duration: info.duration.clone(),
+                        duration: info.duration,
                         thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
                         thumbnail_source: info.thumbnail_source.clone(),
                     })
@@ -1935,13 +1927,13 @@ impl RoomMessage {
         }
         let fallback = match event.content.msgtype.clone() {
             MessageType::Audio(content) => "sent an audio.".to_string(),
-            MessageType::Emote(content) => content.body.clone(),
+            MessageType::Emote(content) => content.body,
             MessageType::File(content) => "sent a file.".to_string(),
             MessageType::Image(content) => "sent an image.".to_string(),
-            MessageType::Location(content) => content.body.clone(),
-            MessageType::Notice(content) => content.body.clone(),
-            MessageType::ServerNotice(content) => content.body.clone(),
-            MessageType::Text(content) => content.body.clone(),
+            MessageType::Location(content) => content.body,
+            MessageType::Notice(content) => content.body,
+            MessageType::ServerNotice(content) => content.body,
+            MessageType::Text(content) => content.body,
             MessageType::Video(content) => "sent a video.".to_string(),
             _ => "Unknown sync item".to_string(),
         };
@@ -1983,7 +1975,7 @@ impl RoomMessage {
                         width: info.width.map(u64::from),
                         height: info.height.map(u64::from),
                         blurhash: info.blurhash.clone(),
-                        duration: info.duration.clone(),
+                        duration: info.duration,
                         thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
                         thumbnail_source: info.thumbnail_source.clone(),
                     });
@@ -2026,7 +2018,7 @@ impl RoomMessage {
     pub(crate) fn room_name_from_event(event: OriginalRoomNameEvent, room: &Room) -> Self {
         let text_desc = TextDesc {
             body: match event.content.name {
-                Some(name) => format!("changed name to {}", name),
+                Some(name) => format!("changed name to {name}"),
                 None => "changed name".to_string(),
             },
             formatted_body: None,
@@ -2055,7 +2047,7 @@ impl RoomMessage {
     pub(crate) fn room_name_from_sync_event(event: OriginalSyncRoomNameEvent, room: &Room) -> Self {
         let text_desc = TextDesc {
             body: match event.content.name {
-                Some(name) => format!("changed name to {}", name),
+                Some(name) => format!("changed name to {name}"),
                 None => "changed name".to_string(),
             },
             formatted_body: None,
@@ -2147,11 +2139,11 @@ impl RoomMessage {
             .content
             .users
             .iter()
-            .map(|(user_id, value)| format!("power level of {} to {}", user_id.to_string(), value))
+            .map(|(user_id, value)| format!("power level of {} to {}", user_id, value))
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("changed {}", users),
+            body: format!("changed {users}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -2183,11 +2175,11 @@ impl RoomMessage {
             .content
             .users
             .iter()
-            .map(|(user_id, value)| format!("power level of {} to {}", user_id.to_string(), value))
+            .map(|(user_id, value)| format!("power level of {} to {}", user_id, value))
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body: format!("changed {}", users),
+            body: format!("changed {users}"),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -2218,8 +2210,8 @@ impl RoomMessage {
         }
         let text_desc = TextDesc {
             body: match reason {
-                Some(reason) => format!("deleted this item because {}", reason),
-                None => format!("deleted this item"),
+                Some(reason) => format!("deleted this item because {reason}"),
+                None => "deleted this item".to_string(),
             },
             formatted_body: None,
         };
@@ -2254,8 +2246,8 @@ impl RoomMessage {
         }
         let text_desc = TextDesc {
             body: match reason {
-                Some(reason) => format!("deleted this item because {}", reason),
-                None => format!("deleted this item"),
+                Some(reason) => format!("deleted this item because {reason}"),
+                None => "deleted this item".to_string(),
             },
             formatted_body: None,
         };
@@ -2288,9 +2280,9 @@ impl RoomMessage {
         let deny = event.content.deny.join(", ");
         let text_desc = TextDesc {
             body: match (allow.is_empty(), deny.is_empty()) {
-                (true, true) => format!("allowed {}, denied {}", allow, deny),
-                (true, false) => format!("allowed {}", allow),
-                (false, true) => format!("denied {}", deny),
+                (true, true) => format!("allowed {allow}, denied {deny}"),
+                (true, false) => format!("allowed {allow}"),
+                (false, true) => format!("denied {deny}"),
                 (false, false) => "".to_string(),
             },
             formatted_body: None,
@@ -2324,9 +2316,9 @@ impl RoomMessage {
         let deny = event.content.deny.join(", ");
         let text_desc = TextDesc {
             body: match (allow.is_empty(), deny.is_empty()) {
-                (true, true) => format!("allowed {}, denied {}", allow, deny),
-                (true, false) => format!("allowed {}", allow),
-                (false, true) => format!("denied {}", deny),
+                (true, true) => format!("allowed {allow}, denied {deny}"),
+                (true, false) => format!("allowed {allow}"),
+                (false, true) => format!("denied {deny}"),
                 (false, false) => "".to_string(),
             },
             formatted_body: None,
@@ -2897,52 +2889,52 @@ impl RoomMessage {
                 info!("Edit event applies to a state event, discarding");
                 let fallback = match m.membership_change() {
                     Some(MembershipChange::None) => {
-                        format!("{} not changed", m.user_id().to_string())
+                        format!("{} not changed", m.user_id())
                     }
                     Some(MembershipChange::Error) => {
-                        format!("{} membership error", m.user_id().to_string())
+                        format!("{} membership error", m.user_id())
                     }
                     Some(MembershipChange::Joined) => {
-                        format!("{} joined", m.user_id().to_string())
+                        format!("{} joined", m.user_id())
                     }
                     Some(MembershipChange::Left) => {
-                        format!("{} left", m.user_id().to_string())
+                        format!("{} left", m.user_id())
                     }
                     Some(MembershipChange::Banned) => {
-                        format!("{} banned", m.user_id().to_string())
+                        format!("{} banned", m.user_id())
                     }
                     Some(MembershipChange::Unbanned) => {
-                        format!("{} unbanned", m.user_id().to_string())
+                        format!("{} unbanned", m.user_id())
                     }
                     Some(MembershipChange::Kicked) => {
-                        format!("{} kicked", m.user_id().to_string())
+                        format!("{} kicked", m.user_id())
                     }
                     Some(MembershipChange::Invited) => {
-                        format!("{} invited", m.user_id().to_string())
+                        format!("{} invited", m.user_id())
                     }
                     Some(MembershipChange::KickedAndBanned) => {
-                        format!("{} kicked and banned", m.user_id().to_string())
+                        format!("{} kicked and banned", m.user_id())
                     }
                     Some(MembershipChange::InvitationAccepted) => {
-                        format!("{} accepted invitation", m.user_id().to_string())
+                        format!("{} accepted invitation", m.user_id())
                     }
                     Some(MembershipChange::InvitationRejected) => {
-                        format!("{} rejected invitation", m.user_id().to_string())
+                        format!("{} rejected invitation", m.user_id())
                     }
                     Some(MembershipChange::InvitationRevoked) => {
-                        format!("{} revoked invitation", m.user_id().to_string())
+                        format!("{} revoked invitation", m.user_id())
                     }
                     Some(MembershipChange::Knocked) => {
-                        format!("{} knocked", m.user_id().to_string())
+                        format!("{} knocked", m.user_id())
                     }
                     Some(MembershipChange::KnockAccepted) => {
-                        format!("{} accepted knock", m.user_id().to_string())
+                        format!("{} accepted knock", m.user_id())
                     }
                     Some(MembershipChange::KnockRetracted) => {
-                        format!("{} retracted knock", m.user_id().to_string())
+                        format!("{} retracted knock", m.user_id())
                     }
                     Some(MembershipChange::KnockDenied) => {
-                        format!("{} denied knock", m.user_id().to_string())
+                        format!("{} denied knock", m.user_id())
                     }
                     Some(MembershipChange::ProfileChanged {
                         displayname_change,
@@ -3035,7 +3027,7 @@ impl RoomMessage {
         let room_id = room.room_id().to_string();
         match event {
             VirtualTimelineItem::DayDivider { year, month, day } => {
-                let desc = format!("{}-{:02}-{:02}", year, month, day);
+                let desc = format!("{year}-{month:02}-{day:02}");
                 RoomMessage::new(
                     "virtual".to_string(),
                     room_id,
