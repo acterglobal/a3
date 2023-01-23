@@ -81,6 +81,8 @@ object Faq {
     fn comments_count() -> u32;
 }
 
+object MediaSource {}
+
 object DeviceId {
     fn to_string() -> string;
 }
@@ -114,7 +116,7 @@ object RoomEventItem {
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> u64;
 
-    /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+    /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
     fn event_type() -> string;
 
     /// the type of massage, like audio, text, image, file, etc
@@ -125,6 +127,9 @@ object RoomEventItem {
 
     /// contains source data, name, mimetype, size, width and height
     fn image_desc() -> Option<ImageDesc>;
+
+    /// contains source data, name, mimetype, size, width and height
+    fn video_desc() -> Option<VideoDesc>;
 
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
@@ -142,7 +147,13 @@ object RoomEventItem {
     fn is_editable() -> bool;
 }
 
-object RoomVirtualItem {}
+object RoomVirtualItem {
+    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    fn event_type() -> string;
+
+    /// contains description text
+    fn desc() -> Option<string>;
+}
 
 /// A room Message metadata and content
 object RoomMessage {
@@ -182,6 +193,59 @@ object ImageDesc {
 
     /// image height
     fn height() -> Option<u64>;
+
+    /// thumbnail mimetype
+    fn thumbnail_mimetype() -> Option<string>;
+
+    /// thumbnail file size
+    fn thumbnail_size() -> Option<u64>;
+
+    /// thumbnail image width
+    fn thumbnail_width() -> Option<u64>;
+
+    /// thumbnail image height
+    fn thumbnail_height() -> Option<u64>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
+}
+
+object VideoDesc {
+    /// file name
+    fn name() -> string;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size in bytes
+    fn size() -> Option<u64>;
+
+    /// image width
+    fn width() -> Option<u64>;
+
+    /// image height
+    fn height() -> Option<u64>;
+
+    /// blurhash
+    fn blurhash() -> Option<string>;
+
+    /// duration in seconds
+    fn duration() -> Option<u64>;
+
+    /// thumbnail mimetype
+    fn thumbnail_mimetype() -> Option<string>;
+
+    /// thumbnail file size
+    fn thumbnail_size() -> Option<u64>;
+
+    /// thumbnail image width
+    fn thumbnail_width() -> Option<u64>;
+
+    /// thumbnail image height
+    fn thumbnail_height() -> Option<u64>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
 }
 
 object FileDesc {
@@ -193,6 +257,21 @@ object FileDesc {
 
     /// file size in bytes
     fn size() -> Option<u64>;
+
+    /// thumbnail mimetype
+    fn thumbnail_mimetype() -> Option<string>;
+
+    /// thumbnail file size
+    fn thumbnail_size() -> Option<u64>;
+
+    /// thumbnail image width
+    fn thumbnail_width() -> Option<u64>;
+
+    /// thumbnail image height
+    fn thumbnail_height() -> Option<u64>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
 }
 
 object ReactionDesc {

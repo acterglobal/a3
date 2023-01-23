@@ -48,6 +48,7 @@ pub use group::{CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;
 pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
+    VideoDesc,
 };
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
@@ -61,6 +62,8 @@ pub use verification::{VerificationEmoji, VerificationEvent};
 
 #[cfg(feature = "with-mocks")]
 pub use effektio_core::mocks::*;
+
+pub use effektio_core::ruma::events::room::MediaSource;
 
 pub type DeviceId = effektio_core::ruma::OwnedDeviceId;
 pub type EventId = effektio_core::ruma::OwnedEventId;

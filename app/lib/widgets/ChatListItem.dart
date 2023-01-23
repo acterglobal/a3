@@ -142,9 +142,12 @@ class _ChatListItemState extends State<ChatListItem> {
     if (eventItem == null) {
       return const SizedBox();
     }
+
     String sender = eventItem.sender();
     String eventType = eventItem.eventType();
-    if (eventType == 'Encrypted') {
+
+    // message event
+    if (eventType == 'm.call.answer') {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -155,65 +158,304 @@ class _ChatListItemState extends State<ChatListItem> {
               style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
             ),
           ),
-          const Text(
-            'RoomEncryptedEvent',
-            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
-          ),
-        ],
-      );
-    }
-    if (eventType == 'RedactedMessage') {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              '${simplifyUserId(sender)}: ',
-              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
-            ),
-          ),
-          const Text(
-            'RoomRedactionEvent',
-            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
-          ),
-        ],
-      );
-    }
-    TextDesc? textDesc = eventItem.textDesc();
-    if (textDesc == null) {
-      return const SizedBox();
-    }
-    String body = textDesc.body();
-    String? formattedBody = textDesc.formattedBody();
-    if (formattedBody != null) {
-      body = simplifyBody(formattedBody);
-    }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            '${simplifyUserId(sender)}: ',
+          Text(
+            eventItem.textDesc()!.body(),
             style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
           ),
-        ),
-        Flexible(
-          child: Html(
+        ],
+      );
+    }
+    if (eventType == 'm.call.candidates') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
-            // ignore: unnecessary_string_interpolations
-            data: '''$body''',
-            maxLines: 1,
-            defaultTextStyle: const TextStyle(
-              color: ChatTheme01.chatBodyTextColor,
-              overflow: TextOverflow.ellipsis,
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
             ),
-            onLinkTap: (url) => {},
           ),
-        ),
-      ],
-    );
+          const Text(
+            'Call Candidates',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.call.hangup') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Call Hangup',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.call.invite') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Call Invite',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.accept') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Accept',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.cancel') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Cancel',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.done') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Done',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.key') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Key',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.mac') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Mac',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.ready') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Ready',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.key.verification.start') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Key Verification Start',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.reaction') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Reaction',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.room.encrypted') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Room Encrypted',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.room.message') {
+      TextDesc? textDesc = eventItem.textDesc();
+      if (textDesc == null) {
+        return const SizedBox();
+      }
+      String body = textDesc.body();
+      String? formattedBody = textDesc.formattedBody();
+      if (formattedBody != null) {
+        body = simplifyBody(formattedBody);
+      }
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          Flexible(
+            child: Html(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              // ignore: unnecessary_string_interpolations
+              data: '''$body''',
+              maxLines: 1,
+              defaultTextStyle: const TextStyle(
+                color: ChatTheme01.chatBodyTextColor,
+                overflow: TextOverflow.ellipsis,
+              ),
+              onLinkTap: (url) => {},
+            ),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.room.redaction') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Room Redaction',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+    if (eventType == 'm.sticker') {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              '${simplifyUserId(sender)}: ',
+              style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+            ),
+          ),
+          const Text(
+            'Sticker',
+            style: TextStyle(color: ChatTheme01.chatBodyTextColor),
+          ),
+        ],
+      );
+    }
+
+    // exclude state event
+    return const SizedBox();
   }
 
   Widget? buildTrailing(BuildContext context) {

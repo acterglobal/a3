@@ -1,3 +1,4 @@
+use core::time::Duration;
 use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
@@ -10,8 +11,69 @@ use matrix_sdk::{
     },
     ruma::{
         events::{
-            room::message::{MessageFormat, MessageType, Relation},
-            AnySyncMessageLikeEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
+            call::{
+                answer::{OriginalCallAnswerEvent, OriginalSyncCallAnswerEvent},
+                candidates::{OriginalCallCandidatesEvent, OriginalSyncCallCandidatesEvent},
+                hangup::{OriginalCallHangupEvent, OriginalSyncCallHangupEvent},
+                invite::{OriginalCallInviteEvent, OriginalSyncCallInviteEvent},
+            },
+            key::verification::{
+                accept::{
+                    OriginalKeyVerificationAcceptEvent, OriginalSyncKeyVerificationAcceptEvent,
+                },
+                cancel::{
+                    OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent,
+                },
+                done::{OriginalKeyVerificationDoneEvent, OriginalSyncKeyVerificationDoneEvent},
+                key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
+                mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
+                ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
+                start::{OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent},
+            },
+            policy::rule::{
+                room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
+                server::{OriginalPolicyRuleServerEvent, OriginalSyncPolicyRuleServerEvent},
+                user::{OriginalPolicyRuleUserEvent, OriginalSyncPolicyRuleUserEvent},
+            },
+            reaction::{OriginalReactionEvent, OriginalSyncReactionEvent},
+            room::{
+                aliases::{OriginalRoomAliasesEvent, OriginalSyncRoomAliasesEvent},
+                avatar::{OriginalRoomAvatarEvent, OriginalSyncRoomAvatarEvent},
+                canonical_alias::{
+                    OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent,
+                },
+                create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
+                encrypted::{OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent},
+                encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
+                guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
+                history_visibility::{
+                    OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
+                },
+                join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
+                member::{MembershipChange, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
+                message::{
+                    MessageFormat, MessageType, OriginalRoomMessageEvent,
+                    OriginalSyncRoomMessageEvent, Relation,
+                },
+                name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
+                pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},
+                power_levels::{OriginalRoomPowerLevelsEvent, OriginalSyncRoomPowerLevelsEvent},
+                redaction::{RoomRedactionEvent, SyncRoomRedactionEvent},
+                server_acl::{OriginalRoomServerAclEvent, OriginalSyncRoomServerAclEvent},
+                third_party_invite::{
+                    OriginalRoomThirdPartyInviteEvent, OriginalSyncRoomThirdPartyInviteEvent,
+                },
+                tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
+                topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
+                MediaSource, ThumbnailInfo,
+            },
+            space::{
+                child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
+                parent::{OriginalSpaceParentEvent, OriginalSyncSpaceParentEvent},
+            },
+            sticker::{OriginalStickerEvent, OriginalSyncStickerEvent},
+            AnySyncMessageLikeEvent, AnySyncStateEvent, AnySyncTimelineEvent, SyncMessageLikeEvent,
+            SyncStateEvent,
         },
         OwnedEventId, OwnedUserId,
     },
@@ -27,6 +89,7 @@ pub struct RoomEventItem {
     msgtype: Option<String>,
     text_desc: Option<TextDesc>,
     image_desc: Option<ImageDesc>,
+    video_desc: Option<VideoDesc>,
     file_desc: Option<FileDesc>,
     in_reply_to: Option<OwnedEventId>,
     reactions: HashMap<String, ReactionDesc>,
@@ -43,6 +106,7 @@ impl RoomEventItem {
         msgtype: Option<String>,
         text_desc: Option<TextDesc>,
         image_desc: Option<ImageDesc>,
+        video_desc: Option<VideoDesc>,
         file_desc: Option<FileDesc>,
         in_reply_to: Option<OwnedEventId>,
         reactions: HashMap<String, ReactionDesc>,
@@ -56,6 +120,7 @@ impl RoomEventItem {
             msgtype,
             text_desc,
             image_desc,
+            video_desc,
             file_desc,
             in_reply_to,
             reactions,
@@ -91,6 +156,10 @@ impl RoomEventItem {
         self.image_desc.clone()
     }
 
+    pub fn video_desc(&self) -> Option<VideoDesc> {
+        self.video_desc.clone()
+    }
+
     pub fn file_desc(&self) -> Option<FileDesc> {
         self.file_desc.clone()
     }
@@ -117,7 +186,24 @@ impl RoomEventItem {
 }
 
 #[derive(Clone, Debug)]
-pub struct RoomVirtualItem {}
+pub struct RoomVirtualItem {
+    event_type: String,
+    desc: Option<String>,
+}
+
+impl RoomVirtualItem {
+    pub(crate) fn new(event_type: String, desc: Option<String>) -> Self {
+        RoomVirtualItem { event_type, desc }
+    }
+
+    pub fn event_type(&self) -> String {
+        self.event_type.clone()
+    }
+
+    pub fn desc(&self) -> Option<String> {
+        self.desc.clone()
+    }
+}
 
 #[derive(Clone, Debug)]
 pub struct RoomMessage {
@@ -142,61 +228,1435 @@ impl RoomMessage {
         }
     }
 
-    #[allow(clippy::too_many_arguments)]
-    pub(crate) fn from_sync_event(
-        msgtype: Option<MessageType>,
-        relates_to: Option<Relation<MessageType>>,
-        event_id: String,
-        sender: String,
-        origin_server_ts: u64,
-        item_content_type: String,
+    pub(crate) fn call_answer_from_event(event: OriginalCallAnswerEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.answer.sdp,
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.answer".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_answer_from_sync_event(
+        event: OriginalSyncCallAnswerEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.answer.sdp,
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.answer".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_candidates_from_event(
+        event: OriginalCallCandidatesEvent,
+        room: &Room,
+    ) -> Self {
+        let body = event
+            .content
+            .candidates
+            .into_iter()
+            .map(|x| x.candidate)
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body,
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.candidates".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_candidates_from_sync_event(
+        event: OriginalSyncCallCandidatesEvent,
+        room: &Room,
+    ) -> Self {
+        let body = event
+            .content
+            .candidates
+            .into_iter()
+            .map(|x| x.candidate)
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body,
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.candidates".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_hangup_from_event(event: OriginalCallHangupEvent, room: &Room) -> Self {
+        let text_desc = event.content.reason.map(|x| TextDesc {
+            body: x.to_string(),
+            formatted_body: None,
+        });
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.hangup".to_string(),
+                None,
+                text_desc,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_hangup_from_sync_event(
+        event: OriginalSyncCallHangupEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = event.content.reason.map(|x| TextDesc {
+            body: x.to_string(),
+            formatted_body: None,
+        });
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.hangup".to_string(),
+                None,
+                text_desc,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_invite_from_event(event: OriginalCallInviteEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.offer.sdp,
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.invite".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn call_invite_from_sync_event(
+        event: OriginalSyncCallInviteEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.offer.sdp,
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.call.invite".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_accept_from_event(
+        event: OriginalKeyVerificationAcceptEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "accepted verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.accept".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_accept_from_sync_event(
+        event: OriginalSyncKeyVerificationAcceptEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "accepted verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.accept".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_cancel_from_event(
+        event: OriginalKeyVerificationCancelEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "canceled verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.cancel".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_cancel_from_sync_event(
+        event: OriginalSyncKeyVerificationCancelEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "canceled verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.cancel".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_done_from_event(
+        event: OriginalKeyVerificationDoneEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "done verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.done".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_done_from_sync_event(
+        event: OriginalSyncKeyVerificationDoneEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "done verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.done".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_key_from_event(
+        event: OriginalKeyVerificationKeyEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "sent ephemeral public key for device".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.key".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_key_from_sync_event(
+        event: OriginalSyncKeyVerificationKeyEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "sent ephemeral public key for device".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.key".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_mac_from_event(
+        event: OriginalKeyVerificationMacEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "sent MAC of device's key".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.mac".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_mac_from_sync_event(
+        event: OriginalSyncKeyVerificationMacEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "sent MAC of device's key".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.mac".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_ready_from_event(
+        event: OriginalKeyVerificationReadyEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "ready verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.ready".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_ready_from_sync_event(
+        event: OriginalSyncKeyVerificationReadyEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "ready verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.ready".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_start_from_event(
+        event: OriginalKeyVerificationStartEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "started verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.start".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn key_verification_start_from_sync_event(
+        event: OriginalSyncKeyVerificationStartEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "started verification".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.key.verification.start".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn policy_rule_room_from_event(
+        event: OriginalPolicyRuleRoomEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed policy rule room".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.policy.rule.room".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn policy_rule_room_from_sync_event(
+        event: OriginalSyncPolicyRuleRoomEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed policy rule room".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.policy.rule.room".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn policy_rule_server_from_event(
+        event: OriginalPolicyRuleServerEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed policy rule server".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.policy.rule.server".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn policy_rule_server_from_sync_event(
+        event: OriginalSyncPolicyRuleServerEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed policy rule server".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.policy.rule.server".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn policy_rule_user_from_event(
+        event: OriginalPolicyRuleUserEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed policy rule user".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.policy.rule.user".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn policy_rule_user_from_sync_event(
+        event: OriginalSyncPolicyRuleUserEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed policy rule user".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.policy.rule.user".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn reaction_from_event(event: OriginalReactionEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: format!("reacted by {}", event.content.relates_to.key),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.reaction".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn reaction_from_sync_event(event: OriginalSyncReactionEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: format!("reacted by {}", event.content.relates_to.key),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.reaction".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_aliases_from_event(event: OriginalRoomAliasesEvent, room: &Room) -> Self {
+        let aliases = event
+            .content
+            .aliases
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body: format!("changed room aliases to {}", aliases),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.aliases".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_aliases_from_sync_event(
+        event: OriginalSyncRoomAliasesEvent,
+        room: &Room,
+    ) -> Self {
+        let aliases = event
+            .content
+            .aliases
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body: format!("changed room aliases to {}", aliases),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.aliases".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_avatar_from_event(event: OriginalRoomAvatarEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: "changed room avatar".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.avatar".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_avatar_from_sync_event(
+        event: OriginalSyncRoomAvatarEvent,
+        room: &Room,
+    ) -> Self {
+        let text_desc = TextDesc {
+            body: "changed room avatar".to_string(),
+            formatted_body: None,
+        };
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.avatar".to_string(),
+                None,
+                Some(text_desc),
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_canonical_alias_from_event(
+        event: OriginalRoomCanonicalAliasEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.canonical.alias".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_canonical_alias_from_sync_event(
+        event: OriginalSyncRoomCanonicalAliasEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.canonical.alias".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_create_from_event(event: OriginalRoomCreateEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.create".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_create_from_sync_event(
+        event: OriginalSyncRoomCreateEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.create".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_encrypted_from_event(
+        event: OriginalRoomEncryptedEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.encrypted".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_encrypted_from_sync_event(
+        event: OriginalSyncRoomEncryptedEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.encrypted".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_encryption_from_event(
+        event: OriginalRoomEncryptionEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.encryption".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_encryption_from_sync_event(
+        event: OriginalSyncRoomEncryptionEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.encryption".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_guest_access_from_event(
+        event: OriginalRoomGuestAccessEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.guest.access".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_guest_access_from_sync_event(
+        event: OriginalSyncRoomGuestAccessEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.guest.access".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_history_visibility_from_event(
+        event: OriginalRoomHistoryVisibilityEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.history.visibility".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_history_visibility_from_sync_event(
+        event: OriginalSyncRoomHistoryVisibilityEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.history.visibility".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_join_rules_from_event(
+        event: OriginalRoomJoinRulesEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.join.rules".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_join_rules_from_sync_event(
+        event: OriginalSyncRoomJoinRulesEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.join.rules".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_member_from_event(event: OriginalRoomMemberEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.member".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_member_from_sync_event(
+        event: OriginalSyncRoomMemberEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.member".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_message_from_event(
+        event: OriginalRoomMessageEvent,
         room: &Room,
         has_editable: bool,
     ) -> Self {
         let mut sent_by_me = false;
         if (has_editable) {
             if let Some(user_id) = room.client().user_id() {
-                if *user_id == sender {
+                if *user_id == event.sender {
                     sent_by_me = true;
                 }
             }
         }
-        let fallback = match &msgtype {
-            Some(MessageType::Audio(content)) => "sent an audio.".to_string(),
-            Some(MessageType::Emote(content)) => content.body.clone(),
-            Some(MessageType::File(content)) => "sent a file.".to_string(),
-            Some(MessageType::Image(content)) => "sent an image.".to_string(),
-            Some(MessageType::Location(content)) => content.body.to_string(),
-            Some(MessageType::Notice(content)) => content.body.clone(),
-            Some(MessageType::ServerNotice(content)) => content.body.clone(),
-            Some(MessageType::Text(content)) => content.body.clone(),
-            Some(MessageType::Video(content)) => "sent a video.".to_string(),
-            _ => "Unknown timeline item".to_string(),
+        let fallback = match event.content.msgtype.clone() {
+            MessageType::Audio(content) => "sent an audio.".to_string(),
+            MessageType::Emote(content) => content.body.clone(),
+            MessageType::File(content) => "sent a file.".to_string(),
+            MessageType::Image(content) => "sent an image.".to_string(),
+            MessageType::Location(content) => content.body.clone(),
+            MessageType::Notice(content) => content.body.clone(),
+            MessageType::ServerNotice(content) => content.body.clone(),
+            MessageType::Text(content) => content.body.clone(),
+            MessageType::Video(content) => "sent a video.".to_string(),
+            _ => "Unknown sync item".to_string(),
         };
         let mut text_desc = TextDesc {
             body: fallback,
             formatted_body: None,
         };
         let mut image_desc: Option<ImageDesc> = None;
+        let mut video_desc: Option<VideoDesc> = None;
         let mut file_desc: Option<FileDesc> = None;
-        let mut is_editable = false;
-        match &msgtype {
-            Some(MessageType::Text(content)) => {
+        match event.content.msgtype.clone() {
+            MessageType::Text(content) => {
                 if let Some(formatted) = &content.formatted {
                     if formatted.format == MessageFormat::Html {
                         text_desc.set_formatted_body(Some(formatted.body.clone()));
                     }
                 }
-                if sent_by_me {
-                    is_editable = true;
-                }
             }
-            Some(MessageType::Emote(content)) => {
-                if sent_by_me {
-                    is_editable = true;
-                }
-            }
-            Some(MessageType::Image(content)) => {
+            MessageType::Emote(content) => {}
+            MessageType::Image(content) => {
                 if let Some(info) = content.info.as_ref() {
                     image_desc = Some(ImageDesc {
                         name: content.body.clone(),
@@ -204,44 +1664,685 @@ impl RoomMessage {
                         size: info.size.map(u64::from),
                         width: info.width.map(u64::from),
                         height: info.height.map(u64::from),
+                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                        thumbnail_source: info.thumbnail_source.clone(),
                     });
                 }
             }
-            Some(MessageType::File(content)) => {
+            MessageType::Video(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    video_desc = Some(VideoDesc {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        width: info.width.map(u64::from),
+                        height: info.height.map(u64::from),
+                        blurhash: info.blurhash.clone(),
+                        duration: info.duration.clone(),
+                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                        thumbnail_source: info.thumbnail_source.clone(),
+                    })
+                }
+            }
+            MessageType::File(content) => {
                 if let Some(info) = content.info.as_ref() {
                     file_desc = Some(FileDesc {
                         name: content.body.clone(),
                         mimetype: info.mimetype.clone(),
                         size: info.size.map(u64::from),
+                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                        thumbnail_source: info.thumbnail_source.clone(),
                     });
                 }
             }
             _ => {}
         }
-        let mut parent_event_id = None;
-        if let Some(Relation::Reply { in_reply_to }) = &relates_to {
-            parent_event_id = Some(in_reply_to.event_id.clone());
-        }
-        // room list needn't show message reaction
-        // so sync event handler should keep `reactions` empty
-        // reaction event handler needn't exist in conversation controller
-        let event_item = RoomEventItem::new(
-            event_id,
-            sender,
-            origin_server_ts,
-            item_content_type,
-            msgtype.map(|x| x.msgtype().to_string()),
-            Some(text_desc),
-            image_desc,
-            file_desc,
-            parent_event_id,
-            Default::default(),
-            sent_by_me,
-        );
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
-            Some(event_item),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.message".to_string(),
+                Some(event.content.msgtype().to_string()),
+                Some(text_desc),
+                image_desc,
+                video_desc,
+                file_desc,
+                None,
+                Default::default(),
+                sent_by_me,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_message_from_sync_event(
+        event: OriginalSyncRoomMessageEvent,
+        room: &Room,
+        has_editable: bool,
+    ) -> Self {
+        let mut sent_by_me = false;
+        if (has_editable) {
+            if let Some(user_id) = room.client().user_id() {
+                if *user_id == event.sender {
+                    sent_by_me = true;
+                }
+            }
+        }
+        let fallback = match event.content.msgtype.clone() {
+            MessageType::Audio(content) => "sent an audio.".to_string(),
+            MessageType::Emote(content) => content.body.clone(),
+            MessageType::File(content) => "sent a file.".to_string(),
+            MessageType::Image(content) => "sent an image.".to_string(),
+            MessageType::Location(content) => content.body.clone(),
+            MessageType::Notice(content) => content.body.clone(),
+            MessageType::ServerNotice(content) => content.body.clone(),
+            MessageType::Text(content) => content.body.clone(),
+            MessageType::Video(content) => "sent a video.".to_string(),
+            _ => "Unknown sync item".to_string(),
+        };
+        let mut text_desc = TextDesc {
+            body: fallback,
+            formatted_body: None,
+        };
+        let mut image_desc: Option<ImageDesc> = None;
+        let mut video_desc: Option<VideoDesc> = None;
+        let mut file_desc: Option<FileDesc> = None;
+        match event.content.msgtype.clone() {
+            MessageType::Text(content) => {
+                if let Some(formatted) = &content.formatted {
+                    if formatted.format == MessageFormat::Html {
+                        text_desc.set_formatted_body(Some(formatted.body.clone()));
+                    }
+                }
+            }
+            MessageType::Emote(content) => {}
+            MessageType::Image(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    image_desc = Some(ImageDesc {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        width: info.width.map(u64::from),
+                        height: info.height.map(u64::from),
+                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                        thumbnail_source: info.thumbnail_source.clone(),
+                    });
+                }
+            }
+            MessageType::Video(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    video_desc = Some(VideoDesc {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        width: info.width.map(u64::from),
+                        height: info.height.map(u64::from),
+                        blurhash: info.blurhash.clone(),
+                        duration: info.duration.clone(),
+                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                        thumbnail_source: info.thumbnail_source.clone(),
+                    });
+                }
+            }
+            MessageType::File(content) => {
+                if let Some(info) = content.info.as_ref() {
+                    file_desc = Some(FileDesc {
+                        name: content.body.clone(),
+                        mimetype: info.mimetype.clone(),
+                        size: info.size.map(u64::from),
+                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                        thumbnail_source: info.thumbnail_source.clone(),
+                    });
+                }
+            }
+            _ => {}
+        }
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.message".to_string(),
+                Some(event.content.msgtype().to_string()),
+                Some(text_desc),
+                image_desc,
+                video_desc,
+                file_desc,
+                None,
+                Default::default(),
+                sent_by_me,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_name_from_event(event: OriginalRoomNameEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.name".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_name_from_sync_event(event: OriginalSyncRoomNameEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.name".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_pinned_events_from_event(
+        event: OriginalRoomPinnedEventsEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.pinned.events".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_pinned_events_from_sync_event(
+        event: OriginalSyncRoomPinnedEventsEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.pinned.events".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_power_levels_from_event(
+        event: OriginalRoomPowerLevelsEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.power.levels".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_power_levels_from_sync_event(
+        event: OriginalSyncRoomPowerLevelsEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.power.levels".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_redaction_from_event(event: RoomRedactionEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id().to_string(),
+                event.sender().to_string(),
+                event.origin_server_ts().get().into(),
+                "m.room.redaction".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_redaction_from_sync_event(
+        event: SyncRoomRedactionEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id().to_string(),
+                event.sender().to_string(),
+                event.origin_server_ts().get().into(),
+                "m.room.redaction".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_server_acl_from_event(
+        event: OriginalRoomServerAclEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.server.acl".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_server_acl_from_sync_event(
+        event: OriginalSyncRoomServerAclEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.server.acl".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_third_party_invite_from_event(
+        event: OriginalRoomThirdPartyInviteEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.third.party.invite".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_third_party_invite_from_sync_event(
+        event: OriginalSyncRoomThirdPartyInviteEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.third.party.invite".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_tombstone_from_event(
+        event: OriginalRoomTombstoneEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.tombstone".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_tombstone_from_sync_event(
+        event: OriginalSyncRoomTombstoneEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.tombstone".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_topic_from_event(event: OriginalRoomTopicEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.topic".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn room_topic_from_sync_event(
+        event: OriginalSyncRoomTopicEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.room.topic".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn space_child_from_event(event: OriginalSpaceChildEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.space.child".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn space_child_from_sync_event(
+        event: OriginalSyncSpaceChildEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.space.child".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn space_parent_from_event(event: OriginalSpaceParentEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.space.parent".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn space_parent_from_sync_event(
+        event: OriginalSyncSpaceParentEvent,
+        room: &Room,
+    ) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.space.parent".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn sticker_from_event(event: OriginalStickerEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.sticker".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
+            None,
+        )
+    }
+
+    pub(crate) fn sticker_from_sync_event(event: OriginalSyncStickerEvent, room: &Room) -> Self {
+        RoomMessage::new(
+            "event".to_string(),
+            room.room_id().to_string(),
+            Some(RoomEventItem::new(
+                event.event_id.to_string(),
+                event.sender.to_string(),
+                event.origin_server_ts.get().into(),
+                "m.sticker".to_string(),
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Default::default(),
+                false,
+            )),
             None,
         )
     }
@@ -291,6 +2392,7 @@ impl RoomMessage {
                     formatted_body: None,
                 };
                 let mut image_desc: Option<ImageDesc> = None;
+                let mut video_desc: Option<VideoDesc> = None;
                 let mut file_desc: Option<FileDesc> = None;
                 let mut is_editable = false;
                 match msgtype {
@@ -317,6 +2419,23 @@ impl RoomMessage {
                                 size: info.size.map(u64::from),
                                 width: info.width.map(u64::from),
                                 height: info.height.map(u64::from),
+                                thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                                thumbnail_source: info.thumbnail_source.clone(),
+                            });
+                        }
+                    }
+                    MessageType::Video(content) => {
+                        if let Some(info) = content.info.as_ref() {
+                            video_desc = Some(VideoDesc {
+                                name: content.body.clone(),
+                                mimetype: info.mimetype.clone(),
+                                size: info.size.map(u64::from),
+                                width: info.width.map(u64::from),
+                                height: info.height.map(u64::from),
+                                blurhash: info.blurhash.clone(),
+                                duration: info.duration.clone(),
+                                thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                                thumbnail_source: info.thumbnail_source.clone(),
                             });
                         }
                     }
@@ -326,6 +2445,8 @@ impl RoomMessage {
                                 name: content.body.clone(),
                                 mimetype: info.mimetype.clone(),
                                 size: info.size.map(u64::from),
+                                thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+                                thumbnail_source: info.thumbnail_source.clone(),
                             });
                         }
                     }
@@ -339,10 +2460,11 @@ impl RoomMessage {
                     event_id,
                     sender,
                     origin_server_ts,
-                    "Message".to_string(),
+                    "m.room.message".to_string(),
                     Some(msgtype.msgtype().to_string()),
                     Some(text_desc),
                     image_desc,
+                    video_desc,
                     file_desc,
                     replied_to_id,
                     reactions,
@@ -355,7 +2477,8 @@ impl RoomMessage {
                     event_id,
                     sender,
                     origin_server_ts,
-                    "RedactedMessage".to_string(),
+                    "m.room.redaction".to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -373,15 +2496,18 @@ impl RoomMessage {
                     size: content.info.size.map(u64::from),
                     width: content.info.width.map(u64::from),
                     height: content.info.height.map(u64::from),
+                    thumbnail_info: content.info.thumbnail_info.to_owned().map(|x| *x),
+                    thumbnail_source: content.info.thumbnail_source.clone(),
                 };
                 RoomEventItem::new(
                     event_id,
                     sender,
                     origin_server_ts,
-                    "Sticker".to_string(),
-                    Some("m.sticker".to_string()),
+                    "m.sticker".to_string(),
+                    None,
                     None,
                     Some(image_desc),
+                    None,
                     None,
                     None,
                     Default::default(),
@@ -394,7 +2520,8 @@ impl RoomMessage {
                     event_id,
                     sender,
                     origin_server_ts,
-                    "UnableToDecrypt".to_string(),
+                    "m.room.encrypted".to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -406,12 +2533,75 @@ impl RoomMessage {
             }
             TimelineItemContent::RoomMember(m) => {
                 info!("Edit event applies to a state event, discarding");
+                let fallback = match m.membership_change() {
+                    Some(MembershipChange::None) => {
+                        format!("{} not changed", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Error) => {
+                        format!("{} membership error", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Joined) => {
+                        format!("{} joined", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Left) => {
+                        format!("{} left", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Banned) => {
+                        format!("{} banned", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Unbanned) => {
+                        format!("{} unbanned", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Kicked) => {
+                        format!("{} kicked", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Invited) => {
+                        format!("{} invited", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::KickedAndBanned) => {
+                        format!("{} kicked and banned", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::InvitationAccepted) => {
+                        format!("{} accepted invitation", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::InvitationRejected) => {
+                        format!("{} rejected invitation", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::InvitationRevoked) => {
+                        format!("{} revoked invitation", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::Knocked) => {
+                        format!("{} knocked", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::KnockAccepted) => {
+                        format!("{} accepted knock", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::KnockRetracted) => {
+                        format!("{} retracted knock", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::KnockDenied) => {
+                        format!("{} denied knock", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::ProfileChanged {
+                        displayname_change,
+                        avatar_url_change,
+                    }) => {
+                        format!("{} changed profile", m.user_id().to_string())
+                    }
+                    Some(MembershipChange::NotImplemented) => "not implemented".to_string(),
+                    _ => "unknown error".to_string(),
+                };
+                let text_desc = TextDesc {
+                    body: fallback,
+                    formatted_body: None,
+                };
                 RoomEventItem::new(
                     event_id,
                     sender,
                     origin_server_ts,
-                    "RoomMember".to_string(),
+                    "m.room.member".to_string(),
                     None,
+                    Some(text_desc),
                     None,
                     None,
                     None,
@@ -426,7 +2616,8 @@ impl RoomMessage {
                     event_id,
                     sender,
                     origin_server_ts,
-                    "OtherState".to_string(),
+                    s.content().event_type().to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -442,7 +2633,8 @@ impl RoomMessage {
                     event_id,
                     sender,
                     origin_server_ts,
-                    "FailedToParseMessageLike".to_string(),
+                    event_type.to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -462,7 +2654,8 @@ impl RoomMessage {
                     event_id,
                     sender,
                     origin_server_ts,
-                    "FailedToParseState".to_string(),
+                    event_type.to_string(),
+                    None,
                     None,
                     None,
                     None,
@@ -478,12 +2671,35 @@ impl RoomMessage {
 
     pub(crate) fn from_timeline_virtual_item(event: &VirtualTimelineItem, room: Room) -> Self {
         let room_id = room.room_id().to_string();
-        RoomMessage::new(
-            "virtual".to_string(),
-            room_id,
-            None,
-            Some(RoomVirtualItem {}),
-        )
+        match event {
+            VirtualTimelineItem::DayDivider { year, month, day } => {
+                let desc = format!("{}-{:02}-{:02}", year, month, day);
+                RoomMessage::new(
+                    "virtual".to_string(),
+                    room_id,
+                    None,
+                    Some(RoomVirtualItem::new("DayDivider".to_string(), Some(desc))),
+                )
+            }
+            VirtualTimelineItem::LoadingIndicator => RoomMessage::new(
+                "virtual".to_string(),
+                room_id,
+                None,
+                Some(RoomVirtualItem::new("LoadingIndicator".to_string(), None)),
+            ),
+            VirtualTimelineItem::ReadMarker => RoomMessage::new(
+                "virtual".to_string(),
+                room_id,
+                None,
+                Some(RoomVirtualItem::new("ReadMarker".to_string(), None)),
+            ),
+            VirtualTimelineItem::TimelineStart => RoomMessage::new(
+                "virtual".to_string(),
+                room_id,
+                None,
+                Some(RoomVirtualItem::new("TimelineStart".to_string(), None)),
+            ),
+        }
     }
 
     pub fn item_type(&self) -> String {
@@ -538,6 +2754,8 @@ pub struct ImageDesc {
     size: Option<u64>,
     width: Option<u64>,
     height: Option<u64>,
+    thumbnail_info: Option<ThumbnailInfo>,
+    thumbnail_source: Option<MediaSource>,
 }
 
 impl ImageDesc {
@@ -560,6 +2778,113 @@ impl ImageDesc {
     pub fn height(&self) -> Option<u64> {
         self.height
     }
+
+    pub fn thumbnail_mimetype(&self) -> Option<String> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_size(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_width(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_height(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_source(&self) -> Option<MediaSource> {
+        self.thumbnail_source.clone()
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct VideoDesc {
+    name: String,
+    mimetype: Option<String>,
+    size: Option<u64>,
+    width: Option<u64>,
+    height: Option<u64>,
+    blurhash: Option<String>,
+    duration: Option<Duration>,
+    thumbnail_info: Option<ThumbnailInfo>,
+    thumbnail_source: Option<MediaSource>,
+}
+
+impl VideoDesc {
+    pub fn name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub fn mimetype(&self) -> Option<String> {
+        self.mimetype.clone()
+    }
+
+    pub fn size(&self) -> Option<u64> {
+        self.size
+    }
+
+    pub fn width(&self) -> Option<u64> {
+        self.width
+    }
+
+    pub fn height(&self) -> Option<u64> {
+        self.height
+    }
+
+    pub fn blurhash(&self) -> Option<String> {
+        self.blurhash.clone()
+    }
+
+    pub fn duration(&self) -> Option<u64> {
+        self.duration.map(|x| x.as_secs())
+    }
+
+    pub fn thumbnail_mimetype(&self) -> Option<String> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_size(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_width(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_height(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_source(&self) -> Option<MediaSource> {
+        self.thumbnail_source.clone()
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -567,6 +2892,8 @@ pub struct FileDesc {
     name: String,
     mimetype: Option<String>,
     size: Option<u64>,
+    thumbnail_info: Option<ThumbnailInfo>,
+    thumbnail_source: Option<MediaSource>,
 }
 
 impl FileDesc {
@@ -580,6 +2907,38 @@ impl FileDesc {
 
     pub fn size(&self) -> Option<u64> {
         self.size
+    }
+
+    pub fn thumbnail_mimetype(&self) -> Option<String> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.mimetype.clone(),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_size(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.size.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_width(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.width.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_height(&self) -> Option<u64> {
+        match &self.thumbnail_info {
+            Some(thumbnail_info) => thumbnail_info.height.map(u64::from),
+            None => None,
+        }
+    }
+
+    pub fn thumbnail_source(&self) -> Option<MediaSource> {
+        self.thumbnail_source.clone()
     }
 }
 
@@ -605,46 +2964,206 @@ impl ReactionDesc {
 
 pub(crate) fn sync_event_to_message(ev: SyncTimelineEvent, room: Room) -> Option<RoomMessage> {
     info!("sync event to message: {:?}", ev);
-    if let Ok(AnySyncTimelineEvent::MessageLike(evt)) = ev.event.deserialize() {
-        match evt {
-            AnySyncMessageLikeEvent::RoomEncrypted(SyncMessageLikeEvent::Original(m)) => {
-                return Some(RoomMessage::from_sync_event(
-                    None,
-                    None,
-                    m.event_id.to_string(),
-                    m.sender.to_string(),
-                    m.origin_server_ts.get().into(),
-                    "Encrypted".to_string(),
-                    &room,
-                    false,
-                ));
-            }
-            AnySyncMessageLikeEvent::RoomMessage(SyncMessageLikeEvent::Original(m)) => {
-                return Some(RoomMessage::from_sync_event(
-                    Some(m.content.msgtype),
-                    m.content.relates_to,
-                    m.event_id.to_string(),
-                    m.sender.to_string(),
-                    m.origin_server_ts.get().into(),
-                    "Message".to_string(),
-                    &room,
-                    true,
-                ));
-            }
-            AnySyncMessageLikeEvent::RoomRedaction(r) => {
-                return Some(RoomMessage::from_sync_event(
-                    None,
-                    None,
-                    r.event_id().to_string(),
-                    r.sender().to_string(),
-                    r.origin_server_ts().get().into(),
-                    "RedactedMessage".to_string(),
-                    &room,
-                    false,
-                ));
-            }
-            _ => {}
+    let room_id = room.room_id().to_string();
+    let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
+
+    match ev.event.deserialize() {
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleRoom(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::policy_rule_room_from_sync_event(e, &room));
         }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleServer(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::policy_rule_server_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::PolicyRuleUser(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::policy_rule_user_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAliases(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_aliases_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomAvatar(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_avatar_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCanonicalAlias(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_canonical_alias_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomCreate(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_create_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomEncryption(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_encryption_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomGuestAccess(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_guest_access_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomHistoryVisibility(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_history_visibility_from_sync_event(
+                e, &room,
+            ));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomJoinRules(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_join_rules_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomMember(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_member_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomName(SyncStateEvent::Original(
+            e,
+        )))) => {
+            return Some(RoomMessage::room_name_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPinnedEvents(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_pinned_events_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomPowerLevels(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_power_levels_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomServerAcl(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_server_acl_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomThirdPartyInvite(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_third_party_invite_from_sync_event(
+                e, &room,
+            ));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTombstone(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_tombstone_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::RoomTopic(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_topic_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceChild(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::space_child_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::State(AnySyncStateEvent::SpaceParent(
+            SyncStateEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::space_parent_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallAnswer(
+            SyncMessageLikeEvent::Original(a),
+        ))) => {
+            return Some(RoomMessage::call_answer_from_sync_event(a, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallCandidates(
+            SyncMessageLikeEvent::Original(c),
+        ))) => {
+            return Some(RoomMessage::call_candidates_from_sync_event(c, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallHangup(
+            SyncMessageLikeEvent::Original(h),
+        ))) => {
+            return Some(RoomMessage::call_hangup_from_sync_event(h, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::CallInvite(
+            SyncMessageLikeEvent::Original(i),
+        ))) => {
+            return Some(RoomMessage::call_invite_from_sync_event(i, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationAccept(
+            SyncMessageLikeEvent::Original(a),
+        ))) => {
+            return Some(RoomMessage::key_verification_accept_from_sync_event(
+                a, &room,
+            ));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationCancel(
+            SyncMessageLikeEvent::Original(c),
+        ))) => {
+            return Some(RoomMessage::key_verification_cancel_from_sync_event(
+                c, &room,
+            ));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationDone(
+            SyncMessageLikeEvent::Original(d),
+        ))) => {
+            return Some(RoomMessage::key_verification_done_from_sync_event(d, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationKey(
+            SyncMessageLikeEvent::Original(k),
+        ))) => {
+            return Some(RoomMessage::key_verification_key_from_sync_event(k, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationMac(
+            SyncMessageLikeEvent::Original(m),
+        ))) => {
+            return Some(RoomMessage::key_verification_mac_from_sync_event(m, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationReady(
+            SyncMessageLikeEvent::Original(r),
+        ))) => {
+            return Some(RoomMessage::key_verification_ready_from_sync_event(
+                r, &room,
+            ));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::KeyVerificationStart(
+            SyncMessageLikeEvent::Original(s),
+        ))) => {
+            return Some(RoomMessage::key_verification_start_from_sync_event(
+                s, &room,
+            ));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Reaction(
+            SyncMessageLikeEvent::Original(r),
+        ))) => {
+            return Some(RoomMessage::reaction_from_sync_event(r, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomEncrypted(
+            SyncMessageLikeEvent::Original(e),
+        ))) => {
+            return Some(RoomMessage::room_encrypted_from_sync_event(e, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomMessage(
+            SyncMessageLikeEvent::Original(m),
+        ))) => {
+            return Some(RoomMessage::room_message_from_sync_event(m, &room, false));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::RoomRedaction(r))) => {
+            return Some(RoomMessage::room_redaction_from_sync_event(r, &room));
+        }
+        Ok(AnySyncTimelineEvent::MessageLike(AnySyncMessageLikeEvent::Sticker(
+            SyncMessageLikeEvent::Original(s),
+        ))) => {
+            return Some(RoomMessage::sticker_from_sync_event(s, &room));
+        }
+        _ => {}
     }
     None
 }
