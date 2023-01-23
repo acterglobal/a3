@@ -14,11 +14,14 @@ use matrix_sdk::{
             Visibility,
         },
         assign,
-        events::room::{
-            encrypted::OriginalSyncRoomEncryptedEvent,
-            member::{MembershipState, OriginalSyncRoomMemberEvent},
-            message::OriginalSyncRoomMessageEvent,
-            redaction::SyncRoomRedactionEvent,
+        events::{
+            room::{
+                encrypted::OriginalSyncRoomEncryptedEvent,
+                member::{MembershipState, OriginalSyncRoomMemberEvent},
+                message::OriginalSyncRoomMessageEvent,
+                redaction::SyncRoomRedactionEvent,
+            },
+            AnySyncTimelineEvent,
         },
         serde::Raw,
         OwnedRoomId, OwnedUserId,
@@ -60,9 +63,13 @@ impl Conversation {
                 .map(SyncTimelineEvent::from)
                 .collect();
             for event in events {
-                if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
-                    self.set_latest_message(msg);
-                    return;
+                // show only message event as latest message in chat room list
+                // skip the state event
+                if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
+                    if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
+                        self.set_latest_message(msg);
+                        return;
+                    }
                 }
             }
         }

@@ -19,7 +19,8 @@ use matrix_sdk::{
             },
             key::verification::{
                 accept::{
-                    OriginalKeyVerificationAcceptEvent, OriginalSyncKeyVerificationAcceptEvent,
+                    AcceptMethod, OriginalKeyVerificationAcceptEvent,
+                    OriginalSyncKeyVerificationAcceptEvent,
                 },
                 cancel::{
                     OriginalKeyVerificationCancelEvent, OriginalSyncKeyVerificationCancelEvent,
@@ -28,7 +29,11 @@ use matrix_sdk::{
                 key::{OriginalKeyVerificationKeyEvent, OriginalSyncKeyVerificationKeyEvent},
                 mac::{OriginalKeyVerificationMacEvent, OriginalSyncKeyVerificationMacEvent},
                 ready::{OriginalKeyVerificationReadyEvent, OriginalSyncKeyVerificationReadyEvent},
-                start::{OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent},
+                start::{
+                    OriginalKeyVerificationStartEvent, OriginalSyncKeyVerificationStartEvent,
+                    StartMethod,
+                },
+                VerificationMethod,
             },
             policy::rule::{
                 room::{OriginalPolicyRuleRoomEvent, OriginalSyncPolicyRuleRoomEvent},
@@ -43,7 +48,10 @@ use matrix_sdk::{
                     OriginalRoomCanonicalAliasEvent, OriginalSyncRoomCanonicalAliasEvent,
                 },
                 create::{OriginalRoomCreateEvent, OriginalSyncRoomCreateEvent},
-                encrypted::{OriginalRoomEncryptedEvent, OriginalSyncRoomEncryptedEvent},
+                encrypted::{
+                    EncryptedEventScheme, OriginalRoomEncryptedEvent,
+                    OriginalSyncRoomEncryptedEvent,
+                },
                 encryption::{OriginalRoomEncryptionEvent, OriginalSyncRoomEncryptionEvent},
                 guest_access::{OriginalRoomGuestAccessEvent, OriginalSyncRoomGuestAccessEvent},
                 history_visibility::{
@@ -287,7 +295,7 @@ impl RoomMessage {
         event: OriginalCallCandidatesEvent,
         room: &Room,
     ) -> Self {
-        let body = event
+        let candidates = event
             .content
             .candidates
             .into_iter()
@@ -295,7 +303,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body,
+            body: format!("changed candidates to {}", candidates),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -323,7 +331,7 @@ impl RoomMessage {
         event: OriginalSyncCallCandidatesEvent,
         room: &Room,
     ) -> Self {
-        let body = event
+        let candidates = event
             .content
             .candidates
             .into_iter()
@@ -331,7 +339,7 @@ impl RoomMessage {
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
-            body,
+            body: format!("changed candidates to {}", candidates),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -357,7 +365,7 @@ impl RoomMessage {
 
     pub(crate) fn call_hangup_from_event(event: OriginalCallHangupEvent, room: &Room) -> Self {
         let text_desc = event.content.reason.map(|x| TextDesc {
-            body: x.to_string(),
+            body: format!("hangup this call because {}", x.to_string()),
             formatted_body: None,
         });
         RoomMessage::new(
@@ -386,7 +394,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = event.content.reason.map(|x| TextDesc {
-            body: x.to_string(),
+            body: format!("hangup this call because {}", x.to_string()),
             formatted_body: None,
         });
         RoomMessage::new(
@@ -469,8 +477,16 @@ impl RoomMessage {
         event: OriginalKeyVerificationAcceptEvent,
         room: &Room,
     ) -> Self {
+        let body = if let AcceptMethod::SasV1(content) = event.content.method {
+            format!(
+                "accepted verification with {}",
+                content.message_authentication_code.to_string(),
+            )
+        } else {
+            "accepted verification".to_string()
+        };
         let text_desc = TextDesc {
-            body: "accepted verification".to_string(),
+            body,
             formatted_body: None,
         };
         RoomMessage::new(
@@ -498,8 +514,16 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationAcceptEvent,
         room: &Room,
     ) -> Self {
+        let body = if let AcceptMethod::SasV1(content) = event.content.method {
+            format!(
+                "accepted verification with {}",
+                content.message_authentication_code.to_string(),
+            )
+        } else {
+            "accepted verification".to_string()
+        };
         let text_desc = TextDesc {
-            body: "accepted verification".to_string(),
+            body,
             formatted_body: None,
         };
         RoomMessage::new(
@@ -528,7 +552,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: "canceled verification".to_string(),
+            body: format!("canceled verification because {}", event.content.reason),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -557,7 +581,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = TextDesc {
-            body: "canceled verification".to_string(),
+            body: format!("canceled verification because {}", event.content.reason),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -759,8 +783,21 @@ impl RoomMessage {
         event: OriginalKeyVerificationReadyEvent,
         room: &Room,
     ) -> Self {
+        let methods = event
+            .content
+            .methods
+            .iter()
+            .map(|x| match x {
+                VerificationMethod::SasV1 => "SasV1".to_string(),
+                VerificationMethod::QrCodeScanV1 => "QrCodeScanV1".to_string(),
+                VerificationMethod::QrCodeShowV1 => "QrCodeShowV1".to_string(),
+                VerificationMethod::ReciprocateV1 => "ReciprocateV1".to_string(),
+                _ => "Unknown".to_string(),
+            })
+            .collect::<Vec<String>>()
+            .join(", ");
         let text_desc = TextDesc {
-            body: "ready verification".to_string(),
+            body: format!("ready verification with {}", methods),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -788,8 +825,21 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationReadyEvent,
         room: &Room,
     ) -> Self {
+        let methods = event
+            .content
+            .methods
+            .iter()
+            .map(|x| match x {
+                VerificationMethod::SasV1 => "SasV1".to_string(),
+                VerificationMethod::QrCodeScanV1 => "QrCodeScanV1".to_string(),
+                VerificationMethod::QrCodeShowV1 => "QrCodeShowV1".to_string(),
+                VerificationMethod::ReciprocateV1 => "ReciprocateV1".to_string(),
+                _ => "Unknown".to_string(),
+            })
+            .collect::<Vec<String>>()
+            .join(", ");
         let text_desc = TextDesc {
-            body: "ready verification".to_string(),
+            body: format!("ready verification with {}", methods),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -817,8 +867,13 @@ impl RoomMessage {
         event: OriginalKeyVerificationStartEvent,
         room: &Room,
     ) -> Self {
+        let method = match event.content.method {
+            StartMethod::SasV1(s) => "SasV1".to_string(),
+            StartMethod::ReciprocateV1(s) => "ReciprocateV1".to_string(),
+            _ => "Unknown".to_string(),
+        };
         let text_desc = TextDesc {
-            body: "started verification".to_string(),
+            body: format!("started verification with {}", method),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -846,8 +901,13 @@ impl RoomMessage {
         event: OriginalSyncKeyVerificationStartEvent,
         room: &Room,
     ) -> Self {
+        let method = match event.content.method {
+            StartMethod::SasV1(s) => "SasV1".to_string(),
+            StartMethod::ReciprocateV1(s) => "ReciprocateV1".to_string(),
+            _ => "Unknown".to_string(),
+        };
         let text_desc = TextDesc {
-            body: "started verification".to_string(),
+            body: format!("started verification with {}", method),
             formatted_body: None,
         };
         RoomMessage::new(
@@ -875,8 +935,14 @@ impl RoomMessage {
         event: OriginalPolicyRuleRoomEvent,
         room: &Room,
     ) -> Self {
+        let body = format!(
+            "recommended {} about {} because {}",
+            event.content.0.recommendation.to_string(),
+            event.content.0.entity,
+            event.content.0.reason,
+        );
         let text_desc = TextDesc {
-            body: "changed policy rule room".to_string(),
+            body,
             formatted_body: None,
         };
         RoomMessage::new(
@@ -1225,6 +1291,21 @@ impl RoomMessage {
         event: OriginalRoomCanonicalAliasEvent,
         room: &Room,
     ) -> Self {
+        let alt_aliases = event
+            .content
+            .alt_aliases
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body: format!(
+                "changed canonical aliases ({}) of room alias ({:?})",
+                alt_aliases,
+                event.content.alias.map(|x| x.to_string()),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1234,7 +1315,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.canonical.alias".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1250,6 +1331,21 @@ impl RoomMessage {
         event: OriginalSyncRoomCanonicalAliasEvent,
         room: &Room,
     ) -> Self {
+        let alt_aliases = event
+            .content
+            .alt_aliases
+            .iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body: format!(
+                "changed canonical aliases ({}) of room alias ({:?})",
+                alt_aliases,
+                event.content.alias.map(|x| x.to_string()),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1259,7 +1355,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.canonical.alias".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1272,6 +1368,10 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_create_from_event(event: OriginalRoomCreateEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: format!("{} created this room", event.content.creator.to_string()),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1281,7 +1381,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.create".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1297,6 +1397,10 @@ impl RoomMessage {
         event: OriginalSyncRoomCreateEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!("{} created this room", event.content.creator.to_string()),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1306,7 +1410,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.create".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1322,6 +1426,15 @@ impl RoomMessage {
         event: OriginalRoomEncryptedEvent,
         room: &Room,
     ) -> Self {
+        let scheme = match event.content.scheme {
+            EncryptedEventScheme::MegolmV1AesSha2(s) => "MegolmV1AesSha2".to_string(),
+            EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
+            _ => "Unknown".to_string(),
+        };
+        let text_desc = TextDesc {
+            body: format!("encrypted by {}", scheme),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1331,7 +1444,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.encrypted".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1347,6 +1460,15 @@ impl RoomMessage {
         event: OriginalSyncRoomEncryptedEvent,
         room: &Room,
     ) -> Self {
+        let scheme = match event.content.scheme {
+            EncryptedEventScheme::MegolmV1AesSha2(s) => "MegolmV1AesSha2".to_string(),
+            EncryptedEventScheme::OlmV1Curve25519AesSha2(s) => "OlmV1Curve25519AesSha2".to_string(),
+            _ => "Unknown".to_string(),
+        };
+        let text_desc = TextDesc {
+            body: format!("encrypted by {}", scheme),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1356,7 +1478,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.encrypted".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1372,6 +1494,13 @@ impl RoomMessage {
         event: OriginalRoomEncryptionEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed encryption to {}",
+                event.content.algorithm.to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1381,7 +1510,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.encryption".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1397,6 +1526,13 @@ impl RoomMessage {
         event: OriginalSyncRoomEncryptionEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed encryption to {}",
+                event.content.algorithm.to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1406,7 +1542,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.encryption".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1422,6 +1558,13 @@ impl RoomMessage {
         event: OriginalRoomGuestAccessEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed room's guest access to {}",
+                event.content.guest_access.to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1431,7 +1574,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.guest.access".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1447,6 +1590,13 @@ impl RoomMessage {
         event: OriginalSyncRoomGuestAccessEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed room's guest access to {}",
+                event.content.guest_access.to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1456,7 +1606,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.guest.access".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1472,6 +1622,13 @@ impl RoomMessage {
         event: OriginalRoomHistoryVisibilityEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed room's history visibility to {}",
+                event.content.history_visibility.to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1481,7 +1638,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.history.visibility".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1497,6 +1654,13 @@ impl RoomMessage {
         event: OriginalSyncRoomHistoryVisibilityEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed room's history visibility to {}",
+                event.content.history_visibility.to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1506,7 +1670,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.history.visibility".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1522,6 +1686,13 @@ impl RoomMessage {
         event: OriginalRoomJoinRulesEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed room's join rules to {}",
+                event.content.join_rule.as_str().to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1531,7 +1702,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.join.rules".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1547,6 +1718,13 @@ impl RoomMessage {
         event: OriginalSyncRoomJoinRulesEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!(
+                "changed room's join rules to {}",
+                event.content.join_rule.as_str().to_string(),
+            ),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1556,7 +1734,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.join.rules".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1569,6 +1747,18 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_member_from_event(event: OriginalRoomMemberEvent, room: &Room) -> Self {
+        let mut terms = vec![];
+        if let Some(displayname) = event.content.displayname {
+            terms.push(format!("({})", displayname));
+        }
+        terms.push(format!(
+            "changed its membership to {}",
+            event.content.membership.to_string(),
+        ));
+        let text_desc = TextDesc {
+            body: terms.join(" "),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1578,7 +1768,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.member".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1594,6 +1784,18 @@ impl RoomMessage {
         event: OriginalSyncRoomMemberEvent,
         room: &Room,
     ) -> Self {
+        let mut terms = vec![];
+        if let Some(displayname) = event.content.displayname {
+            terms.push(format!("({})", displayname));
+        }
+        terms.push(format!(
+            "changed its membership to {}",
+            event.content.membership.to_string(),
+        ));
+        let text_desc = TextDesc {
+            body: terms.join(" "),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1603,7 +1805,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.member".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1822,6 +2024,13 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_name_from_event(event: OriginalRoomNameEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: match event.content.name {
+                Some(name) => format!("changed name to {}", name),
+                None => "changed name".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1831,7 +2040,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.name".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1844,6 +2053,13 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_name_from_sync_event(event: OriginalSyncRoomNameEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: match event.content.name {
+                Some(name) => format!("changed name to {}", name),
+                None => "changed name".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1853,7 +2069,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.name".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1869,6 +2085,10 @@ impl RoomMessage {
         event: OriginalRoomPinnedEventsEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!("pinned {} events", event.content.pinned.len()),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1878,7 +2098,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.pinned.events".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1894,6 +2114,10 @@ impl RoomMessage {
         event: OriginalSyncRoomPinnedEventsEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!("pinned {} events", event.content.pinned.len()),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1903,7 +2127,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.pinned.events".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1919,6 +2143,17 @@ impl RoomMessage {
         event: OriginalRoomPowerLevelsEvent,
         room: &Room,
     ) -> Self {
+        let users = event
+            .content
+            .users
+            .iter()
+            .map(|(user_id, value)| format!("power level of {} to {}", user_id.to_string(), value))
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body: format!("changed {}", users),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1928,7 +2163,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.power.levels".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1944,6 +2179,17 @@ impl RoomMessage {
         event: OriginalSyncRoomPowerLevelsEvent,
         room: &Room,
     ) -> Self {
+        let users = event
+            .content
+            .users
+            .iter()
+            .map(|(user_id, value)| format!("power level of {} to {}", user_id.to_string(), value))
+            .collect::<Vec<String>>()
+            .join(", ");
+        let text_desc = TextDesc {
+            body: format!("changed {}", users),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1953,7 +2199,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.power.levels".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1966,6 +2212,17 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_redaction_from_event(event: RoomRedactionEvent, room: &Room) -> Self {
+        let mut reason = None;
+        if let Some(ev) = event.as_original() {
+            reason = ev.content.reason.clone();
+        }
+        let text_desc = TextDesc {
+            body: match reason {
+                Some(reason) => format!("deleted this item because {}", reason),
+                None => format!("deleted this item"),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -1975,7 +2232,7 @@ impl RoomMessage {
                 event.origin_server_ts().get().into(),
                 "m.room.redaction".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -1991,6 +2248,17 @@ impl RoomMessage {
         event: SyncRoomRedactionEvent,
         room: &Room,
     ) -> Self {
+        let mut reason = None;
+        if let Some(ev) = event.as_original() {
+            reason = ev.content.reason.clone();
+        }
+        let text_desc = TextDesc {
+            body: match reason {
+                Some(reason) => format!("deleted this item because {}", reason),
+                None => format!("deleted this item"),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2000,7 +2268,7 @@ impl RoomMessage {
                 event.origin_server_ts().get().into(),
                 "m.room.redaction".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2016,6 +2284,17 @@ impl RoomMessage {
         event: OriginalRoomServerAclEvent,
         room: &Room,
     ) -> Self {
+        let allow = event.content.allow.join(", ");
+        let deny = event.content.deny.join(", ");
+        let text_desc = TextDesc {
+            body: match (allow.is_empty(), deny.is_empty()) {
+                (true, true) => format!("allowed {}, denied {}", allow, deny),
+                (true, false) => format!("allowed {}", allow),
+                (false, true) => format!("denied {}", deny),
+                (false, false) => "".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2025,7 +2304,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.server.acl".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2041,6 +2320,17 @@ impl RoomMessage {
         event: OriginalSyncRoomServerAclEvent,
         room: &Room,
     ) -> Self {
+        let allow = event.content.allow.join(", ");
+        let deny = event.content.deny.join(", ");
+        let text_desc = TextDesc {
+            body: match (allow.is_empty(), deny.is_empty()) {
+                (true, true) => format!("allowed {}, denied {}", allow, deny),
+                (true, false) => format!("allowed {}", allow),
+                (false, true) => format!("denied {}", deny),
+                (false, false) => "".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2050,7 +2340,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.server.acl".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2066,6 +2356,10 @@ impl RoomMessage {
         event: OriginalRoomThirdPartyInviteEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!("invited {}", event.content.display_name),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2075,7 +2369,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.third.party.invite".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2091,6 +2385,10 @@ impl RoomMessage {
         event: OriginalSyncRoomThirdPartyInviteEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!("invited {}", event.content.display_name),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2100,7 +2398,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.third.party.invite".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2116,6 +2414,10 @@ impl RoomMessage {
         event: OriginalRoomTombstoneEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.body,
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2125,7 +2427,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.tombstone".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2141,6 +2443,10 @@ impl RoomMessage {
         event: OriginalSyncRoomTombstoneEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.body,
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2150,7 +2456,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.tombstone".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2163,6 +2469,10 @@ impl RoomMessage {
     }
 
     pub(crate) fn room_topic_from_event(event: OriginalRoomTopicEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: format!("changed topic to {}", event.content.topic),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2172,7 +2482,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.topic".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2188,6 +2498,10 @@ impl RoomMessage {
         event: OriginalSyncRoomTopicEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: format!("changed topic to {}", event.content.topic),
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2197,7 +2511,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.room.topic".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2210,6 +2524,13 @@ impl RoomMessage {
     }
 
     pub(crate) fn space_child_from_event(event: OriginalSpaceChildEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: match event.content.order {
+                Some(order) => order,
+                None => "".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2219,7 +2540,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.space.child".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2235,6 +2556,13 @@ impl RoomMessage {
         event: OriginalSyncSpaceChildEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: match event.content.order {
+                Some(order) => order,
+                None => "".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2244,7 +2572,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.space.child".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2257,6 +2585,19 @@ impl RoomMessage {
     }
 
     pub(crate) fn space_parent_from_event(event: OriginalSpaceParentEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: match event.content.via {
+                Some(via) => format!(
+                    "changed parent to {}",
+                    via.iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", "),
+                ),
+                None => "".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2266,7 +2607,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.space.parent".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2282,6 +2623,19 @@ impl RoomMessage {
         event: OriginalSyncSpaceParentEvent,
         room: &Room,
     ) -> Self {
+        let text_desc = TextDesc {
+            body: match event.content.via {
+                Some(via) => format!(
+                    "changed parent to {}",
+                    via.iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(", "),
+                ),
+                None => "".to_string(),
+            },
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2291,7 +2645,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.space.parent".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2304,6 +2658,10 @@ impl RoomMessage {
     }
 
     pub(crate) fn sticker_from_event(event: OriginalStickerEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.body,
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2313,7 +2671,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.sticker".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
@@ -2326,6 +2684,10 @@ impl RoomMessage {
     }
 
     pub(crate) fn sticker_from_sync_event(event: OriginalSyncStickerEvent, room: &Room) -> Self {
+        let text_desc = TextDesc {
+            body: event.content.body,
+            formatted_body: None,
+        };
         RoomMessage::new(
             "event".to_string(),
             room.room_id().to_string(),
@@ -2335,7 +2697,7 @@ impl RoomMessage {
                 event.origin_server_ts.get().into(),
                 "m.sticker".to_string(),
                 None,
-                None,
+                Some(text_desc),
                 None,
                 None,
                 None,
