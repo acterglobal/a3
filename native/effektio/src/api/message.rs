@@ -365,7 +365,7 @@ impl RoomMessage {
 
     pub(crate) fn call_hangup_from_event(event: OriginalCallHangupEvent, room: &Room) -> Self {
         let text_desc = event.content.reason.map(|x| TextDesc {
-            body: format!("hangup this call because {}", x.to_string()),
+            body: format!("hangup this call because {x}"),
             formatted_body: None,
         });
         RoomMessage::new(
@@ -394,7 +394,7 @@ impl RoomMessage {
         room: &Room,
     ) -> Self {
         let text_desc = event.content.reason.map(|x| TextDesc {
-            body: format!("hangup this call because {}", x),
+            body: format!("hangup this call because {x}"),
             formatted_body: None,
         });
         RoomMessage::new(
@@ -2139,7 +2139,7 @@ impl RoomMessage {
             .content
             .users
             .iter()
-            .map(|(user_id, value)| format!("power level of {} to {}", user_id, value))
+            .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
@@ -2175,7 +2175,7 @@ impl RoomMessage {
             .content
             .users
             .iter()
-            .map(|(user_id, value)| format!("power level of {} to {}", user_id, value))
+            .map(|(user_id, value)| format!("power level of {user_id} to {value}"))
             .collect::<Vec<String>>()
             .join(", ");
         let text_desc = TextDesc {
@@ -2787,7 +2787,7 @@ impl RoomMessage {
                                 width: info.width.map(u64::from),
                                 height: info.height.map(u64::from),
                                 blurhash: info.blurhash.clone(),
-                                duration: info.duration.clone(),
+                                duration: info.duration,
                                 thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
                                 thumbnail_source: info.thumbnail_source.clone(),
                             });
@@ -2940,7 +2940,7 @@ impl RoomMessage {
                         displayname_change,
                         avatar_url_change,
                     }) => {
-                        format!("{} changed profile", m.user_id().to_string())
+                        format!("{} changed profile", m.user_id())
                     }
                     Some(MembershipChange::NotImplemented) => "not implemented".to_string(),
                     _ => "unknown error".to_string(),
