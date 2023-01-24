@@ -3,7 +3,6 @@ import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/Team.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
@@ -101,9 +100,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         child: TextFormField(
           controller: nameController,
           keyboardType: TextInputType.text,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.deny(RegExp(r'^[^a-z0-9]$')),
-          ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
             border: InputBorder.none,
@@ -146,9 +142,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         child: TextFormField(
           controller: descriptionController,
           keyboardType: TextInputType.text,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.deny(RegExp(r'^[^a-z0-9]$')),
-          ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
             border: InputBorder.none,
@@ -170,10 +163,10 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
               id: 'teams',
               builder: (_) {
                 return InkWell(
-                  onTap: () => nameController.text.isNotEmpty
+                  onTap: () => nameController.text.trim().isNotEmpty
                       ? _showPopupMenu(context)
                       : null,
-                  onTapDown: widget.controller.taskNameCount.value < 30
+                  onTapDown: nameController.text.trim().isNotEmpty
                       ? getPosition
                       : null,
                   child: Container(
@@ -188,7 +181,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           ? widget.controller.selectedTeam!.name!
                           : 'Select Team',
                       style: ToDoTheme.selectTeamTextStyle.copyWith(
-                        color: widget.controller.taskNameCount.value < 30
+                        color: nameController.text.trim().isNotEmpty
                             ? null
                             : const Color(0xFF898A8D),
                       ),
@@ -221,13 +214,14 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                   ),
                 )
               : CustomOnbaordingButton(
-                  onPressed: (widget.controller.taskNameCount < 30)
+                  onPressed: (widget.controller.taskNameCount < 30 &&
+                          nameController.text.trim().isNotEmpty)
                       ? () async {
                           widget.controller.isLoading.value = true;
                           await widget.controller.createToDoList(
                             widget.controller.selectedTeam!.id,
-                            nameController.text,
-                            descriptionController.text,
+                            nameController.text.trim(),
+                            descriptionController.text.trim(),
                           );
                           widget.controller.isLoading.value = false;
                           Navigator.pop(context);
@@ -351,11 +345,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                 key: formGlobalKey,
                 child: TextFormField(
                   controller: teamInputController,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9a-zA-Z]+|\s'),
-                    ),
-                  ],
                   maxLines: 5,
                   maxLength: 50,
                   cursorColor: Colors.white,
@@ -399,9 +388,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                         ),
                       );
                     });
-                  },
-                  validator: (val) {
-                    return null;
                   },
                 ),
               ),
