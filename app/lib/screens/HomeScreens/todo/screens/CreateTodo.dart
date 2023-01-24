@@ -102,7 +102,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           controller: nameController,
           keyboardType: TextInputType.text,
           inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]+|\s')),
+            FilteringTextInputFormatter.deny(RegExp(r'^[^a-z0-9]$')),
           ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
@@ -147,7 +147,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           controller: descriptionController,
           keyboardType: TextInputType.text,
           inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]+|\s')),
+            FilteringTextInputFormatter.deny(RegExp(r'^[^a-z0-9]$')),
           ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
