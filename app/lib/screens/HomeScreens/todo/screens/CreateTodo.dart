@@ -29,6 +29,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   void initState() {
     super.initState();
     widget.controller.taskNameCount.value = 30;
+    widget.controller.maxLength.value = double.maxFinite.toInt();
     widget.controller.setSelectedTeam(null);
   }
 
@@ -89,36 +90,39 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         ),
       );
 
-  Widget _buildNameInput() => Container(
-        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-        height: 60,
-        decoration: BoxDecoration(
-          color: ToDoTheme.textFieldColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
-        ),
-        child: TextFormField(
-          controller: nameController,
-          keyboardType: TextInputType.text,
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-            border: InputBorder.none,
-            hintText: 'List Title',
-            // hide default counter helper
-            counterText: '',
-            // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
+  Widget _buildNameInput() => Obx(
+        () => Container(
+          margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+          height: 60,
+          decoration: BoxDecoration(
+            color: ToDoTheme.textFieldColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
           ),
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          maxLength: 30,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return 'Cannot be empty';
-            }
-            return null;
-          },
-          onChanged: (value) => widget.controller.updateWordCount(value.length),
+          child: TextFormField(
+            controller: nameController,
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
+              border: InputBorder.none,
+
+              hintText: 'List Title',
+              // hide default counter helper
+              counterText: '',
+              // pass the hint text parameter here
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+            maxLength: widget.controller.maxLength.value,
+            style: const TextStyle(color: Colors.white),
+            cursorColor: Colors.white,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Cannot be empty';
+              }
+              return null;
+            },
+            onChanged: (value) => widget.controller.updateWordCount(value),
+          ),
         ),
       );
 
