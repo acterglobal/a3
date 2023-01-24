@@ -248,14 +248,14 @@ class ToDoController extends GetxController {
   }
 
   //ToDo list card expand.
-  void toggleCardExpand(int index) {
-    cardExpand = !cardExpand;
+  void toggleCardExpand(int index, bool prevState) {
+    cardExpand = !prevState;
     update(['list-item-$index']);
   }
 
   // Completed tasks expand.
-  void toggleExpandBtn(index) {
-    expandBtn = !expandBtn;
+  void toggleExpandBtn(index, bool prevState) {
+    expandBtn = !prevState;
     update(['list-item-$index']);
   }
 
