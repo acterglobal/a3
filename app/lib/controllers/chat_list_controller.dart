@@ -62,7 +62,8 @@ class ChatListController extends GetxController {
 
         if (newItem.latestMessage != null) {
           debugPrint(
-              'timestamp is ${newItem.latestMessage!.eventItem()!.originServerTs()}');
+            'timestamp is ${newItem.latestMessage!.eventItem()!.originServerTs()}',
+          );
         }
 
         joinedRooms.add(newItem);
