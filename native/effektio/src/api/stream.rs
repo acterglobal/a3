@@ -1,10 +1,12 @@
 use anyhow::{bail, Result};
 use futures::{Stream, StreamExt};
 use futures_signals::signal_vec::{SignalVecExt, VecDiff};
-use js_int::UInt;
 use log::info;
 use matrix_sdk::{
-    room::{timeline::Timeline, Room},
+    room::{
+        timeline::{PaginationOptions, Timeline, TimelineItem, VirtualTimelineItem},
+        Room,
+    },
     ruma::{
         events::{
             relation::Replacement,
@@ -175,10 +177,39 @@ impl TimelineStream {
 
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
         let timeline = self.timeline.clone();
+        let mut timeline_stream = timeline.signal().to_stream();
+
         RUNTIME
             .spawn(async move {
-                let outcome = timeline.paginate_backwards(UInt::from(count)).await?;
-                Ok(outcome.more_messages)
+                timeline
+                    .paginate_backwards(PaginationOptions::single_request(count))
+                    .await?;
+
+                let mut is_loading_indicator = false;
+                if let Some(VecDiff::InsertAt { index: 0, value }) = timeline_stream.next().await {
+                    if let TimelineItem::Virtual(VirtualTimelineItem::LoadingIndicator) =
+                        value.as_ref()
+                    {
+                        is_loading_indicator = true;
+                    }
+                }
+                if !is_loading_indicator {
+                    return Ok(true);
+                }
+
+                let mut is_timeline_start = false;
+                if let Some(VecDiff::UpdateAt { index: 0, value }) = timeline_stream.next().await {
+                    if let TimelineItem::Virtual(VirtualTimelineItem::TimelineStart) =
+                        value.as_ref()
+                    {
+                        is_timeline_start = true;
+                    }
+                }
+                if !is_timeline_start {
+                    return Ok(true);
+                }
+
+                Ok(false)
             })
             .await?
     }
