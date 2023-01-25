@@ -273,6 +273,7 @@ impl super::EffektioModel for TaskListUpdate {
             self.inner.task_list.event_id
         )]
     }
+
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
