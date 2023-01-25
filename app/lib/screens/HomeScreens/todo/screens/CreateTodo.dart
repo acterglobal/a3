@@ -42,7 +42,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ToDoTheme.backgroundGradient2Color,

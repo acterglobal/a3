@@ -17,11 +17,9 @@ class ToDoCommentScreen extends StatefulWidget {
 }
 
 class _ToDoCommentScreenState extends State<ToDoCommentScreen> {
-
   bool emojiShowing = false;
   bool isKeyBoardOpen = false;
   TextEditingController commentTextController = TextEditingController();
-
 
   void onEmojiSelected(Emoji emoji) {
     commentTextController
@@ -73,8 +71,7 @@ class _ToDoCommentScreenState extends State<ToDoCommentScreen> {
                     return Padding(
                       padding: const EdgeInsets.all(12),
                       child: ToDoCommentView(
-                        commentModel: newsCommentController
-                            .listComments[index],
+                        commentModel: newsCommentController.listComments[index],
                         postition: index,
                       ),
                     );
@@ -157,7 +154,7 @@ class _ToDoCommentScreenState extends State<ToDoCommentScreen> {
                   width: MediaQuery.of(context).size.width,
                   height: 250,
                   child: EmojiPicker(
-                    onEmojiSelected: (Category category, Emoji emoji) {
+                    onEmojiSelected: (Category? category, Emoji emoji) {
                       onEmojiSelected(emoji);
                     },
                     onBackspacePressed: onBackspacePressed,
@@ -171,7 +168,6 @@ class _ToDoCommentScreenState extends State<ToDoCommentScreen> {
                       indicatorColor: Colors.blue,
                       iconColor: Colors.grey,
                       iconColorSelected: Colors.blue,
-                      progressIndicatorColor: Colors.blue,
                       backspaceColor: Colors.blue,
                       skinToneDialogBgColor: Colors.white,
                       skinToneIndicatorColor: Colors.grey,
@@ -206,7 +202,7 @@ class _ToDoCommentScreenState extends State<ToDoCommentScreen> {
       },
       child: CachedNetworkImage(
         imageUrl:
-        'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+            'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
         height: 45,
         width: 45,
         imageBuilder: (context, imageProvider) => Container(
