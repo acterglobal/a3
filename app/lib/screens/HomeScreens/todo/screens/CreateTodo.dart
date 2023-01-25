@@ -222,11 +222,13 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           nameController.text.trim().isNotEmpty)
                       ? () async {
                           widget.controller.isLoading.value = true;
-                          await widget.controller.createToDoList(
-                            widget.controller.selectedTeam!.id,
-                            nameController.text.trim(),
-                            descriptionController.text.trim(),
-                          );
+                          await widget.controller
+                              .createToDoList(
+                                widget.controller.selectedTeam!.id,
+                                nameController.text.trim(),
+                                descriptionController.text.trim(),
+                              )
+                              .then((res) => debugPrint('ToDo CREATED: $res'));
                           widget.controller.isLoading.value = false;
                           Navigator.pop(context);
                         }

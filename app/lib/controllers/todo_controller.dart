@@ -224,11 +224,12 @@ class ToDoController extends GetxController {
     // send task update.
     String eventId =
         await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
+    DateTime completedDate = DateTime.now();
     ToDoTask updateItem = ToDoTask(
       name: task.name,
       progressPercent: updateVal,
       taskUpdateDraft: task.taskUpdateDraft,
-      due: task.due,
+      due: completedDate,
     );
     // update todos.
     int idx = list.tasks.indexOf(task);
