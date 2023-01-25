@@ -1,5 +1,6 @@
 import 'package:duration/duration.dart';
 import 'package:effektio/common/animations/LikeAnimation.dart';
+import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/NewsItem.dart';
 import 'package:effektio/widgets/SideMenu.dart';
@@ -64,6 +65,7 @@ class _NewsScreenState extends State<NewsScreen>
               leading: Builder(
                 builder: (BuildContext context) {
                   return IconButton(
+                    key: Keys.sidebarBtn,
                     icon: Container(
                       margin: const EdgeInsets.only(
                         bottom: 10,

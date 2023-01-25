@@ -1,3 +1,4 @@
+import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/login_controller.dart';
 import 'package:effektio/controllers/network_controller.dart';
@@ -79,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 35),
                   signInOnboardingTextField(
+                    LoginScreenKeys.usernameField,
                     AppLocalizations.of(context)!.username,
                     controller.username,
                     AppLocalizations.of(context)!.emptyUsername,
@@ -86,6 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   signInOnboardingTextField(
+                    LoginScreenKeys.passwordField,
                     AppLocalizations.of(context)!.password,
                     controller.password,
                     AppLocalizations.of(context)!.emptyPassword,
@@ -110,6 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: AppCommonTheme.primaryColor,
                         )
                       : CustomOnbaordingButton(
+                          key: LoginScreenKeys.submitBtn,
                           onPressed: () async {
                             controller.isSubmitting = true;
                             if (formKey.currentState!.validate()) {

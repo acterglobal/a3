@@ -138,6 +138,7 @@ Widget signUpOnboardingTextField(
 enum SignInOnboardingTextFieldEnum { userName, password }
 
 Widget signInOnboardingTextField(
+  Key key,
   String hintText,
   TextEditingController controller,
   String validatorText,
@@ -151,6 +152,7 @@ Widget signInOnboardingTextField(
       borderRadius: BorderRadius.circular(4),
     ),
     child: TextFormField(
+      key: key,
       inputFormatters: [
         FilteringTextInputFormatter.deny(RegExp(r'\s')),
       ],

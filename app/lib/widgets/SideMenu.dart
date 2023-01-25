@@ -1,3 +1,4 @@
+import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CrossSigning.dart';
@@ -68,6 +69,7 @@ class SideDrawer extends StatelessWidget {
             margin: const EdgeInsets.only(right: 20),
             alignment: Alignment.bottomCenter,
             child: ElevatedButton(
+              key: Keys.loginBtn,
               style: ButtonStyle(
                 alignment: Alignment.center,
                 backgroundColor: MaterialStateProperty.all<Color>(
@@ -150,6 +152,7 @@ class SideDrawer extends StatelessWidget {
   Widget buildUserId() {
     return Text(
       userId,
+      key: Keys.usernameLabel,
       style: SideMenuAndProfileTheme.sideMenuProfileStyle + const FontSize(14),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:effektio/common/constants.dart';
 import 'package:effektio/common/store/themes/AppTheme.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
@@ -39,6 +40,11 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:themed/themed.dart';
 
 void main() async {
+  await startApp();
+}
+
+Future<void> startFreshTestApp(String key) async {
+  await EffektioSdk.resetSessionsAndClients(key);
   await startApp();
 }
 
@@ -205,6 +211,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
   Widget buildNewsFeedTab() {
     return Container(
+      key: Keys.newsSectionBtn,
       margin: const EdgeInsets.only(top: 10),
       child: Tab(
         icon: tabIndex == 0
@@ -280,7 +287,7 @@ class _EffektioHomeState extends State<EffektioHome>
     );
     return DefaultTabController(
       length: 4,
-      key: const Key('bottom-bar'),
+      key: Keys.bottomBar,
       child: SafeArea(
         child: Scaffold(
           appBar: buildAppBar(),

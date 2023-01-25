@@ -1,5 +1,6 @@
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
+import 'package:effektio/common/constants.dart';
 import 'package:get/get.dart';
 
 class SignUpController extends GetxController {
@@ -20,7 +21,7 @@ class SignUpController extends GetxController {
     update();
     final sdk = await EffektioSdk.instance;
     if (!username.contains(':')) {
-      username = '$username:effektio.org';
+      username = '$username:$defaultDomain';
     }
     if (!username.startsWith('@')) {
       username = '@$username';
