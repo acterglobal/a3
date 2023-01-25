@@ -67,7 +67,9 @@ dependencies:
   avatar_stack: ^1.1.2
   flutter_lorem: ^2.0.0
   get_time_ago: ^1.1.5
-  implicitly_animated_reorderable_list_2: ^0.4.4
+  implicitly_animated_reorderable_list_2: 
+    git:
+      url: https://github.com/effektio/implicitly_animated_reorderable_list_2.git
   flutter_mentions: ^2.0.1
   flutter_matrix_html: ^1.0.0
   flutter_icons_null_safety: ^1.1.0
