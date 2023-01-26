@@ -4,7 +4,6 @@ use effektio_core::statics::default_effektio_conversation_states;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use log::{error, info, warn};
-
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
@@ -15,11 +14,14 @@ use matrix_sdk::{
             Visibility,
         },
         assign,
-        events::room::{
-            encrypted::OriginalSyncRoomEncryptedEvent,
-            member::{MembershipState, OriginalSyncRoomMemberEvent},
-            message::OriginalSyncRoomMessageEvent,
-            redaction::OriginalSyncRoomRedactionEvent,
+        events::{
+            room::{
+                encrypted::OriginalSyncRoomEncryptedEvent,
+                member::{MembershipState, OriginalSyncRoomMemberEvent},
+                message::OriginalSyncRoomMessageEvent,
+                redaction::SyncRoomRedactionEvent,
+            },
+            AnySyncTimelineEvent,
         },
         serde::Raw,
         OwnedRoomId, OwnedUserId,
@@ -61,9 +63,13 @@ impl Conversation {
                 .map(SyncTimelineEvent::from)
                 .collect();
             for event in events {
-                if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
-                    self.set_latest_message(msg);
-                    return;
+                // show only message event as latest message in chat room list
+                // skip the state event
+                if let Ok(AnySyncTimelineEvent::MessageLike(m)) = event.event.deserialize() {
+                    if let Some(msg) = sync_event_to_message(event.clone(), room.clone()) {
+                        self.set_latest_message(msg);
+                        return;
+                    }
                 }
             }
         }
@@ -174,7 +180,7 @@ impl ConversationController {
 
         client.add_event_handler_context(me);
         let handle = client.add_event_handler(
-            |ev: OriginalSyncRoomRedactionEvent,
+            |ev: SyncRoomRedactionEvent,
              room: MatrixRoom,
              c: MatrixClient,
              Ctx(me): Ctx<ConversationController>| async move {
@@ -233,16 +239,7 @@ impl ConversationController {
                 let ev = raw_event
                     .deserialize_as::<OriginalSyncRoomEncryptedEvent>()
                     .unwrap();
-                let msg = RoomMessage::from_sync_event(
-                    None,
-                    None,
-                    ev.event_id.to_string(),
-                    ev.sender.to_string(),
-                    ev.origin_server_ts.get().into(),
-                    "Encrypted".to_string(),
-                    room,
-                    false,
-                );
+                let msg = RoomMessage::room_encrypted_from_sync_event(ev, room);
                 convo.set_latest_message(msg.clone());
 
                 if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -274,16 +271,7 @@ impl ConversationController {
                 client: client.clone(),
                 room: room.clone(),
             });
-            let msg = RoomMessage::from_sync_event(
-                Some(ev.content.msgtype),
-                ev.content.relates_to,
-                ev.event_id.to_string(),
-                ev.sender.to_string(),
-                ev.origin_server_ts.get().into(),
-                "Message".to_string(),
-                room,
-                true,
-            );
+            let msg = RoomMessage::room_message_from_sync_event(ev, room, true);
             convo.set_latest_message(msg.clone());
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
@@ -300,7 +288,7 @@ impl ConversationController {
 
     // reorder room list on OriginalSyncRoomMemberEvent
     fn process_room_member(
-        &self,
+        &mut self,
         ev: OriginalSyncRoomMemberEvent,
         room: &MatrixRoom,
         client: &MatrixClient,
@@ -308,6 +296,27 @@ impl ConversationController {
         // filter only event for me
         let user_id = client.user_id().expect("You seem to be not logged in");
         if ev.state_key != *user_id {
+            if let MatrixRoom::Joined(joined) = room {
+                let mut convos = self.conversations.lock_mut();
+                let room_id = room.room_id();
+
+                let mut convo = Conversation::new(Room {
+                    client: client.clone(),
+                    room: room.clone(),
+                });
+                let msg = RoomMessage::room_member_from_sync_event(ev, room);
+                convo.set_latest_message(msg.clone());
+
+                if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {
+                    convos.remove(idx);
+                    convos.insert(0, convo);
+                    if let Err(e) = self.incoming_event_tx.try_send(msg) {
+                        warn!("Dropping ephemeral event for {}: {}", room_id, e);
+                    }
+                } else {
+                    convos.insert(0, convo);
+                }
+            }
             return;
         }
 
@@ -344,7 +353,7 @@ impl ConversationController {
     // reorder room list on OriginalSyncRoomRedactionEvent
     async fn process_room_redaction(
         &mut self,
-        ev: OriginalSyncRoomRedactionEvent,
+        ev: SyncRoomRedactionEvent,
         room: &MatrixRoom,
         client: &MatrixClient,
     ) {
@@ -357,16 +366,7 @@ impl ConversationController {
                 client: client.clone(),
                 room: room.clone(),
             });
-            let msg = RoomMessage::from_sync_event(
-                None,
-                None,
-                ev.event_id.to_string(),
-                ev.sender.to_string(),
-                ev.origin_server_ts.get().into(),
-                "RedactedMessage".to_string(),
-                room,
-                false,
-            );
+            let msg = RoomMessage::room_redaction_from_sync_event(ev, room);
             convo.set_latest_message(msg.clone());
 
             if let Some(idx) = convos.iter().position(|x| x.room_id() == room_id) {

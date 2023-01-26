@@ -36,7 +36,6 @@ jobs:
           httpPort: 8008
           disableRateLimiting: true
           customConfig: |
-            server_mame: "ds9.effektio.org"
             allow_guest_access: true
 
       - uses: rui314/setup-mold@v1
@@ -46,6 +45,8 @@ jobs:
 
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:8008
+        env:
+          EFFEKTIO_SERVERNAME: "localhost"
 
       - name: run cargo integration tests
         env:
@@ -86,11 +87,12 @@ jobs:
           httpPort: 8118
           disableRateLimiting: true
           customConfig: |
-            server_mame: "ds9.effektio.org"
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:8118/
+        env:
+          EFFEKTIO_SERVERNAME: "localhost"
 
       - name: Build Native
         run: cargo make --profile release desktop
@@ -138,11 +140,12 @@ jobs:
           httpPort: 8118
           disableRateLimiting: true
           customConfig: |
-            server_mame: "ds9.effektio.org"
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:8118/
+        env:
+          EFFEKTIO_SERVERNAME: "localhost"
 
       - name: Build Native
         run: cargo make --profile release ios
@@ -194,11 +197,12 @@ jobs:
           httpPort: 8118
           disableRateLimiting: true
           customConfig: |
-            server_mame: "ds9.effektio.org"
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock http://localhost:8118/
+        env:
+          EFFEKTIO_SERVERNAME: "localhost"
 
       - name: Build Native
         run: cargo make --profile release android

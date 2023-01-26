@@ -4,7 +4,7 @@ import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show EffektioSdk;
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -17,6 +17,7 @@ class SideDrawer extends StatelessWidget {
   final String? displayName;
   final String userId;
   final Future<FfiBufferUint8>? displayAvatar;
+  final Client client;
 
   const SideDrawer({
     Key? key,
@@ -24,6 +25,7 @@ class SideDrawer extends StatelessWidget {
     required this.userId,
     this.displayName,
     this.displayAvatar,
+    required this.client,
   }) : super(key: key);
 
   @override

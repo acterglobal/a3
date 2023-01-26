@@ -16,13 +16,19 @@ fn register_with_registration_token(basepath: string, username: string, password
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
 
+/// Representing a time frame
+object EfkDuration {}
+
+fn duration_from_secs(secs: u64) -> EfkDuration;
+
+
 /// Representing a color
-object Color {
+object EfkColor {
     /// as rgba in u8
     fn rgba_u8() -> (u8, u8, u8, u8);
 }
 
-object UtcDateTime { 
+object UtcDateTime {
     fn timestamp() -> i64;
     fn to_rfc2822() -> string;
     fn to_rfc3339() -> string;
@@ -41,11 +47,11 @@ object News {
     /// the number of comments on this item
     fn comments_count() -> u32;
     /// if given, the specific foreground color
-    fn fg_color() -> Option<Color>; 
+    fn fg_color() -> Option<EfkColor>; 
     /// if given, the specific background color
-    fn bg_color() -> Option<Color>; 
+    fn bg_color() -> Option<EfkColor>; 
     /// if given, the image
-    fn image() -> Option<Vec<u8>>; 
+    fn image() -> Option<Vec<u8>>;
 }
 
 object Tag {
@@ -54,7 +60,7 @@ object Tag {
     /// dash-cased-ascii-version for usage in hashtags (no `#` at the front)
     fn hash_tag() -> string;
     /// if given, the specific color for this tag
-    fn color() -> Option<Color>; 
+    fn color() -> Option<EfkColor>; 
 }
 
 /// A news object
@@ -74,6 +80,8 @@ object Faq {
     /// the number of comments on this item
     fn comments_count() -> u32;
 }
+
+object MediaSource {}
 
 object DeviceId {
     fn to_string() -> string;
@@ -108,8 +116,8 @@ object RoomEventItem {
     /// the server receiving timestamp in milliseconds
     fn origin_server_ts() -> u64;
 
-    /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
-    fn item_content_type() -> string;
+    /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+    fn event_type() -> string;
 
     /// the type of massage, like audio, text, image, file, etc
     fn msgtype() -> Option<string>;
@@ -119,6 +127,9 @@ object RoomEventItem {
 
     /// contains source data, name, mimetype, size, width and height
     fn image_desc() -> Option<ImageDesc>;
+
+    /// contains source data, name, mimetype, size, width and height
+    fn video_desc() -> Option<VideoDesc>;
 
     /// contains source data, name, mimetype and size
     fn file_desc() -> Option<FileDesc>;
@@ -136,7 +147,13 @@ object RoomEventItem {
     fn is_editable() -> bool;
 }
 
-object RoomVirtualItem {}
+object RoomVirtualItem {
+    /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+    fn event_type() -> string;
+
+    /// contains description text
+    fn desc() -> Option<string>;
+}
 
 /// A room Message metadata and content
 object RoomMessage {
@@ -176,6 +193,59 @@ object ImageDesc {
 
     /// image height
     fn height() -> Option<u64>;
+
+    /// thumbnail mimetype
+    fn thumbnail_mimetype() -> Option<string>;
+
+    /// thumbnail file size
+    fn thumbnail_size() -> Option<u64>;
+
+    /// thumbnail image width
+    fn thumbnail_width() -> Option<u64>;
+
+    /// thumbnail image height
+    fn thumbnail_height() -> Option<u64>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
+}
+
+object VideoDesc {
+    /// file name
+    fn name() -> string;
+
+    /// MIME
+    fn mimetype() -> Option<string>;
+
+    /// file size in bytes
+    fn size() -> Option<u64>;
+
+    /// image width
+    fn width() -> Option<u64>;
+
+    /// image height
+    fn height() -> Option<u64>;
+
+    /// blurhash
+    fn blurhash() -> Option<string>;
+
+    /// duration in seconds
+    fn duration() -> Option<u64>;
+
+    /// thumbnail mimetype
+    fn thumbnail_mimetype() -> Option<string>;
+
+    /// thumbnail file size
+    fn thumbnail_size() -> Option<u64>;
+
+    /// thumbnail image width
+    fn thumbnail_width() -> Option<u64>;
+
+    /// thumbnail image height
+    fn thumbnail_height() -> Option<u64>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
 }
 
 object FileDesc {
@@ -187,6 +257,21 @@ object FileDesc {
 
     /// file size in bytes
     fn size() -> Option<u64>;
+
+    /// thumbnail mimetype
+    fn thumbnail_mimetype() -> Option<string>;
+
+    /// thumbnail file size
+    fn thumbnail_size() -> Option<u64>;
+
+    /// thumbnail image width
+    fn thumbnail_width() -> Option<u64>;
+
+    /// thumbnail image height
+    fn thumbnail_height() -> Option<u64>;
+
+    /// thumbnail source
+    fn thumbnail_source() -> Option<MediaSource>;
 }
 
 object ReactionDesc {
@@ -336,7 +421,7 @@ object Conversation {
 }
 
 object CommentDraft {
-    /// set the content of the draft to body 
+    /// set the content of the draft to body
     fn content_text(body: string);
 
     /// set the content to a formatted body of html_body, where body is the tag-stripped version
@@ -368,7 +453,7 @@ object CommentsManager {
     /// Does this item have any comments?
     fn has_comments() -> bool;
 
-    /// How many comments does this item have 
+    /// How many comments does this item have
     fn comments_count() -> u32;
 
     /// draft a new comment for this item
@@ -409,9 +494,9 @@ object Task {
 
     /// When this was started
     fn utc_start() -> Option<UtcDateTime>;
-    
+
     /// Has this been colored in?
-    fn color() -> Option<Color>;
+    fn color() -> Option<EfkColor>;
 
     /// is this task already done?
     fn is_done() -> bool;
@@ -454,7 +539,7 @@ object TaskUpdateBuilder {
     fn unset_sort_order_update();
 
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
     fn unset_color_update();
 
@@ -524,7 +609,7 @@ object TaskDraft {
     fn sort_order(sort_order: u32);
 
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
 
     /// set the utc_due for this task list in rfc3339 format
@@ -543,11 +628,9 @@ object TaskDraft {
     fn utc_start_from_format(utc_start: string, format: string)-> Result<bool>;
     fn unset_utc_start();
 
-
     /// set the sort order for this task list
     fn progress_percent(progress_percent: u8);
     fn unset_progress_percent();
-    
 
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -582,9 +665,9 @@ object TaskList {
 
     /// order in the list
     fn sort_order() -> u32;
-    
+
     /// Has this been colored in?
-    fn color() -> Option<Color>;
+    fn color() -> Option<EfkColor>;
     
     /// Does this have any special time zone
     fn time_zone() -> Option<string>;
@@ -597,6 +680,9 @@ object TaskList {
 
     /// The tasks belonging to this tasklist
     fn tasks() -> Future<Result<Vec<Task>>>;
+
+    /// make a builder for creating the task draft
+    fn task_builder() -> Result<TaskDraft>;
 
     /// make a builder for updating the task list
     fn update_builder() -> Result<TaskListUpdateBuilder>;
@@ -617,7 +703,7 @@ object TaskListDraft {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
     /// set the keywords for this task list
     fn keywords(keywords: Vec<string>);
@@ -642,7 +728,7 @@ object TaskListUpdateBuilder {
     /// set the sort order for this task list
     fn sort_order(sort_order: u32);
     /// set the color for this task list
-    fn color(color: Color);
+    fn color(color: EfkColor);
     fn unset_color();
     fn unset_color_update();
     /// set the keywords for this task list
@@ -667,6 +753,9 @@ object Group {
 
     /// the members currently in the group
     fn active_members() -> Future<Result<Vec<Member>>>;
+
+    /// the room id
+    fn get_room_id() -> string;
 
     // the members currently in the room
     fn get_member(user_id: string) -> Future<Result<Member>>;
@@ -714,6 +803,19 @@ object SyncState {
     /// stop the sync loop
     fn cancel();
 }
+
+object CreateGroupSettings {
+    /// set the alias of group
+    fn alias(value: string);
+
+    /// set the group's visibility to either Public or Private
+    fn visibility(value: string);
+
+    /// add the id of user that will be invited to this group
+    fn add_invitee(value: string);
+}
+
+fn new_group_settings(name: string) -> CreateGroupSettings;
 
 /// Main entry point for `effektio`.
 object Client {
@@ -801,6 +903,21 @@ object Client {
 
     /// the Tasks lists of this Group
     fn task_lists() -> Future<Result<Vec<TaskList>>>;
+
+    /// create default group
+    fn create_effektio_group(settings: CreateGroupSettings) -> Future<Result<RoomId>>;
+
+    /// listen to updates to any model key
+    fn subscribe(key: string) -> Stream<bool>;
+
+    /// Fetch the Comment or use its event_id to wait for it to come down the wire
+    fn wait_for_comment(key: string, timeout: Option<EfkDuration>) -> Future<Result<Comment>>;
+
+    /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
+    fn wait_for_task_list(key: string, timeout: Option<EfkDuration>) -> Future<Result<TaskList>>;
+
+    /// Fetch the Task or use its event_id to wait for it to come down the wire
+    fn wait_for_task(key: string, timeout: Option<EfkDuration>) -> Future<Result<Task>>;
 }
 
 object UserProfile {

@@ -58,7 +58,7 @@ class _ToDoBookmarkScreenState extends State<ToDoBookmarkScreen> {
                   children: [
                     Text(
                       'Oct 19 at 3:36am',
-                      style: ToDoTheme.subtitleTextStyle.copyWith(
+                      style: ToDoTheme.descriptionTextStyle.copyWith(
                         color: ToDoTheme.calendarColor,
                         fontSize: 13,
                       ),
@@ -147,7 +147,7 @@ class _ToDoBookmarkScreenState extends State<ToDoBookmarkScreen> {
                       ),
                       child: const Text(
                         'Okay',
-                        style: ToDoTheme.subtitleTextStyle,
+                        style: ToDoTheme.descriptionTextStyle,
                       ),
                     ),
                   )

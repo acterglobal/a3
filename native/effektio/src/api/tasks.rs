@@ -1,30 +1,19 @@
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    convert::{TryFrom, TryInto},
-    ops::Deref,
-    ops::DerefMut,
-};
-
-use crate::UserId;
-
-use super::{client::Client, group::Group, RUNTIME};
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
+use core::time::Duration;
 use effektio_core::{
     events::{
-        self,
         tasks::{self, Priority, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
         TextMessageEventContent, UtcDateTime,
     },
     executor::Executor,
     models::{self, AnyEffektioModel, Color, EffektioModel, TaskStats},
-    // models::,
     ruma::{
         events::{
             room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
             MessageLikeEvent,
         },
-        OwnedEventId, OwnedRoomId,
+        OwnedEventId, OwnedRoomId, OwnedUserId,
     },
     statics::KEYS,
     store::Store,
@@ -32,8 +21,49 @@ use effektio_core::{
 };
 use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
+use std::{
+    collections::{hash_map::Entry, HashMap},
+    convert::{TryFrom, TryInto},
+    ops::{Deref, DerefMut},
+};
+
+use super::{client::Client, group::Group, RUNTIME};
 
 impl Client {
+    pub async fn wait_for_task_list(
+        &self,
+        key: String,
+        timeout: Option<Box<Duration>>,
+    ) -> Result<TaskList> {
+        let AnyEffektioModel::TaskList(content) = self.wait_for(key.clone(), timeout).await? else {
+            bail!("{key} is not a task");
+        };
+        let room = self
+            .client
+            .get_room(content.room_id())
+            .context("Room not found")?;
+        Ok(TaskList {
+            client: self.clone(),
+            room,
+            content,
+        })
+    }
+
+    pub async fn wait_for_task(&self, key: String, timeout: Option<Box<Duration>>) -> Result<Task> {
+        let AnyEffektioModel::Task(content) = self.wait_for(key.clone(), timeout).await? else {
+            bail!("{key} is not a task");
+        };
+        let room = self
+            .client
+            .get_room(content.room_id())
+            .context("Room not found")?;
+        Ok(Task {
+            client: self.clone(),
+            room,
+            content,
+        })
+    }
+
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
@@ -65,6 +95,7 @@ impl Client {
         }
         Ok(task_lists)
     }
+
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let client = self.clone();
         let mdl = self.store.get(key).await?;
@@ -104,6 +135,7 @@ impl Group {
         }
         Ok(task_lists)
     }
+
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let mdl = self.client.store().get(key).await?;
 
@@ -182,7 +214,7 @@ impl TaskListDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -219,12 +251,16 @@ impl std::ops::Deref for TaskList {
 }
 
 impl TaskList {
+    pub fn name(&self) -> String {
+        self.content.name.clone()
+    }
+
     pub fn description_text(&self) -> Option<String> {
         self.description.as_ref().map(|t| t.body.clone())
     }
 
-    pub fn sort_order(&self) -> u32 {
-        self.content.sort_order
+    pub fn subscribers(&self) -> Vec<OwnedUserId> {
+        self.content.subscribers.clone()
     }
 
     pub fn role(&self) -> Option<String> {
@@ -234,8 +270,24 @@ impl TaskList {
             .and_then(|t| serde_json::to_string(t).ok())
     }
 
+    pub fn sort_order(&self) -> u32 {
+        self.content.sort_order
+    }
+
+    pub fn color(&self) -> Option<Color> {
+        self.content.color.clone()
+    }
+
     pub fn time_zone(&self) -> Option<String> {
         self.content.time_zone.as_ref().map(ToString::to_string)
+    }
+
+    pub fn keywords(&self) -> Vec<String> {
+        self.content.keywords.clone()
+    }
+
+    pub fn categories(&self) -> Vec<String> {
+        self.content.categories.clone()
     }
 }
 
@@ -280,6 +332,7 @@ impl TaskList {
             content,
         })
     }
+
     pub fn update_builder(&self) -> Result<TaskListUpdateBuilder> {
         let Room::Joined(joined) = &self.room else {
             bail!("Can only update tasks in joined rooms");
@@ -358,12 +411,20 @@ impl std::ops::Deref for Task {
 
 /// helpers for content
 impl Task {
+    pub fn title(&self) -> String {
+        self.content.title.clone()
+    }
+
     pub fn description_text(&self) -> Option<String> {
         self.content.description.as_ref().map(|t| t.body.clone())
     }
 
-    pub fn progress_percent(&self) -> Option<u8> {
-        self.content.progress_percent
+    pub fn assignees(&self) -> Vec<OwnedUserId> {
+        self.content.assignees.clone()
+    }
+
+    pub fn subscribers(&self) -> Vec<OwnedUserId> {
+        self.content.subscribers.clone()
     }
 
     pub fn sort_order(&self) -> u32 {
@@ -383,6 +444,34 @@ impl Task {
             Priority::SecondLowest => 8,
             Priority::Lowest => 9,
         })
+    }
+
+    pub fn utc_due(&self) -> Option<UtcDateTime> {
+        self.content.utc_due
+    }
+
+    pub fn utc_start(&self) -> Option<UtcDateTime> {
+        self.content.utc_start
+    }
+
+    pub fn color(&self) -> Option<Color> {
+        self.content.color.clone()
+    }
+
+    pub fn is_done(&self) -> bool {
+        self.content.is_done()
+    }
+
+    pub fn progress_percent(&self) -> Option<u8> {
+        self.content.progress_percent
+    }
+
+    pub fn keywords(&self) -> Vec<String> {
+        self.content.keywords.clone()
+    }
+
+    pub fn categories(&self) -> Vec<String> {
+        self.content.categories.clone()
     }
 }
 
@@ -558,7 +647,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(subscribers.to_vec());
         self
     }
@@ -568,7 +657,7 @@ impl TaskDraft {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut [UserId]) -> &mut Self {
+    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
         self.content.assignees(assignees.to_vec());
         self
     }
@@ -680,7 +769,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }
@@ -695,7 +784,7 @@ impl TaskUpdateBuilder {
         self
     }
 
-    pub fn assignees(&mut self, assignees: &mut [UserId]) -> &mut Self {
+    pub fn assignees(&mut self, assignees: &mut [OwnedUserId]) -> &mut Self {
         self.content.assignees(Some(assignees.to_vec()));
         self
     }
@@ -892,7 +981,7 @@ impl TaskListUpdateBuilder {
         self
     }
 
-    pub fn subscribers(&mut self, subscribers: &mut [UserId]) -> &mut Self {
+    pub fn subscribers(&mut self, subscribers: &mut [OwnedUserId]) -> &mut Self {
         self.content.subscribers(Some(subscribers.to_vec()));
         self
     }
@@ -930,6 +1019,7 @@ impl Group {
             content: Default::default(),
         })
     }
+
     pub fn task_list_draft_with_builder(&self, content: TaskListBuilder) -> Result<TaskListDraft> {
         let matrix_sdk::room::Room::Joined(joined) = &self.inner.room else {
             bail!("You can't create tasks for groups we are not part on")

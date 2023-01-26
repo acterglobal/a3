@@ -1,4 +1,9 @@
+use derive_getters::Getters;
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId};
+use serde::{Deserialize, Serialize};
 use std::ops::Deref;
+
+use super::{AnyEffektioModel, EventMeta};
 
 use crate::{
     events::tasks::{
@@ -7,11 +12,6 @@ use crate::{
     },
     statics::KEYS,
 };
-use derive_getters::Getters;
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
-use serde::{Deserialize, Serialize};
-
-use super::{AnyEffektioModel, EventMeta};
 
 static TASKS_KEY: &str = "tasks";
 
@@ -30,6 +30,14 @@ impl Deref for Task {
 impl Task {
     pub fn title(&self) -> &String {
         &self.inner.title
+    }
+
+    pub fn subscribers(&self) -> Vec<OwnedUserId> {
+        self.inner.subscribers.clone()
+    }
+
+    pub fn room_id(&self) -> &RoomId {
+        &self.meta.room_id
     }
 
     pub fn is_done(&self) -> bool {
@@ -183,6 +191,20 @@ impl TaskList {
     pub fn tasks_key(&self) -> String {
         format!("{}::{TASKS_KEY}", self.meta.event_id)
     }
+
+    pub fn key_from_event(event_id: &EventId) -> String {
+        event_id.to_string()
+    }
+
+    pub fn redacted(&self) -> bool {
+        false
+    }
+
+    pub fn updater(&self) -> TaskListUpdateBuilder {
+        TaskListUpdateBuilder::default()
+            .task_list(self.meta.event_id.to_owned())
+            .to_owned()
+    }
 }
 
 impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
@@ -208,27 +230,10 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
     }
 }
 
-impl TaskList {
-    pub fn key_from_event(event_id: &EventId) -> String {
-        event_id.to_string()
-    }
-
-    pub fn redacted(&self) -> bool {
-        false
-    }
-
-    pub fn updater(&self) -> TaskListUpdateBuilder {
-        TaskListUpdateBuilder::default()
-            .task_list(self.meta.event_id.to_owned())
-            .to_owned()
-    }
-}
-
 impl super::EffektioModel for TaskList {
     fn indizes(&self) -> Vec<String> {
         vec![KEYS::TASKS.to_owned()]
     }
-
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }
@@ -268,6 +273,7 @@ impl super::EffektioModel for TaskListUpdate {
             self.inner.task_list.event_id
         )]
     }
+
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
     }

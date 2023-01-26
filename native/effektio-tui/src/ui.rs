@@ -264,7 +264,7 @@ impl TasksState {
             let ls = List::new(
                 self.task_lists
                     .iter()
-                    .map(|l| ListItem::new(Text::from(l.name().clone())))
+                    .map(|l| ListItem::new(Text::from(l.name())))
                     .collect::<Vec<_>>(),
             )
             .highlight_style(Style::default().add_modifier(Modifier::BOLD).fg(PRIMARY))

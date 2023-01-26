@@ -19,7 +19,8 @@ use matrix_sdk::{
                 },
                 ImageInfo,
             },
-            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyTimelineEvent, MessageLikeEvent,
+            AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyStateEvent, AnyTimelineEvent,
+            MessageLikeEvent, StateEvent,
         },
         EventId, UInt, UserId,
     },
@@ -730,72 +731,229 @@ impl Room {
                 let eid = EventId::parse(event_id.clone())?;
                 let evt = room.event(&eid).await?;
                 match evt.event.deserialize() {
-                    Ok(AnyTimelineEvent::State(s)) => {
-                        bail!("Invalid AnyTimelineEvent::State: {:?}", s)
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleRoom(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::policy_rule_room_from_event(e, &r);
+                        Ok(msg)
                     }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomEncrypted(e))) => {
-                        if let Some(e) = e.as_original() {
-                            info!("RoomEncrypted: {:?}", e.content);
-                            let msg = RoomMessage::from_sync_event(
-                                None,
-                                None,
-                                e.event_id.to_string(),
-                                e.sender.to_string(),
-                                e.origin_server_ts.get().into(),
-                                "Encrypted".to_string(),
-                                &r,
-                                false, // not needed for parent msg
-                            );
-                            return Ok(msg);
-                        }
-                        bail!("Invalid AnyMessageLikeEvent::RoomEncrypted: {:?}", e)
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleServer(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::policy_rule_server_from_event(e, &r);
+                        Ok(msg)
                     }
-                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(m))) => {
-                        match m {
-                            MessageLikeEvent::Original(m) => {
-                                let msg = RoomMessage::from_sync_event(
-                                    Some(m.content.msgtype),
-                                    m.content.relates_to,
-                                    m.event_id.to_string(),
-                                    m.sender.to_string(),
-                                    m.origin_server_ts.get().into(),
-                                    "Message".to_string(),
-                                    &r,
-                                    false, // not needed for parent msg
-                                );
-                                Ok(msg)
-                            }
-                            MessageLikeEvent::Redacted(m) => {
-                                let msg = RoomMessage::from_sync_event(
-                                    None,
-                                    None,
-                                    m.event_id.to_string(),
-                                    m.sender.to_string(),
-                                    m.origin_server_ts.get().into(),
-                                    "RedactedMessage".to_string(),
-                                    &r,
-                                    false, // not needed for deleted msg
-                                );
-                                Ok(msg)
-                            }
-                        }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::PolicyRuleUser(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::policy_rule_user_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomAliases(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_aliases_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomAvatar(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_avatar_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomCanonicalAlias(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_canonical_alias_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomCreate(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_create_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomEncryption(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_encryption_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomGuestAccess(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_guest_access_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomHistoryVisibility(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_history_visibility_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomJoinRules(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_join_rules_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomMember(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_member_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomName(StateEvent::Original(
+                        e,
+                    )))) => {
+                        let msg = RoomMessage::room_name_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomPinnedEvents(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_pinned_events_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomPowerLevels(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_power_levels_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomServerAcl(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_server_acl_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomThirdPartyInvite(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_third_party_invite_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomTombstone(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_tombstone_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::RoomTopic(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::room_topic_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::SpaceChild(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::space_child_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(AnyStateEvent::SpaceParent(
+                        StateEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::space_parent_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::State(_)) => {
+                        bail!("Invalid AnyTimelineEvent::State: other")
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallAnswer(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::call_answer_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallCandidates(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::call_candidates_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallHangup(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::call_hangup_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::CallInvite(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::call_invite_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(
+                        AnyMessageLikeEvent::KeyVerificationAccept(MessageLikeEvent::Original(e)),
+                    )) => {
+                        let msg = RoomMessage::key_verification_accept_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(
+                        AnyMessageLikeEvent::KeyVerificationCancel(MessageLikeEvent::Original(e)),
+                    )) => {
+                        let msg = RoomMessage::key_verification_cancel_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(
+                        AnyMessageLikeEvent::KeyVerificationDone(MessageLikeEvent::Original(e)),
+                    )) => {
+                        let msg = RoomMessage::key_verification_done_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationKey(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::key_verification_key_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::KeyVerificationMac(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::key_verification_mac_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(
+                        AnyMessageLikeEvent::KeyVerificationReady(MessageLikeEvent::Original(e)),
+                    )) => {
+                        let msg = RoomMessage::key_verification_ready_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(
+                        AnyMessageLikeEvent::KeyVerificationStart(MessageLikeEvent::Original(e)),
+                    )) => {
+                        let msg = RoomMessage::key_verification_start_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Reaction(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        let msg = RoomMessage::reaction_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomEncrypted(
+                        MessageLikeEvent::Original(e),
+                    ))) => {
+                        info!("RoomEncrypted: {:?}", e.content);
+                        let msg = RoomMessage::room_encrypted_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomMessage(
+                        MessageLikeEvent::Original(m),
+                    ))) => {
+                        let msg = RoomMessage::room_message_from_event(m, &r, false);
+                        Ok(msg)
                     }
                     Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(e))) => {
-                        if let Some(e) = e.as_original() {
-                            info!("RoomRedaction: {:?}", e.content);
-                            let msg = RoomMessage::from_sync_event(
-                                None,
-                                None,
-                                e.event_id.to_string(),
-                                e.sender.to_string(),
-                                e.origin_server_ts.get().into(),
-                                "RedactedMessage".to_string(),
-                                &r,
-                                false, // not needed for parent msg
-                            );
-                            return Ok(msg);
-                        }
-                        bail!("Invalid AnyMessageLikeEvent::RoomRedaction: {:?}", r)
+                        let msg = RoomMessage::room_redaction_from_event(e, &r);
+                        Ok(msg)
+                    }
+                    Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::Sticker(
+                        MessageLikeEvent::Original(s),
+                    ))) => {
+                        let msg = RoomMessage::sticker_from_event(s, &r);
+                        Ok(msg)
                     }
                     Ok(AnyTimelineEvent::MessageLike(_)) => {
                         bail!("Invalid AnyTimelineEvent::MessageLike: other")

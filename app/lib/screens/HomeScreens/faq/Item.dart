@@ -381,7 +381,7 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                     child: SizedBox(
                       height: 250,
                       child: EmojiPicker(
-                        onEmojiSelected: (Category category, Emoji emoji) {
+                        onEmojiSelected: (Category? category, Emoji emoji) {
                           onEmojiSelected(emoji);
                         },
                         onBackspacePressed: onBackspacePressed,
@@ -395,7 +395,6 @@ class _FaqItemScreenState extends State<FaqItemScreen> {
                           indicatorColor: Colors.blue,
                           iconColor: Colors.grey,
                           iconColorSelected: Colors.blue,
-                          progressIndicatorColor: Colors.blue,
                           backspaceColor: Colors.blue,
                           skinToneDialogBgColor: Colors.white,
                           skinToneIndicatorColor: Colors.grey,
