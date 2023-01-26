@@ -3,6 +3,7 @@ import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
@@ -104,17 +105,40 @@ class _TaskCardState extends State<TaskCard> {
           Padding(
             padding: const EdgeInsets.all(10),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: widget.task.progressPercent >= 100
+                  ? MainAxisAlignment.end
+                  : MainAxisAlignment.start,
               children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+                  child: Visibility(
+                    visible: widget.task.progressPercent >= 100,
+                    child: const Icon(
+                      FlutterIcons.ios_checkmark_circle_outline_ion,
+                      color: Colors.red,
+                      size: 18,
+                    ),
+                  ),
+                ),
                 SvgPicture.asset(
                   'assets/images/calendar-2.svg',
-                  color: ToDoTheme.todayCalendarColor,
+                  color: widget.task.progressPercent >= 100
+                      ? Colors.red
+                      : ToDoTheme.todayCalendarColor,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
-                    DateFormat('EEEE, d MMM').format(widget.task.due!.toUtc()),
-                    style: ToDoTheme.todayCalendarTextStyle,
+                    widget.task.progressPercent >= 100
+                        ? DateFormat('H:m E, d MMM')
+                            .format(widget.task.due!.toUtc())
+                        : DateFormat('E, d MMM')
+                            .format(widget.task.due!.toUtc()),
+                    style: widget.task.progressPercent >= 100
+                        ? ToDoTheme.todayCalendarTextStyle
+                            .copyWith(color: Colors.red)
+                        : ToDoTheme.todayCalendarTextStyle,
                   ),
                 ),
               ],
@@ -132,7 +156,7 @@ class _TaskCardState extends State<TaskCard> {
     return const Icon(
       Icons.done_outlined,
       color: ToDoTheme.inactiveCheckColor,
-      size: 10,
+      size: 14,
     );
   }
 }

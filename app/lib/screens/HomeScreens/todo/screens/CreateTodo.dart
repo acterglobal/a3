@@ -42,7 +42,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ToDoTheme.backgroundGradient2Color,
@@ -222,11 +222,13 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           nameController.text.trim().isNotEmpty)
                       ? () async {
                           widget.controller.isLoading.value = true;
-                          await widget.controller.createToDoList(
-                            widget.controller.selectedTeam!.id,
-                            nameController.text.trim(),
-                            descriptionController.text.trim(),
-                          );
+                          await widget.controller
+                              .createToDoList(
+                                widget.controller.selectedTeam!.id,
+                                nameController.text.trim(),
+                                descriptionController.text.trim(),
+                              )
+                              .then((res) => debugPrint('ToDo CREATED: $res'));
                           widget.controller.isLoading.value = false;
                           Navigator.pop(context);
                         }
