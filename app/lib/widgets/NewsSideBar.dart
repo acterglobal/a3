@@ -62,7 +62,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       widget.news.fgColor(),
       AppCommonTheme.primaryColor,
     );
-    TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
+    TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       fontSize: 13,
       color: fgColor,
       shadows: [
@@ -275,7 +275,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
                           width: MediaQuery.of(context).size.width,
                           height: 250,
                           child: EmojiPicker(
-                            onEmojiSelected: (Category category, Emoji emoji) {
+                            onEmojiSelected: (Category? category, Emoji emoji) {
                               onEmojiSelected(emoji);
                             },
                             onBackspacePressed: onBackspacePressed,
@@ -289,7 +289,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
                               indicatorColor: Colors.blue,
                               iconColor: Colors.grey,
                               iconColorSelected: Colors.blue,
-                              progressIndicatorColor: Colors.blue,
                               backspaceColor: Colors.blue,
                               skinToneDialogBgColor: Colors.white,
                               skinToneIndicatorColor: Colors.grey,

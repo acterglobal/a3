@@ -163,9 +163,9 @@ class TodoCard extends StatelessWidget {
         ),
         const Spacer(),
         IconButton(
-          onPressed: () => controller.toggleCardExpand(index),
+          onPressed: () => controller.toggleCardExpand(index, isExpanded),
           icon: Icon(
-            controller.cardExpand == true
+            isExpanded
                 ? FlutterIcons.ios_arrow_up_ion
                 : FlutterIcons.ios_arrow_down_ion,
           ),
@@ -245,7 +245,7 @@ class TodoCard extends StatelessWidget {
           Row(
             children: <Widget>[
               ElevatedButton(
-                onPressed: () => controller.toggleExpandBtn(index),
+                onPressed: () => controller.toggleExpandBtn(index, expandBtn),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(
                     ToDoTheme.secondaryCardColor,
@@ -267,7 +267,7 @@ class TodoCard extends StatelessWidget {
                       softWrap: false,
                     ),
                     Icon(
-                      controller.expandBtn
+                      expandBtn
                           ? Icons.expand_more
                           : Icons.keyboard_arrow_right,
                       size: 14,

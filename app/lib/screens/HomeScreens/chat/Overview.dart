@@ -12,8 +12,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:implicitly_animated_reorderable_list/implicitly_animated_reorderable_list.dart';
-import 'package:implicitly_animated_reorderable_list/transitions.dart';
+import 'package:implicitly_animated_reorderable_list_2/implicitly_animated_reorderable_list_2.dart';
+import 'package:implicitly_animated_reorderable_list_2/transitions.dart';
 
 class ChatOverview extends StatefulWidget {
   final Client client;
@@ -25,7 +25,6 @@ class ChatOverview extends StatefulWidget {
 }
 
 class _ChatOverviewState extends State<ChatOverview> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,10 +92,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (widget.client.isGuest())
-                  empty
-                else
-                  buildList(context),
+                if (widget.client.isGuest()) empty else buildList(context),
               ],
             ),
           ),

@@ -3,7 +3,6 @@ import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/Team.dart';
 import 'package:effektio/widgets/OnboardingWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
@@ -30,6 +29,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
   void initState() {
     super.initState();
     widget.controller.taskNameCount.value = 30;
+    widget.controller.maxLength.value = double.maxFinite.toInt();
     widget.controller.setSelectedTeam(null);
   }
 
@@ -42,7 +42,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ToDoTheme.backgroundGradient2Color,
@@ -90,39 +90,39 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         ),
       );
 
-  Widget _buildNameInput() => Container(
-        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-        height: 60,
-        decoration: BoxDecoration(
-          color: ToDoTheme.textFieldColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
-        ),
-        child: TextFormField(
-          controller: nameController,
-          keyboardType: TextInputType.text,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]+|\s')),
-          ],
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-            border: InputBorder.none,
-            hintText: 'List Title',
-            // hide default counter helper
-            counterText: '',
-            // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
+  Widget _buildNameInput() => Obx(
+        () => Container(
+          margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+          height: 60,
+          decoration: BoxDecoration(
+            color: ToDoTheme.textFieldColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
           ),
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          maxLength: 30,
-          validator: (val) {
-            if (val == null || val.trim().isEmpty) {
-              return 'Cannot be empty';
-            }
-            return null;
-          },
-          onChanged: (value) => widget.controller.updateWordCount(value.length),
+          child: TextFormField(
+            controller: nameController,
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
+              border: InputBorder.none,
+
+              hintText: 'List Title',
+              // hide default counter helper
+              counterText: '',
+              // pass the hint text parameter here
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+            maxLength: widget.controller.maxLength.value,
+            style: const TextStyle(color: Colors.white),
+            cursorColor: Colors.white,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Cannot be empty';
+              }
+              return null;
+            },
+            onChanged: (value) => widget.controller.updateWordCount(value),
+          ),
         ),
       );
 
@@ -146,9 +146,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
         child: TextFormField(
           controller: descriptionController,
           keyboardType: TextInputType.text,
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9a-zA-Z]+|\s')),
-          ],
           decoration: const InputDecoration(
             contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
             border: InputBorder.none,
@@ -170,10 +167,10 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
               id: 'teams',
               builder: (_) {
                 return InkWell(
-                  onTap: () => nameController.text.isNotEmpty
+                  onTap: () => nameController.text.trim().isNotEmpty
                       ? _showPopupMenu(context)
                       : null,
-                  onTapDown: widget.controller.taskNameCount.value < 30
+                  onTapDown: nameController.text.trim().isNotEmpty
                       ? getPosition
                       : null,
                   child: Container(
@@ -188,7 +185,7 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                           ? widget.controller.selectedTeam!.name!
                           : 'Select Team',
                       style: ToDoTheme.selectTeamTextStyle.copyWith(
-                        color: widget.controller.taskNameCount.value < 30
+                        color: nameController.text.trim().isNotEmpty
                             ? null
                             : const Color(0xFF898A8D),
                       ),
@@ -221,14 +218,17 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                   ),
                 )
               : CustomOnbaordingButton(
-                  onPressed: (widget.controller.taskNameCount < 30)
+                  onPressed: (widget.controller.taskNameCount < 30 &&
+                          nameController.text.trim().isNotEmpty)
                       ? () async {
                           widget.controller.isLoading.value = true;
-                          await widget.controller.createToDoList(
-                            widget.controller.selectedTeam!.id,
-                            nameController.text,
-                            descriptionController.text,
-                          );
+                          await widget.controller
+                              .createToDoList(
+                                widget.controller.selectedTeam!.id,
+                                nameController.text.trim(),
+                                descriptionController.text.trim(),
+                              )
+                              .then((res) => debugPrint('ToDo CREATED: $res'));
                           widget.controller.isLoading.value = false;
                           Navigator.pop(context);
                         }
@@ -351,11 +351,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                 key: formGlobalKey,
                 child: TextFormField(
                   controller: teamInputController,
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9a-zA-Z]+|\s'),
-                    ),
-                  ],
                   maxLines: 5,
                   maxLength: 50,
                   cursorColor: Colors.white,
@@ -399,9 +394,6 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
                         ),
                       );
                     });
-                  },
-                  validator: (val) {
-                    return null;
                   },
                 ),
               ),

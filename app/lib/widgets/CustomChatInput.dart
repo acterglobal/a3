@@ -458,7 +458,6 @@ class EmojiPickerWidget extends StatelessWidget {
               indicatorColor: AppCommonTheme.primaryColor,
               iconColor: AppCommonTheme.dividerColor,
               iconColorSelected: AppCommonTheme.primaryColor,
-              progressIndicatorColor: AppCommonTheme.primaryColor,
               showRecentsTab: true,
               recentsLimit: 28,
               noRecents: Text(
@@ -475,7 +474,7 @@ class EmojiPickerWidget extends StatelessWidget {
     );
   }
 
-  void _handleEmojiSelected(Category category, Emoji emoji) {
+  void _handleEmojiSelected(Category? category, Emoji emoji) {
     _roomController.mentionKey.currentState!.controller!.text += emoji.emoji;
     _roomController.sendButtonUpdate();
   }

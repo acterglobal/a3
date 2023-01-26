@@ -22,6 +22,7 @@ class ToDoController extends GetxController {
   bool cardExpand = false;
   bool expandBtn = false;
   RxBool isLoading = false.obs;
+  RxInt maxLength = double.maxFinite.toInt().obs;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
   Team? selectedTeam;
@@ -223,11 +224,12 @@ class ToDoController extends GetxController {
     // send task update.
     String eventId =
         await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
+    DateTime completedDate = DateTime.now();
     ToDoTask updateItem = ToDoTask(
       name: task.name,
       progressPercent: updateVal,
       taskUpdateDraft: task.taskUpdateDraft,
-      due: task.due,
+      due: completedDate,
     );
     // update todos.
     int idx = list.tasks.indexOf(task);
@@ -248,14 +250,14 @@ class ToDoController extends GetxController {
   }
 
   //ToDo list card expand.
-  void toggleCardExpand(int index) {
-    cardExpand = !cardExpand;
+  void toggleCardExpand(int index, bool prevState) {
+    cardExpand = !prevState;
     update(['list-item-$index']);
   }
 
   // Completed tasks expand.
-  void toggleExpandBtn(index) {
-    expandBtn = !expandBtn;
+  void toggleExpandBtn(index, bool prevState) {
+    expandBtn = !prevState;
     update(['list-item-$index']);
   }
 
@@ -265,14 +267,22 @@ class ToDoController extends GetxController {
     update(['teams']);
   }
 
-  // max length counter for task name.
-  void updateWordCount(int val) {
-    if (val == 0) {
+  // max words counter for task name.
+  void updateWordCount(String val) {
+    if (val.isEmpty) {
       taskNameCount.value = 30;
+      maxLength.value = double.maxFinite.toInt();
       selectedTeam = null;
       update(['teams']);
     } else {
-      taskNameCount.value = 30 - val;
+      List l = val.split(' ');
+      if (taskNameCount.value > 0) {
+        taskNameCount.value = 30 - l.length;
+        maxLength.value = double.maxFinite.toInt();
+      } else {
+        taskNameCount.value = 30 - l.length;
+        maxLength.value = val.length;
+      }
       update(['teams']);
     }
   }

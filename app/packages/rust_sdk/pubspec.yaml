@@ -5,12 +5,12 @@ homepage: 'https://doc.effektio.org/'
 publish_to: "none"
 
 environment:
-  sdk: ">=2.16.0-134.1.beta <3.0.0"
+  sdk: ">=2.18.0 <3.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
   async: ^2.8.2
-  ffi: ^1.1.2
+  ffi: ^2.0.1
   flutter:
     sdk: flutter
   flutter_web_plugins:
