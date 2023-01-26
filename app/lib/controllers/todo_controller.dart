@@ -5,6 +5,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
+        CommentsManager,
         CreateGroupSettings,
         FfiString,
         Group,
@@ -121,10 +122,12 @@ class ToDoController extends GetxController {
             subscribers.add(user.toString());
           }
         }
+        CommentsManager commentsManager = await task.comments();
         ToDoTask item = ToDoTask(
           index: task.sortOrder(),
           name: task.title(),
           taskUpdateDraft: task.updateBuilder(),
+          commentsManager: commentsManager,
           assignees: assignees,
           categories: asDartStringList(task.categories().toList()) ?? [],
           tags: asDartStringList(task.keywords().toList()) ?? [],
@@ -182,11 +185,12 @@ class ToDoController extends GetxController {
         await list.taskDraft.send().then((res) => res.toString());
     // wait for task to come down to wire.
     final Task task = await client.waitForTask(eventId, null);
-
+    final CommentsManager commentsManager = await task.comments();
     final ToDoTask newItem = ToDoTask(
       name: task.title(),
       progressPercent: task.progressPercent() ?? 0,
       taskUpdateDraft: task.updateBuilder(),
+      commentsManager: commentsManager,
       due: DateTime.parse(
         task.utcDue()!.toRfc3339(),
       ),
@@ -229,6 +233,7 @@ class ToDoController extends GetxController {
       name: task.name,
       progressPercent: updateVal,
       taskUpdateDraft: task.taskUpdateDraft,
+      commentsManager: task.commentsManager,
       due: completedDate,
     );
     // update todos.
@@ -239,6 +244,7 @@ class ToDoController extends GetxController {
       name: updateItem.name,
       taskUpdateDraft: updateItem.taskUpdateDraft,
       progressPercent: updateItem.progressPercent,
+      commentsManager: updateItem.commentsManager,
       due: updateItem.due,
     );
     todos[listIdx] = newList;

@@ -2,6 +2,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
+import 'package:effektio/screens/HomeScreens/todo/TaskDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,7 +21,16 @@ class ToDoTaskView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => {},
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ToDoTaskDetailScreen(
+            task: task,
+            list: todoList,
+            controller: controller,
+          ),
+        ),
+      ),
       child: TaskCard(
         task: task,
         controller: controller,
@@ -141,6 +151,34 @@ class _TaskCardState extends State<TaskCard> {
                         : ToDoTheme.todayCalendarTextStyle,
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Visibility(
+                    visible: widget.task.commentsManager.hasComments(),
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(
+                          FlutterIcons.dot_single_ent,
+                          color: Colors.grey,
+                        ),
+                        SvgPicture.asset(
+                          'assets/images/message.svg',
+                          color: Colors.white,
+                          height: 18,
+                          width: 18,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Text(
+                            '${widget.task.commentsManager.commentsCount()}',
+                            style: ToDoTheme.todayCalendarTextStyle
+                                .copyWith(color: Colors.white),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           ),

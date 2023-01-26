@@ -9,6 +9,7 @@ import 'package:effektio/widgets/ExpandableText.dart';
 import 'package:effektio/widgets/ToDoTaskView.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class ToDoListView extends StatelessWidget {
@@ -177,37 +178,32 @@ class TodoCard extends StatelessWidget {
 
   Widget buildComments(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const Icon(
-              FlutterIcons.heart_evi,
-              color: ToDoTheme.primaryTextColor,
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ToDoCommentScreen(),
-                  ),
-                );
-              },
-              child: Row(
-                children: const [
-                  Icon(
-                    FlutterIcons.comment_evi,
-                    color: ToDoTheme.primaryTextColor,
-                  ),
-                ],
-              ),
-            )
-          ],
+        const Icon(
+          FlutterIcons.heart_evi,
+          color: ToDoTheme.primaryTextColor,
         ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8, top: 3),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ToDoCommentScreen(),
+                ),
+              );
+            },
+            child: SvgPicture.asset(
+              'assets/images/message.svg',
+              color: Colors.white,
+              height: 18,
+              width: 18,
+            ),
+          ),
+        ),
+        const Spacer(),
         const Icon(
           FlutterIcons.bookmark_border_mdi,
           color: ToDoTheme.primaryTextColor,
