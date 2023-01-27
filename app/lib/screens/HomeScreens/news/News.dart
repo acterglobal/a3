@@ -38,7 +38,6 @@ class _NewsScreenState extends State<NewsScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder<FfiListNews>(
       future: widget.client.latestNews(),
       builder: (BuildContext context, AsyncSnapshot<FfiListNews> snapshot) {
@@ -143,6 +142,7 @@ class _NewsScreenState extends State<NewsScreen>
               userId: widget.client.userId().toString(),
               displayName: widget.displayName,
               displayAvatar: widget.displayAvatar,
+              client: widget.client,
             ),
             body: PageView.builder(
               itemCount: snapshot.requireData.length,

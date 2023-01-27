@@ -29,7 +29,7 @@ class FaqListItem extends StatelessWidget {
           ),
         );
       },
-      child: Card(
+      child: Container(
         child: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
@@ -40,24 +40,21 @@ class FaqListItem extends StatelessWidget {
                   vertical: 4,
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
+                    Expanded(
                       child: Text(
                         faq.title(),
                         style: FAQTheme.titleStyle,
                       ),
                     ),
-                    // new Spacer(),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: GestureDetector(
-                        onTap: () => {
-                          const SnackBar(content: Text('Bookmark Icon tapped'))
-                        },
-                        child: Image.asset(
-                          'assets/images/bookmark.png',
-                          color: AppCommonTheme.svgIconColor,
-                        ),
+                    GestureDetector(
+                      onTap: () => {
+                        const SnackBar(content: Text('Bookmark Icon tapped'))
+                      },
+                      child: Image.asset(
+                        'assets/images/bookmark.png',
+                        color: AppCommonTheme.svgIconColor,
                       ),
                     )
                   ],
@@ -143,12 +140,10 @@ class FaqListItem extends StatelessWidget {
             ],
           ),
         ),
-        elevation: 8,
         margin: const EdgeInsets.only(top: 20),
-        color: FAQTheme.faqCardColor,
-        shape: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white),
+        decoration: BoxDecoration(
+          color: PinsTheme.cardBackgroundColor,
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );
