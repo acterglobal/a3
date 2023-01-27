@@ -217,21 +217,35 @@ class ToDoController extends GetxController {
   }
 
   /// updates todo task progress.
-  Future<String> markToDoTask(ToDoTask task, ToDoList list) async {
+  Future<String> updateToDoTask(
+    ToDoTask task,
+    ToDoList list,
+    String? name,
+    int? progressPercent,
+  ) async {
     int updateVal = 0;
-    if (task.progressPercent < 100) {
-      task.taskUpdateDraft.markDone();
-      updateVal = 100;
-    } else {
-      task.taskUpdateDraft.markUndone();
+
+    /// should only be null if intent is to mark the task.
+    if (progressPercent == null) {
+      if (task.progressPercent < 100) {
+        task.taskUpdateDraft.markDone();
+        updateVal = 100;
+      } else {
+        task.taskUpdateDraft.markUndone();
+      }
     }
+    // should only be non-null if task title is updated.
+    if (name != null) {
+      task.taskUpdateDraft.title(name);
+    }
+
     // send task update.
     String eventId =
         await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
     DateTime completedDate = DateTime.now();
     ToDoTask updateItem = ToDoTask(
-      name: task.name,
-      progressPercent: updateVal,
+      name: name ?? task.name,
+      progressPercent: progressPercent ?? updateVal,
       taskUpdateDraft: task.taskUpdateDraft,
       commentsManager: task.commentsManager,
       due: completedDate,

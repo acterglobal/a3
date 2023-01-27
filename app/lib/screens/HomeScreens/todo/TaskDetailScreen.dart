@@ -235,11 +235,18 @@ class _DividerWidget extends StatelessWidget {
   }
 }
 
-class _NameWidget extends StatelessWidget {
+class _NameWidget extends StatefulWidget {
   const _NameWidget(this.task, this.list, this.controller);
   final ToDoTask task;
   final ToDoList list;
   final ToDoController controller;
+
+  @override
+  State<_NameWidget> createState() => _NameWidgetState();
+}
+
+class _NameWidgetState extends State<_NameWidget> {
+  String taskTitle = '';
 
   @override
   Widget build(BuildContext context) {
@@ -250,9 +257,12 @@ class _NameWidget extends StatelessWidget {
         children: <Widget>[
           Flexible(
             child: InkWell(
-              onTap: () async => await controller
-                  .markToDoTask(task, list)
-                  .then((res) => debugPrint('TOGGLE CHECK')),
+              onTap: () async => await widget.controller
+                  .updateToDoTask(widget.task, widget.list, null, null)
+                  .then((res) {
+                debugPrint('TOGGLE CHECK');
+                Navigator.pop(context);
+              }),
               child: CircleAvatar(
                 backgroundColor: AppCommonTheme.transparentColor,
                 radius: 18,
@@ -260,7 +270,7 @@ class _NameWidget extends StatelessWidget {
                   height: 25,
                   width: 25,
                   decoration: BoxDecoration(
-                    color: (task.progressPercent >= 100)
+                    color: (widget.task.progressPercent >= 100)
                         ? ToDoTheme.activeCheckColor
                         : ToDoTheme.inactiveCheckColor,
                     shape: BoxShape.circle,
@@ -269,7 +279,7 @@ class _NameWidget extends StatelessWidget {
                       color: ToDoTheme.floatingABColor,
                     ),
                   ),
-                  child: checkBuilder(),
+                  child: _CheckWidget(task: widget.task),
                 ),
               ),
             ),
@@ -277,14 +287,27 @@ class _NameWidget extends StatelessWidget {
           Flexible(
             child: Padding(
               padding: const EdgeInsets.only(left: 8),
-              child: Text(
-                task.name,
-                style: ToDoTheme.taskTitleTextStyle.copyWith(
-                  decoration: (task.progressPercent >= 100)
-                      ? TextDecoration.lineThrough
-                      : null,
+              child: TextFormField(
+                initialValue: widget.task.name,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
                 ),
-                overflow: TextOverflow.ellipsis,
+                style: ToDoTheme.taskTitleTextStyle,
+                cursorColor: ToDoTheme.primaryTextColor,
+                onChanged: (value) {
+                  setState(() {
+                    taskTitle = value;
+                  });
+                },
+                onEditingComplete: () async {
+                  await widget.controller.updateToDoTask(
+                    widget.task,
+                    widget.list,
+                    taskTitle,
+                    widget.task.progressPercent,
+                  );
+                  Navigator.pop(context);
+                },
               ),
             ),
           ),
@@ -292,10 +315,19 @@ class _NameWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget? checkBuilder() {
+class _CheckWidget extends StatelessWidget {
+  const _CheckWidget({
+    required this.task,
+  });
+
+  final ToDoTask task;
+
+  @override
+  Widget build(BuildContext context) {
     if ((task.progressPercent < 100)) {
-      return null;
+      return const SizedBox.shrink();
     }
     return const Icon(
       Icons.done_outlined,
