@@ -587,12 +587,11 @@ packages:
   implicitly_animated_reorderable_list_2:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "31d866dafaa15fdc1e9b06beb7fbf298766b750b"
-      url: "https://github.com/effektio/implicitly_animated_reorderable_list_2.git"
-    source: git
-    version: "0.4.4"
+      name: implicitly_animated_reorderable_list_2
+      sha256: a1ccedc23812111047fee029782623b8be004f08b577428f193b1da34cfd7542
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   infinite_listview:
     dependency: transitive
     description:
