@@ -236,7 +236,6 @@ class _TasksWidget extends StatelessWidget {
 
 class _TasksRatioWidget extends StatelessWidget {
   const _TasksRatioWidget({
-    super.key,
     required this.controller,
     required this.index,
     required this.isExpanded,
@@ -280,7 +279,6 @@ class _TasksRatioWidget extends StatelessWidget {
 
 class _CommentsWidget extends StatelessWidget {
   const _CommentsWidget({
-    super.key,
     required this.context,
   });
 
