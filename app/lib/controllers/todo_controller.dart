@@ -1,10 +1,12 @@
 import 'package:effektio/models/Team.dart';
+import 'package:effektio/models/ToDoComment.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
+        Comment,
         CommentsManager,
         CreateGroupSettings,
         FfiString,
@@ -142,6 +144,27 @@ class ToDoController extends GetxController {
     }
 
     return todoTasks;
+  }
+
+  /// fetch comments for todo task.
+  Future<List<ToDoComment>> getComments(ToDoTask task) async {
+    List<ToDoComment> todoComments = [];
+    List<Comment> comments = await task.commentsManager
+        .comments()
+        .then((ffiList) => ffiList.toList());
+    for (Comment comment in comments) {
+      ToDoComment item = ToDoComment(
+        userId: comment.sender().toString(),
+        replyBuilder: comment.replyBuilder(),
+        text: comment.contentFormatted() ?? comment.contentText(),
+        time: DateTime.fromMillisecondsSinceEpoch(
+          comment.originServerTs(),
+          isUtc: true,
+        ),
+      );
+      todoComments.add(item);
+    }
+    return todoComments;
   }
 
   /// creates todo for team (group).

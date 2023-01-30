@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
+import 'package:effektio/models/ToDoComment.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio/screens/HomeScreens/todo/TaskAssignScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
+import 'package:effektio/widgets/CustomAvatar.dart';
+import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ToDoTaskDetailScreen extends StatelessWidget {
+class ToDoTaskDetailScreen extends StatefulWidget {
   const ToDoTaskDetailScreen({
     Key? key,
     required this.task,
@@ -21,7 +26,21 @@ class ToDoTaskDetailScreen extends StatelessWidget {
   final ToDoController controller;
 
   @override
+  State<ToDoTaskDetailScreen> createState() => _ToDoTaskDetailScreenState();
+}
+
+class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
+  bool showCommentInput = false;
+
+  void callback() {
+    setState(() {
+      showCommentInput = !showCommentInput;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    debugPrint('$showCommentInput');
     return Scaffold(
       backgroundColor: ToDoTheme.backgroundGradientColor,
       appBar: AppBar(
@@ -32,7 +51,7 @@ class ToDoTaskDetailScreen extends StatelessWidget {
           icon: const Icon(Icons.close),
           color: ToDoTheme.primaryTextColor,
         ),
-        title: Text(task.name, style: ToDoTheme.listTitleTextStyle),
+        title: Text(widget.task.name, style: ToDoTheme.listTitleTextStyle),
         centerTitle: true,
         actions: [
           IconButton(
@@ -42,28 +61,29 @@ class ToDoTaskDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ScrollConfiguration(
-        behavior: const ScrollBehavior().copyWith(overscroll: false),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _NameWidget(task, list, controller),
-              const _DividerWidget(),
-              const _AssignWidget(),
-              const _DividerWidget(),
-              const _DueDateWidget(),
-              const _DividerWidget(),
-              const _AddFileWidget(),
-              const _DividerWidget(),
-              const _DiscussionWidget(),
-              const _DividerWidget(),
-              const _SubscribersWidget(),
-              const _DividerWidget(),
-              const _LastUpdatedWidget(),
-            ],
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _NameWidget(widget.task, widget.list, widget.controller),
+            const _DividerWidget(),
+            const _AssignWidget(),
+            const _DividerWidget(),
+            const _DueDateWidget(),
+            const _DividerWidget(),
+            const _AddFileWidget(),
+            const _DividerWidget(),
+            _DiscussionWidget(widget.task, widget.controller, callback),
+            const _DividerWidget(),
+            const _SubscribersWidget(),
+            const _DividerWidget(),
+            Visibility(
+              visible: showCommentInput,
+              replacement: const _LastUpdatedWidget(),
+              child: _CommentInput(widget.controller),
+            ),
+          ],
         ),
       ),
     );
@@ -149,71 +169,6 @@ class ToDoTaskDetailScreen extends StatelessWidget {
       radius: 28,
       backgroundColor: ToDoTheme.infoAvatarColor,
       child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
-    );
-  }
-
-  void showCommentBottomSheet(BuildContext context) {
-    List<String> options = ['Save', 'Copy Link', 'Share', 'Report'];
-    List<Icon> optionIcons = [
-      const Icon(
-        Icons.bookmark_border,
-        color: ToDoTheme.primaryTextColor,
-      ),
-      const Icon(
-        Icons.link,
-        color: ToDoTheme.primaryTextColor,
-      ),
-      const Icon(
-        Icons.file_upload_outlined,
-        color: ToDoTheme.primaryTextColor,
-      ),
-      const Icon(
-        Icons.warning_amber_rounded,
-        color: Colors.red,
-      ),
-    ];
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ToDoTheme.bottomSheetColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      isDismissible: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Wrap(
-            alignment: WrapAlignment.spaceEvenly,
-            children: List.generate(
-              options.length,
-              (index) => Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  color: ToDoTheme.secondaryCardColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    optionIcons[index],
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      options[index],
-                      style: index == options.length - 1
-                          ? ToDoTheme.listMemberTextStyle
-                              .copyWith(color: Colors.red)
-                          : ToDoTheme.listMemberTextStyle,
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -629,54 +584,203 @@ class _AddFileWidget extends StatelessWidget {
   }
 }
 
-class _DiscussionWidget extends StatelessWidget {
-  const _DiscussionWidget();
+class _DiscussionWidget extends StatefulWidget {
+  const _DiscussionWidget(this.task, this.controller, this.callback);
+  final ToDoTask task;
+  final ToDoController controller;
+  final Function callback;
 
+  @override
+  State<_DiscussionWidget> createState() => _DiscussionWidgetState();
+}
+
+class _DiscussionWidgetState extends State<_DiscussionWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
+      child: Column(
+        children: [
           Row(
-            children: [
-              const Icon(
-                FlutterIcons.message1_ant,
-                color: ToDoTheme.calendarColor,
-                size: 18,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  'Discussion',
-                  style: ToDoTheme.taskTitleTextStyle.copyWith(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                children: [
+                  const Icon(
+                    FlutterIcons.message1_ant,
                     color: ToDoTheme.calendarColor,
-                    fontWeight: FontWeight.w600,
+                    size: 18,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Text(
+                      'Discussion',
+                      style: ToDoTheme.taskTitleTextStyle.copyWith(
+                        color: ToDoTheme.calendarColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const Icon(
+                FlutterIcons.dot_single_ent,
+                color: Colors.grey,
+              ),
+              Text(
+                '${widget.task.commentsManager.commentsCount()}',
+                style: ToDoTheme.listMemberTextStyle,
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    widget.callback();
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    'Write message',
+                    style: ToDoTheme.taskTitleTextStyle.copyWith(
+                      color: AppCommonTheme.secondaryColor,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
-          InkWell(
-            onTap: () {
-              showNotYetImplementedMsg(
-                context,
-                'Writing message is not implemented yet',
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(
-                'Write message',
-                style: ToDoTheme.taskTitleTextStyle.copyWith(
-                  color: AppCommonTheme.secondaryColor,
+          Visibility(
+            visible: widget.task.commentsManager.hasComments(),
+            child: FutureBuilder<List<ToDoComment>>(
+              future: widget.controller.getComments(widget.task),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: AppCommonTheme.primaryColor,
+                    ),
+                  );
+                } else {
+                  if (snapshot.hasData) {
+                    if (snapshot.data!.isNotEmpty) {
+                      return ListView.separated(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: 2,
+                        itemBuilder: (context, index) => ListTile(
+                          leading: CustomAvatar(
+                            uniqueKey: snapshot.data![index].userId,
+                            radius: 25,
+                            isGroup: false,
+                            stringName:
+                                simplifyUserId(snapshot.data![index].userId)!,
+                          ),
+                          title: Text(
+                            simplifyUserId(snapshot.data![index].userId) ??
+                                'No Name',
+                            style: ToDoTheme.taskListTextStyle,
+                          ),
+                          subtitle: Text(
+                            snapshot.data![index].text ?? '',
+                            style: ToDoTheme.activeTasksTextStyle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          trailing: InkWell(
+                            onTap: () => showCommentBottomSheet(context),
+                            child: const Icon(
+                              FlutterIcons.dots_three_horizontal_ent,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        separatorBuilder: (context, index) => const Divider(
+                          color: ToDoTheme.dividerColor,
+                        ),
+                      );
+                    } else {
+                      const SizedBox.shrink();
+                    }
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Failed to fetch due to ${snapshot.error.toString()} ',
+                        style: ToDoTheme.listMemberTextStyle,
+                      ),
+                    );
+                  }
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void showCommentBottomSheet(BuildContext context) {
+    List<String> options = ['Save', 'Copy Link', 'Share', 'Report'];
+    List<Icon> optionIcons = [
+      const Icon(
+        Icons.bookmark_border,
+        color: ToDoTheme.primaryTextColor,
+      ),
+      const Icon(
+        Icons.link,
+        color: ToDoTheme.primaryTextColor,
+      ),
+      const Icon(
+        Icons.file_upload_outlined,
+        color: ToDoTheme.primaryTextColor,
+      ),
+      const Icon(
+        Icons.warning_amber_rounded,
+        color: Colors.red,
+      ),
+    ];
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: ToDoTheme.bottomSheetColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: List.generate(
+              options.length,
+              (index) => Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  color: ToDoTheme.secondaryCardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    optionIcons[index],
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Text(
+                      options[index],
+                      style: index == options.length - 1
+                          ? ToDoTheme.listMemberTextStyle
+                              .copyWith(color: Colors.red)
+                          : ToDoTheme.listMemberTextStyle,
+                    )
+                  ],
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -780,6 +884,174 @@ class _LastUpdatedWidget extends StatelessWidget {
           'Last Update ???',
           style: ToDoTheme.activeTasksTextStyle,
           textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+}
+
+class _CommentInput extends StatefulWidget {
+  const _CommentInput(this.controller);
+  final ToDoController controller;
+  @override
+  State<_CommentInput> createState() => _CommentInputState();
+}
+
+class _CommentInputState extends State<_CommentInput> {
+  bool emojiShowing = false;
+  final TextEditingController inputController = TextEditingController();
+  void onEmojiSelected(Emoji emoji) {
+    inputController
+      ..text += emoji.emoji
+      ..selection = TextSelection.fromPosition(
+        TextPosition(offset: inputController.text.length),
+      );
+  }
+
+  void onBackspacePressed() {
+    inputController
+      ..text = inputController.text.characters.skipLast(1).toString()
+      ..selection = TextSelection.fromPosition(
+        TextPosition(offset: inputController.text.length),
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: ToDoTheme.textFieldColor,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: CustomAvatar(
+                    uniqueKey: widget.controller.client.account().userId(),
+                    radius: 18,
+                    isGroup: false,
+                    avatar: widget.controller.client.account().avatar(),
+                    stringName: simplifyUserId(
+                          widget.controller.client.account().userId(),
+                        ) ??
+                        '',
+                    cacheHeight: 120,
+                    cacheWidth: 120,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: AppCommonTheme.textFieldColor,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.centerRight,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: TextField(
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                            cursorColor: Colors.grey,
+                            controller: inputController,
+                            decoration: const InputDecoration(
+                              hintText: 'New Message',
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                            onChanged: (val) {
+                              setState(() {
+                                inputController
+                                  ..text = val
+                                  ..selection = TextSelection.fromPosition(
+                                    TextPosition(
+                                      offset: inputController.text.length,
+                                    ),
+                                  );
+                              });
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.emoji_emotions_outlined,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              emojiShowing = !emojiShowing;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Visibility(
+                  visible: inputController.text.trim().isNotEmpty,
+                  child: IconButton(
+                    onPressed: () {
+                      showNotYetImplementedMsg(
+                        context,
+                        'Send not yet implemented',
+                      );
+                    },
+                    icon: const Icon(Icons.send, color: Colors.pink),
+                  ),
+                ),
+              ],
+            ),
+            Offstage(
+              offstage: !emojiShowing,
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 250,
+                child: EmojiPicker(
+                  onEmojiSelected: (Category? category, Emoji emoji) {
+                    onEmojiSelected(emoji);
+                  },
+                  onBackspacePressed: onBackspacePressed,
+                  config: Config(
+                    columns: 7,
+                    emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                    verticalSpacing: 0,
+                    horizontalSpacing: 0,
+                    initCategory: Category.RECENT,
+                    bgColor: Colors.white,
+                    indicatorColor: Colors.blue,
+                    iconColor: Colors.grey,
+                    iconColorSelected: Colors.blue,
+                    backspaceColor: Colors.blue,
+                    skinToneDialogBgColor: Colors.white,
+                    skinToneIndicatorColor: Colors.grey,
+                    enableSkinTones: true,
+                    showRecentsTab: true,
+                    recentsLimit: 28,
+                    noRecents: const Text(
+                      'No Recents',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black26,
+                      ),
+                    ),
+                    tabIndicatorAnimDuration: kTabScrollDuration,
+                    categoryIcons: const CategoryIcons(),
+                    buttonMode: ButtonMode.MATERIAL,
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
