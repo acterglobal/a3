@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class ToDoTaskDetailScreen extends StatefulWidget {
   const ToDoTaskDetailScreen({
@@ -40,7 +41,6 @@ class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('$showCommentInput');
     return Scaffold(
       backgroundColor: ToDoTheme.backgroundGradientColor,
       appBar: AppBar(
@@ -81,7 +81,7 @@ class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
             Visibility(
               visible: showCommentInput,
               replacement: const _LastUpdatedWidget(),
-              child: _CommentInput(widget.controller),
+              child: _CommentInput(widget.controller, widget.task),
             ),
           ],
         ),
@@ -665,12 +665,13 @@ class _DiscussionWidgetState extends State<_DiscussionWidget> {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isNotEmpty) {
                       return ListView.separated(
+                        shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: 2,
+                        itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) => ListTile(
                           leading: CustomAvatar(
                             uniqueKey: snapshot.data![index].userId,
-                            radius: 25,
+                            radius: 18,
                             isGroup: false,
                             stringName:
                                 simplifyUserId(snapshot.data![index].userId)!,
@@ -891,7 +892,8 @@ class _LastUpdatedWidget extends StatelessWidget {
 }
 
 class _CommentInput extends StatefulWidget {
-  const _CommentInput(this.controller);
+  const _CommentInput(this.controller, this.task);
+  final ToDoTask task;
   final ToDoController controller;
   @override
   State<_CommentInput> createState() => _CommentInputState();
@@ -899,20 +901,20 @@ class _CommentInput extends StatefulWidget {
 
 class _CommentInputState extends State<_CommentInput> {
   bool emojiShowing = false;
-  final TextEditingController inputController = TextEditingController();
+  final TextEditingController _inputController = TextEditingController();
   void onEmojiSelected(Emoji emoji) {
-    inputController
+    _inputController
       ..text += emoji.emoji
       ..selection = TextSelection.fromPosition(
-        TextPosition(offset: inputController.text.length),
+        TextPosition(offset: _inputController.text.length),
       );
   }
 
   void onBackspacePressed() {
-    inputController
-      ..text = inputController.text.characters.skipLast(1).toString()
+    _inputController
+      ..text = _inputController.text.characters.skipLast(1).toString()
       ..selection = TextSelection.fromPosition(
-        TextPosition(offset: inputController.text.length),
+        TextPosition(offset: _inputController.text.length),
       );
   }
 
@@ -944,70 +946,76 @@ class _CommentInputState extends State<_CommentInput> {
                     cacheWidth: 120,
                   ),
                 ),
-                Expanded(
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                      color: AppCommonTheme.textFieldColor,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.centerRight,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: TextField(
-                            style: const TextStyle(
-                              color: Colors.white,
+                GetBuilder<ToDoController>(
+                  id: 'comment-input',
+                  builder: (cntrl) {
+                    return Expanded(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                          color: AppCommonTheme.textFieldColor,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Stack(
+                          alignment: Alignment.centerRight,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: TextField(
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
+                                cursorColor: Colors.grey,
+                                controller: _inputController,
+                                decoration: const InputDecoration(
+                                  hintText: 'New Message',
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey,
+                                  ),
+                                  border: InputBorder.none,
+                                ),
+                                onChanged: (val) => cntrl.updateCommentInput(
+                                  _inputController,
+                                  val,
+                                ),
+                              ),
                             ),
-                            cursorColor: Colors.grey,
-                            controller: inputController,
-                            decoration: const InputDecoration(
-                              hintText: 'New Message',
-                              hintStyle: TextStyle(
+                            IconButton(
+                              icon: const Icon(
+                                Icons.emoji_emotions_outlined,
                                 color: Colors.grey,
                               ),
-                              border: InputBorder.none,
+                              onPressed: () {
+                                setState(() {
+                                  emojiShowing = !emojiShowing;
+                                });
+                              },
                             ),
-                            onChanged: (val) {
-                              setState(() {
-                                inputController
-                                  ..text = val
-                                  ..selection = TextSelection.fromPosition(
-                                    TextPosition(
-                                      offset: inputController.text.length,
-                                    ),
-                                  );
-                              });
-                            },
-                          ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.emoji_emotions_outlined,
-                            color: Colors.grey,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              emojiShowing = !emojiShowing;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
-                Visibility(
-                  visible: inputController.text.trim().isNotEmpty,
-                  child: IconButton(
-                    onPressed: () {
-                      showNotYetImplementedMsg(
-                        context,
-                        'Send not yet implemented',
-                      );
-                    },
-                    icon: const Icon(Icons.send, color: Colors.pink),
-                  ),
+                GetBuilder<ToDoController>(
+                  id: 'comment-input',
+                  builder: (cntrl) {
+                    return Visibility(
+                      visible: _inputController.text.trim().isNotEmpty,
+                      child: IconButton(
+                        onPressed: () async => await cntrl
+                            .sendComment(
+                          widget.task.commentsManager.commentDraft(),
+                          _inputController.text.trim(),
+                        )
+                            .then((res) {
+                          cntrl.updateCommentInput(_inputController, '');
+                          debugPrint('Comment id: $res');
+                        }),
+                        icon: const Icon(Icons.send, color: Colors.pink),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

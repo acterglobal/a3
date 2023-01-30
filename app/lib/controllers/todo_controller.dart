@@ -7,6 +7,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
         Comment,
+        CommentDraft,
         CommentsManager,
         CreateGroupSettings,
         FfiString,
@@ -30,6 +31,7 @@ class ToDoController extends GetxController {
   RxInt selectedValueIndex = 0.obs;
   Team? selectedTeam;
   FocusNode addTaskNode = FocusNode();
+  TextEditingController commentInputCntrl = TextEditingController();
 
   ToDoController({required this.client}) : super();
 
@@ -155,12 +157,8 @@ class ToDoController extends GetxController {
     for (Comment comment in comments) {
       ToDoComment item = ToDoComment(
         userId: comment.sender().toString(),
-        replyBuilder: comment.replyBuilder(),
-        text: comment.contentFormatted() ?? comment.contentText(),
-        time: DateTime.fromMillisecondsSinceEpoch(
-          comment.originServerTs(),
-          isUtc: true,
-        ),
+        text: comment.contentText(),
+        time: DateTime.fromMillisecondsSinceEpoch(comment.originServerTs()),
       );
       todoComments.add(item);
     }
@@ -261,7 +259,6 @@ class ToDoController extends GetxController {
     if (name != null) {
       task.taskUpdateDraft.title(name);
     }
-
     // send task update.
     String eventId =
         await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
@@ -339,6 +336,24 @@ class ToDoController extends GetxController {
       }
     }
     return count;
+  }
+
+  void updateCommentInput(TextEditingController cntrl, String val) {
+    cntrl
+      ..text = val
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: cntrl.text.length,
+        ),
+      );
+    update(['comment-input']);
+  }
+
+  /// send comment draft to wire.
+  Future<String> sendComment(CommentDraft draft, String text) async {
+    draft.contentText(text);
+    String eventId = await draft.send().then((eventId) => eventId.toString());
+    return eventId;
   }
 
   ///helper function to convert list ffiString object to DartString.
