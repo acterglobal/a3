@@ -26,6 +26,7 @@ class ToDoController extends GetxController {
   bool cardExpand = false;
   bool expandBtn = false;
   RxBool isLoading = false.obs;
+  RxBool commentInput = false.obs;
   RxInt maxLength = double.maxFinite.toInt().obs;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
@@ -162,6 +163,7 @@ class ToDoController extends GetxController {
       );
       todoComments.add(item);
     }
+    todoComments.sort((a, b) => a.time.compareTo(b.time));
     return todoComments;
   }
 
@@ -349,10 +351,31 @@ class ToDoController extends GetxController {
     update(['comment-input']);
   }
 
+  // Toggle Comment input view.
+  void toggleCommentInput() {
+    commentInput.value = !commentInput.value;
+  }
+
+  // Update Text controller for task name input
+  void updateNameInput(TextEditingController cntrl, String val) {
+    cntrl
+      ..text = val
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: cntrl.text.length,
+        ),
+      );
+    update(['task-name']);
+  }
+
   /// send comment draft to wire.
   Future<String> sendComment(CommentDraft draft, String text) async {
     draft.contentText(text);
     String eventId = await draft.send().then((eventId) => eventId.toString());
+    // Wait for comment to come down on wire before refreshing screen.
+    Future.delayed(const Duration(milliseconds: 800), () {
+      update(['discussion']);
+    });
     return eventId;
   }
 

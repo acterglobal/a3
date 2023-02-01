@@ -6,17 +6,16 @@ import 'package:effektio/screens/HomeScreens/todo/TaskDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class ToDoTaskView extends StatefulWidget {
   final ToDoTask task;
   final ToDoList todoList;
-  final ToDoController controller;
   const ToDoTaskView({
     Key? key,
     required this.task,
     required this.todoList,
-    required this.controller,
   }) : super(key: key);
 
   @override
@@ -24,22 +23,32 @@ class ToDoTaskView extends StatefulWidget {
 }
 
 class _ToDoTaskViewState extends State<ToDoTaskView> {
+  final ToDoController controller = Get.find<ToDoController>();
+  late int idx;
+  late int listIdx;
+  @override
+  void initState() {
+    super.initState();
+    listIdx = controller.todos.indexOf(widget.todoList);
+    idx = widget.todoList.tasks.indexOf(widget.task);
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ToDoTaskDetailScreen(
-            task: widget.task,
-            list: widget.todoList,
-            controller: widget.controller,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ToDoTaskDetailScreen(
+              index: idx,
+              listIndex: listIdx,
+            ),
           ),
-        ),
-      ),
+        );
+      },
       child: TaskCard(
         task: widget.task,
-        controller: widget.controller,
         todoList: widget.todoList,
       ),
     );
@@ -51,13 +60,12 @@ class TaskCard extends StatelessWidget {
     super.key,
     required this.task,
     required this.todoList,
-    required this.controller,
   });
   final ToDoTask task;
   final ToDoList todoList;
-  final ToDoController controller;
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
     return Card(
       elevation: 0,
       color: ToDoTheme.secondaryCardColor,
@@ -142,7 +150,7 @@ class TaskCard extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 8),
                   child: Text(
                     task.progressPercent >= 100
-                        ? DateFormat('H:m E, d MMM').format(task.due!.toUtc())
+                        ? DateFormat('H:mm E, d MMM').format(task.due!.toUtc())
                         : DateFormat('E, d MMM').format(task.due!.toUtc()),
                     style: task.progressPercent >= 100
                         ? ToDoTheme.todayCalendarTextStyle

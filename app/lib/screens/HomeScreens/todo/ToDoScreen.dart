@@ -26,7 +26,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
     super.initState();
     todoController = Get.put(ToDoController(client: widget.client));
     buttonWidgets = [
-      ToDoListView(controller: todoController),
+      const ToDoListView(),
       const ToDoMineScreen(),
       const Placeholder(),
       const Placeholder()

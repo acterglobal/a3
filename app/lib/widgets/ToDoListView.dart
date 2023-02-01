@@ -13,10 +13,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class ToDoListView extends StatelessWidget {
-  const ToDoListView({Key? key, required this.controller}) : super(key: key);
-  final ToDoController controller;
+  const ToDoListView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
     return Obx(
       () => controller.todos.isEmpty
           ? const Center(
@@ -34,7 +34,6 @@ class ToDoListView extends StatelessWidget {
                   id: 'list-item-$index',
                   builder: (_) {
                     return TodoCard(
-                      controller: controller,
                       index: index,
                       isExpanded: controller.cardExpand,
                       expandBtn: controller.expandBtn,
@@ -50,7 +49,6 @@ class ToDoListView extends StatelessWidget {
 class TodoCard extends StatelessWidget {
   const TodoCard({
     super.key,
-    required this.controller,
     required this.index,
     required this.isExpanded,
     required this.expandBtn,
@@ -58,9 +56,9 @@ class TodoCard extends StatelessWidget {
   final int index;
   final bool isExpanded;
   final bool expandBtn;
-  final ToDoController controller;
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
     return Card(
       elevation: 0,
       margin: const EdgeInsets.all(8),
@@ -87,13 +85,11 @@ class TodoCard extends StatelessWidget {
             _CommentsWidget(context: context),
             const _DividerWidget(),
             _TasksRatioWidget(
-              controller: controller,
               index: index,
               isExpanded: isExpanded,
               todo: controller.todos[index],
             ),
             _TasksWidget(
-              controller: controller,
               index: index,
               context: context,
               todo: controller.todos[index],
@@ -109,15 +105,12 @@ class TodoCard extends StatelessWidget {
 
 class _TasksWidget extends StatelessWidget {
   const _TasksWidget({
-    required this.controller,
     required this.index,
     required this.context,
     required this.todo,
     required this.isExpanded,
     required this.expandBtn,
   });
-
-  final ToDoController controller;
   final int index;
   final BuildContext context;
   final ToDoList todo;
@@ -126,6 +119,7 @@ class _TasksWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
     List<ToDoTask> _pendingTasks =
         todo.tasks.where((element) => element.progressPercent < 100).toList();
     List<ToDoTask> _completedTasks =
@@ -141,7 +135,6 @@ class _TasksWidget extends StatelessWidget {
               _pendingTasks.length,
               (index) => ToDoTaskView(
                 task: _pendingTasks[index],
-                controller: controller,
                 todoList: todo,
               ),
             ),
@@ -221,7 +214,6 @@ class _TasksWidget extends StatelessWidget {
                   _completedTasks.length,
                   (index) => ToDoTaskView(
                     task: _completedTasks[index],
-                    controller: controller,
                     todoList: todo,
                   ),
                 ),
@@ -236,19 +228,18 @@ class _TasksWidget extends StatelessWidget {
 
 class _TasksRatioWidget extends StatelessWidget {
   const _TasksRatioWidget({
-    required this.controller,
     required this.index,
     required this.isExpanded,
     required this.todo,
   });
 
-  final ToDoController controller;
   final int index;
   final bool isExpanded;
   final ToDoList todo;
 
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[

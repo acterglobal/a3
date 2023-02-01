@@ -14,33 +14,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
-class ToDoTaskDetailScreen extends StatefulWidget {
+class ToDoTaskDetailScreen extends StatelessWidget {
   const ToDoTaskDetailScreen({
     Key? key,
-    required this.task,
-    required this.list,
-    required this.controller,
+    required this.index,
+    required this.listIndex,
   }) : super(key: key);
-  final ToDoTask task;
-  final ToDoList list;
-  final ToDoController controller;
-
-  @override
-  State<ToDoTaskDetailScreen> createState() => _ToDoTaskDetailScreenState();
-}
-
-class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
-  bool showCommentInput = false;
-
-  void callback() {
-    setState(() {
-      showCommentInput = !showCommentInput;
-    });
-  }
+  final int index;
+  final int listIndex;
 
   @override
   Widget build(BuildContext context) {
+    final ToDoController cntrl = Get.find<ToDoController>();
     return Scaffold(
       backgroundColor: ToDoTheme.backgroundGradientColor,
       appBar: AppBar(
@@ -51,7 +38,12 @@ class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
           icon: const Icon(Icons.close),
           color: ToDoTheme.primaryTextColor,
         ),
-        title: Text(widget.task.name, style: ToDoTheme.listTitleTextStyle),
+        title: Obx(
+          () => Text(
+            cntrl.todos[listIndex].tasks[index].name,
+            style: ToDoTheme.listTitleTextStyle,
+          ),
+        ),
         centerTitle: true,
         actions: [
           IconButton(
@@ -66,7 +58,12 @@ class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            _NameWidget(widget.task, widget.list, widget.controller),
+            Obx(
+              () => _NameWidget(
+                cntrl.todos[listIndex].tasks[index],
+                cntrl.todos[listIndex],
+              ),
+            ),
             const _DividerWidget(),
             const _AssignWidget(),
             const _DividerWidget(),
@@ -74,14 +71,16 @@ class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
             const _DividerWidget(),
             const _AddFileWidget(),
             const _DividerWidget(),
-            _DiscussionWidget(widget.task, widget.controller, callback),
+            _DiscussionWidget(cntrl.todos[listIndex].tasks[index]),
             const _DividerWidget(),
             const _SubscribersWidget(),
             const _DividerWidget(),
-            Visibility(
-              visible: showCommentInput,
-              replacement: const _LastUpdatedWidget(),
-              child: _CommentInput(widget.controller, widget.task),
+            Obx(
+              () => Visibility(
+                visible: cntrl.commentInput.value,
+                replacement: const _LastUpdatedWidget(),
+                child: _CommentInput(cntrl.todos[listIndex].tasks[index]),
+              ),
             ),
           ],
         ),
@@ -163,14 +162,6 @@ class _ToDoTaskDetailScreenState extends State<ToDoTaskDetailScreen> {
       },
     );
   }
-
-  Widget infoAvatarBuilder(int count) {
-    return CircleAvatar(
-      radius: 28,
-      backgroundColor: ToDoTheme.infoAvatarColor,
-      child: Text('+$count', style: ToDoTheme.infoAvatarTextStyle),
-    );
-  }
 }
 
 class _DividerWidget extends StatelessWidget {
@@ -190,21 +181,15 @@ class _DividerWidget extends StatelessWidget {
   }
 }
 
-class _NameWidget extends StatefulWidget {
-  const _NameWidget(this.task, this.list, this.controller);
+class _NameWidget extends StatelessWidget {
+  const _NameWidget(this.task, this.list);
   final ToDoTask task;
   final ToDoList list;
-  final ToDoController controller;
-
-  @override
-  State<_NameWidget> createState() => _NameWidgetState();
-}
-
-class _NameWidgetState extends State<_NameWidget> {
-  String taskTitle = '';
-
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
+    final TextEditingController _nameController =
+        TextEditingController(text: task.name);
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
       child: Row(
@@ -212,11 +197,10 @@ class _NameWidgetState extends State<_NameWidget> {
         children: <Widget>[
           Flexible(
             child: InkWell(
-              onTap: () async => await widget.controller
-                  .updateToDoTask(widget.task, widget.list, null, null)
+              onTap: () async => await controller
+                  .updateToDoTask(task, list, null, null)
                   .then((res) {
                 debugPrint('TOGGLE CHECK');
-                Navigator.pop(context);
               }),
               child: CircleAvatar(
                 backgroundColor: AppCommonTheme.transparentColor,
@@ -225,7 +209,7 @@ class _NameWidgetState extends State<_NameWidget> {
                   height: 25,
                   width: 25,
                   decoration: BoxDecoration(
-                    color: (widget.task.progressPercent >= 100)
+                    color: (task.progressPercent >= 100)
                         ? ToDoTheme.activeCheckColor
                         : ToDoTheme.inactiveCheckColor,
                     shape: BoxShape.circle,
@@ -234,37 +218,41 @@ class _NameWidgetState extends State<_NameWidget> {
                       color: ToDoTheme.floatingABColor,
                     ),
                   ),
-                  child: _CheckWidget(task: widget.task),
+                  child: _CheckWidget(task: task),
                 ),
               ),
             ),
           ),
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: TextFormField(
-                initialValue: widget.task.name,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
+          GetBuilder<ToDoController>(
+            id: 'task-name',
+            builder: (_) {
+              return Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                    style: ToDoTheme.taskTitleTextStyle.copyWith(
+                      decoration: (task.progressPercent >= 100)
+                          ? TextDecoration.lineThrough
+                          : null,
+                    ),
+                    cursorColor: ToDoTheme.primaryTextColor,
+                    onChanged: (val) =>
+                        controller.updateNameInput(_nameController, val),
+                    onEditingComplete: () async =>
+                        await controller.updateToDoTask(
+                      task,
+                      list,
+                      _nameController.text.trim(),
+                      task.progressPercent,
+                    ),
+                  ),
                 ),
-                style: ToDoTheme.taskTitleTextStyle,
-                cursorColor: ToDoTheme.primaryTextColor,
-                onChanged: (value) {
-                  setState(() {
-                    taskTitle = value;
-                  });
-                },
-                onEditingComplete: () async {
-                  await widget.controller.updateToDoTask(
-                    widget.task,
-                    widget.list,
-                    taskTitle,
-                    widget.task.progressPercent,
-                  );
-                  Navigator.pop(context);
-                },
-              ),
-            ),
+              );
+            },
           ),
         ],
       ),
@@ -584,19 +572,13 @@ class _AddFileWidget extends StatelessWidget {
   }
 }
 
-class _DiscussionWidget extends StatefulWidget {
-  const _DiscussionWidget(this.task, this.controller, this.callback);
+class _DiscussionWidget extends StatelessWidget {
+  const _DiscussionWidget(this.task);
   final ToDoTask task;
-  final ToDoController controller;
-  final Function callback;
 
-  @override
-  State<_DiscussionWidget> createState() => _DiscussionWidgetState();
-}
-
-class _DiscussionWidgetState extends State<_DiscussionWidget> {
   @override
   Widget build(BuildContext context) {
+    final ToDoController controller = Get.find<ToDoController>();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Column(
@@ -627,17 +609,20 @@ class _DiscussionWidgetState extends State<_DiscussionWidget> {
                 FlutterIcons.dot_single_ent,
                 color: Colors.grey,
               ),
-              Text(
-                '${widget.task.commentsManager.commentsCount()}',
-                style: ToDoTheme.listMemberTextStyle,
+
+              // TODO: fix comments count.
+              GetBuilder<ToDoController>(
+                id: 'discussion',
+                builder: (_) {
+                  return Text(
+                    '${task.commentsManager.commentsCount()}',
+                    style: ToDoTheme.listMemberTextStyle,
+                  );
+                },
               ),
               const Spacer(),
               InkWell(
-                onTap: () {
-                  setState(() {
-                    widget.callback();
-                  });
-                },
+                onTap: () => controller.toggleCommentInput(),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Text(
@@ -650,70 +635,95 @@ class _DiscussionWidgetState extends State<_DiscussionWidget> {
               ),
             ],
           ),
-          Visibility(
-            visible: widget.task.commentsManager.hasComments(),
-            child: FutureBuilder<List<ToDoComment>>(
-              future: widget.controller.getComments(widget.task),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: AppCommonTheme.primaryColor,
-                    ),
-                  );
-                } else {
-                  if (snapshot.hasData) {
-                    if (snapshot.data!.isNotEmpty) {
-                      return ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: snapshot.data!.length,
-                        itemBuilder: (context, index) => ListTile(
-                          leading: CustomAvatar(
-                            uniqueKey: snapshot.data![index].userId,
-                            radius: 18,
-                            isGroup: false,
-                            stringName:
-                                simplifyUserId(snapshot.data![index].userId)!,
-                          ),
-                          title: Text(
-                            simplifyUserId(snapshot.data![index].userId) ??
-                                'No Name',
-                            style: ToDoTheme.taskListTextStyle,
-                          ),
-                          subtitle: Text(
-                            snapshot.data![index].text ?? '',
-                            style: ToDoTheme.activeTasksTextStyle,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                          ),
-                          trailing: InkWell(
-                            onTap: () => showCommentBottomSheet(context),
-                            child: const Icon(
-                              FlutterIcons.dots_three_horizontal_ent,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        separatorBuilder: (context, index) => const Divider(
-                          color: ToDoTheme.dividerColor,
+          GetBuilder<ToDoController>(
+            id: 'discussion',
+            builder: (_) {
+              return Visibility(
+                visible: task.commentsManager.hasComments(),
+                child: FutureBuilder<List<ToDoComment>>(
+                  future: controller.getComments(task),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: AppCommonTheme.primaryColor,
                         ),
                       );
                     } else {
-                      const SizedBox.shrink();
+                      if (snapshot.hasData) {
+                        if (snapshot.data!.isNotEmpty) {
+                          List<ToDoComment> comments =
+                              snapshot.data!.reversed.toList();
+                          return ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 5,
+                            itemBuilder: (context, index) => ListTile(
+                              leading: CustomAvatar(
+                                uniqueKey: comments[index].userId,
+                                radius: 18,
+                                isGroup: false,
+                                stringName: simplifyUserId(
+                                  comments[index].userId,
+                                )!,
+                              ),
+                              title: Text(
+                                simplifyUserId(comments[index].userId) ??
+                                    'No Name',
+                                style: ToDoTheme.taskListTextStyle,
+                              ),
+                              subtitle: Text(
+                                comments[index].text ?? '',
+                                style: ToDoTheme.activeTasksTextStyle,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                              ),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  InkWell(
+                                    onTap: () =>
+                                        showCommentBottomSheet(context),
+                                    child: const Icon(
+                                      FlutterIcons.dots_three_horizontal_ent,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    comments[index].time.isToday()
+                                        ? 'Today'
+                                        : comments[index].time.isYesterday()
+                                            ? 'Yesterday'
+                                            : DateFormat('H:mm E, d MMM')
+                                                .format(comments[index].time),
+                                    style: ToDoTheme.todayCalendarTextStyle
+                                        .copyWith(fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            separatorBuilder: (context, index) => const Divider(
+                              color: ToDoTheme.dividerColor,
+                            ),
+                          );
+                        } else {
+                          const SizedBox.shrink();
+                        }
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Failed to fetch due to ${snapshot.error.toString()} ',
+                            style: ToDoTheme.listMemberTextStyle,
+                          ),
+                        );
+                      }
                     }
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                        'Failed to fetch due to ${snapshot.error.toString()} ',
-                        style: ToDoTheme.listMemberTextStyle,
-                      ),
-                    );
-                  }
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+                    return const SizedBox.shrink();
+                  },
+                ),
+              );
+            },
           )
         ],
       ),
@@ -892,14 +902,14 @@ class _LastUpdatedWidget extends StatelessWidget {
 }
 
 class _CommentInput extends StatefulWidget {
-  const _CommentInput(this.controller, this.task);
+  const _CommentInput(this.task);
   final ToDoTask task;
-  final ToDoController controller;
   @override
   State<_CommentInput> createState() => _CommentInputState();
 }
 
 class _CommentInputState extends State<_CommentInput> {
+  final ToDoController controller = Get.find<ToDoController>();
   bool emojiShowing = false;
   final TextEditingController _inputController = TextEditingController();
   void onEmojiSelected(Emoji emoji) {
@@ -934,12 +944,12 @@ class _CommentInputState extends State<_CommentInput> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: CustomAvatar(
-                    uniqueKey: widget.controller.client.account().userId(),
+                    uniqueKey: controller.client.account().userId(),
                     radius: 18,
                     isGroup: false,
-                    avatar: widget.controller.client.account().avatar(),
+                    avatar: controller.client.account().avatar(),
                     stringName: simplifyUserId(
-                          widget.controller.client.account().userId(),
+                          controller.client.account().userId(),
                         ) ??
                         '',
                     cacheHeight: 120,
