@@ -140,7 +140,9 @@ class ToDoController extends GetxController {
           description: task.descriptionText() ?? '',
           priority: task.priority() ?? 0,
           progressPercent: task.progressPercent() ?? 0,
-          due: DateTime.parse(task.utcDue()!.toRfc3339()),
+          due: task.utcDue() != null
+              ? DateTime.parse(task.utcDue()!.toRfc3339())
+              : null,
         );
         todoTasks.add(item);
       }
@@ -203,7 +205,9 @@ class ToDoController extends GetxController {
     required ToDoList list,
   }) async {
     list.taskDraft.title(name);
-    list.taskDraft.utcDueFromRfc3339(dueDate!.toUtc().toIso8601String());
+    if (dueDate != null) {
+      list.taskDraft.utcDueFromRfc3339(dueDate.toUtc().toIso8601String());
+    }
     final String eventId =
         await list.taskDraft.send().then((res) => res.toString());
     // wait for task to come down to wire.
@@ -214,9 +218,11 @@ class ToDoController extends GetxController {
       progressPercent: task.progressPercent() ?? 0,
       taskUpdateDraft: task.updateBuilder(),
       commentsManager: commentsManager,
-      due: DateTime.parse(
-        task.utcDue()!.toRfc3339(),
-      ),
+      due: task.utcDue() != null
+          ? DateTime.parse(
+              task.utcDue()!.toRfc3339(),
+            )
+          : null,
       description: task.descriptionText() ?? '',
       assignees: [],
       subscribers: [],
@@ -244,9 +250,11 @@ class ToDoController extends GetxController {
     ToDoTask task,
     ToDoList list,
     String? name,
+    DateTime? due,
     int? progressPercent,
   ) async {
     int updateVal = 0;
+    DateTime? completedDate;
 
     /// should only be null if intent is to mark the task.
     if (progressPercent == null) {
@@ -261,10 +269,17 @@ class ToDoController extends GetxController {
     if (name != null) {
       task.taskUpdateDraft.title(name);
     }
+    // should only be non-null if intent is to update due.
+    if (due != null) {
+      task.taskUpdateDraft.utcDueFromRfc3339(due.toUtc().toIso8601String());
+      completedDate = due.toUtc();
+    } else {
+      task.taskUpdateDraft.unsetUtcDue();
+      completedDate = null;
+    }
     // send task update.
     String eventId =
         await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
-    DateTime completedDate = DateTime.now();
     ToDoTask updateItem = ToDoTask(
       name: name ?? task.name,
       progressPercent: progressPercent ?? updateVal,

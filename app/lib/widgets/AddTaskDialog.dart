@@ -22,7 +22,7 @@ class AddTaskDialogBox extends StatefulWidget {
 class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
   final titleInputController = TextEditingController();
 
-  DateTime _selectedDate = DateTime.now().toUtc();
+  DateTime? _selectedDate;
   int idx = 0;
 
   @override
@@ -50,20 +50,20 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                         _buildScheduleBtn(
                           ctx: context,
                           text: 'Today',
-                          index: 0,
-                        ),
-                        _buildScheduleBtn(
-                          ctx: context,
-                          text: 'Tomorrow',
                           index: 1,
                         ),
                         _buildScheduleBtn(
                           ctx: context,
-                          text: (idx > 1)
-                              ? DateFormat('EEEE, d MMM, yyyy')
-                                  .format(_selectedDate)
-                              : 'Pick a Day',
+                          text: 'Tomorrow',
                           index: 2,
+                        ),
+                        _buildScheduleBtn(
+                          ctx: context,
+                          text: (idx > 2 && _selectedDate != null)
+                              ? DateFormat('EEEE, d MMM, yyyy')
+                                  .format(_selectedDate!)
+                              : 'Pick a Day',
+                          index: 3,
                         )
                       ],
                     ),
@@ -163,11 +163,11 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
         final now = DateTime.now();
         setState(() {
           idx = index;
-          if (index == 0) {
+          if (index == 1) {
             _selectedDate = now;
-          } else if (index == 1) {
+          } else if (index == 2) {
             _selectedDate = DateTime(now.year, now.month, now.day + 1);
-          } else {
+          } else if (index == 3) {
             Future.delayed(
               const Duration(seconds: 0),
               () => _showDatePicker(ctx),
@@ -248,7 +248,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
         });
       } else {
         setState(() {
-          _selectedDate = DateTime.now();
+          _selectedDate = null;
           idx = 0;
         });
       }

@@ -2,7 +2,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio/screens/HomeScreens/todo/TaskDetailScreen.dart';
+import 'package:effektio/screens/HomeScreens/todo/TaskDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -40,7 +40,7 @@ class _ToDoTaskViewState extends State<ToDoTaskView> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ToDoTaskDetailScreen(
+            builder: (context) => TaskDetailScreen(
               index: idx,
               listIndex: listIdx,
             ),
@@ -81,7 +81,7 @@ class TaskCard extends StatelessWidget {
                 Flexible(
                   child: InkWell(
                     onTap: () async => await controller
-                        .updateToDoTask(task, todoList, null, null)
+                        .updateToDoTask(task, todoList, null, null, null)
                         .then((res) => debugPrint('TOGGLE CHECK')),
                     child: CircleAvatar(
                       backgroundColor: AppCommonTheme.transparentColor,
@@ -140,23 +140,29 @@ class TaskCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SvgPicture.asset(
-                  'assets/images/calendar-2.svg',
-                  color: task.progressPercent >= 100
-                      ? Colors.red
-                      : ToDoTheme.todayCalendarColor,
-                ),
+                task.due != null
+                    ? SvgPicture.asset(
+                        'assets/images/calendar-2.svg',
+                        color: task.progressPercent >= 100
+                            ? Colors.red
+                            : ToDoTheme.todayCalendarColor,
+                      )
+                    : const SizedBox.shrink(),
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Text(
-                    task.progressPercent >= 100
-                        ? DateFormat('H:mm E, d MMM').format(task.due!.toUtc())
-                        : DateFormat('E, d MMM').format(task.due!.toUtc()),
-                    style: task.progressPercent >= 100
-                        ? ToDoTheme.todayCalendarTextStyle
-                            .copyWith(color: Colors.red)
-                        : ToDoTheme.todayCalendarTextStyle,
-                  ),
+                  child: task.due != null
+                      ? Text(
+                          task.progressPercent >= 100
+                              ? DateFormat('H:mm E, d MMM')
+                                  .format(task.due!.toUtc())
+                              : DateFormat('E, d MMM')
+                                  .format(task.due!.toUtc()),
+                          style: task.progressPercent >= 100
+                              ? ToDoTheme.todayCalendarTextStyle
+                                  .copyWith(color: Colors.red)
+                              : ToDoTheme.todayCalendarTextStyle,
+                        )
+                      : const SizedBox.shrink(),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 8),

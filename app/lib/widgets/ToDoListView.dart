@@ -3,7 +3,6 @@ import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/models/Team.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio/screens/HomeScreens/todo/screens/CommentsScreen.dart';
 import 'package:effektio/widgets/AddTaskDialog.dart';
 import 'package:effektio/widgets/ExpandableText.dart';
 import 'package:effektio/widgets/ToDoTaskView.dart';
@@ -89,12 +88,14 @@ class TodoCard extends StatelessWidget {
               isExpanded: isExpanded,
               todo: controller.todos[index],
             ),
-            _TasksWidget(
-              index: index,
-              context: context,
-              todo: controller.todos[index],
-              isExpanded: isExpanded,
-              expandBtn: expandBtn,
+            Obx(
+              () => _TasksWidget(
+                index: index,
+                context: context,
+                todo: controller.todos[index],
+                isExpanded: isExpanded,
+                expandBtn: expandBtn,
+              ),
             )
           ],
         ),
@@ -287,14 +288,7 @@ class _CommentsWidget extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 8, top: 3),
           child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ToDoCommentScreen(),
-                ),
-              );
-            },
+            onTap: () {},
             child: SvgPicture.asset(
               'assets/images/message.svg',
               color: Colors.white,
