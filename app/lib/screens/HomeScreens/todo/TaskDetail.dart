@@ -209,7 +209,7 @@ class _NameWidget extends StatelessWidget {
               onTap: () async => await controller
                   .updateToDoTask(task, list, null, null, null)
                   .then((res) {
-                debugPrint('TOGGLE CHECK');
+                debugPrint('Update eventId: $res');
               }),
               child: CircleAvatar(
                 backgroundColor: AppCommonTheme.transparentColor,

@@ -41,7 +41,6 @@ class _TaskCommentScreenState extends State<TaskCommentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('CHECK');
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppCommonTheme.backgroundColorLight,
