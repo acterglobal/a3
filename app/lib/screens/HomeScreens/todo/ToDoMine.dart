@@ -72,7 +72,9 @@ class _ToDoMineScreenState extends State<ToDoMineScreen> {
         ListTile(
           onTap: () {
             showNotYetImplementedMsg(
-                context, 'Upcoming events is not yet Implemented');
+              context,
+              'Upcoming events is not yet Implemented',
+            );
           },
           leading: const Icon(
             FlutterIcons.event_mdi,
