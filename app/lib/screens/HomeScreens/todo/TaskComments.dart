@@ -113,7 +113,6 @@ class _TaskCommentScreenState extends State<TaskCommentScreen> {
                                 Text(
                                   snapshot.data![index].text ?? '',
                                   style: ToDoTheme.activeTasksTextStyle,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 Padding(
                                   padding:

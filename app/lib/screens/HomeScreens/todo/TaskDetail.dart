@@ -204,38 +204,36 @@ class _NameWidget extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Flexible(
-            child: InkWell(
-              onTap: () async => await controller
-                  .updateToDoTask(task, list, null, null, null)
-                  .then((res) {
-                debugPrint('Update eventId: $res');
-              }),
-              child: CircleAvatar(
-                backgroundColor: AppCommonTheme.transparentColor,
-                radius: 18,
-                child: Container(
-                  height: 25,
-                  width: 25,
-                  decoration: BoxDecoration(
-                    color: (task.progressPercent >= 100)
-                        ? ToDoTheme.activeCheckColor
-                        : ToDoTheme.inactiveCheckColor,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      width: 1.5,
-                      color: ToDoTheme.floatingABColor,
-                    ),
+          InkWell(
+            onTap: () async => await controller
+                .updateToDoTask(task, list, null, null, null)
+                .then((res) {
+              debugPrint('Update eventId: $res');
+            }),
+            child: CircleAvatar(
+              backgroundColor: AppCommonTheme.transparentColor,
+              radius: 18,
+              child: Container(
+                height: 25,
+                width: 25,
+                decoration: BoxDecoration(
+                  color: (task.progressPercent >= 100)
+                      ? ToDoTheme.activeCheckColor
+                      : ToDoTheme.inactiveCheckColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 1.5,
+                    color: ToDoTheme.floatingABColor,
                   ),
-                  child: _CheckWidget(task: task),
                 ),
+                child: _CheckWidget(task: task),
               ),
             ),
           ),
           GetBuilder<ToDoController>(
             id: 'task-name',
             builder: (_) {
-              return Flexible(
+              return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8),
                   child: TextFormField(
@@ -323,7 +321,6 @@ class _DueDateWidget extends StatelessWidget {
   final ToDoList list;
   @override
   Widget build(BuildContext context) {
-    debugPrint('${task.due}');
     return InkWell(
       onTap: () => showBottomSheet(context, task),
       child: Padding(

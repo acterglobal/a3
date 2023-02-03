@@ -355,11 +355,9 @@ class _HeaderWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       child: Row(
         children: [
-          Flexible(
-            child: Text(
-              title,
-              style: ToDoTheme.listTitleTextStyle,
-            ),
+          Text(
+            title,
+            style: ToDoTheme.listTitleTextStyle,
           ),
           const SizedBox(
             width: 8.0,
