@@ -2,7 +2,7 @@ import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
-import 'package:effektio/screens/HomeScreens/todo/screens/CreateTodo.dart';
+import 'package:effektio/screens/HomeScreens/todo/CreateTodo.dart';
 import 'package:effektio/widgets/ToDoListView.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
@@ -26,7 +26,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
     super.initState();
     todoController = Get.put(ToDoController(client: widget.client));
     buttonWidgets = [
-      ToDoListView(controller: todoController),
+      const ToDoListView(),
       const ToDoMineScreen(),
       const Placeholder(),
       const Placeholder()

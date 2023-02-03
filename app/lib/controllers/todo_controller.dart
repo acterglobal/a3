@@ -1,10 +1,14 @@
 import 'package:effektio/models/Team.dart';
+import 'package:effektio/models/ToDoComment.dart';
 import 'package:effektio/models/ToDoList.dart';
 import 'package:effektio/models/ToDoTask.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show
         Client,
+        Comment,
+        CommentDraft,
+        CommentsManager,
         CreateGroupSettings,
         FfiString,
         Group,
@@ -22,11 +26,13 @@ class ToDoController extends GetxController {
   bool cardExpand = false;
   bool expandBtn = false;
   RxBool isLoading = false.obs;
+  RxBool commentInput = false.obs;
   RxInt maxLength = double.maxFinite.toInt().obs;
   RxInt taskNameCount = 0.obs;
   RxInt selectedValueIndex = 0.obs;
   Team? selectedTeam;
   FocusNode addTaskNode = FocusNode();
+  TextEditingController commentInputCntrl = TextEditingController();
 
   ToDoController({required this.client}) : super();
 
@@ -121,10 +127,12 @@ class ToDoController extends GetxController {
             subscribers.add(user.toString());
           }
         }
+        CommentsManager commentsManager = await task.comments();
         ToDoTask item = ToDoTask(
           index: task.sortOrder(),
           name: task.title(),
           taskUpdateDraft: task.updateBuilder(),
+          commentsManager: commentsManager,
           assignees: assignees,
           categories: asDartStringList(task.categories().toList()) ?? [],
           tags: asDartStringList(task.keywords().toList()) ?? [],
@@ -132,13 +140,33 @@ class ToDoController extends GetxController {
           description: task.descriptionText() ?? '',
           priority: task.priority() ?? 0,
           progressPercent: task.progressPercent() ?? 0,
-          due: DateTime.parse(task.utcDue()!.toRfc3339()),
+          due: task.utcDue() != null
+              ? DateTime.parse(task.utcDue()!.toRfc3339())
+              : null,
         );
         todoTasks.add(item);
       }
     }
 
     return todoTasks;
+  }
+
+  /// fetch comments for todo task.
+  Future<List<ToDoComment>> getComments(ToDoTask task) async {
+    List<ToDoComment> todoComments = [];
+    List<Comment> comments = await task.commentsManager
+        .comments()
+        .then((ffiList) => ffiList.toList());
+    for (Comment comment in comments) {
+      ToDoComment item = ToDoComment(
+        userId: comment.sender().toString(),
+        text: comment.contentText(),
+        time: DateTime.fromMillisecondsSinceEpoch(comment.originServerTs()),
+      );
+      todoComments.add(item);
+    }
+    todoComments.sort((a, b) => a.time.compareTo(b.time));
+    return todoComments;
   }
 
   /// creates todo for team (group).
@@ -177,19 +205,24 @@ class ToDoController extends GetxController {
     required ToDoList list,
   }) async {
     list.taskDraft.title(name);
-    list.taskDraft.utcDueFromRfc3339(dueDate!.toUtc().toIso8601String());
+    if (dueDate != null) {
+      list.taskDraft.utcDueFromRfc3339(dueDate.toUtc().toIso8601String());
+    }
     final String eventId =
         await list.taskDraft.send().then((res) => res.toString());
     // wait for task to come down to wire.
     final Task task = await client.waitForTask(eventId, null);
-
+    final CommentsManager commentsManager = await task.comments();
     final ToDoTask newItem = ToDoTask(
       name: task.title(),
       progressPercent: task.progressPercent() ?? 0,
       taskUpdateDraft: task.updateBuilder(),
-      due: DateTime.parse(
-        task.utcDue()!.toRfc3339(),
-      ),
+      commentsManager: commentsManager,
+      due: task.utcDue() != null
+          ? DateTime.parse(
+              task.utcDue()!.toRfc3339(),
+            )
+          : null,
       description: task.descriptionText() ?? '',
       assignees: [],
       subscribers: [],
@@ -213,22 +246,45 @@ class ToDoController extends GetxController {
   }
 
   /// updates todo task progress.
-  Future<String> markToDoTask(ToDoTask task, ToDoList list) async {
+  Future<String> updateToDoTask(
+    ToDoTask task,
+    ToDoList list,
+    String? name,
+    DateTime? due,
+    int? progressPercent,
+  ) async {
     int updateVal = 0;
-    if (task.progressPercent < 100) {
-      task.taskUpdateDraft.markDone();
-      updateVal = 100;
+    DateTime? completedDate;
+
+    /// should only be null if intent is to mark the task.
+    if (progressPercent == null) {
+      if (task.progressPercent < 100) {
+        task.taskUpdateDraft.markDone();
+        updateVal = 100;
+      } else {
+        task.taskUpdateDraft.markUndone();
+      }
+    }
+    // should only be non-null if task title is updated.
+    if (name != null) {
+      task.taskUpdateDraft.title(name);
+    }
+    // should only be non-null if intent is to update due.
+    if (due != null) {
+      task.taskUpdateDraft.utcDueFromRfc3339(due.toUtc().toIso8601String());
+      completedDate = due.toUtc();
     } else {
-      task.taskUpdateDraft.markUndone();
+      task.taskUpdateDraft.unsetUtcDue();
+      completedDate = null;
     }
     // send task update.
     String eventId =
         await task.taskUpdateDraft.send().then((eventId) => eventId.toString());
-    DateTime completedDate = DateTime.now();
     ToDoTask updateItem = ToDoTask(
-      name: task.name,
-      progressPercent: updateVal,
+      name: name ?? task.name,
+      progressPercent: progressPercent ?? updateVal,
       taskUpdateDraft: task.taskUpdateDraft,
+      commentsManager: task.commentsManager,
       due: completedDate,
     );
     // update todos.
@@ -239,6 +295,7 @@ class ToDoController extends GetxController {
       name: updateItem.name,
       taskUpdateDraft: updateItem.taskUpdateDraft,
       progressPercent: updateItem.progressPercent,
+      commentsManager: updateItem.commentsManager,
       due: updateItem.due,
     );
     todos[listIdx] = newList;
@@ -296,6 +353,45 @@ class ToDoController extends GetxController {
       }
     }
     return count;
+  }
+
+  void updateCommentInput(TextEditingController cntrl, String val) {
+    cntrl
+      ..text = val
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: cntrl.text.length,
+        ),
+      );
+    update(['comment-input']);
+  }
+
+  // Toggle Comment input view.
+  void toggleCommentInput() {
+    commentInput.value = !commentInput.value;
+  }
+
+  // Update Text controller for task name input
+  void updateNameInput(TextEditingController cntrl, String val) {
+    cntrl
+      ..text = val
+      ..selection = TextSelection.fromPosition(
+        TextPosition(
+          offset: cntrl.text.length,
+        ),
+      );
+    update(['task-name']);
+  }
+
+  /// send comment draft to wire.
+  Future<String> sendComment(CommentDraft draft, String text) async {
+    draft.contentText(text);
+    String eventId = await draft.send().then((eventId) => eventId.toString());
+    // Wait for comment to come down on wire before refreshing screen.
+    Future.delayed(const Duration(milliseconds: 800), () {
+      update(['discussion']);
+    });
+    return eventId;
   }
 
   ///helper function to convert list ffiString object to DartString.

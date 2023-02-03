@@ -10,8 +10,7 @@ import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
 // import 'package:effektio/screens/HomeScreens/Notification.dart';
 import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
 import 'package:effektio/screens/HomeScreens/news/News.dart';
-import 'package:effektio/screens/HomeScreens/todo/AddToDo.dart';
-import 'package:effektio/screens/HomeScreens/todo/ToDoScreen.dart';
+import 'package:effektio/screens/HomeScreens/todo/ToDo.dart';
 import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
 import 'package:effektio/screens/OnboardingScreens/Signup.dart';
 import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
@@ -80,7 +79,6 @@ class Effektio extends StatelessWidget {
               '/profile': (BuildContext context) => const SocialProfileScreen(),
               '/signup': (BuildContext context) => const SignupScreen(),
               '/gallery': (BuildContext context) => const GalleryScreen(),
-              '/addTodo': (BuildContext context) => const AddToDoScreen(),
             },
           ),
         ),
