@@ -14,7 +14,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:get/get.dart';
 
-class ChatBubbleBuilder extends StatefulWidget {
+class ChatBubbleBuilder extends StatelessWidget {
   final String userId;
   final Widget child;
   final types.Message message;
@@ -30,25 +30,9 @@ class ChatBubbleBuilder extends StatefulWidget {
     required this.enlargeEmoji,
   }) : super(key: key);
 
-  @override
-  State<ChatBubbleBuilder> createState() => _ChatBubbleBuilderState();
-}
-
-class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
-    with TickerProviderStateMixin {
-  final ChatRoomController roomController = Get.find<ChatRoomController>();
-  late TabController tabBarController;
-  List<Tab> reactionTabs = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    tabBarController = TabController(length: reactionTabs.length, vsync: this);
+  bool isAuthor() {
+    return userId == message.author.id;
   }
-
-  // A helper function to get bubble widget size to set constraints beforehand
-  //for emoji container.
 
   @override
   Widget build(BuildContext context) {
@@ -64,16 +48,217 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             Stack(
               clipBehavior: Clip.none,
               children: [
-                buildChatBubble(),
-                buildEmojiRow(),
+                _ChatBubble(
+                  isAuthor: isAuthor(),
+                  userId: userId,
+                  message: message,
+                  nextMessageInGroup: nextMessageInGroup,
+                  child: child,
+                  enlargeEmoji: enlargeEmoji,
+                ),
+                _EmojiRow(isAuthor: isAuthor(), message: message)
               ],
             ),
             Align(
               alignment:
                   !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-              child: buildEmojiContainer(),
+              child: _EmojiContainer(
+                isAuthor: isAuthor(),
+                message: message,
+                nextMessageInGroup: nextMessageInGroup,
+              ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+class _ChatBubble extends StatelessWidget {
+  const _ChatBubble({
+    required this.isAuthor,
+    required this.userId,
+    required this.message,
+    required this.nextMessageInGroup,
+    required this.child,
+    required this.enlargeEmoji,
+  });
+  final bool isAuthor;
+  final String userId;
+  final types.Message message;
+  final bool nextMessageInGroup;
+  final Widget child;
+  final bool enlargeEmoji;
+
+  @override
+  Widget build(BuildContext context) {
+    final ChatRoomController controller = Get.find<ChatRoomController>();
+    return GestureDetector(
+      onLongPress: () {
+        controller.updateEmojiState(message);
+        controller.replyMessageWidget = child;
+        controller.repliedToMessage = message;
+      },
+      child: Column(
+        crossAxisAlignment:
+            isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          (message.repliedMessage != null)
+              ? userId == message.repliedMessage!.author.id
+                  ? const Text(
+                      'Replied to yourself',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    )
+                  : Text(
+                      controller.client.userId().toString() ==
+                              message.repliedMessage!.author.id
+                          ? 'Replied to you'
+                          : 'Replied to ${message.repliedMessage!.author.id}',
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                    )
+              : const SizedBox(),
+          const SizedBox(height: 8),
+          //reply bubble
+          (message.repliedMessage != null)
+              ? Bubble(
+                  child: _OriginalMessageBuilder(message: message),
+                  color: AppCommonTheme.backgroundColorLight,
+                  margin: nextMessageInGroup
+                      ? const BubbleEdges.symmetric(horizontal: 2)
+                      : null,
+                  radius: const Radius.circular(22),
+                  padding: message.repliedMessage is types.ImageMessage
+                      ? const BubbleEdges.all(0)
+                      : null,
+                  nip: BubbleNip.no,
+                )
+              : const SizedBox(),
+          const SizedBox(height: 4),
+          Flexible(
+            child: Bubble(
+              child: child,
+              style: enlargeEmoji
+                  ? const BubbleStyle(
+                      color: Colors.transparent,
+                      borderColor: Colors.transparent,
+                      elevation: 0,
+                    )
+                  : BubbleStyle(
+                      color: !isAuthor || message is types.ImageMessage
+                          ? AppCommonTheme.backgroundColorLight
+                          : AppCommonTheme.primaryColor,
+                      margin: nextMessageInGroup
+                          ? const BubbleEdges.symmetric(horizontal: 2)
+                          : null,
+                      radius: const Radius.circular(22),
+                      padding: message is types.ImageMessage
+                          ? const BubbleEdges.all(0)
+                          : null,
+                      nip: (nextMessageInGroup || message is types.ImageMessage)
+                          ? BubbleNip.no
+                          : !isAuthor
+                              ? BubbleNip.leftBottom
+                              : BubbleNip.rightBottom,
+                      nipHeight: 18,
+                      nipWidth: 0.5,
+                      nipRadius: 0,
+                    ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmojiContainer extends StatefulWidget {
+  const _EmojiContainer({
+    required this.isAuthor,
+    required this.message,
+    required this.nextMessageInGroup,
+  });
+  final bool isAuthor;
+  final types.Message message;
+  final bool nextMessageInGroup;
+
+  @override
+  State<_EmojiContainer> createState() => _EmojiContainerState();
+}
+
+class _EmojiContainerState extends State<_EmojiContainer>
+    with TickerProviderStateMixin {
+  late TabController tabBarController;
+  List<Tab> reactionTabs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    tabBarController = TabController(length: reactionTabs.length, vsync: this);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<String> keys = [];
+    if (widget.message.metadata != null) {
+      if (widget.message.metadata!.containsKey('reactions')) {
+        Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
+        keys = reactions.keys.toList();
+      }
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Container(
+          constraints: BoxConstraints(maxWidth: constraints.maxWidth / 3),
+          margin: const EdgeInsets.all(2),
+          decoration: BoxDecoration(
+            border: keys.isEmpty
+                ? null
+                : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
+            borderRadius: BorderRadius.only(
+              topLeft: widget.nextMessageInGroup
+                  ? const Radius.circular(12)
+                  : !widget.isAuthor
+                      ? const Radius.circular(0)
+                      : const Radius.circular(12),
+              topRight: widget.nextMessageInGroup
+                  ? const Radius.circular(12)
+                  : !widget.isAuthor
+                      ? const Radius.circular(12)
+                      : const Radius.circular(0),
+              bottomLeft: const Radius.circular(12),
+              bottomRight: const Radius.circular(12),
+            ),
+            color: ChatTheme01.chatEmojiContainerColor,
+          ),
+          padding: const EdgeInsets.all(5),
+          child: Wrap(
+            direction: Axis.horizontal,
+            spacing: 5,
+            runSpacing: 3,
+            children: List.generate(keys.length, (int index) {
+              String key = keys[index];
+              Map<String, dynamic> reactions =
+                  widget.message.metadata!['reactions'];
+              ReactionDesc? desc = reactions[key];
+              int count = desc!.count();
+              return GestureDetector(
+                onTap: () {
+                  showEmojiReactionsSheet(reactions);
+                },
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(key, style: ChatTheme01.emojiCountStyle),
+                    const SizedBox(width: 2),
+                    Text(count.toString(), style: ChatTheme01.emojiCountStyle),
+                  ],
+                ),
+              );
+            }),
+          ),
         );
       },
     );
@@ -86,7 +271,11 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
     setState(() {
       reactions.forEach((key, value) {
         count += value.count();
-        reactionTabs.add(Tab(text: '$key+${value.count()}'));
+        reactionTabs.add(
+          Tab(
+            text: '$key+${value.count()}',
+          ),
+        );
       });
       reactionTabs.insert(0, (Tab(text: 'All $count')));
       tabBarController =
@@ -106,14 +295,18 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
             Flexible(
               child: TabBar(
                 isScrollable: true,
-                overlayColor:
-                    MaterialStateProperty.all<Color>(Colors.transparent),
                 padding: const EdgeInsets.all(24),
                 controller: tabBarController,
+                overlayColor:
+                    MaterialStateProperty.all<Color>(Colors.transparent),
                 indicator: const BoxDecoration(
                   color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white,
+                dividerColor: Colors.transparent,
                 tabs: reactionTabs,
               ),
             ),
@@ -125,8 +318,8 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
                   viewportFraction: 1.0,
                   controller: tabBarController,
                   children: [
-                    buildReactionListing(keys),
-                    for (var count in keys) buildReactionListing([count]),
+                    _ReactionListing(emojis: keys),
+                    for (var count in keys) _ReactionListing(emojis: [count]),
                   ],
                 ),
               ),
@@ -140,93 +333,53 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       });
     });
   }
+}
 
-  // Custom chat bubble
-  Widget buildChatBubble() {
-    return GestureDetector(
-      onLongPress: () {
-        roomController.updateEmojiState(widget.message);
-        roomController.replyMessageWidget = widget.child;
-        roomController.repliedToMessage = widget.message;
-      },
-      child: Column(
-        crossAxisAlignment:
-            isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          (widget.message.repliedMessage != null)
-              ? widget.userId == widget.message.repliedMessage!.author.id
-                  ? const Text(
-                      'Replied to yourself',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
-                    )
-                  : Text(
-                      roomController.client.userId().toString() ==
-                              widget.message.repliedMessage!.author.id
-                          ? 'Replied to you'
-                          : 'Replied to ${widget.message.repliedMessage!.author.id}',
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    )
-              : const SizedBox(),
-          const SizedBox(height: 8),
-          (widget.message.repliedMessage != null)
-              ? buildOriginalBubble(widget.message)
-              : const SizedBox(),
-          const SizedBox(height: 4),
-          Flexible(
-            child: Bubble(
-              child: widget.child,
-              style: widget.enlargeEmoji
-                  ? const BubbleStyle(
-                      color: Colors.transparent,
-                      borderColor: Colors.transparent,
-                      elevation: 0,
-                    )
-                  : BubbleStyle(
-                      color: !isAuthor() || widget.message is types.ImageMessage
-                          ? AppCommonTheme.backgroundColorLight
-                          : AppCommonTheme.primaryColor,
-                      margin: widget.nextMessageInGroup
-                          ? const BubbleEdges.symmetric(horizontal: 2)
-                          : null,
-                      radius: const Radius.circular(22),
-                      padding: widget.message is types.ImageMessage
-                          ? const BubbleEdges.all(0)
-                          : null,
-                      nip: (widget.nextMessageInGroup ||
-                              widget.message is types.ImageMessage)
-                          ? BubbleNip.no
-                          : !isAuthor()
-                              ? BubbleNip.leftBottom
-                              : BubbleNip.rightBottom,
-                      nipHeight: 18,
-                      nipWidth: 0.5,
-                      nipRadius: 0,
-                    ),
-            ),
-          ),
-        ],
+class _EmojiRow extends StatelessWidget {
+  const _EmojiRow({required this.isAuthor, required this.message});
+  final bool isAuthor;
+  final types.Message message;
+  @override
+  Widget build(BuildContext context) {
+    final ChatRoomController controller = Get.find<ChatRoomController>();
+    return Visibility(
+      visible: controller.emojiCurrentId == message.id &&
+          controller.isEmojiContainerVisible,
+      child: Container(
+        width: 198,
+        height: 42,
+        padding: const EdgeInsets.all(8),
+        margin: !isAuthor
+            ? const EdgeInsets.only(bottom: 8, left: 8)
+            : const EdgeInsets.only(bottom: 8, right: 8),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          color: AppCommonTheme.backgroundColor,
+          border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
+        ),
+        child: EmojiRow(
+          onEmojiTap: (String value) async {
+            await controller.sendEmojiReaction(
+              controller.repliedToMessage!.id,
+              value,
+            );
+            controller.updateEmojiState(message);
+          },
+        ),
       ),
     );
   }
+}
 
-  //Custom original bubble
-  Widget buildOriginalBubble(types.Message message) {
-    return Bubble(
-      child: originalMessageBuilder(message),
-      color: AppCommonTheme.backgroundColorLight,
-      margin: widget.nextMessageInGroup
-          ? const BubbleEdges.symmetric(horizontal: 2)
-          : null,
-      radius: const Radius.circular(22),
-      padding: message.repliedMessage is types.ImageMessage
-          ? const BubbleEdges.all(0)
-          : null,
-      nip: BubbleNip.no,
-    );
-  }
+class _OriginalMessageBuilder extends StatelessWidget {
+  const _OriginalMessageBuilder({
+    required this.message,
+  });
 
-  Widget originalMessageBuilder(types.Message message) {
+  final types.Message message;
+
+  @override
+  Widget build(BuildContext context) {
     if (message.repliedMessage is types.TextMessage) {
       return ConstrainedBox(
         constraints: BoxConstraints(
@@ -268,103 +421,17 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
       return const SizedBox();
     }
   }
+}
 
-  //Emoji Container which shows message reactions
-  Widget buildEmojiContainer() {
-    List<String> keys = [];
-    if (widget.message.metadata != null) {
-      if (widget.message.metadata!.containsKey('reactions')) {
-        Map<String, dynamic> reactions = widget.message.metadata!['reactions'];
-        keys = reactions.keys.toList();
-      }
-    }
+class _ReactionListing extends StatelessWidget {
+  const _ReactionListing({
+    required this.emojis,
+  });
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Container(
-          constraints: BoxConstraints(maxWidth: constraints.maxWidth / 3),
-          margin: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            border: keys.isEmpty
-                ? null
-                : Border.all(color: AppCommonTheme.dividerColor, width: 0.2),
-            borderRadius: BorderRadius.only(
-              topLeft: widget.nextMessageInGroup
-                  ? const Radius.circular(12)
-                  : !isAuthor()
-                      ? const Radius.circular(0)
-                      : const Radius.circular(12),
-              topRight: widget.nextMessageInGroup
-                  ? const Radius.circular(12)
-                  : !isAuthor()
-                      ? const Radius.circular(12)
-                      : const Radius.circular(0),
-              bottomLeft: const Radius.circular(12),
-              bottomRight: const Radius.circular(12),
-            ),
-            color: ChatTheme01.chatEmojiContainerColor,
-          ),
-          padding: const EdgeInsets.all(5),
-          child: Wrap(
-            direction: Axis.horizontal,
-            spacing: 5,
-            runSpacing: 3,
-            children: List.generate(keys.length, (int index) {
-              String key = keys[index];
-              Map<String, dynamic> reactions =
-                  widget.message.metadata!['reactions'];
-              ReactionDesc? desc = reactions[key];
-              int count = desc!.count();
-              return GestureDetector(
-                onTap: () {
-                  showEmojiReactionsSheet(reactions);
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(key, style: ChatTheme01.emojiCountStyle),
-                    const SizedBox(width: 2),
-                    Text(count.toString(), style: ChatTheme01.emojiCountStyle),
-                  ],
-                ),
-              );
-            }),
-          ),
-        );
-      },
-    );
-  }
+  final List<String> emojis;
 
-  //Emoji Row to select emoji reaction
-  Widget buildEmojiRow() {
-    return Visibility(
-      visible: roomController.emojiCurrentId == widget.message.id &&
-          roomController.isEmojiContainerVisible,
-      child: Container(
-        width: 198,
-        height: 42,
-        padding: const EdgeInsets.all(8),
-        margin: !isAuthor()
-            ? const EdgeInsets.only(bottom: 8, left: 8)
-            : const EdgeInsets.only(bottom: 8, right: 8),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          color: AppCommonTheme.backgroundColor,
-          border: Border.all(color: AppCommonTheme.dividerColor, width: 0.5),
-        ),
-        child: EmojiRow(
-          onEmojiTap: (String value) async {
-            await roomController.sendEmojiReaction(
-              roomController.repliedToMessage!.id,
-              value,
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget buildReactionListing(List<String> emojis) {
+  @override
+  Widget build(BuildContext context) {
     return ListView.separated(
       padding: const EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
@@ -376,9 +443,5 @@ class _ChatBubbleBuilderState extends State<ChatBubbleBuilder>
         return const SizedBox(height: 12);
       },
     );
-  }
-
-  bool isAuthor() {
-    return widget.userId == widget.message.author.id;
   }
 }

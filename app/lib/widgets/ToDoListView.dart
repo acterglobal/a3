@@ -374,7 +374,7 @@ class _HeaderWidget extends StatelessWidget {
                     style: ToDoTheme.listTagTextStyle,
                   ),
                 )
-              : const SizedBox(),
+              : const SizedBox.shrink(),
         ],
       ),
     );
