@@ -17,7 +17,6 @@ class SideDrawer extends StatelessWidget {
   final String? displayName;
   final String userId;
   final Future<FfiBufferUint8>? displayAvatar;
-  final Client client;
 
   const SideDrawer({
     Key? key,
@@ -25,7 +24,6 @@ class SideDrawer extends StatelessWidget {
     required this.userId,
     this.displayName,
     this.displayAvatar,
-    required this.client,
   }) : super(key: key);
 
   @override
@@ -39,7 +37,12 @@ class SideDrawer extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              buildHeader(context),
+              _HeaderWidget(
+                isGuest: isGuest,
+                userId: userId,
+                displayName: displayName,
+                displayAvatar: displayAvatar,
+              ),
               SizedBox(height: size.height * 0.04),
               buildPinsItem(context),
               buildTodoItem(context),
@@ -56,101 +59,6 @@ class SideDrawer extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildHeader(BuildContext context) {
-    if (isGuest) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(right: 20),
-            alignment: Alignment.bottomCenter,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                alignment: Alignment.center,
-                backgroundColor: MaterialStateProperty.all<Color>(
-                  AppCommonTheme.primaryColor,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
-              child: Text(AppLocalizations.of(context)!.login),
-            ),
-          ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            child: ElevatedButton(
-              style: ButtonStyle(
-                alignment: Alignment.center,
-                backgroundColor: MaterialStateProperty.all<Color>(
-                  AppCommonTheme.primaryColor,
-                ),
-              ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/signup');
-              },
-              child: Text(AppLocalizations.of(context)!.signUp),
-            ),
-          ),
-        ],
-      );
-    }
-    return GestureDetector(
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Profile View not implemented yet',
-        );
-      },
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: CustomAvatar(
-              uniqueKey: userId,
-              radius: 24,
-              cacheHeight: 120,
-              cacheWidth: 120,
-              avatar: displayAvatar,
-              displayName: displayName,
-              isGroup: false,
-              stringName: displayName!,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildDisplayName(),
-              buildUserId(),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildDisplayName() {
-    if (displayName == null) {
-      return const SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
-      );
-    }
-    return Text(
-      displayName!,
-      style: SideMenuAndProfileTheme.sideMenuProfileStyle,
-    );
-  }
-
-  Widget buildUserId() {
-    return Text(
-      userId,
-      style: SideMenuAndProfileTheme.sideMenuProfileStyle + const FontSize(14),
     );
   }
 
@@ -355,6 +263,109 @@ class SideDrawer extends StatelessWidget {
         await sdk.logout();
         Navigator.pushReplacementNamed(context, '/');
       },
+    );
+  }
+}
+
+class _HeaderWidget extends StatelessWidget {
+  const _HeaderWidget({
+    required this.isGuest,
+    required this.userId,
+    required this.displayAvatar,
+    required this.displayName,
+  });
+
+  final bool isGuest;
+  final String userId;
+  final Future<FfiBufferUint8>? displayAvatar;
+  final String? displayName;
+  @override
+  Widget build(BuildContext context) {
+    if (isGuest) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: const EdgeInsets.only(right: 20),
+            alignment: Alignment.bottomCenter,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                alignment: Alignment.center,
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  AppCommonTheme.primaryColor,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/login');
+              },
+              child: Text(AppLocalizations.of(context)!.login),
+            ),
+          ),
+          Container(
+            alignment: Alignment.bottomCenter,
+            child: ElevatedButton(
+              style: ButtonStyle(
+                alignment: Alignment.center,
+                backgroundColor: MaterialStateProperty.all<Color>(
+                  AppCommonTheme.primaryColor,
+                ),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/signup');
+              },
+              child: Text(AppLocalizations.of(context)!.signUp),
+            ),
+          ),
+        ],
+      );
+    }
+    return GestureDetector(
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Profile View not implemented yet',
+        );
+      },
+      child: Row(
+        children: [
+          Container(
+            margin: const EdgeInsets.all(10),
+            child: CustomAvatar(
+              uniqueKey: userId,
+              radius: 24,
+              cacheHeight: 120,
+              cacheWidth: 120,
+              avatar: displayAvatar,
+              displayName: displayName,
+              isGroup: false,
+              stringName: displayName!,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              displayName == null
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: AppCommonTheme.primaryColor,
+                      ),
+                    )
+                  : Text(
+                      displayName!,
+                      style: SideMenuAndProfileTheme.sideMenuProfileStyle,
+                    ),
+              Text(
+                userId,
+                style: SideMenuAndProfileTheme.sideMenuProfileStyle +
+                    const FontSize(14),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
