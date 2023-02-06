@@ -51,14 +51,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
     roomController.setCurrentRoom(widget.room);
   }
 
   @override
   void dispose() {
     roomController.setCurrentRoom(null);
-
     super.dispose();
   }
 
@@ -293,7 +291,6 @@ class _ChatScreenState extends State<ChatScreen> {
       message: p1,
       onPreviewDataFetched: roomController.handlePreviewDataFetched,
       messageWidth: messageWidth,
-      controller: roomController,
     );
   }
 
