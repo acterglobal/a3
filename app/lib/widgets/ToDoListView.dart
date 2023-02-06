@@ -193,7 +193,6 @@ class _TasksWidget extends StatelessWidget {
                           type: MaterialType.transparency,
                           child: AddTaskDialogBox(
                             toDoList: todo,
-                            controller: controller,
                           ),
                         ),
                       );
