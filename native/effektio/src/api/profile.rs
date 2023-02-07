@@ -7,7 +7,8 @@ use matrix_sdk::{
             media::get_content_thumbnail::v3::Method,
             profile::get_profile::v3::Request as GetProfileRequest,
         },
-        events::room::MediaSource, OwnedMxcUri, OwnedRoomId, OwnedUserId, RoomId, UserId, UInt,
+        events::room::MediaSource,
+        OwnedMxcUri, OwnedRoomId, OwnedUserId, RoomId, UInt, UserId,
     },
     Client,
 };
