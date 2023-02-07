@@ -174,7 +174,7 @@ impl RoomProfile {
                     return Ok(FfiBuffer::new(result));
                 }
                 // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from user profile");
+                info!("Could not get media content from room profile");
                 Ok(FfiBuffer::new(vec![]))
             })
             .await?
