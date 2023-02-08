@@ -77,12 +77,20 @@ class _ChatListItemState extends State<ChatListItem> {
             isGroup: true,
             stringName: simplifyRoomId(roomId)!,
           ),
-          title: buildTitle(context),
+          title: _TitleWidget(displayName: displayName, context: context),
           subtitle: GetBuilder<ChatListController>(
             id: 'chatroom-$roomId-subtitle',
-            builder: (controller) => buildSubtitle(context),
+            builder: (controller) => _SubtitleWidget(
+              typingUsers: widget.typingUsers,
+              latestMessage: widget.latestMessage,
+            ),
           ),
-          trailing: buildTrailing(context),
+          trailing: _TrailingWidget(
+            room: widget.room,
+            latestMessage: widget.latestMessage,
+            activeMembers: activeMembers,
+            userId: userId,
+          ),
         ),
         const Padding(
           padding: EdgeInsets.only(bottom: 5),
@@ -110,7 +118,22 @@ class _ChatListItemState extends State<ChatListItem> {
     );
   }
 
-  Widget buildTitle(BuildContext context) {
+  Future<void> getActiveMembers() async {
+    activeMembers = (await widget.room.activeMembers()).toList();
+  }
+}
+
+class _TitleWidget extends StatelessWidget {
+  const _TitleWidget({
+    required this.displayName,
+    required this.context,
+  });
+
+  final String? displayName;
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     if (displayName == null) {
       return Text(
         AppLocalizations.of(context)!.loadingName,
@@ -122,25 +145,35 @@ class _ChatListItemState extends State<ChatListItem> {
       style: ChatTheme01.chatTitleStyle,
     );
   }
+}
 
-  Widget buildSubtitle(BuildContext context) {
-    if (widget.typingUsers.isNotEmpty) {
+class _SubtitleWidget extends StatelessWidget {
+  const _SubtitleWidget({
+    required this.typingUsers,
+    required this.latestMessage,
+  });
+  final List<types.User> typingUsers;
+  final RoomMessage? latestMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    if (typingUsers.isNotEmpty) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
         child: Text(
-          getUserPlural(widget.typingUsers),
+          getUserPlural(typingUsers),
           style: ChatTheme01.latestChatStyle.copyWith(
             fontStyle: FontStyle.italic,
           ),
         ),
       );
     }
-    if (widget.latestMessage == null) {
-      return const SizedBox();
+    if (latestMessage == null) {
+      return const SizedBox.shrink();
     }
-    RoomEventItem? eventItem = widget.latestMessage!.eventItem();
+    RoomEventItem? eventItem = latestMessage!.eventItem();
     if (eventItem == null) {
-      return const SizedBox();
+      return const SizedBox.shrink();
     }
 
     String sender = eventItem.sender();
@@ -215,29 +248,53 @@ class _ChatListItemState extends State<ChatListItem> {
           ],
         );
     }
-
-    // exclude state event
-    return const SizedBox();
+    return const SizedBox.shrink();
   }
 
-  Widget? buildTrailing(BuildContext context) {
-    if (widget.latestMessage == null) {
-      return null;
+  String getUserPlural(List<types.User> authors) {
+    if (authors.isEmpty) {
+      return '';
+    } else if (authors.length == 1) {
+      return '${authors[0].firstName} is typing...';
+    } else if (authors.length == 2) {
+      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
+    } else {
+      return '${authors[0].firstName} and ${authors.length - 1} others typing...';
     }
-    RoomEventItem? eventItem = widget.latestMessage!.eventItem();
+  }
+}
+
+class _TrailingWidget extends StatelessWidget {
+  const _TrailingWidget({
+    required this.room,
+    required this.activeMembers,
+    this.latestMessage,
+    required this.userId,
+  });
+  final Conversation room;
+  final List<Member> activeMembers;
+  final RoomMessage? latestMessage;
+  final String? userId;
+
+  @override
+  Widget build(BuildContext context) {
+    if (latestMessage == null) {
+      return const SizedBox.shrink();
+    }
+    RoomEventItem? eventItem = latestMessage!.eventItem();
     if (eventItem == null) {
-      return null;
+      return const SizedBox.shrink();
     }
     String senderID = '';
     types.Status? messageStatus;
     int ts = eventItem.originServerTs();
     var receiptController = Get.find<ReceiptController>();
     List<String> seenByList = receiptController.getSeenByList(
-      widget.room.getRoomId(),
+      room.getRoomId(),
       ts,
     );
 
-    senderID = widget.latestMessage!.eventItem()!.sender();
+    senderID = latestMessage!.eventItem()!.sender();
 
     messageStatus = seenByList.isEmpty
         ? types.Status.sent
@@ -254,13 +311,22 @@ class _ChatListItemState extends State<ChatListItem> {
           style: ChatTheme01.latestChatDateStyle,
         ),
         senderID == userId
-            ? customStatusBuilder(messageStatus)
-            : const SizedBox(),
+            ? _CustomStatusWidget(status: messageStatus)
+            : const SizedBox.shrink(),
       ],
     );
   }
+}
 
-  Widget customStatusBuilder(types.Status status) {
+class _CustomStatusWidget extends StatelessWidget {
+  const _CustomStatusWidget({
+    required this.status,
+  });
+
+  final types.Status status;
+
+  @override
+  Widget build(BuildContext context) {
     if (status == types.Status.delivered) {
       return SvgPicture.asset('assets/images/deliveredIcon.svg');
     } else if (status == types.Status.seen) {
@@ -283,21 +349,5 @@ class _ChatListItemState extends State<ChatListItem> {
         height: 12,
       );
     }
-  }
-
-  String getUserPlural(List<types.User> authors) {
-    if (authors.isEmpty) {
-      return '';
-    } else if (authors.length == 1) {
-      return '${authors[0].firstName} is typing...';
-    } else if (authors.length == 2) {
-      return '${authors[0].firstName} and ${authors[1].firstName} is typing...';
-    } else {
-      return '${authors[0].firstName} and ${authors.length - 1} others typing...';
-    }
-  }
-
-  Future<void> getActiveMembers() async {
-    activeMembers = (await widget.room.activeMembers()).toList();
   }
 }
