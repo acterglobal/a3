@@ -524,7 +524,7 @@ class Api {
   }
 
   /// Initialize logging
-  void initLogging(
+  String initLogging(
     String? filter,
   ) {
     final tmp0 = filter;
@@ -555,6 +555,9 @@ class Api {
     final tmp9 = tmp6.arg1;
     final tmp10 = tmp6.arg2;
     final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
     if (tmp8 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp9_0 = ffi.Pointer.fromAddress(tmp9);
       final tmp8_0 = utf8.decode(tmp9_0.asTypedList(tmp10));
@@ -565,7 +568,14 @@ class Api {
       }
       throw tmp8_0;
     }
-    return;
+    final ffi.Pointer<ffi.Uint8> tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+    final tmp7 = utf8.decode(tmp12_0.asTypedList(tmp13));
+    if (tmp14 > 0) {
+      final ffi.Pointer<ffi.Void> tmp12_0;
+      tmp12_0 = ffi.Pointer.fromAddress(tmp12);
+      this.__deallocate(tmp12_0, tmp14 * 1, 1);
+    }
+    return tmp7;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -20404,6 +20414,12 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
+  @ffi.Int64()
+  external int arg4;
+  @ffi.Uint64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
 }
 
 class _EfkColorRgbaU8Return extends ffi.Struct {

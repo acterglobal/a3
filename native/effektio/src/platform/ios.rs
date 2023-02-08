@@ -10,8 +10,8 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(filter: Option<String>) -> Result<()> {
+pub fn init_logging(filter: Option<String>) -> Result<String> {
     // FIXME: not yet supported
-
-    Ok(())
+    let file_path = "".to_string();
+    Ok(file_path)
 }

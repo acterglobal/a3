@@ -85,7 +85,7 @@ mod api {
     }
 }
 
-fn init_logging(filter: Option<String>) -> Result<()> {
-    platform::init_logging(filter)?;
-    Ok(())
+fn init_logging(filter: Option<String>) -> Result<String> {
+    let file_path = platform::init_logging(filter)?;
+    Ok(file_path)
 }

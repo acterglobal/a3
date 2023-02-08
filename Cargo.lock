@@ -978,9 +978,11 @@ dependencies = [
  "anyhow",
  "assign",
  "async-broadcast",
+ "chrono",
  "derive_builder 0.10.2",
  "effektio-core",
  "env_logger 0.9.3",
+ "fern",
  "ffi-gen",
  "ffi-gen-macro",
  "flexi_logger",
@@ -1197,6 +1199,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a407cfaa3385c4ae6b23e84623d48c2798d06e3e6a1878f7f59f17b3f86499"
 dependencies = [
  "instant",
+]
+
+[[package]]
+name = "fern"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3bdd7b0849075e79ee9a1836df22c717d1eba30451796fdc631b04565dd11e2a"
+dependencies = [
+ "log",
 ]
 
 [[package]]

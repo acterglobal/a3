@@ -1,5 +1,5 @@
 /// Initialize logging
-fn init_logging(filter: Option<string>) -> Result<()>;
+fn init_logging(filter: Option<string>) -> Result<string>;
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(basepath: string, username: string, password: string, device_name: Option<string>) -> Future<Result<Client>>;

@@ -1,5 +1,5 @@
 use anyhow::Result;
-use flexi_logger::{AdaptiveFormat, Logger};
+use flexi_logger::{Duplicate, FileSpec, Logger};
 use matrix_sdk::{Client, ClientBuilder};
 use std::{fs, path};
 
@@ -18,7 +18,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(filter: Option<String>) -> Result<()> {
+pub fn init_logging(filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -27,8 +27,11 @@ pub fn init_logging(filter: Option<String>) -> Result<()> {
     } else {
         Logger::try_with_env()?
     };
+    let file_spec = FileSpec::default();
+    let file_path = file_spec.as_pathbuf(None).display().to_string();
     logger
-        .adaptive_format_for_stderr(AdaptiveFormat::Detailed)
+        .log_to_file(file_spec)
+        .duplicate_to_stderr(Duplicate::All)
         .start()?;
-    Ok(())
+    Ok(file_path)
 }
