@@ -141,7 +141,8 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
                             ),
                             iconName: 'like_filled',
                             color: AppCommonTheme.primaryColor,
-                            isSmall: false)
+                            isSmall: false,
+                          )
                         : _LikeWidget(
                             size: Size(
                               heartSize.value * 30,

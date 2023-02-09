@@ -107,22 +107,26 @@ class _BodyWidget extends StatelessWidget {
                   Row(
                     children: <Widget>[
                       _RadioBtn(
-                          todoController: todoController,
-                          text: buttonText[0],
-                          index: 0),
+                        todoController: todoController,
+                        text: buttonText[0],
+                        index: 0,
+                      ),
                       _RadioBtn(
-                          todoController: todoController,
-                          text: buttonText[1],
-                          index: 1),
+                        todoController: todoController,
+                        text: buttonText[1],
+                        index: 1,
+                      ),
                       _RadioBtn(
-                          todoController: todoController,
-                          text: buttonText[2],
-                          index: 2),
+                        todoController: todoController,
+                        text: buttonText[2],
+                        index: 2,
+                      ),
                       const Spacer(),
                       _RadioBtn(
-                          todoController: todoController,
-                          text: buttonText[3],
-                          index: 3),
+                        todoController: todoController,
+                        text: buttonText[3],
+                        index: 3,
+                      ),
                     ],
                   ),
                   Expanded(

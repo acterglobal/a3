@@ -57,14 +57,16 @@ class NewsItem extends StatelessWidget {
                         children: <Widget>[
                           const Spacer(),
                           _TitleWidget(
-                              news: news,
-                              backgroundColor: bgColor,
-                              foregroundColor: fgColor),
+                            news: news,
+                            backgroundColor: bgColor,
+                            foregroundColor: fgColor,
+                          ),
                           const SizedBox(height: 10),
                           _SubtitleWidget(
-                              news: news,
-                              backgroundColor: bgColor,
-                              foregroundColor: fgColor),
+                            news: news,
+                            backgroundColor: bgColor,
+                            foregroundColor: fgColor,
+                          ),
                           const SizedBox(height: 10),
                         ],
                       ),
