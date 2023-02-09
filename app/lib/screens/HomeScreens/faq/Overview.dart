@@ -1,5 +1,5 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/FaqController.dart';
+import 'package:effektio/controllers/faq_controller.dart';
 import 'package:effektio/widgets/FaqListItem.dart';
 import 'package:effektio/widgets/searchWidget.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -70,9 +70,10 @@ class _FaqOverviewScreenState extends State<FaqOverviewScreen> {
                             child: ListView.builder(
                               padding: const EdgeInsets.all(8),
                               shrinkWrap: true,
-                              itemCount: controller.searchController.text.isEmpty
-                                  ? snapshot.requireData.length
-                                  : controller.searchData.length,
+                              itemCount:
+                                  controller.searchController.text.isEmpty
+                                      ? snapshot.requireData.length
+                                      : controller.searchData.length,
                               itemBuilder: (
                                 BuildContext context,
                                 int index,

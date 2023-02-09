@@ -92,7 +92,12 @@ class _ChatOverviewState extends State<ChatOverview> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (widget.client.isGuest()) empty else buildList(context),
+                if (widget.client.isGuest())
+                  empty
+                else
+                  _ListWidget(
+                    client: widget.client,
+                  ),
               ],
             ),
           ),
@@ -104,50 +109,17 @@ class _ChatOverviewState extends State<ChatOverview> {
   SvgPicture get empty {
     return SvgPicture.asset('assets/images/empty_messages.svg');
   }
+}
 
-  Widget buildListHeader(BuildContext context) {
-    return GetBuilder<ChatListController>(
-      id: 'invited_list',
-      builder: (ChatListController controller) {
-        if (controller.invitations.isEmpty) {
-          return const SizedBox();
-        }
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.only(left: 18),
-              child: Text(
-                AppLocalizations.of(context)!.invitedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 10),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: controller.invitations.length,
-              itemBuilder: (BuildContext context, int index) {
-                return buildInvitedItem(controller.invitations[index]);
-              },
-            ),
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.only(left: 18, top: 10),
-              child: Text(
-                AppLocalizations.of(context)!.joinedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        );
-      },
-    );
-  }
+class _ListWidget extends StatelessWidget {
+  const _ListWidget({
+    required this.client,
+  });
 
-  Widget buildList(BuildContext context) {
+  final Client client;
+
+  @override
+  Widget build(BuildContext context) {
     return GetBuilder<ChatListController>(
       id: 'chatlist',
       builder: (ChatListController controller) {
@@ -165,7 +137,7 @@ class _ChatOverviewState extends State<ChatOverview> {
           );
         }
         return ImplicitlyAnimatedReorderableList<JoinedRoom>(
-          header: buildListHeader(context),
+          header: _ListHeader(client: client),
           items: controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
@@ -190,7 +162,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: buildJoinedItem(item),
+                  child: _JoinedItem(client: client, item: item),
                 ),
               );
             },
@@ -200,7 +172,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: buildJoinedItem(item),
+                child: _JoinedItem(client: client, item: item),
               );
             },
           ),
@@ -219,7 +191,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: buildJoinedItem(item),
+                  child: _JoinedItem(client: client, item: item),
                 ),
               );
             },
@@ -230,16 +202,88 @@ class _ChatOverviewState extends State<ChatOverview> {
       },
     );
   }
+}
 
-  Widget buildInvitedItem(Invitation item) {
+class _ListHeader extends StatelessWidget {
+  const _ListHeader({required this.client});
+
+  final Client client;
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<ChatListController>(
+      id: 'invited_list',
+      builder: (ChatListController controller) {
+        if (controller.invitations.isEmpty) {
+          return const SizedBox();
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.invitedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: controller.invitations.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _InvitedItem(
+                  client: client,
+                  item: controller.invitations[index],
+                );
+              },
+            ),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18, top: 10),
+              child: Text(
+                AppLocalizations.of(context)!.joinedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _InvitedItem extends StatelessWidget {
+  const _InvitedItem({
+    required this.client,
+    required this.item,
+  });
+
+  final Client client;
+  final Invitation item;
+
+  @override
+  Widget build(BuildContext context) {
     return InviteInfoWidget(
-      client: widget.client,
+      client: client,
       invitation: item,
       avatarColor: Colors.white,
     );
   }
+}
 
-  Widget buildJoinedItem(JoinedRoom item) {
+class _JoinedItem extends StatelessWidget {
+  const _JoinedItem({
+    required this.client,
+    required this.item,
+  });
+  final Client client;
+  final JoinedRoom item;
+
+  @override
+  Widget build(BuildContext context) {
     String roomId = item.conversation.getRoomId();
     // we should be able to update only changed room items
     // so we use GetBuilder to render item
@@ -247,7 +291,7 @@ class _ChatOverviewState extends State<ChatOverview> {
       id: 'chatroom-$roomId',
       builder: (controller) => ChatListItem(
         key: Key(roomId),
-        client: widget.client,
+        client: client,
         room: item.conversation,
         latestMessage: item.latestMessage,
         typingUsers: item.typingUsers,

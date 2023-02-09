@@ -140,7 +140,14 @@ class _TypeIndicatorState extends State<TypeIndicator>
             ? MainAxisAlignment.start
             : MainAxisAlignment.end,
         children: [
-          if (widget.bubbleAlignment == BubbleRtlAlignment.left) buildStart(),
+          if (widget.bubbleAlignment == BubbleRtlAlignment.left)
+            Container(
+              margin: const EdgeInsets.only(right: 12),
+              child: TypingWidget(
+                widget: widget,
+                mode: widget.options.typingMode,
+              ),
+            ),
           Container(
             margin: const EdgeInsets.all(8),
             padding: const EdgeInsets.only(top: 12),
@@ -169,28 +176,15 @@ class _TypeIndicatorState extends State<TypeIndicator>
               ],
             ),
           ),
-          if (widget.bubbleAlignment == BubbleRtlAlignment.right) buildEnd(),
+          if (widget.bubbleAlignment == BubbleRtlAlignment.right)
+            Container(
+              margin: const EdgeInsets.only(left: 12),
+              child: TypingWidget(
+                widget: widget,
+                mode: widget.options.typingMode,
+              ),
+            ),
         ],
-      ),
-    );
-  }
-
-  Widget buildStart() {
-    return Container(
-      margin: const EdgeInsets.only(right: 12),
-      child: TypingWidget(
-        widget: widget,
-        mode: widget.options.typingMode,
-      ),
-    );
-  }
-
-  Widget buildEnd() {
-    return Container(
-      margin: const EdgeInsets.only(left: 12),
-      child: TypingWidget(
-        widget: widget,
-        mode: widget.options.typingMode,
       ),
     );
   }
@@ -367,7 +361,15 @@ class TypingAvatar extends StatelessWidget {
       backgroundColor: getUserAvatarNameColor(author, colors),
       backgroundImage: _buildImage(),
       radius: 13,
-      child: _buildInitials(),
+      child: Text(
+        getUserInitials(author),
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+          color: neutral2,
+        ),
+        textScaleFactor: 0.7,
+      ),
     );
   }
 
@@ -376,21 +378,6 @@ class TypingAvatar extends StatelessWidget {
       return null;
     }
     return NetworkImage(author.imageUrl!);
-  }
-
-  Widget? _buildInitials() {
-    if (author.imageUrl != null) {
-      return null;
-    }
-    return Text(
-      getUserInitials(author),
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: neutral2,
-      ),
-      textScaleFactor: 0.7,
-    );
   }
 }
 

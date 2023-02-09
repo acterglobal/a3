@@ -1,7 +1,7 @@
 import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/GalleryView.dart';
+import 'package:effektio/widgets/GalleryItem.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -25,7 +25,7 @@ class GalleryScreen extends StatelessWidget {
           mainAxisSpacing: 15,
           children: List.generate(9, (int index) {
             return Center(
-              child: galleryImagesView(images[index]),
+              child: GalleryItem(image: images[index]),
             );
           }),
         ),

@@ -300,7 +300,6 @@ class _EffektioHomeState extends State<EffektioHome>
             userId: client.userId().toString(),
             displayName: displayName,
             displayAvatar: displayAvatar,
-            client: client,
           ),
           bottomNavigationBar: TabBar(
             labelColor: AppCommonTheme.primaryColor,
