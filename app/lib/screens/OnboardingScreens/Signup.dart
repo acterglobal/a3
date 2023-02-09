@@ -30,28 +30,6 @@ class _SignupScreentate extends State<SignupScreen> {
     super.dispose();
   }
 
-  Future<bool> validateSignUp() async {
-    bool isRegistered = await signUpController.signUpSubmitted();
-    if (isRegistered) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.loginSuccess),
-          backgroundColor: AuthTheme.authSuccess,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.loginFailed),
-          backgroundColor: AuthTheme.authFailed,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-    }
-    return isRegistered;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,29 +58,29 @@ class _SignupScreentate extends State<SignupScreen> {
                     style: AuthTheme.authBodyStyle,
                   ),
                   const SizedBox(height: 20),
-                  signUpOnboardingTextField(
-                    AppLocalizations.of(context)!.name,
-                    controller.name,
-                    AppLocalizations.of(context)!.missingName,
-                    SignUpOnboardingTextFieldEnum.name,
+                  SignUpTextField(
+                    hintText: AppLocalizations.of(context)!.name,
+                    controller: controller.name,
+                    validatorText: AppLocalizations.of(context)!.missingName,
+                    type: SignUpOnboardingTextFieldEnum.name,
                   ),
-                  signUpOnboardingTextField(
-                    AppLocalizations.of(context)!.username,
-                    controller.username,
-                    AppLocalizations.of(context)!.emptyUsername,
-                    SignUpOnboardingTextFieldEnum.userName,
+                  SignUpTextField(
+                    hintText: AppLocalizations.of(context)!.username,
+                    controller: controller.name,
+                    validatorText: AppLocalizations.of(context)!.emptyUsername,
+                    type: SignUpOnboardingTextFieldEnum.userName,
                   ),
-                  signUpOnboardingTextField(
-                    AppLocalizations.of(context)!.password,
-                    controller.password,
-                    AppLocalizations.of(context)!.emptyPassword,
-                    SignUpOnboardingTextFieldEnum.password,
+                  SignUpTextField(
+                    hintText: AppLocalizations.of(context)!.password,
+                    controller: controller.password,
+                    validatorText: AppLocalizations.of(context)!.emptyPassword,
+                    type: SignUpOnboardingTextFieldEnum.password,
                   ),
-                  signUpOnboardingTextField(
-                    AppLocalizations.of(context)!.token,
-                    controller.token,
-                    AppLocalizations.of(context)!.emptyToken,
-                    SignUpOnboardingTextFieldEnum.token,
+                  SignUpTextField(
+                    hintText: AppLocalizations.of(context)!.token,
+                    controller: controller.token,
+                    validatorText: AppLocalizations.of(context)!.emptyToken,
+                    type: SignUpOnboardingTextFieldEnum.token,
                   ),
                   const SizedBox(height: 30),
                   Container(
@@ -145,7 +123,11 @@ class _SignupScreentate extends State<SignupScreen> {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  buildActionButton(controller),
+                  _ActionBtn(
+                    controller: controller,
+                    networkController: networkController,
+                    formKey: formKey,
+                  ),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -180,8 +162,19 @@ class _SignupScreentate extends State<SignupScreen> {
       ),
     );
   }
+}
 
-  Widget buildActionButton(SignUpController controller) {
+class _ActionBtn extends StatelessWidget {
+  const _ActionBtn({
+    required this.controller,
+    required this.networkController,
+    required this.formKey,
+  });
+  final SignUpController controller;
+  final NetworkController networkController;
+  final GlobalKey<FormState> formKey;
+  @override
+  Widget build(BuildContext context) {
     if (controller.isSubmitting) {
       return const CircularProgressIndicator(
         color: AppCommonTheme.primaryColor,
@@ -197,7 +190,7 @@ class _SignupScreentate extends State<SignupScreen> {
               colorText: Colors.white,
             );
           } else {
-            if (await validateSignUp()) {
+            if (await validateSignUp(context)) {
               Navigator.pushReplacementNamed(context, '/');
             }
           }
@@ -205,5 +198,27 @@ class _SignupScreentate extends State<SignupScreen> {
       },
       title: AppLocalizations.of(context)!.signUp,
     );
+  }
+
+  Future<bool> validateSignUp(BuildContext context) async {
+    bool isRegistered = await controller.signUpSubmitted();
+    if (isRegistered) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginSuccess),
+          backgroundColor: AuthTheme.authSuccess,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginFailed),
+          backgroundColor: AuthTheme.authFailed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+    return isRegistered;
   }
 }

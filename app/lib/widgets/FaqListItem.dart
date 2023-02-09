@@ -134,7 +134,7 @@ class FaqListItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
                   height: 40,
-                  child: _buildTagList(),
+                  child: _TagList(faq: faq),
                 ),
               )
             ],
@@ -148,8 +148,17 @@ class FaqListItem extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildTagList() {
+class _TagList extends StatelessWidget {
+  const _TagList({
+    required this.faq,
+  });
+
+  final Faq faq;
+
+  @override
+  Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
       itemCount: faq.tags().length,

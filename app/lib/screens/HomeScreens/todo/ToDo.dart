@@ -26,7 +26,7 @@ class _ToDoScreenState extends State<ToDoScreen> {
     super.initState();
     todoController = Get.put(ToDoController(client: widget.client));
     buttonWidgets = [
-      const ToDoListView(),
+      ToDoListView(controller: todoController),
       const ToDoMineScreen(),
       const Placeholder(),
       const Placeholder()
@@ -72,11 +72,28 @@ class _ToDoScreenState extends State<ToDoScreen> {
           )
         ],
       ),
-      body: buildBody(),
+      body: _BodyWidget(
+        todoController: todoController,
+        buttonText: buttonText,
+        buttonWidgets: buttonWidgets,
+      ),
     );
   }
+}
 
-  Widget buildBody() {
+class _BodyWidget extends StatelessWidget {
+  const _BodyWidget({
+    required this.todoController,
+    required this.buttonText,
+    required this.buttonWidgets,
+  });
+
+  final ToDoController todoController;
+  final List<String> buttonText;
+  final List<Widget> buttonWidgets;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: ToDoTheme.toDoDecoration,
       child: Stack(
@@ -89,11 +106,23 @@ class _ToDoScreenState extends State<ToDoScreen> {
                 children: [
                   Row(
                     children: <Widget>[
-                      radioButton(text: buttonText[0], index: 0),
-                      radioButton(text: buttonText[1], index: 1),
-                      radioButton(text: buttonText[2], index: 2),
+                      _RadioBtn(
+                          todoController: todoController,
+                          text: buttonText[0],
+                          index: 0),
+                      _RadioBtn(
+                          todoController: todoController,
+                          text: buttonText[1],
+                          index: 1),
+                      _RadioBtn(
+                          todoController: todoController,
+                          text: buttonText[2],
+                          index: 2),
                       const Spacer(),
-                      radioButton(text: buttonText[3], index: 3),
+                      _RadioBtn(
+                          todoController: todoController,
+                          text: buttonText[3],
+                          index: 3),
                     ],
                   ),
                   Expanded(
@@ -108,8 +137,21 @@ class _ToDoScreenState extends State<ToDoScreen> {
       ),
     );
   }
+}
 
-  Widget radioButton({required String text, required int index}) {
+class _RadioBtn extends StatelessWidget {
+  const _RadioBtn({
+    required this.todoController,
+    required this.text,
+    required this.index,
+  });
+
+  final ToDoController todoController;
+  final String text;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {

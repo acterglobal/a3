@@ -6,7 +6,7 @@ import 'package:bubble/bubble.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_room_controller.dart';
 import 'package:effektio/widgets/EmojiReactionListItem.dart';
-import 'package:effektio/widgets/emoji_row.dart';
+import 'package:effektio/widgets/EmojiRow.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
@@ -49,6 +49,7 @@ class ChatBubbleBuilder extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 _ChatBubble(
+                  controller: controller,
                   isAuthor: isAuthor(),
                   userId: userId,
                   message: message,
@@ -56,7 +57,11 @@ class ChatBubbleBuilder extends StatelessWidget {
                   child: child,
                   enlargeEmoji: enlargeEmoji,
                 ),
-                _EmojiRow(isAuthor: isAuthor(), message: message)
+                _EmojiRow(
+                  controller: controller,
+                  isAuthor: isAuthor(),
+                  message: message,
+                )
               ],
             ),
             Align(
@@ -77,6 +82,7 @@ class ChatBubbleBuilder extends StatelessWidget {
 
 class _ChatBubble extends StatelessWidget {
   const _ChatBubble({
+    required this.controller,
     required this.isAuthor,
     required this.userId,
     required this.message,
@@ -84,6 +90,7 @@ class _ChatBubble extends StatelessWidget {
     required this.child,
     required this.enlargeEmoji,
   });
+  final ChatRoomController controller;
   final bool isAuthor;
   final String userId;
   final types.Message message;
@@ -93,7 +100,6 @@ class _ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ChatRoomController controller = Get.find<ChatRoomController>();
     return GestureDetector(
       onLongPress: () {
         controller.updateEmojiState(message);
@@ -336,9 +342,15 @@ class _EmojiContainerState extends State<_EmojiContainer>
 }
 
 class _EmojiRow extends StatelessWidget {
-  const _EmojiRow({required this.isAuthor, required this.message});
+  const _EmojiRow({
+    required this.controller,
+    required this.isAuthor,
+    required this.message,
+  });
+  final ChatRoomController controller;
   final bool isAuthor;
   final types.Message message;
+
   @override
   Widget build(BuildContext context) {
     final ChatRoomController controller = Get.find<ChatRoomController>();

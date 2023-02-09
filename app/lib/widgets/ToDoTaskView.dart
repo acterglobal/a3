@@ -48,6 +48,7 @@ class _ToDoTaskViewState extends State<ToDoTaskView> {
         );
       },
       child: TaskCard(
+        controller: controller,
         task: widget.task,
         todoList: widget.todoList,
       ),
@@ -58,14 +59,15 @@ class _ToDoTaskViewState extends State<ToDoTaskView> {
 class TaskCard extends StatelessWidget {
   const TaskCard({
     super.key,
+    required this.controller,
     required this.task,
     required this.todoList,
   });
+  final ToDoController controller;
   final ToDoTask task;
   final ToDoList todoList;
   @override
   Widget build(BuildContext context) {
-    final ToDoController controller = Get.find<ToDoController>();
     return Card(
       elevation: 0,
       color: ToDoTheme.secondaryCardColor,

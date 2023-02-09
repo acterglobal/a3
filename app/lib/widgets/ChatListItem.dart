@@ -32,6 +32,7 @@ class ChatListItem extends StatefulWidget {
 }
 
 class _ChatListItemState extends State<ChatListItem> {
+  final ReceiptController recieptController = Get.find<ReceiptController>();
   Future<FfiBufferUint8>? avatar;
   String? displayName;
   String? userId;
@@ -86,6 +87,7 @@ class _ChatListItemState extends State<ChatListItem> {
             ),
           ),
           trailing: _TrailingWidget(
+            controller: recieptController,
             room: widget.room,
             latestMessage: widget.latestMessage,
             activeMembers: activeMembers,
@@ -266,11 +268,13 @@ class _SubtitleWidget extends StatelessWidget {
 
 class _TrailingWidget extends StatelessWidget {
   const _TrailingWidget({
+    required this.controller,
     required this.room,
     required this.activeMembers,
     this.latestMessage,
     required this.userId,
   });
+  final ReceiptController controller;
   final Conversation room;
   final List<Member> activeMembers;
   final RoomMessage? latestMessage;
@@ -288,8 +292,8 @@ class _TrailingWidget extends StatelessWidget {
     String senderID = '';
     types.Status? messageStatus;
     int ts = eventItem.originServerTs();
-    var receiptController = Get.find<ReceiptController>();
-    List<String> seenByList = receiptController.getSeenByList(
+
+    List<String> seenByList = controller.getSeenByList(
       room.getRoomId(),
       ts,
     );

@@ -30,27 +30,7 @@ class NewsSideBar extends StatefulWidget {
 }
 
 class _NewsSideBarState extends State<NewsSideBar> {
-  TextEditingController commentTextController = TextEditingController();
   final newsCommentGlobalController = Get.put(NewsCommentController());
-
-  bool emojiShowing = false;
-  bool isKeyBoardOpen = false;
-
-  void onEmojiSelected(Emoji emoji) {
-    commentTextController
-      ..text += emoji.emoji
-      ..selection = TextSelection.fromPosition(
-        TextPosition(offset: commentTextController.text.length),
-      );
-  }
-
-  void onBackspacePressed() {
-    commentTextController
-      ..text = commentTextController.text.characters.skipLast(1).toString()
-      ..selection = TextSelection.fromPosition(
-        TextPosition(offset: commentTextController.text.length),
-      );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,19 +58,115 @@ class _NewsSideBarState extends State<NewsSideBar> {
           color: fgColor,
           index: widget.index,
         ),
-        buildSideBarItem(
-          'comment',
-          widget.news.commentsCount().toString(),
-          fgColor,
-          style,
+        _SideBarItem(
+          iconName: 'comment',
+          label: widget.news.commentsCount().toString(),
+          color: fgColor,
+          style: style,
         ),
-        buildSideBarItem('reply', '76', fgColor, style),
-        buildProfileImage(fgColor),
+        _SideBarItem(
+          iconName: 'reply',
+          label: '76',
+          color: fgColor,
+          style: style,
+        ),
+        _ProfileImageWidget(borderColor: fgColor),
       ],
     );
   }
 
-  Widget buildProfileImage(Color borderColor) {
+  void showReportBottomSheet() {
+    showModalBottomSheet(
+      backgroundColor: Colors.grey[800],
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setSheetState) {
+            return Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: AppCommonTheme.textFieldColor,
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text('Spam', style: TextStyle(color: Colors.white)),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text('Violence', style: TextStyle(color: Colors.white)),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Fake Account',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Copyrights',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text(
+                          'Spam',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _ProfileImageWidget extends StatelessWidget {
+  const _ProfileImageWidget({
+    required this.borderColor,
+  });
+
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
@@ -117,17 +193,25 @@ class _NewsSideBarState extends State<NewsSideBar> {
       ),
     );
   }
+}
 
-  Widget buildSideBarItem(
-    String iconName,
-    String label,
-    Color? color,
-    TextStyle style,
-  ) {
+class _SideBarItem extends StatelessWidget {
+  const _SideBarItem({
+    required this.iconName,
+    required this.label,
+    required this.color,
+    required this.style,
+  });
+  final String iconName;
+  final String label;
+  final Color? color;
+  final TextStyle style;
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (iconName == 'comment') {
-          showBottomSheet();
+          showBottomSheet(context);
         } else {
           showNotYetImplementedMsg(context, 'News Action not yet implemented');
         }
@@ -147,7 +231,9 @@ class _NewsSideBarState extends State<NewsSideBar> {
     );
   }
 
-  void showBottomSheet() {
+  void showBottomSheet(BuildContext context) {
+    TextEditingController commentTextController = TextEditingController();
+    bool emojiShowing = false;
     showModalBottomSheet(
       context: context,
       backgroundColor: AppCommonTheme.backgroundColor,
@@ -158,6 +244,23 @@ class _NewsSideBarState extends State<NewsSideBar> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
+            void onEmojiSelected(Emoji emoji) {
+              commentTextController
+                ..text += emoji.emoji
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: commentTextController.text.length),
+                );
+            }
+
+            void onBackspacePressed() {
+              commentTextController
+                ..text =
+                    commentTextController.text.characters.skipLast(1).toString()
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: commentTextController.text.length),
+                );
+            }
+
             return DraggableScrollableSheet(
               expand: false,
               builder:
@@ -211,9 +314,11 @@ class _NewsSideBarState extends State<NewsSideBar> {
                         ),
                         child: Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: buildProfileImage(Colors.black),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: _ProfileImageWidget(
+                                borderColor: Colors.black,
+                              ),
                             ),
                             Expanded(
                               child: Container(
@@ -313,88 +418,6 @@ class _NewsSideBarState extends State<NewsSideBar> {
                   ),
                 );
               },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void showReportBottomSheet() {
-    showModalBottomSheet(
-      backgroundColor: Colors.grey[800],
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setSheetState) {
-            return Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: AppCommonTheme.textFieldColor,
-              ),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('Spam', style: TextStyle(color: Colors.white)),
-                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('Violence', style: TextStyle(color: Colors.white)),
-                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          'Fake Account',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          'Copyrights',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          'Spam',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Icon(Icons.keyboard_arrow_right, color: Colors.white)
-                      ],
-                    ),
-                  ),
-                ],
-              ),
             );
           },
         );

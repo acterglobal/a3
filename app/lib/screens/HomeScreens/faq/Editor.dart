@@ -275,7 +275,10 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: buildGrid(setSheetState),
+                      child: _GridView(
+                        setSheetState: setSheetState,
+                        setState: setState,
+                      ),
                     ),
                   ),
                   Padding(
@@ -335,8 +338,14 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
       },
     );
   }
+}
 
-  Widget buildGrid(StateSetter setSheetState) {
+class _GridView extends StatelessWidget {
+  const _GridView({required this.setSheetState, required this.setState});
+  final StateSetter setSheetState;
+  final Function setState;
+  @override
+  Widget build(BuildContext context) {
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,

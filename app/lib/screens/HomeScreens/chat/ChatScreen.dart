@@ -144,6 +144,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ChatRoomController controller) {
         if (!controller.isEmojiContainerVisible) {
           return CustomChatInput(
+            roomController: controller,
             isChatScreen: true,
             roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
             onButtonPressed: () => onSendButtonPressed(controller),

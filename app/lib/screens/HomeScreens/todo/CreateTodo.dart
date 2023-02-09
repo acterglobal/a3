@@ -18,12 +18,7 @@ class CreateTodoScreen extends StatefulWidget {
 class _CreateTodoScreenState extends State<CreateTodoScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController teamInputController = TextEditingController();
   final TextEditingController taskInputController = TextEditingController();
-  final formGlobalKey = GlobalKey<FormState>();
-  bool disableBtn = false;
-  Offset? tapXY;
-  RenderBox? overlay;
 
   @override
   void initState() {
@@ -33,16 +28,8 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
     widget.controller.setSelectedTeam(null);
   }
 
-  RelativeRect get relRectSize =>
-      RelativeRect.fromSize(tapXY! & const Size(40, 40), overlay!.size);
-
-  void getPosition(TapDownDetails detail) {
-    tapXY = detail.globalPosition;
-  }
-
   @override
   Widget build(BuildContext context) {
-    overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: ToDoTheme.backgroundGradient2Color,
@@ -62,181 +49,31 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildTitle(),
-            _buildNameInput(),
-            _buildWordCount(),
-            _buildDescriptionInput(),
-            _buildSelectTeamBtn(),
-            _buildDivider(),
+            const _TitleWidget(),
+            _NameInputWidget(
+              nameController: nameController,
+              controller: widget.controller,
+            ),
+            _WordCountWidget(controller: widget.controller),
+            _DescriptionInputWidget(
+              descriptionController: descriptionController,
+            ),
+            _SelectTeamWidget(
+              controller: widget.controller,
+              nameController: nameController,
+            ),
+            const _Divider(),
             const Spacer(),
-            _createToDoListBtn(),
+            _CreateBtnWidget(
+              controller: widget.controller,
+              nameController: nameController,
+              descriptionController: descriptionController,
+            ),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildDivider() => const Divider(
-        color: ToDoTheme.dividerColor,
-        endIndent: 10,
-        indent: 10,
-      );
-
-  Widget _buildTitle() => const Padding(
-        padding: EdgeInsets.only(left: 16.0),
-        child: Text(
-          'Create Todo List',
-          style: ToDoTheme.titleTextStyle,
-        ),
-      );
-
-  Widget _buildNameInput() => Obx(
-        () => Container(
-          margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-          height: 60,
-          decoration: BoxDecoration(
-            color: ToDoTheme.textFieldColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
-          ),
-          child: TextFormField(
-            controller: nameController,
-            keyboardType: TextInputType.text,
-            decoration: const InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-              border: InputBorder.none,
-
-              hintText: 'List Title',
-              // hide default counter helper
-              counterText: '',
-              // pass the hint text parameter here
-              hintStyle: TextStyle(color: Colors.grey),
-            ),
-            maxLength: widget.controller.maxLength.value,
-            style: const TextStyle(color: Colors.white),
-            cursorColor: Colors.white,
-            validator: (val) {
-              if (val == null || val.trim().isEmpty) {
-                return 'Cannot be empty';
-              }
-              return null;
-            },
-            onChanged: (value) => widget.controller.updateWordCount(value),
-          ),
-        ),
-      );
-
-  Widget _buildWordCount() => Obx(
-        () => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
-          child: Text(
-            'Word Count: ${widget.controller.taskNameCount.value}',
-            style: ToDoTheme.textFieldCounterStyle,
-          ),
-        ),
-      );
-
-  Widget _buildDescriptionInput() => Container(
-        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-        decoration: BoxDecoration(
-          color: ToDoTheme.textFieldColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
-        ),
-        child: TextFormField(
-          controller: descriptionController,
-          keyboardType: TextInputType.text,
-          decoration: const InputDecoration(
-            contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
-            border: InputBorder.none,
-            hintText: 'List Description',
-            // pass the hint text parameter here
-            hintStyle: TextStyle(color: Colors.grey),
-          ),
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          maxLines: 5,
-        ),
-      );
-
-  Widget _buildSelectTeamBtn() => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: <Widget>[
-            GetBuilder<ToDoController>(
-              id: 'teams',
-              builder: (_) {
-                return InkWell(
-                  onTap: () => nameController.text.trim().isNotEmpty
-                      ? _showPopupMenu(context)
-                      : null,
-                  onTapDown: nameController.text.trim().isNotEmpty
-                      ? getPosition
-                      : null,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.06,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: ToDoTheme.textFieldColor,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: Text(
-                      widget.controller.selectedTeam != null
-                          ? widget.controller.selectedTeam!.name!
-                          : 'Select Team',
-                      style: ToDoTheme.selectTeamTextStyle.copyWith(
-                        color: nameController.text.trim().isNotEmpty
-                            ? null
-                            : const Color(0xFF898A8D),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 12.0),
-              child: Transform.rotate(
-                angle: 90,
-                child: const Icon(
-                  FlutterIcons.flow_branch_ent,
-                  color: ToDoTheme.calendarColor,
-                ),
-              ),
-            )
-          ],
-        ),
-      );
-
-  Widget _createToDoListBtn() => Obx(
-        () => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: widget.controller.isLoading.isTrue
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: AppCommonTheme.primaryColor,
-                  ),
-                )
-              : CustomOnbaordingButton(
-                  onPressed: (widget.controller.taskNameCount < 30 &&
-                          nameController.text.trim().isNotEmpty)
-                      ? () async {
-                          widget.controller.isLoading.value = true;
-                          await widget.controller
-                              .createToDoList(
-                                widget.controller.selectedTeam!.id,
-                                nameController.text.trim(),
-                                descriptionController.text.trim(),
-                              )
-                              .then((res) => debugPrint('ToDo CREATED: $res'));
-                          widget.controller.isLoading.value = false;
-                          Navigator.pop(context);
-                        }
-                      : null,
-                  title: 'Create',
-                ),
-        ),
-      );
 
   Widget? checkBuilder(bool check) {
     if (!check) {
@@ -248,12 +85,92 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
       size: 10,
     );
   }
+}
+
+class _SelectTeamWidget extends StatefulWidget {
+  const _SelectTeamWidget({
+    required this.controller,
+    required this.nameController,
+  });
+  final ToDoController controller;
+  final TextEditingController nameController;
+
+  @override
+  State<_SelectTeamWidget> createState() => _SelectTeamWidgetState();
+}
+
+class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
+  final TextEditingController teamInputController = TextEditingController();
+  final formGlobalKey = GlobalKey<FormState>();
+  RenderBox? overlay;
+  Offset? tapXY;
+  bool disableBtn = false;
+
+  RelativeRect get relRectSize =>
+      RelativeRect.fromSize(tapXY! & const Size(40, 40), overlay!.size);
+
+  void getPosition(TapDownDetails detail) {
+    tapXY = detail.globalPosition;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: <Widget>[
+          GetBuilder<ToDoController>(
+            id: 'teams',
+            builder: (_) {
+              return InkWell(
+                onTap: () => widget.nameController.text.trim().isNotEmpty
+                    ? _showPopupMenu(context)
+                    : null,
+                onTapDown: widget.nameController.text.trim().isNotEmpty
+                    ? getPosition
+                    : null,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.06,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: ToDoTheme.textFieldColor,
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Text(
+                    widget.controller.selectedTeam != null
+                        ? widget.controller.selectedTeam!.name!
+                        : 'Select Team',
+                    style: ToDoTheme.selectTeamTextStyle.copyWith(
+                      color: widget.nameController.text.trim().isNotEmpty
+                          ? null
+                          : const Color(0xFF898A8D),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: Transform.rotate(
+              angle: 90,
+              child: const Icon(
+                FlutterIcons.flow_branch_ent,
+                color: ToDoTheme.calendarColor,
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 
   void _showPopupMenu(BuildContext ctx) async {
     final List<Team> teams = await widget.controller.getTeams();
     showMenu(
       constraints:
-          BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.3),
+          BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.3),
       context: ctx,
       position: relRectSize,
       color: ToDoTheme.bottomSheetColor,
@@ -403,4 +320,166 @@ class _CreateTodoScreenState extends State<CreateTodoScreen> {
       },
     );
   }
+}
+
+class _CreateBtnWidget extends StatelessWidget {
+  const _CreateBtnWidget({
+    required this.controller,
+    required this.nameController,
+    required this.descriptionController,
+  });
+  final ToDoController controller;
+  final TextEditingController nameController;
+  final TextEditingController descriptionController;
+
+  @override
+  Widget build(BuildContext context) => Obx(
+        () => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: controller.isLoading.isTrue
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppCommonTheme.primaryColor,
+                  ),
+                )
+              : CustomOnbaordingButton(
+                  onPressed: (controller.taskNameCount < 30 &&
+                          nameController.text.trim().isNotEmpty)
+                      ? () async {
+                          controller.isLoading.value = true;
+                          await controller
+                              .createToDoList(
+                                controller.selectedTeam!.id,
+                                nameController.text.trim(),
+                                descriptionController.text.trim(),
+                              )
+                              .then((res) => debugPrint('ToDo CREATED: $res'));
+                          controller.isLoading.value = false;
+                          Navigator.pop(context);
+                        }
+                      : null,
+                  title: 'Create',
+                ),
+        ),
+      );
+}
+
+class _DescriptionInputWidget extends StatelessWidget {
+  const _DescriptionInputWidget({
+    required this.descriptionController,
+  });
+
+  final TextEditingController descriptionController;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+        decoration: BoxDecoration(
+          color: ToDoTheme.textFieldColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
+        ),
+        child: TextFormField(
+          controller: descriptionController,
+          keyboardType: TextInputType.text,
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
+            border: InputBorder.none,
+            hintText: 'List Description',
+            // pass the hint text parameter here
+            hintStyle: TextStyle(color: Colors.grey),
+          ),
+          style: const TextStyle(color: Colors.white),
+          cursorColor: Colors.white,
+          maxLines: 5,
+        ),
+      );
+}
+
+class _WordCountWidget extends StatelessWidget {
+  const _WordCountWidget({
+    required this.controller,
+  });
+
+  final ToDoController controller;
+  @override
+  Widget build(BuildContext context) => Obx(
+        () => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 16, 0),
+          child: Text(
+            'Word Count: ${controller.taskNameCount.value}',
+            style: ToDoTheme.textFieldCounterStyle,
+          ),
+        ),
+      );
+}
+
+class _NameInputWidget extends StatelessWidget {
+  const _NameInputWidget({
+    required this.nameController,
+    required this.controller,
+  });
+
+  final TextEditingController nameController;
+  final ToDoController controller;
+  @override
+  Widget build(BuildContext context) => Obx(
+        () => Container(
+          margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+          height: 60,
+          decoration: BoxDecoration(
+            color: ToDoTheme.textFieldColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0x18E5E5E5), width: 0.5),
+          ),
+          child: TextFormField(
+            controller: nameController,
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.fromLTRB(10, 12, 10, 0),
+              border: InputBorder.none,
+
+              hintText: 'List Title',
+              // hide default counter helper
+              counterText: '',
+              // pass the hint text parameter here
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+            maxLength: controller.maxLength.value,
+            style: const TextStyle(color: Colors.white),
+            cursorColor: Colors.white,
+            validator: (val) {
+              if (val == null || val.trim().isEmpty) {
+                return 'Cannot be empty';
+              }
+              return null;
+            },
+            onChanged: (value) => controller.updateWordCount(value),
+          ),
+        ),
+      );
+}
+
+class _TitleWidget extends StatelessWidget {
+  const _TitleWidget();
+
+  @override
+  Widget build(BuildContext context) => const Padding(
+        padding: EdgeInsets.only(left: 16.0),
+        child: Text(
+          'Create Todo List',
+          style: ToDoTheme.titleTextStyle,
+        ),
+      );
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider();
+
+  @override
+  Widget build(BuildContext context) => const Divider(
+        color: ToDoTheme.dividerColor,
+        endIndent: 10,
+        indent: 10,
+      );
 }

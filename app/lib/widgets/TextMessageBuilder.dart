@@ -12,7 +12,7 @@ import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:get/get.dart';
 
 class TextMessageBuilder extends StatelessWidget {
-  const TextMessageBuilder({
+  TextMessageBuilder({
     Key? key,
     required this.message,
     this.onPreviewDataFetched,
@@ -23,10 +23,9 @@ class TextMessageBuilder extends StatelessWidget {
   final void Function(types.TextMessage, types.PreviewData)?
       onPreviewDataFetched;
   final int messageWidth;
-
+  final controller = Get.find<ChatRoomController>();
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ChatRoomController>();
     //remove mx-reply tags.
     String parsedString = simplifyBody(message.text);
     final urlRegexp = RegExp(
@@ -61,6 +60,7 @@ class TextMessageBuilder extends StatelessWidget {
         text: parsedString,
         onPreviewDataFetched: _onPreviewDataFetched,
         textWidget: _TextWidget(
+          controller: controller,
           message: message,
           enlargeEmoji: message.metadata!['enlargeEmoji'],
         ),
@@ -68,7 +68,11 @@ class TextMessageBuilder extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       );
     }
-    return _TextWidget(message: message, enlargeEmoji: enlargeEmoji);
+    return _TextWidget(
+      controller: controller,
+      message: message,
+      enlargeEmoji: enlargeEmoji,
+    );
   }
 
   void _onPreviewDataFetched(types.PreviewData previewData) {
@@ -81,15 +85,15 @@ class TextMessageBuilder extends StatelessWidget {
 
 class _TextWidget extends StatelessWidget {
   const _TextWidget({
+    required this.controller,
     required this.message,
     required this.enlargeEmoji,
   });
+  final ChatRoomController controller;
   final types.TextMessage message;
   final bool enlargeEmoji;
-
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<ChatRoomController>();
     final emojiTextStyle = controller.userId == message.author.id
         ? const EffektioChatTheme().sentEmojiMessageTextStyle
         : const EffektioChatTheme().receivedEmojiMessageTextStyle;
