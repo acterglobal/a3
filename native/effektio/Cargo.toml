@@ -21,7 +21,9 @@ ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 anyhow = "1.0.51"
 assign = "1.1.1"
 async-broadcast = { workspace = true }
+chrono = "0.4"
 derive_builder = { version = "0.10.2" }
+fern = "0.6"
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
@@ -74,14 +76,8 @@ matrix-sdk-sled = { workspace = true }
 #   ----   ANDROID
 [target.'cfg(target_os = "android")'.dependencies]
 android_logger = "0.12"
-chrono = "0.4"
-fern = "0.6"
 tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 tracing-android = "0.2"
-
-#   ----   DESKTOP
-[target.'cfg(all(not(target_os = "android"), not(target_arch = "wasm32"), not(target_os = "ios")))'.dependencies]
-flexi_logger = "0.24.0"
 
 [lib]
 name = "effektio"
