@@ -79,20 +79,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: AuthTheme.authBodyStyle,
                   ),
                   const SizedBox(height: 35),
-                  signInOnboardingTextField(
-                    LoginScreenKeys.usernameField,
-                    AppLocalizations.of(context)!.username,
-                    controller.username,
-                    AppLocalizations.of(context)!.emptyUsername,
-                    SignInOnboardingTextFieldEnum.userName,
+                  SignInTextField(
+                    key: LoginScreenKeys.usernameField,
+                    hintText: AppLocalizations.of(context)!.username,
+                    controller: controller.username,
+                    validatorText: AppLocalizations.of(context)!.emptyUsername,
+                    type: SignInOnboardingTextFieldEnum.userName,
                   ),
                   const SizedBox(height: 20),
-                  signInOnboardingTextField(
-                    LoginScreenKeys.passwordField,
-                    AppLocalizations.of(context)!.password,
-                    controller.password,
-                    AppLocalizations.of(context)!.emptyPassword,
-                    SignInOnboardingTextFieldEnum.password,
+                  SignInTextField(
+                    key: LoginScreenKeys.passwordField,
+                    hintText: AppLocalizations.of(context)!.password,
+                    controller: controller.password,
+                    validatorText: AppLocalizations.of(context)!.emptyPassword,
+                    type: SignInOnboardingTextFieldEnum.password,
                   ),
                   Container(
                     margin: const EdgeInsets.only(right: 20),

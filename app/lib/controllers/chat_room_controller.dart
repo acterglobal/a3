@@ -28,7 +28,7 @@ import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:get/get.dart';
 import 'package:mime/mime.dart';
-import 'package:open_file/open_file.dart';
+import 'package:open_app_file/open_app_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -552,7 +552,7 @@ class ChatRoomController extends GetxController {
           await _currentRoom!.saveFile(message.id, dirPath);
         }
       } else {
-        final result = await OpenFile.open(filePath);
+        final result = await OpenAppFile.open(filePath);
         if (result.message.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

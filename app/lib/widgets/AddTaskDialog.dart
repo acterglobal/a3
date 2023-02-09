@@ -4,26 +4,35 @@ import 'package:effektio/models/ToDoList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class AddTaskDialogBox extends StatefulWidget {
   const AddTaskDialogBox({
     Key? key,
     required this.toDoList,
-    required this.controller,
   }) : super(key: key);
   final ToDoList toDoList;
-  final ToDoController controller;
 
   @override
   State<AddTaskDialogBox> createState() => _AddTaskDialogBoxState();
 }
 
 class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
-  final titleInputController = TextEditingController();
-
-  DateTime _selectedDate = DateTime.now().toUtc();
+  DateTime? _selectedDate;
   int idx = 0;
+
+  void setSelectedDate(DateTime? time) {
+    setState(() {
+      _selectedDate = time;
+    });
+  }
+
+  void setBtnIndex(int index) {
+    setState(() {
+      idx = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,27 +56,36 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        _buildScheduleBtn(
-                          ctx: context,
+                        _ScheduleBtnWidget(
                           text: 'Today',
-                          index: 0,
+                          buttonIndex: 1,
+                          index: idx,
+                          updateIndex: setBtnIndex,
+                          updateSelected: setSelectedDate,
                         ),
-                        _buildScheduleBtn(
-                          ctx: context,
+                        _ScheduleBtnWidget(
                           text: 'Tomorrow',
-                          index: 1,
+                          buttonIndex: 2,
+                          index: idx,
+                          updateIndex: setBtnIndex,
+                          updateSelected: setSelectedDate,
                         ),
-                        _buildScheduleBtn(
-                          ctx: context,
-                          text: (idx > 1)
+                        _ScheduleBtnWidget(
+                          text: (idx > 2 && _selectedDate != null)
                               ? DateFormat('EEEE, d MMM, yyyy')
-                                  .format(_selectedDate)
+                                  .format(_selectedDate!)
                               : 'Pick a Day',
-                          index: 2,
-                        )
+                          buttonIndex: 3,
+                          index: idx,
+                          updateIndex: setBtnIndex,
+                          updateSelected: setSelectedDate,
+                        ),
                       ],
                     ),
-                    _buildInput(),
+                    _InputWidget(
+                      _selectedDate,
+                      list: widget.toDoList,
+                    ),
                   ],
                 ),
               ),
@@ -77,8 +95,21 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
       },
     );
   }
+}
 
-  Widget _buildInput() {
+class _InputWidget extends StatefulWidget {
+  const _InputWidget(this.selectedDate, {required this.list});
+  final ToDoList list;
+  final DateTime? selectedDate;
+  @override
+  State<_InputWidget> createState() => _InputWidgetState();
+}
+
+class _InputWidgetState extends State<_InputWidget> {
+  final titleInputController = TextEditingController();
+  final controller = Get.find<ToDoController>();
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -130,11 +161,11 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
                 onPressed: (titleInputController.text.isEmpty)
                     ? null
                     : () async {
-                        await widget.controller
+                        await controller
                             .createToDoTask(
                               name: titleInputController.text,
-                              dueDate: _selectedDate,
-                              list: widget.toDoList,
+                              dueDate: widget.selectedDate,
+                              list: widget.list,
                             )
                             .then((res) => debugPrint('TASK CREATED: $res'));
                         Navigator.pop(context);
@@ -152,25 +183,41 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
       ),
     );
   }
+}
 
-  Widget _buildScheduleBtn({
-    required BuildContext ctx,
-    required String text,
-    required int index,
-  }) {
+class _ScheduleBtnWidget extends StatefulWidget {
+  const _ScheduleBtnWidget({
+    required this.text,
+    required this.buttonIndex,
+    required this.index,
+    required this.updateIndex,
+    required this.updateSelected,
+  });
+  final String text;
+  final int buttonIndex;
+  final int index;
+  final void Function(int) updateIndex;
+  final void Function(DateTime?) updateSelected;
+  @override
+  State<_ScheduleBtnWidget> createState() => __ScheduleBtnWidgetState();
+}
+
+class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         final now = DateTime.now();
         setState(() {
-          idx = index;
-          if (index == 0) {
-            _selectedDate = now;
-          } else if (index == 1) {
-            _selectedDate = DateTime(now.year, now.month, now.day + 1);
-          } else {
+          widget.updateIndex(widget.buttonIndex);
+          if (widget.buttonIndex == 1) {
+            widget.updateSelected(now);
+          } else if (widget.buttonIndex == 2) {
+            widget.updateSelected(DateTime(now.year, now.month, now.day + 1));
+          } else if (widget.buttonIndex == 3) {
             Future.delayed(
               const Duration(seconds: 0),
-              () => _showDatePicker(ctx),
+              () => _showDatePicker(context),
             );
           }
         });
@@ -182,7 +229,7 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          color: idx == index
+          color: widget.index == widget.buttonIndex
               ? ToDoTheme.floatingABColor
               : ToDoTheme.secondaryColor,
         ),
@@ -192,16 +239,16 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
           children: [
             Icon(
               FlutterIcons.calendar_weekend_outline_mco,
-              color: idx == index
+              color: widget.index == widget.buttonIndex
                   ? ToDoTheme.primaryTextColor
                   : ToDoTheme.calendarColor,
               size: 16,
             ),
             const SizedBox(width: 4),
             Text(
-              text,
+              widget.text,
               textAlign: TextAlign.center,
-              style: idx == index
+              style: widget.index == widget.buttonIndex
                   ? ToDoTheme.calendarTextStyle.copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -244,12 +291,12 @@ class _AddTaskDialogBoxState extends State<AddTaskDialogBox> {
     ).then((_pickedDate) {
       if (_pickedDate != null) {
         setState(() {
-          _selectedDate = _pickedDate;
+          widget.updateSelected(_pickedDate);
         });
       } else {
         setState(() {
-          _selectedDate = DateTime.now();
-          idx = 0;
+          widget.updateSelected(null);
+          widget.updateIndex(0);
         });
       }
     });

@@ -191,6 +191,7 @@ class EffektioSdk {
               level: 900, // warning
               error: e,
             );
+            return e is int;
           },
         ),
       ); // Explicitly-ignored fire-and-forget.
@@ -212,6 +213,7 @@ class EffektioSdk {
             level: 900, // warning
             error: e,
           );
+          return e is int;
         },
       ),
     ); // Explicitly-ignored fire-and-forget.

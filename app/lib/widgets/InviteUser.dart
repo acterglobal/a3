@@ -40,27 +40,27 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
                   const SizedBox(height: 16),
                   Column(
                     children: [
-                      buildDivider(),
+                      const _Divider(),
                       Text(
                         'Whatsapp',
                         style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
-                      buildDivider(),
+                      const _Divider(),
                       Text(
                         'Email',
                         style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
-                      buildDivider(),
+                      const _Divider(),
                       Text(
                         'SMS',
                         style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
-                      buildDivider(),
+                      const _Divider(),
                       Text(
                         'Invitation Link',
                         style: ToDoTheme.titleTextStyle.copyWith(fontSize: 16),
                       ),
-                      buildDivider(),
+                      const _Divider(),
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
@@ -81,8 +81,13 @@ class _InviteUserDialogState extends State<InviteUserDialog> {
       ),
     );
   }
+}
 
-  Widget buildDivider() {
+class _Divider extends StatelessWidget {
+  const _Divider();
+
+  @override
+  Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 12),
       child: Divider(

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_this
+
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
@@ -147,4 +149,18 @@ bool isOnlyEmojis(String text) {
 
   // return true if nothing else left
   return text.isEmpty;
+}
+
+extension DateHelpers on DateTime {
+  bool isToday() {
+    final now = DateTime.now();
+    return now.day == this.day && now.month == month && now.year == year;
+  }
+
+  bool isYesterday() {
+    final yesterday = DateTime.now().subtract(const Duration(days: 1));
+    return yesterday.day == day &&
+        yesterday.month == month &&
+        yesterday.year == year;
+  }
 }
