@@ -153,7 +153,7 @@ class _EffektioHomeState extends State<EffektioHome>
         if (mounted) {
           setState(() {
             if (value.hasAvatar()) {
-              displayAvatar = value.getAvatar();
+              displayAvatar = value.getThumbnail(50, 50);
             }
             displayName = value.getDisplayName();
           });

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/models/JoinedRoom.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
@@ -137,7 +138,7 @@ class _ListWidget extends StatelessWidget {
           );
         }
         return ImplicitlyAnimatedReorderableList<JoinedRoom>(
-          header: _ListHeader(client: client),
+          header: _InviteListView(client: client),
           items: controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
@@ -204,8 +205,8 @@ class _ListWidget extends StatelessWidget {
   }
 }
 
-class _ListHeader extends StatelessWidget {
-  const _ListHeader({required this.client});
+class _InviteListView extends StatelessWidget {
+  const _InviteListView({required this.client});
 
   final Client client;
   @override
@@ -292,9 +293,7 @@ class _JoinedItem extends StatelessWidget {
       builder: (controller) => ChatListItem(
         key: Key(roomId),
         client: client,
-        room: item.conversation,
-        latestMessage: item.latestMessage,
-        typingUsers: item.typingUsers,
+        room: item,
       ),
     );
   }
