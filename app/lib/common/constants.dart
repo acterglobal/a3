@@ -10,6 +10,8 @@ class LoginScreenKeys {
   static const submitBtn = Key('login-submit-btn');
   static const usernameField = Key('login-username-txt');
   static const passwordField = Key('login-password-txt');
+  static const snackbarSuccess = Key('login-snackbar-success');
+  static const snackbarFailed = Key('login-snackbar-failed');
 }
 
 class Keys {

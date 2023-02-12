@@ -5,6 +5,44 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run Integration Tests",
+            "type": "dart",
+            "cwd": "app",
+            "request": "launch",
+            "program": "integration_test",
+            "toolArgs": [
+                "--dart-define",
+                "DEFAULT_EFFEKTIO_SERVER=http://localhost:8118/",
+                "--dart-define",
+                "DEFAULT_EFFEKTIO_DOMAIN=ds9.effektio.org"
+            ],
+            //"templateFor": "test",
+            // "console": "debugConsole",
+            "codeLens": {
+                // This array sets where custom CodeLens links will be rendered:
+                // - run-test: Above test functions as a Run link
+                // - debug-test: Above test functions as a Debug link
+                // - run-test-file: Above main functions in test files as a Run link
+                // - debug-test-file: Above main functions in test files as a Debug link
+                // - run-file: Above main functions in bin/tool/lib files as a Run link
+                // - debug-file: Above main functions in bin/tool/lib files as a Debug link
+                "for": [
+                    "run-test",
+                    "run-test-file",
+                    "debug-test",
+                    "debug-test-file"
+                ],
+                // If specificed, the custom CodeLens will only appear for files that begin
+                // with this path.
+                "path": "app/integration_test/",
+                // Text for the custom CodeLens. If not specified, will use the name field
+                // from the parent launch configuration. The string "${debugType}" here will
+                // be replaced with "run" or "debug" depending on the rendered position
+                // (see the for field above).
+                "title": "${debugType} Local Integration Tests"
+            },
+        },
+        {
             "name": "flutter",
             "cwd": "app",
             "request": "launch",

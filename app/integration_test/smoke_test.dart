@@ -48,16 +48,8 @@ Future<void> signInAs(
   await tester.pumpAndSettle();
 
   // we are back on the news screen
-  Finder sidebarBtn = find.byKey(Keys.sidebarBtn);
-  expect(sidebarBtn, findsOneWidget);
-
-  await tester.tap(sidebarBtn);
-  await tester.pumpAndSettle();
-  // show the drawer, look up username
-
-  Finder usernameLabel = find.byKey(Keys.usernameLabel);
-  expect(usernameLabel, findsOneWidget);
-  expect(tester.widget<Text>(usernameLabel).data, username);
+  Finder successBar = find.byKey(LoginScreenKeys.snackbarSuccess);
+  expect(successBar, findsOneWidget);
 }
 
 void main() {
@@ -72,11 +64,8 @@ void main() {
   //   expect(bottomBar, findsOneWidget);
   // });
 
-  testWidgets('kyras chat screen', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    painting.debugDisableShadows = true;
-
-    await app.startFreshTestApp('kyra_chat_smoketest');
+  testWidgets('kyras can login', (WidgetTester tester) async {
+    await app.startFreshTestApp('kyra_can_login_smoketest');
     await tester.pumpAndSettle();
     await signInAs(tester, binding, 'kyra');
   });

@@ -34,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          key: LoginScreenKeys.snackbarSuccess,
           content: Text(AppLocalizations.of(context)!.loginSuccess),
           backgroundColor: AuthTheme.authSuccess,
           duration: const Duration(seconds: 4),
@@ -42,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          key: LoginScreenKeys.snackbarFailed,
           content: Text(AppLocalizations.of(context)!.loginFailed),
           backgroundColor: AuthTheme.authFailed,
           duration: const Duration(seconds: 4),
