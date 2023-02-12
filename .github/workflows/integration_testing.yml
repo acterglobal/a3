@@ -65,7 +65,7 @@ jobs:
       - name: Install extra deps
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y  ninja-build
+          sudo apt-get install -y libgtk-3-dev libx11-dev pkg-config cmake ninja-build libblkid-dev liblzma-dev
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
@@ -98,6 +98,9 @@ jobs:
         run: cargo run -p effektio-cli -- mock http://localhost:8118/
         env:
           EFFEKTIO_SERVERNAME: "localhost"
+
+      - name: Enable Linux Desktop
+        run: flutter config --enable-linux-desktop
 
       - name: Build Native
         run: cargo make --profile release desktop
