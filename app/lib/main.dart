@@ -135,7 +135,7 @@ class _EffektioHomeState extends State<EffektioHome>
 
   Future<Client> makeClient() async {
     final sdk = await EffektioSdk.instance;
-    Client client = await sdk.currentClient;
+    Client client = sdk.currentClient;
 
     syncState = client.startSync();
     //Start listening for cross signing events

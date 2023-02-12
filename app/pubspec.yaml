@@ -67,6 +67,7 @@ dependencies:
   flutter_lorem: ^2.0.0
   get_time_ago: ^1.1.5
   implicitly_animated_reorderable_list_2: ^0.5.0
+  image_picker_for_web: ^2.1.10
   flutter_mentions: ^2.0.1
   flutter_matrix_html:
     git:

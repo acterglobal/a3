@@ -51,7 +51,7 @@ class EffektioSdk {
   late final ffi.Api _api;
   static String _sessionKey = defaultSessionKey;
   final int _index = 0;
-  static List<ffi.Client> _clients = [];
+  static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('effektio_flutter_sdk');
 
   EffektioSdk._(this._api);
