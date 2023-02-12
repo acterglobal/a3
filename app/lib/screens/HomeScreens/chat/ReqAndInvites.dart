@@ -42,13 +42,28 @@ class _RequestScreenState extends State<RequestScreen> {
         title: const Text('Request & Invites'),
         centerTitle: true,
       ),
-      body: Container(
-        child: buildTabBar(context, 5, 3),
+      body: _TabBarWidget(
+        userProfiles: userProfiles,
+        reqLength: 5,
+        pendingLength: 3,
       ),
     );
   }
+}
 
-  Widget buildTabBar(BuildContext context, int reqLength, int pendingLength) {
+class _TabBarWidget extends StatelessWidget {
+  const _TabBarWidget({
+    required this.userProfiles,
+    required this.reqLength,
+    required this.pendingLength,
+  });
+
+  final List<UserProfile> userProfiles;
+  final int reqLength;
+  final int pendingLength;
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       child: Column(

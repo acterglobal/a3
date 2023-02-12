@@ -81,20 +81,29 @@ class _CustomAvatarState extends State<CustomAvatar> {
           return SizedBox(
             height: widget.radius * 2,
             width: widget.radius * 2,
-            child: buildTextAvatar(),
+            child: _BuildTextAvatar(
+              widget.displayName,
+              stringName: widget.stringName,
+            ),
           );
         }
       },
     );
   }
+}
 
-  Widget buildTextAvatar() {
-    if (widget.displayName != null) {
+class _BuildTextAvatar extends StatelessWidget {
+  const _BuildTextAvatar(this.displayName, {required this.stringName});
+  final String? displayName;
+  final String stringName;
+  @override
+  Widget build(BuildContext context) {
+    if (displayName != null) {
       return TextAvatar(
         numberLetters: 2,
         shape: Shape.Circular,
         upperCase: true,
-        text: widget.displayName,
+        text: displayName,
       );
     }
     return TextAvatar(
@@ -102,7 +111,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
       numberLetters: 2,
       shape: Shape.Circular,
       upperCase: true,
-      text: widget.stringName,
+      text: stringName,
     );
   }
 }

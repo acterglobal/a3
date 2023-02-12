@@ -35,7 +35,7 @@ class NewsItem extends StatelessWidget {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: _buildImage(isDesktop),
+          child: _ImageWidget(news: news, isDesktop: isDesktop),
           clipBehavior: Clip.none,
         ),
         LayoutBuilder(
@@ -56,9 +56,17 @@ class NewsItem extends StatelessWidget {
                       child: Column(
                         children: <Widget>[
                           const Spacer(),
-                          _buildTitle(bgColor, fgColor),
+                          _TitleWidget(
+                            news: news,
+                            backgroundColor: bgColor,
+                            foregroundColor: fgColor,
+                          ),
                           const SizedBox(height: 10),
-                          _buildSubtitle(bgColor, fgColor),
+                          _SubtitleWidget(
+                            news: news,
+                            backgroundColor: bgColor,
+                            foregroundColor: fgColor,
+                          ),
                           const SizedBox(height: 10),
                         ],
                       ),
@@ -77,12 +85,23 @@ class NewsItem extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget? _buildImage(bool isDesktop) {
+class _ImageWidget extends StatelessWidget {
+  const _ImageWidget({
+    required this.news,
+    required this.isDesktop,
+  });
+
+  final News news;
+  final bool isDesktop;
+
+  @override
+  Widget build(BuildContext context) {
     var image = news.image();
     Size size = WidgetsBinding.instance.window.physicalSize;
     if (image == null) {
-      return null;
+      return const SizedBox.shrink();
     }
 
     // return Image.memory(Uint8List.fromList(image), fit: BoxFit.cover);
@@ -93,8 +112,21 @@ class NewsItem extends StatelessWidget {
       cacheHeight: size.height.toInt(),
     );
   }
+}
 
-  Widget _buildTitle(ui.Color backgroundColor, ui.Color foregroundColor) {
+class _TitleWidget extends StatelessWidget {
+  const _TitleWidget({
+    required this.news,
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
+
+  final News news;
+  final ui.Color backgroundColor;
+  final ui.Color foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
     return Text(
       news.text() ?? '',
       style: GoogleFonts.roboto(
@@ -111,8 +143,21 @@ class NewsItem extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildSubtitle(ui.Color backgroundColor, ui.Color foregroundColor) {
+class _SubtitleWidget extends StatelessWidget {
+  const _SubtitleWidget({
+    required this.news,
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
+
+  final News news;
+  final ui.Color backgroundColor;
+  final ui.Color foregroundColor;
+
+  @override
+  Widget build(BuildContext context) {
     return ExpandableText(
       news.text() ?? '',
       maxLines: 2,

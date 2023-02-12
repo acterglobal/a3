@@ -43,15 +43,24 @@ class EmptyHistoryPlaceholder extends StatelessWidget {
                 ),
               ),
               if (controller.typingUsers.isNotEmpty)
-                _buildTypingIndicator(controller),
+                _TypeIndicatorWidget(controller: controller),
             ],
           ),
         );
       },
     );
   }
+}
 
-  Widget _buildTypingIndicator(ChatRoomController controller) {
+class _TypeIndicatorWidget extends StatelessWidget {
+  const _TypeIndicatorWidget({
+    required this.controller,
+  });
+
+  final ChatRoomController controller;
+
+  @override
+  Widget build(BuildContext context) {
     return Positioned.fill(
       child: Align(
         alignment: Alignment.bottomLeft,

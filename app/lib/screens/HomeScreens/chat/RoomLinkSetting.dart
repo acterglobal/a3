@@ -72,7 +72,7 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
             ),
-            buildName(),
+            _NameWidget(displayName: displayName),
             Container(
               margin: const EdgeInsets.only(top: 20, bottom: 10),
               child: const Text(
@@ -166,8 +166,17 @@ class _RoomLinkSettingsScreenState extends State<RoomLinkSettingsScreen> {
       ),
     );
   }
+}
 
-  Widget buildName() {
+class _NameWidget extends StatelessWidget {
+  const _NameWidget({
+    required this.displayName,
+  });
+
+  final String? displayName;
+
+  @override
+  Widget build(BuildContext context) {
     if (displayName == null) {
       return const Text('Loading Name');
     }
