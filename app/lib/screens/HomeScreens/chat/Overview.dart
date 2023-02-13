@@ -91,6 +91,66 @@ class _ChatOverviewState extends State<ChatOverview> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    if (controller.showSearch)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                          bottom: 6,
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: TextField(
+                          onChanged: (value) {
+                            controller.searchedData(
+                              value,
+                              controller.joinedRooms,
+                            );
+                          },
+                          controller: controller.searchController,
+                          style: ToDoTheme.taskTitleTextStyle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          cursorColor: ToDoTheme.primaryTextColor,
+                          decoration: InputDecoration(
+                            hintStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                controller.toggleSearchView();
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              left: 12,
+                              bottom: 2,
+                              top: 2,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                        ),
+                      ),
                     if (widget.client.isGuest())
                       empty
                     else

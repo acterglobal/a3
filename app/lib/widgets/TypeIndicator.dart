@@ -233,7 +233,7 @@ class TypingWidget extends StatelessWidget {
       widget.options.typingUsers,
       MediaQuery.of(context).size.width,
     );
-    if (mode == TypingIndicatorMode.name) {
+    if (mode == TypingIndicatorMode.text) {
       return SizedBox(
         child: Text(
           _getUserPlural(widget.options.typingUsers),
