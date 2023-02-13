@@ -20,13 +20,14 @@ class CustomChatInput extends StatelessWidget {
     ['document', 'File'],
     ['location', 'Location'],
   ];
-
+  final ChatRoomController roomController;
   final Function()? onButtonPressed;
   final bool isChatScreen;
   final String roomName;
 
   const CustomChatInput({
     Key? key,
+    required this.roomController,
     required this.isChatScreen,
     this.onButtonPressed,
     required this.roomName,
@@ -64,7 +65,7 @@ class CustomChatInput extends StatelessWidget {
                               children: [
                                 Text(
                                   controller.isAuthor()
-                                      ? 'Replying to yourself'
+                                      ? 'Replying to you'
                                       : 'Replying to ${toBeginningOfSentenceCase(controller.repliedToMessage?.author.firstName)}',
                                   style: const TextStyle(
                                     color: Colors.grey,
@@ -73,9 +74,10 @@ class CustomChatInput extends StatelessWidget {
                                 ),
                                 if (controller.repliedToMessage != null &&
                                     controller.replyMessageWidget != null)
-                                  _replyContentBuilder(
-                                    controller.repliedToMessage,
-                                    controller.replyMessageWidget,
+                                  _ReplyContentWidget(
+                                    msg: controller.repliedToMessage,
+                                    messageWidget:
+                                        controller.replyMessageWidget,
                                   ),
                               ],
                             ),
@@ -110,22 +112,30 @@ class CustomChatInput extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          if (isChatScreen) _buildAttachmentButton(controller),
+                          if (isChatScreen)
+                            _BuildAttachmentBtn(controller: controller),
                           Expanded(
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 10),
-                              child: _buildTextEditor(context, controller),
+                              child: _TextInputWidget(
+                                isChatScreen: isChatScreen,
+                                roomName: roomName,
+                                controller: controller,
+                              ),
                             ),
                           ),
                           if (controller.isSendButtonVisible || !isChatScreen)
-                            _buildSendButton(),
+                            _BuildSendBtn(onButtonPressed: onButtonPressed),
                           if (!controller.isSendButtonVisible && isChatScreen)
-                            _buildImageButton(context, controller),
+                            _BuildImageBtn(
+                              roomName: roomName,
+                              controller: controller,
+                            ),
                           if (!controller.isSendButtonVisible && isChatScreen)
                             const SizedBox(width: 10),
                           if (!controller.isSendButtonVisible && isChatScreen)
-                            _buildAudioButton(),
+                            const _BuildAudioBtn(),
                         ],
                       ),
                     ),
@@ -135,8 +145,12 @@ class CustomChatInput extends StatelessWidget {
             );
           },
         ),
-        EmojiPickerWidget(size: size),
+        EmojiPickerWidget(
+          size: size,
+          controller: roomController,
+        ),
         AttachmentWidget(
+          controller: roomController,
           attachmentNameList: _attachmentNameList,
           roomName: roomName,
           size: size,
@@ -144,37 +158,66 @@ class CustomChatInput extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildAttachmentButton(ChatRoomController controller) {
+class _BuildAttachmentBtn extends StatelessWidget {
+  const _BuildAttachmentBtn({required this.controller});
+
+  final ChatRoomController controller;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        controller.isEmojiVisible.value = false;
+        controller.isAttachmentVisible.value =
+            !controller.isAttachmentVisible.value;
+        controller.focusNode.unfocus();
+        controller.focusNode.canRequestFocus = true;
+      },
+      child: _BuildPlusBtn(controller: controller),
+    );
+  }
+}
+
+class _BuildPlusBtn extends StatelessWidget {
+  const _BuildPlusBtn({required this.controller});
+
+  final ChatRoomController controller;
+
+  @override
+  Widget build(BuildContext context) {
     return Obx(
-      () => InkWell(
-        onTap: () {
-          controller.isEmojiVisible.value = false;
-          controller.isAttachmentVisible.value =
-              !controller.isAttachmentVisible.value;
-          controller.focusNode.unfocus();
-          controller.focusNode.canRequestFocus = true;
-        },
-        child: _buildPlusIcon(controller),
+      () => Visibility(
+        visible: controller.isAttachmentVisible.value,
+        replacement:
+            SvgPicture.asset('assets/images/add.svg', fit: BoxFit.none),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppCommonTheme.backgroundColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: SvgPicture.asset(
+            'assets/images/add_rotate.svg',
+            fit: BoxFit.none,
+          ),
+        ),
       ),
     );
   }
+}
 
-  Widget _buildPlusIcon(ChatRoomController controller) {
-    if (controller.isAttachmentVisible.value != true) {
-      return SvgPicture.asset('assets/images/add.svg', fit: BoxFit.none);
-    }
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppCommonTheme.backgroundColor,
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: SvgPicture.asset('assets/images/add_rotate.svg', fit: BoxFit.none),
-    );
-  }
-
-  Widget _buildTextEditor(BuildContext context, ChatRoomController controller) {
+class _TextInputWidget extends StatelessWidget {
+  const _TextInputWidget({
+    required this.controller,
+    required this.isChatScreen,
+    required this.roomName,
+  });
+  final ChatRoomController controller;
+  final bool isChatScreen;
+  final String roomName;
+  @override
+  Widget build(BuildContext context) {
     return FlutterMentions(
       key: controller.mentionKey,
       suggestionPosition: SuggestionPosition.Top,
@@ -265,31 +308,19 @@ class CustomChatInput extends StatelessWidget {
       '@$displayName': '<a href="https://matrix.to/#/$userId">$displayName</a>',
     });
   }
+}
 
-  Widget _buildSendButton() {
-    return InkWell(
-      onTap: onButtonPressed,
-      child: SvgPicture.asset('assets/images/sendIcon.svg'),
-    );
-  }
+class _ReplyContentWidget extends StatelessWidget {
+  const _ReplyContentWidget({
+    required this.msg,
+    required this.messageWidget,
+  });
 
-  Widget _buildImageButton(
-    BuildContext context,
-    ChatRoomController controller,
-  ) {
-    return InkWell(
-      onTap: () {
-        controller.handleMultipleImageSelection(context, roomName);
-      },
-      child: SvgPicture.asset('assets/images/camera.svg', fit: BoxFit.none),
-    );
-  }
+  final Message? msg;
+  final Widget? messageWidget;
 
-  Widget _buildAudioButton() {
-    return SvgPicture.asset('assets/images/microphone-2.svg', fit: BoxFit.none);
-  }
-
-  Widget _replyContentBuilder(Message? msg, Widget? messageWidget) {
+  @override
+  Widget build(BuildContext context) {
     if (msg is TextMessage) {
       return messageWidget!;
     } else if (msg is ImageMessage) {
@@ -300,7 +331,7 @@ class CustomChatInput extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(6.33),
             child: Image.memory(
-              base64Decode(msg.metadata?['base64']),
+              base64Decode(msg?.metadata?['base64']),
               fit: BoxFit.fill,
               cacheWidth: 125,
             ),
@@ -318,13 +349,14 @@ class CustomChatInput extends StatelessWidget {
 }
 
 class AttachmentWidget extends StatelessWidget {
+  final ChatRoomController controller;
   final List<List<String>> attachmentNameList;
   final String roomName;
   final Size size;
-  final ChatRoomController _roomController = Get.find<ChatRoomController>();
 
-  AttachmentWidget({
+  const AttachmentWidget({
     Key? key,
+    required this.controller,
     required this.attachmentNameList,
     required this.roomName,
     required this.size,
@@ -334,7 +366,7 @@ class AttachmentWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !_roomController.isAttachmentVisible.value,
+        offstage: !controller.isAttachmentVisible.value,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           width: double.infinity,
@@ -349,7 +381,7 @@ class AttachmentWidget extends StatelessWidget {
                   color: AppCommonTheme.backgroundColor,
                   borderRadius: BorderRadius.circular(5),
                 ),
-                child: _buildSettingButton(context),
+                child: const _BuildSettingBtn(),
               ),
               Expanded(
                 child: Container(
@@ -358,7 +390,11 @@ class AttachmentWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       for (List<String> item in attachmentNameList)
-                        _buildItem(context, item),
+                        _BuildItem(
+                          controller: controller,
+                          roomName: roomName,
+                          item: item,
+                        ),
                     ],
                   ),
                 ),
@@ -369,8 +405,41 @@ class AttachmentWidget extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildSettingButton(BuildContext context) {
+class _BuildAudioBtn extends StatelessWidget {
+  const _BuildAudioBtn();
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset('assets/images/microphone-2.svg', fit: BoxFit.none);
+  }
+}
+
+class _BuildImageBtn extends StatelessWidget {
+  const _BuildImageBtn({
+    required this.controller,
+    required this.roomName,
+  });
+
+  final String roomName;
+  final ChatRoomController controller;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        controller.handleMultipleImageSelection(context, roomName);
+      },
+      child: SvgPicture.asset('assets/images/camera.svg', fit: BoxFit.none),
+    );
+  }
+}
+
+class _BuildSettingBtn extends StatelessWidget {
+  const _BuildSettingBtn();
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -393,20 +462,48 @@ class AttachmentWidget extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildItem(BuildContext context, List<String> item) {
+class _BuildSendBtn extends StatelessWidget {
+  const _BuildSendBtn({
+    required this.onButtonPressed,
+  });
+
+  final Function()? onButtonPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onButtonPressed,
+      child: SvgPicture.asset('assets/images/sendIcon.svg'),
+    );
+  }
+}
+
+class _BuildItem extends StatelessWidget {
+  const _BuildItem({
+    required this.controller,
+    required this.roomName,
+    required this.item,
+  });
+  final ChatRoomController controller;
+  final String roomName;
+  final List<String> item;
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         switch (item[0]) {
           case 'camera':
-            _roomController.isAttachmentVisible.value = false;
-            _roomController.handleMultipleImageSelection(context, roomName);
+            controller.isAttachmentVisible.value = false;
+            controller.handleMultipleImageSelection(context, roomName);
             break;
           case 'gif':
-            _roomController.handleImageSelection(context);
+            controller.handleImageSelection(context);
             break;
           case 'document':
-            _roomController.handleFileSelection(context);
+            controller.handleFileSelection(context);
             break;
           case 'location':
             //location handle
@@ -433,16 +530,19 @@ class AttachmentWidget extends StatelessWidget {
 }
 
 class EmojiPickerWidget extends StatelessWidget {
+  final ChatRoomController controller;
   final Size size;
-  final ChatRoomController _roomController = Get.find<ChatRoomController>();
-
-  EmojiPickerWidget({Key? key, required this.size}) : super(key: key);
+  const EmojiPickerWidget({
+    Key? key,
+    required this.size,
+    required this.controller,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () => Offstage(
-        offstage: !_roomController.isEmojiVisible.value,
+        offstage: !controller.isEmojiVisible.value,
         child: SizedBox(
           height: size.height * 0.3,
           child: EmojiPicker(
@@ -458,7 +558,6 @@ class EmojiPickerWidget extends StatelessWidget {
               indicatorColor: AppCommonTheme.primaryColor,
               iconColor: AppCommonTheme.dividerColor,
               iconColorSelected: AppCommonTheme.primaryColor,
-              progressIndicatorColor: AppCommonTheme.primaryColor,
               showRecentsTab: true,
               recentsLimit: 28,
               noRecents: Text(
@@ -475,18 +574,18 @@ class EmojiPickerWidget extends StatelessWidget {
     );
   }
 
-  void _handleEmojiSelected(Category category, Emoji emoji) {
-    _roomController.mentionKey.currentState!.controller!.text += emoji.emoji;
-    _roomController.sendButtonUpdate();
+  void _handleEmojiSelected(Category? category, Emoji emoji) {
+    controller.mentionKey.currentState!.controller!.text += emoji.emoji;
+    controller.sendButtonUpdate();
   }
 
   void _handleBackspacePressed() {
-    _roomController.mentionKey.currentState!.controller!.text = _roomController
+    controller.mentionKey.currentState!.controller!.text = controller
         .mentionKey.currentState!.controller!.text.characters
         .skipLast(1)
         .string;
-    if (_roomController.mentionKey.currentState!.controller!.text.isEmpty) {
-      _roomController.sendButtonUpdate();
+    if (controller.mentionKey.currentState!.controller!.text.isEmpty) {
+      controller.sendButtonUpdate();
     }
   }
 }

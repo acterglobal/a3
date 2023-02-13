@@ -1,17 +1,12 @@
-import 'dart:math';
-
-import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/InviteUser.dart';
 import 'package:flutter/material.dart';
 
-class ToDoTaskAssignScreen extends StatelessWidget {
-  final List<ImageProvider<Object>> avatars;
+class TaskAssignScreen extends StatelessWidget {
   final _controller = TextEditingController();
 
-  ToDoTaskAssignScreen({
+  TaskAssignScreen({
     Key? key,
-    required this.avatars,
   }) : super(key: key);
 
   @override
@@ -102,29 +97,7 @@ class ToDoTaskAssignScreen extends StatelessWidget {
                           color: ToDoTheme.primaryTextColor,
                         ),
                       ),
-                      Text(
-                        '${avatars.length}',
-                        style: ToDoTheme.subtitleTextStyle,
-                      ),
                     ],
-                  ),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: avatars.length,
-                  itemBuilder: (BuildContext context, int index) => ListTile(
-                    leading: CircleAvatar(
-                      radius: 20,
-                      backgroundImage: avatars[index],
-                    ),
-                    title: const Text(
-                      'John Doe',
-                      style: ToDoTheme.roleNameTextStyle,
-                    ),
-                    trailing: Text(
-                      taskRole[Random().nextInt(taskRole.length)],
-                      style: ToDoTheme.roleTextStyle,
-                    ),
                   ),
                 ),
               ],
@@ -141,14 +114,15 @@ class ToDoTaskAssignScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Someone not in the list? Just Invite them',
+                Text(
+                  'Someone not in the list? Just Invite them',
                   style: ToDoTheme.taskTitleTextStyle.copyWith(
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                   ),
                 ),
                 InkWell(
-                  onTap: (){
+                  onTap: () {
                     showDialogBox(context);
                   },
                   child: Container(
@@ -161,11 +135,15 @@ class ToDoTaskAssignScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.group, color: ToDoTheme.primaryTextColor,),
+                        const Icon(
+                          Icons.group,
+                          color: ToDoTheme.primaryTextColor,
+                        ),
                         const SizedBox(
                           width: 8.0,
                         ),
-                        Text('Invite Members',
+                        Text(
+                          'Invite Members',
                           style: ToDoTheme.taskTitleTextStyle.copyWith(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,
@@ -191,6 +169,4 @@ class ToDoTaskAssignScreen extends StatelessWidget {
       },
     );
   }
-
-
 }

@@ -105,53 +105,6 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
     );
   }
 
-  Widget buildSmallHeart() {
-    return Icon(
-      Icons.favorite,
-      color: AppCommonTheme.primaryColor
-          .withOpacity(smallHeartOpacity.value * 0.8),
-      size: 12,
-    );
-  }
-
-  SvgPicture buildLikeImage(Size size, String iconName, color, bool isSmall) {
-    return SvgPicture.asset(
-      'assets/images/$iconName.svg',
-      color: color,
-      width: size.height,
-      height: size.width,
-    );
-  }
-
-  Widget buildButton() {
-    return InkWell(
-      onTap: () {
-        bool liked = LikeAnimation.likedIndex.contains(widget.index);
-        if (!liked) {
-          LikeAnimation.likedIndex.add(widget.index);
-          controller.reset();
-          controller.forward();
-        } else {
-          LikeAnimation.likedIndex.remove(widget.index);
-          setState(() {});
-        }
-      },
-      child: LikeAnimation.likedIndex.contains(widget.index)
-          ? buildLikeImage(
-              Size(heartSize.value * 30, heartSize.value * 30),
-              'like_filled',
-              AppCommonTheme.primaryColor,
-              false,
-            )
-          : buildLikeImage(
-              Size(heartSize.value * 30, heartSize.value * 30),
-              'heart',
-              widget.color,
-              false,
-            ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -167,22 +120,58 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  buildButton(),
+                  InkWell(
+                    onTap: () {
+                      bool liked =
+                          LikeAnimation.likedIndex.contains(widget.index);
+                      if (!liked) {
+                        LikeAnimation.likedIndex.add(widget.index);
+                        controller.reset();
+                        controller.forward();
+                      } else {
+                        LikeAnimation.likedIndex.remove(widget.index);
+                        setState(() {});
+                      }
+                    },
+                    child: LikeAnimation.likedIndex.contains(widget.index)
+                        ? _LikeWidget(
+                            size: Size(
+                              heartSize.value * 30,
+                              heartSize.value * 30,
+                            ),
+                            iconName: 'like_filled',
+                            color: AppCommonTheme.primaryColor,
+                            isSmall: false,
+                          )
+                        : _LikeWidget(
+                            size: Size(
+                              heartSize.value * 30,
+                              heartSize.value * 30,
+                            ),
+                            iconName: 'heart',
+                            color: widget.color,
+                            isSmall: false,
+                          ),
+                  ),
                   Align(
                     alignment: Alignment.bottomLeft,
-                    child: buildSmallHeart(),
+                    child:
+                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
                   ),
                   Align(
                     alignment: Alignment.topRight,
-                    child: buildSmallHeart(),
+                    child:
+                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
                   ),
                   Align(
                     alignment: Alignment.topLeft,
-                    child: buildSmallHeart(),
+                    child:
+                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
-                    child: buildSmallHeart(),
+                    child:
+                        _SmallHeartWidget(smallHeartOpacity: smallHeartOpacity),
                   ),
                 ],
               ),
@@ -190,6 +179,48 @@ class _LikeButtonState extends State<LikeButton> with TickerProviderStateMixin {
           },
         ),
       ],
+    );
+  }
+}
+
+class _LikeWidget extends StatelessWidget {
+  const _LikeWidget({
+    required this.size,
+    required this.iconName,
+    required this.color,
+    required this.isSmall,
+  });
+
+  final Size size;
+  final String iconName;
+  final Color color;
+  final bool isSmall;
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'assets/images/$iconName.svg',
+      color: color,
+      width: size.height,
+      height: size.width,
+    );
+  }
+}
+
+class _SmallHeartWidget extends StatelessWidget {
+  const _SmallHeartWidget({
+    required this.smallHeartOpacity,
+  });
+
+  final Animation<double> smallHeartOpacity;
+
+  @override
+  Widget build(BuildContext context) {
+    return Icon(
+      Icons.favorite,
+      color: AppCommonTheme.primaryColor
+          .withOpacity(smallHeartOpacity.value * 0.8),
+      size: 12,
     );
   }
 }

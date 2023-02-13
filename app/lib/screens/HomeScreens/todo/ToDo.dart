@@ -1,25 +1,36 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
+import 'package:effektio/controllers/network_controller.dart';
 import 'package:effektio/controllers/todo_controller.dart';
 import 'package:effektio/screens/HomeScreens/todo/ToDoMine.dart';
-import 'package:effektio/screens/HomeScreens/todo/screens/CreateTask.dart';
+import 'package:effektio/screens/HomeScreens/todo/CreateTodo.dart';
+import 'package:effektio/widgets/ToDoListView.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show Client;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ToDoScreen extends StatefulWidget {
-  const ToDoScreen({Key? key}) : super(key: key);
-
+  const ToDoScreen({Key? key, required this.client}) : super(key: key);
+  final Client client;
   @override
   State<ToDoScreen> createState() => _ToDoScreenState();
 }
 
 class _ToDoScreenState extends State<ToDoScreen> {
-  final ToDoController todoController = ToDoController.instance;
-  List<String> buttonText = ['All', 'Mine', 'Unassigned', 'space', 'All Teams'];
+  late final ToDoController todoController;
+  final networkController = Get.put(NetworkController());
+  List<String> buttonText = ['All', 'Mine', 'Unassigned', 'All Teams'];
+  late final List<Widget> buttonWidgets;
 
   @override
   void initState() {
     super.initState();
-    todoController.init();
+    todoController = Get.put(ToDoController(client: widget.client));
+    buttonWidgets = [
+      ToDoListView(controller: todoController),
+      const ToDoMineScreen(),
+      const Placeholder(),
+      const Placeholder()
+    ];
   }
 
   @override
@@ -32,22 +43,27 @@ class _ToDoScreenState extends State<ToDoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: ToDoTheme.backgroundGradient2Color,
-        title:
-        const Text('Todo List', style: ToDoTheme.titleTextStyle),
+        title: const Padding(
+          padding: EdgeInsets.only(top: 25),
+          child: Text('Todo', style: ToDoTheme.titleTextStyle),
+        ),
         centerTitle: false,
         actions: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.only(
+              top: 25,
+              right: 8,
+            ),
             child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CreateTaskScreen(),
-                  ),
-                );
-              },
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      CreateTodoScreen(controller: todoController),
+                ),
+              ),
               child: const Icon(
                 Icons.add,
                 color: Colors.white,
@@ -56,103 +72,119 @@ class _ToDoScreenState extends State<ToDoScreen> {
           )
         ],
       ),
-      body: Container(
-        decoration: ToDoTheme.toDoDecoration,
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Wrap(
-                      direction: Axis.horizontal,
-                      spacing: 5.0,
-                      children:
-                      List.generate(buttonText.length, (int index) {
-                        return index == 3
-                            ? const SizedBox(
-                          width: 48,
-                        )
-                            : radioButton(
-                          text: buttonText[index],
-                          index: index,
-                        );
-                      }),
-                    ),
-                  ),
-                  GetBuilder<ToDoController>(
-                    id: 'radiobtn',
-                    builder: (ToDoController controller) {
-                      return Container(
-                        child: todoController.selectedValueIndex == 0
-                            ? Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount:
-                            todoController.todoList!.length,
-                            itemBuilder: (
-                                BuildContext context,
-                                int index,
-                                ) {
-                              return todoController
-                                  .todoList![index];
-                            },
-                          ),
-                        )
-                            : todoController.selectedValueIndex == 1
-                            ? const ToDoMineScreen()
-                            : todoController.selectedValueIndex == 2
-                            ? const Placeholder()
-                            : const Placeholder(),
-                      );
-                    },
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
+      body: _BodyWidget(
+        todoController: todoController,
+        buttonText: buttonText,
+        buttonWidgets: buttonWidgets,
       ),
     );
   }
+}
 
-  Widget radioButton({required String text, required int index}) {
+class _BodyWidget extends StatelessWidget {
+  const _BodyWidget({
+    required this.todoController,
+    required this.buttonText,
+    required this.buttonWidgets,
+  });
+
+  final ToDoController todoController;
+  final List<String> buttonText;
+  final List<Widget> buttonWidgets;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: ToDoTheme.toDoDecoration,
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Obx(
+            () => Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  Row(
+                    children: <Widget>[
+                      _RadioBtn(
+                        todoController: todoController,
+                        text: buttonText[0],
+                        index: 0,
+                      ),
+                      _RadioBtn(
+                        todoController: todoController,
+                        text: buttonText[1],
+                        index: 1,
+                      ),
+                      _RadioBtn(
+                        todoController: todoController,
+                        text: buttonText[2],
+                        index: 2,
+                      ),
+                      const Spacer(),
+                      _RadioBtn(
+                        todoController: todoController,
+                        text: buttonText[3],
+                        index: 3,
+                      ),
+                    ],
+                  ),
+                  Expanded(
+                    child:
+                        buttonWidgets[todoController.selectedValueIndex.value],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RadioBtn extends StatelessWidget {
+  const _RadioBtn({
+    required this.todoController,
+    required this.text,
+    required this.index,
+  });
+
+  final ToDoController todoController;
+  final String text;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
     return InkWell(
       splashColor: ToDoTheme.primaryTextColor,
       onTap: () {
-        todoController.updateIndex(index);
+        todoController.updateButtonIndex(index);
       },
-      child: GetBuilder<ToDoController>(
-        id: 'radiobtn',
-        builder: (ToDoController controller) {
-          return Container(
-            height: 35,
-            width: 75,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: index == controller.selectedValueIndex
-                  ? ToDoTheme.primaryColor
-                  : ToDoTheme.secondaryColor,
-              border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
+      child: Container(
+        height: 35,
+        width: 75,
+        margin: const EdgeInsets.symmetric(horizontal: 3, vertical: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: index == todoController.selectedValueIndex.value
+              ? ToDoTheme.primaryColor
+              : ToDoTheme.secondaryColor,
+          border: Border.all(color: ToDoTheme.btnBorderColor, width: 1),
+        ),
+        child: Center(
+          child: Text(
+            text,
+            style: TextStyle(
+              color: index == todoController.selectedValueIndex.value
+                  ? ToDoTheme.primaryTextColor
+                  : ToDoTheme.inactiveTextColor,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
             ),
-            child: Center(
-              child: Text(
-                text,
-                style: TextStyle(
-                  color: index == controller.selectedValueIndex
-                      ? ToDoTheme.primaryTextColor
-                      : ToDoTheme.inactiveTextColor,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
-                textScaleFactor: 0.8,
-              ),
-            ),
-          );
-        },
+            textScaleFactor: 0.8,
+          ),
+        ),
       ),
     );
   }

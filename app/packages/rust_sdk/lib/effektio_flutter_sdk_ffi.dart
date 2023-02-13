@@ -868,7 +868,7 @@ class Api {
     return tmp1;
   }
 
-  Duration durationFromSecs(
+  EfkDuration durationFromSecs(
     int secs,
   ) {
     final tmp0 = secs;
@@ -879,10 +879,37 @@ class Api {
     );
     final tmp4 = tmp2;
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(this, tmp4_0, "drop_box_Duration");
+    final tmp4_1 = _Box(this, tmp4_0, "drop_box_EfkDuration");
     tmp4_1._finalizer = this._registerFinalizer(tmp4_1);
-    final tmp3 = Duration._(this, tmp4_1);
+    final tmp3 = EfkDuration._(this, tmp4_1);
     return tmp3;
+  }
+
+  CreateGroupSettings newGroupSettings(
+    String name,
+  ) {
+    final tmp0 = name;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4 = _newGroupSettings(
+      tmp1,
+      tmp2,
+      tmp3,
+    );
+    final tmp6 = tmp4;
+    final ffi.Pointer<ffi.Void> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+    final tmp6_1 = _Box(this, tmp6_0, "drop_box_CreateGroupSettings");
+    tmp6_1._finalizer = this._registerFinalizer(tmp6_1);
+    final tmp5 = CreateGroupSettings._(this, tmp6_1);
+    return tmp5;
   }
 
   late final _allocatePtr = _lookup<
@@ -3796,6 +3823,51 @@ class Api {
     return tmp7;
   }
 
+  RoomId? __clientCreateEffektioGroupFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientCreateEffektioGroupFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_RoomId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = RoomId._(this, tmp13_1);
+    return tmp7;
+  }
+
   Comment? __clientWaitForCommentFuturePoll(
     int boxed,
     int postCobject,
@@ -3977,6 +4049,52 @@ class Api {
     return tmp7;
   }
 
+  FfiBufferUint8? __userProfileGetThumbnailFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _userProfileGetThumbnailFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   FfiBufferUint8? __roomProfileGetAvatarFuturePoll(
     int boxed,
     int postCobject,
@@ -3992,6 +4110,52 @@ class Api {
     tmp3 = tmp2;
     tmp5 = tmp4;
     final tmp6 = _roomProfileGetAvatarFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiBufferUint8? __roomProfileGetThumbnailFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _roomProfileGetThumbnailFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -5530,14 +5694,28 @@ class Api {
       int Function(
     int,
   )>();
-  late final _colorRgbaU8Ptr = _lookup<
+  late final _newGroupSettingsPtr = _lookup<
       ffi.NativeFunction<
-          _ColorRgbaU8Return Function(
+          ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Color_rgba_u8");
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__new_group_settings");
 
-  late final _colorRgbaU8 = _colorRgbaU8Ptr.asFunction<
-      _ColorRgbaU8Return Function(
+  late final _newGroupSettings = _newGroupSettingsPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _efkColorRgbaU8Ptr = _lookup<
+      ffi.NativeFunction<
+          _EfkColorRgbaU8Return Function(
+    ffi.Int64,
+  )>>("__EfkColor_rgba_u8");
+
+  late final _efkColorRgbaU8 = _efkColorRgbaU8Ptr.asFunction<
+      _EfkColorRgbaU8Return Function(
     int,
   )>();
   late final _utcDateTimeTimestampPtr = _lookup<
@@ -5811,15 +5989,14 @@ class Api {
           int Function(
     int,
   )>();
-  late final _roomEventItemItemContentTypePtr = _lookup<
+  late final _roomEventItemEventTypePtr = _lookup<
       ffi.NativeFunction<
-          _RoomEventItemItemContentTypeReturn Function(
+          _RoomEventItemEventTypeReturn Function(
     ffi.Int64,
-  )>>("__RoomEventItem_item_content_type");
+  )>>("__RoomEventItem_event_type");
 
-  late final _roomEventItemItemContentType =
-      _roomEventItemItemContentTypePtr.asFunction<
-          _RoomEventItemItemContentTypeReturn Function(
+  late final _roomEventItemEventType = _roomEventItemEventTypePtr.asFunction<
+      _RoomEventItemEventTypeReturn Function(
     int,
   )>();
   late final _roomEventItemMsgtypePtr = _lookup<
@@ -5850,6 +6027,16 @@ class Api {
 
   late final _roomEventItemImageDesc = _roomEventItemImageDescPtr.asFunction<
       _RoomEventItemImageDescReturn Function(
+    int,
+  )>();
+  late final _roomEventItemVideoDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomEventItemVideoDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomEventItem_video_desc");
+
+  late final _roomEventItemVideoDesc = _roomEventItemVideoDescPtr.asFunction<
+      _RoomEventItemVideoDescReturn Function(
     int,
   )>();
   late final _roomEventItemFileDescPtr = _lookup<
@@ -5908,6 +6095,27 @@ class Api {
 
   late final _roomEventItemIsEditable = _roomEventItemIsEditablePtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _roomVirtualItemEventTypePtr = _lookup<
+      ffi.NativeFunction<
+          _RoomVirtualItemEventTypeReturn Function(
+    ffi.Int64,
+  )>>("__RoomVirtualItem_event_type");
+
+  late final _roomVirtualItemEventType =
+      _roomVirtualItemEventTypePtr.asFunction<
+          _RoomVirtualItemEventTypeReturn Function(
+    int,
+  )>();
+  late final _roomVirtualItemDescPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomVirtualItemDescReturn Function(
+    ffi.Int64,
+  )>>("__RoomVirtualItem_desc");
+
+  late final _roomVirtualItemDesc = _roomVirtualItemDescPtr.asFunction<
+      _RoomVirtualItemDescReturn Function(
     int,
   )>();
   late final _roomMessageItemTypePtr = _lookup<
@@ -6020,6 +6228,182 @@ class Api {
       _ImageDescHeightReturn Function(
     int,
   )>();
+  late final _imageDescThumbnailMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _ImageDescThumbnailMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__ImageDesc_thumbnail_mimetype");
+
+  late final _imageDescThumbnailMimetype =
+      _imageDescThumbnailMimetypePtr.asFunction<
+          _ImageDescThumbnailMimetypeReturn Function(
+    int,
+  )>();
+  late final _imageDescThumbnailSizePtr = _lookup<
+      ffi.NativeFunction<
+          _ImageDescThumbnailSizeReturn Function(
+    ffi.Int64,
+  )>>("__ImageDesc_thumbnail_size");
+
+  late final _imageDescThumbnailSize = _imageDescThumbnailSizePtr.asFunction<
+      _ImageDescThumbnailSizeReturn Function(
+    int,
+  )>();
+  late final _imageDescThumbnailWidthPtr = _lookup<
+      ffi.NativeFunction<
+          _ImageDescThumbnailWidthReturn Function(
+    ffi.Int64,
+  )>>("__ImageDesc_thumbnail_width");
+
+  late final _imageDescThumbnailWidth = _imageDescThumbnailWidthPtr.asFunction<
+      _ImageDescThumbnailWidthReturn Function(
+    int,
+  )>();
+  late final _imageDescThumbnailHeightPtr = _lookup<
+      ffi.NativeFunction<
+          _ImageDescThumbnailHeightReturn Function(
+    ffi.Int64,
+  )>>("__ImageDesc_thumbnail_height");
+
+  late final _imageDescThumbnailHeight =
+      _imageDescThumbnailHeightPtr.asFunction<
+          _ImageDescThumbnailHeightReturn Function(
+    int,
+  )>();
+  late final _imageDescThumbnailSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _ImageDescThumbnailSourceReturn Function(
+    ffi.Int64,
+  )>>("__ImageDesc_thumbnail_source");
+
+  late final _imageDescThumbnailSource =
+      _imageDescThumbnailSourcePtr.asFunction<
+          _ImageDescThumbnailSourceReturn Function(
+    int,
+  )>();
+  late final _videoDescNamePtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescNameReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_name");
+
+  late final _videoDescName = _videoDescNamePtr.asFunction<
+      _VideoDescNameReturn Function(
+    int,
+  )>();
+  late final _videoDescMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_mimetype");
+
+  late final _videoDescMimetype = _videoDescMimetypePtr.asFunction<
+      _VideoDescMimetypeReturn Function(
+    int,
+  )>();
+  late final _videoDescSizePtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescSizeReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_size");
+
+  late final _videoDescSize = _videoDescSizePtr.asFunction<
+      _VideoDescSizeReturn Function(
+    int,
+  )>();
+  late final _videoDescWidthPtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescWidthReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_width");
+
+  late final _videoDescWidth = _videoDescWidthPtr.asFunction<
+      _VideoDescWidthReturn Function(
+    int,
+  )>();
+  late final _videoDescHeightPtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescHeightReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_height");
+
+  late final _videoDescHeight = _videoDescHeightPtr.asFunction<
+      _VideoDescHeightReturn Function(
+    int,
+  )>();
+  late final _videoDescBlurhashPtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescBlurhashReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_blurhash");
+
+  late final _videoDescBlurhash = _videoDescBlurhashPtr.asFunction<
+      _VideoDescBlurhashReturn Function(
+    int,
+  )>();
+  late final _videoDescDurationPtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescDurationReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_duration");
+
+  late final _videoDescDuration = _videoDescDurationPtr.asFunction<
+      _VideoDescDurationReturn Function(
+    int,
+  )>();
+  late final _videoDescThumbnailMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescThumbnailMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_thumbnail_mimetype");
+
+  late final _videoDescThumbnailMimetype =
+      _videoDescThumbnailMimetypePtr.asFunction<
+          _VideoDescThumbnailMimetypeReturn Function(
+    int,
+  )>();
+  late final _videoDescThumbnailSizePtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescThumbnailSizeReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_thumbnail_size");
+
+  late final _videoDescThumbnailSize = _videoDescThumbnailSizePtr.asFunction<
+      _VideoDescThumbnailSizeReturn Function(
+    int,
+  )>();
+  late final _videoDescThumbnailWidthPtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescThumbnailWidthReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_thumbnail_width");
+
+  late final _videoDescThumbnailWidth = _videoDescThumbnailWidthPtr.asFunction<
+      _VideoDescThumbnailWidthReturn Function(
+    int,
+  )>();
+  late final _videoDescThumbnailHeightPtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescThumbnailHeightReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_thumbnail_height");
+
+  late final _videoDescThumbnailHeight =
+      _videoDescThumbnailHeightPtr.asFunction<
+          _VideoDescThumbnailHeightReturn Function(
+    int,
+  )>();
+  late final _videoDescThumbnailSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _VideoDescThumbnailSourceReturn Function(
+    ffi.Int64,
+  )>>("__VideoDesc_thumbnail_source");
+
+  late final _videoDescThumbnailSource =
+      _videoDescThumbnailSourcePtr.asFunction<
+          _VideoDescThumbnailSourceReturn Function(
+    int,
+  )>();
   late final _fileDescNamePtr = _lookup<
       ffi.NativeFunction<
           _FileDescNameReturn Function(
@@ -6048,6 +6432,57 @@ class Api {
 
   late final _fileDescSize = _fileDescSizePtr.asFunction<
       _FileDescSizeReturn Function(
+    int,
+  )>();
+  late final _fileDescThumbnailMimetypePtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescThumbnailMimetypeReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_thumbnail_mimetype");
+
+  late final _fileDescThumbnailMimetype =
+      _fileDescThumbnailMimetypePtr.asFunction<
+          _FileDescThumbnailMimetypeReturn Function(
+    int,
+  )>();
+  late final _fileDescThumbnailSizePtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescThumbnailSizeReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_thumbnail_size");
+
+  late final _fileDescThumbnailSize = _fileDescThumbnailSizePtr.asFunction<
+      _FileDescThumbnailSizeReturn Function(
+    int,
+  )>();
+  late final _fileDescThumbnailWidthPtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescThumbnailWidthReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_thumbnail_width");
+
+  late final _fileDescThumbnailWidth = _fileDescThumbnailWidthPtr.asFunction<
+      _FileDescThumbnailWidthReturn Function(
+    int,
+  )>();
+  late final _fileDescThumbnailHeightPtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescThumbnailHeightReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_thumbnail_height");
+
+  late final _fileDescThumbnailHeight = _fileDescThumbnailHeightPtr.asFunction<
+      _FileDescThumbnailHeightReturn Function(
+    int,
+  )>();
+  late final _fileDescThumbnailSourcePtr = _lookup<
+      ffi.NativeFunction<
+          _FileDescThumbnailSourceReturn Function(
+    ffi.Int64,
+  )>>("__FileDesc_thumbnail_source");
+
+  late final _fileDescThumbnailSource = _fileDescThumbnailSourcePtr.asFunction<
+      _FileDescThumbnailSourceReturn Function(
     int,
   )>();
   late final _reactionDescCountPtr = _lookup<
@@ -7970,6 +8405,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _taskListTaskBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _TaskListTaskBuilderReturn Function(
+    ffi.Int64,
+  )>>("__TaskList_task_builder");
+
+  late final _taskListTaskBuilder = _taskListTaskBuilderPtr.asFunction<
+      _TaskListTaskBuilderReturn Function(
+    int,
+  )>();
   late final _taskListUpdateBuilderPtr = _lookup<
       ffi.NativeFunction<
           _TaskListUpdateBuilderReturn Function(
@@ -8398,6 +8843,16 @@ class Api {
       int Function(
     int,
   )>();
+  late final _groupGetRoomIdPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupGetRoomIdReturn Function(
+    ffi.Int64,
+  )>>("__Group_get_room_id");
+
+  late final _groupGetRoomId = _groupGetRoomIdPtr.asFunction<
+      _GroupGetRoomIdReturn Function(
+    int,
+  )>();
   late final _groupGetMemberPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -8550,6 +9005,57 @@ class Api {
 
   late final _syncStateCancel = _syncStateCancelPtr.asFunction<
       void Function(
+    int,
+  )>();
+  late final _createGroupSettingsAliasPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateGroupSettings_alias");
+
+  late final _createGroupSettingsAlias =
+      _createGroupSettingsAliasPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createGroupSettingsVisibilityPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateGroupSettings_visibility");
+
+  late final _createGroupSettingsVisibility =
+      _createGroupSettingsVisibilityPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _createGroupSettingsAddInviteePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__CreateGroupSettings_add_invitee");
+
+  late final _createGroupSettingsAddInvitee =
+      _createGroupSettingsAddInviteePtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
     int,
   )>();
   late final _clientStartSyncPtr = _lookup<
@@ -8843,6 +9349,19 @@ class Api {
       int Function(
     int,
   )>();
+  late final _clientCreateEffektioGroupPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_create_effektio_group");
+
+  late final _clientCreateEffektioGroup =
+      _clientCreateEffektioGroupPtr.asFunction<
+          int Function(
+    int,
+    int,
+  )>();
   late final _clientSubscribePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -8949,6 +9468,20 @@ class Api {
       int Function(
     int,
   )>();
+  late final _userProfileGetThumbnailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__UserProfile_get_thumbnail");
+
+  late final _userProfileGetThumbnail = _userProfileGetThumbnailPtr.asFunction<
+      int Function(
+    int,
+    int,
+    int,
+  )>();
   late final _userProfileGetDisplayNamePtr = _lookup<
       ffi.NativeFunction<
           _UserProfileGetDisplayNameReturn Function(
@@ -8978,6 +9511,20 @@ class Api {
 
   late final _roomProfileGetAvatar = _roomProfileGetAvatarPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _roomProfileGetThumbnailPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__RoomProfile_get_thumbnail");
+
+  late final _roomProfileGetThumbnail = _roomProfileGetThumbnailPtr.asFunction<
+      int Function(
+    int,
+    int,
     int,
   )>();
   late final _roomProfileGetDisplayNamePtr = _lookup<
@@ -10447,6 +10994,21 @@ class Api {
     int,
     int,
   )>();
+  late final _clientCreateEffektioGroupFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientCreateEffektioGroupFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_create_effektio_group_future_poll");
+
+  late final _clientCreateEffektioGroupFuturePoll =
+      _clientCreateEffektioGroupFuturePollPtr.asFunction<
+          _ClientCreateEffektioGroupFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _clientWaitForCommentFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _ClientWaitForCommentFuturePollReturn Function(
@@ -10507,6 +11069,21 @@ class Api {
     int,
     int,
   )>();
+  late final _userProfileGetThumbnailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _UserProfileGetThumbnailFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__UserProfile_get_thumbnail_future_poll");
+
+  late final _userProfileGetThumbnailFuturePoll =
+      _userProfileGetThumbnailFuturePollPtr.asFunction<
+          _UserProfileGetThumbnailFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _roomProfileGetAvatarFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _RoomProfileGetAvatarFuturePollReturn Function(
@@ -10518,6 +11095,21 @@ class Api {
   late final _roomProfileGetAvatarFuturePoll =
       _roomProfileGetAvatarFuturePollPtr.asFunction<
           _RoomProfileGetAvatarFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _roomProfileGetThumbnailFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _RoomProfileGetThumbnailFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__RoomProfile_get_thumbnail_future_poll");
+
+  late final _roomProfileGetThumbnailFuturePoll =
+      _roomProfileGetThumbnailFuturePollPtr.asFunction<
+          _RoomProfileGetThumbnailFuturePollReturn Function(
     int,
     int,
     int,
@@ -11955,11 +12547,11 @@ class Api {
 }
 
 /// Representing a time frame
-class Duration {
+class EfkDuration {
   final Api _api;
   final _Box _box;
 
-  Duration._(this._api, this._box);
+  EfkDuration._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -11968,17 +12560,17 @@ class Duration {
 }
 
 /// Representing a color
-class Color {
+class EfkColor {
   final Api _api;
   final _Box _box;
 
-  Color._(this._api, this._box);
+  EfkColor._(this._api, this._box);
 
   /// as rgba in u8
   List<dynamic> rgbaU8() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._colorRgbaU8(
+    final tmp1 = _api._efkColorRgbaU8(
       tmp0,
     );
     final tmp4 = tmp1.arg0;
@@ -12156,7 +12748,7 @@ class News {
   }
 
   /// if given, the specific foreground color
-  Color? fgColor() {
+  EfkColor? fgColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsFgColor(
@@ -12168,14 +12760,14 @@ class News {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
   /// if given, the specific background color
-  Color? bgColor() {
+  EfkColor? bgColor() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._newsBgColor(
@@ -12187,9 +12779,9 @@ class News {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -12270,7 +12862,7 @@ class Tag {
   }
 
   /// if given, the specific color for this tag
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._tagColor(
@@ -12282,9 +12874,9 @@ class Tag {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -12392,6 +12984,18 @@ class Faq {
     final tmp2 = tmp3;
     return tmp2;
   }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class MediaSource {
+  final Api _api;
+  final _Box _box;
+
+  MediaSource._(this._api, this._box);
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -12582,11 +13186,11 @@ class RoomEventItem {
     return tmp2;
   }
 
-  /// one of Message/RedactedMessage/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
-  String itemContentType() {
+  /// one of Message/Redaction/UnableToDecrypt/FailedToParseMessageLike/FailedToParseState
+  String eventType() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._roomEventItemItemContentType(
+    final tmp1 = _api._roomEventItemEventType(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -12661,6 +13265,25 @@ class RoomEventItem {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = ImageDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// contains source data, name, mimetype, size, width and height
+  VideoDesc? videoDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomEventItemVideoDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_VideoDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = VideoDesc._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -12781,6 +13404,50 @@ class RoomVirtualItem {
   final _Box _box;
 
   RoomVirtualItem._(this._api, this._box);
+
+  /// one of DayDivider/LoadingIndicator/ReadMarker/TimelineStart
+  String eventType() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomVirtualItemEventType(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// contains description text
+  String? desc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._roomVirtualItemDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
 
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
@@ -13033,6 +13700,332 @@ class ImageDesc {
     return tmp2;
   }
 
+  /// thumbnail mimetype
+  String? thumbnailMimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._imageDescThumbnailMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// thumbnail file size
+  int? thumbnailSize() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._imageDescThumbnailSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail image width
+  int? thumbnailWidth() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._imageDescThumbnailWidth(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail image height
+  int? thumbnailHeight() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._imageDescThumbnailHeight(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail source
+  MediaSource? thumbnailSource() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._imageDescThumbnailSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class VideoDesc {
+  final Api _api;
+  final _Box _box;
+
+  VideoDesc._(this._api, this._box);
+
+  /// file name
+  String name() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescName(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// MIME
+  String? mimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// file size in bytes
+  int? size() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// image width
+  int? width() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescWidth(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// image height
+  int? height() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescHeight(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// blurhash
+  String? blurhash() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescBlurhash(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// duration in seconds
+  int? duration() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescDuration(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail mimetype
+  String? thumbnailMimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescThumbnailMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// thumbnail file size
+  int? thumbnailSize() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescThumbnailSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail image width
+  int? thumbnailWidth() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescThumbnailWidth(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail image height
+  int? thumbnailHeight() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescThumbnailHeight(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail source
+  MediaSource? thumbnailSource() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._videoDescThumbnailSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -13102,6 +14095,97 @@ class FileDesc {
       return null;
     }
     final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail mimetype
+  String? thumbnailMimetype() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._fileDescThumbnailMimetype(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// thumbnail file size
+  int? thumbnailSize() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._fileDescThumbnailSize(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail image width
+  int? thumbnailWidth() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._fileDescThumbnailWidth(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail image height
+  int? thumbnailHeight() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._fileDescThumbnailHeight(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final tmp2 = tmp4;
+    return tmp2;
+  }
+
+  /// thumbnail source
+  MediaSource? thumbnailSource() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._fileDescThumbnailSource(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_MediaSource");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = MediaSource._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -14979,7 +16063,7 @@ class Task {
   }
 
   /// Has this been colored in?
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskColor(
@@ -14991,9 +16075,9 @@ class Task {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -15249,7 +16333,7 @@ class TaskUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -15896,7 +16980,7 @@ class TaskDraft {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -16469,7 +17553,7 @@ class TaskList {
   }
 
   /// Has this been colored in?
-  Color? color() {
+  EfkColor? color() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
     final tmp1 = _api._taskListColor(
@@ -16481,9 +17565,9 @@ class TaskList {
       return null;
     }
     final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
-    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Color");
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
-    final tmp2 = Color._(_api, tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
     return tmp2;
   }
 
@@ -16555,6 +17639,35 @@ class TaskList {
     final tmp3_1 = _Box(_api, tmp3_0, "__TaskList_tasks_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__taskListTasksFuturePoll);
+    return tmp2;
+  }
+
+  /// make a builder for creating the task draft
+  TaskDraft taskBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._taskListTaskBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_TaskDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = TaskDraft._(_api, tmp7_1);
     return tmp2;
   }
 
@@ -16707,7 +17820,7 @@ class TaskListDraft {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -16920,7 +18033,7 @@ class TaskListUpdateBuilder {
 
   /// set the color for this task list
   void color(
-    Color color,
+    EfkColor color,
   ) {
     final tmp1 = color;
     var tmp0 = 0;
@@ -17110,6 +18223,26 @@ class Group {
     final tmp3_1 = _Box(_api, tmp3_0, "__Group_active_members_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__groupActiveMembersFuturePoll);
+    return tmp2;
+  }
+
+  /// the room id
+  String getRoomId() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupGetRoomId(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
+    if (tmp5 > 0) {
+      final ffi.Pointer<ffi.Void> tmp3_0;
+      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    }
     return tmp2;
   }
 
@@ -17426,6 +18559,96 @@ class SyncState {
     tmp0 = _box.borrow();
     _api._syncStateCancel(
       tmp0,
+    );
+    return;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class CreateGroupSettings {
+  final Api _api;
+  final _Box _box;
+
+  CreateGroupSettings._(this._api, this._box);
+
+  /// set the alias of group
+  void alias(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createGroupSettingsAlias(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the group's visibility to either Public or Private
+  void visibility(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createGroupSettingsVisibility(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// add the id of user that will be invited to this group
+  void addInvitee(
+    String value,
+  ) {
+    final tmp1 = value;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._createGroupSettingsAddInvitee(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
     );
     return;
   }
@@ -17966,6 +19189,29 @@ class Client {
     return tmp2;
   }
 
+  /// create default group
+  Future<RoomId> createEffektioGroup(
+    CreateGroupSettings settings,
+  ) {
+    final tmp1 = settings;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1._box.move();
+    final tmp3 = _api._clientCreateEffektioGroup(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp5_0 = ffi.Pointer.fromAddress(tmp5);
+    final tmp5_1 =
+        _Box(_api, tmp5_0, "__Client_create_effektio_group_future_drop");
+    tmp5_1._finalizer = _api._registerFinalizer(tmp5_1);
+    final tmp4 =
+        _nativeFuture(tmp5_1, _api.__clientCreateEffektioGroupFuturePoll);
+    return tmp4;
+  }
+
   /// listen to updates to any model key
   Stream<bool> subscribe(
     String key,
@@ -18000,7 +19246,7 @@ class Client {
   /// Fetch the Comment or use its event_id to wait for it to come down the wire
   Future<Comment> waitForComment(
     String key,
-    Duration? timeout,
+    EfkDuration? timeout,
   ) {
     final tmp1 = key;
     final tmp5 = timeout;
@@ -18045,7 +19291,7 @@ class Client {
   /// Fetch the Tasklist or use its event_id to wait for it to come down the wire
   Future<TaskList> waitForTaskList(
     String key,
-    Duration? timeout,
+    EfkDuration? timeout,
   ) {
     final tmp1 = key;
     final tmp5 = timeout;
@@ -18091,7 +19337,7 @@ class Client {
   /// Fetch the Task or use its event_id to wait for it to come down the wire
   Future<Task> waitForTask(
     String key,
-    Duration? timeout,
+    EfkDuration? timeout,
   ) {
     final tmp1 = key;
     final tmp5 = timeout;
@@ -18186,6 +19432,34 @@ class UserProfile {
     return tmp2;
   }
 
+  /// get the binary data of thumbnail
+  Future<FfiBufferUint8> getThumbnail(
+    int width,
+    int height,
+  ) {
+    final tmp1 = width;
+    final tmp3 = height;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    final tmp5 = _api._userProfileGetThumbnail(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__UserProfile_get_thumbnail_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__userProfileGetThumbnailFuturePoll);
+    return tmp6;
+  }
+
   /// get the display name
   String? getDisplayName() {
     var tmp0 = 0;
@@ -18247,6 +19521,34 @@ class RoomProfile {
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
     final tmp2 = _nativeFuture(tmp3_1, _api.__roomProfileGetAvatarFuturePoll);
     return tmp2;
+  }
+
+  /// get the binary data of thumbnail
+  Future<FfiBufferUint8> getThumbnail(
+    int width,
+    int height,
+  ) {
+    final tmp1 = width;
+    final tmp3 = height;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    tmp4 = tmp3;
+    final tmp5 = _api._roomProfileGetThumbnail(
+      tmp0,
+      tmp2,
+      tmp4,
+    );
+    final tmp7 = tmp5;
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 =
+        _Box(_api, tmp7_0, "__RoomProfile_get_thumbnail_future_drop");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp6 =
+        _nativeFuture(tmp7_1, _api.__roomProfileGetThumbnailFuturePoll);
+    return tmp6;
   }
 
   /// get the display name
@@ -19310,7 +20612,7 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _ColorRgbaU8Return extends ffi.Struct {
+class _EfkColorRgbaU8Return extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -19481,7 +20783,7 @@ class _RoomEventItemSenderReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _RoomEventItemItemContentTypeReturn extends ffi.Struct {
+class _RoomEventItemEventTypeReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -19515,6 +20817,13 @@ class _RoomEventItemImageDescReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _RoomEventItemVideoDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _RoomEventItemFileDescReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -19538,6 +20847,26 @@ class _RoomEventItemReactionDescReturn extends ffi.Struct {
   external int arg0;
   @ffi.Int64()
   external int arg1;
+}
+
+class _RoomVirtualItemEventTypeReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _RoomVirtualItemDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _RoomMessageItemTypeReturn extends ffi.Struct {
@@ -19633,6 +20962,143 @@ class _ImageDescHeightReturn extends ffi.Struct {
   external int arg1;
 }
 
+class _ImageDescThumbnailMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ImageDescThumbnailSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescThumbnailWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescThumbnailHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _ImageDescThumbnailSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _VideoDescNameReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+}
+
+class _VideoDescMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _VideoDescSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescBlurhashReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _VideoDescDurationReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescThumbnailMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _VideoDescThumbnailSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescThumbnailWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescThumbnailHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _VideoDescThumbnailSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
 class _FileDescNameReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -19657,6 +21123,45 @@ class _FileDescSizeReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint64()
+  external int arg1;
+}
+
+class _FileDescThumbnailMimetypeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _FileDescThumbnailSizeReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _FileDescThumbnailWidthReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _FileDescThumbnailHeightReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+}
+
+class _FileDescThumbnailSourceReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
   external int arg1;
 }
 
@@ -20022,6 +21527,19 @@ class _TaskListTimeZoneReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _TaskListTaskBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _TaskListUpdateBuilderReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -20033,6 +21551,15 @@ class _TaskListUpdateBuilderReturn extends ffi.Struct {
   external int arg3;
   @ffi.Int64()
   external int arg4;
+}
+
+class _GroupGetRoomIdReturn extends ffi.Struct {
+  @ffi.Int64()
+  external int arg0;
+  @ffi.Uint64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
 }
 
 class _GroupTaskListDraftReturn extends ffi.Struct {
@@ -21368,6 +22895,21 @@ class _ClientTaskListsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _ClientCreateEffektioGroupFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _ClientWaitForCommentFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -21428,7 +22970,37 @@ class _UserProfileGetAvatarFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _UserProfileGetThumbnailFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _RoomProfileGetAvatarFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _RoomProfileGetThumbnailFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

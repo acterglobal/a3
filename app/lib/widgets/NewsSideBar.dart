@@ -30,27 +30,7 @@ class NewsSideBar extends StatefulWidget {
 }
 
 class _NewsSideBarState extends State<NewsSideBar> {
-  TextEditingController commentTextController = TextEditingController();
   final newsCommentGlobalController = Get.put(NewsCommentController());
-
-  bool emojiShowing = false;
-  bool isKeyBoardOpen = false;
-
-  void onEmojiSelected(Emoji emoji) {
-    commentTextController
-      ..text += emoji.emoji
-      ..selection = TextSelection.fromPosition(
-        TextPosition(offset: commentTextController.text.length),
-      );
-  }
-
-  void onBackspacePressed() {
-    commentTextController
-      ..text = commentTextController.text.characters.skipLast(1).toString()
-      ..selection = TextSelection.fromPosition(
-        TextPosition(offset: commentTextController.text.length),
-      );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +42,7 @@ class _NewsSideBarState extends State<NewsSideBar> {
       widget.news.fgColor(),
       AppCommonTheme.primaryColor,
     );
-    TextStyle style = Theme.of(context).textTheme.bodyText1!.copyWith(
+    TextStyle style = Theme.of(context).textTheme.bodyLarge!.copyWith(
       fontSize: 13,
       color: fgColor,
       shadows: [
@@ -78,246 +58,20 @@ class _NewsSideBarState extends State<NewsSideBar> {
           color: fgColor,
           index: widget.index,
         ),
-        buildSideBarItem(
-          'comment',
-          widget.news.commentsCount().toString(),
-          fgColor,
-          style,
+        _SideBarItem(
+          iconName: 'comment',
+          label: widget.news.commentsCount().toString(),
+          color: fgColor,
+          style: style,
         ),
-        buildSideBarItem('reply', '76', fgColor, style),
-        buildProfileImage(fgColor),
+        _SideBarItem(
+          iconName: 'reply',
+          label: '76',
+          color: fgColor,
+          style: style,
+        ),
+        _ProfileImageWidget(borderColor: fgColor),
       ],
-    );
-  }
-
-  Widget buildProfileImage(Color borderColor) {
-    return GestureDetector(
-      onTap: () {
-        showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
-      },
-      child: CachedNetworkImage(
-        imageUrl:
-            'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
-        height: 45,
-        width: 45,
-        imageBuilder: (context, imageProvider) => Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: borderColor),
-            borderRadius: BorderRadius.circular(25),
-            image: DecorationImage(
-              image: imageProvider,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        maxHeightDiskCache: 120,
-        maxWidthDiskCache: 120,
-        placeholder: (context, url) => const CircularProgressIndicator(),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-      ),
-    );
-  }
-
-  Widget buildSideBarItem(
-    String iconName,
-    String label,
-    Color? color,
-    TextStyle style,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        if (iconName == 'comment') {
-          showBottomSheet();
-        } else {
-          showNotYetImplementedMsg(context, 'News Action not yet implemented');
-        }
-      },
-      child: Column(
-        children: [
-          SvgPicture.asset(
-            'assets/images/$iconName.svg',
-            color: color,
-            width: 35,
-            height: 35,
-          ),
-          const SizedBox(height: 5),
-          Text(label, style: style),
-        ],
-      ),
-    );
-  }
-
-  void showBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppCommonTheme.backgroundColor,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return DraggableScrollableSheet(
-              expand: false,
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Column(
-                    children: <Widget>[
-                      const Padding(
-                        padding: EdgeInsets.only(top: 12),
-                        child: SizedBox(
-                          height: 40,
-                          child: Center(
-                            child: Text(
-                              '101 Comments',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GetBuilder<NewsCommentController>(
-                        builder: (NewsCommentController newsCommentController) {
-                          return Expanded(
-                            child: ListView.builder(
-                              physics: const BouncingScrollPhysics(),
-                              controller: scrollController,
-                              itemCount: 10,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(12),
-                                  child: CommentView(
-                                    commentModel: newsCommentController
-                                        .listComments[index],
-                                    postition: index,
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 8,
-                          top: 8,
-                          bottom: MediaQuery.of(context).viewInsets.bottom,
-                        ),
-                        child: Row(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: buildProfileImage(Colors.black),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                decoration: BoxDecoration(
-                                  color: AppCommonTheme.textFieldColor,
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                child: Stack(
-                                  alignment: Alignment.centerRight,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8),
-                                      child: TextField(
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                        ),
-                                        cursorColor: Colors.grey,
-                                        controller: commentTextController,
-                                        decoration: const InputDecoration(
-                                          hintText: 'Add a comment',
-                                          hintStyle: TextStyle(
-                                            color: Colors.grey,
-                                          ),
-                                          border: InputBorder.none,
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.emoji_emotions_outlined,
-                                        color: Colors.grey,
-                                      ),
-                                      onPressed: () {
-                                        setState(() {
-                                          emojiShowing = !emojiShowing;
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                showNotYetImplementedMsg(
-                                  context,
-                                  'Send not yet implemented',
-                                );
-                              },
-                              icon: const Icon(Icons.send, color: Colors.pink),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Offstage(
-                        offstage: !emojiShowing,
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width,
-                          height: 250,
-                          child: EmojiPicker(
-                            onEmojiSelected: (Category category, Emoji emoji) {
-                              onEmojiSelected(emoji);
-                            },
-                            onBackspacePressed: onBackspacePressed,
-                            config: Config(
-                              columns: 7,
-                              emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
-                              verticalSpacing: 0,
-                              horizontalSpacing: 0,
-                              initCategory: Category.RECENT,
-                              bgColor: Colors.white,
-                              indicatorColor: Colors.blue,
-                              iconColor: Colors.grey,
-                              iconColorSelected: Colors.blue,
-                              progressIndicatorColor: Colors.blue,
-                              backspaceColor: Colors.blue,
-                              skinToneDialogBgColor: Colors.white,
-                              skinToneIndicatorColor: Colors.grey,
-                              enableSkinTones: true,
-                              showRecentsTab: true,
-                              recentsLimit: 28,
-                              noRecents: const Text(
-                                'No Recents',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black26,
-                                ),
-                              ),
-                              tabIndicatorAnimDuration: kTabScrollDuration,
-                              categoryIcons: const CategoryIcons(),
-                              buttonMode: ButtonMode.MATERIAL,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                );
-              },
-            );
-          },
-        );
-      },
     );
   }
 
@@ -396,6 +150,274 @@ class _NewsSideBarState extends State<NewsSideBar> {
                   ),
                 ],
               ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _ProfileImageWidget extends StatelessWidget {
+  const _ProfileImageWidget({
+    required this.borderColor,
+  });
+
+  final Color borderColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        showNotYetImplementedMsg(context, 'Profile Action not yet implemented');
+      },
+      child: CachedNetworkImage(
+        imageUrl:
+            'https://dragonball.guru/wp-content/uploads/2021/01/goku-dragon-ball-guru.jpg',
+        height: 45,
+        width: 45,
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: borderColor),
+            borderRadius: BorderRadius.circular(25),
+            image: DecorationImage(
+              image: imageProvider,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        maxHeightDiskCache: 120,
+        maxWidthDiskCache: 120,
+        placeholder: (context, url) => const CircularProgressIndicator(),
+        errorWidget: (context, url, error) => const Icon(Icons.error),
+      ),
+    );
+  }
+}
+
+class _SideBarItem extends StatelessWidget {
+  const _SideBarItem({
+    required this.iconName,
+    required this.label,
+    required this.color,
+    required this.style,
+  });
+  final String iconName;
+  final String label;
+  final Color? color;
+  final TextStyle style;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (iconName == 'comment') {
+          showBottomSheet(context);
+        } else {
+          showNotYetImplementedMsg(context, 'News Action not yet implemented');
+        }
+      },
+      child: Column(
+        children: [
+          SvgPicture.asset(
+            'assets/images/$iconName.svg',
+            color: color,
+            width: 35,
+            height: 35,
+          ),
+          const SizedBox(height: 5),
+          Text(label, style: style),
+        ],
+      ),
+    );
+  }
+
+  void showBottomSheet(BuildContext context) {
+    TextEditingController commentTextController = TextEditingController();
+    bool emojiShowing = false;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppCommonTheme.backgroundColor,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            void onEmojiSelected(Emoji emoji) {
+              commentTextController
+                ..text += emoji.emoji
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: commentTextController.text.length),
+                );
+            }
+
+            void onBackspacePressed() {
+              commentTextController
+                ..text =
+                    commentTextController.text.characters.skipLast(1).toString()
+                ..selection = TextSelection.fromPosition(
+                  TextPosition(offset: commentTextController.text.length),
+                );
+            }
+
+            return DraggableScrollableSheet(
+              expand: false,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Column(
+                    children: <Widget>[
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: SizedBox(
+                          height: 40,
+                          child: Center(
+                            child: Text(
+                              '101 Comments',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      GetBuilder<NewsCommentController>(
+                        builder: (NewsCommentController newsCommentController) {
+                          return Expanded(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              controller: scrollController,
+                              itemCount: 10,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(12),
+                                  child: CommentView(
+                                    commentModel: newsCommentController
+                                        .listComments[index],
+                                    postition: index,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          left: 8,
+                          top: 8,
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: _ProfileImageWidget(
+                                borderColor: Colors.black,
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                width: MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                  color: AppCommonTheme.textFieldColor,
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: TextField(
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                        ),
+                                        cursorColor: Colors.grey,
+                                        controller: commentTextController,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Add a comment',
+                                          hintStyle: TextStyle(
+                                            color: Colors.grey,
+                                          ),
+                                          border: InputBorder.none,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.emoji_emotions_outlined,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          emojiShowing = !emojiShowing;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                showNotYetImplementedMsg(
+                                  context,
+                                  'Send not yet implemented',
+                                );
+                              },
+                              icon: const Icon(Icons.send, color: Colors.pink),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Offstage(
+                        offstage: !emojiShowing,
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width,
+                          height: 250,
+                          child: EmojiPicker(
+                            onEmojiSelected: (Category? category, Emoji emoji) {
+                              onEmojiSelected(emoji);
+                            },
+                            onBackspacePressed: onBackspacePressed,
+                            config: Config(
+                              columns: 7,
+                              emojiSizeMax: 32 * (Platform.isIOS ? 1.30 : 1.0),
+                              verticalSpacing: 0,
+                              horizontalSpacing: 0,
+                              initCategory: Category.RECENT,
+                              bgColor: Colors.white,
+                              indicatorColor: Colors.blue,
+                              iconColor: Colors.grey,
+                              iconColorSelected: Colors.blue,
+                              backspaceColor: Colors.blue,
+                              skinToneDialogBgColor: Colors.white,
+                              skinToneIndicatorColor: Colors.grey,
+                              enableSkinTones: true,
+                              showRecentsTab: true,
+                              recentsLimit: 28,
+                              noRecents: const Text(
+                                'No Recents',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black26,
+                                ),
+                              ),
+                              tabIndicatorAnimDuration: kTabScrollDuration,
+                              categoryIcons: const CategoryIcons(),
+                              buttonMode: ButtonMode.MATERIAL,
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                );
+              },
             );
           },
         );

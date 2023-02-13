@@ -38,7 +38,6 @@ class _NewsScreenState extends State<NewsScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder<FfiListNews>(
       future: widget.client.latestNews(),
       builder: (BuildContext context, AsyncSnapshot<FfiListNews> snapshot) {

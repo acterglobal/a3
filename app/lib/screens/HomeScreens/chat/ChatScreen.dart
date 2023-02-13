@@ -51,15 +51,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
     roomController.setCurrentRoom(widget.room);
-
   }
 
   @override
   void dispose() {
     roomController.setCurrentRoom(null);
-
     super.dispose();
   }
 
@@ -147,6 +144,7 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ChatRoomController controller) {
         if (!controller.isEmojiContainerVisible) {
           return CustomChatInput(
+            roomController: controller,
             isChatScreen: true,
             roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
             onButtonPressed: () => onSendButtonPressed(controller),
@@ -294,7 +292,6 @@ class _ChatScreenState extends State<ChatScreen> {
       message: p1,
       onPreviewDataFetched: roomController.handlePreviewDataFetched,
       messageWidth: messageWidth,
-      controller: roomController,
     );
   }
 
@@ -308,8 +305,11 @@ class _ChatScreenState extends State<ChatScreen> {
           borderRadius: BorderRadius.circular(15),
           child: Image.memory(
             base64Decode(imageMessage.metadata?['base64']),
-            errorBuilder:
-                (BuildContext context, Object url, StackTrace? error) {
+            errorBuilder: (
+              BuildContext context,
+              Object url,
+              StackTrace? error,
+            ) {
               return Text('Could not load image due to $error');
             },
             frameBuilder: (
@@ -432,7 +432,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ],
           ),
-          body: buildBody(context),
+          body: Obx(() => buildBody(context)),
         );
       },
     );
@@ -733,43 +733,119 @@ class _ChatScreenState extends State<ChatScreen> {
     types.CustomMessage customMessage, {
     required int messageWidth,
   }) {
-    if (customMessage.metadata?['itemContentType'] == 'UnableToDecrypt') {
-      String text = 'Failed to decrypt message. Re-request session keys.';
-      return Container(
-        width: sqrt(text.length) * 38.5,
-        padding: const EdgeInsets.all(8),
-        constraints: const BoxConstraints(minWidth: 57),
-        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
-      );
+    // state event
+    switch (customMessage.metadata?['eventType']) {
+      case 'm.policy.rule.room':
+      case 'm.policy.rule.server':
+      case 'm.policy.rule.user':
+      case 'm.room.aliases':
+      case 'm.room.avatar':
+      case 'm.room.canonical.alias':
+      case 'm.room.create':
+      case 'm.room.encryption':
+      case 'm.room.guest.access':
+      case 'm.room.history.visibility':
+      case 'm.room.join.rules':
+      case 'm.room.member':
+      case 'm.room.name':
+      case 'm.room.pinned.events':
+      case 'm.room.power.levels':
+      case 'm.room.server.acl':
+      case 'm.room.third.party.invite':
+      case 'm.room.tombstone':
+      case 'm.room.topic':
+      case 'm.space.child':
+      case 'm.space.parent':
+        String text = customMessage.metadata?['body'];
+        return Container(
+          width: sqrt(text.length) * 38.5,
+          padding: const EdgeInsets.all(8),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+        );
     }
-    if (customMessage.metadata?['itemContentType'] == 'RedactedMessage') {
-      String text = '***This message has been deleted.***';
-      return Container(
-        width: sqrt(text.length) * 38.5,
-        padding: const EdgeInsets.all(8),
-        constraints: const BoxConstraints(minWidth: 57),
-        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
-      );
+
+    // message event
+    switch (customMessage.metadata?['eventType']) {
+      case 'm.call.answer':
+      case 'm.call.candidates':
+      case 'm.call.hangup':
+      case 'm.call.invite':
+      case 'm.key.verification.accept':
+      case 'm.key.verification.cancel':
+      case 'm.key.verification.done':
+      case 'm.key.verification.key':
+      case 'm.key.verification.mac':
+      case 'm.key.verification.ready':
+      case 'm.key.verification.start':
+      case 'm.reaction':
+        String text = customMessage.metadata?['body'];
+        return Container(
+          width: sqrt(text.length) * 38.5,
+          padding: const EdgeInsets.all(8),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+        );
+      case 'm.room.encrypted':
+        String text = 'Failed to decrypt message. Re-request session keys.';
+        return Container(
+          width: sqrt(text.length) * 38.5,
+          padding: const EdgeInsets.all(8),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+        );
+      case 'm.room.redaction':
+        String text = '***This message has been deleted.***';
+        return Container(
+          width: sqrt(text.length) * 38.5,
+          padding: const EdgeInsets.all(8),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+        );
+      case 'm.sticker':
+        return Container(
+          width: customMessage.metadata?['width'],
+          padding: const EdgeInsets.all(8),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Image.memory(
+            base64Decode(customMessage.metadata?['base64']),
+            errorBuilder: (
+              BuildContext context,
+              Object url,
+              StackTrace? error,
+            ) {
+              return Text('Could not load image due to $error');
+            },
+            frameBuilder: (
+              BuildContext context,
+              Widget child,
+              int? frame,
+              bool wasSynchronouslyLoaded,
+            ) {
+              if (wasSynchronouslyLoaded) {
+                return child;
+              }
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: frame != null
+                    ? child
+                    : const SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 6,
+                          color: AppCommonTheme.primaryColor,
+                        ),
+                      ),
+              );
+            },
+            cacheWidth: 256,
+            width: messageWidth.toDouble() / 2,
+            fit: BoxFit.cover,
+          ),
+        );
     }
-    if (customMessage.metadata?['itemContentType'] ==
-        'FailedToParseMessageLike') {
-      String text = 'FailedToParseMessageLike';
-      return Container(
-        width: sqrt(text.length) * 38.5,
-        padding: const EdgeInsets.all(8),
-        constraints: const BoxConstraints(minWidth: 57),
-        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
-      );
-    }
-    if (customMessage.metadata?['itemContentType'] == 'FailedToParseState') {
-      String text = 'FailedToParseState';
-      return Container(
-        width: sqrt(text.length) * 38.5,
-        padding: const EdgeInsets.all(8),
-        constraints: const BoxConstraints(minWidth: 57),
-        child: Text(text, style: ChatTheme01.chatReplyTextStyle),
-      );
-    }
+
     return const SizedBox();
   }
 }

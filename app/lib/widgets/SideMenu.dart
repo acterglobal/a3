@@ -4,7 +4,7 @@ import 'package:effektio/widgets/CrossSigning.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show EffektioSdk;
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' hide Color;
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -37,27 +37,300 @@ class SideDrawer extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              buildHeader(context),
+              _HeaderWidget(
+                isGuest: isGuest,
+                userId: userId,
+                displayName: displayName,
+                displayAvatar: displayAvatar,
+              ),
               SizedBox(height: size.height * 0.04),
-              buildPinsItem(context),
-              buildTodoItem(context),
-              buildVaultsItem(context),
-              buildEventItem(context),
-              buildSharedResourcesItem(context),
-              buildPollsItem(context),
-              buildGroupBudgetingItem(context),
-              buildSharedDocumentsItem(context),
-              buildGalleryItem(context),
+              const _PinsItem(),
+              const _TodoItem(),
+              const _VaultsItem(),
+              const _EventItem(),
+              const _SharedResourcesItem(),
+              const _PollsItem(),
+              const _GroupBudgetingItem(),
+              const _SharedDocumentsItem(),
+              const _GalleryItem(),
               const SizedBox(height: 5),
-              if (!isGuest) buildLogoutItem(context),
+              if (!isGuest) const _LogOutItem(),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget buildHeader(BuildContext context) {
+class _LogOutItem extends StatelessWidget {
+  const _LogOutItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/logout.svg',
+        width: 25,
+        height: 25,
+        color: AppCommonTheme.primaryColor,
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.logOut,
+        style: SideMenuAndProfileTheme.signOutText,
+      ),
+      onTap: () async {
+        if (Get.isRegistered<CrossSigning>()) {
+          var crossSigning = Get.find<CrossSigning>();
+          crossSigning.dispose();
+          Get.delete<CrossSigning>();
+        }
+        final sdk = await EffektioSdk.instance;
+        await sdk.logout();
+        Navigator.pushReplacementNamed(context, '/');
+      },
+    );
+  }
+}
+
+class _PinsItem extends StatelessWidget {
+  const _PinsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        FlutterIcons.pin_ent,
+        color: Colors.teal[700],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.pins,
+        style: SideMenuAndProfileTheme.sideMenuStyle,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Pins from Sidebar is not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _SharedDocumentsItem extends StatelessWidget {
+  const _SharedDocumentsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/shared_documents.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[900],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.sharedDocuments,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Shared Docs is not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _VaultsItem extends StatelessWidget {
+  const _VaultsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        FlutterIcons.safe_mco,
+        color: Colors.teal[700],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.vault,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Vault is not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _GroupBudgetingItem extends StatelessWidget {
+  const _GroupBudgetingItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/group_budgeting.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[900],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.groupBudgeting,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Co-Budgeting is not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _PollsItem extends StatelessWidget {
+  const _PollsItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/polls.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[900],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.pollsVotes,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Polls are not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _SharedResourcesItem extends StatelessWidget {
+  const _SharedResourcesItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/shared_resources.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[900],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.sharedResource,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Shared Resources is not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _EventItem extends StatelessWidget {
+  const _EventItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/event.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[900],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.events,
+        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
+      ),
+      onTap: () {
+        showNotYetImplementedMsg(
+          context,
+          'Events is not implemented yet',
+        );
+      },
+    );
+  }
+}
+
+class _GalleryItem extends StatelessWidget {
+  const _GalleryItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/gallery.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[700],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.gallery,
+        style: SideMenuAndProfileTheme.sideMenuStyle,
+      ),
+      onTap: () {
+        Navigator.pushNamed(context, '/gallery');
+      },
+    );
+  }
+}
+
+class _TodoItem extends StatelessWidget {
+  const _TodoItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: SvgPicture.asset(
+        'assets/images/task.svg',
+        width: 25,
+        height: 25,
+        color: Colors.teal[700],
+      ),
+      title: Text(
+        AppLocalizations.of(context)!.toDoList,
+        style: SideMenuAndProfileTheme.sideMenuStyle,
+      ),
+      onTap: () {
+        Navigator.pushNamed(context, '/todo');
+      },
+    );
+  }
+}
+
+class _HeaderWidget extends StatelessWidget {
+  const _HeaderWidget({
+    required this.isGuest,
+    required this.userId,
+    required this.displayAvatar,
+    required this.displayName,
+  });
+
+  final bool isGuest;
+  final String userId;
+  final Future<FfiBufferUint8>? displayAvatar;
+  final String? displayName;
+  @override
+  Widget build(BuildContext context) {
     if (isGuest) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -122,237 +395,27 @@ class SideDrawer extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildDisplayName(),
-              buildUserId(),
+              displayName == null
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        color: AppCommonTheme.primaryColor,
+                      ),
+                    )
+                  : Text(
+                      displayName!,
+                      style: SideMenuAndProfileTheme.sideMenuProfileStyle,
+                    ),
+              Text(
+                userId,
+                style: SideMenuAndProfileTheme.sideMenuProfileStyle +
+                    const FontSize(14),
+              ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  Widget buildDisplayName() {
-    if (displayName == null) {
-      return const SizedBox(
-        height: 20,
-        width: 20,
-        child: CircularProgressIndicator(color: AppCommonTheme.primaryColor),
-      );
-    }
-    return Text(
-      displayName!,
-      style: SideMenuAndProfileTheme.sideMenuProfileStyle,
-    );
-  }
-
-  Widget buildUserId() {
-    return Text(
-      userId,
-      style: SideMenuAndProfileTheme.sideMenuProfileStyle + const FontSize(14),
-    );
-  }
-
-  Widget buildTodoItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/task.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[700],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.toDoList,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
-      ),
-      onTap: () {
-        Navigator.pushNamed(context, '/todo');
-      },
-    );
-  }
-
-  Widget buildGalleryItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/gallery.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[700],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.gallery,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
-      ),
-      onTap: () {
-        Navigator.pushNamed(context, '/gallery');
-      },
-    );
-  }
-
-  Widget buildEventItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/event.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[900],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.events,
-        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Events is not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildSharedResourcesItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/shared_resources.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[900],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.sharedResource,
-        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Shared Resources is not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildPollsItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/polls.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[900],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.pollsVotes,
-        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Polls are not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildGroupBudgetingItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/group_budgeting.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[900],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.groupBudgeting,
-        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Co-Budgeting is not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildVaultsItem(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        FlutterIcons.safe_mco,
-        color: Colors.teal[700],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.vault,
-        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Vault is not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildSharedDocumentsItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/shared_documents.svg',
-        width: 25,
-        height: 25,
-        color: Colors.teal[900],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.sharedDocuments,
-        style: SideMenuAndProfileTheme.sideMenuStyleDisabled,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Shared Docs is not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildPinsItem(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        FlutterIcons.pin_ent,
-        color: Colors.teal[700],
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.pins,
-        style: SideMenuAndProfileTheme.sideMenuStyle,
-      ),
-      onTap: () {
-        showNotYetImplementedMsg(
-          context,
-          'Pins from Sidebar is not implemented yet',
-        );
-      },
-    );
-  }
-
-  Widget buildLogoutItem(BuildContext context) {
-    return ListTile(
-      leading: SvgPicture.asset(
-        'assets/images/logout.svg',
-        width: 25,
-        height: 25,
-        color: AppCommonTheme.primaryColor,
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.logOut,
-        style: SideMenuAndProfileTheme.signOutText,
-      ),
-      onTap: () async {
-        if (Get.isRegistered<CrossSigning>()) {
-          var crossSigning = Get.find<CrossSigning>();
-          crossSigning.dispose();
-          Get.delete<CrossSigning>();
-        }
-        final sdk = await EffektioSdk.instance;
-        await sdk.logout();
-        Navigator.pushReplacementNamed(context, '/');
-      },
     );
   }
 }
