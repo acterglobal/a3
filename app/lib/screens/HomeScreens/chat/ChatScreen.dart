@@ -587,7 +587,7 @@ class _ChatScreenState extends State<ChatScreen> {
           options: TypingIndicatorOptions(
             animationSpeed: const Duration(milliseconds: 800),
             typingUsers: controller.typingUsers,
-            typingMode: TypingIndicatorMode.text,
+            typingMode: TypingIndicatorMode.name,
           ),
         );
       },
@@ -776,14 +776,6 @@ class _ChatScreenState extends State<ChatScreen> {
       case 'm.key.verification.mac':
       case 'm.key.verification.ready':
       case 'm.key.verification.start':
-      case 'm.reaction':
-        String text = customMessage.metadata?['body'];
-        return Container(
-          width: sqrt(text.length) * 38.5,
-          padding: const EdgeInsets.all(8),
-          constraints: const BoxConstraints(minWidth: 57),
-          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
-        );
       case 'm.room.encrypted':
         String text =
             '***Failed to decrypt message. Re-request session keys.***';

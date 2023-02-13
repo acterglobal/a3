@@ -767,9 +767,25 @@ class ChatRoomController extends GetxController {
           case 'm.location':
             break;
           case 'm.notice':
-            break;
+            return types.CustomMessage(
+              author: author,
+              createdAt: createdAt,
+              id: eventId,
+              metadata: {
+                'itemType': 'event',
+                'eventType': eventType,
+              },
+            );
           case 'm.server_notice':
-            break;
+            return types.CustomMessage(
+              author: author,
+              createdAt: createdAt,
+              id: eventId,
+              metadata: {
+                'itemType': 'event',
+                'eventType': eventType,
+              },
+            );
           case 'm.text':
             TextDesc? description = eventItem.textDesc();
             if (description != null) {
