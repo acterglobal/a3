@@ -142,7 +142,6 @@ class ChatListController extends GetxController {
     update(['chatlist']);
   }
 
-
   Future<void> setRoomProfile(Conversation room, JoinedRoom item) async {
     await room.getProfile().then((value) {
       if (value.hasAvatar()) {
@@ -150,6 +149,7 @@ class ChatListController extends GetxController {
       }
       item.displayName = value.getDisplayName();
     });
+  }
 
   void searchedData(String data, List<JoinedRoom> listOfRooms) {
     searchData.clear();
