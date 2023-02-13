@@ -38,11 +38,11 @@ class TextMessageBuilder extends StatelessWidget {
     if (matches.isEmpty) {
       return LinkPreview(
         metadataTitleStyle: controller.userId == message.author.id
-            ? EffektioChatTheme().sentMessageLinkTitleTextStyle
-            : EffektioChatTheme().receivedMessageLinkTitleTextStyle,
+            ? const EffektioChatTheme().sentMessageLinkTitleTextStyle
+            : const EffektioChatTheme().receivedMessageLinkTitleTextStyle,
         metadataTextStyle: controller.userId == message.author.id
-            ? EffektioChatTheme().sentMessageLinkDescriptionTextStyle
-            : EffektioChatTheme().receivedMessageLinkDescriptionTextStyle,
+            ? const EffektioChatTheme().sentMessageLinkDescriptionTextStyle
+            : const EffektioChatTheme().receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
         imageBuilder: (image) {
           return Padding(
