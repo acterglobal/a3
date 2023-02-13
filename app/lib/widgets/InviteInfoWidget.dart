@@ -128,7 +128,7 @@ class _AcceptBtn extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => ChatScreen(
                       client: client,
-                      room: room.conversation,
+                      conversation: room.conversation,
                     ),
                   ),
                 );

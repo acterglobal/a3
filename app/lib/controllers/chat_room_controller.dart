@@ -314,7 +314,7 @@ class ChatRoomController extends GetxController {
       UserProfile profile = await activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (profile.hasAvatar()) {
-        avatars[userId] = profile.getAvatar();
+        avatars[userId] = profile.getThumbnail(62, 60);
         record['avatar'] = avatars[userId];
       }
       String? name = profile.getDisplayName();

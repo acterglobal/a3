@@ -1,6 +1,7 @@
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
 import 'package:effektio/controllers/receipt_controller.dart';
+import 'package:effektio/models/JoinedRoom.dart';
 import 'package:effektio/screens/HomeScreens/chat/ChatScreen.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/CustomAvatar.dart';
@@ -15,16 +16,12 @@ import 'package:intl/intl.dart';
 
 class ChatListItem extends StatefulWidget {
   final Client client;
-  final Conversation room;
-  final RoomMessage? latestMessage;
-  final List<types.User> typingUsers;
+  final JoinedRoom room;
 
   const ChatListItem({
     Key? key,
     required this.client,
     required this.room,
-    this.latestMessage,
-    required this.typingUsers,
   }) : super(key: key);
 
   @override
@@ -33,35 +30,20 @@ class ChatListItem extends StatefulWidget {
 
 class _ChatListItemState extends State<ChatListItem> {
   final ReceiptController recieptController = Get.find<ReceiptController>();
-  Future<FfiBufferUint8>? avatar;
-  String? displayName;
-  String? userId;
+  final ChatListController chatListController = Get.find<ChatListController>();
 
   List<Member> activeMembers = [];
 
   @override
   void initState() {
     super.initState();
-
-    widget.room.getProfile().then((value) {
-      if (mounted) {
-        setState(() {
-          if (value.hasAvatar()) {
-            avatar = value.getAvatar();
-          }
-          displayName = value.getDisplayName();
-        });
-      }
-    });
-
-    userId = widget.client.account().userId();
-
+    chatListController.setRoomProfile(widget.room.conversation, widget.room);
     getActiveMembers();
   }
 
   @override
   Widget build(BuildContext context) {
-    String roomId = widget.room.getRoomId();
+    String roomId = widget.room.conversation.getRoomId();
     // ToDo: UnreadCounter
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -70,28 +52,31 @@ class _ChatListItemState extends State<ChatListItem> {
           onTap: () => handleTap(context),
           leading: CustomAvatar(
             uniqueKey: roomId,
-            avatar: avatar,
-            displayName: displayName,
+            avatar: widget.room.avatar,
+            displayName: widget.room.displayName,
             radius: 25,
-            cacheHeight: 120,
-            cacheWidth: 120,
+            cacheHeight: 62,
+            cacheWidth: 60,
             isGroup: true,
             stringName: simplifyRoomId(roomId)!,
           ),
-          title: _TitleWidget(displayName: displayName, context: context),
+          title: _TitleWidget(
+            displayName: widget.room.displayName,
+            context: context,
+          ),
           subtitle: GetBuilder<ChatListController>(
             id: 'chatroom-$roomId-subtitle',
-            builder: (controller) => _SubtitleWidget(
-              typingUsers: widget.typingUsers,
-              latestMessage: widget.latestMessage,
+            builder: (_) => _SubtitleWidget(
+              typingUsers: widget.room.typingUsers,
+              latestMessage: widget.room.latestMessage,
             ),
           ),
           trailing: _TrailingWidget(
             controller: recieptController,
-            room: widget.room,
-            latestMessage: widget.latestMessage,
+            room: widget.room.conversation,
+            latestMessage: widget.room.latestMessage,
             activeMembers: activeMembers,
-            userId: userId,
+            userId: widget.client.account().userId(),
           ),
         ),
         const Padding(
@@ -112,16 +97,16 @@ class _ChatListItemState extends State<ChatListItem> {
       MaterialPageRoute(
         builder: (context) => ChatScreen(
           client: widget.client,
-          room: widget.room,
-          roomName: displayName,
-          roomAvatar: avatar,
+          conversation: widget.room.conversation,
+          name: widget.room.displayName,
+          avatar: widget.room.avatar,
         ),
       ),
     );
   }
 
   Future<void> getActiveMembers() async {
-    activeMembers = (await widget.room.activeMembers()).toList();
+    activeMembers = (await widget.room.conversation.activeMembers()).toList();
   }
 }
 
