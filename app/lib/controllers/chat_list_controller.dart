@@ -11,6 +11,7 @@ import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
         Invitation,
         RoomMessage,
         TypingEvent;
+import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:get/get.dart';
 
@@ -30,10 +31,13 @@ class ChatListController extends GetxController {
   Client client;
   List<JoinedRoom> joinedRooms = [];
   List<Invitation> invitations = [];
+  bool showSearch = false;
+  List<JoinedRoom> searchData = [];
   bool initialLoaded = false;
   StreamSubscription<FfiListConversation>? _convosSubscription;
   StreamSubscription<FfiListInvitation>? _invitesSubscription;
   StreamSubscription<TypingEvent>? _typingSubscription;
+  TextEditingController searchController = TextEditingController();
 
   ChatListController({required this.client}) : super();
 
@@ -42,9 +46,6 @@ class ChatListController extends GetxController {
     super.onInit();
 
     _convosSubscription = client.conversationsRx().listen((event) {
-      if (!initialLoaded) {
-        initialLoaded = true; // used for rendering
-      }
       joinedRooms.clear();
       for (Conversation convo in event.toList()) {
         String roomId = convo.getRoomId();
@@ -58,7 +59,32 @@ class ChatListController extends GetxController {
           newItem.latestMessage = joinedRooms[pos].latestMessage;
           newItem.typingUsers = joinedRooms[pos].typingUsers;
         }
+
+        if (newItem.latestMessage != null) {
+          debugPrint(
+            'timestamp is ${newItem.latestMessage!.eventItem()!.originServerTs()}',
+          );
+        }
+
         joinedRooms.add(newItem);
+      }
+
+      joinedRooms.sort((a, b) {
+        if (a.latestMessage != null && b.latestMessage != null) {
+          return b.latestMessage!
+              .eventItem()!
+              .originServerTs()
+              .compareTo(a.latestMessage!.eventItem()!.originServerTs());
+        } else {
+          return 0;
+        }
+      });
+
+      joinedRooms.reversed;
+      searchData.addAll(joinedRooms);
+
+      if (!initialLoaded) {
+        initialLoaded = true; // used for rendering
       }
       update(['chatlist']);
     });
@@ -117,6 +143,31 @@ class ChatListController extends GetxController {
   void moveItem(int from, int to) {
     JoinedRoom item = joinedRooms.removeAt(from);
     joinedRooms.insert(to, item);
+    update(['chatlist']);
+  }
+
+  void searchedData(String data, List<JoinedRoom> listOfRooms) {
+    searchData.clear();
+    var name = '';
+
+    if (data.isNotEmpty) {
+      for (var element in listOfRooms) {
+        element.conversation.getProfile().then((value) {
+          name = value.getDisplayName().toString();
+          if (name.toLowerCase().contains(data.toLowerCase())) {
+            searchData.add(element);
+          }
+        });
+      }
+      update(['chatlist']);
+    } else {
+      searchData.addAll(joinedRooms);
+      update(['chatlist']);
+    }
+  }
+
+  void toggleSearchView() {
+    showSearch = !showSearch;
     update(['chatlist']);
   }
 }
