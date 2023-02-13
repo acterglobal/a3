@@ -693,6 +693,15 @@ class ChatRoomController extends GetxController {
       case 'm.key.verification.start':
       case 'm.reaction':
       case 'm.room.encrypted':
+        return types.CustomMessage(
+          author: author,
+          createdAt: createdAt,
+          id: eventId,
+          metadata: {
+            'itemType': 'event',
+            'eventType': eventType,
+          },
+        );
       case 'm.room.redaction':
         return types.CustomMessage(
           author: author,
@@ -701,7 +710,6 @@ class ChatRoomController extends GetxController {
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'body': eventItem.textDesc()?.body(),
           },
         );
       case 'm.room.message':

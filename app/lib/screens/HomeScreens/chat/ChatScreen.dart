@@ -785,7 +785,8 @@ class _ChatScreenState extends State<ChatScreen> {
           child: Text(text, style: ChatTheme01.chatReplyTextStyle),
         );
       case 'm.room.encrypted':
-        String text = 'Failed to decrypt message. Re-request session keys.';
+        String text =
+            '***Failed to decrypt message. Re-request session keys.***';
         return Container(
           width: sqrt(text.length) * 38.5,
           padding: const EdgeInsets.all(8),

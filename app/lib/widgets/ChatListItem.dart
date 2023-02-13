@@ -181,7 +181,47 @@ class _SubtitleWidget extends StatelessWidget {
       case 'm.key.verification.start':
       case 'm.reaction':
       case 'm.room.encrypted':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                '***Failed to decrypt message. Re-request session keys***',
+                style: TextStyle(
+                  color: ChatTheme01.chatReplyTextColor.withOpacity(0.70),
+                ),
+              ),
+            ),
+          ],
+        );
       case 'm.room.redaction':
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text(
+                '${simplifyUserId(sender)}: ',
+                style: const TextStyle(color: ChatTheme01.chatBodyTextColor),
+              ),
+            ),
+            Flexible(
+              child: Text(
+                '***This message has been deleted***',
+                style: TextStyle(
+                  color: ChatTheme01.chatReplyTextColor.withOpacity(0.70),
+                ),
+              ),
+            ),
+          ],
+        );
       case 'm.sticker':
         return Row(
           mainAxisSize: MainAxisSize.min,
