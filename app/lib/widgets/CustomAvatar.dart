@@ -34,6 +34,8 @@ class CustomAvatar extends StatefulWidget {
 
 class _CustomAvatarState extends State<CustomAvatar> {
   late Future<Uint8List>? _avatar;
+
+  // avoid re-run future when object state isn't changed.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
