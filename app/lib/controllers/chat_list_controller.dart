@@ -157,12 +157,10 @@ class ChatListController extends GetxController {
 
     if (data.isNotEmpty) {
       for (var element in listOfRooms) {
-        element.conversation.getProfile().then((value) {
-          name = value.getDisplayName().toString();
-          if (name.toLowerCase().contains(data.toLowerCase())) {
-            searchData.add(element);
-          }
-        });
+        name = element.displayName!;
+        if (name.toLowerCase().contains(data.toLowerCase())) {
+          searchData.add(element);
+        }
       }
       update(['chatlist']);
     } else {
