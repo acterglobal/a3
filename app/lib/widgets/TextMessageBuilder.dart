@@ -95,8 +95,8 @@ class _TextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final emojiTextStyle = controller.userId == message.author.id
-        ? EffektioChatTheme().sentEmojiMessageTextStyle
-        : EffektioChatTheme().receivedEmojiMessageTextStyle;
+        ? const EffektioChatTheme().sentEmojiMessageTextStyle
+        : const EffektioChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: enlargeEmoji
