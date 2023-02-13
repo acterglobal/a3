@@ -113,7 +113,7 @@ jobs:
         run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          flutter test -d linux integration_test/* --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:8118/ --dart-define DEFAULT_EFFEKTIO_DOMAIN=ds9.effektio.org
+          flutter test -d linux integration_test/* --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:8118/ --dart-define DEFAULT_EFFEKTIO_DOMAIN=localhost
 
   flutter-ios:
     runs-on: macos-latest
