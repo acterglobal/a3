@@ -199,7 +199,9 @@ class _ListWidget extends StatelessWidget {
         }
         return ImplicitlyAnimatedReorderableList<JoinedRoom>(
           header: _InviteListView(client: client),
-          items: controller.joinedRooms,
+          items: controller.showSearch
+              ? controller.searchData
+              : controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
           // Remember to update the underlying data when the list has been reordered.
