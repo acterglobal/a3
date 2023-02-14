@@ -17,7 +17,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(filter: Option<String>) -> Result<String> {
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 

@@ -125,8 +125,9 @@ class EffektioSdk {
       final api = Platform.isAndroid
           ? ffi.Api(await _getAndroidDynLib('libeffektio.so'))
           : ffi.Api.load();
+      Directory appDocDir = await getApplicationDocumentsDirectory();
       try {
-        api.initLogging('warn,effektio=debug');
+        api.initLogging(appDocDir.path, 'warn,effektio=debug');
       } catch (e) {
         developer.log(
           'Setting logging failed',

@@ -2,7 +2,10 @@ use android_logger::{AndroidLogger, Config, FilterBuilder};
 use anyhow::Result;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
-use std::sync::{Arc, Mutex};
+use std::{
+    path::PathBuf,
+    sync::{Arc, Mutex},
+};
 
 use super::native;
 
@@ -13,7 +16,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(filter: Option<String>) -> Result<String> {
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -30,9 +33,10 @@ pub fn init_logging(filter: Option<String>) -> Result<String> {
     }
     let wrapper = LoggerWrapper::new(log_config);
 
-    let file_path = chrono::Local::now()
-        .format("/data/data/org.effektio.app/app_flutter/app_%Y-%m-%d_%H-%M-%S.log")
-        .to_string();
+    let file_name = chrono::Local::now().format("app_%Y-%m-%d_%H-%M-%S.log").to_string();
+    let mut path = PathBuf::from(log_dir.as_str());
+    path.push(file_name);
+    let log_path = path.to_string_lossy().to_string();
 
     fern::Dispatch::new()
         .format(|out, message, record| {
@@ -46,10 +50,11 @@ pub fn init_logging(filter: Option<String>) -> Result<String> {
         })
         .level(log_level.filter())
         .chain(wrapper.cloned_boxed_logger())
-        .chain(fern::log_file(file_path.clone())?)
+        .chain(fern::log_file(log_path.clone())?)
         .apply()?;
 
-    Ok(file_path)
+    log::info!("log file path: {}", log_path);
+    Ok(log_path)
 }
 
 /// Wrapper for our verification which acts as the actual logger.
