@@ -31,9 +31,9 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
     let file_name = chrono::Local::now()
         .format("app_%Y-%m-%d_%H-%M-%S.log")
         .to_string();
-    let mut path = std::fs::canonicalize(PathBuf::from("."))?;
+    let mut path = PathBuf::from(log_dir.as_str());
     path.push(file_name);
-    let file_path = path.to_string_lossy().to_string();
+    let log_path = path.to_string_lossy().to_string();
 
     fern::Dispatch::new()
         .format(|out, message, record| {
@@ -47,12 +47,11 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
         })
         .level(log_level.filter())
         .chain(wrapper.cloned_boxed_logger())
-        // .chain(fern::log_file(file_path.clone())?)
+        .chain(fern::log_file(log_path.clone())?)
         .apply()?;
 
-    log::info!("log file path: {}", file_path.clone());
-
-    Ok(file_path)
+    log::info!("log file path: {}", log_path.clone());
+    Ok(log_path)
 }
 
 /// Wrapper for our verification which acts as the actual logger.
