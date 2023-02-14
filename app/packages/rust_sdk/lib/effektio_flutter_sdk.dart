@@ -91,9 +91,7 @@ class EffektioSdk {
     return libDir;
   }
 
-  static Future<DynamicLibrary> _getAndroidDynamicLibrary(
-    String libName,
-  ) async {
+  static Future<DynamicLibrary> _getAndroidDynLib(String libName) async {
     try {
       // android api 30 is working here
       return DynamicLibrary.open(libName);
@@ -115,13 +113,17 @@ class EffektioSdk {
   }
 
   static String get deviceName {
-    return 'Effektio ${Platform.operatingSystem} ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')}';
+    String versionName = const String.fromEnvironment(
+      'VERSION_NAME',
+      defaultValue: 'DEV',
+    );
+    return 'Effektio ${Platform.operatingSystem} $versionName';
   }
 
   static Future<EffektioSdk> get instance async {
     if (_instance == null) {
       final api = Platform.isAndroid
-          ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
+          ? ffi.Api(await _getAndroidDynLib('libeffektio.so'))
           : ffi.Api.load();
       try {
         api.initLogging('warn,effektio=debug');
@@ -154,16 +156,14 @@ class EffektioSdk {
       // we are replacing a guest account
       var client = _clients.removeAt(0);
       unawaited(
-        client.logout().catchError(
-          (e) {
-            developer.log(
-              'Logout of Guest failed',
-              level: 900, // warning
-              error: e,
-            );
-            return e is int;
-          },
-        ),
+        client.logout().catchError((e) {
+          developer.log(
+            'Logout of Guest failed',
+            level: 900, // warning
+            error: e,
+          );
+          return e is int;
+        }),
       ); // Explicitly-ignored fire-and-forget.
     }
     _clients.add(client);
@@ -176,16 +176,14 @@ class EffektioSdk {
     var client = _clients.removeAt(0);
     await _persistSessions();
     unawaited(
-      client.logout().catchError(
-        (e) {
-          developer.log(
-            'Logout failed',
-            level: 900, // warning
-            error: e,
-          );
-          return e is int;
-        },
-      ),
+      client.logout().catchError((e) {
+        developer.log(
+          'Logout failed',
+          level: 900, // warning
+          error: e,
+        );
+        return e is int;
+      }),
     ); // Explicitly-ignored fire-and-forget.
     if (_clients.isEmpty) {
       // login as guest
