@@ -43,3 +43,10 @@ Unlike android, ios needs small space of 2~3 GB.
 5. Run `flutter pub get` in `app` directory of this project.
 6. Uncomment `# platform :ios, '9.0'` in Podfile of `app/ios` directory.
 7. Run `flutter run`.
+
+## Flutter package `file_picker` error in android 6.0
+
+`FilePickerDelegate` occurs error in `getSlotFromBufferLocked()` under android 6.0.
+This issue was fixed android 7.0.
+Please read [this comment](https://ubidots.com/community/t/solved-android-send-call-data-to-ubidots-etslotfrombufferlocked-unknown-buffer/334/2).
+Now minimum version of android is 7.0.
