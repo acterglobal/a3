@@ -28,7 +28,9 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
         None => FilterBuilder::new().build(),
     };
 
-    let file_name = chrono::Local::now().format("app_%Y-%m-%d_%H-%M-%S.log").to_string();
+    let file_name = chrono::Local::now()
+        .format("app_%Y-%m-%d_%H-%M-%S.log")
+        .to_string();
     let mut path = PathBuf::from(log_dir.as_str());
     path.push(file_name);
     let log_path = path.to_string_lossy().to_string();

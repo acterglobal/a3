@@ -28,7 +28,9 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
 
     let wrapper = LoggerWrapper::new("org.effektio.app", "viewcycle");
 
-    let file_name = chrono::Local::now().format("app_%Y-%m-%d_%H-%M-%S.log").to_string();
+    let file_name = chrono::Local::now()
+        .format("app_%Y-%m-%d_%H-%M-%S.log")
+        .to_string();
     let mut path = std::fs::canonicalize(PathBuf::from("."))?;
     path.push(file_name);
     let file_path = path.to_string_lossy().to_string();
