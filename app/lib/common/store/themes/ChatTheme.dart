@@ -128,7 +128,7 @@ class EffektioChatTheme extends ChatTheme {
     ),
     SystemMessageTheme systemMessageTheme = const SystemMessageTheme(
       margin: EdgeInsets.all(0),
-      textStyle: TextStyle(),
+      textStyle: TextStyle(color: Color(0xB3969696)),
     ),
     UnreadHeaderTheme unreadHeaderTheme = const UnreadHeaderTheme(
       color: secondary,

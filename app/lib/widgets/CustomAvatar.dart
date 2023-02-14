@@ -111,7 +111,7 @@ class _BuildTextAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (displayName != null) {
       return TextAvatar(
-        numberLetters: 2,
+        numberLetters: 1,
         shape: Shape.Circular,
         upperCase: true,
         text: displayName,
@@ -119,7 +119,7 @@ class _BuildTextAvatar extends StatelessWidget {
     }
     return TextAvatar(
       fontSize: 12,
-      numberLetters: 2,
+      numberLetters: 1,
       shape: Shape.Circular,
       upperCase: true,
       text: stringName,

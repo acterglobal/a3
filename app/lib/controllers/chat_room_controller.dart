@@ -666,7 +666,7 @@ class ChatRoomController extends GetxController {
       String k = key.toDartString();
       reactions[k] = eventItem.reactionDesc(k);
     }
-
+    debugPrint(eventType);
     // state event
     switch (eventType) {
       case 'm.policy.rule.room':
@@ -680,7 +680,6 @@ class ChatRoomController extends GetxController {
       case 'm.room.guest.access':
       case 'm.room.history.visibility':
       case 'm.room.join.rules':
-      case 'm.room.member':
       case 'm.room.name':
       case 'm.room.pinned.events':
       case 'm.room.power.levels':
@@ -736,6 +735,24 @@ class ChatRoomController extends GetxController {
             'eventType': eventType,
           },
         );
+      case 'm.room.member':
+        TextDesc? description = eventItem.textDesc();
+        if (description != null) {
+          String? formattedBody = description.formattedBody();
+          String body = description.body(); // always exists
+          return types.CustomMessage(
+            author: author,
+            createdAt: createdAt,
+            id: eventId,
+            metadata: {
+              'itemType': 'event',
+              'eventType': eventType,
+              'messageLength': body.length,
+              'body': formattedBody ?? body,
+            },
+          );
+        }
+        break;
       case 'm.room.message':
         String? msgtype = eventItem.msgtype();
         switch (msgtype) {
@@ -791,25 +808,43 @@ class ChatRoomController extends GetxController {
           case 'm.location':
             break;
           case 'm.notice':
-            return types.CustomMessage(
-              author: author,
-              createdAt: createdAt,
-              id: eventId,
-              metadata: {
-                'itemType': 'event',
-                'eventType': eventType,
-              },
-            );
+            TextDesc? description = eventItem.textDesc();
+            if (description != null) {
+              String? formattedBody = description.formattedBody();
+              String body = description.body(); // always exists
+              return types.TextMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                text: formattedBody ?? body,
+                metadata: {
+                  'itemType': 'event',
+                  'msgType': eventItem.msgtype(),
+                  'eventType': eventType,
+                  'messageLength': body.length,
+                },
+              );
+            }
+            break;
           case 'm.server_notice':
-            return types.CustomMessage(
-              author: author,
-              createdAt: createdAt,
-              id: eventId,
-              metadata: {
-                'itemType': 'event',
-                'eventType': eventType,
-              },
-            );
+            TextDesc? description = eventItem.textDesc();
+            if (description != null) {
+              String? formattedBody = description.formattedBody();
+              String body = description.body(); // always exists
+              return types.TextMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                text: formattedBody ?? body,
+                metadata: {
+                  'itemType': 'event',
+                  'eventType': eventType,
+                  'msgType': eventItem.msgtype(),
+                  'messageLength': body.length,
+                },
+              );
+            }
+            break;
           case 'm.text':
             TextDesc? description = eventItem.textDesc();
             if (description != null) {
