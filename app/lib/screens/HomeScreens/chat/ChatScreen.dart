@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
@@ -744,7 +745,6 @@ class _ChatScreenState extends State<ChatScreen> {
       case 'm.room.guest.access':
       case 'm.room.history.visibility':
       case 'm.room.join.rules':
-      case 'm.room.member':
       case 'm.room.name':
       case 'm.room.pinned.events':
       case 'm.room.power.levels':
@@ -754,13 +754,15 @@ class _ChatScreenState extends State<ChatScreen> {
       case 'm.room.topic':
       case 'm.space.child':
       case 'm.space.parent':
-        String text = customMessage.metadata?['body'];
-        return Container(
-          width: sqrt(text.length) * 38.5,
-          padding: const EdgeInsets.all(8),
-          constraints: const BoxConstraints(minWidth: 57),
-          child: Text(text, style: ChatTheme01.chatReplyTextStyle),
-        );
+        String? text = customMessage.metadata?['body'];
+        return text != null
+            ? const SizedBox.shrink()
+            : Container(
+                width: sqrt(text!.length) * 38.5,
+                padding: const EdgeInsets.all(8),
+                constraints: const BoxConstraints(minWidth: 57),
+                child: Text(text, style: ChatTheme01.chatReplyTextStyle),
+              );
     }
 
     // message event
@@ -776,6 +778,17 @@ class _ChatScreenState extends State<ChatScreen> {
       case 'm.key.verification.mac':
       case 'm.key.verification.ready':
       case 'm.key.verification.start':
+        break;
+      case 'm.room.member':
+        String text = customMessage.metadata?['body'];
+        return Container(
+          padding: const EdgeInsets.only(left: 8, bottom: 6),
+          constraints: const BoxConstraints(minWidth: 57),
+          child: Text(
+            text,
+            style: ChatTheme01.chatMutedBodyStyle,
+          ),
+        );
       case 'm.room.encrypted':
         String text =
             '***Failed to decrypt message. Re-request session keys.***';

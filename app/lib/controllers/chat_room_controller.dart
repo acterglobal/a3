@@ -597,7 +597,7 @@ class ChatRoomController extends GetxController {
   }
 
   void _insertMessage(types.Message m) {
-    if (m is! types.UnsupportedMessage && m is! types.CustomMessage) {
+    if (m is! types.UnsupportedMessage) {
       var receiptController = Get.find<ReceiptController>();
       List<String> seenByList = receiptController.getSeenByList(
         _currentRoom!.getRoomId(),
@@ -617,7 +617,7 @@ class ChatRoomController extends GetxController {
   }
 
   void _updateMessage(types.Message m, int index) {
-    if (m is! types.UnsupportedMessage && m is! types.CustomMessage) {
+    if (m is! types.UnsupportedMessage) {
       var receiptController = Get.find<ReceiptController>();
       List<String> seenByList = receiptController.getSeenByList(
         _currentRoom!.getRoomId(),
@@ -666,7 +666,6 @@ class ChatRoomController extends GetxController {
       String k = key.toDartString();
       reactions[k] = eventItem.reactionDesc(k);
     }
-    debugPrint(eventType);
     // state event
     switch (eventType) {
       case 'm.policy.rule.room':
