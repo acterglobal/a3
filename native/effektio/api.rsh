@@ -921,6 +921,9 @@ object UserProfile {
     /// get the binary data of avatar
     fn get_avatar() -> Future<Result<buffer<u8>>>;
 
+    /// get the binary data of thumbnail
+    fn get_thumbnail(width: u64, height: u64) -> Future<Result<buffer<u8>>>;
+
     /// get the display name
     fn get_display_name() -> Option<string>;
 }
@@ -931,6 +934,9 @@ object RoomProfile {
 
     /// get the binary data of avatar
     fn get_avatar() -> Future<Result<buffer<u8>>>;
+
+    /// get the binary data of thumbnail
+    fn get_thumbnail(width: u64, height: u64) -> Future<Result<buffer<u8>>>;
 
     /// get the display name
     fn get_display_name() -> Option<string>;

@@ -64,71 +64,71 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
               isGroup: true,
               stringName: simplifyUserId(userId)!,
             ),
-            title: _buildTitle(),
-            subtitle: _buildSubtitle(context),
+            title: _TitleWidget(invitation: widget.invitation),
+            subtitle: _SubtitleWidget(invitation: widget.invitation),
           ),
           const Divider(color: AppCommonTheme.dividerColor, indent: 15),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildAcceptButton(context),
-              _buildRejectButton(context),
+              _AcceptBtn(client: widget.client, invitation: widget.invitation),
+              _RejectBtn(client: widget.client, invitation: widget.invitation),
             ],
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildTitle() {
-    return Text(
-      widget.invitation.sender(),
-      style: AppCommonTheme.appBarTitleStyle.copyWith(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
+class _RejectBtn extends StatelessWidget {
+  const _RejectBtn({
+    required this.client,
+    required this.invitation,
+  });
 
-  Widget _buildSubtitle(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        text: AppLocalizations.of(context)!.invitationText2,
-        style: AppCommonTheme.appBarTitleStyle.copyWith(
+  final Client client;
+  final Invitation invitation;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.46,
+      child: elevatedButton(
+        AppLocalizations.of(context)!.decline,
+        AppCommonTheme.primaryColor,
+        () async => await invitation.reject(),
+        AppCommonTheme.appBarTitleStyle.copyWith(
           fontSize: 14,
-          fontWeight: FontWeight.w400,
-          color: AppCommonTheme.dividerColor,
+          fontWeight: FontWeight.w500,
         ),
-        children: <TextSpan>[
-          TextSpan(
-            text: widget.invitation.roomName(),
-            style: AppCommonTheme.appBarTitleStyle.copyWith(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }
+}
 
-  Widget _buildAcceptButton(BuildContext context) {
+class _AcceptBtn extends StatelessWidget {
+  const _AcceptBtn({required this.client, required this.invitation});
+  final Client client;
+  final Invitation invitation;
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.46,
       child: elevatedButton(
         AppLocalizations.of(context)!.accept,
         AppCommonTheme.greenButtonColor,
         () async {
-          if (await widget.invitation.accept() == true) {
+          if (await invitation.accept() == true) {
             final listController = Get.find<ChatListController>();
             for (var room in listController.joinedRooms) {
-              if (room.conversation.getRoomId() == widget.invitation.roomId()) {
+              if (room.conversation.getRoomId() == invitation.roomId()) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ChatScreen(
-                      client: widget.client,
-                      room: room.conversation,
+                      client: client,
+                      conversation: room.conversation,
                     ),
                   ),
                 );
@@ -143,18 +143,48 @@ class _InviteInfoWidgetState extends State<InviteInfoWidget> {
       ),
     );
   }
+}
 
-  Widget _buildRejectButton(BuildContext context) {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.46,
-      child: elevatedButton(
-        AppLocalizations.of(context)!.decline,
-        AppCommonTheme.primaryColor,
-        () async => await widget.invitation.reject(),
-        AppCommonTheme.appBarTitleStyle.copyWith(
+class _TitleWidget extends StatelessWidget {
+  const _TitleWidget({required this.invitation});
+
+  final Invitation invitation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      invitation.sender(),
+      style: AppCommonTheme.appBarTitleStyle.copyWith(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+}
+
+class _SubtitleWidget extends StatelessWidget {
+  const _SubtitleWidget({required this.invitation});
+
+  final Invitation invitation;
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: AppLocalizations.of(context)!.invitationText2,
+        style: AppCommonTheme.appBarTitleStyle.copyWith(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
+          color: AppCommonTheme.dividerColor,
         ),
+        children: <TextSpan>[
+          TextSpan(
+            text: invitation.roomName(),
+            style: AppCommonTheme.appBarTitleStyle.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

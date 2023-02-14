@@ -1,17 +1,12 @@
-import 'dart:math';
-
-import 'package:effektio/common/store/MockData.dart';
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/widgets/InviteUser.dart';
 import 'package:flutter/material.dart';
 
-class ToDoTaskAssignScreen extends StatelessWidget {
-  final List<ImageProvider<Object>> avatars;
+class TaskAssignScreen extends StatelessWidget {
   final _controller = TextEditingController();
 
-  ToDoTaskAssignScreen({
+  TaskAssignScreen({
     Key? key,
-    required this.avatars,
   }) : super(key: key);
 
   @override
@@ -102,29 +97,7 @@ class ToDoTaskAssignScreen extends StatelessWidget {
                           color: ToDoTheme.primaryTextColor,
                         ),
                       ),
-                      Text(
-                        '${avatars.length}',
-                        style: ToDoTheme.descriptionTextStyle,
-                      ),
                     ],
-                  ),
-                ),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: avatars.length,
-                  itemBuilder: (BuildContext context, int index) => ListTile(
-                    leading: CircleAvatar(
-                      radius: 20,
-                      backgroundImage: avatars[index],
-                    ),
-                    title: const Text(
-                      'John Doe',
-                      style: ToDoTheme.roleNameTextStyle,
-                    ),
-                    trailing: Text(
-                      taskRole[Random().nextInt(taskRole.length)],
-                      style: ToDoTheme.roleTextStyle,
-                    ),
                   ),
                 ),
               ],

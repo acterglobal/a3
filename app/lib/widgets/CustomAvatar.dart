@@ -33,6 +33,17 @@ class CustomAvatar extends StatefulWidget {
 }
 
 class _CustomAvatarState extends State<CustomAvatar> {
+  late Future<Uint8List>? _avatar;
+
+  // avoid re-run future when object state isn't changed.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {
+      _avatar = getAvatar();
+    });
+  }
+
   Future<Uint8List>? getAvatar() async {
     if (widget.avatar == null) {
       // hasAvatar == false
@@ -45,7 +56,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List>(
-      future: getAvatar(),
+      future: _avatar,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           const SizedBox(
@@ -58,12 +69,12 @@ class _CustomAvatarState extends State<CustomAvatar> {
         }
         if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
           return CircleAvatar(
-            backgroundImage: ResizeImage(
+            foregroundImage: ResizeImage(
               MemoryImage(
                 snapshot.requireData,
               ),
-              height: widget.cacheHeight ?? widget.radius.toInt(),
-              width: widget.cacheWidth ?? widget.radius.toInt(),
+              width: widget.cacheWidth ?? 50,
+              height: widget.cacheHeight ?? 50,
             ),
             radius: widget.radius,
           );
@@ -81,20 +92,29 @@ class _CustomAvatarState extends State<CustomAvatar> {
           return SizedBox(
             height: widget.radius * 2,
             width: widget.radius * 2,
-            child: buildTextAvatar(),
+            child: _BuildTextAvatar(
+              widget.displayName,
+              stringName: widget.stringName,
+            ),
           );
         }
       },
     );
   }
+}
 
-  Widget buildTextAvatar() {
-    if (widget.displayName != null) {
+class _BuildTextAvatar extends StatelessWidget {
+  const _BuildTextAvatar(this.displayName, {required this.stringName});
+  final String? displayName;
+  final String stringName;
+  @override
+  Widget build(BuildContext context) {
+    if (displayName != null) {
       return TextAvatar(
         numberLetters: 2,
         shape: Shape.Circular,
         upperCase: true,
-        text: widget.displayName,
+        text: displayName,
       );
     }
     return TextAvatar(
@@ -102,7 +122,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
       numberLetters: 2,
       shape: Shape.Circular,
       upperCase: true,
-      text: widget.stringName,
+      text: stringName,
     );
   }
 }

@@ -94,7 +94,13 @@ class ChatRoomController extends GetxController {
       if (m is types.UnsupportedMessage) {
         return;
       }
-      _insertMessage(m);
+      int index = _messages.indexWhere((msg) => m.id == msg.id);
+      if (index == -1) {
+        _insertMessage(m);
+      } else {
+        // update event may be fetched prior to insert event
+        _updateMessage(m, index);
+      }
       RoomEventItem? eventItem = event.eventItem();
       if (eventItem != null) {
         if (eventItem.sender() != client.userId().toString()) {
@@ -156,7 +162,13 @@ class ChatRoomController extends GetxController {
               if (m is types.UnsupportedMessage) {
                 continue;
               }
-              _insertMessage(m);
+              int index = _messages.indexWhere((msg) => m.id == msg.id);
+              if (index == -1) {
+                _insertMessage(m);
+              } else {
+                // update event may be fetched prior to insert event
+                _updateMessage(m, index);
+              }
               if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
                 _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
               }
@@ -178,7 +190,13 @@ class ChatRoomController extends GetxController {
             if (m is types.UnsupportedMessage) {
               break;
             }
-            _insertMessage(m);
+            int index = _messages.indexWhere((msg) => m.id == msg.id);
+            if (index == -1) {
+              _insertMessage(m);
+            } else {
+              // update event may be fetched prior to insert event
+              _updateMessage(m, index);
+            }
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
             }
@@ -199,7 +217,13 @@ class ChatRoomController extends GetxController {
             if (m is types.UnsupportedMessage) {
               break;
             }
-            _updateMessage(m);
+            int index = _messages.indexWhere((msg) => m.id == msg.id);
+            if (index == -1) {
+              // update event may be fetched prior to insert event
+              _insertMessage(m);
+            } else {
+              _updateMessage(m, index);
+            }
             if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
               _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
             }
@@ -314,7 +338,7 @@ class ChatRoomController extends GetxController {
       UserProfile profile = await activeMembers[i].getProfile();
       Map<String, dynamic> record = {};
       if (profile.hasAvatar()) {
-        avatars[userId] = profile.getAvatar();
+        avatars[userId] = profile.getThumbnail(62, 60);
         record['avatar'] = avatars[userId];
       }
       String? name = profile.getDisplayName();
@@ -573,9 +597,8 @@ class ChatRoomController extends GetxController {
   }
 
   void _insertMessage(types.Message m) {
-    var receiptController = Get.find<ReceiptController>();
-    if (m.type != types.MessageType.unsupported &&
-        m.type != types.MessageType.custom) {
+    if (m is! types.UnsupportedMessage && m is! types.CustomMessage) {
+      var receiptController = Get.find<ReceiptController>();
       List<String> seenByList = receiptController.getSeenByList(
         _currentRoom!.getRoomId(),
         m.createdAt!,
@@ -593,21 +616,22 @@ class ChatRoomController extends GetxController {
     _messages.add(m);
   }
 
-  void _updateMessage(types.Message m) {
-    var receiptController = Get.find<ReceiptController>();
-    int index = _messages.indexWhere((msg) => m.id == msg.id);
-    List<String> seenByList = receiptController.getSeenByList(
-      _currentRoom!.getRoomId(),
-      m.createdAt!,
-    );
-    if (m.author.id == client.userId().toString()) {
-      types.Status status = seenByList.isEmpty
-          ? types.Status.sent
-          : seenByList.length < activeMembers.length
-              ? types.Status.delivered
-              : types.Status.seen;
-      _messages[index] = m.copyWith(showStatus: true, status: status);
-      return;
+  void _updateMessage(types.Message m, int index) {
+    if (m is! types.UnsupportedMessage && m is! types.CustomMessage) {
+      var receiptController = Get.find<ReceiptController>();
+      List<String> seenByList = receiptController.getSeenByList(
+        _currentRoom!.getRoomId(),
+        m.createdAt!,
+      );
+      if (m.author.id == client.userId().toString()) {
+        types.Status status = seenByList.isEmpty
+            ? types.Status.sent
+            : seenByList.length < activeMembers.length
+                ? types.Status.delivered
+                : types.Status.seen;
+        _messages[index] = m.copyWith(showStatus: true, status: status);
+        return;
+      }
     }
     _messages[index] = m;
   }

@@ -20,7 +20,7 @@ class ToDoList {
   final String? role;
   final String? timezone;
 
-  ToDoList({
+  const ToDoList({
     this.index,
     required this.name,
     this.team,

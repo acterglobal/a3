@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:effektio/common/store/themes/SeperatedThemes.dart';
 import 'package:effektio/controllers/chat_list_controller.dart';
+import 'package:effektio/models/JoinedRoom.dart';
 import 'package:effektio/widgets/AppCommon.dart';
 import 'package:effektio/widgets/ChatListItem.dart';
 import 'package:effektio/widgets/InviteInfoWidget.dart';
@@ -28,75 +29,140 @@ class _ChatOverviewState extends State<ChatOverview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar(
-            pinned: false,
-            snap: false,
-            floating: true,
-            leading: TextButton(
-              onPressed: () {},
-              child: Container(
-                margin: const EdgeInsets.only(right: 15),
-                child: Text(
-                  AppLocalizations.of(context)!.chat,
-                  style: AppCommonTheme.appBarTitleStyle,
+      body: GetBuilder<ChatListController>(
+        id: 'chatlist',
+        builder: (controller) {
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                pinned: false,
+                snap: false,
+                floating: true,
+                leading: TextButton(
+                  onPressed: () {},
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 15),
+                    child: Text(
+                      AppLocalizations.of(context)!.chat,
+                      style: AppCommonTheme.appBarTitleStyle,
+                    ),
+                  ),
                 ),
+                leadingWidth: 100,
+                actions: [
+                  IconButton(
+                    onPressed: () => controller.toggleSearchView(),
+                    padding: const EdgeInsets.only(right: 10, left: 5),
+                    icon: const Icon(
+                      FlutterIcons.search1_ant,
+                      color: AppCommonTheme.svgIconColor,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showNotYetImplementedMsg(
+                        context,
+                        'Multiselect is not implemented yet',
+                      );
+                    },
+                    padding: const EdgeInsets.only(right: 10, left: 5),
+                    icon: const Icon(
+                      FlutterIcons.select_mco,
+                      color: AppCommonTheme.svgIconColor,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showNotYetImplementedMsg(
+                        context,
+                        'Starting a new chat is not implemented yet',
+                      );
+                    },
+                    padding: const EdgeInsets.only(right: 10, left: 10),
+                    icon: const Icon(
+                      FlutterIcons.md_add_ion,
+                      color: AppCommonTheme.svgIconColor,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            leadingWidth: 100,
-            actions: [
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Chat Search is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 5),
-                icon: const Icon(
-                  FlutterIcons.search1_ant,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Multiselect is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 5),
-                icon: const Icon(
-                  FlutterIcons.select_mco,
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              IconButton(
-                onPressed: () {
-                  showNotYetImplementedMsg(
-                    context,
-                    'Starting a new chat is not implemented yet',
-                  );
-                },
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                icon: const Icon(
-                  FlutterIcons.md_add_ion,
-                  color: AppCommonTheme.svgIconColor,
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (controller.showSearch)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          top: 5,
+                          bottom: 6,
+                          left: 10,
+                          right: 10,
+                        ),
+                        child: TextField(
+                          onChanged: (value) {
+                            controller.searchedData(
+                              value,
+                              controller.joinedRooms,
+                            );
+                          },
+                          controller: controller.searchController,
+                          style: ToDoTheme.taskTitleTextStyle.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                          cursorColor: ToDoTheme.primaryTextColor,
+                          decoration: InputDecoration(
+                            hintStyle: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                            ),
+                            suffixIcon: GestureDetector(
+                              onTap: () {
+                                controller.toggleSearchView();
+                              },
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.only(
+                              left: 12,
+                              bottom: 2,
+                              top: 2,
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(30.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (widget.client.isGuest())
+                      empty
+                    else
+                      _ListWidget(
+                        client: widget.client,
+                      ),
+                  ],
                 ),
               ),
             ],
-          ),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                if (widget.client.isGuest()) empty else buildList(context),
-              ],
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -104,50 +170,17 @@ class _ChatOverviewState extends State<ChatOverview> {
   SvgPicture get empty {
     return SvgPicture.asset('assets/images/empty_messages.svg');
   }
+}
 
-  Widget buildListHeader(BuildContext context) {
-    return GetBuilder<ChatListController>(
-      id: 'invited_list',
-      builder: (ChatListController controller) {
-        if (controller.invitations.isEmpty) {
-          return const SizedBox();
-        }
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.only(left: 18),
-              child: Text(
-                AppLocalizations.of(context)!.invitedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 10),
-            ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: controller.invitations.length,
-              itemBuilder: (BuildContext context, int index) {
-                return buildInvitedItem(controller.invitations[index]);
-              },
-            ),
-            Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.only(left: 18, top: 10),
-              child: Text(
-                AppLocalizations.of(context)!.joinedRooms,
-                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        );
-      },
-    );
-  }
+class _ListWidget extends StatelessWidget {
+  const _ListWidget({
+    required this.client,
+  });
 
-  Widget buildList(BuildContext context) {
+  final Client client;
+
+  @override
+  Widget build(BuildContext context) {
     return GetBuilder<ChatListController>(
       id: 'chatlist',
       builder: (ChatListController controller) {
@@ -165,8 +198,10 @@ class _ChatOverviewState extends State<ChatOverview> {
           );
         }
         return ImplicitlyAnimatedReorderableList<JoinedRoom>(
-          header: buildListHeader(context),
-          items: controller.joinedRooms,
+          header: _InviteListView(client: client),
+          items: controller.showSearch
+              ? controller.searchData
+              : controller.joinedRooms,
           areItemsTheSame: (a, b) =>
               a.conversation.getRoomId() == b.conversation.getRoomId(),
           // Remember to update the underlying data when the list has been reordered.
@@ -190,7 +225,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: buildJoinedItem(item),
+                  child: _JoinedItem(client: client, item: item),
                 ),
               );
             },
@@ -200,7 +235,7 @@ class _ChatOverviewState extends State<ChatOverview> {
             builder: (context, animation, inDrag) {
               return FadeTransition(
                 opacity: animation,
-                child: buildJoinedItem(item),
+                child: _JoinedItem(client: client, item: item),
               );
             },
           ),
@@ -219,7 +254,7 @@ class _ChatOverviewState extends State<ChatOverview> {
                   color: color,
                   elevation: elevation ?? 0.0,
                   type: MaterialType.transparency,
-                  child: buildJoinedItem(item),
+                  child: _JoinedItem(client: client, item: item),
                 ),
               );
             },
@@ -230,16 +265,88 @@ class _ChatOverviewState extends State<ChatOverview> {
       },
     );
   }
+}
 
-  Widget buildInvitedItem(Invitation item) {
+class _InviteListView extends StatelessWidget {
+  const _InviteListView({required this.client});
+
+  final Client client;
+  @override
+  Widget build(BuildContext context) {
+    return GetBuilder<ChatListController>(
+      id: 'invited_list',
+      builder: (ChatListController controller) {
+        if (controller.invitations.isEmpty) {
+          return const SizedBox();
+        }
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18),
+              child: Text(
+                AppLocalizations.of(context)!.invitedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: controller.invitations.length,
+              itemBuilder: (BuildContext context, int index) {
+                return _InvitedItem(
+                  client: client,
+                  item: controller.invitations[index],
+                );
+              },
+            ),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.only(left: 18, top: 10),
+              child: Text(
+                AppLocalizations.of(context)!.joinedRooms,
+                style: AppCommonTheme.appBarTitleStyle.copyWith(fontSize: 16),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _InvitedItem extends StatelessWidget {
+  const _InvitedItem({
+    required this.client,
+    required this.item,
+  });
+
+  final Client client;
+  final Invitation item;
+
+  @override
+  Widget build(BuildContext context) {
     return InviteInfoWidget(
-      client: widget.client,
+      client: client,
       invitation: item,
       avatarColor: Colors.white,
     );
   }
+}
 
-  Widget buildJoinedItem(JoinedRoom item) {
+class _JoinedItem extends StatelessWidget {
+  const _JoinedItem({
+    required this.client,
+    required this.item,
+  });
+  final Client client;
+  final JoinedRoom item;
+
+  @override
+  Widget build(BuildContext context) {
     String roomId = item.conversation.getRoomId();
     // we should be able to update only changed room items
     // so we use GetBuilder to render item
@@ -247,10 +354,8 @@ class _ChatOverviewState extends State<ChatOverview> {
       id: 'chatroom-$roomId',
       builder: (controller) => ChatListItem(
         key: Key(roomId),
-        client: widget.client,
-        room: item.conversation,
-        latestMessage: item.latestMessage,
-        typingUsers: item.typingUsers,
+        client: client,
+        room: item,
       ),
     );
   }

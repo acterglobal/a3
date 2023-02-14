@@ -27,17 +27,17 @@ import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Future<FfiBufferUint8>? roomAvatar;
-  final String? roomName;
-  final Conversation room;
+  final Future<FfiBufferUint8>? avatar;
+  final String? name;
+  final Conversation conversation;
   final Client client;
 
   const ChatScreen({
     Key? key,
-    required this.room,
+    required this.conversation,
     required this.client,
-    this.roomAvatar,
-    this.roomName,
+    this.avatar,
+    this.name,
   }) : super(key: key);
 
   @override
@@ -51,14 +51,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
-    roomController.setCurrentRoom(widget.room);
+    roomController.setCurrentRoom(widget.conversation);
   }
 
   @override
   void dispose() {
     roomController.setCurrentRoom(null);
-
     super.dispose();
   }
 
@@ -130,10 +128,8 @@ class _ChatScreenState extends State<ChatScreen> {
           uniqueKey: userId,
           avatar: roomController.getUserAvatar(userId),
           displayName: roomController.getUserName(userId),
-          radius: 15,
+          radius: 50,
           isGroup: false,
-          cacheHeight: 120,
-          cacheWidth: 120,
           stringName: simplifyUserId(userId)!,
         ),
       ),
@@ -146,8 +142,9 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (ChatRoomController controller) {
         if (!controller.isEmojiContainerVisible) {
           return CustomChatInput(
+            roomController: controller,
             isChatScreen: true,
-            roomName: widget.roomName ?? AppLocalizations.of(context)!.noName,
+            roomName: widget.name ?? AppLocalizations.of(context)!.noName,
             onButtonPressed: () => onSendButtonPressed(controller),
           );
         }
@@ -293,7 +290,6 @@ class _ChatScreenState extends State<ChatScreen> {
       message: p1,
       onPreviewDataFetched: roomController.handlePreviewDataFetched,
       messageWidth: messageWidth,
-      controller: roomController,
     );
   }
 
@@ -448,9 +444,9 @@ class _ChatScreenState extends State<ChatScreen> {
           MaterialPageRoute(
             builder: (context) => ChatProfileScreen(
               client: widget.client,
-              room: widget.room,
-              roomName: widget.roomName,
-              roomAvatar: widget.roomAvatar,
+              room: widget.conversation,
+              roomName: widget.name,
+              roomAvatar: widget.avatar,
               isGroup: true,
               isAdmin: true,
             ),
@@ -465,14 +461,14 @@ class _ChatScreenState extends State<ChatScreen> {
           child: FittedBox(
             fit: BoxFit.contain,
             child: CustomAvatar(
-              uniqueKey: widget.room.getRoomId(),
-              avatar: widget.roomAvatar,
-              displayName: widget.roomName,
+              uniqueKey: widget.conversation.getRoomId(),
+              avatar: widget.avatar,
+              displayName: widget.name,
               radius: 20,
               cacheHeight: 120,
               cacheWidth: 120,
               isGroup: true,
-              stringName: simplifyRoomId(widget.room.getRoomId())!,
+              stringName: simplifyRoomId(widget.conversation.getRoomId())!,
             ),
           ),
         ),
@@ -481,11 +477,11 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget buildRoomName(BuildContext context) {
-    if (widget.roomName == null) {
+    if (widget.name == null) {
       return Text(AppLocalizations.of(context)!.loadingName);
     }
     return Text(
-      widget.roomName!,
+      widget.name!,
       overflow: TextOverflow.clip,
       style: ChatTheme01.chatTitleStyle,
     );
@@ -516,7 +512,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
     int invitedIndex = listController.invitations.indexWhere((x) {
-      return x.roomId() == widget.room.getRoomId();
+      return x.roomId() == widget.conversation.getRoomId();
     });
     return GetBuilder<ChatRoomController>(
       id: 'Chat',
