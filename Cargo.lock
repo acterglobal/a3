@@ -994,6 +994,7 @@ dependencies = [
  "matrix-sdk-base",
  "matrix-sdk-sled",
  "mime",
+ "oslog",
  "parking_lot 0.11.2",
  "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=62ed200a56d00353eea128191311c4c8016def9f)",
  "sanitize-filename-reader-friendly",
@@ -2165,6 +2166,17 @@ name = "os_str_bytes"
 version = "6.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b7820b9daea5457c9f21c69448905d723fbd21136ccf521748f23fd49e723ee"
+
+[[package]]
+name = "oslog"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80d2043d1f61d77cb2f4b1f7b7b2295f40507f5f8e9d1c8bf10a1ca5f97a3969"
+dependencies = [
+ "cc",
+ "dashmap",
+ "log",
+]
 
 [[package]]
 name = "overload"

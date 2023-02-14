@@ -79,6 +79,10 @@ android_logger = "0.12"
 tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 tracing-android = "0.2"
 
+#   ----   IOS
+[target.'cfg(target_os = "ios")'.dependencies]
+oslog = "0.2"
+
 [lib]
 name = "effektio"
 crate-type = ["cdylib", "staticlib", "lib"]

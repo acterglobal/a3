@@ -43,3 +43,20 @@ Unlike android, ios needs small space of 2~3 GB.
 5. Run `flutter pub get` in `app` directory of this project.
 6. Uncomment `# platform :ios, '9.0'` in Podfile of `app/ios` directory.
 7. Run `flutter run`.
+
+### flutter v3.7 issue
+
+Compared with `flutter v3.3`, `flutter v3.7` has many changes.
+It should be compiled in macOS 12.5+ and Xcode 14+.
+As default, macOS 12.5 contains `ruby v2.6` and its path is `/usr/bin/ruby`.
+In case that you need `ruby v3`, you can't delete system default ruby.
+Instead, you can install `ruby v3` additionally after installing Ruby Version Manager.
+Please run the following commands:
+```sh
+brew install gnupg
+curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
+curl -sSL https://get.rvm.io | bash -s stable --ruby
+source /Users/bitfriend/.rvm/scripts/rvm
+sudo gem install cocoapods
+```
