@@ -17,8 +17,13 @@ pub fn init_logging(filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
+    let log_level = match filter {
+        Some(ref filter) => FilterBuilder::new().parse(&filter).build(),
+        None => FilterBuilder::new().build(),
+    };
+
     let mut log_config = Config::default()
-        .with_max_level(LevelFilter::Info)
+        .with_max_level(LevelFilter::Trace)
         .with_tag("effektio-sdk");
     if let Some(filter) = filter {
         log_config = log_config.with_filter(FilterBuilder::new().parse(&filter).build())
@@ -39,7 +44,7 @@ pub fn init_logging(filter: Option<String>) -> Result<String> {
                 message
             ))
         })
-        .level(LevelFilter::Info)
+        .level(log_level.filter())
         .chain(wrapper.cloned_boxed_logger())
         .chain(fern::log_file(file_path.clone())?)
         .apply()?;

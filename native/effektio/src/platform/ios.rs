@@ -1,4 +1,5 @@
 use anyhow::Result;
+use env_logger::filter::Builder as FilterBuilder;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use oslog::OsLog;
@@ -20,6 +21,11 @@ pub fn init_logging(filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
+    let log_level = match filter {
+        Some(filter) => FilterBuilder::new().parse(&filter).build(),
+        None => FilterBuilder::new().build(),
+    };
+
     let wrapper = LoggerWrapper::new("org.effektio.app", "viewcycle");
 
     let file_name = chrono::Local::now().format("app_%Y-%m-%d_%H-%M-%S.log").to_string();
@@ -37,7 +43,7 @@ pub fn init_logging(filter: Option<String>) -> Result<String> {
                 message
             ))
         })
-        .level(LevelFilter::Debug)
+        .level(log_level.filter())
         .chain(wrapper.cloned_boxed_logger())
         // .chain(fern::log_file(file_path.clone())?)
         .apply()?;

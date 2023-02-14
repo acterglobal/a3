@@ -45,7 +45,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "037f3e1da32ddba7770530e69258b742c15ad67bdf90e5f6b35f4b6db9a60eb7"
 dependencies = [
  "android_log-sys",
- "env_logger 0.10.0",
+ "env_logger",
  "log",
  "once_cell",
 ]
@@ -981,7 +981,7 @@ dependencies = [
  "chrono",
  "derive_builder 0.10.2",
  "effektio-core",
- "env_logger 0.9.3",
+ "env_logger",
  "fern",
  "ffi-gen",
  "ffi-gen-macro",
@@ -1018,7 +1018,7 @@ dependencies = [
  "dialoguer",
  "effektio",
  "effektio-core",
- "env_logger 0.10.0",
+ "env_logger",
  "futures",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -1043,7 +1043,7 @@ dependencies = [
  "derive-getters",
  "derive_builder 0.11.2",
  "enum_dispatch",
- "env_logger 0.10.0",
+ "env_logger",
  "fake",
  "futures",
  "matrix-sdk",
@@ -1066,7 +1066,7 @@ dependencies = [
  "anyhow",
  "effektio",
  "effektio-core",
- "env_logger 0.9.3",
+ "env_logger",
  "futures",
  "log",
  "tempfile",
@@ -1086,7 +1086,7 @@ dependencies = [
  "dialoguer",
  "effektio",
  "effektio-core",
- "env_logger 0.10.0",
+ "env_logger",
  "futures",
  "mime",
  "term-table",
@@ -1127,19 +1127,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "env_logger"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a12e6657c4c97ebab115a42dcee77225f7f482cdd841cf7088c657a42e9e00e7"
-dependencies = [
- "atty",
- "humantime",
- "log",
- "regex",
- "termcolor",
 ]
 
 [[package]]
