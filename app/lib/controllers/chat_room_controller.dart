@@ -597,7 +597,7 @@ class ChatRoomController extends GetxController {
   }
 
   void _insertMessage(types.Message m) {
-    if (m is! types.UnsupportedMessage && m is! types.CustomMessage) {
+    if (m is! types.UnsupportedMessage) {
       var receiptController = Get.find<ReceiptController>();
       List<String> seenByList = receiptController.getSeenByList(
         _currentRoom!.getRoomId(),
@@ -617,7 +617,7 @@ class ChatRoomController extends GetxController {
   }
 
   void _updateMessage(types.Message m, int index) {
-    if (m is! types.UnsupportedMessage && m is! types.CustomMessage) {
+    if (m is! types.UnsupportedMessage) {
       var receiptController = Get.find<ReceiptController>();
       List<String> seenByList = receiptController.getSeenByList(
         _currentRoom!.getRoomId(),
@@ -666,7 +666,6 @@ class ChatRoomController extends GetxController {
       String k = key.toDartString();
       reactions[k] = eventItem.reactionDesc(k);
     }
-
     // state event
     switch (eventType) {
       case 'm.policy.rule.room':
@@ -680,7 +679,6 @@ class ChatRoomController extends GetxController {
       case 'm.room.guest.access':
       case 'm.room.history.visibility':
       case 'm.room.join.rules':
-      case 'm.room.member':
       case 'm.room.name':
       case 'm.room.pinned.events':
       case 'm.room.power.levels':
@@ -717,6 +715,15 @@ class ChatRoomController extends GetxController {
       case 'm.key.verification.start':
       case 'm.reaction':
       case 'm.room.encrypted':
+        return types.CustomMessage(
+          author: author,
+          createdAt: createdAt,
+          id: eventId,
+          metadata: {
+            'itemType': 'event',
+            'eventType': eventType,
+          },
+        );
       case 'm.room.redaction':
         return types.CustomMessage(
           author: author,
@@ -725,9 +732,26 @@ class ChatRoomController extends GetxController {
           metadata: {
             'itemType': 'event',
             'eventType': eventType,
-            'body': eventItem.textDesc()?.body(),
           },
         );
+      case 'm.room.member':
+        TextDesc? description = eventItem.textDesc();
+        if (description != null) {
+          String? formattedBody = description.formattedBody();
+          String body = description.body(); // always exists
+          return types.CustomMessage(
+            author: author,
+            createdAt: createdAt,
+            id: eventId,
+            metadata: {
+              'itemType': 'event',
+              'eventType': eventType,
+              'messageLength': body.length,
+              'body': formattedBody ?? body,
+            },
+          );
+        }
+        break;
       case 'm.room.message':
         String? msgtype = eventItem.msgtype();
         switch (msgtype) {
@@ -783,8 +807,42 @@ class ChatRoomController extends GetxController {
           case 'm.location':
             break;
           case 'm.notice':
+            TextDesc? description = eventItem.textDesc();
+            if (description != null) {
+              String? formattedBody = description.formattedBody();
+              String body = description.body(); // always exists
+              return types.TextMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                text: formattedBody ?? body,
+                metadata: {
+                  'itemType': 'event',
+                  'msgType': eventItem.msgtype(),
+                  'eventType': eventType,
+                  'messageLength': body.length,
+                },
+              );
+            }
             break;
           case 'm.server_notice':
+            TextDesc? description = eventItem.textDesc();
+            if (description != null) {
+              String? formattedBody = description.formattedBody();
+              String body = description.body(); // always exists
+              return types.TextMessage(
+                author: author,
+                createdAt: createdAt,
+                id: eventId,
+                text: formattedBody ?? body,
+                metadata: {
+                  'itemType': 'event',
+                  'eventType': eventType,
+                  'msgType': eventItem.msgtype(),
+                  'messageLength': body.length,
+                },
+              );
+            }
             break;
           case 'm.text':
             TextDesc? description = eventItem.textDesc();

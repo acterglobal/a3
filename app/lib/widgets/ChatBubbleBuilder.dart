@@ -36,14 +36,17 @@ class ChatBubbleBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String msgType = '';
+    if (message.metadata!.containsKey('eventType')) {
+      msgType = message.metadata?['eventType'];
+    }
+    bool isMemberEvent = msgType == 'm.room.member';
     return GetBuilder<ChatRoomController>(
       id: 'emoji-reaction',
       builder: (ChatRoomController controller) {
         return Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment:
               isAuthor() ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
           children: [
             Stack(
               clipBehavior: Clip.none,
@@ -56,23 +59,29 @@ class ChatBubbleBuilder extends StatelessWidget {
                   nextMessageInGroup: nextMessageInGroup,
                   child: child,
                   enlargeEmoji: enlargeEmoji,
+                  isMemberEvent: isMemberEvent,
                 ),
-                _EmojiRow(
-                  controller: controller,
-                  isAuthor: isAuthor(),
-                  message: message,
-                )
+                !isMemberEvent
+                    ? _EmojiRow(
+                        controller: controller,
+                        isAuthor: isAuthor(),
+                        message: message,
+                      )
+                    : const SizedBox.shrink()
               ],
             ),
-            Align(
-              alignment:
-                  !isAuthor() ? Alignment.bottomLeft : Alignment.bottomRight,
-              child: _EmojiContainer(
-                isAuthor: isAuthor(),
-                message: message,
-                nextMessageInGroup: nextMessageInGroup,
-              ),
-            ),
+            !isMemberEvent
+                ? Align(
+                    alignment: !isAuthor()
+                        ? Alignment.bottomLeft
+                        : Alignment.bottomRight,
+                    child: _EmojiContainer(
+                      isAuthor: isAuthor(),
+                      message: message,
+                      nextMessageInGroup: nextMessageInGroup,
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ],
         );
       },
@@ -89,6 +98,7 @@ class _ChatBubble extends StatelessWidget {
     required this.nextMessageInGroup,
     required this.child,
     required this.enlargeEmoji,
+    required this.isMemberEvent,
   });
   final ChatRoomController controller;
   final bool isAuthor;
@@ -97,19 +107,26 @@ class _ChatBubble extends StatelessWidget {
   final bool nextMessageInGroup;
   final Widget child;
   final bool enlargeEmoji;
+  final bool isMemberEvent;
 
   @override
   Widget build(BuildContext context) {
+    String msgType = '';
+    if (message.metadata!.containsKey('eventType')) {
+      msgType = message.metadata?['eventType'];
+    }
+    bool isMemberEvent = msgType == 'm.room.member';
     return GestureDetector(
-      onLongPress: () {
-        controller.updateEmojiState(message);
-        controller.replyMessageWidget = child;
-        controller.repliedToMessage = message;
-      },
+      onLongPress: isMemberEvent
+          ? null
+          : () {
+              controller.updateEmojiState(message);
+              controller.replyMessageWidget = child;
+              controller.repliedToMessage = message;
+            },
       child: Column(
         crossAxisAlignment:
             isAuthor ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
         children: [
           (message.repliedMessage != null)
               ? userId == message.repliedMessage!.author.id
@@ -142,37 +159,31 @@ class _ChatBubble extends StatelessWidget {
                 )
               : const SizedBox(),
           const SizedBox(height: 4),
-          Flexible(
-            child: Bubble(
-              child: child,
-              style: enlargeEmoji
-                  ? const BubbleStyle(
-                      color: Colors.transparent,
-                      borderColor: Colors.transparent,
-                      elevation: 0,
-                    )
-                  : BubbleStyle(
-                      color: !isAuthor || message is types.ImageMessage
-                          ? AppCommonTheme.backgroundColorLight
-                          : AppCommonTheme.primaryColor,
-                      margin: nextMessageInGroup
-                          ? const BubbleEdges.symmetric(horizontal: 2)
-                          : null,
-                      radius: const Radius.circular(22),
-                      padding: message is types.ImageMessage
-                          ? const BubbleEdges.all(0)
-                          : null,
-                      nip: (nextMessageInGroup || message is types.ImageMessage)
-                          ? BubbleNip.no
-                          : !isAuthor
-                              ? BubbleNip.leftBottom
-                              : BubbleNip.rightBottom,
-                      nipHeight: 18,
-                      nipWidth: 0.5,
-                      nipRadius: 0,
-                    ),
-            ),
-          ),
+          (enlargeEmoji || isMemberEvent)
+              ? child
+              : Bubble(
+                  child: child,
+                  style: BubbleStyle(
+                    color: !isAuthor || message is types.ImageMessage
+                        ? AppCommonTheme.backgroundColorLight
+                        : AppCommonTheme.primaryColor,
+                    margin: nextMessageInGroup
+                        ? const BubbleEdges.symmetric(horizontal: 2)
+                        : null,
+                    radius: const Radius.circular(22),
+                    padding: message is types.ImageMessage
+                        ? const BubbleEdges.all(0)
+                        : null,
+                    nip: (nextMessageInGroup || message is types.ImageMessage)
+                        ? BubbleNip.no
+                        : !isAuthor
+                            ? BubbleNip.leftBottom
+                            : BubbleNip.rightBottom,
+                    nipHeight: 18,
+                    nipWidth: 0.5,
+                    nipRadius: 0,
+                  ),
+                ),
         ],
       ),
     );
@@ -358,8 +369,7 @@ class _EmojiRow extends StatelessWidget {
       visible: controller.emojiCurrentId == message.id &&
           controller.isEmojiContainerVisible,
       child: Container(
-        width: 198,
-        height: 42,
+        constraints: const BoxConstraints(maxWidth: 202, maxHeight: 42),
         padding: const EdgeInsets.all(8),
         margin: !isAuthor
             ? const EdgeInsets.only(bottom: 8, left: 8)
