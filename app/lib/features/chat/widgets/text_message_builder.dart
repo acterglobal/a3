@@ -51,13 +51,14 @@ class TextMessageBuilder extends StatelessWidget {
             ? ChatTheme01.chatMutedBodyStyle
                 .copyWith(fontWeight: FontWeight.w800)
             : controller.userId == message.author.id
-                ? EffektioChatTheme().sentMessageLinkTitleTextStyle
-                : EffektioChatTheme().receivedMessageLinkTitleTextStyle,
+                ? const EffektioChatTheme().sentMessageLinkTitleTextStyle
+                : const EffektioChatTheme().receivedMessageLinkTitleTextStyle,
         metadataTextStyle: isNotice
             ? ChatTheme01.chatMutedBodyStyle.copyWith(fontSize: 12)
             : controller.userId == message.author.id
-                ? EffektioChatTheme().sentMessageLinkDescriptionTextStyle
-                : EffektioChatTheme().receivedMessageLinkDescriptionTextStyle,
+                ? const EffektioChatTheme().sentMessageLinkDescriptionTextStyle
+                : const EffektioChatTheme()
+                    .receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
         imageBuilder: (image) {
           return Padding(
@@ -114,8 +115,8 @@ class _TextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final emojiTextStyle = controller.userId == message.author.id
-        ? EffektioChatTheme().sentEmojiMessageTextStyle
-        : EffektioChatTheme().receivedEmojiMessageTextStyle;
+        ? const EffektioChatTheme().sentEmojiMessageTextStyle
+        : const EffektioChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: enlargeEmoji
