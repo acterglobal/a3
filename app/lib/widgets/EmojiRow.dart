@@ -50,7 +50,6 @@ class EmojiRow extends StatelessWidget {
     final emojiList = emojiConfiguration?.emojiList ?? _emojiUnicodes;
     final size = emojiConfiguration?.size;
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Wrap(
           direction: Axis.horizontal,

@@ -33,6 +33,17 @@ class CustomAvatar extends StatefulWidget {
 }
 
 class _CustomAvatarState extends State<CustomAvatar> {
+  late Future<Uint8List>? _avatar;
+
+  // avoid re-run future when object state isn't changed.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    setState(() {
+      _avatar = getAvatar();
+    });
+  }
+
   Future<Uint8List>? getAvatar() async {
     if (widget.avatar == null) {
       // hasAvatar == false
@@ -45,7 +56,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List>(
-      future: getAvatar(),
+      future: _avatar,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           const SizedBox(
@@ -58,12 +69,12 @@ class _CustomAvatarState extends State<CustomAvatar> {
         }
         if (snapshot.hasData && snapshot.requireData.isNotEmpty) {
           return CircleAvatar(
-            backgroundImage: ResizeImage(
+            foregroundImage: ResizeImage(
               MemoryImage(
                 snapshot.requireData,
               ),
-              height: widget.cacheHeight ?? widget.radius.toInt(),
-              width: widget.cacheWidth ?? widget.radius.toInt(),
+              width: widget.cacheWidth ?? 50,
+              height: widget.cacheHeight ?? 50,
             ),
             radius: widget.radius,
           );
@@ -100,7 +111,7 @@ class _BuildTextAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (displayName != null) {
       return TextAvatar(
-        numberLetters: 2,
+        numberLetters: 1,
         shape: Shape.Circular,
         upperCase: true,
         text: displayName,
@@ -108,7 +119,7 @@ class _BuildTextAvatar extends StatelessWidget {
     }
     return TextAvatar(
       fontSize: 12,
-      numberLetters: 2,
+      numberLetters: 1,
       shape: Shape.Circular,
       upperCase: true,
       text: stringName,

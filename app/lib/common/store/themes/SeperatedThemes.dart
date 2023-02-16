@@ -122,6 +122,7 @@ class ChatTheme01 {
   static const latestChatTextColor = ColorRef(Colors.white, id: 'LCT');
   static const chatBodyTextColor = ColorRef(Colors.white, id: 'CBT');
   static const chatReplyTextColor = ColorRef(Color(0xFF969696));
+  static const chatMutedTextColor = ColorRef(Color(0xB3969696));
   static const leaveBtnBg = ColorRef(Color(0xff594848));
   static const redText = ColorRef(Color(0xffFF4B4B));
   static const chatInputTextColor = ColorRef(Colors.white, id: 'CITXC');
@@ -174,6 +175,14 @@ class ChatTheme01 {
       fontSize: 14,
       fontWeight: FontWeight.w400,
       color: chatBodyTextColor,
+    ),
+  );
+
+  static const chatMutedBodyStyle = TextStyleRef(
+    TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w400,
+      color: chatMutedTextColor,
     ),
   );
 
