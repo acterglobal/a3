@@ -135,6 +135,10 @@ class EffektioChatTheme extends ChatTheme {
         height: 1.333,
       ),
     ),
+    SystemMessageTheme systemMessageTheme = const SystemMessageTheme(
+      margin: EdgeInsets.zero,
+      textStyle: TextStyle(),
+    ),
     TypingIndicatorTheme typingIndicatorTheme = const TypingIndicatorTheme(
       animatedCirclesColor: Color(0xFFFFFFFF),
       animatedCircleSize: 8.0,
@@ -202,6 +206,7 @@ class EffektioChatTheme extends ChatTheme {
           userAvatarNameColors: userAvatarNameColors,
           userAvatarTextStyle: userAvatarTextStyle,
           userNameTextStyle: userNameTextStyle,
+          systemMessageTheme: systemMessageTheme,
           unreadHeaderTheme: unreadHeaderTheme,
           typingIndicatorTheme: typingIndicatorTheme,
         );
