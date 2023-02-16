@@ -51,14 +51,13 @@ class TextMessageBuilder extends StatelessWidget {
             ? ChatTheme01.chatMutedBodyStyle
                 .copyWith(fontWeight: FontWeight.w800)
             : controller.userId == message.author.id
-                ? const EffektioChatTheme().sentMessageLinkTitleTextStyle
-                : const EffektioChatTheme().receivedMessageLinkTitleTextStyle,
+                ? EffektioChatTheme().sentMessageLinkTitleTextStyle
+                : EffektioChatTheme().receivedMessageLinkTitleTextStyle,
         metadataTextStyle: isNotice
             ? ChatTheme01.chatMutedBodyStyle.copyWith(fontSize: 12)
             : controller.userId == message.author.id
-                ? const EffektioChatTheme().sentMessageLinkDescriptionTextStyle
-                : const EffektioChatTheme()
-                    .receivedMessageLinkDescriptionTextStyle,
+                ? EffektioChatTheme().sentMessageLinkDescriptionTextStyle
+                : EffektioChatTheme().receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
         imageBuilder: (image) {
           return Padding(

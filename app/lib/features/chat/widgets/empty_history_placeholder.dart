@@ -70,7 +70,7 @@ class _TypeIndicatorWidget extends StatelessWidget {
           options: TypingIndicatorOptions(
             animationSpeed: const Duration(milliseconds: 800),
             typingUsers: controller.typingUsers,
-            typingMode: TypingIndicatorMode.text,
+            typingMode: TypingIndicatorMode.name,
           ),
         ),
       ),

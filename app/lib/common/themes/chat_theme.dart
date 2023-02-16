@@ -126,6 +126,10 @@ class EffektioChatTheme extends ChatTheme {
       fontWeight: FontWeight.w800,
       height: 1.333,
     ),
+    SystemMessageTheme systemMessageTheme = const SystemMessageTheme(
+      margin: EdgeInsets.zero,
+      textStyle: TextStyle(),
+    ),
     UnreadHeaderTheme unreadHeaderTheme = const UnreadHeaderTheme(
       color: secondary,
       textStyle: TextStyle(
@@ -202,6 +206,7 @@ class EffektioChatTheme extends ChatTheme {
           userAvatarNameColors: userAvatarNameColors,
           userAvatarTextStyle: userAvatarTextStyle,
           userNameTextStyle: userNameTextStyle,
+          systemMessageTheme: systemMessageTheme,
           unreadHeaderTheme: unreadHeaderTheme,
           typingIndicatorTheme: typingIndicatorTheme,
         );
