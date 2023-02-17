@@ -2,7 +2,6 @@ use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
 use log::{info, warn};
-
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
@@ -11,12 +10,12 @@ use matrix_sdk::{
         assign,
         events::{
             reaction::ReactionEventContent,
-            relation::Annotation,
+            relation::{Annotation, Replacement},
             room::{
                 message::{
                     FileInfo, FileMessageEventContent, ForwardThread, ImageMessageEventContent,
-                    MessageType, RoomMessageEvent, RoomMessageEventContent,
-                    TextMessageEventContent,
+                    MessageType, Relation as MessageRelation, RoomMessageEvent,
+                    RoomMessageEventContent, TextMessageEventContent,
                 },
                 ImageInfo,
             },
@@ -527,6 +526,193 @@ impl Room {
             .spawn(async move {
                 let encrypted = room.is_encrypted().await?;
                 Ok(encrypted)
+            })
+            .await?
+    }
+
+    pub async fn edit_text_message(
+        &self,
+        new_msg: String,
+        event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message from a room we are not in")
+        };
+        let eid = EventId::parse(event_id)?;
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let timeline = Arc::new(room.timeline().await);
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    info!("Can't edit an event not sent by own user");
+                    return Ok(false);
+                }
+
+                let text_content = TextMessageEventContent::markdown(new_msg.to_owned());
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Text(text_content.clone()));
+                let replacement = Replacement::new(eid.to_owned(), MessageType::Text(text_content));
+                edited_content.relates_to = Some(MessageRelation::Replacement(replacement));
+
+                timeline
+                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub async fn edit_image_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: Option<u32>,
+        width: Option<u32>,
+        height: Option<u32>,
+        event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message from a room we are not in")
+        };
+        let eid = EventId::parse(event_id)?;
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut image_buf = std::fs::read(path)?;
+
+                let timeline = Arc::new(room.timeline().await);
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    info!("Can't edit an event not sent by own user");
+                    return Ok(false);
+                }
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, image_buf).await?;
+
+                let info = assign!(ImageInfo::new(), {
+                    height: height.map(UInt::from),
+                    width: width.map(UInt::from),
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let image_content = ImageMessageEventContent::plain(
+                    name,
+                    response.content_uri,
+                    Some(Box::new(info)),
+                );
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::Image(image_content.clone()));
+                let replacement =
+                    Replacement::new(eid.to_owned(), MessageType::Image(image_content));
+                edited_content.relates_to = Some(MessageRelation::Replacement(replacement));
+
+                timeline
+                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
+            })
+            .await?
+    }
+
+    pub async fn edit_file_message(
+        &self,
+        uri: String,
+        name: String,
+        mimetype: String,
+        size: Option<u32>,
+        event_id: String,
+        txn_id: Option<String>,
+    ) -> Result<bool> {
+        let room = if let MatrixRoom::Joined(r) = &self.room {
+            r.clone()
+        } else {
+            bail!("Can't edit message from a room we are not in")
+        };
+        let eid = EventId::parse(event_id)?;
+        let client = self.client.clone();
+
+        RUNTIME
+            .spawn(async move {
+                let path = PathBuf::from(uri);
+                let mut file_buf = std::fs::read(path)?;
+
+                let timeline = Arc::new(room.timeline().await);
+                let timeline_event = room.event(&eid).await.context("Couldn't find event.")?;
+
+                let event_content = timeline_event
+                    .event
+                    .deserialize_as::<RoomMessageEvent>()
+                    .context("Couldn't deserialise event")?;
+
+                let mut sent_by_me = false;
+                if let Some(user_id) = client.user_id() {
+                    if user_id == event_content.sender() {
+                        sent_by_me = true;
+                    }
+                }
+                if !sent_by_me {
+                    info!("Can't edit an event not sent by own user");
+                    return Ok(false);
+                }
+
+                let content_type: mime::Mime = mimetype.parse()?;
+                let response = client.media().upload(&content_type, file_buf).await?;
+
+                let info = assign!(FileInfo::new(), {
+                    mimetype: Some(mimetype),
+                    size: size.map(UInt::from),
+                });
+                let file_content = FileMessageEventContent::plain(
+                    name,
+                    response.content_uri,
+                    Some(Box::new(info)),
+                );
+                let mut edited_content =
+                    RoomMessageEventContent::new(MessageType::File(file_content.clone()));
+                let replacement = Replacement::new(eid.to_owned(), MessageType::File(file_content));
+                edited_content.relates_to = Some(MessageRelation::Replacement(replacement));
+
+                timeline
+                    .send(edited_content.into(), txn_id.as_deref().map(Into::into))
+                    .await?;
+                Ok(true)
             })
             .await?
     }

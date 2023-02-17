@@ -395,6 +395,15 @@ object Conversation {
     /// whether this room is encrypted one
     fn is_encrypted() -> Future<Result<bool>>;
 
+    /// modify the text message of room
+    fn edit_text_message(new_msg: string, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// modify the image message of room
+    fn edit_image_message(uri: string, name: string, mimetype: string, size: Option<u32>, width: Option<u32>, height: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
+    /// modify the file message of room
+    fn edit_file_message(uri: string, name: string, mimetype: string, size: Option<u32>, event_id: string, txn_id: Option<string>) -> Future<Result<bool>>;
+
     /// get original of reply msg
     fn get_message(event_id: string) -> Future<Result<RoomMessage>>;
 
