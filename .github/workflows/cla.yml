@@ -14,7 +14,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          path-to-signatures: ".github/cla/signatures-version1.json"
+          use-remote-repo: true
+          remote-repo-name: "acterglobal/cla-store"
+          path-to-signatures: "signatures/version1.json"
           url-to-cladocument: "https://github.com/acterglobal/a3/blob/main/.github/cla/CLA.md"
           # This branch can't have protections, commits are made directly to the specified branch.
           branch: "main"
