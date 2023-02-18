@@ -10,7 +10,7 @@ _If you are choosing on behalf of an entity please check the Entity Contributor 
 
 Thank you for your interest in contributing to Effektio's Effektio App ("We" or "Us").
 
-The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/effektio/effektio.
+The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/acterglobal/a3.
 
 ### How to use this Contributor Agreement
 
@@ -138,7 +138,7 @@ Address:
 
 Thank you for your interest in contributing to Effektio's Effektio App ("We" or "Us").
 
-The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/effektio/effektio.
+The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/acterglobal/a3.
 
 ### How to use this Contributor Agreement
 

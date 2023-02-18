@@ -31,7 +31,7 @@ The current system has a problem with the latest android native development kit 
 
 ## iOS Build
 
-The iOS build doesn't work right now, see [#10](https://github.com/effektio/effektio/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.
+The iOS build doesn't work right now, see [#10](https://github.com/acterglobal/a3/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.
 
 The following is iOS build steps.
 Unlike android, ios needs small space of 2~3 GB.
