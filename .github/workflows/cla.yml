@@ -1,0 +1,20 @@
+name: "CLA Signature Bot"
+on:
+  pull_request:
+    types: [opened, closed, synchronize]
+
+jobs:
+  CLABot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "CLA Signature Bot"
+        uses: roblox/cla-assistant@2.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          path-to-signatures: ".github/cla/signatures/version1.json"
+          url-to-cladocument: "https://github.com/acterglobal/a3/blob/main/.github/cla/CLA.md"
+          # This branch can't have protections, commits are made directly to the specified branch.
+          branch: "main"
+          whitelist: gtalha07,bitfriend,dependabot[bot]
+          blockchain-storage-flag: false
