@@ -8,13 +8,13 @@ _If you are choosing on behalf of an entity please check the Entity Contributor 
 
 ## (including the Traditional Patent License OPTION)
 
-Thank you for your interest in contributing to Effektio's Effektio App ("We" or "Us").
+Thank you for your interest in contributing to Acter's Acter App ("We" or "Us").
 
 The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/acterglobal/a3.
 
 ### How to use this Contributor Agreement
 
-If You are an employee and have created the Contribution as part of your employment, You need to have Your employer approve this Agreement or sign the Entity version of this document. If You do not own the Copyright in the entire work of authorship, any other author of the Contribution should also sign this – in any event, please contact Us at team@effektio.org
+If You are an employee and have created the Contribution as part of your employment, You need to have Your employer approve this Agreement or sign the Entity version of this document. If You do not own the Copyright in the entire work of authorship, any other author of the Contribution should also sign this – in any event, please contact Us at team@acter.global
 
 ### 1\. Definitions
 
@@ -136,13 +136,13 @@ Address:
 
 ## (including the Traditional Patent License OPTION)
 
-Thank you for your interest in contributing to Effektio's Effektio App ("We" or "Us").
+Thank you for your interest in contributing to Acter's Acter App ("We" or "Us").
 
 The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/acterglobal/a3.
 
 ### How to use this Contributor Agreement
 
-If You are an employee and have created the Contribution as part of your employment, You need to have Your employer approve this Agreement or sign the Entity version of this document. If You do not own the Copyright in the entire work of authorship, any other author of the Contribution should also sign this – in any event, please contact Us at team@effektio.org
+If You are an employee and have created the Contribution as part of your employment, You need to have Your employer approve this Agreement or sign the Entity version of this document. If You do not own the Copyright in the entire work of authorship, any other author of the Contribution should also sign this – in any event, please contact Us at team@acter.global
 
 ### 1\. Definitions
 
