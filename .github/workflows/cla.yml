@@ -1,5 +1,7 @@
 name: "CLA Signature Bot"
 on:
+  issue_comment:
+    types: [created]
   pull_request:
     types: [opened, closed, synchronize]
 
@@ -8,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "CLA Signature Bot"
-        uses: roblox/cla-assistant@2.0.0
+        uses: roblox/cla-assistant@v2.0.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
