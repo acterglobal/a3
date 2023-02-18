@@ -17,12 +17,12 @@ jobs:
         with:
           submodules: true
 
-#       ---- setup of systems
+      #       ---- setup of systems
 
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: "stable"
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
@@ -30,13 +30,12 @@ jobs:
           toolchain: nightly
           override: true
 
-#                  ---- Install extra tools
+      #                  ---- Install extra tools
 
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
 
-
-#
+      #
       - name: Versions
         run: |
           echo "--- Rust"
@@ -46,7 +45,7 @@ jobs:
           echo "--- dartdoct"
           flutter pub global run dartdoc --version
 
-#       ---- Actual build steps
+      #       ---- Actual build steps
 
       - name: Build Rust docs
         run: |
@@ -65,7 +64,10 @@ jobs:
         run: flutter pub global run dartdoc --output ../docs/static/api/main/dart-sdk/
         working-directory: app/packages/rust_sdk
 
-#       ---- Finalisation for github pages
+      #       ---- Finalisation for github pages
+
+      - name: "Ensure zola works"
+        run: git config --global --add safe.directory /github/workspace/docs/themes/adidoks
 
       - name: build zola
         uses: shalzz/zola-deploy-action@master

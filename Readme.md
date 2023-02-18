@@ -21,7 +21,7 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 [![Matrix: #Foyer](https://img.shields.io/badge/Foyer-green?style=for-the-badge)](https://matrix.to/#/#foyer:effektio.org)
 [![Matrix: #Tech](https://img.shields.io/badge/tech-green?style=for-the-badge)](https://matrix.to/#/#tech:effektio.org)
 
-[![Acter Public Source License](https://img.shields.io/badge/License-Effektio%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
+[![Acter Public Source License](https://img.shields.io/badge/License-Acter%20Public%20Source%20License-blue?style=for-the-badge)](./LICENSE.txt)
 
 </div>
 
