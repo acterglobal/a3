@@ -52,7 +52,7 @@ dependencies = [
 
 [tasks.flutter-get]
 # update flutter dependencies
-script_runner = "@duckscript"
+script_runner = "@shell"
 script = [
     "cd ${CARGO_MAKE_WORKSPACE_WORKING_DIRECTORY}/${TARGET_PLUGIN}",
     "flutter pub get",
@@ -152,7 +152,7 @@ args = ["lipo", "--release"]
 
 [tasks.post-ios]
 dependencies = ["ffigen"]
-script_runner = "@duckscript"
+script_runner = "@shell"
 condition = { platforms = ["mac"] }
 script = [
     """
@@ -317,21 +317,19 @@ dependencies = [
 [tasks.desktop-build]
 private = true
 condition = { env_true = ["DEV"] }
-script_runner = "@duckscript"
 command = "cargo"
 args = ["build", "--lib"]
 
 [tasks.desktop-build-release]
 private = true
 condition = { env_true = ["RELEASE"], platforms = ["windows", "linux"] }
-script_runner = "@duckscript"
 command = "cargo"
 args = ["build", "--lib", "--release"]
 
 [tasks.desktop-build-release-mac]
 private = true
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }
-script_runner = "bash"
+script_runner = "@shell"
 script = [
     """
     cargo build --lib --target x86_64-apple-darwin --release
