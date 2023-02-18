@@ -27,6 +27,6 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 
 ## License
 
-This code is made available under an the eventually Free Software "Acter Public Source License". Tl;dr: You can use the software for personal, educational and interal usage as long as the installation stays below 100 registered users and is not available to the public. Any other installation, usage or derivation of the work requires consent by the licensor. All code is made availble under the AGPL Free Software License two years after its publication.
+The App (code) is made available under an the eventually Free Software "Acter Public Source License". Tl;dr: You can use the software for personal, educational and interal usage as long as the installation stays below 100 registered users and is not available to the public. Any other installation, usage or derivation of the work requires consent by the licensor. All code is made availble under the AGPL Free Software License two years after its publication.
 
 All contributors must agree that their code is licensed this way and that the license can be changed by the licensor. A bot on the Github repo will track that agreement.
