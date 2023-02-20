@@ -72,6 +72,7 @@ dependencies:
 
   # State Management
   get: ^4.6.5
+  flutter_riverpod: ^2.2.0
 
   # Utilities
   path_provider: ^2.0.8
