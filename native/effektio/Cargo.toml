@@ -5,7 +5,7 @@ edition = "2021"
 rust-version = "1.58"
 description = "SDK of the effektio app"
 homepage = "https://effekto.org"
-repository = "https://github.com/effektio/effektio"
+repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]

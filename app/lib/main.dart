@@ -1,25 +1,24 @@
 import 'dart:async';
 
-import 'package:effektio/common/store/themes/AppTheme.dart';
-import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-import 'package:effektio/controllers/chat_list_controller.dart';
-import 'package:effektio/controllers/chat_room_controller.dart';
-import 'package:effektio/controllers/receipt_controller.dart';
+import 'package:effektio/common/snackbars/not_implemented.dart';
+import 'package:effektio/common/themes/app_theme.dart';
+import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:effektio/common/utils/utils.dart';
+import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
+import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
+import 'package:effektio/features/chat/controllers/receipt_controller.dart';
+import 'package:effektio/features/chat/pages/chat_page.dart';
 import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio/screens/HomeScreens/chat/Overview.dart';
-// import 'package:effektio/screens/HomeScreens/Notification.dart';
-import 'package:effektio/screens/HomeScreens/faq/Overview.dart';
-import 'package:effektio/screens/HomeScreens/news/News.dart';
-import 'package:effektio/screens/HomeScreens/todo/ToDo.dart';
-import 'package:effektio/screens/OnboardingScreens/LogIn.dart';
-import 'package:effektio/screens/OnboardingScreens/Signup.dart';
-import 'package:effektio/screens/SideMenuScreens/Gallery.dart';
-import 'package:effektio/screens/UserScreens/SocialProfile.dart';
-import 'package:effektio/widgets/AppCommon.dart';
-// import 'package:effektio/widgets/AppCommon.dart';
-import 'package:effektio/widgets/CrossSigning.dart';
-import 'package:effektio/widgets/MaterialIndicator.dart';
-import 'package:effektio/widgets/SideMenu.dart';
+import 'package:effektio/features/faq/pages/faq_page.dart';
+import 'package:effektio/features/news/pages/news_page.dart';
+import 'package:effektio/features/todo/pages/todo_page.dart';
+import 'package:effektio/features/onboarding/pages/login_page.dart';
+import 'package:effektio/features/onboarding/pages/sign_up_page.dart';
+import 'package:effektio/features/gallery/pages/gallery_page.dart';
+import 'package:effektio/features/profile/pages/social_profile_page.dart';
+import 'package:effektio/features/cross_signing/cross_signing.dart';
+import 'package:effektio/common/widgets/material_indicator.dart';
+import 'package:effektio/common/widgets/side_menu.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
@@ -75,10 +74,10 @@ class Effektio extends StatelessWidget {
             initialRoute: '/',
             routes: <String, WidgetBuilder>{
               '/': (BuildContext context) => const EffektioHome(),
-              '/login': (BuildContext context) => const LoginScreen(),
-              '/profile': (BuildContext context) => const SocialProfileScreen(),
-              '/signup': (BuildContext context) => const SignupScreen(),
-              '/gallery': (BuildContext context) => const GalleryScreen(),
+              '/login': (BuildContext context) => const LoginPage(),
+              '/profile': (BuildContext context) => const SocialProfilePage(),
+              '/signup': (BuildContext context) => const SignupPage(),
+              '/gallery': (BuildContext context) => const GalleryPage(),
             },
           ),
         ),
@@ -282,14 +281,14 @@ class _EffektioHomeState extends State<EffektioHome>
           body: TabBarView(
             controller: tabController,
             children: [
-              NewsScreen(
+              NewsPage(
                 client: client,
                 displayName: displayName,
                 displayAvatar: displayAvatar,
               ),
-              FaqOverviewScreen(client: client),
-              ToDoScreen(client: client),
-              ChatOverview(client: client),
+              FaqPage(client: client),
+              ToDoPage(client: client),
+              ChatPage(client: client),
             ],
           ),
           drawer: SideDrawer(
