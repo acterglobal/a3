@@ -1,8 +1,8 @@
 /// Start logging
-fn init_logging(app_name: string, log_dir: string, filter: Option<string>) -> Result<string>;
+fn init_logging(app_name: string, log_dir: string, filter: Option<string>) -> Result<()>;
 
 /// Stop logging
-fn rotate_logging() -> Result<()>;
+fn rotate_logging() -> Result<string>;
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(basepath: string, username: string, password: string, device_name: Option<string>) -> Future<Result<Client>>;

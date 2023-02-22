@@ -129,22 +129,21 @@ class EffektioSdk {
           ? ffi.Api(await _getAndroidDynLib('libeffektio.so'))
           : ffi.Api.load();
       Directory appDocDir = await getApplicationDocumentsDirectory();
-      String logPath = '';
       try {
         if (Platform.isAndroid) {
-          logPath = api.initLogging(
+          api.initLogging(
             'com.example.effektio',
             appDocDir.path,
             'warn,effektio=debug',
           );
         } else if (Platform.isIOS || Platform.isMacOS) {
-          logPath = api.initLogging(
+          api.initLogging(
             'org.effektio.app',
             appDocDir.path,
             'warn,effektio=debug',
           );
         } else {
-          logPath = api.initLogging(
+          api.initLogging(
             'effektio',
             appDocDir.path,
             'warn,effektio=debug',
@@ -259,7 +258,8 @@ class EffektioSdk {
     return _api.newGroupSettings(name);
   }
 
-  Future<void> reportBug() async {
-    _api.rotateLogging();
+  void reportBug() {
+    String oldPath = _api.rotateLogging();
+    debugPrint('rotation log: $oldPath');
   }
 }

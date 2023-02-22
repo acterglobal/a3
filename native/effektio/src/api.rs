@@ -85,10 +85,10 @@ mod api {
     }
 }
 
-fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<String> {
-    Ok(platform::init_logging(app_name, log_dir, filter)?)
+fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
+    platform::init_logging(app_name, log_dir, filter)
 }
 
-fn rotate_logging() -> Result<()> {
+fn rotate_logging() -> Result<String> {
     platform::rotate_logging()
 }

@@ -524,7 +524,7 @@ class Api {
   }
 
   /// Start logging
-  String initLogging(
+  void initLogging(
     String appName,
     String logDir,
     String? filter,
@@ -585,9 +585,6 @@ class Api {
     final tmp17 = tmp14.arg1;
     final tmp18 = tmp14.arg2;
     final tmp19 = tmp14.arg3;
-    final tmp20 = tmp14.arg4;
-    final tmp21 = tmp14.arg5;
-    final tmp22 = tmp14.arg6;
     if (tmp16 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
       final tmp16_0 = utf8.decode(tmp17_0.asTypedList(tmp18));
@@ -598,23 +595,19 @@ class Api {
       }
       throw tmp16_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp20_0 = ffi.Pointer.fromAddress(tmp20);
-    final tmp15 = utf8.decode(tmp20_0.asTypedList(tmp21));
-    if (tmp22 > 0) {
-      final ffi.Pointer<ffi.Void> tmp20_0;
-      tmp20_0 = ffi.Pointer.fromAddress(tmp20);
-      this.__deallocate(tmp20_0, tmp22 * 1, 1);
-    }
-    return tmp15;
+    return;
   }
 
   /// Stop logging
-  void rotateLogging() {
+  String rotateLogging() {
     final tmp0 = _rotateLogging();
     final tmp2 = tmp0.arg0;
     final tmp3 = tmp0.arg1;
     final tmp4 = tmp0.arg2;
     final tmp5 = tmp0.arg3;
+    final tmp6 = tmp0.arg4;
+    final tmp7 = tmp0.arg5;
+    final tmp8 = tmp0.arg6;
     if (tmp2 == 0) {
       final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       final tmp2_0 = utf8.decode(tmp3_0.asTypedList(tmp4));
@@ -625,7 +618,14 @@ class Api {
       }
       throw tmp2_0;
     }
-    return;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+    final tmp1 = utf8.decode(tmp6_0.asTypedList(tmp7));
+    if (tmp8 > 0) {
+      final ffi.Pointer<ffi.Void> tmp6_0;
+      tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      this.__deallocate(tmp6_0, tmp8 * 1, 1);
+    }
+    return tmp1;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -5603,7 +5603,7 @@ class Api {
 
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
-          _StartLoggingReturn Function(
+          _InitLoggingReturn Function(
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -5617,7 +5617,7 @@ class Api {
   )>>("__init_logging");
 
   late final _initLogging = _initLoggingPtr.asFunction<
-      _StartLoggingReturn Function(
+      _InitLoggingReturn Function(
     int,
     int,
     int,
@@ -20679,7 +20679,18 @@ class TypingEvent {
   }
 }
 
-class _StartLoggingReturn extends ffi.Struct {
+class _InitLoggingReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _RotateLoggingReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -20694,17 +20705,6 @@ class _StartLoggingReturn extends ffi.Struct {
   external int arg5;
   @ffi.Uint64()
   external int arg6;
-}
-
-class _RotateLoggingReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Int64()
-  external int arg1;
-  @ffi.Uint64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
 }
 
 class _EfkColorRgbaU8Return extends ffi.Struct {

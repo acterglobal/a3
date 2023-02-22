@@ -1,4 +1,5 @@
 use anyhow::Result;
+use log::{Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
 use matrix_sdk_sled::make_store_config;
 use std::path::PathBuf;
@@ -14,15 +15,26 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<String> {
-    let file_path = "".to_string();
-    Ok(file_path)
+pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
+    Ok(())
 }
 
-pub fn rotate_logging() -> Result<()> {
-    Ok(())
+pub fn rotate_logging() -> Result<String> {
+    Ok("".to_string())
 }
 
 pub fn sanitize(base_path: String, home: String) -> PathBuf {
     PathBuf::from(base_path).join(sanitize_filename_reader_friendly::sanitize(&home))
+}
+
+pub struct NopLogger;
+
+impl Log for NopLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        false
+    }
+
+    fn log(&self, record: &Record) {}
+
+    fn flush(&self) {}
 }

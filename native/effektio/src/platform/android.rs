@@ -3,7 +3,7 @@ use anyhow::Result;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use std::{
-    fs::OpenOptions,
+    fs::canonicalize,
     path::PathBuf,
     sync::{Arc, Mutex},
 };
@@ -17,7 +17,9 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<String> {
+static mut FILE_LOGGER: Option<Arc<fern::ImplDispatch>> = None;
+
+pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -34,21 +36,10 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
     }
     let console_logger = LoggerWrapper::new(log_config).cloned_boxed_logger();
 
-    let file_name = chrono::Local::now()
-        .format("app_%Y-%m-%d_%H-%M-%S.log")
-        .to_string();
     let mut path = PathBuf::from(log_dir.as_str());
-    path.push(file_name);
-    let log_path = path.to_string_lossy().to_string();
+    path.push("app_");
 
-    let file_logger = OpenOptions::new()
-        .write(true)
-        .create(true)
-        .truncate(true)
-        .create(true)
-        .open(log_path.as_str())?;
-
-    fern::Dispatch::new()
+    let (level, dispatch) = fern::Dispatch::new()
         .format(|out, message, record| {
             out.finish(format_args!(
                 "{}[{}][{}] {}",
@@ -60,11 +51,21 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
         })
         .level(log_level.filter())
         .chain(console_logger)
-        .chain(file_logger)
-        .apply()?;
+        .chain(fern::Manual::new(path, "%Y-%m-%d_%H-%M-%S%.f.log"))
+        .into_dispatch_with_arc();
 
-    log::info!("log file path: {}", log_path);
-    Ok(log_path)
+    if level == log::LevelFilter::Off {
+        log::set_boxed_logger(Box::new(native::NopLogger)).unwrap();
+    } else {
+        log::set_boxed_logger(Box::new(dispatch.clone())).unwrap();
+    }
+    log::set_max_level(level);
+
+    unsafe {
+        FILE_LOGGER = Some(dispatch);
+    }
+
+    Ok(())
 }
 
 /// Wrapper for our verification which acts as the actual logger.
@@ -96,6 +97,19 @@ impl Log for LoggerWrapper {
     fn flush(&self) {}
 }
 
-pub fn rotate_logging() -> Result<()> {
-    Ok(())
+pub fn rotate_logging() -> Result<String> {
+    unsafe {
+        if let Some(dispatch) = &FILE_LOGGER {
+            let res = dispatch.rotate();
+            for output in res.iter() {
+                match output {
+                    Some((old_path, new_path)) => {
+                        return Ok(canonicalize(old_path)?.to_string_lossy().to_string());
+                    }
+                    None => {}
+                }
+            }
+        }
+    }
+    Ok("".to_string())
 }

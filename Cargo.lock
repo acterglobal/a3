@@ -1191,8 +1191,9 @@ dependencies = [
 [[package]]
 name = "fern"
 version = "0.6.1"
-source = "git+https://github.com/acterglobal/fern?branch=rotate#97d1606e64c68eedfaaf83173eec5ea95c18a931"
+source = "git+https://github.com/acterglobal/fern?branch=rotate#5ebb9a788a921f053422662214019924c051c152"
 dependencies = [
+ "chrono",
  "log",
 ]
 

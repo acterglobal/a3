@@ -77,7 +77,7 @@ class _BugReportItem extends StatelessWidget {
       ),
       onTap: () async {
         final sdk = await EffektioSdk.instance;
-        await sdk.reportBug();
+        sdk.reportBug();
       },
     );
   }
