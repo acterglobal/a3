@@ -53,12 +53,32 @@ class SideDrawer extends StatelessWidget {
               const _GroupBudgetingItem(),
               const _SharedDocumentsItem(),
               const _GalleryItem(),
+              const _BugReportItem(),
               const SizedBox(height: 5),
               if (!isGuest) const _LogOutItem(),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _BugReportItem extends StatelessWidget {
+  const _BugReportItem();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const SizedBox(width: 25, height: 25),
+      title: const Text(
+        'Bug Report',
+        style: SideMenuAndProfileTheme.sideMenuStyle,
+      ),
+      onTap: () async {
+        final sdk = await EffektioSdk.instance;
+        await sdk.reportBug();
+      },
     );
   }
 }

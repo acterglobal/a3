@@ -85,7 +85,10 @@ mod api {
     }
 }
 
-fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
-    let file_path = platform::init_logging(log_dir, filter)?;
-    Ok(file_path)
+fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<String> {
+    Ok(platform::init_logging(app_name, log_dir, filter)?)
+}
+
+fn rotate_logging() -> Result<()> {
+    platform::rotate_logging()
 }

@@ -523,20 +523,25 @@ class Api {
     _deallocate(pointer.cast(), byteCount, alignment);
   }
 
-  /// Initialize logging
+  /// Start logging
   String initLogging(
+    String appName,
     String logDir,
     String? filter,
   ) {
-    final tmp0 = logDir;
-    final tmp4 = filter;
+    final tmp0 = appName;
+    final tmp4 = logDir;
+    final tmp8 = filter;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
     var tmp5 = 0;
+    var tmp6 = 0;
     var tmp7 = 0;
-    var tmp8 = 0;
     var tmp9 = 0;
+    var tmp11 = 0;
+    var tmp12 = 0;
+    var tmp13 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -544,53 +549,83 @@ class Api {
     tmp1_1.setAll(0, tmp0_0);
     tmp1 = tmp1_0.address;
     tmp3 = tmp2;
-    if (tmp4 == null) {
-      tmp5 = 0;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    if (tmp8 == null) {
+      tmp9 = 0;
     } else {
-      tmp5 = 1;
-      final tmp6 = tmp4;
-      final tmp6_0 = utf8.encode(tmp6);
-      tmp8 = tmp6_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp7_0 = this.__allocate(tmp8 * 1, 1);
-      final Uint8List tmp7_1 = tmp7_0.asTypedList(tmp8);
-      tmp7_1.setAll(0, tmp6_0);
-      tmp7 = tmp7_0.address;
-      tmp9 = tmp8;
+      tmp9 = 1;
+      final tmp10 = tmp8;
+      final tmp10_0 = utf8.encode(tmp10);
+      tmp12 = tmp10_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = this.__allocate(tmp12 * 1, 1);
+      final Uint8List tmp11_1 = tmp11_0.asTypedList(tmp12);
+      tmp11_1.setAll(0, tmp10_0);
+      tmp11 = tmp11_0.address;
+      tmp13 = tmp12;
     }
-    final tmp10 = _initLogging(
+    final tmp14 = _initLogging(
       tmp1,
       tmp2,
       tmp3,
       tmp5,
+      tmp6,
       tmp7,
-      tmp8,
       tmp9,
+      tmp11,
+      tmp12,
+      tmp13,
     );
-    final tmp12 = tmp10.arg0;
-    final tmp13 = tmp10.arg1;
-    final tmp14 = tmp10.arg2;
-    final tmp15 = tmp10.arg3;
-    final tmp16 = tmp10.arg4;
-    final tmp17 = tmp10.arg5;
-    final tmp18 = tmp10.arg6;
-    if (tmp12 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      final tmp12_0 = utf8.decode(tmp13_0.asTypedList(tmp14));
-      if (tmp14 > 0) {
-        final ffi.Pointer<ffi.Void> tmp13_0;
-        tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-        this.__deallocate(tmp13_0, tmp15, 1);
+    final tmp16 = tmp14.arg0;
+    final tmp17 = tmp14.arg1;
+    final tmp18 = tmp14.arg2;
+    final tmp19 = tmp14.arg3;
+    final tmp20 = tmp14.arg4;
+    final tmp21 = tmp14.arg5;
+    final tmp22 = tmp14.arg6;
+    if (tmp16 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp17_0 = ffi.Pointer.fromAddress(tmp17);
+      final tmp16_0 = utf8.decode(tmp17_0.asTypedList(tmp18));
+      if (tmp18 > 0) {
+        final ffi.Pointer<ffi.Void> tmp17_0;
+        tmp17_0 = ffi.Pointer.fromAddress(tmp17);
+        this.__deallocate(tmp17_0, tmp19, 1);
       }
-      throw tmp12_0;
+      throw tmp16_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp16_0 = ffi.Pointer.fromAddress(tmp16);
-    final tmp11 = utf8.decode(tmp16_0.asTypedList(tmp17));
-    if (tmp18 > 0) {
-      final ffi.Pointer<ffi.Void> tmp16_0;
-      tmp16_0 = ffi.Pointer.fromAddress(tmp16);
-      this.__deallocate(tmp16_0, tmp18 * 1, 1);
+    final ffi.Pointer<ffi.Uint8> tmp20_0 = ffi.Pointer.fromAddress(tmp20);
+    final tmp15 = utf8.decode(tmp20_0.asTypedList(tmp21));
+    if (tmp22 > 0) {
+      final ffi.Pointer<ffi.Void> tmp20_0;
+      tmp20_0 = ffi.Pointer.fromAddress(tmp20);
+      this.__deallocate(tmp20_0, tmp22 * 1, 1);
     }
-    return tmp11;
+    return tmp15;
+  }
+
+  /// Stop logging
+  void rotateLogging() {
+    final tmp0 = _rotateLogging();
+    final tmp2 = tmp0.arg0;
+    final tmp3 = tmp0.arg1;
+    final tmp4 = tmp0.arg2;
+    final tmp5 = tmp0.arg3;
+    if (tmp2 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      final tmp2_0 = utf8.decode(tmp3_0.asTypedList(tmp4));
+      if (tmp4 > 0) {
+        final ffi.Pointer<ffi.Void> tmp3_0;
+        tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+        this.__deallocate(tmp3_0, tmp5, 1);
+      }
+      throw tmp2_0;
+    }
+    return;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -5568,7 +5603,10 @@ class Api {
 
   late final _initLoggingPtr = _lookup<
       ffi.NativeFunction<
-          _InitLoggingReturn Function(
+          _StartLoggingReturn Function(
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -5579,7 +5617,10 @@ class Api {
   )>>("__init_logging");
 
   late final _initLogging = _initLoggingPtr.asFunction<
-      _InitLoggingReturn Function(
+      _StartLoggingReturn Function(
+    int,
+    int,
+    int,
     int,
     int,
     int,
@@ -5588,6 +5629,12 @@ class Api {
     int,
     int,
   )>();
+  late final _rotateLoggingPtr =
+      _lookup<ffi.NativeFunction<_RotateLoggingReturn Function()>>(
+          "__rotate_logging");
+
+  late final _rotateLogging =
+      _rotateLoggingPtr.asFunction<_RotateLoggingReturn Function()>();
   late final _loginNewClientPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -20632,7 +20679,7 @@ class TypingEvent {
   }
 }
 
-class _InitLoggingReturn extends ffi.Struct {
+class _StartLoggingReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -20647,6 +20694,17 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg5;
   @ffi.Uint64()
   external int arg6;
+}
+
+class _RotateLoggingReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
 }
 
 class _EfkColorRgbaU8Return extends ffi.Struct {

@@ -24,8 +24,8 @@ async-broadcast = { workspace = true }
 chrono = "0.4"
 derive_builder = { version = "0.10.2" }
 env_logger = "0.10.0"
-fern = "0.6"
-ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
+fern = { git = "https://github.com/acterglobal/fern", branch = "rotate" }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
 lazy_static = "1.4"
@@ -80,7 +80,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 tracing-android = "0.2"
 
 #   ----   IOS
-[target.'cfg(target_os = "ios")'.dependencies]
+[target.'cfg(any(target_os = "ios", target_os = "macos"))'.dependencies]
 oslog = "0.2"
 
 [lib]

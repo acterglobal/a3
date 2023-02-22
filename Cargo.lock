@@ -983,7 +983,7 @@ dependencies = [
  "effektio-core",
  "env_logger",
  "fern",
- "ffi-gen",
+ "ffi-gen 0.1.13 (git+https://github.com/effektio/ffi-gen)",
  "ffi-gen-macro",
  "futures",
  "futures-signals",
@@ -1191,10 +1191,21 @@ dependencies = [
 [[package]]
 name = "fern"
 version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bdd7b0849075e79ee9a1836df22c717d1eba30451796fdc631b04565dd11e2a"
+source = "git+https://github.com/acterglobal/fern?branch=rotate#97d1606e64c68eedfaaf83173eec5ea95c18a931"
 dependencies = [
  "log",
+]
+
+[[package]]
+name = "ffi-gen"
+version = "0.1.13"
+source = "git+https://github.com/acterglobal/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
+dependencies = [
+ "anyhow",
+ "genco",
+ "heck",
+ "pest",
+ "pest_derive",
 ]
 
 [[package]]
@@ -1212,9 +1223,9 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/effektio/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
+source = "git+https://github.com/acterglobal/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
 dependencies = [
- "ffi-gen",
+ "ffi-gen 0.1.13 (git+https://github.com/acterglobal/ffi-gen)",
  "proc-macro2",
  "quote",
  "syn",

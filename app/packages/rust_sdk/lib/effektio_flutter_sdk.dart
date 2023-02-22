@@ -68,8 +68,11 @@ class EffektioSdk {
     }
 
     if (_clients.isEmpty) {
-      ffi.Client client =
-          await _api.guestClient(appDocPath, defaultServer, deviceName);
+      ffi.Client client = await _api.guestClient(
+        appDocPath,
+        defaultServer,
+        deviceName,
+      );
       _clients.add(client);
       loggedIn = client.loggedIn();
       await _persistSessions();
@@ -126,11 +129,30 @@ class EffektioSdk {
           ? ffi.Api(await _getAndroidDynLib('libeffektio.so'))
           : ffi.Api.load();
       Directory appDocDir = await getApplicationDocumentsDirectory();
+      String logPath = '';
       try {
-        api.initLogging(appDocDir.path, 'warn,effektio=debug');
+        if (Platform.isAndroid) {
+          logPath = api.initLogging(
+            'com.example.effektio',
+            appDocDir.path,
+            'warn,effektio=debug',
+          );
+        } else if (Platform.isIOS || Platform.isMacOS) {
+          logPath = api.initLogging(
+            'org.effektio.app',
+            appDocDir.path,
+            'warn,effektio=debug',
+          );
+        } else {
+          logPath = api.initLogging(
+            'effektio',
+            appDocDir.path,
+            'warn,effektio=debug',
+          );
+        }
       } catch (e) {
         developer.log(
-          'Setting logging failed',
+          'Logging setup failed',
           level: 900, // warning
           error: e,
         );
@@ -151,8 +173,12 @@ class EffektioSdk {
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-    final client =
-        await _api.loginNewClient(appDocPath, username, password, deviceName);
+    final client = await _api.loginNewClient(
+      appDocPath,
+      username,
+      password,
+      deviceName,
+    );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       var client = _clients.removeAt(0);
@@ -231,5 +257,9 @@ class EffektioSdk {
 
   ffi.CreateGroupSettings newGroupSettings(String name) {
     return _api.newGroupSettings(name);
+  }
+
+  Future<void> reportBug() async {
+    _api.rotateLogging();
   }
 }

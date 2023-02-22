@@ -4,6 +4,7 @@ use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use oslog::OsLog;
 use std::{
+    fs::OpenOptions,
     path::PathBuf,
     sync::{Arc, Mutex},
 };
@@ -17,7 +18,9 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
+// this includes macos, because macos and ios is very much alike in logging
+
+pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -26,7 +29,7 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
         None => FilterBuilder::new().build(),
     };
 
-    let wrapper = LoggerWrapper::new("org.effektio.app", "viewcycle");
+    let console_logger = LoggerWrapper::new(app_name.as_str(), "viewcycle").cloned_boxed_logger();
 
     let file_name = chrono::Local::now()
         .format("app_%Y-%m-%d_%H-%M-%S.log")
@@ -34,6 +37,13 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
     let mut path = PathBuf::from(log_dir.as_str());
     path.push(file_name);
     let log_path = path.to_string_lossy().to_string();
+
+    let file_logger = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .create(true)
+        .open(log_path.as_str())?;
 
     fern::Dispatch::new()
         .format(|out, message, record| {
@@ -46,8 +56,8 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
             ))
         })
         .level(log_level.filter())
-        .chain(wrapper.cloned_boxed_logger())
-        .chain(fern::log_file(log_path.clone())?)
+        .chain(console_logger)
+        .chain(file_logger)
         .apply()?;
 
     log::info!("log file path: {}", log_path.clone());
@@ -89,4 +99,8 @@ impl Log for LoggerWrapper {
     }
 
     fn flush(&self) {}
+}
+
+pub fn rotate_logging() -> Result<()> {
+    Ok(())
 }

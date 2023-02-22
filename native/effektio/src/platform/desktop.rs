@@ -1,9 +1,15 @@
 use anyhow::Result;
 use env_logger::filter::Builder as FilterBuilder;
-use log::LevelFilter;
+use log::{LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
-use std::path::PathBuf;
+use std::{
+    fs::{File, OpenOptions},
+    io::Write,
+    path::PathBuf,
+    sync::Arc,
+};
 
+use crate::Client;
 use super::native;
 
 pub use super::native::sanitize;
@@ -19,7 +25,11 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
+static mut LOGGER: &dyn Log = &NopLogger;
+
+// this excludes macos, because macos and ios is very much alike in logging
+
+pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<String> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -35,6 +45,16 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
     path.push(file_name);
     let log_path = path.to_string_lossy().to_string();
 
+    let file = OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .create(true)
+        .open(log_path.as_str())?;
+    // unsafe {
+    //     FILE_LOGGER = Some(Arc::new(file.try_clone()?));
+    // }
+
     fern::Dispatch::new()
         .format(|out, message, record| {
             out.finish(format_args!(
@@ -47,9 +67,37 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<String> {
         })
         .level(log_level.filter())
         .chain(std::io::stdout())
-        .chain(fern::log_file(log_path.clone())?)
+        .chain(file)
         .apply()?;
 
     log::info!("log file path: {}", log_path);
     Ok(log_path)
 }
+
+struct NopLogger;
+
+impl Log for NopLogger {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        false
+    }
+
+    fn log(&self, record: &Record) {}
+
+    fn flush(&self) {}
+}
+
+pub fn rotate_logging() -> Result<()> {
+    let logger = log::logger();
+    let log_level = log::max_level();
+    unsafe {
+        log::set_max_level(LevelFilter::Off);
+        log::set_boxed_logger(Box::new(&NopLogger));
+        // if let Some(file) = &FILE_LOGGER {
+        //     file.try_clone()?.flush()?;
+        //     FILE_LOGGER = None;
+        // }
+    }
+    Ok(())
+}
+
+impl Client {}

@@ -265,17 +265,14 @@ class _EffektioHomeState extends State<EffektioHome>
   }
 
   Widget buildHomeScreen(BuildContext context, Client client) {
-    tabController.addListener(
-      () => {
-        if (client.isGuest() && tabIndex == 3)
-          {
-            showNotYetImplementedMsg(
-              context,
-              'Chat for Guests is not implemented yet',
-            )
-          }
-      },
-    );
+    tabController.addListener(() {
+      if (client.isGuest() && tabIndex == 3) {
+        showNotYetImplementedMsg(
+          context,
+          'Chat for Guests is not implemented yet',
+        );
+      }
+    });
     return DefaultTabController(
       length: 4,
       key: const Key('bottom-bar'),
@@ -335,25 +332,25 @@ class _EffektioHomeState extends State<EffektioHome>
       builder: (BuildContext context, AsyncSnapshot<Client> snapshot) {
         if (snapshot.hasData) {
           return buildHomeScreen(context, snapshot.requireData);
-        } else if (snapshot.hasError) {
+        }
+        if (snapshot.hasError) {
           return SizedBox(
             height: 40,
             width: 40,
             child: Text('${snapshot.error}'),
           );
-        } else {
-          return const Scaffold(
-            body: Center(
-              child: SizedBox(
-                height: 50,
-                width: 50,
-                child: CircularProgressIndicator(
-                  color: AppCommonTheme.primaryColor,
-                ),
+        }
+        return const Scaffold(
+          body: Center(
+            child: SizedBox(
+              height: 50,
+              width: 50,
+              child: CircularProgressIndicator(
+                color: AppCommonTheme.primaryColor,
               ),
             ),
-          );
-        }
+          ),
+        );
       },
     );
   }
