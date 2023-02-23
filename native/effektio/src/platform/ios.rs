@@ -11,6 +11,21 @@ use std::{
 
 use super::native;
 
+// this includes macos, because macos and ios is very much alike in logging
+
+#[cfg(target_os = "macos")]
+pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
+    let builder = native::new_client_config(base_path, home)
+        .await?
+        .user_agent(format!(
+            "{:}/effektio@{:}",
+            option_env!("CARGO_BIN_NAME").unwrap_or("effektio-desktop"),
+            env!("CARGO_PKG_VERSION")
+        ));
+    Ok(builder)
+}
+
+#[cfg(not(target_os = "macos"))]
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
     let builder = native::new_client_config(base_path, home)
         .await?
@@ -19,8 +34,6 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
 }
 
 static mut FILE_LOGGER: Option<Arc<fern::ImplDispatch>> = None;
-
-// this includes macos, because macos and ios is very much alike in logging
 
 pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
