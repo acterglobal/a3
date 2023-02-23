@@ -9,7 +9,6 @@ use std::{
     sync::Arc,
 };
 
-use crate::Client;
 use super::native;
 
 pub use super::native::sanitize;
@@ -86,5 +85,3 @@ pub fn rotate_logging() -> Result<String> {
     }
     Ok("".to_string())
 }
-
-impl Client {}
