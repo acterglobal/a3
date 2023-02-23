@@ -523,7 +523,7 @@ class Api {
     _deallocate(pointer.cast(), byteCount, alignment);
   }
 
-  /// Start logging
+  /// Initialize logging
   void initLogging(
     String appName,
     String logDir,
@@ -598,34 +598,58 @@ class Api {
     return;
   }
 
-  /// Stop logging
-  String rotateLogging() {
-    final tmp0 = _rotateLogging();
-    final tmp2 = tmp0.arg0;
-    final tmp3 = tmp0.arg1;
-    final tmp4 = tmp0.arg2;
-    final tmp5 = tmp0.arg3;
-    final tmp6 = tmp0.arg4;
-    final tmp7 = tmp0.arg5;
-    final tmp8 = tmp0.arg6;
-    if (tmp2 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      final tmp2_0 = utf8.decode(tmp3_0.asTypedList(tmp4));
-      if (tmp4 > 0) {
-        final ffi.Pointer<ffi.Void> tmp3_0;
-        tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-        this.__deallocate(tmp3_0, tmp5, 1);
+  /// Report bug with log file
+  bool reportBug(
+    String text,
+    String label,
+  ) {
+    final tmp0 = text;
+    final tmp4 = label;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8 = _reportBug(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    final tmp14 = tmp8.arg4;
+    if (tmp10 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      final tmp10_0 = utf8.decode(tmp11_0.asTypedList(tmp12));
+      if (tmp12 > 0) {
+        final ffi.Pointer<ffi.Void> tmp11_0;
+        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+        this.__deallocate(tmp11_0, tmp13, 1);
       }
-      throw tmp2_0;
+      throw tmp10_0;
     }
-    final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-    final tmp1 = utf8.decode(tmp6_0.asTypedList(tmp7));
-    if (tmp8 > 0) {
-      final ffi.Pointer<ffi.Void> tmp6_0;
-      tmp6_0 = ffi.Pointer.fromAddress(tmp6);
-      this.__deallocate(tmp6_0, tmp8 * 1, 1);
-    }
-    return tmp1;
+    final tmp9 = tmp14 > 0;
+    return tmp9;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -5629,12 +5653,26 @@ class Api {
     int,
     int,
   )>();
-  late final _rotateLoggingPtr =
-      _lookup<ffi.NativeFunction<_RotateLoggingReturn Function()>>(
-          "__rotate_logging");
+  late final _reportBugPtr = _lookup<
+      ffi.NativeFunction<
+          _ReportBugReturn Function(
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__report_bug");
 
-  late final _rotateLogging =
-      _rotateLoggingPtr.asFunction<_RotateLoggingReturn Function()>();
+  late final _reportBug = _reportBugPtr.asFunction<
+      _ReportBugReturn Function(
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _loginNewClientPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -20690,7 +20728,7 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
-class _RotateLoggingReturn extends ffi.Struct {
+class _ReportBugReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
@@ -20699,12 +20737,8 @@ class _RotateLoggingReturn extends ffi.Struct {
   external int arg2;
   @ffi.Uint64()
   external int arg3;
-  @ffi.Int64()
+  @ffi.Uint8()
   external int arg4;
-  @ffi.Uint64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
 }
 
 class _EfkColorRgbaU8Return extends ffi.Struct {

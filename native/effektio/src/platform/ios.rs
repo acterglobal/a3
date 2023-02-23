@@ -115,19 +115,20 @@ impl Log for LoggerWrapper {
     fn flush(&self) {}
 }
 
-pub fn rotate_logging() -> Result<String> {
+pub fn report_bug(text: String, label: String) -> Result<bool> {
     unsafe {
         if let Some(dispatch) = &FILE_LOGGER {
             let res = dispatch.rotate();
             for output in res.iter() {
                 match output {
                     Some((old_path, new_path)) => {
-                        return Ok(canonicalize(old_path)?.to_string_lossy().to_string());
+                        let log_path = canonicalize(old_path)?.to_string_lossy().to_string();
+                        return Ok(true);
                     }
                     None => {}
                 }
             }
         }
     }
-    Ok("".to_string())
+    Ok(false)
 }

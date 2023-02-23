@@ -2,12 +2,14 @@ use anyhow::Result;
 use env_logger::filter::Builder as FilterBuilder;
 use log::LevelFilter;
 use matrix_sdk::ClientBuilder;
-use std::{
-    fs::canonicalize,
-    io::Write,
-    path::PathBuf,
-    sync::Arc,
+use reqwest::{
+    blocking::{
+        multipart::{Form, Part},
+        Client,
+    },
+    StatusCode,
 };
+use std::{fs::canonicalize, path::PathBuf, sync::Arc};
 
 use super::native;
 
@@ -69,19 +71,33 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
     Ok(())
 }
 
-pub fn rotate_logging() -> Result<String> {
+pub fn report_bug(text: String, label: String) -> Result<bool> {
     unsafe {
         if let Some(dispatch) = &FILE_LOGGER {
             let res = dispatch.rotate();
             for output in res.iter() {
                 match output {
                     Some((old_path, new_path)) => {
-                        return Ok(canonicalize(old_path)?.to_string_lossy().to_string());
+                        let log_path = canonicalize(old_path)?.to_string_lossy().to_string();
+                        // submit bug report to rageserver to open issue for that bug
+                        let form = Form::new()
+                            .text("text", text.clone())
+                            .text("user_agent", "Mozilla/0.9")
+                            .text("app", "Effektio-windows")
+                            .text("version", "1.0.0")
+                            .text("label", label.clone())
+                            .file("log", log_path.clone())?;
+                        let resp = Client::new()
+                            .post("http://192.168.142.130:9110/api/submit")
+                            .basic_auth("alice", Some("secret"))
+                            .multipart(form)
+                            .send()?;
+                        return Ok(resp.status() == StatusCode::OK);
                     }
                     None => {}
                 }
             }
         }
     }
-    Ok("".to_string())
+    Ok(false)
 }

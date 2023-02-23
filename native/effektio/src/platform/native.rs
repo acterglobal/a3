@@ -19,8 +19,8 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
     Ok(())
 }
 
-pub fn rotate_logging() -> Result<String> {
-    Ok("".to_string())
+pub fn report_bug(text: String, label: String) -> Result<bool> {
+    Ok(true)
 }
 
 pub fn sanitize(base_path: String, home: String) -> PathBuf {

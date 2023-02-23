@@ -258,8 +258,8 @@ class EffektioSdk {
     return _api.newGroupSettings(name);
   }
 
-  void reportBug() {
-    String oldPath = _api.rotateLogging();
-    debugPrint('rotation log: $oldPath');
+  void reportBug(String text, String label) {
+    bool res = _api.reportBug(text, label);
+    debugPrint('report bug: $res');
   }
 }

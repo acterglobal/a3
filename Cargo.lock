@@ -996,6 +996,7 @@ dependencies = [
  "mime",
  "oslog",
  "parking_lot 0.11.2",
+ "reqwest",
  "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=62ed200a56d00353eea128191311c4c8016def9f)",
  "sanitize-filename-reader-friendly",
  "serde",
@@ -2092,6 +2093,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
 
 [[package]]
+name = "mime_guess"
+version = "2.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4192263c238a5f0d0c6bfd21f336a313a4ce1c450542449ca191bb657b4642ef"
+dependencies = [
+ "mime",
+ "unicase",
+]
+
+[[package]]
 name = "mio"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2668,6 +2679,7 @@ dependencies = [
  "js-sys",
  "log",
  "mime",
+ "mime_guess",
  "once_cell",
  "percent-encoding",
  "pin-project-lite",
