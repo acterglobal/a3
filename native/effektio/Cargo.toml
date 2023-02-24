@@ -15,7 +15,7 @@ testing = [ "dep:matrix-sdk-base" ]
 dart = [ "with-mocks" ]
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"

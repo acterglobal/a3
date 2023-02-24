@@ -983,7 +983,7 @@ dependencies = [
  "effektio-core",
  "env_logger",
  "fern",
- "ffi-gen 0.1.13 (git+https://github.com/effektio/ffi-gen)",
+ "ffi-gen",
  "ffi-gen-macro",
  "futures",
  "futures-signals",
@@ -1211,23 +1211,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "ffi-gen"
-version = "0.1.13"
-source = "git+https://github.com/effektio/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
-dependencies = [
- "anyhow",
- "genco",
- "heck",
- "pest",
- "pest_derive",
-]
-
-[[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
 source = "git+https://github.com/acterglobal/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
 dependencies = [
- "ffi-gen 0.1.13 (git+https://github.com/acterglobal/ffi-gen)",
+ "ffi-gen",
  "proc-macro2",
  "quote",
  "syn",
