@@ -14,6 +14,8 @@ use std::{
 
 use super::{native, super::api::RUNTIME};
 
+pub use super::native::sanitize;
+
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
     let builder = native::new_client_config(base_path, home)
         .await?
@@ -53,8 +55,11 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
                 message
             ))
         })
+        // Only log messages Info and above
         .level(log_level.filter())
+        // Output to console
         .chain(console_logger)
+        // Output to file
         .chain(fern::Manual::new(path, "%Y-%m-%d_%H-%M-%S%.f.log"))
         .into_dispatch_with_arc();
 
@@ -72,7 +77,7 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
     Ok(())
 }
 
-/// Wrapper for our verification which acts as the actual logger.
+/// Wrapper for our console which acts as the actual logger.
 #[derive(Clone)]
 struct LoggerWrapper(Arc<Mutex<AndroidLogger>>);
 

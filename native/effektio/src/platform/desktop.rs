@@ -49,8 +49,11 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
                 message
             ))
         })
+        // Only log messages Info and above
         .level(log_level.filter())
+        // Output to console
         .chain(std::io::stdout())
+        // Output to file
         .chain(fern::Manual::new(path, "%Y-%m-%d_%H-%M-%S%.f.log"))
         .into_dispatch_with_arc();
 
