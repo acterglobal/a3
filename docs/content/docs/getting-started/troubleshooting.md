@@ -51,19 +51,14 @@ This issue was fixed android 7.0.
 Please read [this comment](https://ubidots.com/community/t/solved-android-send-call-data-to-ubidots-etslotfrombufferlocked-unknown-buffer/334/2).
 Now minimum version of android is 7.0.
 
-### flutter v3.7 issue in iOS
+### CocoaPods issue in iOS build
 
-Compared with `flutter v3.3`, `flutter v3.7` has many changes.
-It should be compiled in macOS 12.5+ and Xcode 14+.
-As default, macOS 12.5 contains `ruby v2.6` and its path is `/usr/bin/ruby`.
-In case that you need `ruby v3`, you can't delete system default ruby.
-Instead, you can install `ruby v3` additionally after installing Ruby Version Manager.
-Please run the following commands:
-```sh
-brew install gnupg
-curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
-curl -sSL https://get.rvm.io | bash -s stable --ruby
-source /Users/bitfriend/.rvm/scripts/rvm
-sudo gem install cocoapods
-```
+You may get the error message `Invalid argument @ io_fread` during compilation of rust library.
+`cocoapods` is using `ruby-macho` and `ruby-macho` occurs the crash about big input file.
+iOS simulator uses `x86_64-apple-ios` architecture.
+The size of our library `libeffektio.a` is as following:
+Debug build: 717MB
+Release build: 223MB
+When using release build of `libeffektio.a`, the error `Invalid argument @ io_fread` disappeared.
+The compile command of release build is the following:
+`cargo make --profile release ios`
