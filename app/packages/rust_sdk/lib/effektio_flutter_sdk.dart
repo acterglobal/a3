@@ -258,8 +258,36 @@ class EffektioSdk {
     return _api.newGroupSettings(name);
   }
 
-  void reportBug(String text, String label) {
-    bool res = _api.reportBug(text, label);
-    debugPrint('report bug: $res');
+  Future<bool> reportBug(String text, String label, bool withLog) async {
+    const url = String.fromEnvironment(
+      'RAGESHAKE_URL',
+      defaultValue: 'https://rageshake.acter.global/api/submit',
+    );
+    const username = String.fromEnvironment(
+      'RAGESHAKE_USERNAME',
+      defaultValue: 'acter',
+    );
+    const password = String.fromEnvironment(
+      'RAGESHAKE_PASSWORD',
+      defaultValue: 'global',
+    );
+    const appName = String.fromEnvironment(
+      'ISSUE_APP_NAME',
+      defaultValue: 'a3-nightly',
+    );
+    const version = String.fromEnvironment(
+      'ISSUE_APP_VERSION',
+      defaultValue: '1.0.0',
+    );
+    return await _api.reportBug(
+      url,
+      username,
+      password,
+      appName,
+      version,
+      text,
+      label,
+      withLog,
+    );
   }
 }

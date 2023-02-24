@@ -89,6 +89,18 @@ fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Re
     platform::init_logging(app_name, log_dir, filter)
 }
 
-fn report_bug(text: String, label: String) -> Result<bool> {
-    platform::report_bug(text, label)
+async fn report_bug(
+    url: String,
+    username: String,
+    password: Option<String>,
+    app_name: String,
+    version: String,
+    text: String,
+    label: String,
+    with_log: bool,
+) -> Result<bool> {
+    platform::report_bug(
+        url, username, password, app_name, version, text, label, with_log,
+    )
+    .await
 }

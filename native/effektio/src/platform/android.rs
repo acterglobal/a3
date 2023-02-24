@@ -2,13 +2,17 @@ use android_logger::{AndroidLogger, Config, FilterBuilder};
 use anyhow::Result;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
+use reqwest::{
+    multipart::{Form, Part},
+    Client, StatusCode,
+};
 use std::{
-    fs::canonicalize,
+    fs,
     path::PathBuf,
     sync::{Arc, Mutex},
 };
 
-use super::native;
+use super::{native, super::api::RUNTIME};
 
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
     let builder = native::new_client_config(base_path, home)
@@ -97,20 +101,54 @@ impl Log for LoggerWrapper {
     fn flush(&self) {}
 }
 
-pub fn report_bug(text: String, label: String) -> Result<bool> {
-    unsafe {
-        if let Some(dispatch) = &FILE_LOGGER {
-            let res = dispatch.rotate();
-            for output in res.iter() {
-                match output {
-                    Some((old_path, new_path)) => {
-                        let log_path = canonicalize(old_path)?.to_string_lossy().to_string();
-                        return Ok(true);
+pub async fn report_bug(
+    url: String,
+    username: String,
+    password: Option<String>,
+    app_name: String,
+    version: String,
+    text: String,
+    label: String,
+    with_log: bool,
+) -> Result<bool> {
+    let mut form = Form::new()
+        .text("text", text)
+        .text("user_agent", "Mozilla/0.9")
+        .text("app", app_name)
+        .text("version", version)
+        .text("label", label);
+    if with_log {
+        unsafe {
+            if let Some(dispatch) = &FILE_LOGGER {
+                let res = dispatch.rotate();
+                for output in res.iter() {
+                    match output {
+                        Some((old_path, new_path)) => {
+                            let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
+                            let file = fs::read(log_path)?;
+                            let filename =
+                                old_path.file_name().unwrap().to_string_lossy().to_string();
+                            let file_part = Part::bytes(file)
+                                .file_name(filename)
+                                .mime_str("text/plain")?;
+                            form = form.part("log", file_part);
+                            break;
+                        }
+                        None => {}
                     }
-                    None => {}
                 }
             }
         }
     }
-    Ok(false)
+    RUNTIME
+        .spawn(async move {
+            let resp = Client::new()
+                .post(url)
+                .basic_auth(username, password)
+                .multipart(form)
+                .send()
+                .await?;
+            Ok(resp.status() == StatusCode::OK)
+        })
+        .await?
 }

@@ -19,7 +19,16 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
     Ok(())
 }
 
-pub fn report_bug(text: String, label: String) -> Result<bool> {
+pub async fn report_bug(
+    url: String,
+    username: String,
+    password: Option<String>,
+    app_name: String,
+    version: String,
+    text: String,
+    label: String,
+    with_log: bool,
+) -> Result<bool> {
     Ok(true)
 }
 
