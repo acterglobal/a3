@@ -261,16 +261,20 @@ class EffektioSdk {
   Future<bool> reportBug(String text, String label, bool withLog) async {
     const url = String.fromEnvironment(
       'RAGESHAKE_URL',
-      defaultValue: 'https://rageshake.acter.global/api/submit',
+      defaultValue: 'http://localhost/api/submit',
     );
-    const username = String.fromEnvironment(
-      'RAGESHAKE_USERNAME',
-      defaultValue: 'acter',
-    );
-    const password = String.fromEnvironment(
-      'RAGESHAKE_PASSWORD',
-      defaultValue: 'global',
-    );
+    String username = url.startsWith('http://localhost')
+        ? const String.fromEnvironment(
+            'RAGESHAKE_USERNAME',
+            defaultValue: 'alice',
+          )
+        : const String.fromEnvironment('RAGESHAKE_USERNAME');
+    String password = url.startsWith('http://localhost')
+        ? const String.fromEnvironment(
+            'RAGESHAKE_PASSWORD',
+            defaultValue: 'secret',
+          )
+        : const String.fromEnvironment('RAGESHAKE_PASSWORD');
     const appName = String.fromEnvironment(
       'ISSUE_APP_NAME',
       defaultValue: 'a3-nightly',
