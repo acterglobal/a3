@@ -1,12 +1,17 @@
 use anyhow::Result;
 use env_logger::filter::Builder as FilterBuilder;
+use lazy_static::lazy_static;
 use log::LevelFilter;
 use matrix_sdk::ClientBuilder;
 use reqwest::{
     multipart::{Form, Part},
     Client, StatusCode,
 };
-use std::{fs, path::PathBuf, sync::Arc};
+use std::{
+    fs,
+    path::PathBuf,
+    sync::{Arc, Mutex},
+};
 
 use super::{native, super::api::RUNTIME};
 
@@ -23,7 +28,9 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-static mut FILE_LOGGER: Option<Arc<fern::ImplDispatch>> = None;
+lazy_static! {
+    static ref FILE_LOGGER: Mutex<Option<Arc<fern::ImplDispatch>>> = Mutex::new(None);
+}
 
 // this excludes macos, because macos and ios is very much alike in logging
 
@@ -66,9 +73,7 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     }
     log::set_max_level(level);
 
-    unsafe {
-        FILE_LOGGER = Some(dispatch);
-    }
+    *FILE_LOGGER.lock().unwrap() = Some(dispatch);
 
     Ok(())
 }
@@ -90,24 +95,22 @@ pub async fn report_bug(
         .text("version", version)
         .text("label", label);
     if with_log {
-        unsafe {
-            if let Some(dispatch) = &FILE_LOGGER {
-                let res = dispatch.rotate();
-                for output in res.iter() {
-                    match output {
-                        Some((old_path, new_path)) => {
-                            let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
-                            let file = fs::read(log_path)?;
-                            let filename =
-                                old_path.file_name().unwrap().to_string_lossy().to_string();
-                            let file_part = Part::bytes(file)
-                                .file_name(filename)
-                                .mime_str("text/plain")?;
-                            form = form.part("log", file_part);
-                            break;
-                        }
-                        None => {}
+        if let Some(dispatch) = &*FILE_LOGGER.lock().unwrap() {
+            let res = dispatch.rotate();
+            for output in res.iter() {
+                match output {
+                    Some((old_path, new_path)) => {
+                        let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
+                        let file = fs::read(log_path)?;
+                        let filename =
+                            old_path.file_name().unwrap().to_string_lossy().to_string();
+                        let file_part = Part::bytes(file)
+                            .file_name(filename)
+                            .mime_str("text/plain")?;
+                        form = form.part("log", file_part);
+                        break;
                     }
+                    None => {}
                 }
             }
         }
