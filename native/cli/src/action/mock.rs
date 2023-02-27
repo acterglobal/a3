@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use clap::{crate_version, Parser};
+use clap::{crate_version, Parser, Subcommand};
 use effektio::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
@@ -12,7 +12,6 @@ use effektio_core::{
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
-
 #[derive(Parser, Debug)]
 pub struct MockOpts {
     /// Which homeserver are we running against
@@ -37,7 +36,7 @@ pub struct MockOpts {
     pub cmd: Option<MockCmd>,
 }
 
-#[derive(clap::Subcommand, Debug)]
+#[derive(Debug, Subcommand)]
 pub enum MockCmd {
     All,
     Users,

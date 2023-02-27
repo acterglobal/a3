@@ -19,14 +19,12 @@ pub struct LoginConfig {
     #[clap(
         short = 'u',
         long = "user",
-        parse(try_from_str),
         env = ENV_USER
     )]
     login_username: OwnedUserId,
     #[clap(
         short = 'p',
         long = "password",
-        parse(try_from_str),
         env = ENV_PASSWORD
     )]
     login_password: Option<String>,
