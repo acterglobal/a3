@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:effektio/main.dart' as app;
-import 'package:effektio/common/constants.dart';
+import 'package:effektio/common/utils/constants.dart';
 
 Future<void> signInAs(
   WidgetTester tester,

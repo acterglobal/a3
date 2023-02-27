@@ -1,9 +1,9 @@
-Effektio Source License 1.0
+Acter Public Source License 1.0
 
 Parameters
 
-Licensor:             The Effektio Council / Benjamin Kampmann
-Licensed Work:        Effektio
+Licensor:             Acter
+Licensed Work:        a3 / Acter App
 Additional Use Grant: You may make use of the Licensed Work for personal and
                       educational purposes as well as for internal usage,
                       provided that your service is not publicly accessible and
@@ -17,7 +17,7 @@ Change License:       GNU AFFERO GENERAL PUBLIC LICENSE, Version 3.0
 
 Notice
 
-The Effektio Source License (this document, or the "License"), based on the
+The Acter Public Source License (this document, or the "License"), based on the
 Business Source License 1.1, is not an Open Source license. However, the
 Licensed Work will eventually be made available under an Open Source License,
 as stated in this License.
@@ -26,7 +26,7 @@ as stated in this License.
 
 -----------------------------------------------------------------------------
 
-Effektio Source License 1.0
+Acter Public Source License 1.0
 
 Terms
 

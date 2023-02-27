@@ -25,14 +25,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
-  avatar_stack:
-    dependency: "direct main"
-    description:
-      name: avatar_stack
-      sha256: f4614fdd04503eaf50300259adb3b33b00f2f34505192aba5848e76adf118443
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -74,7 +66,7 @@ packages:
     source: hosted
     version: "1.0.2"
   characters:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: characters
       sha256: e6a326c8af69605aec75ed6c187d06b349707a27fbff8222ca9cc2cff167975c
@@ -121,14 +113,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
-  cross_file:
-    dependency: transitive
-    description:
-      name: cross_file
-      sha256: "0b0036e8cccbfbe0555fd83c1d31a6f30b77a96b598b35a5d36dd41f718695e9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.3+4"
   crypto:
     dependency: transitive
     description:
@@ -161,14 +145,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  duration:
-    dependency: "direct main"
-    description:
-      name: duration
-      sha256: d0b29d0a345429e3986ac56d60e4aef65b37d11e653022b2b9a4b361332b777f
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.12"
   effektio_flutter_sdk:
     dependency: "direct main"
     description:
@@ -290,10 +266,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "3e0fb14a577eddf081dde34c2a27fe547e713b11"
-      url: "https://github.com/effektio/flyer-flutter_chat_ui.git"
+      resolved-ref: "06bdc7f595a5cfc86b707c34377f4a636dfcf254"
+      url: "https://github.com/acterglobal/flyer-flutter_chat_ui.git"
     source: git
-    version: "1.6.5"
+    version: "1.6.6"
   flutter_colorpicker:
     dependency: "direct main"
     description:
@@ -408,14 +384,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_lorem:
-    dependency: "direct main"
-    description:
-      name: flutter_lorem
-      sha256: "004e1af5b030b632628d8cc1eb2f90451f48b6c0080f43069f69baa4959e9fe5"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   flutter_math_fork:
     dependency: transitive
     description:
@@ -430,7 +398,7 @@ packages:
       path: "."
       ref: HEAD
       resolved-ref: "401f1eb60e3493834162c4cb4ce35e83a4a2bb68"
-      url: "https://github.com/effektio/flutter_matrix_html.git"
+      url: "https://github.com/acterglobal/flutter_matrix_html.git"
     source: git
     version: "1.1.0"
   flutter_mentions:
@@ -499,14 +467,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  formz:
-    dependency: "direct main"
-    description:
-      name: formz
-      sha256: ed92f501f4a44b1da9137a025007df773b3732147b413c464158ecd997612ab6
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.1"
   fuchsia_remote_debug_protocol:
     dependency: transitive
     description: flutter
@@ -592,22 +552,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
-  image_picker_for_web:
-    dependency: "direct main"
-    description:
-      name: image_picker_for_web
-      sha256: "7d319fb74955ca46d9bf7011497860e3923bb67feebcf068f489311065863899"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.10"
-  image_picker_platform_interface:
-    dependency: transitive
-    description:
-      name: image_picker_platform_interface
-      sha256: "7cef2f28f4f2fef99180f636c3d446b4ccbafd6ba0fad2adc9a80c4040f656b8"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.6.2"
   implicitly_animated_reorderable_list_2:
     dependency: "direct main"
     description:
@@ -1332,5 +1276,5 @@ packages:
     source: hosted
     version: "3.1.1"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
+  dart: ">=2.19.0 <3.0.0"
   flutter: ">=3.7.0"
