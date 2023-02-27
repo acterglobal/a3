@@ -263,18 +263,14 @@ class EffektioSdk {
       'RAGESHAKE_URL',
       defaultValue: 'http://localhost/api/submit',
     );
-    String username = url.startsWith('http://localhost')
-        ? const String.fromEnvironment(
-            'RAGESHAKE_USERNAME',
-            defaultValue: 'alice',
-          )
-        : const String.fromEnvironment('RAGESHAKE_USERNAME');
-    String password = url.startsWith('http://localhost')
-        ? const String.fromEnvironment(
-            'RAGESHAKE_PASSWORD',
-            defaultValue: 'secret',
-          )
-        : const String.fromEnvironment('RAGESHAKE_PASSWORD');
+    const username = String.fromEnvironment(
+      'RAGESHAKE_USERNAME',
+      defaultValue: 'alice',
+    );
+    const password = String.fromEnvironment(
+      'RAGESHAKE_PASSWORD',
+      defaultValue: 'secret',
+    );
     const appName = String.fromEnvironment(
       'ISSUE_APP_NAME',
       defaultValue: 'a3-nightly',
