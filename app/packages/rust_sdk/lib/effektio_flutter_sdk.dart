@@ -19,7 +19,7 @@ export './effektio_flutter_sdk_ffi.dart' show Client;
 // }
 
 const defaultServer = String.fromEnvironment(
-  'DEFAULT_EFFEKTIO_SERVER',
+  'DEFAULT_HOMESERVER_URL',
   defaultValue: 'https://matrix.effektio.org',
 );
 
