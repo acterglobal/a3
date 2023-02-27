@@ -116,7 +116,21 @@ jobs:
         run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          flutter test -d linux integration_test/* --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+          flutter pub run build_runner build
+          flutter test -d linux integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+
+      - name: Generate Cucumber report
+        if: failure()
+        working-directory: util/cucumber_reporter
+        run: |
+          yarn install
+          node .
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          path: util/cucumber_reporter/output
 
   flutter-ios:
     runs-on: macos-latest
@@ -174,8 +188,23 @@ jobs:
 
       - name: Run flutter integration tests
         working-directory: app
-        run: flutter test -d ios integration_test/* --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
+        run: |
+          flutter pub run build_runner build
+          flutter test -d ios integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
 
+      - name: Generate Cucumber report
+        if: failure()
+        working-directory: util/cucumber_reporter
+        run: |
+          yarn install
+          node .
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          path: util/cucumber_reporter/output
+          
   flutter-android:
     runs-on: macos-latest
     name: Android
@@ -238,7 +267,21 @@ jobs:
           disable-animations: true
           emulator-build: 7425822
           script: |
-            flutter test -d android integration_test/* --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost 
+            flutter pub run build_runner build
+            flutter test -d android integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost 
+
+      - name: Generate Cucumber report
+        if: failure()
+        working-directory: util/cucumber_reporter
+        run: |
+          yarn install
+          node .
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          path: util/cucumber_reporter/output
 
   report-issue:
     runs-on: ubuntu-latest

@@ -92,6 +92,10 @@ dev_dependencies:
     sdk: flutter
   icons_launcher: ^2.0.1
   flutter_lints: ^1.0.4
+  build_runner: ^2.3.3
+  flutter_gherkin:
+    git:
+      url: https://git.openprivacy.ca/openprivacy/flutter_gherkin.git
 
 icons_launcher:
   image_path: "assets/icon/logo.png"

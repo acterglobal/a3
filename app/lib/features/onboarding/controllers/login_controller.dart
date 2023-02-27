@@ -1,6 +1,5 @@
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/utils/constants.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
@@ -12,12 +11,6 @@ class LoginController extends GetxController {
   Future<Client> login(String username, String password) async {
     update();
     final sdk = await EffektioSdk.instance;
-    if (!username.contains(':')) {
-      username = '$username:$defaultDomain';
-    }
-    if (!username.startsWith('@')) {
-      username = '@$username';
-    }
     Client client = await sdk.login(username, password);
     return client;
   }
