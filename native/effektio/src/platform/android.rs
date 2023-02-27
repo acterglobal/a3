@@ -25,7 +25,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
 
 static mut FILE_LOGGER: Option<Arc<fern::ImplDispatch>> = None;
 
-pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -36,7 +36,7 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
 
     let mut log_config = Config::default()
         .with_max_level(LevelFilter::Trace)
-        .with_tag(app_name.as_str());
+        .with_tag("com.example.effektio");
     if let Some(filter) = filter {
         log_config = log_config.with_filter(FilterBuilder::new().parse(&filter).build());
     }
@@ -55,8 +55,10 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
                 message
             ))
         })
-        // Only log messages Info and above
+        // Add blanket level filter -
         .level(log_level.filter())
+        // - and per-module overrides
+        .level_for("effektio-sdk", log_level.filter())
         // Output to console
         .chain(console_logger)
         // Output to file
@@ -64,9 +66,9 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
         .into_dispatch_with_arc();
 
     if level == log::LevelFilter::Off {
-        log::set_boxed_logger(Box::new(native::NopLogger)).unwrap();
+        log::set_boxed_logger(Box::new(native::NopLogger))?;
     } else {
-        log::set_boxed_logger(Box::new(dispatch.clone())).unwrap();
+        log::set_boxed_logger(Box::new(dispatch.clone()))?;
     }
     log::set_max_level(level);
 

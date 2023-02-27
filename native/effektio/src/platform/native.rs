@@ -15,7 +15,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     Ok(())
 }
 

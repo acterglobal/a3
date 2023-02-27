@@ -130,25 +130,7 @@ class EffektioSdk {
           : ffi.Api.load();
       Directory appDocDir = await getApplicationDocumentsDirectory();
       try {
-        if (Platform.isAndroid) {
-          api.initLogging(
-            'com.example.effektio',
-            appDocDir.path,
-            'warn,effektio=debug',
-          );
-        } else if (Platform.isIOS || Platform.isMacOS) {
-          api.initLogging(
-            'org.effektio.app',
-            appDocDir.path,
-            'warn,effektio=debug',
-          );
-        } else {
-          api.initLogging(
-            'effektio',
-            appDocDir.path,
-            'warn,effektio=debug',
-          );
-        }
+        api.initLogging(appDocDir.path, 'warn,effektio=debug');
       } catch (e) {
         developer.log(
           'Logging setup failed',

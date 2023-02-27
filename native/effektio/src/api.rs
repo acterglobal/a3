@@ -85,8 +85,8 @@ mod api {
     }
 }
 
-fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
-    platform::init_logging(app_name, log_dir, filter)
+fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+    platform::init_logging(log_dir, filter)
 }
 
 async fn report_bug(

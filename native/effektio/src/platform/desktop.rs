@@ -27,7 +27,7 @@ static mut FILE_LOGGER: Option<Arc<fern::ImplDispatch>> = None;
 
 // this excludes macos, because macos and ios is very much alike in logging
 
-pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -> Result<()> {
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
@@ -49,8 +49,10 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
                 message
             ))
         })
-        // Only log messages Info and above
+        // Add blanket level filter -
         .level(log_level.filter())
+        // - and per-module overrides
+        .level_for("effektio-sdk", log_level.filter())
         // Output to console
         .chain(std::io::stdout())
         // Output to file
@@ -58,9 +60,9 @@ pub fn init_logging(app_name: String, log_dir: String, filter: Option<String>) -
         .into_dispatch_with_arc();
 
     if level == log::LevelFilter::Off {
-        log::set_boxed_logger(Box::new(native::NopLogger)).unwrap();
+        log::set_boxed_logger(Box::new(native::NopLogger))?;
     } else {
-        log::set_boxed_logger(Box::new(dispatch.clone())).unwrap();
+        log::set_boxed_logger(Box::new(dispatch.clone()))?;
     }
     log::set_max_level(level);
 

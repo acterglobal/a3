@@ -1,5 +1,5 @@
 /// Initialize logging
-fn init_logging(app_name: string, log_dir: string, filter: Option<string>) -> Result<()>;
+fn init_logging(log_dir: string, filter: Option<string>) -> Result<()>;
 
 /// Report bug with log file
 fn report_bug(url: string, username: string, password: Option<string>, app_name: string, version: string, text: string, label: string, with_log: bool) -> Future<Result<bool>>;
