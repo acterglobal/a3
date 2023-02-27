@@ -8,8 +8,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
-import 'package:effektio/common/utils/constants.dart'
-    show LoginScreenKeys, Keys;
+import 'package:effektio/common/utils/constants.dart' show LoginScreenKeys;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

@@ -24,6 +24,6 @@ class Keys {
 }
 
 const defaultDomain = String.fromEnvironment(
-  'DEFAULT_EFFEKTIO_DOMAIN',
-  defaultValue: 'effektio.org',
+  'DEFAULT_HOMESERVER_DOMAIN',
+  defaultValue: 'acter.global',
 );

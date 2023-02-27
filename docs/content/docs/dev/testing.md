@@ -36,7 +36,6 @@ cd app
 flutter test
 ```
 
-
 ## Integration Tests
 
 ### Infrastructure
@@ -44,13 +43,13 @@ flutter test
 You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse/latest/) with a specific configuration. We recommend to just use our docker-compose setup for that:
 
 #### Docker Container
-We have a `docker` container image available with that setup already for you at `lightyear/effektio-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
 
+We have a `docker` container image available with that setup already for you at `lightyear/effektio-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
 
 <details>
 <summary><strong>Custom Synapse-Server</strong></summary>
 
-If you can't or don't want to use the docekr containers, you'll need a synapse matrix backend with the following settings included (in the `homeserver.yaml`):
+If you can't or don't want to use the docker containers, you'll need a synapse matrix backend with the following settings included (in the `homeserver.yaml`):
 
 ```yaml
 allow_guest_access: true
@@ -326,7 +325,6 @@ sudo systemctl status matrix-synapse
 
 You needn't to add `admin` user with `register_new_matrix_user`.
 
-
 #### Firewall
 
 If you are running synapse on a virtual or remote machine and API call is not working, you can update the firewall rules to allow access to the ports. To turn off the public profile of a server firewall on a `Ubuntu` linux, you can use `gufw` and disable it like so:
@@ -336,9 +334,10 @@ If you are running synapse on a virtual or remote machine and API call is not wo
 </details>
 
 #### Mock data
+
 The integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
-`cargo run -p effektio-cli -- mock $HOMESERVER`
+`cargo run -p effektio-cli -- mock --homeserver $HOMESERVER`
 
 **Reset docker**
 To start the docker-compose afresh:
@@ -348,6 +347,7 @@ To start the docker-compose afresh:
 3. start the service with `docker-compose up -d`
 
 **Reset database (in case of SQLite)**
+
 1. Stop service with `sudo systemctl stop matrix-synapse`
 2. Delete this file `/var/lib/matrix-synapse/homeserver.db`
 3. Start service with `sudo systemctl start matrix-synapse`
@@ -389,7 +389,7 @@ To run the rust integration tests, you need a fresh integration testing infrastr
 
 ```
 cd app
-flutter test integration_test/* --dart-define DEFAULT_EFFEKTIO_SERVER=$HOMESERVER --dart-define DEFAULT_EFFEKTIO_DOMAIN=ds9.effektio.org
+flutter test integration_test/* --dart-define DEFAULT_HOMESERVER_URL=$HOMESERVER
 ```
 
 **From Visual Studio Ccode**

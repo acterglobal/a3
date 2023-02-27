@@ -33,7 +33,7 @@ jobs:
       - uses: michaelkaye/setup-matrix-synapse@main
         with:
           uploadLogs: false
-          httpPort: 8008
+          httpPort: 8118
           disableRateLimiting: true
           customConfig: |
             allow_guest_access: true
@@ -44,13 +44,15 @@ jobs:
       - uses: Swatinem/rust-cache@v1
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://localhost:8008
+        run: cargo run -p effektio-cli -- mock
         env:
-          EFFEKTIO_SERVERNAME: "localhost"
+          DEFAULT_HOMESERVER_NAME: "localhost"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: run cargo integration tests
         env:
-          HOMESERVER: "http://localhost:8008"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
+          DEFAULT_HOMESERVER_NAME: "localhost"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
         run: cargo test -p effektio-test -- --nocapture
@@ -95,9 +97,10 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://localhost:8118/
+        run: cargo run -p effektio-cli -- mock
         env:
-          EFFEKTIO_SERVERNAME: "localhost"
+          DEFAULT_HOMESERVER_NAME: "localhost"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Enable Linux Desktop
         run: flutter config --enable-linux-desktop
@@ -113,7 +116,7 @@ jobs:
         run: |
           export DISPLAY=:99
           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-          flutter test -d linux integration_test/* --dart-define DEFAULT_EFFEKTIO_SERVER=http://localhost:8118/ --dart-define DEFAULT_EFFEKTIO_DOMAIN=localhost
+          flutter test -d linux integration_test/* --dart-define DEFAULT_HOMESERVER_URL=http://localhost:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
 
   flutter-ios:
     runs-on: macos-latest
@@ -154,9 +157,10 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://localhost:8118/
+        run: cargo run -p effektio-cli -- mock
         env:
-          EFFEKTIO_SERVERNAME: "localhost"
+          DEFAULT_HOMESERVER_NAME: "localhost"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8008"
 
       - name: Build Native
         run: cargo make --profile release ios
@@ -170,7 +174,7 @@ jobs:
 
       - name: Run flutter integration tests
         working-directory: app
-        run: flutter test -d ios integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://10.0.2.2:8118/
+        run: flutter test -d ios integration_test/* --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost
 
   flutter-android:
     runs-on: macos-latest
@@ -211,9 +215,10 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock http://localhost:8118/
+        run: cargo run -p effektio-cli -- mock
         env:
-          EFFEKTIO_SERVERNAME: "localhost"
+          DEFAULT_HOMESERVER_NAME: "localhost"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8008"
 
       - name: Build Native
         run: cargo make --profile release android
@@ -233,7 +238,7 @@ jobs:
           disable-animations: true
           emulator-build: 7425822
           script: |
-            flutter test -d android integration_test/*  --dart-define DEFAULT_EFFEKTIO_SERVER=http://10.0.2.2:8118/
+            flutter test -d android integration_test/* --dart-define DEFAULT_HOMESERVER_URL=http://10.0.2.2:8118/ --dart-define DEFAULT_HOMESERVER_NAME=localhost 
 
   report-issue:
     runs-on: ubuntu-latest

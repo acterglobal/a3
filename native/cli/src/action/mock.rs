@@ -16,10 +16,13 @@ use std::collections::HashMap;
 #[derive(Parser, Debug)]
 pub struct MockOpts {
     /// Which homeserver are we running against
-    #[clap(env = "EFFEKTIO_HOMESERVER")]
+    #[clap(
+        env = "DEFAULT_HOMESERVER_URL",
+        default_value = "http://localhost:8118"
+    )]
     pub homeserver: String,
     /// Which homeserver are we running against
-    #[clap(env = "EFFEKTIO_SERVERNAME", default_value = "ds9.effektio.org")]
+    #[clap(env = "DEFAULT_HOMESERVER_NAME", default_value = "localhost")]
     pub server_name: String,
 
     /// Persist the store in .local/{user_id}

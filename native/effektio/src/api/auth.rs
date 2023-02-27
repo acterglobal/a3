@@ -1,11 +1,14 @@
 use anyhow::{bail, Context, Result};
 use assign::assign;
 use effektio_core::{
-    ruma::api::client::{account::register, session::login, uiaa},
+    ruma::{
+        api::client::{account::register, session::login, uiaa},
+        OwnedUserId, ServerName,
+    },
     RestoreToken,
 };
 use log::info;
-use matrix_sdk::Session;
+use matrix_sdk::{ClientBuilder, Session};
 
 use crate::platform;
 
@@ -13,6 +16,39 @@ use super::{
     client::{Client, ClientStateBuilder},
     device, RUNTIME,
 };
+
+async fn make_client_config(
+    base_path: String,
+    username: &str,
+) -> Result<(ClientBuilder, OwnedUserId)> {
+    let formatted_username = if !username.starts_with('@') {
+        format!("@{username}")
+    } else {
+        username.to_owned()
+    };
+
+    // fully qualified username, good to go
+    if let Ok(user_id) = OwnedUserId::try_from(formatted_username.as_str()) {
+        return Ok((
+            platform::new_client_config(base_path, user_id.to_string())
+                .await?
+                .server_name(user_id.server_name()),
+            user_id,
+        ));
+    }
+
+    // we need to fallback to the testing/default scenario
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
+    let user_id = OwnedUserId::try_from(format!("{formatted_username}:{homeserver_name}"))?;
+
+    let url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
+    Ok((
+        platform::new_client_config(base_path, user_id.to_string())
+            .await?
+            .homeserver_url(url),
+        user_id,
+    ))
+}
 
 pub async fn guest_client(
     base_path: String,
@@ -90,24 +126,7 @@ pub async fn login_new_client(
     password: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let mut config = platform::new_client_config(base_path, username)
-        .await?
-        .server_name(user_id.server_name());
-
-    match user_id.server_name().as_str() {
-        "effektio.org" => {
-            // effektio.org has problems with the .well-known-setup at the moment
-            config = config.homeserver_url("https://matrix.effektio.org");
-        }
-        "ds9.effektio.org" => {
-            // this is our local CI test environment
-            let url = option_env!("HOMESERVER").unwrap_or("http://localhost:8118");
-            config = config.homeserver_url(url);
-        }
-        _ => {}
-    };
-
+    let (mut config, user_id) = make_client_config(base_path, &username).await?;
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -138,10 +157,7 @@ pub async fn register_with_registration_token(
     registration_token: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let user_id = effektio_core::ruma::OwnedUserId::try_from(username.clone())?;
-    let config = platform::new_client_config(base_path, username.clone())
-        .await?
-        .server_name(user_id.server_name());
+    let (mut config, user_id) = make_client_config(base_path, &username).await?;
     // First we need to log in.
     RUNTIME
         .spawn(async move {
