@@ -131,6 +131,7 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
+          name: cucumber-report
           path: util/cucumber_reporter/output
 
   flutter-ios:
@@ -205,6 +206,7 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
+          name: cucumber-report
           path: util/cucumber_reporter/output
           
   flutter-android:
@@ -284,6 +286,7 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
+          name: cucumber-report
           path: util/cucumber_reporter/output
 
   report-issue:
