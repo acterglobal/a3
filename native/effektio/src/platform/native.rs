@@ -34,6 +34,7 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 pub async fn report_bug(
     url: String,
     username: String,
