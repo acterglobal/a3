@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{bail, Result};
 use env_logger::filter::Builder as FilterBuilder;
 use lazy_static::lazy_static;
 use log::LevelFilter;
@@ -95,23 +95,28 @@ pub async fn report_bug(
         .text("version", version)
         .text("label", label);
     if with_log {
-        if let Some(dispatch) = &*FILE_LOGGER.lock().unwrap() {
-            let res = dispatch.rotate();
-            for output in res.iter() {
-                match output {
-                    Some((old_path, new_path)) => {
-                        let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
-                        let file = fs::read(log_path)?;
-                        let filename =
-                            old_path.file_name().unwrap().to_string_lossy().to_string();
-                        let file_part = Part::bytes(file)
-                            .file_name(filename)
-                            .mime_str("text/plain")?;
-                        form = form.part("log", file_part);
-                        break;
+        match &*FILE_LOGGER.lock().unwrap() {
+            Some(dispatch) => {
+                let res = dispatch.rotate();
+                for output in res.iter() {
+                    match output {
+                        Some((old_path, new_path)) => {
+                            let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
+                            let file = fs::read(log_path)?;
+                            let filename =
+                                old_path.file_name().unwrap().to_string_lossy().to_string();
+                            let file_part = Part::bytes(file)
+                                .file_name(filename)
+                                .mime_str("text/plain")?;
+                            form = form.part("log", file_part);
+                            break;
+                        }
+                        None => {}
                     }
-                    None => {}
                 }
+            }
+            None => {
+                bail!("You didn't set up file logger.");
             }
         }
     }
