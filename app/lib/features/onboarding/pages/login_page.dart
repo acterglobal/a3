@@ -39,14 +39,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           duration: const Duration(seconds: 4),
         ),
       );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.loginFailed),
+          backgroundColor: AuthTheme.authFailed,
+          duration: const Duration(seconds: 4),
+        ),
+      );
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.loginFailed),
-        backgroundColor: AuthTheme.authFailed,
-        duration: const Duration(seconds: 4),
-      ),
-    );
   }
 
   @override

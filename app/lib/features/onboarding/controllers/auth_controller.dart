@@ -19,6 +19,7 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
+
     if (!username.contains(':')) {
       username = '$username:effektio.org';
     }
@@ -33,6 +34,7 @@ class AuthController extends StateNotifier<bool> {
       state = false;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
+      debugPrint('$e');
       state = false;
     }
   }
@@ -63,6 +65,7 @@ class AuthController extends StateNotifier<bool> {
   void logOut(BuildContext context) async {
     final sdk = await EffektioSdk.instance;
     await sdk.logout();
+    ref.read(isLoggedInProvider.notifier).update((state) => !state);
     Navigator.pushReplacementNamed(context, '/');
     ref.read(clientProvider.notifier).getClient();
   }
