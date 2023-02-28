@@ -408,8 +408,8 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: bc846ee4df720288a17b8455ec4cc1ccbe90ecdb
-      url: "https://git.openprivacy.ca/openprivacy/flutter_gherkin.git"
+      resolved-ref: ffa1c68e9a2fec93a9ff09c3463095c343ab34bc
+      url: "https://github.com/acterglobal/flutter_gherkin"
     source: git
     version: "3.0.0-rc.17"
   flutter_highlight:
