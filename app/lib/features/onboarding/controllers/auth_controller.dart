@@ -14,7 +14,10 @@ class AuthController extends StateNotifier<bool> {
   AuthController(this.ref) : super(false);
 
   Future<void> login(
-      String username, String password, BuildContext context) async {
+    String username,
+    String password,
+    BuildContext context,
+  ) async {
     state = true;
     if (!username.contains(':')) {
       username = '$username:effektio.org';
@@ -31,7 +34,6 @@ class AuthController extends StateNotifier<bool> {
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
       state = false;
-      rethrow;
     }
   }
 
@@ -52,10 +54,10 @@ class AuthController extends StateNotifier<bool> {
     try {
       await sdk.signUp(username, password, displayName, token);
       ref.read(clientProvider.notifier).getClient();
+      state = false;
     } catch (e) {
-      rethrow;
+      state = false;
     }
-    state = false;
   }
 
   void logOut(BuildContext context) async {
