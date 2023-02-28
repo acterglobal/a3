@@ -75,12 +75,7 @@ class _BugReportItem extends StatelessWidget {
         'Bug Report',
         style: SideMenuAndProfileTheme.sideMenuStyle,
       ),
-      onTap: () async {
-        final sdk = await EffektioSdk.instance;
-        bool res = await sdk.reportBug('test message', 'bug report test', true);
-        debugPrint('bug report result: $res');
-        Navigator.of(context).pop();
-      },
+      onTap: () => Get.offAndToNamed('/bug_report'),
     );
   }
 }

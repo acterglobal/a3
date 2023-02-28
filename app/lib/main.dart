@@ -4,6 +4,7 @@ import 'package:effektio/common/snackbars/not_implemented.dart';
 import 'package:effektio/common/themes/app_theme.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/utils/utils.dart';
+import 'package:effektio/features/bug_report/pages/bug_report_page.dart';
 import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
 import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
 import 'package:effektio/features/chat/controllers/receipt_controller.dart';
@@ -78,6 +79,7 @@ class Effektio extends StatelessWidget {
               '/profile': (BuildContext context) => const SocialProfilePage(),
               '/signup': (BuildContext context) => const SignupPage(),
               '/gallery': (BuildContext context) => const GalleryPage(),
+              '/bug_report': (BuildContext context) => const BugReportPage(),
             },
           ),
         ),
