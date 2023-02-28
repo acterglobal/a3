@@ -18,7 +18,6 @@ class ClientStateNotifier extends StateNotifier<AsyncValue<Client>> {
     final sdk = await EffektioSdk.instance;
     state = await AsyncValue.guard(() async {
       final client = await sdk.currentClient;
-      client.startSync();
       return client;
     });
   }

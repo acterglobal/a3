@@ -3,8 +3,7 @@ import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/features/cross_signing/cross_signing.dart';
 import 'package:effektio/common/widgets/custom_avatar.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk;
+import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -51,11 +50,11 @@ class SideDrawer extends ConsumerWidget {
   }
 }
 
-class _LogOutItem extends StatelessWidget {
+class _LogOutItem extends ConsumerWidget {
   const _LogOutItem();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/logout.svg',
@@ -67,15 +66,13 @@ class _LogOutItem extends StatelessWidget {
         AppLocalizations.of(context)!.logOut,
         style: SideMenuAndProfileTheme.signOutText,
       ),
-      onTap: () async {
+      onTap: () {
+        ref.read(authControllerProvider.notifier).logOut(context);
         if (Get.isRegistered<CrossSigning>()) {
           var crossSigning = Get.find<CrossSigning>();
           crossSigning.dispose();
           Get.delete<CrossSigning>();
         }
-        final sdk = await EffektioSdk.instance;
-        await sdk.logout();
-        Navigator.pushReplacementNamed(context, '/');
       },
     );
   }
@@ -310,7 +307,6 @@ class _HeaderWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final client = ref.watch(clientProvider).requireValue;
-    final userProfile = ref.watch(userProfileProvider);
     if (client.isGuest()) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -356,58 +352,59 @@ class _HeaderWidget extends ConsumerWidget {
           'Profile View not implemented yet',
         );
       },
-      child: userProfile.when(
-        data: (data) {
-          return Row(
-            children: [
-              Container(
-                margin: const EdgeInsets.all(10),
-                child: CustomAvatar(
-                  uniqueKey: client.userId().toString(),
-                  radius: 24,
-                  cacheHeight: 120,
-                  cacheWidth: 120,
-                  avatar: data.getAvatar(),
-                  displayName: data.getDisplayName(),
-                  isGroup: false,
-                  stringName: data.getDisplayName()!,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: ref.watch(userProfileProvider).when(
+            data: (data) {
+              return Row(
                 children: [
-                  data.getDisplayName() == null
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: AppCommonTheme.primaryColor,
-                          ),
-                        )
-                      : Text(
-                          data.getDisplayName()!,
-                          style: SideMenuAndProfileTheme.sideMenuProfileStyle,
-                        ),
-                  Text(
-                    data.userId().toString(),
-                    style: SideMenuAndProfileTheme.sideMenuProfileStyle +
-                        const FontSize(14),
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    child: CustomAvatar(
+                      uniqueKey: client.userId().toString(),
+                      radius: 24,
+                      cacheHeight: 120,
+                      cacheWidth: 120,
+                      avatar: data.getAvatar(),
+                      displayName: data.getDisplayName(),
+                      isGroup: false,
+                      stringName: data.getDisplayName()!,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      data.getDisplayName() == null
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppCommonTheme.primaryColor,
+                              ),
+                            )
+                          : Text(
+                              data.getDisplayName()!,
+                              style:
+                                  SideMenuAndProfileTheme.sideMenuProfileStyle,
+                            ),
+                      Text(
+                        data.userId().toString(),
+                        style: SideMenuAndProfileTheme.sideMenuProfileStyle +
+                            const FontSize(14),
+                      ),
+                    ],
                   ),
                 ],
+              );
+            },
+            error: (error, stackTrace) => const Center(
+              child: Text('Couldn\'t fetch profile'),
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                color: AppCommonTheme.primaryColor,
               ),
-            ],
-          );
-        },
-        error: (error, stackTrace) => const Center(
-          child: Text('Couldn\'t fetch profile'),
-        ),
-        loading: () => const Center(
-          child: CircularProgressIndicator(
-            color: AppCommonTheme.primaryColor,
+            ),
           ),
-        ),
-      ),
     );
   }
 }
