@@ -30,7 +30,7 @@ class AuthController extends StateNotifier<bool> {
     try {
       await sdk.login(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.read(clientProvider.notifier).getClient();
+      ref.invalidate(clientProvider);
       state = false;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
@@ -55,7 +55,7 @@ class AuthController extends StateNotifier<bool> {
     final sdk = await EffektioSdk.instance;
     try {
       await sdk.signUp(username, password, displayName, token);
-      ref.read(clientProvider.notifier).getClient();
+      ref.invalidate(clientProvider);
       state = false;
     } catch (e) {
       state = false;
@@ -67,6 +67,6 @@ class AuthController extends StateNotifier<bool> {
     await sdk.logout();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     Navigator.pushReplacementNamed(context, '/');
-    ref.read(clientProvider.notifier).getClient();
+    ref.invalidate(clientProvider);
   }
 }
