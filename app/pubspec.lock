@@ -408,7 +408,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: ffa1c68e9a2fec93a9ff09c3463095c343ab34bc
+      resolved-ref: "4deb4fc18bb8f4899600ea80748b20487c3b058e"
       url: "https://github.com/acterglobal/flutter_gherkin"
     source: git
     version: "3.0.0-rc.17"
