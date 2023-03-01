@@ -12,9 +12,9 @@
             "program": "integration_test",
             "toolArgs": [
                 "--dart-define",
-                "DEFAULT_EFFEKTIO_SERVER=http://localhost:8118/",
+                "DEFAULT_HOMESERVER_URL=http://localhost:8118/",
                 "--dart-define",
-                "DEFAULT_EFFEKTIO_DOMAIN=ds9.effektio.org"
+                "DEFAULT_HOMESERVER_NAME=localhost"
             ],
             //"templateFor": "test",
             // "console": "debugConsole",

@@ -14,14 +14,19 @@ use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
 #[derive(Parser, Debug)]
 pub struct MockOpts {
-    /// Which homeserver are we running against
+    /// the URL to the homeserver are we running against
     #[clap(
+        long = "homeserver-url",
         env = "DEFAULT_HOMESERVER_URL",
         default_value = "http://localhost:8118"
     )]
     pub homeserver: String,
-    /// Which homeserver are we running against
-    #[clap(env = "DEFAULT_HOMESERVER_NAME", default_value = "localhost")]
+    /// name of that homeserver
+    #[clap(
+        long = "homeserver-name",
+        env = "DEFAULT_HOMESERVER_NAME",
+        default_value = "localhost"
+    )]
     pub server_name: String,
 
     /// Persist the store in .local/{user_id}

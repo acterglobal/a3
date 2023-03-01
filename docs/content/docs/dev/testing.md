@@ -101,7 +101,7 @@ At the end of `sudo apt install matrix-synapse-py3`, you will get the following 
 
 ![Ubuntu ServerName](/images/ubuntu-servername.png)
 
-You have to enter `ds9.effektio.org` in this dialog, that is domain applied to all users in `effektio-test`.
+Keep `localhost` in this dialog, that is domain applied to all users in `effektio-test`.
 `server_name` in `/etc/matrix-synapse/homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
 
 In `homeserver.yaml`, you have to change `bind_addresses: ['::1', '127.0.0.1']` to `bind_addresses: ['0.0.0.0']`.
@@ -203,7 +203,7 @@ At the end of `sudo apt install matrix-synapse-py3`, you will get the following 
 
 ![Ubuntu ServerName](/images/ubuntu-servername.png)
 
-You have to enter `ds9.effektio.org` in this dialog, that is domain applied to all users in `effektio-test`.
+Keep `localhost` in this dialog, that is domain applied to all users in `effektio-test`.
 `server_name` in `homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
 
 In `homeserver.yaml`, you have to change `bind_addresses: ['::1', '127.0.0.1']` to `bind_addresses: ['0.0.0.0']`.
@@ -337,7 +337,7 @@ If you are running synapse on a virtual or remote machine and API call is not wo
 
 The integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
-`cargo run -p effektio-cli -- mock --homeserver $HOMESERVER`
+`cargo run -p effektio-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
 **Reset docker**
 To start the docker-compose afresh:
@@ -351,13 +351,13 @@ To start the docker-compose afresh:
 1. Stop service with `sudo systemctl stop matrix-synapse`
 2. Delete this file `/var/lib/matrix-synapse/homeserver.db`
 3. Start service with `sudo systemctl start matrix-synapse`
-4. Run this command `cargo run -p effektio-cli -- mock $HOMESERVER`
+4. Run this command `cargo run -p effektio-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
 Don't forget to rerun the `mock data` generation again.
 
 ### Rust integration tests
 
-To run the rust integration tests, you need a fresh integration testing infrastructure (see above) availabe at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
+To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$HOMESERVER`. Assuming you are running the docker-compose setup, this would be `http://localhost:8118` (which is the fallback default, so you don't have to put it into your environment). Then you can run the integration test with:
 
 <details><summary><strong>Custom Environment variable under Windows PowerShell</strong></summary>
 
@@ -381,15 +381,15 @@ HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p effektio-test --
 
 ### Flutter UI integration tests
 
-Flutter integration tests can be found `app/integration_test`.
+Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`]() to write and run our tests.
 
 **Running**
 
-To run the rust integration tests, you need a fresh integration testing infrastructure (see above) availabe at `$HOMESERVER`. The following will build the App and run the tests with on the default target (or you specify it via `-d`, e.g. `-d linux` or `-d windows`).
+To run the rust integration tests, you need a fresh integration testing infrastructure (see above) available at `$DEFAULT_HOMESERVER_URL` with the `$DEFAULT_HOMESERVER_NAME` set. The following will build the App and run the tests with on the default target (or you specify it via `-d`, e.g. `-d linux` or `-d windows`).
 
 ```
 cd app
-flutter test integration_test/* --dart-define DEFAULT_HOMESERVER_URL=$HOMESERVER
+flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
 ```
 
 **From Visual Studio Ccode**
