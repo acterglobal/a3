@@ -54,6 +54,22 @@ jobs:
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
         run: cargo test -p effektio-test -- --nocapture
 
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: Rust integration tests failed on main
+          body: |
+            ### Desktop Integration tests failed on main
+            Workflow name - `${{ github.workflow }}`
+            Job -           `${{ github.job }}`
+            status -        `${{ job.status }}`
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          assignees: gnunicorn
+
   flutter-desktop:
     runs-on: ubuntu-latest
     name: Flutter Desktop
@@ -128,8 +144,24 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: cucumber-report
+          name: linux-cucumber-report
           path: util/cucumber_reporter/output
+
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: Desktop integration tests failed on main
+          body: |
+            ### Desktop Integration tests failed on main
+            Workflow name - `${{ github.workflow }}`
+            Job -           `${{ github.job }}`
+            status -        `${{ job.status }}`
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          assignees: gnunicorn
 
   flutter-ios:
     runs-on: macos-latest
@@ -202,9 +234,25 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: cucumber-report
+          name: ios-cucumber-report
           path: util/cucumber_reporter/output
           
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
+        uses: dacbd/create-issue-action@main
+        with:
+          token: ${{ github.token }}
+          title: iOS integration tests failed on main
+          body: |
+            ### iOS Integration tests failed on main
+            Workflow name - `${{ github.workflow }}`
+            Job -           `${{ github.job }}`
+            status -        `${{ job.status }}`
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          assignees: gnunicorn
+
   flutter-android:
     runs-on: macos-latest
     name: Android
@@ -282,28 +330,21 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: cucumber-report
+          name: android-cucumber-report
           path: util/cucumber_reporter/output
 
-  report-issue:
-    runs-on: ubuntu-latest
-    # file an error if this failed on `main` post-merge
-    if: ${{ github.ref == 'refs/heads/main' && failure() }}
-    name: Report issue
-    needs:
-      - flutter-desktop
-      - flutter-android
-      - flutter-ios
-    steps:
-      - name: Create Issue on Failed workflow
+      # file an error if this failed on `main` post-merge
+      - name: Report issue
+        if: ${{ github.ref == 'refs/heads/main' && failure() }}
         uses: dacbd/create-issue-action@main
         with:
           token: ${{ github.token }}
-          title: Mobile integration tests failed on main
+          title: Android integration tests failed on main
           body: |
-            ### Mobile Integration tests failed on main
+            ### Android Integration tests failed on main
             Workflow name - `${{ github.workflow }}`
             Job -           `${{ github.job }}`
             status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
