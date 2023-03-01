@@ -7,6 +7,8 @@ import 'package:effektio/main.dart' as app;
 
 part 'gherkin_suite_test.g.dart';
 
+// ignore_for_file: avoid_print
+
 @GherkinTestSuite(
   executionOrder: ExecutionOrder.alphabetical,
   featurePaths: <String>['integration_test/features/**.feature'],
