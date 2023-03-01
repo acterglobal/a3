@@ -2,32 +2,24 @@ import 'package:effektio/common/snackbars/not_implemented.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/features/cross_signing/cross_signing.dart';
 import 'package:effektio/common/widgets/custom_avatar.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk;
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:effektio/features/home/controllers/home_controller.dart';
+import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 
-class SideDrawer extends StatelessWidget {
-  final bool isGuest;
-  final String? displayName;
-  final String userId;
-  final Future<FfiBufferUint8>? displayAvatar;
-
+class SideDrawer extends ConsumerWidget {
   const SideDrawer({
     Key? key,
-    required this.isGuest,
-    required this.userId,
-    this.displayName,
-    this.displayAvatar,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider).requireValue;
     final size = MediaQuery.of(context).size;
     return Drawer(
       backgroundColor: AppCommonTheme.backgroundColor,
@@ -37,12 +29,7 @@ class SideDrawer extends StatelessWidget {
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _HeaderWidget(
-                isGuest: isGuest,
-                userId: userId,
-                displayName: displayName,
-                displayAvatar: displayAvatar,
-              ),
+              const _HeaderWidget(),
               SizedBox(height: size.height * 0.04),
               const _PinsItem(),
               const _TodoItem(),
@@ -54,7 +41,7 @@ class SideDrawer extends StatelessWidget {
               const _SharedDocumentsItem(),
               const _GalleryItem(),
               const SizedBox(height: 5),
-              if (!isGuest) const _LogOutItem(),
+              if (!client.isGuest()) const _LogOutItem(),
             ],
           ),
         ),
@@ -63,11 +50,11 @@ class SideDrawer extends StatelessWidget {
   }
 }
 
-class _LogOutItem extends StatelessWidget {
+class _LogOutItem extends ConsumerWidget {
   const _LogOutItem();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ListTile(
       leading: SvgPicture.asset(
         'assets/images/logout.svg',
@@ -79,15 +66,13 @@ class _LogOutItem extends StatelessWidget {
         AppLocalizations.of(context)!.logOut,
         style: SideMenuAndProfileTheme.signOutText,
       ),
-      onTap: () async {
+      onTap: () {
+        ref.read(authControllerProvider.notifier).logOut(context);
         if (Get.isRegistered<CrossSigning>()) {
           var crossSigning = Get.find<CrossSigning>();
           crossSigning.dispose();
           Get.delete<CrossSigning>();
         }
-        final sdk = await EffektioSdk.instance;
-        await sdk.logout();
-        Navigator.pushReplacementNamed(context, '/');
       },
     );
   }
@@ -317,21 +302,12 @@ class _TodoItem extends StatelessWidget {
   }
 }
 
-class _HeaderWidget extends StatelessWidget {
-  const _HeaderWidget({
-    required this.isGuest,
-    required this.userId,
-    required this.displayAvatar,
-    required this.displayName,
-  });
-
-  final bool isGuest;
-  final String userId;
-  final Future<FfiBufferUint8>? displayAvatar;
-  final String? displayName;
+class _HeaderWidget extends ConsumerWidget {
+  const _HeaderWidget();
   @override
-  Widget build(BuildContext context) {
-    if (isGuest) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(clientProvider).requireValue;
+    if (client.isGuest()) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -376,46 +352,59 @@ class _HeaderWidget extends StatelessWidget {
           'Profile View not implemented yet',
         );
       },
-      child: Row(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(10),
-            child: CustomAvatar(
-              uniqueKey: userId,
-              radius: 24,
-              cacheHeight: 120,
-              cacheWidth: 120,
-              avatar: displayAvatar,
-              displayName: displayName,
-              isGroup: false,
-              stringName: displayName!,
+      child: ref.watch(userProfileProvider).when(
+            data: (data) {
+              return Row(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    child: CustomAvatar(
+                      uniqueKey: client.userId().toString(),
+                      radius: 24,
+                      cacheHeight: 120,
+                      cacheWidth: 120,
+                      avatar: data.getAvatar(),
+                      displayName: data.getDisplayName(),
+                      isGroup: false,
+                      stringName: data.getDisplayName()!,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      data.getDisplayName() == null
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppCommonTheme.primaryColor,
+                              ),
+                            )
+                          : Text(
+                              data.getDisplayName()!,
+                              style:
+                                  SideMenuAndProfileTheme.sideMenuProfileStyle,
+                            ),
+                      Text(
+                        data.userId().toString(),
+                        style: SideMenuAndProfileTheme.sideMenuProfileStyle +
+                            const FontSize(14),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+            error: (error, stackTrace) => const Center(
+              child: Text('Couldn\'t fetch profile'),
+            ),
+            loading: () => const Center(
+              child: CircularProgressIndicator(
+                color: AppCommonTheme.primaryColor,
+              ),
             ),
           ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              displayName == null
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        color: AppCommonTheme.primaryColor,
-                      ),
-                    )
-                  : Text(
-                      displayName!,
-                      style: SideMenuAndProfileTheme.sideMenuProfileStyle,
-                    ),
-              Text(
-                userId,
-                style: SideMenuAndProfileTheme.sideMenuProfileStyle +
-                    const FontSize(14),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

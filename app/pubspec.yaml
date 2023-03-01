@@ -72,6 +72,7 @@ dependencies:
 
   # State Management
   get: ^4.6.5
+  flutter_riverpod: ^2.2.0
 
   # Utilities
   path_provider: ^2.0.8
@@ -84,6 +85,9 @@ dependencies:
   permission_handler: ^10.2.0
   sprintf: ^6.0.0
   get_time_ago: ^1.1.5
+
+  # Testing
+  mockito: ^5.3.2
 
 dev_dependencies:
   flutter_test:
