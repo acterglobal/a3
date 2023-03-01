@@ -11,9 +11,13 @@ import 'package:overlay_support/overlay_support.dart';
 class NetworkController extends GetxController {
   static NetworkController to = Get.find();
 
-  var connectionType = 0.obs;
+  var connectionType = ConnectivityResult.other.obs;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription _streamSubscription;
+
+  bool isDisconnected() {
+    return connectionType.value == ConnectivityResult.none;
+  }
 
   @override
   void onInit() {
@@ -34,19 +38,9 @@ class NetworkController extends GetxController {
   }
 
   void _updateState(ConnectivityResult result) {
-    switch (result) {
-      case ConnectivityResult.wifi:
-        connectionType.value = 1;
-        break;
-      case ConnectivityResult.mobile:
-        connectionType.value = 2;
-        break;
-      case ConnectivityResult.none:
-        connectionType.value = 0;
-        _showNoInternetNotification();
-        break;
-      default:
-        _showNoInternetNotification();
+    connectionType.value = result;
+    if (result == ConnectivityResult.none) {
+      _showNoInternetNotification();
     }
   }
 

@@ -79,7 +79,7 @@ dependencies:
   filesystem_picker: ^2.0.1
   open_app_file: ^4.0.1
   emoji_picker_flutter: ^1.5.2
-  connectivity_plus: ^3.0.2
+  connectivity_plus: ^3.0.3
   mime: ^1.0.2
   permission_handler: ^10.2.0
   sprintf: ^6.0.0

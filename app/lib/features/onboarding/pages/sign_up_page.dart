@@ -184,7 +184,7 @@ class _ActionBtn extends StatelessWidget {
     return CustomButton(
       onPressed: () async {
         if (formKey.currentState!.validate()) {
-          if (networkController.connectionType.value == 0) {
+          if (networkController.isDisconnected()) {
             Get.snackbar(
               'No internet',
               'Please turn on internet to continue',

@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () async {
                             controller.isSubmitting = true;
                             if (formKey.currentState!.validate()) {
-                              if (networkController.connectionType.value == 0) {
+                              if (networkController.isDisconnected()) {
                                 Get.snackbar(
                                   'No internet',
                                   'Please turn on internet to continue',
