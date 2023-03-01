@@ -18,9 +18,14 @@ export './effektio_flutter_sdk_ffi.dart' show Client;
 //   EffektioClient(this.client);
 // }
 
-const defaultServer = String.fromEnvironment(
+const defaultServerUrl = String.fromEnvironment(
   'DEFAULT_HOMESERVER_URL',
   defaultValue: 'https://matrix.effektio.org',
+);
+
+const defaultServerName = String.fromEnvironment(
+  'DEFAULT_HOMESERVER_NAME',
+  defaultValue: 'effektio.org',
 );
 
 const logSettings = String.fromEnvironment(
@@ -87,8 +92,12 @@ class EffektioSdk {
     }
 
     if (_clients.isEmpty) {
-      ffi.Client client =
-          await _api.guestClient(appDocPath, defaultServer, deviceName);
+      ffi.Client client = await _api.guestClient(
+        appDocPath,
+        defaultServerName,
+        defaultServerUrl,
+        deviceName,
+      );
       _clients.add(client);
       loggedIn = client.loggedIn();
       await _persistSessions();
@@ -178,8 +187,14 @@ class EffektioSdk {
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-    final client =
-        await _api.loginNewClient(appDocPath, username, password, deviceName);
+    final client = await _api.loginNewClient(
+      appDocPath,
+      username,
+      password,
+      defaultServerName,
+      defaultServerUrl,
+      deviceName,
+    );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       var client = _clients.removeAt(0);
@@ -243,6 +258,8 @@ class EffektioSdk {
       username,
       password,
       token,
+      defaultServerName,
+      defaultServerUrl,
       deviceName,
     );
     final account = client.account();

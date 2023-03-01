@@ -20,6 +20,8 @@ use super::{
 async fn make_client_config(
     base_path: String,
     username: &str,
+    default_homeserver_name: &str,
+    default_homeserver_url: &str,
 ) -> Result<(ClientBuilder, OwnedUserId)> {
     let formatted_username = if !username.starts_with('@') {
         format!("@{username}")
@@ -38,26 +40,24 @@ async fn make_client_config(
     }
 
     // we need to fallback to the testing/default scenario
-    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME").unwrap_or("localhost");
-    let user_id = OwnedUserId::try_from(format!("{formatted_username}:{homeserver_name}"))?;
-
-    let url = option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118");
+    let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
     Ok((
         platform::new_client_config(base_path, user_id.to_string())
             .await?
-            .homeserver_url(url),
+            .homeserver_url(default_homeserver_url),
         user_id,
     ))
 }
 
 pub async fn guest_client(
     base_path: String,
-    homeurl: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let config = platform::new_client_config(base_path, homeurl.clone())
+    let config = platform::new_client_config(base_path, default_homeserver_name)
         .await?
-        .homeserver_url(homeurl);
+        .homeserver_url(default_homeserver_url);
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
@@ -124,9 +124,17 @@ pub async fn login_new_client(
     base_path: String,
     username: String,
     password: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (mut config, user_id) = make_client_config(base_path, &username).await?;
+    let (mut config, user_id) = make_client_config(
+        base_path,
+        &username,
+        &default_homeserver_name,
+        &default_homeserver_url,
+    )
+    .await?;
     // First we need to log in.
     RUNTIME
         .spawn(async move {
@@ -155,9 +163,17 @@ pub async fn register_with_registration_token(
     username: String,
     password: String,
     registration_token: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (mut config, user_id) = make_client_config(base_path, &username).await?;
+    let (mut config, user_id) = make_client_config(
+        base_path,
+        &username,
+        &default_homeserver_name,
+        &default_homeserver_url,
+    )
+    .await?;
     // First we need to log in.
     RUNTIME
         .spawn(async move {
