@@ -23,7 +23,7 @@ class Keys {
   static const usernameLabel = Key('username-lbl');
 }
 
-const defaultDomain = String.fromEnvironment(
-  'DEFAULT_HOMESERVER_DOMAIN',
-  defaultValue: 'acter.global',
+const inCI = bool.fromEnvironment(
+  'CI',
+  defaultValue: false,
 );

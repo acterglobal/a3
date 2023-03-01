@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:effektio/common/utils/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -16,7 +17,7 @@ class NetworkController extends GetxController {
   late StreamSubscription _streamSubscription;
 
   bool isDisconnected() {
-    return connectionType.value == ConnectivityResult.none;
+    return !(inCI && connectionType.value == ConnectivityResult.none);
   }
 
   @override
