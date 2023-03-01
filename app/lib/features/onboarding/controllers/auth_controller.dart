@@ -39,12 +39,8 @@ class AuthController extends StateNotifier<bool> {
     }
   }
 
-  void signUp(
-    String username,
-    String password,
-    String displayName,
-    String token,
-  ) async {
+  Future<void> signUp(String username, String password, String displayName,
+      String token, BuildContext context) async {
     state = true;
     if (!username.contains(':')) {
       username = '$username:effektio.org';
@@ -55,8 +51,10 @@ class AuthController extends StateNotifier<bool> {
     final sdk = await EffektioSdk.instance;
     try {
       await sdk.signUp(username, password, displayName, token);
+      ref.read(isLoggedInProvider.notifier).update((state) => !state);
       ref.invalidate(clientProvider);
       state = false;
+      Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
       state = false;
     }

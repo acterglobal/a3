@@ -25,6 +25,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   void dispose() {
+    username.dispose();
+    password.dispose();
     Get.delete<NetworkController>();
     super.dispose();
   }
