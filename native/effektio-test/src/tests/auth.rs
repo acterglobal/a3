@@ -8,6 +8,9 @@ async fn guest_can_login() -> Result<()> {
     let tmp_dir = TempDir::new()?;
     let _client = guest_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
         option_env!("DEFAULT_HOMESERVER_URL")
             .unwrap_or("http://localhost:8118")
             .to_string(),
@@ -25,6 +28,12 @@ async fn sisko_can_login() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "sisko".to_string(),
         "sisko".to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
         Some("SISKO_DEV".to_string()),
     )
     .await?;
@@ -39,6 +48,12 @@ async fn kyra_can_login() -> Result<()> {
         tmp_dir.path().to_str().expect("always works").to_string(),
         "kyra".to_string(),
         "kyra".to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
         Some("KYRA_DEV".to_string()),
     )
     .await?;
@@ -55,6 +70,12 @@ async fn kyra_can_restore() -> Result<()> {
             tmp_dir.path().to_str().expect("always works").to_string(),
             "kyra".to_string(),
             "kyra".to_string(),
+            option_env!("DEFAULT_HOMESERVER_NAME")
+                .unwrap_or("localhost")
+                .to_string(),
+            option_env!("DEFAULT_HOMESERVER_URL")
+                .unwrap_or("http://localhost:8118")
+                .to_string(),
             Some("KYRA_DEV".to_string()),
         )
         .await?;
