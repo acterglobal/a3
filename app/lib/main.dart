@@ -42,7 +42,7 @@ class Effektio extends StatelessWidget {
     return Portal(
       child: Themed(
         child: OverlaySupport.global(
-          child: GetMaterialApp(
+          child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: AppTheme.theme,
             title: 'Effektio',

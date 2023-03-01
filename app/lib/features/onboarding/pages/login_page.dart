@@ -1,4 +1,5 @@
 import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:effektio/common/utils/constants.dart';
 import 'package:effektio/common/widgets/custom_button.dart';
 import 'package:effektio/common/controllers/network_controller.dart';
 import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
@@ -66,7 +67,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: SvgPicture.asset('assets/images/logo.svg'),
+                child: SvgPicture.asset(
+                  'assets/images/logo.svg',
+                ),
               ),
               const SizedBox(height: 40),
               Text(
@@ -80,6 +83,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 35),
               SignInTextField(
+                key: LoginPageKeys.usernameField,
                 hintText: AppLocalizations.of(context)!.username,
                 controller: username,
                 validatorText: AppLocalizations.of(context)!.emptyUsername,
@@ -87,12 +91,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
               const SizedBox(height: 20),
               SignInTextField(
+                key: LoginPageKeys.passwordField,
                 hintText: AppLocalizations.of(context)!.password,
                 controller: password,
                 validatorText: AppLocalizations.of(context)!.emptyPassword,
                 type: SignInOnboardingTextFieldEnum.password,
               ),
               Container(
+                key: LoginPageKeys.forgotPassBtn,
                 margin: const EdgeInsets.only(right: 20),
                 width: double.infinity,
                 alignment: Alignment.bottomRight,
@@ -111,6 +117,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       color: AppCommonTheme.primaryColor,
                     )
                   : CustomButton(
+                      key: LoginPageKeys.submitBtn,
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
                           if (networkController.connectionType.value == 0) {
@@ -138,6 +145,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     style: AuthTheme.authBodyStyle,
                   ),
                   InkWell(
+                    key: LoginPageKeys.signUpBtn,
                     onTap: () {
                       Navigator.pushReplacementNamed(context, '/signup');
                     },

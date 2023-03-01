@@ -1,11 +1,15 @@
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/material_indicator.dart';
+import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
+import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
+import 'package:effektio/features/chat/controllers/receipt_controller.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/home/widgets/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -26,6 +30,14 @@ class _HomePageState extends ConsumerState<HomePage>
     tabController.addListener(() {
       setState(() => tabIndex = tabController.index);
     });
+  }
+
+  @override
+  void dispose() {
+    Get.delete<ChatListController>();
+    Get.delete<ChatRoomController>();
+    Get.delete<ReceiptController>();
+    super.dispose();
   }
 
   @override

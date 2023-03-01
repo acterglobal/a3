@@ -1,7 +1,11 @@
+import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
+import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
+import 'package:effektio/features/chat/controllers/receipt_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show Client, EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
 final clientProvider =
     StateNotifierProvider<ClientStateNotifier, AsyncValue<Client>>(
@@ -19,6 +23,9 @@ class ClientStateNotifier extends StateNotifier<AsyncValue<Client>> {
     state = await AsyncValue.guard(() async {
       final client = await sdk.currentClient;
       client.startSync();
+      Get.put(ChatListController(client: client));
+      Get.put(ChatRoomController(client: client));
+      Get.put(ReceiptController(client: client));
       return client;
     });
   }
