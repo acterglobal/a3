@@ -1,13 +1,13 @@
-import 'dart:math';
-
 import 'package:effektio/common/utils/constants.dart';
 import 'package:effektio/features/onboarding/pages/login_page.dart';
+import 'package:effektio/features/onboarding/pages/sign_up_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mockito/mockito.dart';
 
 void main() {
   group('login page test', () {
@@ -82,4 +82,40 @@ void main() {
     expect(userNameError, findsOneWidget);
     expect(passwordError, findsOneWidget);
   });
+
+  // Not working for some reason.
+  testWidgets('Button triggers navigation to sign up', (tester) async {
+    final mockObserver = MockNavigatorObserver();
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          initialRoute: '/login',
+          routes: <String, WidgetBuilder>{
+            '/login': (BuildContext context) => const LoginPage(),
+            '/signup': (BuildContext context) => const SignupPage(),
+          },
+          navigatorObservers: [mockObserver],
+        ),
+      ),
+    );
+    await tester.tap(find.byKey(LoginPageKeys.signUpBtn));
+    await tester.pumpAndSettle();
+    verify(
+      mockObserver.didReplace(
+        oldRoute: anyNamed('oldRoute'),
+        newRoute: anyNamed('newRoute'),
+      ),
+    );
+    expect(find.byType(SignupPage), findsOneWidget);
+    expect(find.byType(LoginPage), findsNothing);
+  });
 }
+
+class MockNavigatorObserver extends Mock implements NavigatorObserver {}

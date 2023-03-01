@@ -86,6 +86,9 @@ dependencies:
   sprintf: ^6.0.0
   get_time_ago: ^1.1.5
 
+  # Testing
+  mockito: ^5.3.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
