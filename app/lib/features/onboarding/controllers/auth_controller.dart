@@ -39,8 +39,13 @@ class AuthController extends StateNotifier<bool> {
     }
   }
 
-  Future<void> signUp(String username, String password, String displayName,
-      String token, BuildContext context) async {
+  Future<void> signUp(
+    String username,
+    String password,
+    String displayName,
+    String token,
+    BuildContext context,
+  ) async {
     state = true;
     if (!username.contains(':')) {
       username = '$username:effektio.org';
