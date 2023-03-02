@@ -388,8 +388,9 @@ class _EffektioHomeState extends State<EffektioHome>
                 }
               },
               backgroundColor: Colors.green,
-              child: const Icon(Icons.navigation),
+              child: const Icon(Icons.bug_report_rounded),
             ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
           ),
           controller: Get.find<ScreenshotController>(),
         ),
