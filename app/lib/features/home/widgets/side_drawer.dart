@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
+import 'package:effektio/common/utils/constants.dart' show Keys;
 
 class SideDrawer extends ConsumerWidget {
   const SideDrawer({
@@ -315,6 +316,7 @@ class _HeaderWidget extends ConsumerWidget {
             margin: const EdgeInsets.only(right: 20),
             alignment: Alignment.bottomCenter,
             child: ElevatedButton(
+              key: Keys.loginBtn,
               style: ButtonStyle(
                 alignment: Alignment.center,
                 backgroundColor: MaterialStateProperty.all<Color>(

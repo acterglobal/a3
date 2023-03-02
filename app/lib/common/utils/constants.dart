@@ -16,3 +16,17 @@ class LoginPageKeys {
   static const snackbarSuccess = Key('login-snackbar-success');
   static const snackbarFailed = Key('login-snackbar-failed');
 }
+
+class Keys {
+  // generic / home
+  static const bottomBar = Key('bottom-bar');
+  static const newsSectionBtn = Key('news-section-btn');
+  static const sidebarBtn = Key('sidebar-btn');
+  static const loginBtn = Key('login-btn');
+  static const usernameLabel = Key('username-lbl');
+}
+
+const inCI = bool.fromEnvironment(
+  'CI',
+  defaultValue: false,
+);

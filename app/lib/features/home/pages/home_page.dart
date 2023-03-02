@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:effektio/common/utils/constants.dart';
 import 'package:get/get.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -89,6 +90,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget newsFeedTab() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
+      key: Keys.newsSectionBtn,
       child: Tab(
         icon: tabIndex == 0
             ? SvgPicture.asset('assets/images/newsfeed_bold.svg')

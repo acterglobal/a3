@@ -17,8 +17,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:themed/themed.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 
 void main() async {
+  await startApp();
+}
+
+Future<void> startFreshTestApp(String key) async {
+  await EffektioSdk.resetSessionsAndClients(key);
   await startApp();
 }
 
@@ -37,7 +43,6 @@ class Effektio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugInvertOversizedImages = true; // detect non-optimized images
     return Portal(
       child: Themed(
         child: OverlaySupport.global(

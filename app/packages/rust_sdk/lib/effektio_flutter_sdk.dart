@@ -18,9 +18,24 @@ export './effektio_flutter_sdk_ffi.dart' show Client;
 //   EffektioClient(this.client);
 // }
 
-const defaultServer = String.fromEnvironment(
-  'DEFAULT_EFFEKTIO_SERVER',
+const defaultServerUrl = String.fromEnvironment(
+  'DEFAULT_HOMESERVER_URL',
   defaultValue: 'https://matrix.effektio.org',
+);
+
+const defaultServerName = String.fromEnvironment(
+  'DEFAULT_HOMESERVER_NAME',
+  defaultValue: 'effektio.org',
+);
+
+const logSettings = String.fromEnvironment(
+  'RUST_LOG',
+  defaultValue: 'warn,effektio=debug',
+);
+
+const defaultSessionKey = String.fromEnvironment(
+  'DEFAULT_EFFEKTIO_SESSION',
+  defaultValue: 'sessions',
 );
 
 Color convertColor(ffi.EfkColor? primary, Color fallback) {
@@ -39,8 +54,9 @@ Color convertColor(ffi.EfkColor? primary, Color fallback) {
 class EffektioSdk {
   static EffektioSdk? _instance;
   late final ffi.Api _api;
+  static String _sessionKey = defaultSessionKey;
   final int _index = 0;
-  final List<ffi.Client> _clients = [];
+  static final List<ffi.Client> _clients = [];
   static const platform = MethodChannel('effektio_flutter_sdk');
 
   EffektioSdk._(this._api);
@@ -52,14 +68,22 @@ class EffektioSdk {
       sessions.add(token);
     }
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('sessions', sessions);
+    await prefs.setStringList(_sessionKey, sessions);
+  }
+
+  static Future<void> resetSessionsAndClients(String sessionKey) async {
+    await _unrestoredInstance;
+    _clients.clear();
+    _sessionKey = sessionKey;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_sessionKey, []);
   }
 
   Future<void> _restore() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> sessions = (prefs.getStringList('sessions') ?? []);
+    List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
     bool loggedIn = false;
     for (var token in sessions) {
       ffi.Client client = await _api.loginWithToken(appDocPath, token);
@@ -68,8 +92,12 @@ class EffektioSdk {
     }
 
     if (_clients.isEmpty) {
-      ffi.Client client =
-          await _api.guestClient(appDocPath, defaultServer, deviceName);
+      ffi.Client client = await _api.guestClient(
+        appDocPath,
+        defaultServerName,
+        defaultServerUrl,
+        deviceName,
+      );
       _clients.add(client);
       loggedIn = client.loggedIn();
       await _persistSessions();
@@ -77,8 +105,12 @@ class EffektioSdk {
     debugPrint('Restored $_clients: $loggedIn');
   }
 
-  Future<ffi.Client> get currentClient async {
+  ffi.Client get currentClient {
     return _clients[_index];
+  }
+
+  bool get hasClients {
+    return _clients.isNotEmpty;
   }
 
   static Future<String> _getNativeLibraryDirectory() async {
@@ -118,13 +150,13 @@ class EffektioSdk {
     return 'Effektio ${Platform.operatingSystem} ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')}';
   }
 
-  static Future<EffektioSdk> get instance async {
+  static Future<EffektioSdk> get _unrestoredInstance async {
     if (_instance == null) {
       final api = Platform.isAndroid
           ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
           : ffi.Api.load();
       try {
-        api.initLogging('warn,effektio=debug');
+        api.initLogging(logSettings);
       } catch (e) {
         developer.log(
           'Setting logging failed',
@@ -133,9 +165,16 @@ class EffektioSdk {
         );
       }
       _instance = EffektioSdk._(api);
-      await _instance!._restore();
     }
     return _instance!;
+  }
+
+  static Future<EffektioSdk> get instance async {
+    final instance = await _unrestoredInstance;
+    if (!instance.hasClients) {
+      await instance._restore();
+    }
+    return instance;
   }
 
   Future<ffi.Client> login(String username, String password) async {
@@ -148,8 +187,14 @@ class EffektioSdk {
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-    final client =
-        await _api.loginNewClient(appDocPath, username, password, deviceName);
+    final client = await _api.loginNewClient(
+      appDocPath,
+      username,
+      password,
+      defaultServerName,
+      defaultServerUrl,
+      deviceName,
+    );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       var client = _clients.removeAt(0);
@@ -213,6 +258,8 @@ class EffektioSdk {
       username,
       password,
       token,
+      defaultServerName,
+      defaultServerUrl,
       deviceName,
     );
     final account = client.account();

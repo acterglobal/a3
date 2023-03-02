@@ -21,7 +21,7 @@ class ClientStateNotifier extends StateNotifier<AsyncValue<Client>> {
     state = const AsyncLoading();
     final sdk = await EffektioSdk.instance;
     state = await AsyncValue.guard(() async {
-      final client = await sdk.currentClient;
+      final client = sdk.currentClient;
       client.startSync();
       Get.put(ChatListController(client: client));
       Get.put(ChatRoomController(client: client));

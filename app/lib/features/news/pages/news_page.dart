@@ -5,6 +5,7 @@ import 'package:effektio/features/home/widgets/side_drawer.dart';
 import 'package:effektio/features/news/controllers/news_controller.dart';
 import 'package:effektio/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
+import 'package:effektio/common/utils/constants.dart' show Keys;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NewsPage extends ConsumerStatefulWidget {
@@ -40,6 +41,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
+              key: Keys.sidebarBtn,
               icon: Container(
                 margin: const EdgeInsets.only(
                   bottom: 10,

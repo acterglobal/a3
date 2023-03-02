@@ -19,13 +19,6 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-
-    if (!username.contains(':')) {
-      username = '$username:effektio.org';
-    }
-    if (!username.startsWith('@')) {
-      username = '@$username';
-    }
     final sdk = await EffektioSdk.instance;
     try {
       await sdk.login(username, password);
@@ -47,12 +40,6 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-    if (!username.contains(':')) {
-      username = '$username:effektio.org';
-    }
-    if (!username.startsWith('@')) {
-      username = '@$username';
-    }
     final sdk = await EffektioSdk.instance;
     try {
       await sdk.signUp(username, password, displayName, token);

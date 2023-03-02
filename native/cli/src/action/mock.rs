@@ -1,5 +1,5 @@
 use anyhow::{bail, Result};
-use clap::{crate_version, Parser};
+use clap::{crate_version, Parser, Subcommand};
 use effektio::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
@@ -12,14 +12,21 @@ use effektio_core::{
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
-
 #[derive(Parser, Debug)]
 pub struct MockOpts {
-    /// Which homeserver are we running against
-    #[clap(env = "EFFEKTIO_HOMESERVER")]
+    /// the URL to the homeserver are we running against
+    #[clap(
+        long = "homeserver-url",
+        env = "DEFAULT_HOMESERVER_URL",
+        default_value = "http://localhost:8118"
+    )]
     pub homeserver: String,
-    /// Which homeserver are we running against
-    #[clap(env = "EFFEKTIO_SERVERNAME", default_value = "ds9.effektio.org")]
+    /// name of that homeserver
+    #[clap(
+        long = "homeserver-name",
+        env = "DEFAULT_HOMESERVER_NAME",
+        default_value = "localhost"
+    )]
     pub server_name: String,
 
     /// Persist the store in .local/{user_id}
@@ -34,7 +41,7 @@ pub struct MockOpts {
     pub cmd: Option<MockCmd>,
 }
 
-#[derive(clap::Subcommand, Debug)]
+#[derive(Debug, Subcommand)]
 pub enum MockCmd {
     All,
     Users,

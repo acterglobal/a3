@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
+import 'package:effektio/common/utils/constants.dart' show LoginPageKeys;
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -37,6 +38,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          key: LoginPageKeys.snackbarSuccess,
           content: Text(AppLocalizations.of(context)!.loginSuccess),
           backgroundColor: AuthTheme.authSuccess,
           duration: const Duration(seconds: 4),
@@ -45,6 +47,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          key: LoginPageKeys.snackbarFailed,
           content: Text(AppLocalizations.of(context)!.loginFailed),
           backgroundColor: AuthTheme.authFailed,
           duration: const Duration(seconds: 4),
@@ -120,7 +123,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       key: LoginPageKeys.submitBtn,
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          if (networkController.connectionType.value == 0) {
+                          if (networkController.isDisconnected()) {
                             Get.snackbar(
                               'No internet',
                               'Please turn on internet to continue',

@@ -13,7 +13,7 @@ pub async fn random_user_with_random_space(
 ) -> Result<(effektio::Client, OwnedRoomId)> {
     let uuid = uuid::Uuid::new_v4().to_string();
     let user = ensure_user(
-        option_env!("HOMESERVER").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
         format!("it-{prefix}-{uuid}"),
         "effektio-integration-tests".to_owned(),
         StoreConfig::default(),
@@ -34,7 +34,7 @@ async fn odos_tasks() -> Result<()> {
     let _ = env_logger::try_init();
     let list_name = "Daily Security Brief".to_owned();
     let mut odo = ensure_user(
-        option_env!("HOMESERVER").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
         "odo".to_owned(),
         "effektio-integration-tests".to_owned(),
         StoreConfig::default(),
