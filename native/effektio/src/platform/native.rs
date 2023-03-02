@@ -8,10 +8,10 @@ use reqwest::{
     Client as ReqClient, StatusCode,
 };
 use std::{
-    fs,
     path::PathBuf,
     sync::{Arc, Mutex},
 };
+use tokio::fs::File;
 
 use super::super::api::RUNTIME;
 
@@ -42,7 +42,7 @@ pub async fn report_bug(
     app_name: String,
     version: String,
     text: String,
-    label: String,
+    label: Option<String>,
     with_log: bool,
     screenshot_path: Option<String>,
 ) -> Result<bool> {
@@ -50,33 +50,18 @@ pub async fn report_bug(
         .text("text", text)
         .text("user_agent", "Mozilla/0.9")
         .text("app", app_name)
-        .text("version", version)
-        .text("label", label);
-    if let Some(screenshot_path) = screenshot_path {
-        let file_path = PathBuf::from(&screenshot_path);
-        let img_path = file_path.canonicalize()?.to_string_lossy().to_string();
-        let file = fs::read(img_path)?;
-        let filename = file_path.file_name().unwrap().to_string_lossy().to_string();
-        let file_part = Part::bytes(file)
-            .file_name(filename)
-            .mime_str("image/png")?;
-        form = form.part("file", file_part);
+        .text("version", version);
+    if let Some(label) = label {
+        form = form.text("label", label);
     }
-    if with_log {
+    let old_path = if with_log {
+        let mut res = None;
         match &*FILE_LOGGER.lock().unwrap() {
             Some(dispatch) => {
-                let res = dispatch.rotate();
-                for output in res.iter() {
+                for output in dispatch.rotate().iter() {
                     match output {
                         Some((old_path, new_path)) => {
-                            let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
-                            let file = fs::read(log_path)?;
-                            let filename =
-                                old_path.file_name().unwrap().to_string_lossy().to_string();
-                            let file_part = Part::bytes(file)
-                                .file_name(filename)
-                                .mime_str("text/plain")?;
-                            form = form.part("log", file_part);
+                            res = Some(old_path.clone());
                             break;
                         }
                         None => {}
@@ -87,15 +72,41 @@ pub async fn report_bug(
                 bail!("You didn't set up file logger.");
             }
         }
-    }
+        res
+    } else {
+        None
+    };
     RUNTIME
         .spawn(async move {
+            // call await, after lock is released
+            // if await is called under lock exists, you will get deadlock
+            if let Some(old_path) = old_path {
+                let log_path = old_path.canonicalize()?.to_string_lossy().to_string();
+                let file = File::open(log_path).await?;
+                let length = file.metadata().await?.len();
+                let filename = old_path.file_name().unwrap().to_string_lossy().to_string();
+                let file_part = Part::stream_with_length(file, length)
+                    .file_name(filename)
+                    .mime_str("text/plain")?;
+                form = form.part("log", file_part);
+            }
+            if let Some(screenshot_path) = screenshot_path {
+                let mut file = File::open(&screenshot_path).await?;
+                let length = file.metadata().await?.len();
+                let file_path = PathBuf::from(&screenshot_path);
+                let filename = file_path.file_name().unwrap().to_string_lossy().to_string();
+                let file_part = Part::stream_with_length(file, length)
+                    .file_name(filename)
+                    .mime_str("image/png")?;
+                form = form.part("file", file_part);
+            }
             let resp = ReqClient::new()
                 .post(url)
                 .basic_auth(username, password)
                 .multipart(form)
                 .send()
                 .await?;
+            log::info!("report error: {:?}", resp);
             Ok(resp.status() == StatusCode::OK)
         })
         .await?

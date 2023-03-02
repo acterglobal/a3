@@ -366,9 +366,10 @@ class _EffektioHomeState extends State<EffektioHome>
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
                 var appDocDir = await getApplicationDocumentsDirectory();
+                // rageshake disallows dot in filename
                 String timestamp = formatDate(
                   DateTime.now(),
-                  [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '.', SSS],
+                  [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
                 );
                 var controller = Get.find<ScreenshotController>();
                 var imagePath = await controller.captureAndSave(

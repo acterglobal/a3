@@ -242,7 +242,7 @@ class EffektioSdk {
 
   Future<bool> reportBug(
     String text,
-    String label,
+    String? label,
     bool withLog,
     String? screenshotPath,
   ) async {

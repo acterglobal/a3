@@ -67,7 +67,7 @@ class BugReportController extends GetxController {
     final sdk = await EffektioSdk.instance;
     final res = await sdk.reportBug(
       text,
-      tags.join(','),
+      tags.isEmpty ? null : tags.join(','),
       withLog,
       screenshotPath,
     );

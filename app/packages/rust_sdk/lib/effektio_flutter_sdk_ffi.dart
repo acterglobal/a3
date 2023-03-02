@@ -591,7 +591,7 @@ class Api {
     String appName,
     String version,
     String text,
-    String label,
+    String? label,
     bool withLog,
     String? screenshotPath,
   ) {
@@ -602,8 +602,8 @@ class Api {
     final tmp18 = version;
     final tmp22 = text;
     final tmp26 = label;
-    final tmp30 = withLog;
-    final tmp32 = screenshotPath;
+    final tmp32 = withLog;
+    final tmp34 = screenshotPath;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -624,13 +624,14 @@ class Api {
     var tmp24 = 0;
     var tmp25 = 0;
     var tmp27 = 0;
-    var tmp28 = 0;
     var tmp29 = 0;
+    var tmp30 = 0;
     var tmp31 = 0;
     var tmp33 = 0;
     var tmp35 = 0;
-    var tmp36 = 0;
     var tmp37 = 0;
+    var tmp38 = 0;
+    var tmp39 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -679,28 +680,34 @@ class Api {
     tmp23_1.setAll(0, tmp22_0);
     tmp23 = tmp23_0.address;
     tmp25 = tmp24;
-    final tmp26_0 = utf8.encode(tmp26);
-    tmp28 = tmp26_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp27_0 = this.__allocate(tmp28 * 1, 1);
-    final Uint8List tmp27_1 = tmp27_0.asTypedList(tmp28);
-    tmp27_1.setAll(0, tmp26_0);
-    tmp27 = tmp27_0.address;
-    tmp29 = tmp28;
-    tmp31 = tmp30 ? 1 : 0;
-    if (tmp32 == null) {
-      tmp33 = 0;
+    if (tmp26 == null) {
+      tmp27 = 0;
     } else {
-      tmp33 = 1;
-      final tmp34 = tmp32;
-      final tmp34_0 = utf8.encode(tmp34);
-      tmp36 = tmp34_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp35_0 = this.__allocate(tmp36 * 1, 1);
-      final Uint8List tmp35_1 = tmp35_0.asTypedList(tmp36);
-      tmp35_1.setAll(0, tmp34_0);
-      tmp35 = tmp35_0.address;
-      tmp37 = tmp36;
+      tmp27 = 1;
+      final tmp28 = tmp26;
+      final tmp28_0 = utf8.encode(tmp28);
+      tmp30 = tmp28_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp29_0 = this.__allocate(tmp30 * 1, 1);
+      final Uint8List tmp29_1 = tmp29_0.asTypedList(tmp30);
+      tmp29_1.setAll(0, tmp28_0);
+      tmp29 = tmp29_0.address;
+      tmp31 = tmp30;
     }
-    final tmp38 = _reportBug(
+    tmp33 = tmp32 ? 1 : 0;
+    if (tmp34 == null) {
+      tmp35 = 0;
+    } else {
+      tmp35 = 1;
+      final tmp36 = tmp34;
+      final tmp36_0 = utf8.encode(tmp36);
+      tmp38 = tmp36_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp37_0 = this.__allocate(tmp38 * 1, 1);
+      final Uint8List tmp37_1 = tmp37_0.asTypedList(tmp38);
+      tmp37_1.setAll(0, tmp36_0);
+      tmp37 = tmp37_0.address;
+      tmp39 = tmp38;
+    }
+    final tmp40 = _reportBug(
       tmp1,
       tmp2,
       tmp3,
@@ -721,20 +728,21 @@ class Api {
       tmp24,
       tmp25,
       tmp27,
-      tmp28,
       tmp29,
+      tmp30,
       tmp31,
       tmp33,
       tmp35,
-      tmp36,
       tmp37,
+      tmp38,
+      tmp39,
     );
-    final tmp40 = tmp38;
-    final ffi.Pointer<ffi.Void> tmp40_0 = ffi.Pointer.fromAddress(tmp40);
-    final tmp40_1 = _Box(this, tmp40_0, "__report_bug_future_drop");
-    tmp40_1._finalizer = this._registerFinalizer(tmp40_1);
-    final tmp39 = _nativeFuture(tmp40_1, this.__reportBugFuturePoll);
-    return tmp39;
+    final tmp42 = tmp40;
+    final ffi.Pointer<ffi.Void> tmp42_0 = ffi.Pointer.fromAddress(tmp42);
+    final tmp42_1 = _Box(this, tmp42_0, "__report_bug_future_drop");
+    tmp42_1._finalizer = this._registerFinalizer(tmp42_1);
+    final tmp41 = _nativeFuture(tmp42_1, this.__reportBugFuturePoll);
+    return tmp41;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -5796,6 +5804,7 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
+    ffi.Uint8,
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
@@ -5808,6 +5817,7 @@ class Api {
 
   late final _reportBug = _reportBugPtr.asFunction<
       int Function(
+    int,
     int,
     int,
     int,
