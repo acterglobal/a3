@@ -240,7 +240,12 @@ class EffektioSdk {
     return _api.newGroupSettings(name);
   }
 
-  Future<bool> reportBug(String text, String label, bool withLog) async {
+  Future<bool> reportBug(
+    String text,
+    String label,
+    bool withLog,
+    String? screenshotPath,
+  ) async {
     const url = String.fromEnvironment(
       'RAGESHAKE_URL',
       defaultValue: 'http://localhost/api/submit',
@@ -270,6 +275,7 @@ class EffektioSdk {
       text,
       label,
       withLog,
+      screenshotPath,
     );
   }
 }

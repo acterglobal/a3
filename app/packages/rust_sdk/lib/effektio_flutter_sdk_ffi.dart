@@ -593,6 +593,7 @@ class Api {
     String text,
     String label,
     bool withLog,
+    String? screenshotPath,
   ) {
     final tmp0 = url;
     final tmp4 = username;
@@ -602,6 +603,7 @@ class Api {
     final tmp22 = text;
     final tmp26 = label;
     final tmp30 = withLog;
+    final tmp32 = screenshotPath;
     var tmp1 = 0;
     var tmp2 = 0;
     var tmp3 = 0;
@@ -625,6 +627,10 @@ class Api {
     var tmp28 = 0;
     var tmp29 = 0;
     var tmp31 = 0;
+    var tmp33 = 0;
+    var tmp35 = 0;
+    var tmp36 = 0;
+    var tmp37 = 0;
     final tmp0_0 = utf8.encode(tmp0);
     tmp2 = tmp0_0.length;
     final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
@@ -681,7 +687,20 @@ class Api {
     tmp27 = tmp27_0.address;
     tmp29 = tmp28;
     tmp31 = tmp30 ? 1 : 0;
-    final tmp32 = _reportBug(
+    if (tmp32 == null) {
+      tmp33 = 0;
+    } else {
+      tmp33 = 1;
+      final tmp34 = tmp32;
+      final tmp34_0 = utf8.encode(tmp34);
+      tmp36 = tmp34_0.length;
+      final ffi.Pointer<ffi.Uint8> tmp35_0 = this.__allocate(tmp36 * 1, 1);
+      final Uint8List tmp35_1 = tmp35_0.asTypedList(tmp36);
+      tmp35_1.setAll(0, tmp34_0);
+      tmp35 = tmp35_0.address;
+      tmp37 = tmp36;
+    }
+    final tmp38 = _reportBug(
       tmp1,
       tmp2,
       tmp3,
@@ -705,13 +724,17 @@ class Api {
       tmp28,
       tmp29,
       tmp31,
+      tmp33,
+      tmp35,
+      tmp36,
+      tmp37,
     );
-    final tmp34 = tmp32;
-    final ffi.Pointer<ffi.Void> tmp34_0 = ffi.Pointer.fromAddress(tmp34);
-    final tmp34_1 = _Box(this, tmp34_0, "__report_bug_future_drop");
-    tmp34_1._finalizer = this._registerFinalizer(tmp34_1);
-    final tmp33 = _nativeFuture(tmp34_1, this.__reportBugFuturePoll);
-    return tmp33;
+    final tmp40 = tmp38;
+    final ffi.Pointer<ffi.Void> tmp40_0 = ffi.Pointer.fromAddress(tmp40);
+    final tmp40_1 = _Box(this, tmp40_0, "__report_bug_future_drop");
+    tmp40_1._finalizer = this._registerFinalizer(tmp40_1);
+    final tmp39 = _nativeFuture(tmp40_1, this.__reportBugFuturePoll);
+    return tmp39;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -5777,10 +5800,18 @@ class Api {
     ffi.Uint64,
     ffi.Uint64,
     ffi.Uint8,
+    ffi.Uint8,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
   )>>("__report_bug");
 
   late final _reportBug = _reportBugPtr.asFunction<
       int Function(
+    int,
+    int,
+    int,
+    int,
     int,
     int,
     int,

@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:date_format/date_format.dart';
 import 'package:effektio/common/snackbars/not_implemented.dart';
 import 'package:effektio/common/themes/app_theme.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
@@ -28,14 +30,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:themed/themed.dart';
+import 'package:window_size/window_size.dart';
 
 void main() async {
   await startApp();
@@ -43,11 +48,16 @@ void main() async {
 
 Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
+  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
+  if (isDesktop) {
+    setWindowTitle('Effektio');
+  }
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
+  Get.put(ScreenshotController());
   runApp(const Effektio());
 }
 
@@ -73,13 +83,44 @@ class Effektio extends StatelessWidget {
             supportedLocales: ApplicationLocalizations.supportedLocales,
             // MaterialApp contains our top-level Navigator
             initialRoute: '/',
-            routes: <String, WidgetBuilder>{
-              '/': (BuildContext context) => const EffektioHome(),
-              '/login': (BuildContext context) => const LoginPage(),
-              '/profile': (BuildContext context) => const SocialProfilePage(),
-              '/signup': (BuildContext context) => const SignupPage(),
-              '/gallery': (BuildContext context) => const GalleryPage(),
-              '/bug_report': (BuildContext context) => const BugReportPage(),
+            onGenerateRoute: (settings) {
+              switch (settings.name) {
+                case '/':
+                  return MaterialPageRoute(
+                    settings: settings,
+                    builder: (ctx) => const EffektioHome(),
+                  );
+                case '/login':
+                  return MaterialPageRoute(
+                    settings: settings,
+                    builder: (ctx) => const LoginPage(),
+                  );
+                case '/profile':
+                  return MaterialPageRoute(
+                    settings: settings,
+                    builder: (ctx) => const SocialProfilePage(),
+                  );
+                case '/signup':
+                  return MaterialPageRoute(
+                    settings: settings,
+                    builder: (ctx) => const SignupPage(),
+                  );
+                case '/gallery':
+                  return MaterialPageRoute(
+                    settings: settings,
+                    builder: (ctx) => const GalleryPage(),
+                  );
+                case '/bug_report':
+                  return MaterialPageRoute(
+                    settings: settings,
+                    builder: (ctx) {
+                      final map = settings.arguments as Map;
+                      return BugReportPage(imagePath: map['screenshot']);
+                    },
+                  );
+                default:
+                  return null;
+              }
             },
           ),
         ),
@@ -278,49 +319,79 @@ class _EffektioHomeState extends State<EffektioHome>
       length: 4,
       key: const Key('bottom-bar'),
       child: SafeArea(
-        child: Scaffold(
-          appBar: buildAppBar(),
-          body: TabBarView(
-            controller: tabController,
-            children: [
-              NewsPage(
-                client: client,
-                displayName: displayName,
-                displayAvatar: displayAvatar,
-              ),
-              FaqPage(client: client),
-              ToDoPage(client: client),
-              ChatPage(client: client),
-            ],
-          ),
-          drawer: SideDrawer(
-            isGuest: client.isGuest(),
-            userId: client.userId().toString(),
-            displayName: displayName,
-            displayAvatar: displayAvatar,
-          ),
-          bottomNavigationBar: TabBar(
-            labelColor: AppCommonTheme.primaryColor,
-            unselectedLabelColor: AppCommonTheme.svgIconColor,
-            controller: tabController,
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorPadding: const EdgeInsets.symmetric(horizontal: 12),
-            indicator: const MaterialIndicator(
-              height: 5,
-              bottomLeftRadius: 8,
-              bottomRightRadius: 8,
-              topLeftRadius: 0,
-              topRightRadius: 0,
-              tabPosition: TabPosition.top,
-              color: AppCommonTheme.primaryColor,
+        child: Screenshot(
+          child: Scaffold(
+            appBar: buildAppBar(),
+            body: TabBarView(
+              controller: tabController,
+              children: [
+                NewsPage(
+                  client: client,
+                  displayName: displayName,
+                  displayAvatar: displayAvatar,
+                ),
+                FaqPage(client: client),
+                ToDoPage(client: client),
+                ChatPage(client: client),
+              ],
             ),
-            tabs: [
-              buildNewsFeedTab(),
-              buildPinsTab(),
-              buildTasksTab(),
-              buildChatTab(),
-            ],
+            drawer: SideDrawer(
+              isGuest: client.isGuest(),
+              userId: client.userId().toString(),
+              displayName: displayName,
+              displayAvatar: displayAvatar,
+            ),
+            bottomNavigationBar: TabBar(
+              labelColor: AppCommonTheme.primaryColor,
+              unselectedLabelColor: AppCommonTheme.svgIconColor,
+              controller: tabController,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorPadding: const EdgeInsets.symmetric(horizontal: 12),
+              indicator: const MaterialIndicator(
+                height: 5,
+                bottomLeftRadius: 8,
+                bottomRightRadius: 8,
+                topLeftRadius: 0,
+                topRightRadius: 0,
+                tabPosition: TabPosition.top,
+                color: AppCommonTheme.primaryColor,
+              ),
+              tabs: [
+                buildNewsFeedTab(),
+                buildPinsTab(),
+                buildTasksTab(),
+                buildChatTab(),
+              ],
+            ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () async {
+                var appDocDir = await getApplicationDocumentsDirectory();
+                String timestamp = formatDate(
+                  DateTime.now(),
+                  [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '.', SSS],
+                );
+                var controller = Get.find<ScreenshotController>();
+                var imagePath = await controller.captureAndSave(
+                  appDocDir.path,
+                  fileName: 'screenshot_$timestamp.png',
+                );
+                if (imagePath != null) {
+                  Navigator.pushNamed(
+                    context,
+                    '/bug_report',
+                    arguments: {
+                      'screenshot': imagePath,
+                    },
+                  );
+                } else {
+                  Navigator.pushNamed(context, '/bug_report');
+                }
+              },
+              backgroundColor: Colors.green,
+              child: const Icon(Icons.navigation),
+            ),
           ),
+          controller: Get.find<ScreenshotController>(),
         ),
       ),
     );

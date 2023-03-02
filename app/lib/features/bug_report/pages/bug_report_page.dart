@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/custom_button.dart';
 import 'package:effektio/features/bug_report/controllers/bug_report_controller.dart';
@@ -6,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class BugReportPage extends StatefulWidget {
-  const BugReportPage({Key? key}) : super(key: key);
+  final String? imagePath;
+
+  const BugReportPage({Key? key, this.imagePath}) : super(key: key);
 
   @override
   _BugReportState createState() => _BugReportState();
@@ -17,6 +21,7 @@ class _BugReportState extends State<BugReportPage> {
   final bugReportController = Get.put(BugReportController());
   String text = '';
   bool withLog = false;
+  bool withScreenshot = false;
 
   @override
   void dispose() {
@@ -31,16 +36,14 @@ class _BugReportState extends State<BugReportPage> {
       appBar: AppBar(
         backgroundColor: ToDoTheme.backgroundGradient2Color,
         leading: InkWell(
-          onTap: () => Get.back(),
+          onTap: () => Navigator.pop(context),
           child: const Icon(
             Icons.arrow_back_ios_new,
             color: Colors.white,
           ),
         ),
       ),
-      body: Container(
-        decoration: ToDoTheme.toDoDecoration,
-        height: MediaQuery.of(context).size.height * (1 - 0.12),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: GetBuilder<BugReportController>(
           builder: (BugReportController controller) {
@@ -82,6 +85,34 @@ class _BugReportState extends State<BugReportPage> {
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
                 const SizedBox(height: 10),
+                CheckboxListTile(
+                  title: const Text(
+                    'Including screenshot',
+                    style: AuthTheme.authBodyStyle,
+                  ),
+                  value: withScreenshot,
+                  onChanged: (bool? value) {
+                    if (value != null) {
+                      setState(() => withScreenshot = value);
+                    }
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  enabled: widget.imagePath != null,
+                ),
+                const SizedBox(height: 10),
+                if (withScreenshot)
+                  Image.file(
+                    File(widget.imagePath!),
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    errorBuilder: (
+                      BuildContext ctx,
+                      Object error,
+                      StackTrace? stackTrace,
+                    ) {
+                      return Text('Could not load image due to $error');
+                    },
+                  ),
+                if (withScreenshot) const SizedBox(height: 10),
                 const Divider(
                   color: ToDoTheme.dividerColor,
                   endIndent: 10,
@@ -98,6 +129,7 @@ class _BugReportState extends State<BugReportPage> {
                             context,
                             text,
                             withLog,
+                            withScreenshot ? widget.imagePath : null,
                           );
                           String msg = result
                               ? 'Reported the bug successfully!'
@@ -105,7 +137,7 @@ class _BugReportState extends State<BugReportPage> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(msg)),
                           );
-                          Get.back();
+                          Navigator.pop(context);
                         },
                         title: 'Submit',
                       ),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +13,13 @@ class BugReportController extends GetxController {
     tags = values;
   }
 
-  Future<bool> report(BuildContext context, String text, bool withLog) async {
+  Future<bool> report(
+    BuildContext context,
+    String text,
+    bool withLog,
+    String? screenshotPath,
+  ) async {
+    // validate issue text
     if (text.isEmpty) {
       showDialog<void>(
         context: context,
@@ -21,7 +29,7 @@ class BugReportController extends GetxController {
           content: const Text('Please enter the issue text'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
+              onPressed: () => Navigator.pop(ctx),
               child: const Text('Ok'),
             ),
           ],
@@ -29,6 +37,8 @@ class BugReportController extends GetxController {
       );
       return false;
     }
+
+    // validate issue tag
     if (tags.isEmpty) {
       bool? res = await showDialog<bool>(
         context: context,
@@ -38,11 +48,11 @@ class BugReportController extends GetxController {
           content: const Text('Will you submit without any tag?'),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
+              onPressed: () => Navigator.pop(ctx, false),
               child: const Text('No'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
+              onPressed: () => Navigator.pop(ctx, true),
               child: const Text('Yes'),
             ),
           ],
@@ -52,9 +62,18 @@ class BugReportController extends GetxController {
         return false;
       }
     }
+
     isSubmitting = true;
     final sdk = await EffektioSdk.instance;
-    final res = await sdk.reportBug(text, tags.join(','), withLog);
+    final res = await sdk.reportBug(
+      text,
+      tags.join(','),
+      withLog,
+      screenshotPath,
+    );
+    if (screenshotPath != null) {
+      await File(screenshotPath).delete();
+    }
     isSubmitting = false;
     return res;
   }

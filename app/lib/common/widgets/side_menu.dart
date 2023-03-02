@@ -1,7 +1,7 @@
 import 'package:effektio/common/snackbars/not_implemented.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/cross_signing/cross_signing.dart';
 import 'package:effektio/common/widgets/custom_avatar.dart';
+import 'package:effektio/features/cross_signing/cross_signing.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
     show EffektioSdk;
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
@@ -53,29 +53,12 @@ class SideDrawer extends StatelessWidget {
               const _GroupBudgetingItem(),
               const _SharedDocumentsItem(),
               const _GalleryItem(),
-              const _BugReportItem(),
               const SizedBox(height: 5),
               if (!isGuest) const _LogOutItem(),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _BugReportItem extends StatelessWidget {
-  const _BugReportItem();
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const SizedBox(width: 25, height: 25),
-      title: const Text(
-        'Bug Report',
-        style: SideMenuAndProfileTheme.sideMenuStyle,
-      ),
-      onTap: () => Get.offAndToNamed('/bug_report'),
     );
   }
 }

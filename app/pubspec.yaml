@@ -63,6 +63,8 @@ dependencies:
       url: https://github.com/google/flutter-desktop-embedding.git
       path: plugins/window_size
   multi_select_flutter: ^4.1.3
+  date_format: ^2.0.2
+  screenshot: ^1.3.0
 
   # Code Generation
   flutter_localizations:

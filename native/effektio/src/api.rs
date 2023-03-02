@@ -98,9 +98,10 @@ async fn report_bug(
     text: String,
     label: String,
     with_log: bool,
+    screenshot_path: Option<String>,
 ) -> Result<bool> {
     platform::report_bug(
-        url, username, password, app_name, version, text, label, with_log,
+        url, username, password, app_name, version, text, label, with_log, screenshot_path,
     )
     .await
 }

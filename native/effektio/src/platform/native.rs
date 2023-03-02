@@ -44,6 +44,7 @@ pub async fn report_bug(
     text: String,
     label: String,
     with_log: bool,
+    screenshot_path: Option<String>,
 ) -> Result<bool> {
     let mut form = Form::new()
         .text("text", text)
@@ -51,6 +52,17 @@ pub async fn report_bug(
         .text("app", app_name)
         .text("version", version)
         .text("label", label);
+    if let Some(screenshot_path) = screenshot_path {
+        let file_path = PathBuf::from(&screenshot_path);
+        let img_path = file_path.canonicalize()?.to_string_lossy().to_string();
+        let file = fs::read(img_path)?;
+        let filename =
+            file_path.file_name().unwrap().to_string_lossy().to_string();
+        let file_part = Part::bytes(file)
+            .file_name(filename)
+            .mime_str("image/png")?;
+        form = form.part("file", file_part);
+    }
     if with_log {
         match &*FILE_LOGGER.lock().unwrap() {
             Some(dispatch) => {
