@@ -1,0 +1,11 @@
+{
+  "name": "y",
+  "version": "0.1.0",
+  "main": "index.js",
+  "author": "Acter developers",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "cucumber-html-reporter": "^5.5.0"
+  }
+}

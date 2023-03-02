@@ -31,7 +31,7 @@ The current system has a problem with the latest android native development kit 
 
 ## iOS Build
 
-The iOS build doesn't work right now, see [#10](https://github.com/effektio/effektio/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.
+The iOS build doesn't work right now, see [#10](https://github.com/acterglobal/a3/issues/10). Please install the Android SDK and use the aformentioned emulator for development and testing.
 
 The following is iOS build steps.
 Unlike android, ios needs small space of 2~3 GB.
@@ -43,3 +43,10 @@ Unlike android, ios needs small space of 2~3 GB.
 5. Run `flutter pub get` in `app` directory of this project.
 6. Uncomment `# platform :ios, '9.0'` in Podfile of `app/ios` directory.
 7. Run `flutter run`.
+
+## Flutter package `file_picker` error in android 6.0
+
+`FilePickerDelegate` occurs error in `getSlotFromBufferLocked()` under android 6.0.
+This issue was fixed android 7.0.
+Please read [this comment](https://ubidots.com/community/t/solved-android-send-call-data-to-ubidots-etslotfrombufferlocked-unknown-buffer/334/2).
+Now minimum version of android is 7.0.

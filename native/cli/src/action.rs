@@ -39,7 +39,7 @@ impl Action {
 #[derive(Parser, Debug)]
 pub struct Manage {
     /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
+    #[clap(short, long, env = ENV_ROOM)]
     pub room: Box<ruma::RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,

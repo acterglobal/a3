@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-export SYNAPSE_SERVER_NAME=ds9.effektio.org
+export SYNAPSE_SERVER_NAME=localhost
 export SYNAPSE_REPORT_STATS=no
 echo " ====== Generating config  ====== "
 /start.py generate

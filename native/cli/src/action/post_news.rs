@@ -12,7 +12,7 @@ use tracing::info;
 #[derive(Parser, Debug)]
 pub struct PostNews {
     /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
+    #[clap(short, long, env = ENV_ROOM)]
     pub room: Box<effektio_core::ruma::RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,

@@ -6,7 +6,7 @@ edition = "2021"
 rust-version = "1.58"
 description = "Core types and features of the effektio app"
 homepage = "https://effekto.org"
-repository = "https://github.com/effektio/effektio"
+repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
@@ -20,9 +20,9 @@ chrono = {version = "0.4", default-features = false, features = ["serde"]}
 chrono-tz = { version = "0.5", default-features = false, features = ["serde"] }
 csscolorparser = { version = "0.5.0", features = ["serde"] }
 dashmap = "5.4.0"
-derive_builder = "0.11.2"
 derive-getters = "0.2.0"
 enum_dispatch = "0.3.10"
+derive_builder = "0.11.2"
 futures = "0.3.24"
 ruma-macros = { workspace = true }
 serde = "1.0.136"
@@ -41,9 +41,9 @@ workspace = true
 default-features = false
 
 [dev-dependencies]
+env_logger = { version = "0.10.0" }
 tokio = { version = "1", features = ["rt", "macros"]}
 tracing = { version = "0.1.37", default-features = false, features = ["log"] }
-env_logger = { version = "0.10.0" }
 
 [dev-dependencies.matrix-sdk]
 workspace = true

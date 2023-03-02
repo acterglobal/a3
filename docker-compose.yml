@@ -1,12 +1,11 @@
-
 version: '3'
 
 services:
 
   synapse:
     build:
-        context: .github/effektio-synapse-ci
-        dockerfile: Dockerfile
+      context: .github/effektio-synapse-ci
+      dockerfile: Dockerfile
     image: lightyear/effektio-synapse-ci:latest
     restart: unless-stopped
     environment:

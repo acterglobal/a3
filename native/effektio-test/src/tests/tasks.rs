@@ -1,46 +1,31 @@
 use anyhow::{bail, Result};
-use effektio::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateGroupSettingsBuilder};
+use effektio::{
+    matrix_sdk::config::StoreConfig,
+    testing::{ensure_user, wait_for},
+    CreateGroupSettingsBuilder,
+};
 use effektio_core::{models::EffektioModel, ruma::OwnedRoomId};
-use futures::Future;
+
 use tokio::time::{sleep, Duration};
 
-async fn wait_for<F, T, O>(fun: F) -> Result<Option<T>>
-where
-    F: Fn() -> O,
-    O: Future<Output = Result<Option<T>>>,
-{
-    let duration = Duration::from_secs(1);
-    let mut remaining: u32 = 3;
-    loop {
-        if let Some(t) = fun().await? {
-            return Ok(Some(t));
-        }
-        let Some(new) = remaining.checked_sub(1)  else {
-            return Ok(None);
-        };
-        remaining = new;
-        sleep(duration).await;
-    }
-}
 pub async fn random_user_with_random_space(
     prefix: &str,
 ) -> Result<(effektio::Client, OwnedRoomId)> {
     let uuid = uuid::Uuid::new_v4().to_string();
     let user = ensure_user(
-        option_env!("HOMESERVER").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
         format!("it-{prefix}-{uuid}"),
         "effektio-integration-tests".to_owned(),
         StoreConfig::default(),
     )
     .await?;
 
-    let room_id = user
-        .create_effektio_group(
-            CreateGroupSettingsBuilder::default()
-                .name(format!("it-room-{prefix}-{uuid}"))
-                .build()?,
-        )
-        .await?;
+    let settings = Box::new(
+        CreateGroupSettingsBuilder::default()
+            .name(format!("it-room-{prefix}-{uuid}"))
+            .build()?,
+    );
+    let room_id = user.create_effektio_group(settings).await?;
     Ok((user, room_id))
 }
 
@@ -49,7 +34,7 @@ async fn odos_tasks() -> Result<()> {
     let _ = env_logger::try_init();
     let list_name = "Daily Security Brief".to_owned();
     let mut odo = ensure_user(
-        option_env!("HOMESERVER").unwrap_or("http://localhost:8118"),
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
         "odo".to_owned(),
         "effektio-integration-tests".to_owned(),
         StoreConfig::default(),
@@ -173,8 +158,10 @@ async fn task_smoketests() -> Result<()> {
         let group = wait_for_group.clone();
         let task_list_key = task_list_key.clone();
         async move {
-            Ok(group.task_list(&task_list_key).await.ok())
-    }}).await? else {
+            let result = group.task_list(&task_list_key).await.ok();
+            Ok(result)
+        }
+    }).await? else {
         bail!("freshly created Task List couldn't be found");
     };
 

@@ -22,7 +22,6 @@ pub struct LoginConfig {
         short = 'u',
         long = "user",
         value_hint = clap::ValueHint::Username,
-        parse(try_from_str),
         env = ENV_USER
     )]
     login_username: OwnedUserId,

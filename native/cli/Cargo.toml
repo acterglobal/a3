@@ -5,12 +5,12 @@ edition = "2021"
 rust-version = "1.58"
 description = "CLI of effektio app to interact with an effektio setup"
 homepage = "https://effekto.org"
-repository = "https://github.com/effektio/effektio"
+repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [dependencies]
 anyhow = "1"
-clap = { version = "3", features = ["derive", "cargo", "env", "unicode", "wrap_help"] }
+clap = { version = "4.1.8", features = ["derive", "cargo", "env", "unicode", "wrap_help"] }
 dialoguer = "0.9.0"
 futures = { version = "0.3.21" }
 env_logger = "0.10.0"

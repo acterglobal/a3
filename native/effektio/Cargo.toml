@@ -5,7 +5,7 @@ edition = "2021"
 rust-version = "1.58"
 description = "SDK of the effektio app"
 homepage = "https://effekto.org"
-repository = "https://github.com/effektio/effektio"
+repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
@@ -20,6 +20,7 @@ ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
 [dependencies]
 anyhow = "1.0.51"
 assign = "1.1.1"
+async-broadcast = { workspace = true }
 derive_builder = { version = "0.10.2" }
 ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
 futures = "0.3.17"
@@ -36,7 +37,6 @@ serde_json = { version = "1" }
 tokio = "1"
 tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"
-async-broadcast = { workspace = true }
 
 [dev-dependencies]
 env_logger = "0.9.0"
@@ -62,25 +62,22 @@ features = [
 workspace = true
 optional = true
 
-[dependencies.js_int]
-version = "0.2.2"
-features = ["lax_deserialize"]
-
 #   ----   WASM
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 tracing-wasm = "0.2.1"
 wasm-bindgen-futures = "0.4.28"
 
-#   ----   WASM
+#   ----   non-WASM
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 matrix-sdk-sled = { workspace = true }
 
-#   ----  ANDROID
+#   ----   ANDROID
 [target.'cfg(target_os = "android")'.dependencies]
-android_logger = "0.11"
+android_logger = "0.12"
 tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 tracing-android = "0.2"
 
+#   ----   DESKTOP
 [target.'cfg(all(not(target_os = "android"), not(target_arch = "wasm32"), not(target_os = "ios")))'.dependencies]
 flexi_logger = "0.24.0"
 

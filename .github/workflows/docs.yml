@@ -6,23 +6,26 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
 jobs:
   docs:
     runs-on: ubuntu-20.04
     name: Build Latest API Docs
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: true
 
-#       ---- setup of systems
+      #       ---- setup of systems
 
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: "stable"
 
       - name: Install supported toolchain
         uses: actions-rs/toolchain@v1
@@ -30,13 +33,12 @@ jobs:
           toolchain: nightly
           override: true
 
-#                  ---- Install extra tools
+      #                  ---- Install extra tools
 
       - name: Install Dartdocs
         run: flutter pub global activate dartdoc
 
-
-#
+      #
       - name: Versions
         run: |
           echo "--- Rust"
@@ -46,7 +48,7 @@ jobs:
           echo "--- dartdoct"
           flutter pub global run dartdoc --version
 
-#       ---- Actual build steps
+      #       ---- Actual build steps
 
       - name: Build Rust docs
         run: |
@@ -65,10 +67,10 @@ jobs:
         run: flutter pub global run dartdoc --output ../docs/static/api/main/dart-sdk/
         working-directory: app/packages/rust_sdk
 
-#       ---- Finalisation for github pages
+      #       ---- Finalisation for github pages
 
       - name: build zola
-        uses: shalzz/zola-deploy-action@master
+        uses: shalzz/zola-deploy-action@v0.16.1-1
         if: ${{ github.ref == 'refs/heads/main' }}
         env:
           BUILD_DIR: docs
