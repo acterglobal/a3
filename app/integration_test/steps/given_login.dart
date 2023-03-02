@@ -28,23 +28,23 @@ StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
       await context.world.appDriver.tap(login);
       await context.world.appDriver.waitForAppToSettle();
 
-      Finder user = find.byKey(LoginScreenKeys.usernameField);
+      Finder user = find.byKey(LoginPageKeys.usernameField);
       context.expect(user, findsOneWidget);
 
       await context.world.appDriver.enterText(user, username);
 
-      Finder password = find.byKey(LoginScreenKeys.passwordField);
+      Finder password = find.byKey(LoginPageKeys.passwordField);
       context.expect(password, findsOneWidget);
 
       await context.world.appDriver.enterText(password, username);
 
-      Finder submitBtn = find.byKey(LoginScreenKeys.submitBtn);
+      Finder submitBtn = find.byKey(LoginPageKeys.submitBtn);
       context.expect(submitBtn, findsOneWidget);
       await context.world.appDriver.tap(submitBtn);
       await context.world.appDriver.waitForAppToSettle();
 
       // we are back on the news screen
-      Finder successBar = find.byKey(LoginScreenKeys.snackbarSuccess);
+      Finder successBar = find.byKey(LoginPageKeys.snackbarSuccess);
       context.expect(successBar, findsOneWidget);
       // implement your code
     },

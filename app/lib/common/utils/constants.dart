@@ -6,8 +6,11 @@ const String disappointedFace = '\u{1F625}';
 const String angryFace = '\u{1F621}';
 const String astonishedFace = '\u{1F632}';
 
-class LoginScreenKeys {
+class LoginPageKeys {
+  static const signUpBtn = Key('sign-up-btn');
   static const submitBtn = Key('login-submit-btn');
+  static const brandIcon = Key('brand-icon');
+  static const forgotPassBtn = Key('forgot-pass-btn');
   static const usernameField = Key('login-username-txt');
   static const passwordField = Key('login-password-txt');
   static const snackbarSuccess = Key('login-snackbar-success');

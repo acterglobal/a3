@@ -1,6 +1,5 @@
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:flutter/material.dart';
-import 'package:effektio/common/utils/constants.dart';
 import 'package:get/get.dart';
 
 class SignUpController extends GetxController {
