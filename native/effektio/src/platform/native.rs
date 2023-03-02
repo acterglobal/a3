@@ -56,8 +56,7 @@ pub async fn report_bug(
         let file_path = PathBuf::from(&screenshot_path);
         let img_path = file_path.canonicalize()?.to_string_lossy().to_string();
         let file = fs::read(img_path)?;
-        let filename =
-            file_path.file_name().unwrap().to_string_lossy().to_string();
+        let filename = file_path.file_name().unwrap().to_string_lossy().to_string();
         let file_part = Part::bytes(file)
             .file_name(filename)
             .mime_str("image/png")?;
