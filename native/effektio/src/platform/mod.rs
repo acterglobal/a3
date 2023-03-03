@@ -17,4 +17,4 @@ mod desktop;
 #[cfg(not(any(target_os = "android", target_os = "ios", target_os = "macos")))]
 pub use desktop::*;
 
-pub use native::report_bug;
+pub use native::{report_bug, sanitize, write_log};

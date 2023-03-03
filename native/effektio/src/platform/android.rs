@@ -10,8 +10,6 @@ use std::{
 
 use super::native;
 
-pub use super::native::sanitize;
-
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
     let builder = native::new_client_config(base_path, home)
         .await?

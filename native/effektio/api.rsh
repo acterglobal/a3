@@ -4,6 +4,9 @@ fn init_logging(log_dir: string, filter: Option<string>) -> Result<()>;
 /// Open new issue with log file and return issue id
 fn report_bug(url: string, username: string, password: Option<string>, app_name: string, version: string, description: string, tag: Option<string>, with_log: bool, screenshot_path: Option<string>) -> Future<Result<string>>;
 
+/// Allow flutter to call logging on rust side
+fn write_log(text: string, level: string) -> Result<()>;
+
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(basepath: string, username: string, password: string, device_name: Option<string>) -> Future<Result<Client>>;
 

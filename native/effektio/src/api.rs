@@ -1,6 +1,5 @@
 use anyhow::Result;
 use futures::Stream;
-pub use futures_signals::signal_vec::VecDiff;
 use lazy_static::lazy_static;
 use tokio::runtime;
 
@@ -112,4 +111,8 @@ async fn report_bug(
         screenshot_path,
     )
     .await
+}
+
+fn write_log(text: String, level: String) -> Result<()> {
+    platform::write_log(text, level)
 }

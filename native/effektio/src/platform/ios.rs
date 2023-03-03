@@ -11,8 +11,6 @@ use std::{
 
 use super::native;
 
-pub use super::native::sanitize;
-
 // this includes macos, because macos and ios is very much alike in logging
 
 #[cfg(target_os = "ios")]

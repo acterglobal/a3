@@ -583,7 +583,7 @@ class Api {
     return;
   }
 
-  /// Report bug with log file
+  /// Open new issue with log file and return issue id
   Future<String> reportBug(
     String url,
     String username,
@@ -743,6 +743,58 @@ class Api {
     tmp42_1._finalizer = this._registerFinalizer(tmp42_1);
     final tmp41 = _nativeFuture(tmp42_1, this.__reportBugFuturePoll);
     return tmp41;
+  }
+
+  /// Allow flutter to call logging on rust side
+  void writeLog(
+    String text,
+    String level,
+  ) {
+    final tmp0 = text;
+    final tmp4 = level;
+    var tmp1 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp6 = 0;
+    var tmp7 = 0;
+    final tmp0_0 = utf8.encode(tmp0);
+    tmp2 = tmp0_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
+    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
+    tmp1_1.setAll(0, tmp0_0);
+    tmp1 = tmp1_0.address;
+    tmp3 = tmp2;
+    final tmp4_0 = utf8.encode(tmp4);
+    tmp6 = tmp4_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
+    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
+    tmp5_1.setAll(0, tmp4_0);
+    tmp5 = tmp5_0.address;
+    tmp7 = tmp6;
+    final tmp8 = _writeLog(
+      tmp1,
+      tmp2,
+      tmp3,
+      tmp5,
+      tmp6,
+      tmp7,
+    );
+    final tmp10 = tmp8.arg0;
+    final tmp11 = tmp8.arg1;
+    final tmp12 = tmp8.arg2;
+    final tmp13 = tmp8.arg3;
+    if (tmp10 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+      final tmp10_0 = utf8.decode(tmp11_0.asTypedList(tmp12));
+      if (tmp12 > 0) {
+        final ffi.Pointer<ffi.Void> tmp11_0;
+        tmp11_0 = ffi.Pointer.fromAddress(tmp11);
+        this.__deallocate(tmp11_0, tmp13, 1);
+      }
+      throw tmp10_0;
+    }
+    return;
   }
 
   /// Create a new client for homeserver at url with storage at data_path
@@ -5847,6 +5899,26 @@ class Api {
     int,
     int,
     int,
+    int,
+    int,
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _writeLogPtr = _lookup<
+      ffi.NativeFunction<
+          _WriteLogReturn Function(
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__write_log");
+
+  late final _writeLog = _writeLogPtr.asFunction<
+      _WriteLogReturn Function(
     int,
     int,
     int,
@@ -20913,6 +20985,17 @@ class TypingEvent {
 }
 
 class _InitLoggingReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _WriteLogReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()

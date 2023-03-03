@@ -58,6 +58,12 @@ Future<void> startApp() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   Get.put(ScreenshotController());
+  final sdk = await EffektioSdk.instance;
+  PlatformDispatcher.instance.onError = (exception, stackTrace) {
+    sdk.writeLog(exception.toString(), 'error');
+    sdk.writeLog(stackTrace.toString(), 'error');
+    return true; // make this error handled
+  };
   runApp(const Effektio());
 }
 
@@ -365,6 +371,7 @@ class _EffektioHomeState extends State<EffektioHome>
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
+                throw Exception('force exception');
                 var appDocDir = await getApplicationDocumentsDirectory();
                 // rageshake disallows dot in filename
                 String timestamp = formatDate(

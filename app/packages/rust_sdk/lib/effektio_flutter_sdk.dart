@@ -279,4 +279,8 @@ class EffektioSdk {
     );
     return reportUrl.isEmpty ? null : reportUrl;
   }
+
+  void writeLog(String text, String level) {
+    _api.writeLog(text, level);
+  }
 }

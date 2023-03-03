@@ -123,6 +123,18 @@ pub async fn report_bug(
         .await?
 }
 
+pub fn write_log(text: String, level: String) -> Result<()> {
+    match level.as_str() {
+        "debug" => log::debug!("{}", text),
+        "error" => log::error!("{}", text),
+        "info" => log::info!("{}", text),
+        "warn" => log::warn!("{}", text),
+        "trace" => log::trace!("{}", text),
+        _ => {},
+    }
+    Ok(())
+}
+
 pub fn sanitize(base_path: String, home: String) -> PathBuf {
     PathBuf::from(base_path).join(sanitize_filename_reader_friendly::sanitize(&home))
 }
