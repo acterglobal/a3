@@ -1,8 +1,8 @@
 /// Initialize logging
 fn init_logging(log_dir: string, filter: Option<string>) -> Result<()>;
 
-/// Report bug with log file
-fn report_bug(url: string, username: string, password: Option<string>, app_name: string, version: string, description: string, tag: Option<string>, with_log: bool, screenshot_path: Option<string>) -> Future<Result<bool>>;
+/// Open new issue with log file and return issue id
+fn report_bug(url: string, username: string, password: Option<string>, app_name: string, version: string, description: string, tag: Option<string>, with_log: bool, screenshot_path: Option<string>) -> Future<Result<string>>;
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(basepath: string, username: string, password: string, device_name: Option<string>) -> Future<Result<Client>>;

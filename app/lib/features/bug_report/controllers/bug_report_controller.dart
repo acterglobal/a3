@@ -13,7 +13,7 @@ class BugReportController extends GetxController {
     tags = values;
   }
 
-  Future<bool> report(
+  Future<String?> report(
     BuildContext context,
     String description,
     bool withLog,
@@ -35,7 +35,7 @@ class BugReportController extends GetxController {
           ],
         ),
       );
-      return false;
+      return '';
     }
 
     // validate issue tag
@@ -59,13 +59,13 @@ class BugReportController extends GetxController {
         ),
       );
       if (res == false) {
-        return false;
+        return '';
       }
     }
 
     isSubmitting = true;
     final sdk = await EffektioSdk.instance;
-    final res = await sdk.reportBug(
+    final reportUrl = await sdk.reportBug(
       description,
       tags.isEmpty ? null : tags.join(','),
       withLog,
@@ -75,6 +75,6 @@ class BugReportController extends GetxController {
       await File(screenshotPath).delete();
     }
     isSubmitting = false;
-    return res;
+    return reportUrl;
   }
 }

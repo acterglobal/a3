@@ -584,7 +584,7 @@ class Api {
   }
 
   /// Report bug with log file
-  Future<bool> reportBug(
+  Future<String> reportBug(
     String url,
     String username,
     String? password,
@@ -1124,7 +1124,7 @@ class Api {
   late final _ffiStringIntoParts =
       _ffiStringIntoPartsPtr.asFunction<_FfiStringParts Function(int)>();
 
-  bool? __reportBugFuturePoll(
+  String? __reportBugFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1149,6 +1149,8 @@ class Api {
     final tmp11 = tmp6.arg3;
     final tmp12 = tmp6.arg4;
     final tmp13 = tmp6.arg5;
+    final tmp14 = tmp6.arg6;
+    final tmp15 = tmp6.arg7;
     if (tmp8 == 0) {
       return null;
     }
@@ -1162,7 +1164,13 @@ class Api {
       }
       throw tmp9_0;
     }
-    final tmp7 = tmp13 > 0;
+    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
+    if (tmp15 > 0) {
+      final ffi.Pointer<ffi.Void> tmp13_0;
+      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+      this.__deallocate(tmp13_0, tmp15 * 1, 1);
+    }
     return tmp7;
   }
 
@@ -22212,8 +22220,12 @@ class _ReportBugFuturePollReturn extends ffi.Struct {
   external int arg3;
   @ffi.Uint64()
   external int arg4;
-  @ffi.Uint8()
+  @ffi.Int64()
   external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+  @ffi.Uint64()
+  external int arg7;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {

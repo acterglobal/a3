@@ -99,7 +99,7 @@ async fn report_bug(
     tag: Option<String>,
     with_log: bool,
     screenshot_path: Option<String>,
-) -> Result<bool> {
+) -> Result<String> {
     platform::report_bug(
         url,
         username,

@@ -7,6 +7,7 @@ use reqwest::{
     multipart::{Form, Part},
     Client as ReqClient, StatusCode,
 };
+use serde::Deserialize;
 use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
@@ -34,6 +35,11 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     Ok(())
 }
 
+#[derive(Deserialize)]
+struct ReportResp {
+    report_url: String, // example - https://github.com/bitfriend/effektio-bugs/issues/9
+}
+
 #[allow(clippy::too_many_arguments)]
 pub async fn report_bug(
     url: String,
@@ -45,7 +51,7 @@ pub async fn report_bug(
     tag: Option<String>,
     with_log: bool,
     screenshot_path: Option<String>,
-) -> Result<bool> {
+) -> Result<String> {
     let mut form = Form::new()
         .text("text", description)
         .text("user_agent", "Mozilla/0.9")
@@ -107,7 +113,12 @@ pub async fn report_bug(
                 .send()
                 .await?;
             log::info!("report error: {:?}", resp);
-            Ok(resp.status() == StatusCode::OK)
+            if resp.status() == StatusCode::OK {
+                let json = resp.json::<ReportResp>().await?;
+                Ok(json.report_url)
+            } else {
+                Ok("".to_string())
+            }
         })
         .await?
 }

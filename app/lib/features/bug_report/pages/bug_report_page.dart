@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:effektio/common/utils/utils.dart';
 import 'package:effektio/common/widgets/custom_button.dart';
 import 'package:effektio/features/bug_report/controllers/bug_report_controller.dart';
 import 'package:effektio/features/bug_report/widgets/select_tag.dart';
@@ -125,15 +126,17 @@ class _BugReportState extends State<BugReportPage> {
                       )
                     : CustomButton(
                         onPressed: () async {
-                          bool result = await controller.report(
+                          String? reportUrl = await controller.report(
                             context,
                             description,
                             withLog,
                             withScreenshot ? widget.imagePath : null,
                           );
-                          String msg = result
-                              ? 'Reported the bug successfully!'
-                              : 'Error occurred in bug report';
+                          String msg = 'Error occurred in bug report';
+                          if (reportUrl != null) {
+                            String? issueId = getIssueId(reportUrl);
+                            msg = 'Reported the bug successfully! (#$issueId)';
+                          }
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(msg)),
                           );

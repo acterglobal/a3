@@ -240,7 +240,7 @@ class EffektioSdk {
     return _api.newGroupSettings(name);
   }
 
-  Future<bool> reportBug(
+  Future<String?> reportBug(
     String description,
     String? tag,
     bool withLog,
@@ -266,7 +266,7 @@ class EffektioSdk {
       'ISSUE_APP_VERSION',
       defaultValue: '1.0.0',
     );
-    return await _api.reportBug(
+    String reportUrl = await _api.reportBug(
       url,
       username,
       password,
@@ -277,5 +277,6 @@ class EffektioSdk {
       withLog,
       screenshotPath,
     );
+    return reportUrl.isEmpty ? null : reportUrl;
   }
 }
