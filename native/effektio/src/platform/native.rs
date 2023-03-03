@@ -31,10 +31,6 @@ lazy_static! {
     pub static ref FILE_LOGGER: Mutex<Option<Arc<fern::ImplDispatch>>> = Mutex::new(None);
 }
 
-pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
-    Ok(())
-}
-
 #[derive(Deserialize)]
 struct ReportResp {
     report_url: String, // example - https://github.com/bitfriend/effektio-bugs/issues/9

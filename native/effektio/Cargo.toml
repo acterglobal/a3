@@ -19,7 +19,6 @@ ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-assign = "1.1.1"
 async-broadcast = { workspace = true }
 chrono = "0.4"
 derive_builder = { version = "0.10.2" }

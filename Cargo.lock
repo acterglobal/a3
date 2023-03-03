@@ -964,7 +964,6 @@ version = "0.1.0"
 dependencies = [
  "android_logger",
  "anyhow",
- "assign",
  "async-broadcast",
  "chrono",
  "derive_builder 0.10.2",
@@ -1022,7 +1021,6 @@ dependencies = [
 name = "effektio-core"
 version = "0.1.0"
 dependencies = [
- "assign",
  "async-broadcast",
  "async-recursion",
  "chrono",

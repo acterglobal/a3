@@ -1,9 +1,8 @@
 use anyhow::{bail, Context, Result};
-use assign::assign;
 use effektio_core::{
     ruma::{
         api::client::{account::register, session::login, uiaa},
-        OwnedUserId, ServerName,
+        assign, OwnedUserId, ServerName,
     },
     RestoreToken,
 };
@@ -31,22 +30,18 @@ async fn make_client_config(
 
     // fully qualified username, good to go
     if let Ok(user_id) = OwnedUserId::try_from(formatted_username.as_str()) {
-        return Ok((
-            platform::new_client_config(base_path, user_id.to_string())
-                .await?
-                .server_name(user_id.server_name()),
-            user_id,
-        ));
+        let builder = platform::new_client_config(base_path, user_id.to_string())
+            .await?
+            .server_name(user_id.server_name());
+        return Ok((builder, user_id));
     }
 
     // we need to fallback to the testing/default scenario
     let user_id = OwnedUserId::try_from(format!("{formatted_username}:{default_homeserver_name}"))?;
-    Ok((
-        platform::new_client_config(base_path, user_id.to_string())
-            .await?
-            .homeserver_url(default_homeserver_url),
-        user_id,
-    ))
+    let builder = platform::new_client_config(base_path, user_id.to_string())
+        .await?
+        .homeserver_url(default_homeserver_url);
+    Ok((builder, user_id))
 }
 
 pub async fn guest_client(
