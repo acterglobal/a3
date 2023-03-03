@@ -205,7 +205,7 @@ jobs:
         run: cargo run -p effektio-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
-          DEFAULT_HOMESERVER_URL: "http://localhost:8008"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Build Native
         run: cargo make --profile release ios
@@ -295,7 +295,7 @@ jobs:
         run: cargo run -p effektio-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
-          DEFAULT_HOMESERVER_URL: "http://localhost:8008"
+          DEFAULT_HOMESERVER_URL: "http://localhost:8118"
 
       - name: Build Native
         run: cargo make --profile release android

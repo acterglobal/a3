@@ -49,8 +49,12 @@ class _CustomAvatarState extends State<CustomAvatar> {
       // hasAvatar == false
       return Uint8List(0);
     }
-    FfiBufferUint8 avatar = await widget.avatar!;
-    return avatar.asTypedList(); // sometimes empty array may be returned
+    try {
+      FfiBufferUint8 avatar = await widget.avatar!;
+      return avatar.asTypedList();
+    } catch (e) {
+      return Uint8List(0);
+    } // sometimes empty array may be returned
   }
 
   @override

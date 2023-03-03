@@ -59,7 +59,9 @@ impl UserProfile {
 
     pub async fn get_avatar(&self) -> Result<FfiBuffer<u8>> {
         let client = self.client.clone();
-        let avatar_url = self.avatar_url.clone().unwrap();
+        let Some(avatar_url) = self.avatar_url.clone() else {
+            anyhow::bail!("No User Profile found");
+        };
         RUNTIME
             .spawn(async move {
                 let request = MediaRequest {
@@ -70,7 +72,7 @@ impl UserProfile {
                     return Ok(FfiBuffer::new(result));
                 }
                 // sometimes fetching failed, i don't know that reason
-                info!("Could not get media content from user profile");
+                log::warn!("Could not get media content from user profile");
                 Ok(FfiBuffer::new(vec![]))
             })
             .await?

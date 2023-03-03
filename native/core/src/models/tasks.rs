@@ -71,8 +71,12 @@ impl super::EffektioModel for Task {
         &self.meta.event_id
     }
 
-    fn supports_comments(&self) -> bool {
-        true
+    fn capabilities(&self) -> &[super::Capability] {
+        &[super::Capability::Commentable]
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -125,6 +129,10 @@ impl super::EffektioModel for TaskUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
@@ -238,8 +246,12 @@ impl super::EffektioModel for TaskList {
         &self.meta.event_id
     }
 
-    fn supports_comments(&self) -> bool {
-        true
+    fn capabilities(&self) -> &[super::Capability] {
+        &[super::Capability::Commentable]
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 
     fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
@@ -276,6 +288,10 @@ impl super::EffektioModel for TaskListUpdate {
 
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
