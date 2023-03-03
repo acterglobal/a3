@@ -8,6 +8,7 @@ pub static PURPOSE_TEAM_VALUE: &str = "org.effektio.team";
 #[allow(non_snake_case)]
 pub mod KEYS {
     pub static TASKS: &str = "tasks";
+    pub static PINS: &str = "pins";
 }
 
 const HISTORY: &str = r#"{

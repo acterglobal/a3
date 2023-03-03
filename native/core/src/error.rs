@@ -20,6 +20,12 @@ pub enum Error {
     #[error("Index not found.")]
     IndexNotFound,
 
+    #[error("Model {0:?} unknown")]
+    UnknownModel(Option<String>),
+
+    #[error("Failed to parse {model_type}: {msg}")]
+    FailedToParse { model_type: String, msg: String },
+
     #[error("{0}")]
     Custom(String),
 }

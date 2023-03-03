@@ -193,8 +193,12 @@ impl Group {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                let Some(model) = AnyEffektioModel::from_raw_tlevent(&msg.event) else {
-                    continue
+                let model = match AnyEffektioModel::from_raw_tlevent(&msg.event) {
+                    Ok(model) => model,
+                    Err(m) => {
+                        tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
+                        continue;
+                    }
                 };
                 // match event {
                 //     MessageLikeEvent::Original(o) => {

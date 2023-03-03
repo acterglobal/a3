@@ -13,7 +13,7 @@ use crate::{
     statics::KEYS,
 };
 
-static TASKS_KEY: &str = "tasks";
+static TASKS_KEY: &str = KEYS::TASKS;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
