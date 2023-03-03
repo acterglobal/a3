@@ -130,7 +130,7 @@ pub fn write_log(text: String, level: String) -> Result<()> {
         "info" => log::info!("{}", text),
         "warn" => log::warn!("{}", text),
         "trace" => log::trace!("{}", text),
-        _ => {},
+        _ => {}
     }
     Ok(())
 }
