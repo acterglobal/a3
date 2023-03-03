@@ -88,6 +88,7 @@ fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     platform::init_logging(log_dir, filter)
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn report_bug(
     url: String,
     username: String,

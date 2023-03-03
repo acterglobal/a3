@@ -5,9 +5,6 @@ import 'package:effektio/common/widgets/custom_avatar.dart';
 import 'package:effektio/features/cross_signing/cross_signing.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk;
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
