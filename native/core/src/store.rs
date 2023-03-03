@@ -166,8 +166,9 @@ impl Store {
     }
 
     #[tracing::instrument(skip(self))]
-    pub async fn save_model_inner(&self, mdl: AnyEffektioModel) -> Result<()> {
+    pub async fn save_model_inner(&self, mdl: AnyEffektioModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
+        let mut keys_changed = vec![key.clone()];
         tracing::trace!(user=?self.client.user_id(), key, "saving");
         let mut indizes = mdl.indizes();
         if let Some(prev) = self.models.insert(key.clone(), mdl) {
@@ -185,6 +186,7 @@ impl Store {
                 if let Some(mut v) = self.indizes.get_mut(&idz) {
                     v.value_mut().retain(|k| k != &key)
                 }
+                keys_changed.push(idz);
             }
         }
         for idx in indizes.into_iter() {
@@ -194,25 +196,27 @@ impl Store {
                 .or_default()
                 .value_mut()
                 .push(key.clone());
-            tracing::trace!(user = ?self.client.user_id(), idx, key, exists=self.indizes.contains_key(&idx), "added to index");
+            tracing::trace!(user = ?self.client.user_id(), idx, key, "added to index");
+            keys_changed.push(idx);
         }
         tracing::trace!(user=?self.client.user_id(), key, "saved");
         self.dirty.insert(key);
-        Ok(())
+        Ok(keys_changed)
     }
 
-    pub async fn save_many(&self, models: Vec<AnyEffektioModel>) -> Result<()> {
+    pub async fn save_many(&self, models: Vec<AnyEffektioModel>) -> Result<Vec<String>> {
+        let mut total_list = Vec::new();
         for mdl in models.into_iter() {
-            self.save_model_inner(mdl).await?;
+            total_list.extend(self.save_model_inner(mdl).await?);
         }
         self.sync().await?; // FIXME: should we really run this every time?
-        Ok(())
+        Ok(total_list)
     }
 
-    pub async fn save(&self, mdl: AnyEffektioModel) -> Result<()> {
-        self.save_model_inner(mdl).await?;
+    pub async fn save(&self, mdl: AnyEffektioModel) -> Result<Vec<String>> {
+        let keys = self.save_model_inner(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
-        Ok(())
+        Ok(keys)
     }
 
     pub async fn sync(&self) -> Result<()> {

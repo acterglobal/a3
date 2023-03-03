@@ -11,12 +11,6 @@ class LoginController extends GetxController {
   Future<Client> login(String username, String password) async {
     update();
     final sdk = await EffektioSdk.instance;
-    if (!username.contains(':')) {
-      username = '$username:effektio.org';
-    }
-    if (!username.startsWith('@')) {
-      username = '@$username';
-    }
     Client client = await sdk.login(username, password);
     return client;
   }

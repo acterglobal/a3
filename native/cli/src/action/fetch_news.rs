@@ -14,9 +14,9 @@ use tracing::{info, warn};
 #[derive(Parser, Debug)]
 pub struct FetchNews {
     /// The room you want to post the news to
-    #[clap(short, long, parse(try_from_str), env = ENV_ROOM)]
+    #[arg(short, long, env = ENV_ROOM)]
     pub room: Box<ruma::RoomId>,
-    #[clap(flatten)]
+    #[command(flatten)]
     pub login: LoginConfig,
 }
 

@@ -1,7 +1,7 @@
 name: effektio_flutter_sdk
 description: A new flutter plugin project.
 version: 0.0.1
-homepage: 'https://doc.effektio.org/'
+homepage: 'https://doc.acter.global/'
 publish_to: "none"
 
 environment:

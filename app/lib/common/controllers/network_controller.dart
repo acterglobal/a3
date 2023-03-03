@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:effektio/common/utils/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
@@ -11,9 +12,13 @@ import 'package:overlay_support/overlay_support.dart';
 class NetworkController extends GetxController {
   static NetworkController to = Get.find();
 
-  var connectionType = 0.obs;
+  var connectionType = ConnectivityResult.other.obs;
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription _streamSubscription;
+
+  bool isDisconnected() {
+    return !(inCI && connectionType.value == ConnectivityResult.none);
+  }
 
   @override
   void onInit() {
@@ -34,19 +39,9 @@ class NetworkController extends GetxController {
   }
 
   void _updateState(ConnectivityResult result) {
-    switch (result) {
-      case ConnectivityResult.wifi:
-        connectionType.value = 1;
-        break;
-      case ConnectivityResult.mobile:
-        connectionType.value = 2;
-        break;
-      case ConnectivityResult.none:
-        connectionType.value = 0;
-        _showNoInternetNotification();
-        break;
-      default:
-        _showNoInternetNotification();
+    connectionType.value = result;
+    if (result == ConnectivityResult.none) {
+      _showNoInternetNotification();
     }
   }
 

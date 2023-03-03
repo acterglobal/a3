@@ -19,14 +19,12 @@ pub struct LoginConfig {
     #[clap(
         short = 'u',
         long = "user",
-        parse(try_from_str),
         env = ENV_USER
     )]
     login_username: OwnedUserId,
     #[clap(
         short = 'p',
         long = "password",
-        parse(try_from_str),
         env = ENV_PASSWORD
     )]
     login_password: Option<String>,
@@ -48,6 +46,12 @@ impl LoginConfig {
             String::from(path.to_string_lossy()),
             username.to_string(),
             password,
+            option_env!("DEFAULT_HOMESERVER_NAME")
+                .unwrap_or("effektio.org")
+                .to_string(),
+            option_env!("DEFAULT_HOMESERVER_URL")
+                .unwrap_or("https://matrix.effektio.org")
+                .to_string(),
             Some("effektio-tui".to_owned()),
         )
         .await?;
