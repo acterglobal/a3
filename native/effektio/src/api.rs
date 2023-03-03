@@ -95,8 +95,8 @@ async fn report_bug(
     password: Option<String>,
     app_name: String,
     version: String,
-    text: String,
-    label: Option<String>,
+    description: String,
+    tag: Option<String>,
     with_log: bool,
     screenshot_path: Option<String>,
 ) -> Result<bool> {
@@ -106,8 +106,8 @@ async fn report_bug(
         password,
         app_name,
         version,
-        text,
-        label,
+        description,
+        tag,
         with_log,
         screenshot_path,
     )

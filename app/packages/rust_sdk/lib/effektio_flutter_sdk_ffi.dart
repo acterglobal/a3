@@ -590,8 +590,8 @@ class Api {
     String? password,
     String appName,
     String version,
-    String text,
-    String? label,
+    String description,
+    String? tag,
     bool withLog,
     String? screenshotPath,
   ) {
@@ -600,8 +600,8 @@ class Api {
     final tmp8 = password;
     final tmp14 = appName;
     final tmp18 = version;
-    final tmp22 = text;
-    final tmp26 = label;
+    final tmp22 = description;
+    final tmp26 = tag;
     final tmp32 = withLog;
     final tmp34 = screenshotPath;
     var tmp1 = 0;

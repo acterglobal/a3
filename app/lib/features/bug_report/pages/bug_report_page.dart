@@ -19,7 +19,7 @@ class BugReportPage extends StatefulWidget {
 class _BugReportState extends State<BugReportPage> {
   final formKey = GlobalKey<FormState>();
   final bugReportController = Get.put(BugReportController());
-  String text = '';
+  String description = '';
   bool withLog = false;
   bool withScreenshot = false;
 
@@ -53,14 +53,14 @@ class _BugReportState extends State<BugReportPage> {
               children: [
                 const SizedBox(height: 10),
                 const Text(
-                  'Issue text',
+                  'Issue description',
                   style: AuthTheme.authBodyStyle,
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
                   style: const TextStyle(color: Colors.white),
                   onChanged: (value) => setState(() {
-                    text = value;
+                    description = value;
                   }),
                 ),
                 const SizedBox(height: 10),
@@ -127,7 +127,7 @@ class _BugReportState extends State<BugReportPage> {
                         onPressed: () async {
                           bool result = await controller.report(
                             context,
-                            text,
+                            description,
                             withLog,
                             withScreenshot ? widget.imagePath : null,
                           );

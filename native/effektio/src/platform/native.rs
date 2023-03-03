@@ -41,18 +41,18 @@ pub async fn report_bug(
     password: Option<String>,
     app_name: String,
     version: String,
-    text: String,
-    label: Option<String>,
+    description: String,
+    tag: Option<String>,
     with_log: bool,
     screenshot_path: Option<String>,
 ) -> Result<bool> {
     let mut form = Form::new()
-        .text("text", text)
+        .text("text", description)
         .text("user_agent", "Mozilla/0.9")
         .text("app", app_name)
         .text("version", version);
-    if let Some(label) = label {
-        form = form.text("label", label);
+    if let Some(tag) = tag {
+        form = form.text("label", tag);
     }
     let old_path = if with_log {
         let mut res = None;

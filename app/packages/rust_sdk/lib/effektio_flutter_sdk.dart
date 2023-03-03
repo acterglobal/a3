@@ -241,8 +241,8 @@ class EffektioSdk {
   }
 
   Future<bool> reportBug(
-    String text,
-    String? label,
+    String description,
+    String? tag,
     bool withLog,
     String? screenshotPath,
   ) async {
@@ -272,8 +272,8 @@ class EffektioSdk {
       password,
       appName,
       version,
-      text,
-      label,
+      description,
+      tag,
       withLog,
       screenshotPath,
     );

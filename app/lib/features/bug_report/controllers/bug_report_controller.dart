@@ -15,18 +15,18 @@ class BugReportController extends GetxController {
 
   Future<bool> report(
     BuildContext context,
-    String text,
+    String description,
     bool withLog,
     String? screenshotPath,
   ) async {
-    // validate issue text
-    if (text.isEmpty) {
+    // validate issue description
+    if (description.isEmpty) {
       showDialog<void>(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext ctx) => AlertDialog(
-          title: const Text('Empty text'),
-          content: const Text('Please enter the issue text'),
+          title: const Text('Empty description'),
+          content: const Text('Please enter the issue description'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -66,7 +66,7 @@ class BugReportController extends GetxController {
     isSubmitting = true;
     final sdk = await EffektioSdk.instance;
     final res = await sdk.reportBug(
-      text,
+      description,
       tags.isEmpty ? null : tags.join(','),
       withLog,
       screenshotPath,
