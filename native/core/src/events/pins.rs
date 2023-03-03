@@ -5,6 +5,23 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
+#[derive(Clone, Debug, Deserialize, Serialize, Builder)]
+#[builder(name = "PinDisplayInfoBuilder", derive(Debug))]
+pub struct PinDisplayInfo {
+    /// Colorize the item
+    #[builder(setter(into), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    color: Option<Color>,
+    /// Show this icon
+    #[builder(setter(into), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    icon: Option<Icon>,
+    /// show it in particular sections only
+    #[builder(setter(into), default)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    section: Option<String>,
+}
+
 /// The Pin Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
 #[ruma_event(type = "org.effektio.dev.pin", kind = MessageLike)]
@@ -26,12 +43,7 @@ pub struct PinEventContent {
     /// Optionally, a pin can be colored
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub color: Option<Color>,
-
-    /// Optionally, a pin might have an icon attached
-    #[builder(setter(into), default)]
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub icon: Option<Icon>,
+    pub display: Option<PinDisplayInfo>,
 }
 
 #[cfg(test)]
