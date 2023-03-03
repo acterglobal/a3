@@ -20,7 +20,7 @@ use matrix_sdk::ruma::{
     EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
 };
 pub use news::News;
-pub use pins::Pin;
+pub use pins::{Pin, PinUpdate};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -35,7 +35,7 @@ use crate::events::{
     comments::{
         OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
     },
-    pins::{OriginalPinEvent, SyncPinEvent},
+    pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
     tasks::{
         OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
         SyncTaskListEvent, SyncTaskUpdateEvent,
@@ -139,6 +139,7 @@ pub enum AnyEffektioModel {
 
     // -- Pins
     Pin,
+    PinUpdate,
 
     // -- more generics
     Comment,
@@ -196,6 +197,17 @@ impl AnyEffektioModel {
                         tracing::error!(?error, ?raw, "parsing pin event failed");
                         Error::FailedToParse {
                             model_type: "org.effektio.dev.pin".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "org.effektio.dev.pin.updae" => Ok(AnyEffektioModel::PinUpdate(
+                raw.deserialize_as::<OriginalPinUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing pin update event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.pin.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -303,6 +315,20 @@ impl AnyEffektioModel {
                 .into_full_event(room_id.to_owned())
             {
                 MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::Pin(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "org.effektio.dev.pin.update" => match raw
+                .deserialize_as::<SyncPinUpdateEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing pin update event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.pin.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::PinUpdate(t.into())),
                 _ => Err(Error::UnknownModel(None)),
             },
 

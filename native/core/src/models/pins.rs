@@ -2,9 +2,12 @@ use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::EventMeta;
+use super::{AnyEffektioModel, EventMeta};
 
-use crate::{events::pins::PinEventContent, statics::KEYS};
+use crate::{
+    events::pins::{PinEventContent, PinUpdateBuilder, PinUpdateEventContent},
+    statics::KEYS,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Pin {
@@ -27,11 +30,11 @@ impl Pin {
         &self.meta.room_id
     }
 
-    // pub fn updater(&self) -> PinUpdateBuilder {
-    //     PinUpdateBuilder::default()
-    //         .Pin(self.meta.event_id.clone())
-    //         .to_owned()
-    // }
+    pub fn updater(&self) -> PinUpdateBuilder {
+        PinUpdateBuilder::default()
+            .pin(self.meta.event_id.clone())
+            .to_owned()
+    }
 
     pub fn key_from_event(event_id: &EventId) -> String {
         event_id.to_string()
@@ -55,13 +58,13 @@ impl super::EffektioModel for Pin {
         super::default_model_execute(store, self.into()).await
     }
 
-    // fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
-    //     let AnyEffektioModel::PinUpdate(update) = model else {
-    //         return Ok(false)
-    //     };
+    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
+        let AnyEffektioModel::PinUpdate(update) = model else {
+            return Ok(false)
+        };
 
-    //     update.apply(&mut self.inner)
-    // }
+        update.apply(&mut self.inner)
+    }
 }
 
 impl From<OriginalMessageLikeEvent<PinEventContent>> for Pin {
@@ -75,6 +78,59 @@ impl From<OriginalMessageLikeEvent<PinEventContent>> for Pin {
             ..
         } = outer;
         Pin {
+            inner: content,
+            meta: EventMeta {
+                room_id,
+                event_id,
+                sender,
+                origin_server_ts,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct PinUpdate {
+    inner: PinUpdateEventContent,
+    meta: EventMeta,
+}
+
+impl super::EffektioModel for PinUpdate {
+    fn indizes(&self) -> Vec<String> {
+        vec![format!("{:}::history", self.inner.pin.event_id)]
+    }
+
+    fn event_id(&self) -> &EventId {
+        &self.meta.event_id
+    }
+
+    async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {
+        super::default_model_execute(store, self.into()).await
+    }
+
+    fn belongs_to(&self) -> Option<Vec<String>> {
+        Some(vec![Pin::key_from_event(&self.inner.pin.event_id)])
+    }
+}
+
+impl Deref for PinUpdate {
+    type Target = PinUpdateEventContent;
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl From<OriginalMessageLikeEvent<PinUpdateEventContent>> for PinUpdate {
+    fn from(outer: OriginalMessageLikeEvent<PinUpdateEventContent>) -> Self {
+        let OriginalMessageLikeEvent {
+            content,
+            room_id,
+            event_id,
+            sender,
+            origin_server_ts,
+            ..
+        } = outer;
+        PinUpdate {
             inner: content,
             meta: EventMeta {
                 room_id,
