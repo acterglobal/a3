@@ -23,7 +23,9 @@ use effektio_core::{
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
     },
     statics::{default_effektio_group_states, initial_state_for_alias},
+    templates::{Engine, Value},
 };
+use futures::stream::StreamExt;
 use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -53,6 +55,22 @@ struct HistoryState {
 }
 
 impl Group {
+    pub async fn create_onboarding_data(&self) -> Result<()> {
+        let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
+        engine.add_user("main".to_owned(), self.client.client.clone());
+        engine.add_context(
+            "space".to_owned(),
+            Value::try_from(self.room.room_id().to_string())?,
+        );
+
+        let mut executer = engine.execute()?;
+        while let Some(i) = executer.next().await {
+            i?
+        }
+
+        Ok(())
+    }
+
     pub(crate) async fn add_handlers(&self) {
         self.room
             .client()

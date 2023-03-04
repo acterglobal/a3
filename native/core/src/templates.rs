@@ -9,11 +9,12 @@ use futures::{
 };
 use indexmap::IndexMap;
 use matrix_sdk::Client as MatrixClient;
+pub use minijinja::value::Value;
 use minijinja::Environment;
 use serde;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::collections::BTreeMap;
-use toml::{Table, Value};
+use toml::{Table, Value as TomlValue};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
@@ -134,7 +135,7 @@ pub enum TemplatesRoot {
     V01(TemplateV01),
 }
 
-type Context = BTreeMap<String, minijinja::value::Value>;
+type Context = BTreeMap<String, Value>;
 
 pub struct ExecutionStream {
     total: u32,
@@ -143,26 +144,26 @@ pub struct ExecutionStream {
 }
 
 fn execute_value_template(
-    value: Value,
+    value: TomlValue,
     env: &Environment,
     context: &Context,
-) -> Result<Value, Error> {
+) -> Result<TomlValue, Error> {
     match value {
-        Value::String(s) => {
+        TomlValue::String(s) => {
             let resp = env.compile_expression(&s)?.eval(context)?;
-            Ok(Value::try_from(resp)?)
+            Ok(TomlValue::try_from(resp)?)
         }
-        Value::Array(v) => Ok(Value::Array(
+        TomlValue::Array(v) => Ok(TomlValue::Array(
             v.into_iter()
                 .map(|v| execute_value_template(v, env, context))
-                .collect::<Result<Vec<Value>, Error>>()?,
+                .collect::<Result<Vec<TomlValue>, Error>>()?,
         )),
-        Value::Table(t) => {
+        TomlValue::Table(t) => {
             let mut new_table = toml::map::Map::with_capacity(t.len());
             for (key, value) in t.into_iter() {
                 new_table.insert(key, execute_value_template(value, env, context)?);
             }
-            Ok(Value::Table(new_table))
+            Ok(TomlValue::Table(new_table))
         }
         _ => Ok(value),
     }
@@ -209,7 +210,7 @@ pub struct Engine {
 }
 
 impl Engine {
-    pub fn from_str<'a>(source: &'a str) -> Result<Self, Error> {
+    pub fn with_template(source: &str) -> Result<Self, Error> {
         let TemplatesRoot::V01(root) = toml::from_str::<TemplatesRoot>(source)?;
 
         Ok(Self {
@@ -223,18 +224,20 @@ impl Engine {
         &self.root.inputs
     }
 
-    pub fn add_context(&mut self, name: String, value: minijinja::value::Value) {
+    pub fn add_context(&mut self, name: String, value: Value) {
         self.context.insert(name, value);
     }
 
-    pub fn add_users(&mut self, name: String, client: MatrixClient) {
+    pub fn add_user(&mut self, name: String, client: MatrixClient) {
         self.users.insert(name, client);
     }
 
     pub fn execute(&self) -> Result<ExecutionStream, Error> {
+        tracing::trace!(name = ?self.root.name, "executing");
+
         let env = Environment::new();
         let users = self.users.clone();
-        let mut context = self.context.clone();
+        let context = self.context.clone();
         let objects = self.root.objects.clone();
         let total = objects.len();
         let mut default_user = None;
@@ -266,12 +269,12 @@ impl Engine {
         }
 
         let stream = try_stream! {
-            for (name, fields) in objects.into_iter() {
-                let reformatted = execute_value_template(Value::Table(fields), &env, &context)?;
-                let Value::Table(t) = reformatted else {
+            for (_name, fields) in objects.into_iter() {
+                let reformatted = execute_value_template(TomlValue::Table(fields), &env, &context)?;
+                let TomlValue::Table(t) = reformatted else {
                     unreachable!();
                 };
-                let model = Table::try_into::<Object>(t)?;
+                let _obj = Table::try_into::<Object>(t)?;
                 yield
             }
 
@@ -320,7 +323,7 @@ url = "https://github.com/acterglobal/a3"
 
         "#;
 
-        let engine = Engine::from_str(tmpl)?;
+        let _engine = Engine::with_template(tmpl)?;
 
         Ok(())
     }
