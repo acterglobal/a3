@@ -23,16 +23,6 @@ const rageshakePassword = String.fromEnvironment(
   defaultValue: 'secret',
 );
 
-const issueAppName = String.fromEnvironment(
-  'ISSUE_APP_NAME',
-  defaultValue: 'a3-nightly',
-);
-
-const issueAppVersion = String.fromEnvironment(
-  'ISSUE_APP_VERSION',
-  defaultValue: '1.0.0',
-);
-
 class BugReportController extends GetxController {
   List<String> tags = [];
   String errorText = '';
@@ -103,9 +93,9 @@ class BugReportController extends GetxController {
     request.headers.addAll({'Authorization': basicAuth});
     request.fields.addAll({
       'text': description,
-      'user_agent': 'Mozilla/9.0',
-      'app': issueAppName,
-      'version': issueAppVersion,
+      'user_agent': userAgent,
+      'app': appName, // should be same as one among github_project_mappings
+      'version': versionName,
     });
     request.fields.addIf(tags.isNotEmpty, 'label', tags.join(','));
     request.files.addIf(

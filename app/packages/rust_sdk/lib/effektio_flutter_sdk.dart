@@ -38,6 +38,19 @@ const defaultSessionKey = String.fromEnvironment(
   defaultValue: 'sessions',
 );
 
+// ex: a3-nightly or effektio-linux
+String appName = String.fromEnvironment(
+  'APP_NAME',
+  defaultValue: 'effektio-${Platform.operatingSystem}',
+);
+
+const versionName = String.fromEnvironment(
+  'VERSION_NAME',
+  defaultValue: 'DEV',
+);
+
+String userAgent = '$appName/$versionName';
+
 Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
     return fallback;
@@ -96,7 +109,7 @@ class EffektioSdk {
         appDocPath,
         defaultServerName,
         defaultServerUrl,
-        deviceName,
+        userAgent,
       );
       _clients.add(client);
       loggedIn = client.loggedIn();
@@ -144,14 +157,6 @@ class EffektioSdk {
     }
   }
 
-  static String get deviceName {
-    String versionName = const String.fromEnvironment(
-      'VERSION_NAME',
-      defaultValue: 'DEV',
-    );
-    return 'Effektio ${Platform.operatingSystem} $versionName';
-  }
-
   static Future<EffektioSdk> get _unrestoredInstance async {
     if (_instance == null) {
       final api = Platform.isAndroid
@@ -196,7 +201,7 @@ class EffektioSdk {
       password,
       defaultServerName,
       defaultServerUrl,
-      deviceName,
+      userAgent,
     );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
@@ -259,7 +264,7 @@ class EffektioSdk {
       token,
       defaultServerName,
       defaultServerUrl,
-      deviceName,
+      userAgent,
     );
     final account = client.account();
     await account.setDisplayName(displayName);
