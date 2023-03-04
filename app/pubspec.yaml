@@ -32,7 +32,6 @@ dependencies:
 
   # UI
   flutter_adaptive_scaffold: ^0.1.0
-  adaptive_navigation: ^0.0.9
   flutter_chat_ui:
     git:
       url: https://github.com/acterglobal/flyer-flutter_chat_ui.git

@@ -9,22 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "47.0.0"
-  adaptive_breakpoints:
-    dependency: transitive
-    description:
-      name: adaptive_breakpoints
-      sha256: "3aa6ef09074fe7824dfdc9a6d9f955c8a3bae0fb71c495cbd72f471a87699b4f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.6"
-  adaptive_navigation:
-    dependency: "direct main"
-    description:
-      name: adaptive_navigation
-      sha256: "271d3e54147ce37b389c3d7d19777b4340e4ccd440d0349457c8b8db197b1c41"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.9"
   analyzer:
     dependency: transitive
     description:
