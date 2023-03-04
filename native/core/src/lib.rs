@@ -15,6 +15,8 @@ pub mod store;
 pub mod support;
 pub use error::{Error, Result};
 pub use support::RestoreToken;
+#[cfg(feature = "templates")]
+pub mod templates;
 pub mod util;
 
 #[cfg(feature = "with-mocks")]
