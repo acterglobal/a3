@@ -88,30 +88,8 @@ fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     platform::init_logging(log_dir, filter)
 }
 
-#[allow(clippy::too_many_arguments)]
-async fn report_bug(
-    url: String,
-    username: String,
-    password: Option<String>,
-    app_name: String,
-    version: String,
-    description: String,
-    tag: Option<String>,
-    with_log: bool,
-    screenshot_path: Option<String>,
-) -> Result<String> {
-    platform::report_bug(
-        url,
-        username,
-        password,
-        app_name,
-        version,
-        description,
-        tag,
-        with_log,
-        screenshot_path,
-    )
-    .await
+fn rotate_log_file() -> Result<String> {
+    platform::rotate_log_file()
 }
 
 fn write_log(text: String, level: String) -> Result<()> {

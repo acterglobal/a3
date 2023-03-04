@@ -46,107 +46,109 @@ class _BugReportState extends State<BugReportPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: GetBuilder<BugReportController>(
-          builder: (BugReportController controller) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                const Text(
-                  'Issue description',
-                  style: AuthTheme.authBodyStyle,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  style: const TextStyle(color: Colors.white),
-                  onChanged: (value) => setState(() {
-                    description = value;
-                  }),
-                ),
-                const SizedBox(height: 10),
-                const Text(
-                  'Issue tag(s)',
-                  style: AuthTheme.authBodyStyle,
-                ),
-                const SizedBox(height: 10),
-                SelectTag(),
-                const SizedBox(height: 10),
-                CheckboxListTile(
-                  title: const Text(
-                    'Including log file',
-                    style: AuthTheme.authBodyStyle,
-                  ),
-                  value: withLog,
-                  onChanged: (bool? value) {
-                    if (value != null) {
-                      setState(() => withLog = value);
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              'Issue description',
+              style: AuthTheme.authBodyStyle,
+            ),
+            const SizedBox(height: 10),
+            TextFormField(
+              style: const TextStyle(color: Colors.white),
+              onChanged: (value) => setState(() {
+                description = value;
+              }),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Issue tag(s)',
+              style: AuthTheme.authBodyStyle,
+            ),
+            const SizedBox(height: 10),
+            SelectTag(),
+            const SizedBox(height: 10),
+            CheckboxListTile(
+              title: const Text(
+                'Including log file',
+                style: AuthTheme.authBodyStyle,
+              ),
+              value: withLog,
+              onChanged: (bool? value) {
+                if (value != null) {
+                  setState(() => withLog = value);
+                }
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            const SizedBox(height: 10),
+            CheckboxListTile(
+              title: const Text(
+                'Including screenshot',
+                style: AuthTheme.authBodyStyle,
+              ),
+              value: withScreenshot,
+              onChanged: (bool? value) {
+                if (value != null) {
+                  setState(() => withScreenshot = value);
+                }
+              },
+              controlAffinity: ListTileControlAffinity.leading,
+              enabled: widget.imagePath != null,
+            ),
+            const SizedBox(height: 10),
+            if (withScreenshot)
+              Image.file(
+                File(widget.imagePath!),
+                width: MediaQuery.of(context).size.width * 0.8,
+                errorBuilder: (
+                  BuildContext ctx,
+                  Object error,
+                  StackTrace? stackTrace,
+                ) {
+                  return Text('Could not load image due to $error');
+                },
+              ),
+            if (withScreenshot) const SizedBox(height: 10),
+            const Divider(
+              color: ToDoTheme.dividerColor,
+              endIndent: 10,
+              indent: 10,
+            ),
+            const SizedBox(height: 10),
+            GetBuilder<BugReportController>(
+              id: 'submit',
+              builder: (BugReportController controller) {
+                if (controller.isSubmitting) {
+                  return const CircularProgressIndicator(
+                    color: AppCommonTheme.primaryColor,
+                  );
+                }
+                return CustomButton(
+                  onPressed: () async {
+                    String? reportUrl = await controller.report(
+                      context,
+                      description,
+                      withLog,
+                      withScreenshot ? widget.imagePath : null,
+                    );
+                    String msg = 'Error occurred in bug report';
+                    if (reportUrl != null) {
+                      String? issueId = getIssueId(reportUrl);
+                      msg = 'Reported the bug successfully! (#$issueId)';
                     }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(msg)),
+                    );
+                    Navigator.pop(context);
                   },
-                  controlAffinity: ListTileControlAffinity.leading,
-                ),
-                const SizedBox(height: 10),
-                CheckboxListTile(
-                  title: const Text(
-                    'Including screenshot',
-                    style: AuthTheme.authBodyStyle,
-                  ),
-                  value: withScreenshot,
-                  onChanged: (bool? value) {
-                    if (value != null) {
-                      setState(() => withScreenshot = value);
-                    }
-                  },
-                  controlAffinity: ListTileControlAffinity.leading,
-                  enabled: widget.imagePath != null,
-                ),
-                const SizedBox(height: 10),
-                if (withScreenshot)
-                  Image.file(
-                    File(widget.imagePath!),
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    errorBuilder: (
-                      BuildContext ctx,
-                      Object error,
-                      StackTrace? stackTrace,
-                    ) {
-                      return Text('Could not load image due to $error');
-                    },
-                  ),
-                if (withScreenshot) const SizedBox(height: 10),
-                const Divider(
-                  color: ToDoTheme.dividerColor,
-                  endIndent: 10,
-                  indent: 10,
-                ),
-                const SizedBox(height: 10),
-                controller.isSubmitting
-                    ? const CircularProgressIndicator(
-                        color: AppCommonTheme.primaryColor,
-                      )
-                    : CustomButton(
-                        onPressed: () async {
-                          String? reportUrl = await controller.report(
-                            context,
-                            description,
-                            withLog,
-                            withScreenshot ? widget.imagePath : null,
-                          );
-                          String msg = 'Error occurred in bug report';
-                          if (reportUrl != null) {
-                            String? issueId = getIssueId(reportUrl);
-                            msg = 'Reported the bug successfully! (#$issueId)';
-                          }
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(msg)),
-                          );
-                          Navigator.pop(context);
-                        },
-                        title: 'Submit',
-                      ),
-              ],
-            );
-          },
+                  title: 'Submit',
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

@@ -583,166 +583,34 @@ class Api {
     return;
   }
 
-  /// Open new issue with log file and return issue id
-  Future<String> reportBug(
-    String url,
-    String username,
-    String? password,
-    String appName,
-    String version,
-    String description,
-    String? tag,
-    bool withLog,
-    String? screenshotPath,
-  ) {
-    final tmp0 = url;
-    final tmp4 = username;
-    final tmp8 = password;
-    final tmp14 = appName;
-    final tmp18 = version;
-    final tmp22 = description;
-    final tmp26 = tag;
-    final tmp32 = withLog;
-    final tmp34 = screenshotPath;
-    var tmp1 = 0;
-    var tmp2 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    var tmp6 = 0;
-    var tmp7 = 0;
-    var tmp9 = 0;
-    var tmp11 = 0;
-    var tmp12 = 0;
-    var tmp13 = 0;
-    var tmp15 = 0;
-    var tmp16 = 0;
-    var tmp17 = 0;
-    var tmp19 = 0;
-    var tmp20 = 0;
-    var tmp21 = 0;
-    var tmp23 = 0;
-    var tmp24 = 0;
-    var tmp25 = 0;
-    var tmp27 = 0;
-    var tmp29 = 0;
-    var tmp30 = 0;
-    var tmp31 = 0;
-    var tmp33 = 0;
-    var tmp35 = 0;
-    var tmp37 = 0;
-    var tmp38 = 0;
-    var tmp39 = 0;
-    final tmp0_0 = utf8.encode(tmp0);
-    tmp2 = tmp0_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp1_0 = this.__allocate(tmp2 * 1, 1);
-    final Uint8List tmp1_1 = tmp1_0.asTypedList(tmp2);
-    tmp1_1.setAll(0, tmp0_0);
-    tmp1 = tmp1_0.address;
-    tmp3 = tmp2;
-    final tmp4_0 = utf8.encode(tmp4);
-    tmp6 = tmp4_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp5_0 = this.__allocate(tmp6 * 1, 1);
-    final Uint8List tmp5_1 = tmp5_0.asTypedList(tmp6);
-    tmp5_1.setAll(0, tmp4_0);
-    tmp5 = tmp5_0.address;
-    tmp7 = tmp6;
-    if (tmp8 == null) {
-      tmp9 = 0;
-    } else {
-      tmp9 = 1;
-      final tmp10 = tmp8;
-      final tmp10_0 = utf8.encode(tmp10);
-      tmp12 = tmp10_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp11_0 = this.__allocate(tmp12 * 1, 1);
-      final Uint8List tmp11_1 = tmp11_0.asTypedList(tmp12);
-      tmp11_1.setAll(0, tmp10_0);
-      tmp11 = tmp11_0.address;
-      tmp13 = tmp12;
+  /// Rotate the logging file
+  String rotateLogFile() {
+    final tmp0 = _rotateLogFile();
+    final tmp2 = tmp0.arg0;
+    final tmp3 = tmp0.arg1;
+    final tmp4 = tmp0.arg2;
+    final tmp5 = tmp0.arg3;
+    final tmp6 = tmp0.arg4;
+    final tmp7 = tmp0.arg5;
+    final tmp8 = tmp0.arg6;
+    if (tmp2 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+      final tmp2_0 = utf8.decode(tmp3_0.asTypedList(tmp4));
+      if (tmp4 > 0) {
+        final ffi.Pointer<ffi.Void> tmp3_0;
+        tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+        this.__deallocate(tmp3_0, tmp5, 1);
+      }
+      throw tmp2_0;
     }
-    final tmp14_0 = utf8.encode(tmp14);
-    tmp16 = tmp14_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp15_0 = this.__allocate(tmp16 * 1, 1);
-    final Uint8List tmp15_1 = tmp15_0.asTypedList(tmp16);
-    tmp15_1.setAll(0, tmp14_0);
-    tmp15 = tmp15_0.address;
-    tmp17 = tmp16;
-    final tmp18_0 = utf8.encode(tmp18);
-    tmp20 = tmp18_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp19_0 = this.__allocate(tmp20 * 1, 1);
-    final Uint8List tmp19_1 = tmp19_0.asTypedList(tmp20);
-    tmp19_1.setAll(0, tmp18_0);
-    tmp19 = tmp19_0.address;
-    tmp21 = tmp20;
-    final tmp22_0 = utf8.encode(tmp22);
-    tmp24 = tmp22_0.length;
-    final ffi.Pointer<ffi.Uint8> tmp23_0 = this.__allocate(tmp24 * 1, 1);
-    final Uint8List tmp23_1 = tmp23_0.asTypedList(tmp24);
-    tmp23_1.setAll(0, tmp22_0);
-    tmp23 = tmp23_0.address;
-    tmp25 = tmp24;
-    if (tmp26 == null) {
-      tmp27 = 0;
-    } else {
-      tmp27 = 1;
-      final tmp28 = tmp26;
-      final tmp28_0 = utf8.encode(tmp28);
-      tmp30 = tmp28_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp29_0 = this.__allocate(tmp30 * 1, 1);
-      final Uint8List tmp29_1 = tmp29_0.asTypedList(tmp30);
-      tmp29_1.setAll(0, tmp28_0);
-      tmp29 = tmp29_0.address;
-      tmp31 = tmp30;
+    final ffi.Pointer<ffi.Uint8> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+    final tmp1 = utf8.decode(tmp6_0.asTypedList(tmp7));
+    if (tmp8 > 0) {
+      final ffi.Pointer<ffi.Void> tmp6_0;
+      tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+      this.__deallocate(tmp6_0, tmp8 * 1, 1);
     }
-    tmp33 = tmp32 ? 1 : 0;
-    if (tmp34 == null) {
-      tmp35 = 0;
-    } else {
-      tmp35 = 1;
-      final tmp36 = tmp34;
-      final tmp36_0 = utf8.encode(tmp36);
-      tmp38 = tmp36_0.length;
-      final ffi.Pointer<ffi.Uint8> tmp37_0 = this.__allocate(tmp38 * 1, 1);
-      final Uint8List tmp37_1 = tmp37_0.asTypedList(tmp38);
-      tmp37_1.setAll(0, tmp36_0);
-      tmp37 = tmp37_0.address;
-      tmp39 = tmp38;
-    }
-    final tmp40 = _reportBug(
-      tmp1,
-      tmp2,
-      tmp3,
-      tmp5,
-      tmp6,
-      tmp7,
-      tmp9,
-      tmp11,
-      tmp12,
-      tmp13,
-      tmp15,
-      tmp16,
-      tmp17,
-      tmp19,
-      tmp20,
-      tmp21,
-      tmp23,
-      tmp24,
-      tmp25,
-      tmp27,
-      tmp29,
-      tmp30,
-      tmp31,
-      tmp33,
-      tmp35,
-      tmp37,
-      tmp38,
-      tmp39,
-    );
-    final tmp42 = tmp40;
-    final ffi.Pointer<ffi.Void> tmp42_0 = ffi.Pointer.fromAddress(tmp42);
-    final tmp42_1 = _Box(this, tmp42_0, "__report_bug_future_drop");
-    tmp42_1._finalizer = this._registerFinalizer(tmp42_1);
-    final tmp41 = _nativeFuture(tmp42_1, this.__reportBugFuturePoll);
-    return tmp41;
+    return tmp1;
   }
 
   /// Allow flutter to call logging on rust side
@@ -1250,56 +1118,6 @@ class Api {
 
   late final _ffiStringIntoParts =
       _ffiStringIntoPartsPtr.asFunction<_FfiStringParts Function(int)>();
-
-  String? __reportBugFuturePoll(
-    int boxed,
-    int postCobject,
-    int port,
-  ) {
-    final tmp0 = boxed;
-    final tmp2 = postCobject;
-    final tmp4 = port;
-    var tmp1 = 0;
-    var tmp3 = 0;
-    var tmp5 = 0;
-    tmp1 = tmp0;
-    tmp3 = tmp2;
-    tmp5 = tmp4;
-    final tmp6 = _reportBugFuturePoll(
-      tmp1,
-      tmp3,
-      tmp5,
-    );
-    final tmp8 = tmp6.arg0;
-    final tmp9 = tmp6.arg1;
-    final tmp10 = tmp6.arg2;
-    final tmp11 = tmp6.arg3;
-    final tmp12 = tmp6.arg4;
-    final tmp13 = tmp6.arg5;
-    final tmp14 = tmp6.arg6;
-    final tmp15 = tmp6.arg7;
-    if (tmp8 == 0) {
-      return null;
-    }
-    if (tmp9 == 0) {
-      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
-      if (tmp11 > 0) {
-        final ffi.Pointer<ffi.Void> tmp10_0;
-        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
-        this.__deallocate(tmp10_0, tmp12, 1);
-      }
-      throw tmp9_0;
-    }
-    final ffi.Pointer<ffi.Uint8> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp7 = utf8.decode(tmp13_0.asTypedList(tmp14));
-    if (tmp15 > 0) {
-      final ffi.Pointer<ffi.Void> tmp13_0;
-      tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-      this.__deallocate(tmp13_0, tmp15 * 1, 1);
-    }
-    return tmp7;
-  }
 
   Client? __loginNewClientFuturePoll(
     int boxed,
@@ -5917,70 +5735,12 @@ class Api {
     int,
     int,
   )>();
-  late final _reportBugPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-    ffi.Uint8,
-    ffi.Uint8,
-    ffi.Int64,
-    ffi.Uint64,
-    ffi.Uint64,
-  )>>("__report_bug");
+  late final _rotateLogFilePtr =
+      _lookup<ffi.NativeFunction<_RotateLogFileReturn Function()>>(
+          "__rotate_log_file");
 
-  late final _reportBug = _reportBugPtr.asFunction<
-      int Function(
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-    int,
-  )>();
+  late final _rotateLogFile =
+      _rotateLogFilePtr.asFunction<_RotateLogFileReturn Function()>();
   late final _writeLogPtr = _lookup<
       ffi.NativeFunction<
           _WriteLogReturn Function(
@@ -10530,20 +10290,6 @@ class Api {
 
   late final _typingEventUserIds = _typingEventUserIdsPtr.asFunction<
       int Function(
-    int,
-  )>();
-  late final _reportBugFuturePollPtr = _lookup<
-      ffi.NativeFunction<
-          _ReportBugFuturePollReturn Function(
-    ffi.Int64,
-    ffi.Int64,
-    ffi.Int64,
-  )>>("__report_bug_future_poll");
-
-  late final _reportBugFuturePoll = _reportBugFuturePollPtr.asFunction<
-      _ReportBugFuturePollReturn Function(
-    int,
-    int,
     int,
   )>();
   late final _loginNewClientFuturePollPtr = _lookup<
@@ -21100,6 +20846,23 @@ class _InitLoggingReturn extends ffi.Struct {
   external int arg3;
 }
 
+class _RotateLogFileReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+  @ffi.Uint64()
+  external int arg5;
+  @ffi.Uint64()
+  external int arg6;
+}
+
 class _WriteLogReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -22395,25 +22158,6 @@ class _TypingEventRoomIdReturn extends ffi.Struct {
   external int arg1;
   @ffi.Uint64()
   external int arg2;
-}
-
-class _ReportBugFuturePollReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint8()
-  external int arg1;
-  @ffi.Int64()
-  external int arg2;
-  @ffi.Uint64()
-  external int arg3;
-  @ffi.Uint64()
-  external int arg4;
-  @ffi.Int64()
-  external int arg5;
-  @ffi.Uint64()
-  external int arg6;
-  @ffi.Uint64()
-  external int arg7;
 }
 
 class _LoginNewClientFuturePollReturn extends ffi.Struct {

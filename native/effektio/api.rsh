@@ -1,8 +1,8 @@
 /// Initialize logging
 fn init_logging(log_dir: string, filter: Option<string>) -> Result<()>;
 
-/// Open new issue with log file and return issue id
-fn report_bug(url: string, username: string, password: Option<string>, app_name: string, version: string, description: string, tag: Option<string>, with_log: bool, screenshot_path: Option<string>) -> Future<Result<string>>;
+/// Rotate the logging file
+fn rotate_log_file() -> Result<string>;
 
 /// Allow flutter to call logging on rust side
 fn write_log(text: string, level: string) -> Result<()>;

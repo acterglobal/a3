@@ -280,44 +280,8 @@ class EffektioSdk {
     return _api.newGroupSettings(name);
   }
 
-  Future<String?> reportBug(
-    String description,
-    String? tag,
-    bool withLog,
-    String? screenshotPath,
-  ) async {
-    const url = String.fromEnvironment(
-      'RAGESHAKE_URL',
-      defaultValue: 'http://localhost/api/submit',
-    );
-    const username = String.fromEnvironment(
-      'RAGESHAKE_USERNAME',
-      defaultValue: 'alice',
-    );
-    const password = String.fromEnvironment(
-      'RAGESHAKE_PASSWORD',
-      defaultValue: 'secret',
-    );
-    const appName = String.fromEnvironment(
-      'ISSUE_APP_NAME',
-      defaultValue: 'a3-nightly',
-    );
-    const version = String.fromEnvironment(
-      'ISSUE_APP_VERSION',
-      defaultValue: '1.0.0',
-    );
-    String reportUrl = await _api.reportBug(
-      url,
-      username,
-      password,
-      appName,
-      version,
-      description,
-      tag,
-      withLog,
-      screenshotPath,
-    );
-    return reportUrl.isEmpty ? null : reportUrl;
+  String rotateLogFile() {
+    return _api.rotateLogFile();
   }
 
   void writeLog(String text, String level) {
