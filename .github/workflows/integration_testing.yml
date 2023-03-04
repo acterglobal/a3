@@ -40,6 +40,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
+      - uses: taiki-e/install-action@nextest
+
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock
         env:
@@ -52,7 +54,7 @@ jobs:
           DEFAULT_HOMESERVER_NAME: "localhost"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
-        run: cargo test -p effektio-test -- --nocapture
+        run: cargo nextest -p effektio-test -- --nocapture
 
       # file an error if this failed on `main` post-merge
       - name: Report issue

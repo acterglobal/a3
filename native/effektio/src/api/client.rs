@@ -483,13 +483,14 @@ impl Client {
         let c = self.client.clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c.user_id().expect("guest user cannot request verification");
+                let user_id = c
+                    .user_id()
+                    .context("guest user cannot request verification")?;
                 let dev = c
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await
-                    .expect("client should get device")
-                    .unwrap();
+                    .await?
+                    .context("client should get device")?;
                 Ok(dev.is_verified())
             })
             .await?

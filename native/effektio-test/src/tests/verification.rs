@@ -18,14 +18,21 @@ fn wait_for_verification_event(
 }
 
 #[tokio::test]
+#[ignore = "interactive tests only for debugging"]
 async fn interactive_verification_started_from_request() -> Result<()> {
     let _ = env_logger::try_init();
 
     let alice_dir = TempDir::new()?;
     let mut alice = login_new_client(
         alice_dir.path().to_str().expect("always works").to_string(),
-        "@sisko:ds9.effektio.org".to_string(),
+        "@sisko".to_string(),
         "sisko".to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
         Some("ALICE_DEV".to_string()),
     )
     .await?;
@@ -36,8 +43,14 @@ async fn interactive_verification_started_from_request() -> Result<()> {
     let bob_dir = TempDir::new()?;
     let mut bob = login_new_client(
         bob_dir.path().to_str().expect("always works").to_string(),
-        "@sisko:ds9.effektio.org".to_string(),
+        "@sisko".to_string(),
         "sisko".to_string(),
+        option_env!("DEFAULT_HOMESERVER_NAME")
+            .unwrap_or("localhost")
+            .to_string(),
+        option_env!("DEFAULT_HOMESERVER_URL")
+            .unwrap_or("http://localhost:8118")
+            .to_string(),
         Some("BOB_DEV".to_string()),
     )
     .await?;

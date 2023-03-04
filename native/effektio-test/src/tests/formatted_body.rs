@@ -9,12 +9,21 @@ use tokio::time::{sleep, Duration};
 async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let _ = env_logger::try_init();
 
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
+        .unwrap_or("localhost")
+        .to_string();
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
+        .unwrap_or("http://localhost:8118")
+        .to_string();
+
     // initialize sisko's client
     let tmp_dir = TempDir::new()?;
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko:ds9.effektio.org".to_string(),
+        "@sisko".to_string(),
         "sisko".to_string(),
+        homeserver_name.clone(),
+        homeserver_url.clone(),
         Some("SISKO_DEV".to_string()),
     )
     .await?;
@@ -24,7 +33,7 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
 
     // sisko creates room and invites kyra
     let settings = CreateConversationSettingsBuilder::default()
-        .invites(vec!["@kyra:ds9.effektio.org".to_string().try_into()?])
+        .invites(vec![format!("@kyra:{homeserver_name}").try_into()?])
         .build()?;
     let sisko_kyra_dm_id = sisko.create_conversation(settings).await?;
 
@@ -32,8 +41,10 @@ async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let tmp_dir = TempDir::new()?;
     let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra:ds9.effektio.org".to_string(),
+        "@kyra".to_string(),
         "kyra".to_string(),
+        homeserver_name.clone(),
+        homeserver_url.clone(),
         Some("KYRA_DEV".to_string()),
     )
     .await?;
