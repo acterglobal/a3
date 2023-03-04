@@ -17,6 +17,8 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
+const APP_TAG: &str = "com.example.effektio"; // package name in manifest
+
 pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
@@ -28,7 +30,7 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
 
     let mut log_config = Config::default()
         .with_max_level(LevelFilter::Trace)
-        .with_tag("com.example.effektio");
+        .with_tag(APP_TAG);
     if let Some(filter) = filter {
         log_config = log_config.with_filter(FilterBuilder::new().parse(&filter).build());
     }

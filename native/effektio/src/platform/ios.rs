@@ -33,6 +33,8 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
+const APP_TAG: &str = "org.effektio.app"; // product bundle id in project config
+
 pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
@@ -42,7 +44,7 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
         None => FilterBuilder::new().build(),
     };
 
-    let console_logger = LoggerWrapper::new("org.effektio.app", "viewcycle").cloned_boxed_logger();
+    let console_logger = LoggerWrapper::new(APP_TAG, "viewcycle").cloned_boxed_logger();
 
     let mut path = PathBuf::from(log_dir.as_str());
     path.push("app_");
