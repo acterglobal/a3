@@ -19,6 +19,17 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppCommonTheme.transparentColor,
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: AppCommonTheme.backgroundColor,
+        selectedItemColor: AppCommonTheme.primaryColor,
+        unselectedItemColor: AppCommonTheme.svgIconColor,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
+      ),
+      navigationRailTheme: const NavigationRailThemeData(
+        backgroundColor: AppCommonTheme.backgroundColor,
+        indicatorColor: Color(0x1EE8DEF8),
+      ),
     );
   }
 }
