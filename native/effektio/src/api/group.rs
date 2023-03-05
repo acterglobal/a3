@@ -57,11 +57,14 @@ struct HistoryState {
 impl Group {
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
-        engine.add_user("main".to_owned(), self.client.client.clone());
-        engine.add_context(
+        engine
+            .add_user("main".to_owned(), self.client.client.clone())
+            .await?;
+        engine.add_ref(
             "space".to_owned(),
-            Value::try_from(self.room.room_id().to_string())?,
-        );
+            "space".to_owned(),
+            self.room.room_id().to_string(),
+        )?;
 
         let mut executer = engine.execute()?;
         while let Some(i) = executer.next().await {
