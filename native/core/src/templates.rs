@@ -472,6 +472,14 @@ impl Engine {
     }
 }
 
+impl CoreClient {
+    pub async fn template_engine(&self, template: &str) -> Result<Engine, Error> {
+        let mut engine = Engine::with_template(template)?;
+        engine.add_user("main".to_string(), self.clone()).await?;
+        Ok(engine)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

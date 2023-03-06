@@ -8,5 +8,6 @@ mod receipt;
 mod redact;
 mod reply;
 mod tasks;
+mod templates;
 mod typing;
 mod verification;

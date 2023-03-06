@@ -1074,6 +1074,7 @@ dependencies = [
  "log",
  "tempfile",
  "tokio",
+ "tracing",
  "uuid",
 ]
 

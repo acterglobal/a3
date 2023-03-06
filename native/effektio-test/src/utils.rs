@@ -1,6 +1,7 @@
 use anyhow::Result;
 use effektio::{matrix_sdk::config::StoreConfig, testing::ensure_user, CreateGroupSettingsBuilder};
-use effektio_core::ruma::OwnedRoomId;
+use effektio_core::{ruma::OwnedRoomId, templates::Engine};
+use futures::{pin_mut, StreamExt};
 
 pub async fn random_user_with_random_space(
     prefix: &str,
@@ -21,4 +22,31 @@ pub async fn random_user_with_random_space(
     );
     let room_id = user.create_effektio_group(settings).await?;
     Ok((user, room_id))
+}
+
+pub async fn random_user_with_template(
+    prefix: &str,
+    template: &str,
+) -> Result<(effektio::Client, Engine)> {
+    let uuid = uuid::Uuid::new_v4().to_string();
+    let user = ensure_user(
+        option_env!("DEFAULT_HOMESERVER_URL").unwrap_or("http://localhost:8118"),
+        format!("it-{prefix}-{uuid}"),
+        "effektio-integration-tests".to_owned(),
+        StoreConfig::default(),
+    )
+    .await?;
+
+    let tmpl_engine = user.template_engine(template).await?;
+    let exec_stream = tmpl_engine.execute()?;
+    tracing::trace!(
+        total = exec_stream.total(),
+        user_id = ?user.user_id()?,
+        "executing template"
+    );
+    pin_mut!(exec_stream);
+    while let Some(i) = exec_stream.next().await {
+        i?
+    }
+    Ok((user, tmpl_engine))
 }

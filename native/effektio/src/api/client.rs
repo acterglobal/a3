@@ -7,6 +7,7 @@ use effektio_core::{
     models::{AnyEffektioModel, Faq},
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
     store::Store,
+    templates::Engine,
     RestoreToken,
 };
 
@@ -211,6 +212,11 @@ impl Client {
     /// Get access to the internal state
     pub fn executor(&self) -> &Executor {
         self.core.executor()
+    }
+
+    /// Get access to the internal state
+    pub async fn template_engine(&self, template: &str) -> Result<Engine> {
+        Ok(self.core.template_engine(template).await?)
     }
 
     async fn refresh_history(
