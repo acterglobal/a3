@@ -3,7 +3,6 @@ use env_logger::filter::Builder as FilterBuilder;
 use log::LevelFilter;
 use matrix_sdk::ClientBuilder;
 use std::{
-    fs,
     path::PathBuf,
     sync::{Arc, Mutex},
 };

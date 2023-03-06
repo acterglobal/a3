@@ -3,7 +3,6 @@ use anyhow::Result;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use std::{
-    fs,
     path::PathBuf,
     sync::{Arc, Mutex},
 };

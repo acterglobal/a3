@@ -4,7 +4,6 @@ use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
 use oslog::OsLog;
 use std::{
-    fs,
     path::PathBuf,
     sync::{Arc, Mutex},
 };
