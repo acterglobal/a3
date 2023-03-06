@@ -30,7 +30,7 @@ const ENCRYPTION: &str = r#"{
 }"#;
 
 /// Generate the default set ot initial states for effektio teams
-pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
+pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
     let mut v: Vec<Raw<AnyInitialStateEvent>> = [HISTORY]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))

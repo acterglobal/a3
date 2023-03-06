@@ -22,7 +22,8 @@ use effektio_core::{
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
     },
-    statics::{default_effektio_group_states, initial_state_for_alias},
+    spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder},
+    statics::initial_state_for_alias,
     templates::{Engine, Value},
 };
 use futures::stream::StreamExt;
@@ -42,6 +43,9 @@ use super::{
 
 use crate::api::RUNTIME;
 
+pub type CreateGroupSettings = CreateSpaceSettings;
+pub type CreateGroupSettingsBuilder = CreateSpaceSettingsBuilder;
+
 #[derive(Debug, Clone)]
 pub struct Group {
     pub client: Client,
@@ -58,7 +62,7 @@ impl Group {
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
-            .add_user("main".to_owned(), self.client.core.client().clone())
+            .add_user("main".to_owned(), self.client.core.clone())
             .await?;
         engine.add_ref(
             "space".to_owned(),
@@ -268,50 +272,14 @@ impl std::ops::Deref for Group {
     }
 }
 
-#[derive(Builder, Default, Clone)]
-pub struct CreateGroupSettings {
-    #[builder(setter(strip_option))]
-    name: Option<String>,
-    #[builder(default = "Visibility::Private")]
-    visibility: Visibility,
-    #[builder(default = "Vec::new()")]
-    invites: Vec<OwnedUserId>,
-    #[builder(setter(strip_option), default)]
-    alias: Option<String>,
-}
-
-impl CreateGroupSettings {
-    pub fn visibility(&mut self, value: String) {
-        match value.as_str() {
-            "Public" => {
-                self.visibility = Visibility::Public;
-            }
-            "Private" => {
-                self.visibility = Visibility::Private;
-            }
-            _ => {}
-        }
-    }
-
-    pub fn add_invitee(&mut self, value: String) {
-        if let Ok(user_id) = UserId::parse(value) {
-            self.invites.push(user_id);
-        }
-    }
-
-    pub fn alias(&mut self, value: String) {
-        self.alias = Some(value);
-    }
-}
-
 // impl CreateGroupSettingsBuilder {
 //     pub fn add_invite(&mut self, user_id: OwnedUserId) {
 //         self.invites.get_or_insert_with(Vec::new).push(user_id);
 //     }
 // }
 
-pub fn new_group_settings(name: String) -> CreateGroupSettings {
-    CreateGroupSettingsBuilder::default()
+pub fn new_group_settings(name: String) -> CreateSpaceSettings {
+    CreateSpaceSettingsBuilder::default()
         .name(name)
         .build()
         .unwrap()
@@ -322,26 +290,9 @@ impl Client {
         &self,
         settings: Box<CreateGroupSettings>,
     ) -> Result<OwnedRoomId> {
-        let c = self.core.client().clone();
+        let c = self.core.clone();
         RUNTIME
-            .spawn(async move {
-                let initial_states = default_effektio_group_states();
-
-                Ok(c.create_room(assign!(CreateRoomRequest::new(), {
-                    creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
-                        room_type: Some(RoomType::Space)
-                    }))?),
-                    initial_state: initial_states,
-                    is_direct: false,
-                    invite: settings.invites,
-                    room_alias_name: settings.alias,
-                    name: settings.name,
-                    visibility: settings.visibility,
-                }))
-                .await?
-                .room_id()
-                .to_owned())
-            })
+            .spawn(async move { Ok(c.create_acter_space(settings).await?) })
             .await?
     }
 

@@ -1,9 +1,12 @@
-use matrix_sdk::Error as MatrixError;
+use matrix_sdk::{Error as MatrixError, HttpError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Error in the inner MatrixSDK")]
     MatrixSdk(#[from] MatrixError),
+
+    #[error("Error in the MatrixSDK HTTP")]
+    HttpError(#[from] HttpError),
 
     #[error("Not a known Effektio Event")]
     UnknownEvent,

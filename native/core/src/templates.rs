@@ -1,5 +1,10 @@
-use crate::events::pins::PinEventContent;
-use crate::events::tasks::{TaskEventContent, TaskListEventContent};
+use crate::{
+    client::CoreClient,
+    events::{
+        pins::PinEventContent,
+        tasks::{TaskEventContent, TaskListEventContent},
+    },
+};
 
 use async_stream::try_stream;
 use core::pin::Pin;
@@ -9,7 +14,6 @@ use futures::{
 };
 use indexmap::IndexMap;
 use matrix_sdk::ruma::RoomId;
-use matrix_sdk::Client as MatrixClient;
 pub use minijinja::value::Value;
 use minijinja::Environment;
 use serde;
@@ -223,13 +227,20 @@ impl Stream for ExecutionStream {
 struct UserValue {
     user_id: String,
     display_name: String,
-    client: Arc<MatrixClient>,
+    client: Arc<CoreClient>,
 }
 
 impl UserValue {
-    async fn new(client: Arc<MatrixClient>) -> Result<Self, Error> {
-        let user_id = client.user_id().unwrap().to_string();
-        let display_name = match client.account().get_display_name().await {
+    async fn new(client: Arc<CoreClient>) -> Result<Self, Error> {
+        let user_id = client
+            .client()
+            .user_id()
+            .ok_or(Error::Remap(
+                "user".to_string(),
+                "missing user_id".to_string(),
+            ))?
+            .to_string();
+        let display_name = match client.client().account().get_display_name().await {
             Ok(Some(name)) => name,
             _ => user_id.clone(),
         };
@@ -279,7 +290,7 @@ impl minijinja::value::StructObject for ObjRef {
 pub struct Engine {
     root: TemplateV01,
     context: Context,
-    users: BTreeMap<String, Arc<MatrixClient>>,
+    users: BTreeMap<String, Arc<CoreClient>>,
 }
 
 impl Engine {
@@ -320,7 +331,7 @@ impl Engine {
         }
     }
 
-    pub async fn add_user(&mut self, name: String, client: MatrixClient) -> Result<(), Error> {
+    pub async fn add_user(&mut self, name: String, client: CoreClient) -> Result<(), Error> {
         let cl = Arc::new(client);
         let user_value = UserValue::new(cl.clone()).await?;
         self.users.insert(name.clone(), cl.clone());
@@ -423,7 +434,7 @@ impl Engine {
                 let room_id = RoomId::parse(room_id_str.clone())
                     .map_err(|e| Error::Remap(format!("{key}.room({room_name}).id({room_id_str}) parse failed"), e.to_string()))?;
 
-                let room = client.get_joined_room(&room_id)
+                let room = client.client().get_joined_room(&room_id)
                         .ok_or_else(|| Error::UnknownReference("user.room".to_string(), key.clone(), room_name.clone()))?;
 
                 match obj {
