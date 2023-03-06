@@ -4,6 +4,7 @@ use crate::{
         pins::PinEventContent,
         tasks::{TaskEventContent, TaskListEventContent},
     },
+    spaces::CreateSpaceSettings,
 };
 
 use async_stream::try_stream;
@@ -19,6 +20,10 @@ use minijinja::Environment;
 use serde;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::Arc};
+use tokio_retry::{
+    strategy::{jitter, FibonacciBackoff},
+    Retry,
+};
 use toml::{Table, Value as TomlValue};
 
 #[derive(thiserror::Error, Debug)]
@@ -47,7 +52,7 @@ pub enum Error {
     #[error("Too Many defaults. Only one item per type can be set as default. But found more than one for '{0}'")]
     TooManyDefaults(String),
 
-    #[error("Reference to {0} '{1}' on {2} not found.")]
+    #[error("Referenced {0} '{1}' on {2} not found.")]
     UnknownReference(String, String, String),
 
     #[error("{1} doesn't have '{0}' set but no default has been defined.")]
@@ -111,7 +116,10 @@ impl Input {
 #[serde(tag = "type", rename_all = "kebab-case")]
 pub enum ObjectInner {
     Space {
-        name: String,
+        #[serde(default, rename = "is-default")]
+        is_default: bool,
+        #[serde(flatten)]
+        fields: CreateSpaceSettings,
     },
     TaskList {
         #[serde(flatten)]
@@ -354,7 +362,7 @@ impl Engine {
         let mut context = self.context.clone();
         let objects = self.root.objects.clone();
         let total = objects.len();
-        let (default_user, default_user_key, default_space) = {
+        let (default_user, default_user_key, mut default_space) = {
             let mut default_user = None;
             let mut default_user_name = None;
             let mut default_space = None;
@@ -414,10 +422,38 @@ impl Engine {
                     users.get(&username).ok_or_else(|| Error::UnknownReference("user".to_string(), key.clone(), username))?.clone()
                 };
 
-                if let ObjectInner::Space { name: _ } = obj {
-                    unimplemented!("Creating spaces not yet implemented");
-                };
+                if let ObjectInner::Space { is_default, fields } = obj {
+                    if is_default && default_space.is_some() {
+                        Err(Error::TooManyDefaults("Space".to_owned()))?;
+                    }
+                    let new_room_id = client
+                        .create_acter_space(fields)
+                        .await
+                        .map_err(|e| Error::Remap(format!("Creating space '{key}' failed"), e.to_string()))?;
+                    context.insert(key.clone(), Value::from_struct_object(ObjRef { id: new_room_id.to_string() , obj_type: "space".to_owned()}));
+                    if is_default {
+                        default_space = Some(key.clone());
+                    }
+                    let retry_strategy = FibonacciBackoff::from_millis(100)
+                        .map(jitter)
+                        .take(10);
+                    let fetcher_client = client.client().clone();
+                    Retry::spawn(retry_strategy, move || {
+                        std::future::ready(if fetcher_client
+                            .get_joined_room(&new_room_id)
+                            .is_none() {
+                                Err(Error::Remap(
+                                    format!("created space '{key}' ({new_room_id}) could not be found"),
+                                        "Do you have a sync running?".to_owned()
+                                    )
+                                )
+                            } else {
+                                Ok(())
+                            })
+                    }).await?;
+                    continue
 
+                };
 
                 let room_name = match room {
                     Some(r) => r,
@@ -426,7 +462,7 @@ impl Engine {
 
                 let room_id_str = context
                     .get(&room_name)
-                    .ok_or_else(|| Error::UnknownReference("room".to_string(), key.clone(), room_name.clone()))?
+                    .ok_or_else(|| Error::UnknownReference("room".to_string(),  room_name.clone(), key.clone()))?
                     .get_attr("id")
                     .map_err(|e| Error::Remap(format!("{key} room={room_name} attr=id"), e.to_string()))?
                     .to_string();
@@ -435,28 +471,43 @@ impl Engine {
                     .map_err(|e| Error::Remap(format!("{key}.room({room_name}).id({room_id_str}) parse failed"), e.to_string()))?;
 
                 let room = client.client().get_joined_room(&room_id)
-                        .ok_or_else(|| Error::UnknownReference("user.room".to_string(), key.clone(), room_name.clone()))?;
+                        .ok_or_else(|| Error::UnknownReference("user.room".to_string(),  room_name.clone(), key.clone()))?;
 
                 match obj {
                     ObjectInner::TaskList{ fields } => {
-                        let id = room.send(fields, None).await.map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?.event_id;
-                        context.insert(key, Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "task-list".to_owned()}));
+                        let id = room
+                            .send(fields, None)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        context.insert(key,
+                            Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "task-list".to_owned()}));
                         yield
 
                     }
                     ObjectInner::Task{ fields } => {
-                        let id = room.send(fields, None).await.map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?.event_id;
-                        context.insert(key, Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "task".to_owned()}));
+                        let id = room
+                            .send(fields, None)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        context.insert(key,
+                            Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "task".to_owned()}));
                         yield
 
                     }
                     ObjectInner::Pin{ fields } => {
-                        let id = room.send(fields, None).await.map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?.event_id;
-                        context.insert(key, Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "pin".to_owned()}));
+                        let id = room
+                            .send(fields, None)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        context.insert(key,
+                            Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "pin".to_owned()}));
                         yield
 
                     }
-                    ObjectInner::Space { name: _ } => {
+                    ObjectInner::Space { .. } => {
                         unreachable!("we already handled that above");
                     }
 
@@ -495,13 +546,13 @@ main = { type = "user", is-default = true, required = true, description = "The s
 space = { type = "space", required = true, description = "The effektio space" }
 
 [objects]
-start_list = { type = "task-list", name = "{{ inputs.user.display_name() }}'s Acter onboarding list" }
+start_list = { type = "task-list", name = "{{ user.display_name() }}'s Acter onboarding list" }
 
 [objects.task_1]
 type = "task"
 title = "Scroll through the news"
-assignees = ["{{ inputs.user.user_id }}"]
-task_list_id = "{{ objects.start_list.id }}"
+assignees = ["{{ user.user_id }}"]
+task_list_id = "{{ start_list.id }}"
 utc_due = "{{ now() | add_timedelta(mins=5) }}"
 
 [objects.acter-website-pin]

@@ -9,17 +9,27 @@ use matrix_sdk::ruma::{
     serde::Raw,
     OwnedRoomId, OwnedUserId, UserId,
 };
+use serde::{Deserialize, Serialize};
 
 use crate::{client::CoreClient, error::Result, statics::default_acter_space_states};
 
-#[derive(Builder, Default, Clone)]
+fn space_visibilty_default() -> Visibility {
+    Visibility::Private
+}
+
+#[derive(Builder, Default, Deserialize, Serialize, Clone)]
 pub struct CreateSpaceSettings {
     #[builder(setter(strip_option))]
     name: Option<String>,
+
     #[builder(default = "Visibility::Private")]
+    #[serde(default = "space_visibilty_default")]
     visibility: Visibility,
+
     #[builder(default = "Vec::new()")]
+    #[serde(default)]
     invites: Vec<OwnedUserId>,
+
     #[builder(setter(strip_option), default)]
     alias: Option<String>,
 }
@@ -49,10 +59,7 @@ impl CreateSpaceSettings {
 }
 
 impl CoreClient {
-    pub async fn create_acter_space(
-        &self,
-        settings: Box<CreateSpaceSettings>,
-    ) -> Result<OwnedRoomId> {
+    pub async fn create_acter_space(&self, settings: CreateSpaceSettings) -> Result<OwnedRoomId> {
         let initial_states = default_acter_space_states();
 
         Ok(self

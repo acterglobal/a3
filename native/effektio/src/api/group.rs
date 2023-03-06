@@ -292,7 +292,7 @@ impl Client {
     ) -> Result<OwnedRoomId> {
         let c = self.core.clone();
         RUNTIME
-            .spawn(async move { Ok(c.create_acter_space(settings).await?) })
+            .spawn(async move { Ok(c.create_acter_space(Box::into_inner(settings)).await?) })
             .await?
     }
 

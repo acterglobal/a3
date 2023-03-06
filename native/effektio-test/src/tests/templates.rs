@@ -34,7 +34,7 @@ url = "https://github.com/acterglobal/a3"
 #[tokio::test]
 async fn template_creates_space() -> Result<()> {
     let _ = env_logger::try_init();
-    let (mut user, _engine) = random_user_with_template("create-space-", TMPL).await?;
+    let (mut user, _sync_state, _engine) = random_user_with_template("create-space-", TMPL).await?;
     let _state_sync = user.start_sync();
     Ok(())
 }
