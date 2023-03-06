@@ -8,7 +8,7 @@ use futures::{
     Stream,
 };
 use indexmap::IndexMap;
-use matrix_sdk::ruma::{OwnedUserId, RoomId};
+use matrix_sdk::ruma::RoomId;
 use matrix_sdk::Client as MatrixClient;
 pub use minijinja::value::Value;
 use minijinja::Environment;
@@ -82,7 +82,7 @@ impl Input {
         match self {
             Input::Text { required, .. }
             | Input::User { required, .. }
-            | Input::Space { required, .. } => !!required,
+            | Input::Space { required, .. } => *required,
             // _ => false,
         }
     }
@@ -403,7 +403,7 @@ impl Engine {
                     users.get(&username).ok_or_else(|| Error::UnknownReference("user".to_string(), key.clone(), username))?.clone()
                 };
 
-                if let ObjectInner::Space { name } = obj {
+                if let ObjectInner::Space { name: _ } = obj {
                     unimplemented!("Creating spaces not yet implemented");
                 };
 
@@ -445,7 +445,7 @@ impl Engine {
                         yield
 
                     }
-                    ObjectInner::Space { name } => {
+                    ObjectInner::Space { name: _ } => {
                         unreachable!("we already handled that above");
                     }
 

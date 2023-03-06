@@ -58,7 +58,7 @@ impl Group {
     pub async fn create_onboarding_data(&self) -> Result<()> {
         let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
         engine
-            .add_user("main".to_owned(), self.client.client.clone())
+            .add_user("main".to_owned(), self.client.core.client().clone())
             .await?;
         engine.add_ref(
             "space".to_owned(),
@@ -77,7 +77,7 @@ impl Group {
     pub(crate) async fn add_handlers(&self) {
         self.room
             .client()
-            .add_event_handler_context(self.client.executor.clone());
+            .add_event_handler_context(self.client.executor().clone());
         let room_id = self.room_id().to_owned();
         // FIXME: combine into one handler
 
@@ -187,7 +187,6 @@ impl Group {
 
         let mut from = if let Ok(h) = self
             .client
-            .executor
             .store()
             .get_raw::<HistoryState>(&custom_storage_key)
             .await
@@ -323,7 +322,7 @@ impl Client {
         &self,
         settings: Box<CreateGroupSettings>,
     ) -> Result<OwnedRoomId> {
-        let c = self.client.clone();
+        let c = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 let initial_states = default_effektio_group_states();
@@ -363,7 +362,7 @@ impl Client {
                     client: self.clone(),
                     inner: Room {
                         room,
-                        client: self.client.clone(),
+                        client: self.core.client().clone(),
                     },
                 }),
                 None => bail!("Room not found"),

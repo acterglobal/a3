@@ -294,7 +294,7 @@ impl Client {
     pub async fn suggested_users_to_invite(&self, room_name: String) -> Result<Vec<UserProfile>> {
         let client = self.clone();
         let room_id = RoomId::parse(room_name)?;
-        let result = self.client.get_room(&room_id);
+        let result = self.core.client().get_room(&room_id);
         if result.is_none() {
             return Ok(vec![]);
         }
@@ -326,7 +326,7 @@ impl Client {
                             continue;
                         }
                         let user_profile = UserProfile::new(
-                            client.client.clone(),
+                            client.core.client().clone(),
                             member.user_id().to_owned(),
                             member.avatar_url().map(|x| (*x).to_owned()),
                             member.display_name().map(|x| x.to_string()),

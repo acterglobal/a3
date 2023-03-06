@@ -6,6 +6,7 @@
 pub use matrix_sdk;
 pub use matrix_sdk::ruma;
 
+pub mod client;
 pub mod error;
 pub mod events;
 pub mod executor;

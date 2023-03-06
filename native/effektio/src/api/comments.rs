@@ -40,7 +40,8 @@ impl Client {
             bail!("{key} is not a comment");
         };
         let room = self
-            .client
+            .core
+            .client()
             .get_room(&comment.meta.room_id)
             .context("Room not found")?;
         Ok(Comment {

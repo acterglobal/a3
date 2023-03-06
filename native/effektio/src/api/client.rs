@@ -2,6 +2,7 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use effektio_core::{
+    client::CoreClient,
     executor::Executor,
     models::{AnyEffektioModel, Faq},
     statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
@@ -58,9 +59,7 @@ pub struct ClientState {
 
 #[derive(Clone, Debug)]
 pub struct Client {
-    pub(crate) client: MatrixClient,
-    pub(crate) store: Store,
-    pub(crate) executor: Executor,
+    pub(crate) core: CoreClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
@@ -73,7 +72,7 @@ pub struct Client {
 impl std::ops::Deref for Client {
     type Target = MatrixClient;
     fn deref(&self) -> &MatrixClient {
-        &self.client
+        self.core.client()
     }
 }
 
@@ -84,7 +83,7 @@ pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Ve
             async move |(mut groups, mut conversations, client), room| {
                 let inner = Room {
                     room: room.clone(),
-                    client: client.client.clone(),
+                    client: client.core.client().clone(),
                 };
 
                 if inner.is_effektio_group().await {
@@ -186,19 +185,14 @@ impl Drop for SyncState {
 
 impl Client {
     fn user_id_ref(&self) -> Option<&matrix_sdk::ruma::UserId> {
-        self.client.user_id()
+        self.core.client().user_id()
     }
 }
 
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> Result<Self> {
-        let store = Store::new(client.clone()).await?;
-        let executor = Executor::new(store.clone()).await?;
-        client.add_event_handler_context(executor.clone());
         let cl = Client {
-            client,
-            store,
-            executor,
+            core: CoreClient::new(client).await?,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
@@ -211,12 +205,12 @@ impl Client {
     }
 
     pub fn store(&self) -> &Store {
-        &self.store
+        self.core.store()
     }
 
     /// Get access to the internal state
     pub fn executor(&self) -> &Executor {
-        &self.executor
+        self.core.executor()
     }
 
     async fn refresh_history(
@@ -257,8 +251,8 @@ impl Client {
     pub fn start_sync(&mut self) -> SyncState {
         let state = self.state.clone();
         let me = self.clone();
-        let executor = self.executor.clone();
-        let client = self.client.clone();
+        let executor = self.executor().clone();
+        let client = self.core.client().clone();
 
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
@@ -377,8 +371,8 @@ impl Client {
     }
 
     pub async fn restore_token(&self) -> Result<String> {
-        let session = self.client.session().context("Missing session")?.clone();
-        let homeurl = self.client.homeserver().await;
+        let session = self.session().context("Missing session")?.clone();
+        let homeurl = self.homeserver().await;
         let result = serde_json::to_string(&RestoreToken {
             session,
             homeurl,
@@ -403,7 +397,7 @@ impl Client {
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
-    //     let client = self.client.clone();
+    //     let client = self.core.clone();
     //     RUNTIME.spawn(async move {
     //         let user_id = client.user_id().await.context("No User ID found")?;
     //         Ok(user_id.to_string())
@@ -411,7 +405,8 @@ impl Client {
     // }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {
-        self.client
+        self.core
+            .client()
             .user_id()
             .map(|x| x.to_owned())
             .context("UserId not found. Not logged in?")
@@ -419,7 +414,7 @@ impl Client {
 
     pub async fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.client.clone();
+        let l = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 if let Some(room) = l.get_room(&room_id) {
@@ -442,7 +437,7 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<AnyEffektioModel> {
-        let executor = self.executor.clone();
+        let executor = self.core.executor().clone();
 
         RUNTIME
             .spawn(async move {
@@ -457,18 +452,22 @@ impl Client {
 
     pub fn account(&self) -> Result<Account> {
         Ok(Account::new(
-            self.client.account(),
+            self.core.client().account(),
             self.user_id()?.to_string(),
         ))
     }
 
     pub fn device_id(&self) -> Result<String> {
-        let device_id = self.client.device_id().context("No Device ID found")?;
+        let device_id = self
+            .core
+            .client()
+            .device_id()
+            .context("No Device ID found")?;
         Ok(device_id.to_string())
     }
 
     pub async fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.client.clone();
+        let client = self.core.client().clone();
         let user_id = client.user_id().unwrap().to_owned();
         RUNTIME
             .spawn(async move {
@@ -480,7 +479,7 @@ impl Client {
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
-        let c = self.client.clone();
+        let c = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 let user_id = c
@@ -498,7 +497,7 @@ impl Client {
 
     pub async fn logout(&mut self) -> Result<bool> {
         (*self.state).write().should_stop_syncing = true;
-        let client = self.client.clone();
+        let client = self.core.client().clone();
 
         self.invitation_controller.remove_event_handler(&client);
         self.verification_controller
