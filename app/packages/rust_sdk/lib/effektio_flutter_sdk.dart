@@ -40,12 +40,12 @@ const defaultSessionKey = String.fromEnvironment(
 
 // ex: a3-nightly or effektio-linux
 String appName = String.fromEnvironment(
-  'APP_NAME',
+  'RAGESHAKE_APP_NAME',
   defaultValue: 'effektio-${Platform.operatingSystem}',
 );
 
 const versionName = String.fromEnvironment(
-  'VERSION_NAME',
+  'RAGESHAKE_APP_VERSION',
   defaultValue: 'DEV',
 );
 
