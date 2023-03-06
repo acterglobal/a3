@@ -13,16 +13,6 @@ const rageshakeUrl = String.fromEnvironment(
   defaultValue: 'http://localhost/api/submit',
 );
 
-const rageshakeUsername = String.fromEnvironment(
-  'RAGESHAKE_USERNAME',
-  defaultValue: 'alice',
-);
-
-const rageshakePassword = String.fromEnvironment(
-  'RAGESHAKE_PASSWORD',
-  defaultValue: 'secret',
-);
-
 class BugReportController extends GetxController {
   List<String> tags = [];
   String errorText = '';
@@ -88,9 +78,6 @@ class BugReportController extends GetxController {
     String logFile = sdk.rotateLogFile();
 
     var request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
-    String basicAuth = 'Basic ' +
-        base64.encode(utf8.encode('$rageshakeUsername:$rageshakePassword'));
-    request.headers.addAll({'Authorization': basicAuth});
     request.fields.addAll({
       'text': description,
       'user_agent': userAgent,
