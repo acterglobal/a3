@@ -1,7 +1,14 @@
 import 'package:effektio/features/bug_report/controllers/bug_report_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_selector/flutter_custom_selector.dart';
 import 'package:get/get.dart';
-import 'package:multi_select_flutter/multi_select_flutter.dart';
+
+// rageshake supports only single tag for issue.
+// when it supports multi tag, we can convert single selector into multi selector,
+// because flutter_custom_selector provides both single and multi.
+
+Color labelColor = Colors.white; // customized color
+Color errorColor = const Color(0xFFFF5858);
 
 class SelectTag extends StatelessWidget {
   final List<String> tags = [
@@ -22,29 +29,32 @@ class SelectTag extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<BugReportController>(
       builder: (BugReportController controller) {
-        return MultiSelectDialogField(
-          items: tags.map((e) => MultiSelectItem(e, e)).toList(),
-          listType: MultiSelectListType.CHIP,
-          onConfirm: (values) {
-            controller.setTags(values);
+        return CustomSingleSelectField(
+          items: tags,
+          title: 'Select issue tag',
+          onSelectionDone: (value) {
+            controller.setTags([value.toString()]);
           },
-          searchable: true,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.grey.shade50,
-              width: 1.2,
+          decoration: InputDecoration(
+            contentPadding: const EdgeInsets.all(15),
+            errorBorder: inputFieldBorder(color: errorColor),
+            errorMaxLines: 2,
+            errorStyle: defaultTextStyle(
+              color: errorColor,
+              fontSize: 11,
             ),
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-          ),
-          buttonText: const Text(
-            'Select',
-            style: TextStyle(
-              color: Colors.white,
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            labelText: 'Select issue tag',
+            labelStyle: defaultTextStyle(
+              color: labelColor,
+              fontSize: 16,
             ),
-          ),
-          buttonIcon: const Icon(
-            Icons.arrow_downward,
-            color: Colors.white,
+            suffixIcon: const Icon(Icons.keyboard_arrow_down_outlined),
+            suffixIconColor: Colors.white,
+            enabledBorder: inputFieldBorder(),
+            border: inputFieldBorder(),
+            focusedBorder: inputFieldBorder(),
+            focusedErrorBorder: inputFieldBorder(color: errorColor),
           ),
         );
       },
