@@ -12,15 +12,15 @@ pub struct PinDisplayInfo {
     /// Colorize the item
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    color: Option<Color>,
+    pub color: Option<Color>,
     /// Show this icon
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    icon: Option<Icon>,
+    pub icon: Option<Icon>,
     /// show it in particular sections only
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    section: Option<String>,
+    pub section: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]

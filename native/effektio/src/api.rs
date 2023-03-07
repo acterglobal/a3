@@ -22,6 +22,7 @@ mod group;
 mod invitation;
 mod message;
 mod news;
+mod pins;
 mod profile;
 mod receipt;
 mod room;
@@ -50,6 +51,7 @@ pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
     VideoDesc,
 };
+pub use pins::{Pin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};
