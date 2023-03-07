@@ -27,6 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion flutter.compileSdkVersion
+    ndkVersion 	"22.1.7171670"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -57,6 +58,7 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+    buildToolsVersion '30.0.2'
 }
 
 flutter {

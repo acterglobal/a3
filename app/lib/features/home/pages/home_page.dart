@@ -23,6 +23,11 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   late final PageController pageController;
   int _selectedIndex = 0;
+  final desktopPlatforms = [
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+    TargetPlatform.windows
+  ];
   @override
   void initState() {
     super.initState();
@@ -39,141 +44,200 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // get platform of context.
+    final bool isDesktop =
+        desktopPlatforms.contains(Theme.of(context).platform);
     return Scaffold(
       body: AdaptiveLayout(
         bodyRatio: 0.2,
-        primaryNavigation: SlotLayout(
-          config: <Breakpoint, SlotLayoutConfig?>{
-            Breakpoints.medium: SlotLayout.from(
-              key: const Key('primaryNavigation'),
-              builder: (_) {
-                return AdaptiveScaffold.standardNavigationRail(
-                  onDestinationSelected: (int index) {
-                    setState(() {
-                      _selectedIndex = index;
-                      pageController.jumpToPage(_selectedIndex);
-                    });
-                  },
-                  leading: const UserAvatarWidget(isExtendedRail: false),
-                  selectedIndex: _selectedIndex,
-                  destinations: <NavigationRailDestination>[
-                    NavigationRailDestination(
-                      icon: newsFeedIcon(),
-                      label: const Text('Updates'),
+        primaryNavigation: isDesktop
+            ? SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig?>{
+                  // adapt layout according to platform.
+                  Breakpoints.medium: SlotLayout.from(
+                    key: const Key('primaryNavigation'),
+                    builder: (_) {
+                      return AdaptiveScaffold.standardNavigationRail(
+                        onDestinationSelected: (int index) {
+                          setState(() {
+                            _selectedIndex = index;
+                            pageController.jumpToPage(_selectedIndex);
+                          });
+                        },
+                        leading: const UserAvatarWidget(isExtendedRail: false),
+                        selectedIndex: _selectedIndex,
+                        destinations: <NavigationRailDestination>[
+                          NavigationRailDestination(
+                            icon: newsFeedIcon(),
+                            label: const Text('Updates'),
+                          ),
+                          NavigationRailDestination(
+                            icon: pinsIcon(),
+                            label: const Text('Pins'),
+                          ),
+                          NavigationRailDestination(
+                            icon: tasksIcon(),
+                            label: const Text('Tasks'),
+                          ),
+                          NavigationRailDestination(
+                            icon: chatIcon(),
+                            label: const Text('Chat'),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+
+                  Breakpoints.large: SlotLayout.from(
+                    key: const Key('Large primaryNavigation'),
+                    builder: (_) => AdaptiveScaffold.standardNavigationRail(
+                      onDestinationSelected: (int index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          pageController.jumpToPage(_selectedIndex);
+                        });
+                      },
+                      selectedIndex: _selectedIndex,
+                      extended: true,
+                      leading: const UserAvatarWidget(isExtendedRail: true),
+                      destinations: <NavigationRailDestination>[
+                        NavigationRailDestination(
+                          icon: newsFeedIcon(),
+                          label: const Text('Updates'),
+                        ),
+                        NavigationRailDestination(
+                          icon: pinsIcon(),
+                          label: const Text('Pins'),
+                        ),
+                        NavigationRailDestination(
+                          icon: tasksIcon(),
+                          label: const Text('Tasks'),
+                        ),
+                        NavigationRailDestination(
+                          icon: chatIcon(),
+                          label: const Text('Chat'),
+                        ),
+                      ],
                     ),
-                    NavigationRailDestination(
-                      icon: pinsIcon(),
-                      label: const Text('Pins'),
-                    ),
-                    NavigationRailDestination(
-                      icon: tasksIcon(),
-                      label: const Text('Tasks'),
-                    ),
-                    NavigationRailDestination(
-                      icon: chatIcon(),
-                      label: const Text('Chat'),
-                    ),
-                  ],
-                );
-              },
-            ),
-            Breakpoints.large: SlotLayout.from(
-              key: const Key('Large primaryNavigation'),
-              builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                onDestinationSelected: (int index) {
-                  setState(() {
-                    _selectedIndex = index;
-                    pageController.jumpToPage(_selectedIndex);
-                  });
+                  )
                 },
-                selectedIndex: _selectedIndex,
-                extended: true,
-                leading: const UserAvatarWidget(isExtendedRail: true),
-                destinations: <NavigationRailDestination>[
-                  NavigationRailDestination(
-                    icon: newsFeedIcon(),
-                    label: const Text('Updates'),
-                  ),
-                  NavigationRailDestination(
-                    icon: pinsIcon(),
-                    label: const Text('Pins'),
-                  ),
-                  NavigationRailDestination(
-                    icon: tasksIcon(),
-                    label: const Text('Tasks'),
-                  ),
-                  NavigationRailDestination(
-                    icon: chatIcon(),
-                    label: const Text('Chat'),
-                  ),
-                ],
-              ),
-            ),
-          },
-        ),
+              )
+            : null,
         body: SlotLayout(
-          config: <Breakpoint, SlotLayoutConfig>{
-            Breakpoints.mediumAndUp: SlotLayout.from(
-              key: const Key('Body Medium'),
-              builder: (_) => const Scaffold(
-                body: Center(
-                  child: Text(
-                    'Dashboard view to be implemented',
-                    style: AppCommonTheme.appBarTitleStyle,
-                  ),
-                ),
-              ),
-            )
-          },
-        ),
-        secondaryBody: SlotLayout(
           config: <Breakpoint, SlotLayoutConfig>{
             Breakpoints.small: SlotLayout.from(
               key: const Key('Body Small'),
               builder: (_) => HomeWidget(pageController),
             ),
-            Breakpoints.mediumAndUp: SlotLayout.from(
-              key: const Key('Body Medium'),
-              builder: (_) => HomeWidget(pageController),
-            )
+            // show dashboard view on desktop only.
+            Breakpoints.mediumAndUp: isDesktop
+                ? SlotLayout.from(
+                    key: const Key('Body Medium'),
+                    builder: (_) => const Scaffold(
+                      body: Center(
+                        child: Text(
+                          'Dashboard view to be implemented',
+                          style: AppCommonTheme.appBarTitleStyle,
+                        ),
+                      ),
+                    ),
+                  )
+                : SlotLayout.from(
+                    key: const Key('body-meduim-mobile'),
+                    builder: (_) => HomeWidget(pageController),
+                  ),
           },
         ),
-        bottomNavigation: SlotLayout(
-          config: <Breakpoint, SlotLayoutConfig>{
-            Breakpoints.small: SlotLayout.from(
-              key: const Key('Bottom Navigation Small'),
-              inAnimation: AdaptiveScaffold.bottomToTop,
-              outAnimation: AdaptiveScaffold.topToBottom,
-              builder: (_) => AdaptiveScaffold.standardBottomNavigationBar(
-                currentIndex: _selectedIndex,
-                onDestinationSelected: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                    pageController.jumpToPage(_selectedIndex);
-                  });
+        // helper UI for body view but since its doesn't fit for mobile view,
+        // hide it instead.
+        secondaryBody: isDesktop
+            ? SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  Breakpoints.mediumAndUp: SlotLayout.from(
+                    key: const Key('Body Medium'),
+                    builder: (_) => HomeWidget(pageController),
+                  )
                 },
-                destinations: <NavigationDestination>[
-                  NavigationDestination(
-                    icon: newsFeedIcon(),
-                    label: '',
+              )
+            : null,
+        bottomNavigation: isDesktop
+            ? SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  //In desktop, we have ability to adjust windows res,
+                  // adjust to navbar as primary to smaller views.
+                  Breakpoints.small: SlotLayout.from(
+                    key: const Key('Bottom Navigation Small'),
+                    inAnimation: AdaptiveScaffold.bottomToTop,
+                    outAnimation: AdaptiveScaffold.topToBottom,
+                    builder: (_) =>
+                        AdaptiveScaffold.standardBottomNavigationBar(
+                      currentIndex: _selectedIndex,
+                      onDestinationSelected: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          pageController.jumpToPage(_selectedIndex);
+                        });
+                      },
+                      destinations: <NavigationDestination>[
+                        NavigationDestination(
+                          icon: newsFeedIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: pinsIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: tasksIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: chatIcon(),
+                          label: '',
+                        ),
+                      ],
+                    ),
                   ),
-                  NavigationDestination(
-                    icon: pinsIcon(),
-                    label: '',
+                },
+              )
+            : SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  // Navbar should be shown regardless of mobile screen sizes.
+                  Breakpoints.smallAndUp: SlotLayout.from(
+                    key: const Key('Bottom Navigation Small'),
+                    inAnimation: AdaptiveScaffold.bottomToTop,
+                    outAnimation: AdaptiveScaffold.topToBottom,
+                    builder: (_) =>
+                        AdaptiveScaffold.standardBottomNavigationBar(
+                      currentIndex: _selectedIndex,
+                      onDestinationSelected: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          pageController.jumpToPage(_selectedIndex);
+                        });
+                      },
+                      destinations: <NavigationDestination>[
+                        NavigationDestination(
+                          icon: newsFeedIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: pinsIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: tasksIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: chatIcon(),
+                          label: '',
+                        ),
+                      ],
+                    ),
                   ),
-                  NavigationDestination(
-                    icon: tasksIcon(),
-                    label: '',
-                  ),
-                  NavigationDestination(
-                    icon: chatIcon(),
-                    label: '',
-                  ),
-                ],
+                },
               ),
-            ),
-          },
-        ),
       ),
     );
   }
