@@ -26,6 +26,12 @@ use tokio_retry::{
 };
 use toml::{Table, Value as TomlValue};
 
+pub mod filters;
+pub mod functions;
+pub mod values;
+
+use values::{ObjRef, UserValue};
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Toml couldn't be parsed: {0:?}")]
@@ -155,7 +161,7 @@ pub struct TemplateV01 {
 #[derive(Deserialize)]
 #[serde(tag = "version")]
 pub enum TemplatesRoot {
-    #[serde(rename = "0.1")]
+    #[serde(rename = "0.1.0", alias = "0.1")]
     V01(TemplateV01),
 }
 
@@ -231,70 +237,6 @@ impl Stream for ExecutionStream {
     }
 }
 
-#[derive(Debug)]
-struct UserValue {
-    user_id: String,
-    display_name: String,
-    client: Arc<CoreClient>,
-}
-
-impl UserValue {
-    async fn new(client: Arc<CoreClient>) -> Result<Self, Error> {
-        let user_id = client
-            .client()
-            .user_id()
-            .ok_or(Error::Remap(
-                "user".to_string(),
-                "missing user_id".to_string(),
-            ))?
-            .to_string();
-        let display_name = match client.client().account().get_display_name().await {
-            Ok(Some(name)) => name,
-            _ => user_id.clone(),
-        };
-
-        Ok(UserValue {
-            user_id,
-            display_name,
-            client,
-        })
-    }
-}
-
-impl minijinja::value::StructObject for UserValue {
-    fn get_field(&self, name: &str) -> Option<Value> {
-        match name {
-            "user_id" => Some(Value::from(self.user_id.clone())),
-            "display_name" => Some(Value::from(self.display_name.clone())),
-            _ => None,
-        }
-    }
-
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["user_id", "display_name"][..])
-    }
-}
-
-#[derive(Debug)]
-struct ObjRef {
-    id: String,
-    obj_type: String,
-}
-
-impl minijinja::value::StructObject for ObjRef {
-    fn get_field(&self, name: &str) -> Option<Value> {
-        match name {
-            "id" => Some(Value::from(self.id.clone())),
-            "type" => Some(Value::from(self.obj_type.clone())),
-            _ => None,
-        }
-    }
-
-    fn static_fields(&self) -> Option<&'static [&'static str]> {
-        Some(&["id", "type"][..])
-    }
-}
-
 pub struct Engine {
     root: TemplateV01,
     context: Context,
@@ -329,7 +271,7 @@ impl Engine {
             .context
             .insert(
                 name.clone(),
-                Value::from_struct_object(ObjRef { id, obj_type }),
+                Value::from_struct_object(ObjRef::new(id, obj_type)),
             )
             .is_some()
         {
@@ -357,7 +299,18 @@ impl Engine {
     pub fn execute(&self) -> Result<ExecutionStream, Error> {
         tracing::trace!(name = ?self.root.name, "executing");
 
-        let env = Environment::new();
+        let env = {
+            let mut env = Environment::new();
+
+            // functions
+            env.add_function("future", functions::future);
+            env.add_function("now", functions::now);
+
+            // filters
+
+            env
+        };
+
         let users = self.users.clone();
         let mut context = self.context.clone();
         let objects = self.root.objects.clone();
@@ -430,7 +383,7 @@ impl Engine {
                         .create_acter_space(fields)
                         .await
                         .map_err(|e| Error::Remap(format!("Creating space '{key}' failed"), e.to_string()))?;
-                    context.insert(key.clone(), Value::from_struct_object(ObjRef { id: new_room_id.to_string() , obj_type: "space".to_owned()}));
+                    context.insert(key.clone(), Value::from_struct_object(ObjRef::new(new_room_id.to_string() , "space".to_owned())));
                     if is_default {
                         default_space = Some(key.clone());
                     }
@@ -481,7 +434,7 @@ impl Engine {
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
                         context.insert(key,
-                            Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "task-list".to_owned()}));
+                            Value::from_struct_object(ObjRef::new(id.to_string(), "task-list".to_owned())));
                         yield
 
                     }
@@ -492,7 +445,7 @@ impl Engine {
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
                         context.insert(key,
-                            Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "task".to_owned()}));
+                            Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())));
                         yield
 
                     }
@@ -503,7 +456,7 @@ impl Engine {
                             .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
                             .event_id;
                         context.insert(key,
-                            Value::from_struct_object(ObjRef { id: id.to_string() , obj_type: "pin".to_owned()}));
+                            Value::from_struct_object(ObjRef::new(id.to_string(), "pin".to_owned())));
                         yield
 
                     }

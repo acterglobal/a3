@@ -39,7 +39,7 @@ rand = { version = "0.8", optional = true }
 
 # templates
 toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
-minijinja = { version = "0.30.5", optional = true }
+minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
 indexmap = { version = "1.9.2", optional = true }
 async-stream = { version = "0.3.4" }
 tokio-retry = { version = "0.3.0", optional = true }

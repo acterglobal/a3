@@ -23,16 +23,12 @@ name = "Example Template"
 [inputs]
 main = { type = "user", is-default = true, required = true, description = "The user" }
 
-[objects]
-main_space = { type = "space", is-default = true, name = "{{ main.display_name }}'s test space"}
-start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboarding list" }
-
 [objects.task_1]
 type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
-task_list_id = "{{ start_list.id }}"
-utc_due = "{ datetime_in(mins=5) }"   # FIXME: this should be double `{{}}`, but zola fails on that
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ now().as_rfc3339 }}"
 ```
 
 ### Template Execution Context
@@ -45,11 +41,11 @@ As all acter events happen by a user, within a space, these must be supplied for
 
 ## Template Format Reference
 
-Currently only `version = "0.1"` is supported. This is a first temporary version, used for tests and in the internal formats. Note that `versions` follow SemVer and everything below `1.0` is considered experimental and its support might be dropped at any time.
+Currently only `version = "0.1.0"` is supported. This is a first temporary version, used for tests and in the internal formats. Note that `versions` follow SemVer and everything below `1.0` is considered experimental and its support might be dropped at any time.
 
 ### version
 
-`String`. Must be `version = "0.1"`
+`String`. Must be `version = "0.1.0"`
 
 ### name
 
@@ -75,6 +71,10 @@ Currently only `version = "0.1"` is supported. This is a first temporary version
 #### `object[type="task"]`
 
 #### `object[type="pin"]`
+
+## Functions & Filters
+
+Aside from the minijinja builtin [functions](https://docs.rs/minijinja/latest/minijinja/functions/index.html#functions) & [filters](https://docs.rs/minijinja/latest/minijinja/filters/index.html#functions), we provide additional [functions](/api/main/rust/effektio_core/templates/functions.html) and [filters](/api/main/rust/effektio_core/templaets/filters.html). Check their API documentation for details.
 
 [toml]: https://github.com/toml-lang/toml
 [jinja2]: https://jinja.palletsprojects.com/en/3.1.x/templates/

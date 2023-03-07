@@ -16,8 +16,8 @@ start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboa
 type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
-task_list_id = "{{ start_list.id }}"
-utc_due = "{{ now() | add_timedelta(mins=5) }}"
+"m.relates_to" = { event_id = "{{ start_list.id }}" } 
+utc_due = "{{ now().as_rfc3339 }}"
 
 [objects.acter-website-pin]
 type = "pin"
