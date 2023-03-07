@@ -2,7 +2,6 @@ import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
 import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
 import 'package:effektio/features/chat/controllers/receipt_controller.dart';
-import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/home/widgets/home_widget.dart';
 import 'package:effektio/features/home/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
