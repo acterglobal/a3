@@ -43,7 +43,10 @@ impl Pin {
 
 impl super::EffektioModel for Pin {
     fn indizes(&self) -> Vec<String> {
-        vec![KEYS::PINS.to_owned()]
+        vec![
+            format!("{}::{}", self.meta.room_id, KEYS::PINS),
+            KEYS::PINS.to_owned(),
+        ]
     }
 
     fn event_id(&self) -> &EventId {

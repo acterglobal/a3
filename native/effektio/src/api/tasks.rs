@@ -121,16 +121,19 @@ impl Group {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let room_id = self.room_id();
-        for mdl in self.client.store().get_list(KEYS::TASKS).await? {
+        for mdl in self
+            .client
+            .store()
+            .get_list(&format!("{room_id}::{}", KEYS::TASKS))
+            .await?
+        {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
-                if t.room_id() == room_id {
-                    task_lists.push(TaskList {
-                        client: self.client.clone(),
-                        room: self.room.clone(),
-                        content: t,
-                    })
-                }
+                task_lists.push(TaskList {
+                    client: self.client.clone(),
+                    room: self.room.clone(),
+                    content: t,
+                })
             } else {
                 tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
             }

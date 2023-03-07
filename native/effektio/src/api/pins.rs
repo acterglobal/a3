@@ -83,16 +83,19 @@ impl Group {
     pub async fn pins(&self) -> Result<Vec<Pin>> {
         let mut pins = Vec::new();
         let room_id = self.room_id();
-        for mdl in self.client.store().get_list(KEYS::PINS).await? {
+        for mdl in self
+            .client
+            .store()
+            .get_list(&format!("{room_id}::{}", KEYS::PINS))
+            .await?
+        {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::Pin(t) = mdl {
-                if t.room_id() == room_id {
-                    pins.push(Pin {
-                        client: self.client.clone(),
-                        room: self.room.clone(),
-                        content: t,
-                    })
-                }
+                pins.push(Pin {
+                    client: self.client.clone(),
+                    room: self.room.clone(),
+                    content: t,
+                })
             } else {
                 tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
             }
@@ -130,17 +133,11 @@ impl Pin {
     }
 
     pub fn color(&self) -> Option<Color> {
-        self.content
-            .display
-            .as_ref()
-            .and_then(|t| t.color.clone())
+        self.content.display.as_ref().and_then(|t| t.color.clone())
     }
 
     pub fn icon(&self) -> Option<Icon> {
-        self.content
-            .display
-            .as_ref()
-            .and_then(|t| t.icon.clone())
+        self.content.display.as_ref().and_then(|t| t.icon.clone())
     }
 
     pub fn section(&self) -> Option<String> {

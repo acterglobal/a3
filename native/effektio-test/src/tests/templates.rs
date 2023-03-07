@@ -36,5 +36,9 @@ async fn template_creates_space() -> Result<()> {
     let _ = env_logger::try_init();
     let (user, _sync_state, _engine) = random_user_with_template("create-space-", TMPL).await?;
     assert_eq!(user.pins().await?.len(), 3);
+
+    let groups = user.groups().await?;
+    assert_eq!(groups.len(), 1);
+    assert_eq!(groups[0].pins().await?.len(), 3);
     Ok(())
 }
