@@ -1,8 +1,8 @@
 +++
-title = "Contributing"
+title = "Architecture"
 
 sort_by = "weight"
-weight = 50
+weight = 5
 template = "docs/section.html"
 
 +++
