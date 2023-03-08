@@ -13,14 +13,14 @@ type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
 "m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ future(add_mins=5) }}"
+utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
 
 [objects.task_2]
 type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
 "m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ future(add_mins=5) }}"
+utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
 
 [objects.acter-website-pin]
 type = "pin"

@@ -8,7 +8,7 @@ use std::sync::Arc;
 pub struct UserValue {
     user_id: String,
     display_name: String,
-    client: Arc<CoreClient>,
+    _client: Arc<CoreClient>,
 }
 
 impl UserValue {
@@ -29,7 +29,7 @@ impl UserValue {
         Ok(UserValue {
             user_id,
             display_name,
-            client,
+            _client: client,
         })
     }
 }
