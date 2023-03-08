@@ -47,9 +47,6 @@ class ToDoController extends GetxController {
   Future<String> createTeam(String name) async {
     final sdk = await EffektioSdk.instance;
     CreateGroupSettings settings = sdk.newGroupSettings(name);
-    settings.alias(UniqueKey().toString());
-    settings.visibility('Public');
-    settings.addInvitee('@sisko:matrix.org');
     String roomId =
         await client.createEffektioGroup(settings).then((id) => id.toString());
     return roomId;

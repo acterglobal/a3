@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/pin/widgets/tag_item.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as m_colors;
@@ -185,10 +183,10 @@ class _PinItemPageState extends State<PinItemPage> {
                                   'assets/images/heart_like.png',
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8),
                                 child: Text(
-                                  "0", //widget.pin.likesCount().toString(),
+                                  '0', //widget.pin.likesCount().toString(),
                                   style: PinTheme.likeAndCommentStyle,
                                 ),
                               ),
@@ -206,10 +204,10 @@ class _PinItemPageState extends State<PinItemPage> {
                                         'assets/images/comment.png',
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8),
+                                    const Padding(
+                                      padding: EdgeInsets.only(left: 8),
                                       child: Text(
-                                        "0", //widget.pin.commentsCount().toString(),
+                                        '0', //widget.pin.commentsCount().toString(),
                                         style: PinTheme.likeAndCommentStyle,
                                       ),
                                     ),
@@ -238,6 +236,7 @@ class _PinItemPageState extends State<PinItemPage> {
                       scrollDirection: Axis.horizontal,
                       itemCount: 0, //widget.pin.tags().length,
                       itemBuilder: (context, index) {
+                        return null;
                         // var color = widget.pin.tags().elementAt(index).color();
                         // var colorToShow = 0;
                         // if (color != null) {

@@ -1,7 +1,5 @@
 import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
 import 'package:effektio/features/pin/pages/pin_item_page.dart';
-import 'package:effektio/features/pin/widgets/tag_item.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
     show Client, ActerPin;
 import 'package:flutter/material.dart';
@@ -102,10 +100,10 @@ class PinListItem extends StatelessWidget {
                                 color: AppCommonTheme.svgIconColor,
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8),
                               child: Text(
-                                "0", //pin.likesCount().toString(),
+                                '0', //pin.likesCount().toString(),
                                 style: PinTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -116,10 +114,10 @@ class PinListItem extends StatelessWidget {
                                 child: Image.asset('assets/images/comment.png'),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8),
+                            const Padding(
+                              padding: EdgeInsets.only(left: 8),
                               child: Text(
-                                "0", //pin.commentsCount().toString(),
+                                '0', //pin.commentsCount().toString(),
                                 style: PinTheme.likeAndCommentStyle,
                               ),
                             ),
@@ -163,6 +161,7 @@ class _TagList extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       itemCount: 0, //pin.tags().length,
       itemBuilder: (context, index) {
+        return null;
         // var color = pin.tags().elementAt(index).color();
         // var colorToShow = 0;
         // if (color != null) {
