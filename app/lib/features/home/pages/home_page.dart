@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:date_format/date_format.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/utils/constants.dart';
-import 'package:effektio/common/widgets/material_indicator.dart';
 import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
 import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
 import 'package:effektio/features/chat/controllers/receipt_controller.dart';
-import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/home/widgets/home_widget.dart';
+import 'package:effektio/features/home/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,20 +25,21 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage>
-    with SingleTickerProviderStateMixin {
-  late TabController tabController;
-  int tabIndex = 0;
+class _HomePageState extends ConsumerState<HomePage> {
+  late final PageController pageController;
+  int _selectedIndex = 0;
+  final desktopPlatforms = [
+    TargetPlatform.linux,
+    TargetPlatform.macOS,
+    TargetPlatform.windows
+  ];
   late bool bugReportVisible;
   late ShakeDetector detector;
 
   @override
   void initState() {
     super.initState();
-    tabController = TabController(length: 4, vsync: this);
-    tabController.addListener(() {
-      setState(() => tabIndex = tabController.index);
-    });
+    pageController = PageController(initialPage: _selectedIndex);
     // shake is possible in only mobile
     if (Platform.isAndroid || Platform.isIOS) {
       bugReportVisible = false;
@@ -64,146 +65,269 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.watch(clientProvider);
-    return Screenshot(
-      child: Scaffold(
-        body: client.when(
-          data: (data) => HomeWidget(tabController),
-          error: (error, stackTrace) => const Center(
-            child: Text("Couldn't fetch client"),
-          ),
-          loading: () => const Scaffold(
-            body: Center(
-              child: SizedBox(
-                height: 50,
-                width: 50,
-                child: CircularProgressIndicator(
-                  color: AppCommonTheme.primaryColor,
-                ),
-              ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: TabBar(
-          labelColor: AppCommonTheme.primaryColor,
-          unselectedLabelColor: AppCommonTheme.svgIconColor,
-          controller: tabController,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorPadding: const EdgeInsets.symmetric(horizontal: 12),
-          indicator: const MaterialIndicator(
-            height: 5,
-            bottomLeftRadius: 8,
-            bottomRightRadius: 8,
-            topLeftRadius: 0,
-            topRightRadius: 0,
-            tabPosition: TabPosition.top,
-            color: AppCommonTheme.primaryColor,
-          ),
-          tabs: [
-            newsFeedTab(),
-            pinsTab(),
-            tasksTab(),
-            chatTab(),
-          ],
-        ),
-        floatingActionButton: Visibility(
-          child: FloatingActionButton(
-            onPressed: () async {
-              var appDocDir = await getApplicationDocumentsDirectory();
-              // rageshake disallows dot in filename
-              String timestamp = formatDate(
-                DateTime.now(),
-                [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
-              );
-              var controller = Get.find<ScreenshotController>();
-              var imagePath = await controller.captureAndSave(
-                appDocDir.path,
-                fileName: 'screenshot_$timestamp.png',
-              );
-              if (imagePath != null) {
-                Navigator.pushNamed(
-                  context,
-                  '/bug_report',
-                  arguments: {
-                    'screenshot': imagePath,
-                  },
-                );
-              } else {
-                Navigator.pushNamed(context, '/bug_report');
-              }
-            },
-            backgroundColor: Colors.green,
-            child: const Icon(Icons.bug_report_rounded),
-          ),
-          visible: bugReportVisible,
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      ),
-      controller: Get.find<ScreenshotController>(),
-    );
-  }
+    // get platform of context.
+    final bool isDesktop =
+        desktopPlatforms.contains(Theme.of(context).platform);
+    return Scaffold(
+      body: AdaptiveLayout(
+        bodyRatio: 0.2,
+        primaryNavigation: isDesktop
+            ? SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig?>{
+                  // adapt layout according to platform.
+                  Breakpoints.medium: SlotLayout.from(
+                    key: const Key('primaryNavigation'),
+                    builder: (_) {
+                      return AdaptiveScaffold.standardNavigationRail(
+                        onDestinationSelected: (int index) {
+                          setState(() {
+                            _selectedIndex = index;
+                            pageController.jumpToPage(_selectedIndex);
+                          });
+                        },
+                        leading: const UserAvatarWidget(isExtendedRail: false),
+                        selectedIndex: _selectedIndex,
+                        destinations: <NavigationRailDestination>[
+                          NavigationRailDestination(
+                            icon: newsFeedIcon(),
+                            label: const Text('Updates'),
+                          ),
+                          NavigationRailDestination(
+                            icon: pinsIcon(),
+                            label: const Text('Pins'),
+                          ),
+                          NavigationRailDestination(
+                            icon: tasksIcon(),
+                            label: const Text('Tasks'),
+                          ),
+                          NavigationRailDestination(
+                            icon: chatIcon(),
+                            label: const Text('Chat'),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
 
-  Widget newsFeedTab() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      key: Keys.newsSectionBtn,
-      child: Tab(
-        icon: tabIndex == 0
-            ? SvgPicture.asset('assets/images/newsfeed_bold.svg')
-            : SvgPicture.asset('assets/images/newsfeed_linear.svg'),
-      ),
-    );
-  }
-
-  Widget pinsTab() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: const Tab(icon: Icon(FlutterIcons.pin_ent)),
-    );
-  }
-
-  Widget tasksTab() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: const Tab(
-        icon: Icon(FlutterIcons.tasks_faw5s),
-      ),
-    );
-  }
-
-  Widget plusTab() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Tab(
-        icon: tabIndex == 2
-            ? SvgPicture.asset(
-                'assets/images/add.svg',
-                color: AppCommonTheme.primaryColor,
+                  Breakpoints.large: SlotLayout.from(
+                    key: const Key('Large primaryNavigation'),
+                    builder: (_) => AdaptiveScaffold.standardNavigationRail(
+                      onDestinationSelected: (int index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          pageController.jumpToPage(_selectedIndex);
+                        });
+                      },
+                      selectedIndex: _selectedIndex,
+                      extended: true,
+                      leading: const UserAvatarWidget(isExtendedRail: true),
+                      destinations: <NavigationRailDestination>[
+                        NavigationRailDestination(
+                          icon: newsFeedIcon(),
+                          label: const Text('Updates'),
+                        ),
+                        NavigationRailDestination(
+                          icon: pinsIcon(),
+                          label: const Text('Pins'),
+                        ),
+                        NavigationRailDestination(
+                          icon: tasksIcon(),
+                          label: const Text('Tasks'),
+                        ),
+                        NavigationRailDestination(
+                          icon: chatIcon(),
+                          label: const Text('Chat'),
+                        ),
+                      ],
+                    ),
+                  )
+                },
               )
-            : SvgPicture.asset('assets/images/add.svg'),
+            : null,
+        body: SlotLayout(
+          config: <Breakpoint, SlotLayoutConfig>{
+            Breakpoints.small: SlotLayout.from(
+              key: const Key('Body Small'),
+              builder: (_) => HomeWidget(pageController),
+            ),
+            // show dashboard view on desktop only.
+            Breakpoints.mediumAndUp: isDesktop
+                ? SlotLayout.from(
+                    key: const Key('Body Medium'),
+                    builder: (_) => const Scaffold(
+                      body: Center(
+                        child: Text(
+                          'Dashboard view to be implemented',
+                          style: AppCommonTheme.appBarTitleStyle,
+                        ),
+                      ),
+                    ),
+                  )
+                : SlotLayout.from(
+                    key: const Key('body-meduim-mobile'),
+                    builder: (_) => HomeWidget(pageController),
+                  ),
+          },
+        ),
+        // helper UI for body view but since its doesn't fit for mobile view,
+        // hide it instead.
+        secondaryBody: isDesktop
+            ? SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  Breakpoints.mediumAndUp: SlotLayout.from(
+                    key: const Key('Body Medium'),
+                    builder: (_) => HomeWidget(pageController),
+                  )
+                },
+              )
+            : null,
+        bottomNavigation: isDesktop
+            ? SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  //In desktop, we have ability to adjust windows res,
+                  // adjust to navbar as primary to smaller views.
+                  Breakpoints.small: SlotLayout.from(
+                    key: const Key('Bottom Navigation Small'),
+                    inAnimation: AdaptiveScaffold.bottomToTop,
+                    outAnimation: AdaptiveScaffold.topToBottom,
+                    builder: (_) =>
+                        AdaptiveScaffold.standardBottomNavigationBar(
+                      currentIndex: _selectedIndex,
+                      onDestinationSelected: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          pageController.jumpToPage(_selectedIndex);
+                        });
+                      },
+                      destinations: <NavigationDestination>[
+                        NavigationDestination(
+                          icon: newsFeedIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: pinsIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: tasksIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: chatIcon(),
+                          label: '',
+                        ),
+                      ],
+                    ),
+                  ),
+                },
+              )
+            : SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  // Navbar should be shown regardless of mobile screen sizes.
+                  Breakpoints.smallAndUp: SlotLayout.from(
+                    key: const Key('Bottom Navigation Small'),
+                    inAnimation: AdaptiveScaffold.bottomToTop,
+                    outAnimation: AdaptiveScaffold.topToBottom,
+                    builder: (_) =>
+                        AdaptiveScaffold.standardBottomNavigationBar(
+                      currentIndex: _selectedIndex,
+                      onDestinationSelected: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                          pageController.jumpToPage(_selectedIndex);
+                        });
+                      },
+                      destinations: <NavigationDestination>[
+                        NavigationDestination(
+                          icon: newsFeedIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: pinsIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: tasksIcon(),
+                          label: '',
+                        ),
+                        NavigationDestination(
+                          icon: chatIcon(),
+                          label: '',
+                        ),
+                      ],
+                    ),
+                  ),
+                },
+              ),
       ),
+      floatingActionButton: Visibility(
+        child: FloatingActionButton(
+          onPressed: () async {
+            var appDocDir = await getApplicationDocumentsDirectory();
+            // rageshake disallows dot in filename
+            String timestamp = formatDate(
+              DateTime.now(),
+              [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
+            );
+            var controller = Get.find<ScreenshotController>();
+            var imagePath = await controller.captureAndSave(
+              appDocDir.path,
+              fileName: 'screenshot_$timestamp.png',
+            );
+            if (imagePath != null) {
+              Navigator.pushNamed(
+                context,
+                '/bug_report',
+                arguments: {
+                  'screenshot': imagePath,
+                },
+              );
+            } else {
+              Navigator.pushNamed(context, '/bug_report');
+            }
+          },
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.bug_report_rounded),
+        ),
+        visible: bugReportVisible,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 
-  Widget chatTab() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Tab(
-        icon: tabIndex == 3
-            ? SvgPicture.asset('assets/images/chat_bold.svg')
-            : SvgPicture.asset('assets/images/chat_linear.svg'),
-      ),
+  Widget newsFeedIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      key: Keys.newsSectionBtn,
+      child: SvgPicture.asset('assets/images/newsfeed_linear.svg'),
     );
   }
 
-  Widget notificationTab() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Tab(
-        icon: tabIndex == 4
-            ? SvgPicture.asset('assets/images/notification_bold.svg')
-            : SvgPicture.asset('assets/images/notification_linear.svg'),
-      ),
+  Widget pinsIcon() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 10),
+      child: Icon(FlutterIcons.pin_ent),
+    );
+  }
+
+  Widget tasksIcon() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 10),
+      child: Icon(FlutterIcons.tasks_faw5s),
+    );
+  }
+
+  Widget chatIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: SvgPicture.asset('assets/images/chat_linear.svg'),
+    );
+  }
+
+  Widget notificationIcon() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: SvgPicture.asset('assets/images/notification_linear.svg'),
     );
   }
 }
