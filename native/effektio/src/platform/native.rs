@@ -1,4 +1,5 @@
 use anyhow::{bail, Result};
+use env_logger::filter::Builder as FilterBuilder;
 use lazy_static::lazy_static;
 use log::{Log, Metadata, Record};
 use matrix_sdk::{Client, ClientBuilder};
@@ -22,7 +23,58 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
 }
 
 lazy_static! {
-    pub static ref FILE_LOGGER: Mutex<Option<Arc<fern::ImplDispatch>>> = Mutex::new(None);
+    static ref FILE_LOGGER: Mutex<Option<Arc<fern::ImplDispatch>>> = Mutex::new(None);
+}
+
+pub fn init_logging(log_dir: String, filter: Option<String>, console_logger: Option<Box<dyn Log>>) -> Result<()> {
+    std::env::set_var("RUST_BACKTRACE", "1");
+    log_panics::init();
+
+    let log_level = match filter {
+        Some(ref filter) => FilterBuilder::new().parse(&filter).build(),
+        None => FilterBuilder::new().build(),
+    };
+
+    let mut path = PathBuf::from(log_dir.as_str());
+    path.push("app_");
+
+    let mut builder = fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "{}[{}][{}] {}",
+                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                record.target(),
+                record.level(),
+                message
+            ))
+        })
+        // Add blanket level filter -
+        .level(log_level.filter())
+        // - and per-module overrides
+        .level_for("effektio-sdk", log_level.filter());
+
+    // Output to console
+    if let Some(console_logger) = console_logger {
+        builder = builder.chain(console_logger);
+    } else {
+        builder = builder.chain(std::io::stdout());
+    }
+
+    let (level, dispatch) = builder
+        // Output to file
+        .chain(fern::Manual::new(path, "%Y-%m-%d_%H-%M-%S%.f.log"))
+        .into_dispatch_with_arc();
+
+    if level == log::LevelFilter::Off {
+        log::set_boxed_logger(Box::new(NopLogger))?;
+    } else {
+        log::set_boxed_logger(Box::new(dispatch.clone()))?;
+    }
+    log::set_max_level(level);
+
+    *FILE_LOGGER.lock().unwrap() = Some(dispatch);
+
+    Ok(())
 }
 
 pub fn rotate_log_file() -> Result<String> {
@@ -60,7 +112,7 @@ pub fn sanitize(base_path: String, home: String) -> PathBuf {
     PathBuf::from(base_path).join(sanitize_filename_reader_friendly::sanitize(&home))
 }
 
-pub struct NopLogger;
+struct NopLogger;
 
 impl Log for NopLogger {
     fn enabled(&self, metadata: &Metadata) -> bool {
