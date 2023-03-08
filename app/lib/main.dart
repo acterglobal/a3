@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:effektio/common/themes/app_theme.dart';
 import 'package:effektio/features/home/pages/home_page.dart';
+import 'package:effektio/features/home/repositories/sdk_repository.dart';
 import 'package:effektio/l10n/l10n.dart';
 import 'package:effektio/features/onboarding/pages/login_page.dart';
 import 'package:effektio/features/onboarding/pages/sign_up_page.dart';
