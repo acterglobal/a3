@@ -16,7 +16,7 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-const APP_TAG: &str = "com.example.effektio"; // package name in manifest
+const APP_TAG: &str = "org.effektio.app"; // package name in manifest, application id in build.gradle
 
 pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
