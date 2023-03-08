@@ -123,19 +123,18 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       key: LoginPageKeys.submitBtn,
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          await ref
-                              .read(authControllerProvider.notifier)
-                              .login(username.text, password.text, context);
-                          _validateLogin();
-                          // if (networkController.isDisconnected()) {
-                          //   Get.snackbar(
-                          //     'No internet',
-                          //     'Please turn on internet to continue',
-                          //     colorText: Colors.white,
-                          //   );
-                          // } else {
-
-                          // }
+                          if (networkController.isDisconnected()) {
+                            Get.snackbar(
+                              'No internet',
+                              'Please turn on internet to continue',
+                              colorText: Colors.white,
+                            );
+                          } else {
+                            await ref
+                                .read(authControllerProvider.notifier)
+                                .login(username.text, password.text, context);
+                            _validateLogin();
+                          }
                         }
                       },
                       title: AppLocalizations.of(context)!.login,
