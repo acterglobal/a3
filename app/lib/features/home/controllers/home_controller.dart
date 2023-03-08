@@ -14,7 +14,7 @@ class HomeStateNotifier extends StateNotifier<bool> {
   late SyncState syncState;
   HomeStateNotifier(this.ref) : super(false) {
     _loadUp();
-  }
+}
 
   void _loadUp() async {
     state = false;
