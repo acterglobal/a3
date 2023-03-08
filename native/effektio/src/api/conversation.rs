@@ -187,7 +187,7 @@ impl ConversationController {
                 me.clone().process_room_redaction(ev, &room, &c);
             },
         );
-        self.member_event_handle = Some(handle);
+        self.redacted_event_handle = Some(handle);
     }
 
     pub fn remove_event_handler(&mut self, client: &MatrixClient) {
