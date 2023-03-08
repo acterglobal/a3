@@ -14,7 +14,7 @@ class HomeStateNotifier extends StateNotifier<bool> {
   late SyncState syncState;
   HomeStateNotifier(this.ref) : super(false) {
     _loadUp();
-}
+  }
 
   void _loadUp() async {
     state = false;
@@ -30,6 +30,7 @@ class HomeStateNotifier extends StateNotifier<bool> {
     client = sdk.currentClient;
     ref.read(clientRepositoryProvider.notifier).state =
         ClientRepository(client: client);
+    syncState = client.startSync();
     state = true;
   }
 }
