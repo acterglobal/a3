@@ -2,18 +2,9 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use effektio_core::{
-    client::CoreClient,
-    executor::Executor,
-    models::{AnyEffektioModel, Faq},
-    ruma::OwnedRoomId,
-    spaces::is_acter_space,
-    store::Store,
-    templates::Engine,
-    RestoreToken,
+    client::CoreClient, executor::Executor, models::AnyEffektioModel, ruma::OwnedRoomId,
+    spaces::is_acter_space, store::Store, templates::Engine, RestoreToken,
 };
-
-#[cfg(feature = "with-mocks")]
-use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{future::try_join_all, pin_mut, stream, Stream, StreamExt};
 use futures_signals::signal::{
@@ -444,11 +435,6 @@ impl Client {
                 Ok(conversations)
             })
             .await?
-    }
-
-    #[cfg(feature = "with-mocks")]
-    pub async fn faqs(&self) -> Result<Vec<Faq>> {
-        Ok(gen_mock_faqs())
     }
 
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {

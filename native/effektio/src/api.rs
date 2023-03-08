@@ -43,7 +43,7 @@ pub use core::time::Duration as EfkDuration;
 pub use device::{DeviceChangedEvent, DeviceLeftEvent, DeviceRecord};
 pub use effektio_core::{
     events::UtcDateTime,
-    models::{Color as EfkColor, Faq, News, Tag},
+    models::{Color as EfkColor, News, Tag},
 };
 pub use group::{new_group_settings, CreateGroupSettings, CreateGroupSettingsBuilder, Group};
 pub use invitation::Invitation;
@@ -51,7 +51,7 @@ pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
     VideoDesc,
 };
-pub use pins::{Pin, PinDraft, PinUpdateBuilder};
+pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
 pub use room::{Member, Room};

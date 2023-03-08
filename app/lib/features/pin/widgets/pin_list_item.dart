@@ -1,19 +1,19 @@
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/faq/pages/faq_item_page.dart';
-import 'package:effektio/features/faq/widgets/tag_item.dart';
+import 'package:effektio/features/pin/pages/pin_item_page.dart';
+import 'package:effektio/features/pin/widgets/tag_item.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
-    show Client, Faq;
+    show Client, ActerPin;
 import 'package:flutter/material.dart';
 
-class FaqListItem extends StatelessWidget {
+class PinListItem extends StatelessWidget {
   final Client client;
-  final Faq faq;
+  final ActerPin pin;
 
-  const FaqListItem({
+  const PinListItem({
     Key? key,
     required this.client,
-    required this.faq,
+    required this.pin,
   }) : super(key: key);
 
   @override
@@ -24,7 +24,7 @@ class FaqListItem extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) {
-              return FaqItemPage(client: client, faq: faq);
+              return PinItemPage(client: client, pin: pin);
             },
           ),
         );
@@ -44,8 +44,8 @@ class FaqListItem extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        faq.title(),
-                        style: FAQTheme.titleStyle,
+                        pin.title(),
+                        style: PinTheme.titleStyle,
                       ),
                     ),
                     GestureDetector(
@@ -72,7 +72,7 @@ class FaqListItem extends StatelessWidget {
                       margin: const EdgeInsets.only(left: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: FAQTheme.supportColor),
+                        border: Border.all(color: PinTheme.supportColor),
                       ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +82,7 @@ class FaqListItem extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: 8),
                             child: Text(
                               'Support',
-                              style: FAQTheme.teamNameStyle,
+                              style: PinTheme.teamNameStyle,
                             ),
                           )
                         ],
@@ -105,8 +105,8 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                faq.likesCount().toString(),
-                                style: FAQTheme.likeAndCommentStyle,
+                                "0", //pin.likesCount().toString(),
+                                style: PinTheme.likeAndCommentStyle,
                               ),
                             ),
                             Padding(
@@ -119,8 +119,8 @@ class FaqListItem extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Text(
-                                faq.commentsCount().toString(),
-                                style: FAQTheme.likeAndCommentStyle,
+                                "0", //pin.commentsCount().toString(),
+                                style: PinTheme.likeAndCommentStyle,
                               ),
                             ),
                           ],
@@ -134,7 +134,7 @@ class FaqListItem extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: SizedBox(
                   height: 40,
-                  child: _TagList(faq: faq),
+                  child: _TagList(pin: pin),
                 ),
               )
             ],
@@ -152,32 +152,32 @@ class FaqListItem extends StatelessWidget {
 
 class _TagList extends StatelessWidget {
   const _TagList({
-    required this.faq,
+    required this.pin,
   });
 
-  final Faq faq;
+  final ActerPin pin;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: faq.tags().length,
+      itemCount: 0, //pin.tags().length,
       itemBuilder: (context, index) {
-        var color = faq.tags().elementAt(index).color();
-        var colorToShow = 0;
-        if (color != null) {
-          var colorList = color.rgbaU8();
-          colorToShow = hexOfRGBA(
-            colorList.elementAt(0),
-            colorList.elementAt(1),
-            colorList.elementAt(2),
-            opacity: 0.7,
-          );
-        }
-        return TagListItem(
-          tagTitle: faq.tags().elementAt(index).title(),
-          tagColor: colorToShow > 0 ? Color(colorToShow) : Colors.white,
-        );
+        // var color = pin.tags().elementAt(index).color();
+        // var colorToShow = 0;
+        // if (color != null) {
+        //   var colorList = color.rgbaU8();
+        //   colorToShow = hexOfRGBA(
+        //     colorList.elementAt(0),
+        //     colorList.elementAt(1),
+        //     colorList.elementAt(2),
+        //     opacity: 0.7,
+        //   );
+        // }
+        // return TagListItem(
+        //   tagTitle: pin.tags().elementAt(index).title(),
+        //   tagColor: colorToShow > 0 ? Color(colorToShow) : Colors.white,
+        // );
       },
     );
   }

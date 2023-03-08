@@ -1202,6 +1202,141 @@ class Api {
     return tmp7;
   }
 
+  EventId? __pinDraftSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _pinDraftSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
+  ActerPin? __acterPinRefreshFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _acterPinRefreshFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_ActerPin");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = ActerPin._(this, tmp13_1);
+    return tmp7;
+  }
+
+  EventId? __pinUpdateBuilderSendFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _pinUpdateBuilderSendFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_EventId");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp7 = EventId._(this, tmp13_1);
+    return tmp7;
+  }
+
   RoomMessage? __timelineStreamNextFuturePoll(
     int boxed,
     int postCobject,
@@ -3173,6 +3308,98 @@ class Api {
     return tmp7;
   }
 
+  FfiListActerPin? __groupPinsFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _groupPinsFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListActerPin._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiListActerPin? __groupPinnedLinksFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _groupPinnedLinksFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListActerPin._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   UserProfile? __memberGetProfileFuturePoll(
     int boxed,
     int postCobject,
@@ -3676,7 +3903,7 @@ class Api {
     return tmp7;
   }
 
-  FfiListFaq? __clientFaqsFuturePoll(
+  FfiListActerPin? __clientPinsFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -3690,7 +3917,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _clientFaqsFuturePoll(
+    final tmp6 = _clientPinsFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -3715,9 +3942,55 @@ class Api {
       throw tmp9_0;
     }
     final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
-    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListFaq");
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
     tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
-    final tmp14 = FfiListFaq._(this, tmp13_1);
+    final tmp14 = FfiListActerPin._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
+  FfiListActerPin? __clientPinnedLinksFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _clientPinnedLinksFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiListActerPin");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiListActerPin._(this, tmp13_1);
     final tmp7 = tmp14;
     return tmp7;
   }
@@ -5162,6 +5435,37 @@ class Api {
     return tmp7;
   }
 
+  void __acterPinSubscribeStreamPoll(
+    int boxed,
+    int postCobject,
+    int port,
+    int done,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    final tmp6 = done;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    var tmp7 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    tmp7 = tmp6;
+    final tmp8 = _acterPinSubscribeStreamPoll(
+      tmp1,
+      tmp3,
+      tmp5,
+      tmp7,
+    );
+    final tmp10 = tmp8;
+    if (tmp10 == 0) {
+      return null;
+    }
+    return;
+  }
+
   TimelineDiff? __timelineStreamDiffRxStreamPoll(
     int boxed,
     int postCobject,
@@ -5963,63 +6267,275 @@ class Api {
       _TagColorReturn Function(
     int,
   )>();
-  late final _faqTitlePtr = _lookup<
+  late final _pinDraftTitlePtr = _lookup<
       ffi.NativeFunction<
-          _FaqTitleReturn Function(
+          ffi.Void Function(
     ffi.Int64,
-  )>>("__Faq_title");
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinDraft_title");
 
-  late final _faqTitle = _faqTitlePtr.asFunction<
-      _FaqTitleReturn Function(
+  late final _pinDraftTitle = _pinDraftTitlePtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
     int,
   )>();
-  late final _faqBodyPtr = _lookup<
+  late final _pinDraftContentTextPtr = _lookup<
       ffi.NativeFunction<
-          _FaqBodyReturn Function(
+          ffi.Void Function(
     ffi.Int64,
-  )>>("__Faq_body");
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinDraft_content_text");
 
-  late final _faqBody = _faqBodyPtr.asFunction<
-      _FaqBodyReturn Function(
+  late final _pinDraftContentText = _pinDraftContentTextPtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
     int,
   )>();
-  late final _faqPinnedPtr = _lookup<
+  late final _pinDraftUnsetContentPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint8 Function(
+          ffi.Void Function(
     ffi.Int64,
-  )>>("__Faq_pinned");
+  )>>("__PinDraft_unset_content");
 
-  late final _faqPinned = _faqPinnedPtr.asFunction<
-      int Function(
+  late final _pinDraftUnsetContent = _pinDraftUnsetContentPtr.asFunction<
+      void Function(
     int,
   )>();
-  late final _faqTagsPtr = _lookup<
+  late final _pinDraftUrlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinDraft_url");
+
+  late final _pinDraftUrl = _pinDraftUrlPtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _pinDraftUnsetUrlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__PinDraft_unset_url");
+
+  late final _pinDraftUnsetUrl = _pinDraftUnsetUrlPtr.asFunction<
+      void Function(
+    int,
+  )>();
+  late final _pinDraftSendPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Faq_tags");
+  )>>("__PinDraft_send");
 
-  late final _faqTags = _faqTagsPtr.asFunction<
+  late final _pinDraftSend = _pinDraftSendPtr.asFunction<
       int Function(
     int,
   )>();
-  late final _faqLikesCountPtr = _lookup<
+  late final _acterPinTitlePtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint32 Function(
+          _ActerPinTitleReturn Function(
     ffi.Int64,
-  )>>("__Faq_likes_count");
+  )>>("__ActerPin_title");
 
-  late final _faqLikesCount = _faqLikesCountPtr.asFunction<
+  late final _acterPinTitle = _acterPinTitlePtr.asFunction<
+      _ActerPinTitleReturn Function(
+    int,
+  )>();
+  late final _acterPinContentTextPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinContentTextReturn Function(
+    ffi.Int64,
+  )>>("__ActerPin_content_text");
+
+  late final _acterPinContentText = _acterPinContentTextPtr.asFunction<
+      _ActerPinContentTextReturn Function(
+    int,
+  )>();
+  late final _acterPinIsLinkPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__ActerPin_is_link");
+
+  late final _acterPinIsLink = _acterPinIsLinkPtr.asFunction<
       int Function(
     int,
   )>();
-  late final _faqCommentsCountPtr = _lookup<
+  late final _acterPinUrlPtr = _lookup<
       ffi.NativeFunction<
-          ffi.Uint32 Function(
+          _ActerPinUrlReturn Function(
     ffi.Int64,
-  )>>("__Faq_comments_count");
+  )>>("__ActerPin_url");
 
-  late final _faqCommentsCount = _faqCommentsCountPtr.asFunction<
+  late final _acterPinUrl = _acterPinUrlPtr.asFunction<
+      _ActerPinUrlReturn Function(
+    int,
+  )>();
+  late final _acterPinColorPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinColorReturn Function(
+    ffi.Int64,
+  )>>("__ActerPin_color");
+
+  late final _acterPinColor = _acterPinColorPtr.asFunction<
+      _ActerPinColorReturn Function(
+    int,
+  )>();
+  late final _acterPinUpdateBuilderPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinUpdateBuilderReturn Function(
+    ffi.Int64,
+  )>>("__ActerPin_update_builder");
+
+  late final _acterPinUpdateBuilder = _acterPinUpdateBuilderPtr.asFunction<
+      _ActerPinUpdateBuilderReturn Function(
+    int,
+  )>();
+  late final _acterPinSubscribePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_subscribe");
+
+  late final _acterPinSubscribe = _acterPinSubscribePtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _acterPinRefreshPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__ActerPin_refresh");
+
+  late final _acterPinRefresh = _acterPinRefreshPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _pinUpdateBuilderTitlePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinUpdateBuilder_title");
+
+  late final _pinUpdateBuilderTitle = _pinUpdateBuilderTitlePtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _pinUpdateBuilderUnsetTitleUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_unset_title_update");
+
+  late final _pinUpdateBuilderUnsetTitleUpdate =
+      _pinUpdateBuilderUnsetTitleUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _pinUpdateBuilderContentTextPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinUpdateBuilder_content_text");
+
+  late final _pinUpdateBuilderContentText =
+      _pinUpdateBuilderContentTextPtr.asFunction<
+          void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _pinUpdateBuilderUnsetContentPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_unset_content");
+
+  late final _pinUpdateBuilderUnsetContent =
+      _pinUpdateBuilderUnsetContentPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _pinUpdateBuilderUnsetContentUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_unset_content_update");
+
+  late final _pinUpdateBuilderUnsetContentUpdate =
+      _pinUpdateBuilderUnsetContentUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _pinUpdateBuilderUrlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Uint64,
+    ffi.Uint64,
+  )>>("__PinUpdateBuilder_url");
+
+  late final _pinUpdateBuilderUrl = _pinUpdateBuilderUrlPtr.asFunction<
+      void Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
+  late final _pinUpdateBuilderUnsetUrlPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_unset_url");
+
+  late final _pinUpdateBuilderUnsetUrl =
+      _pinUpdateBuilderUnsetUrlPtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _pinUpdateBuilderUnsetUrlUpdatePtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_unset_url_update");
+
+  late final _pinUpdateBuilderUnsetUrlUpdate =
+      _pinUpdateBuilderUnsetUrlUpdatePtr.asFunction<
+          void Function(
+    int,
+  )>();
+  late final _pinUpdateBuilderSendPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_send");
+
+  late final _pinUpdateBuilderSend = _pinUpdateBuilderSendPtr.asFunction<
       int Function(
     int,
   )>();
@@ -9004,6 +9520,36 @@ class Api {
       _GroupTaskListDraftReturn Function(
     int,
   )>();
+  late final _groupPinsPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Group_pins");
+
+  late final _groupPins = _groupPinsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _groupPinnedLinksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Group_pinned_links");
+
+  late final _groupPinnedLinks = _groupPinnedLinksPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _groupPinDraftPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupPinDraftReturn Function(
+    ffi.Int64,
+  )>>("__Group_pin_draft");
+
+  late final _groupPinDraft = _groupPinDraftPtr.asFunction<
+      _GroupPinDraftReturn Function(
+    int,
+  )>();
   late final _memberGetProfilePtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -9319,13 +9865,23 @@ class Api {
       int Function(
     int,
   )>();
-  late final _clientFaqsPtr = _lookup<
+  late final _clientPinsPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__Client_faqs");
+  )>>("__Client_pins");
 
-  late final _clientFaqs = _clientFaqsPtr.asFunction<
+  late final _clientPins = _clientPinsPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _clientPinnedLinksPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Int64 Function(
+    ffi.Int64,
+  )>>("__Client_pinned_links");
+
+  late final _clientPinnedLinks = _clientPinnedLinksPtr.asFunction<
       int Function(
     int,
   )>();
@@ -10222,6 +10778,50 @@ class Api {
     int,
     int,
   )>();
+  late final _pinDraftSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _PinDraftSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__PinDraft_send_future_poll");
+
+  late final _pinDraftSendFuturePoll = _pinDraftSendFuturePollPtr.asFunction<
+      _PinDraftSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _acterPinRefreshFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ActerPinRefreshFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__ActerPin_refresh_future_poll");
+
+  late final _acterPinRefreshFuturePoll =
+      _acterPinRefreshFuturePollPtr.asFunction<
+          _ActerPinRefreshFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _pinUpdateBuilderSendFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _PinUpdateBuilderSendFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__PinUpdateBuilder_send_future_poll");
+
+  late final _pinUpdateBuilderSendFuturePoll =
+      _pinUpdateBuilderSendFuturePollPtr.asFunction<
+          _PinUpdateBuilderSendFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _timelineStreamNextFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamNextFuturePollReturn Function(
@@ -10863,6 +11463,35 @@ class Api {
     int,
     int,
   )>();
+  late final _groupPinsFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupPinsFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Group_pins_future_poll");
+
+  late final _groupPinsFuturePoll = _groupPinsFuturePollPtr.asFunction<
+      _GroupPinsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _groupPinnedLinksFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _GroupPinnedLinksFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Group_pinned_links_future_poll");
+
+  late final _groupPinnedLinksFuturePoll =
+      _groupPinnedLinksFuturePollPtr.asFunction<
+          _GroupPinnedLinksFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _memberGetProfileFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _MemberGetProfileFuturePollReturn Function(
@@ -11026,16 +11655,31 @@ class Api {
     int,
     int,
   )>();
-  late final _clientFaqsFuturePollPtr = _lookup<
+  late final _clientPinsFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _ClientFaqsFuturePollReturn Function(
+          _ClientPinsFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__Client_faqs_future_poll");
+  )>>("__Client_pins_future_poll");
 
-  late final _clientFaqsFuturePoll = _clientFaqsFuturePollPtr.asFunction<
-      _ClientFaqsFuturePollReturn Function(
+  late final _clientPinsFuturePoll = _clientPinsFuturePollPtr.asFunction<
+      _ClientPinsFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
+  late final _clientPinnedLinksFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _ClientPinnedLinksFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__Client_pinned_links_future_poll");
+
+  late final _clientPinnedLinksFuturePoll =
+      _clientPinnedLinksFuturePollPtr.asFunction<
+          _ClientPinnedLinksFuturePollReturn Function(
     int,
     int,
     int,
@@ -11551,6 +12195,23 @@ class Api {
     int,
     int,
   )>();
+  late final _acterPinSubscribeStreamPollPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__ActerPin_subscribe_stream_poll");
+
+  late final _acterPinSubscribeStreamPoll =
+      _acterPinSubscribeStreamPollPtr.asFunction<
+          int Function(
+    int,
+    int,
+    int,
+    int,
+  )>();
   late final _timelineStreamDiffRxStreamPollPtr = _lookup<
       ffi.NativeFunction<
           _TimelineStreamDiffRxStreamPollReturn Function(
@@ -11820,6 +12481,55 @@ class Api {
 
   late final _ffiListAccountInsert =
       _ffiListAccountInsertPtr.asFunction<void Function(int, int, int)>();
+  FfiListActerPin createFfiListActerPin() {
+    final ffi.Pointer<ffi.Void> list_ptr =
+        ffi.Pointer.fromAddress(_ffiListActerPinCreate());
+    final list_box = _Box(this, list_ptr, "drop_box_FfiListActerPin");
+    return FfiListActerPin._(this, list_box);
+  }
+
+  late final _ffiListActerPinCreatePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
+          "__FfiListActerPinCreate");
+
+  late final _ffiListActerPinCreate =
+      _ffiListActerPinCreatePtr.asFunction<int Function()>();
+
+  late final _ffiListActerPinLenPtr =
+      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
+          "__FfiListActerPinLen");
+
+  late final _ffiListActerPinLen =
+      _ffiListActerPinLenPtr.asFunction<int Function(int)>();
+
+  late final _ffiListActerPinElementAtPtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListActerPinElementAt");
+
+  late final _ffiListActerPinElementAt =
+      _ffiListActerPinElementAtPtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListActerPinRemovePtr =
+      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
+          "__FfiListActerPinRemove");
+
+  late final _ffiListActerPinRemove =
+      _ffiListActerPinRemovePtr.asFunction<int Function(int, int)>();
+
+  late final _ffiListActerPinAddPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
+          "__FfiListActerPinAdd");
+
+  late final _ffiListActerPinAdd =
+      _ffiListActerPinAddPtr.asFunction<void Function(int, int)>();
+
+  late final _ffiListActerPinInsertPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Void Function(
+              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListActerPinInsert");
+
+  late final _ffiListActerPinInsert =
+      _ffiListActerPinInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListComment createFfiListComment() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListCommentCreate());
@@ -11967,53 +12677,6 @@ class Api {
 
   late final _ffiListDeviceRecordInsert =
       _ffiListDeviceRecordInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListFaq createFfiListFaq() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListFaqCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListFaq");
-    return FfiListFaq._(this, list_box);
-  }
-
-  late final _ffiListFaqCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>("__FfiListFaqCreate");
-
-  late final _ffiListFaqCreate =
-      _ffiListFaqCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListFaqLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListFaqLen");
-
-  late final _ffiListFaqLen = _ffiListFaqLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListFaqElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListFaqElementAt");
-
-  late final _ffiListFaqElementAt =
-      _ffiListFaqElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListFaqRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListFaqRemove");
-
-  late final _ffiListFaqRemove =
-      _ffiListFaqRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListFaqAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListFaqAdd");
-
-  late final _ffiListFaqAdd =
-      _ffiListFaqAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListFaqInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListFaqInsert");
-
-  late final _ffiListFaqInsert =
-      _ffiListFaqInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListFfiString createFfiListFfiString() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListFfiStringCreate());
@@ -12991,18 +13654,141 @@ class Tag {
   }
 }
 
-/// A news object
-class Faq {
+/// Draft a Pin
+class PinDraft {
   final Api _api;
   final _Box _box;
 
-  Faq._(this._api, this._box);
+  PinDraft._(this._api, this._box);
 
-  /// get the title of the news item
+  /// set the title for this pin
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinDraftTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  /// set the content for this pin
+  void contentText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinDraftContentText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinDraftUnsetContent(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the url for this pin
+  void url(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinDraftUrl(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinDraftUnsetUrl(
+      tmp0,
+    );
+    return;
+  }
+
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pinDraftSend(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__PinDraft_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__pinDraftSendFuturePoll);
+    return tmp2;
+  }
+
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+/// A pin object
+class ActerPin {
+  final Api _api;
+  final _Box _box;
+
+  ActerPin._(this._api, this._box);
+
+  /// get the title of the pin
   String title() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._faqTitle(
+    final tmp1 = _api._acterPinTitle(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -13018,31 +13804,35 @@ class Faq {
     return tmp2;
   }
 
-  /// get the body of the news item
-  String body() {
+  /// get the content_text of the pin
+  String? contentText() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._faqBody(
+    final tmp1 = _api._acterPinContentText(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
     final tmp4 = tmp1.arg1;
     final tmp5 = tmp1.arg2;
-    final ffi.Pointer<ffi.Uint8> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp2 = utf8.decode(tmp3_0.asTypedList(tmp4));
-    if (tmp5 > 0) {
-      final ffi.Pointer<ffi.Void> tmp3_0;
-      tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-      _api.__deallocate(tmp3_0, tmp5 * 1, 1);
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
     }
     return tmp2;
   }
 
-  /// whether this object is pinned
-  bool pinned() {
+  /// whether this pin is a link
+  bool isLink() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._faqPinned(
+    final tmp1 = _api._acterPinIsLink(
       tmp0,
     );
     final tmp3 = tmp1;
@@ -13050,43 +13840,253 @@ class Faq {
     return tmp2;
   }
 
-  /// the tags on this item
-  FfiListTag tags() {
+  /// get the link content
+  String? url() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._faqTags(
+    final tmp1 = _api._acterPinUrl(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp2 = utf8.decode(tmp4_0.asTypedList(tmp5));
+    if (tmp6 > 0) {
+      final ffi.Pointer<ffi.Void> tmp4_0;
+      tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      _api.__deallocate(tmp4_0, tmp6 * 1, 1);
+    }
+    return tmp2;
+  }
+
+  /// get the link color settings
+  EfkColor? color() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinColor(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_EfkColor");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = EfkColor._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// make a builder for updating the pin
+  PinUpdateBuilder updateBuilder() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinUpdateBuilder(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinUpdateBuilder");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = PinUpdateBuilder._(_api, tmp7_1);
+    return tmp2;
+  }
+
+  Stream<void> subscribe() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._acterPinSubscribe(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListTag");
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_subscribe_stream_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListTag._(_api, tmp3_1);
-    final tmp2 = tmp4;
+    final tmp2 = _nativeStream(tmp3_1, _api.__acterPinSubscribeStreamPoll);
     return tmp2;
   }
 
-  /// the number of likes on this item
-  int likesCount() {
+  /// replace the current pin with one with the latest state
+  Future<ActerPin> refresh() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._faqLikesCount(
+    final tmp1 = _api._acterPinRefresh(
       tmp0,
     );
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__ActerPin_refresh_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__acterPinRefreshFuturePoll);
     return tmp2;
   }
 
-  /// the number of comments on this item
-  int commentsCount() {
+  /// Manually drops the object and unregisters the FinalizableHandle.
+  void drop() {
+    _box.drop();
+  }
+}
+
+class PinUpdateBuilder {
+  final Api _api;
+  final _Box _box;
+
+  PinUpdateBuilder._(this._api, this._box);
+
+  /// set the title for this pin
+  void title(
+    String title,
+  ) {
+    final tmp1 = title;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinUpdateBuilderTitle(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetTitleUpdate() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._faqCommentsCount(
+    _api._pinUpdateBuilderUnsetTitleUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the content for this pin
+  void contentText(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinUpdateBuilderContentText(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetContent() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinUpdateBuilderUnsetContent(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetContentUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinUpdateBuilderUnsetContentUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  /// set the url for this pin
+  void url(
+    String text,
+  ) {
+    final tmp1 = text;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    var tmp3 = 0;
+    var tmp4 = 0;
+    tmp0 = _box.borrow();
+    final tmp1_0 = utf8.encode(tmp1);
+    tmp3 = tmp1_0.length;
+    final ffi.Pointer<ffi.Uint8> tmp2_0 = _api.__allocate(tmp3 * 1, 1);
+    final Uint8List tmp2_1 = tmp2_0.asTypedList(tmp3);
+    tmp2_1.setAll(0, tmp1_0);
+    tmp2 = tmp2_0.address;
+    tmp4 = tmp3;
+    _api._pinUpdateBuilderUrl(
+      tmp0,
+      tmp2,
+      tmp3,
+      tmp4,
+    );
+    return;
+  }
+
+  void unsetUrl() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinUpdateBuilderUnsetUrl(
+      tmp0,
+    );
+    return;
+  }
+
+  void unsetUrlUpdate() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    _api._pinUpdateBuilderUnsetUrlUpdate(
+      tmp0,
+    );
+    return;
+  }
+
+  Future<EventId> send() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._pinUpdateBuilderSend(
       tmp0,
     );
     final tmp3 = tmp1;
-    final tmp2 = tmp3;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__PinUpdateBuilder_send_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__pinUpdateBuilderSendFuturePoll);
     return tmp2;
   }
 
@@ -18440,6 +19440,65 @@ class Group {
     return tmp2;
   }
 
+  /// the pins of this Group
+  Future<FfiListActerPin> pins() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupPins(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Group_pins_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__groupPinsFuturePoll);
+    return tmp2;
+  }
+
+  /// the links pinned to this Group
+  Future<FfiListActerPin> pinnedLinks() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupPinnedLinks(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Group_pinned_links_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__groupPinnedLinksFuturePoll);
+    return tmp2;
+  }
+
+  /// pin draft builder
+  PinDraft pinDraft() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._groupPinDraft(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    final tmp5 = tmp1.arg2;
+    final tmp6 = tmp1.arg3;
+    final tmp7 = tmp1.arg4;
+    if (tmp3 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+      final tmp3_0 = utf8.decode(tmp4_0.asTypedList(tmp5));
+      if (tmp5 > 0) {
+        final ffi.Pointer<ffi.Void> tmp4_0;
+        tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+        _api.__deallocate(tmp4_0, tmp6, 1);
+      }
+      throw tmp3_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp7_0 = ffi.Pointer.fromAddress(tmp7);
+    final tmp7_1 = _Box(_api, tmp7_0, "drop_box_PinDraft");
+    tmp7_1._finalizer = _api._registerFinalizer(tmp7_1);
+    final tmp2 = PinDraft._(_api, tmp7_1);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -19048,18 +20107,33 @@ class Client {
     return tmp2;
   }
 
-  /// Get the FAQs for the client
-  Future<FfiListFaq> faqs() {
+  /// Get the Pins for the client
+  Future<FfiListActerPin> pins() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._clientFaqs(
+    final tmp1 = _api._clientPins(
       tmp0,
     );
     final tmp3 = tmp1;
     final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "__Client_faqs_future_drop");
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_pins_future_drop");
     tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = _nativeFuture(tmp3_1, _api.__clientFaqsFuturePoll);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientPinsFuturePoll);
+    return tmp2;
+  }
+
+  /// Get the Pinned Links for the client
+  Future<FfiListActerPin> pinnedLinks() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._clientPinnedLinks(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__Client_pinned_links_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__clientPinnedLinksFuturePoll);
     return tmp2;
   }
 
@@ -20816,7 +21890,7 @@ class _TagColorReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _FaqTitleReturn extends ffi.Struct {
+class _ActerPinTitleReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
@@ -20825,13 +21899,46 @@ class _FaqTitleReturn extends ffi.Struct {
   external int arg2;
 }
 
-class _FaqBodyReturn extends ffi.Struct {
-  @ffi.Int64()
+class _ActerPinContentTextReturn extends ffi.Struct {
+  @ffi.Uint8()
   external int arg0;
-  @ffi.Uint64()
+  @ffi.Int64()
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ActerPinUrlReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+}
+
+class _ActerPinColorReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _ActerPinUpdateBuilderReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
 }
 
 class _DeviceIdToStringReturn extends ffi.Struct {
@@ -21680,6 +22787,19 @@ class _GroupTaskListDraftReturn extends ffi.Struct {
   external int arg4;
 }
 
+class _GroupPinDraftReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+  @ffi.Uint64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Int64()
+  external int arg4;
+}
+
 class _MemberUserIdReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
@@ -22049,6 +23169,51 @@ class _GuestClientFuturePollReturn extends ffi.Struct {
 }
 
 class _RegisterWithRegistrationTokenFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _PinDraftSendFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ActerPinRefreshFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _PinUpdateBuilderSendFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -22752,6 +23917,36 @@ class _GroupTaskListsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
+class _GroupPinsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _GroupPinnedLinksFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
 class _MemberGetProfileFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
@@ -22925,7 +24120,22 @@ class _ClientLatestNewsFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _ClientFaqsFuturePollReturn extends ffi.Struct {
+class _ClientPinsFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _ClientPinnedLinksFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -23587,6 +24797,66 @@ class FfiListAccount extends Iterable<Account>
   }
 }
 
+class FfiListActerPin extends Iterable<ActerPin>
+    implements CustomIterable<ActerPin> {
+  final Api _api;
+  final _Box _box;
+
+  FfiListActerPin._(this._api, this._box);
+
+  @override
+  Iterator<ActerPin> get iterator => CustomIterator(this);
+
+  @override
+  int get length {
+    return _api._ffiListActerPinLen(_box.borrow());
+  }
+
+  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
+  @override
+  ActerPin elementAt(int index) {
+    final address = _api._ffiListActerPinElementAt(_box.borrow(), index);
+    final reference = _Box(
+      _api,
+      ffi.Pointer.fromAddress(address),
+      "drop_box_Leak",
+      context: this,
+    );
+    return ActerPin._(_api, reference);
+  }
+
+  ActerPin operator [](int index) {
+    return elementAt(index);
+  }
+
+  /// Moves the element out of this list and returns it
+  ActerPin remove(int index) {
+    final address = _api._ffiListActerPinRemove(_box.borrow(), index);
+    final reference =
+        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_ActerPin");
+    reference._finalizer = _api._registerFinalizer(reference);
+    return ActerPin._(_api, reference);
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void add(ActerPin element) {
+    _api._ffiListActerPinAdd(_box.borrow(), element._box.borrow());
+    element._box.move();
+  }
+
+  ///The inserted element is moved into the list and must not be used again
+  ///Although you can use the "elementAt" method to get a reference to the added element
+  void insert(int index, ActerPin element) {
+    _api._ffiListActerPinInsert(_box.borrow(), index, element._box.borrow());
+    element._box.move();
+  }
+
+  void drop() {
+    _box.drop();
+  }
+}
+
 class FfiListComment extends Iterable<Comment>
     implements CustomIterable<Comment> {
   final Api _api;
@@ -23761,65 +25031,6 @@ class FfiListDeviceRecord extends Iterable<DeviceRecord>
   void insert(int index, DeviceRecord element) {
     _api._ffiListDeviceRecordInsert(
         _box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
-class FfiListFaq extends Iterable<Faq> implements CustomIterable<Faq> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListFaq._(this._api, this._box);
-
-  @override
-  Iterator<Faq> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListFaqLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  Faq elementAt(int index) {
-    final address = _api._ffiListFaqElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return Faq._(_api, reference);
-  }
-
-  Faq operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  Faq remove(int index) {
-    final address = _api._ffiListFaqRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_Faq");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return Faq._(_api, reference);
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(Faq element) {
-    _api._ffiListFaqAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, Faq element) {
-    _api._ffiListFaqInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 

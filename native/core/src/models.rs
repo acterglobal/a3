@@ -1,6 +1,5 @@
 mod color;
 mod comments;
-mod faq;
 mod news;
 mod pins;
 mod tag;
@@ -13,7 +12,6 @@ pub use crate::store::Store;
 pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use core::fmt::Debug;
-pub use faq::Faq;
 use matrix_sdk::ruma::{
     events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},
     serde::Raw,
@@ -379,7 +377,6 @@ impl AnyEffektioModel {
 #[cfg(feature = "with-mocks")]
 pub mod mocks {
     pub use super::color::mocks::ColorFaker;
-    pub use super::faq::gen_mocks as gen_mock_faqs;
     pub use super::news::gen_mocks as gen_mock_news;
 }
 

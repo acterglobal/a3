@@ -327,6 +327,17 @@ impl PinUpdateBuilder {
         self
     }
 
+    pub fn unset_content(&mut self) -> &mut Self {
+        self.content.content(Some(None));
+        self
+    }
+
+    pub fn unset_content_update(&mut self) -> &mut Self {
+        self.content
+            .content(None::<Option<TextMessageEventContent>>);
+        self
+    }
+
     pub fn url(&mut self, url: String) -> &mut Self {
         self.content.url(Some(Some(url)));
         self
@@ -339,17 +350,6 @@ impl PinUpdateBuilder {
 
     pub fn unset_url_update(&mut self) -> &mut Self {
         self.content.url(None::<Option<String>>);
-        self
-    }
-
-    pub fn unset_content(&mut self) -> &mut Self {
-        self.content.content(Some(None));
-        self
-    }
-
-    pub fn unset_content_update(&mut self) -> &mut Self {
-        self.content
-            .content(None::<Option<TextMessageEventContent>>);
         self
     }
 

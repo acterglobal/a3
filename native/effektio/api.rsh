@@ -63,22 +63,71 @@ object Tag {
     fn color() -> Option<EfkColor>; 
 }
 
-/// A news object
-object Faq {
-    /// get the title of the news item
+/// Draft a Pin
+object PinDraft {
+    /// set the title for this pin
+    fn title(title: string);
+
+    /// set the content for this pin
+    fn content_text(text: string);
+    fn unset_content();
+
+    /// set the url for this pin
+    fn url(text: string);
+    fn unset_url();
+
+    // fire this pin over - the event_id is the confirmation
+    // from the server.
+    fn send() -> Future<Result<EventId>>;
+}
+
+/// A pin object
+object ActerPin {
+    /// get the title of the pin
     fn title() -> string;
-    /// get the body of the news item
-    fn body() -> string;
-    /// whether this object is pinned
-    fn pinned() -> bool;
-    // The team this faq belongs to
+    /// get the content_text of the pin
+    fn content_text() -> Option<string>;
+    /// whether this pin is a link
+    fn is_link() -> bool;
+    /// get the link content
+    fn url() -> Option<string>;
+    /// get the link color settings
+    fn color() -> Option<EfkColor>;
+    // The room this Pin belongs to
     //fn team() -> Room;
-    /// the tags on this item
-    fn tags() -> Vec<Tag>;
-    /// the number of likes on this item
-    fn likes_count() -> u32;
-    /// the number of comments on this item
-    fn comments_count() -> u32;
+
+    /// make a builder for updating the pin
+    fn update_builder() -> Result<PinUpdateBuilder>;
+
+    // get informed about changes to this pin
+    fn subscribe() -> Stream<()>;
+
+    /// replace the current pin with one with the latest state
+    fn refresh() -> Future<Result<ActerPin>>;
+
+    // get the comments manager for this pin
+    // fn comments() -> Future<Result<CommentsManager>>;
+}
+
+object PinUpdateBuilder {
+    /// set the title for this pin
+    fn title(title: string);
+    fn unset_title_update();
+
+    /// set the content for this pin
+    fn content_text(text: string);
+    fn unset_content();
+    fn unset_content_update();
+
+    /// set the url for this pin
+    fn url(text: string);
+    fn unset_url();
+    fn unset_url_update();
+
+    // fire this update over - the event_id is the confirmation
+    // from the server.
+    fn send() -> Future<Result<EventId>>;
+
 }
 
 object MediaSource {}
@@ -759,6 +808,15 @@ object Group {
 
     /// task list draft builder
     fn task_list_draft() -> Result<TaskListDraft>;
+
+    /// the pins of this Group
+    fn pins() -> Future<Result<Vec<ActerPin>>>;
+
+    /// the links pinned to this Group
+    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
+
+    /// pin draft builder
+    fn pin_draft() -> Result<PinDraft>;
 }
 
 object Member {
@@ -859,8 +917,11 @@ object Client {
     /// Get the latest News for the client
     fn latest_news() -> Future<Result<Vec<News>>>;
 
-    /// Get the FAQs for the client
-    fn faqs() -> Future<Result<Vec<Faq>>>;
+    /// Get the Pins for the client
+    fn pins() -> Future<Result<Vec<ActerPin>>>;
+
+    /// Get the Pinned Links for the client
+    fn pinned_links() -> Future<Result<Vec<ActerPin>>>;
 
     /// Get the invitation event stream
     fn invitations_rx() -> Stream<Vec<Invitation>>;
