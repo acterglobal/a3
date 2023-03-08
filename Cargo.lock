@@ -1070,11 +1070,12 @@ dependencies = [
  "anyhow",
  "effektio",
  "effektio-core",
- "env_logger 0.9.3",
+ "env_logger 0.10.0",
  "futures",
  "log",
  "tempfile",
  "tokio",
+ "tokio-retry",
  "tracing",
  "uuid",
 ]

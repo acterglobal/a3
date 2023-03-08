@@ -51,7 +51,6 @@ impl Client {
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
         for mdl in self.store().get_list(KEYS::PINS).await? {
-            #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::Pin(t) = mdl {
                 let room_id = t.room_id().to_owned();
                 let room = match rooms_map.entry(room_id) {
@@ -77,6 +76,40 @@ impl Client {
         }
         Ok(pins)
     }
+
+    pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
+        let mut pins = Vec::new();
+        let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
+        let client = self.clone();
+        for mdl in self.store().get_list(KEYS::PINS).await? {
+            if let AnyEffektioModel::Pin(pin) = mdl {
+                if !pin.is_link() {
+                    continue;
+                }
+                let room_id = pin.room_id().to_owned();
+                let room = match rooms_map.entry(room_id) {
+                    Entry::Occupied(t) => t.get().clone(),
+                    Entry::Vacant(e) => {
+                        if let Some(room) = client.get_room(e.key()) {
+                            e.insert(room.clone());
+                            room
+                        } else {
+                            /// User not part of the room anymore, ignore
+                            continue;
+                        }
+                    }
+                };
+                pins.push(Pin {
+                    client: client.clone(),
+                    room,
+                    content: pin,
+                })
+            } else {
+                tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+            }
+        }
+        Ok(pins)
+    }
 }
 
 impl Group {
@@ -89,13 +122,36 @@ impl Group {
             .get_list(&format!("{room_id}::{}", KEYS::PINS))
             .await?
         {
-            #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::Pin(t) = mdl {
                 pins.push(Pin {
                     client: self.client.clone(),
                     room: self.room.clone(),
                     content: t,
                 })
+            } else {
+                tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
+            }
+        }
+        Ok(pins)
+    }
+
+    pub async fn pinned_links(&self) -> Result<Vec<Pin>> {
+        let mut pins = Vec::new();
+        let room_id = self.room_id();
+        for mdl in self
+            .client
+            .store()
+            .get_list(&format!("{room_id}::{}", KEYS::PINS))
+            .await?
+        {
+            if let AnyEffektioModel::Pin(pin) = mdl {
+                if pin.is_link() {
+                    pins.push(Pin {
+                        client: self.client.clone(),
+                        room: self.room.clone(),
+                        content: pin,
+                    })
+                }
             } else {
                 tracing::warn!("Non pin model found in `pins` index: {:?}", mdl);
             }

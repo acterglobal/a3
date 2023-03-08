@@ -5,7 +5,8 @@ use effektio_core::{
     client::CoreClient,
     executor::Executor,
     models::{AnyEffektioModel, Faq},
-    statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
+    ruma::OwnedRoomId,
+    spaces::is_acter_space,
     store::Store,
     templates::Engine,
     RestoreToken,
@@ -106,18 +107,27 @@ pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Ve
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
+    pub known_groups: Vec<OwnedRoomId>,
     pub total_groups: usize,
     pub loaded_groups: usize,
 }
 
 impl HistoryLoadState {
     pub fn is_done_loading(&self) -> bool {
-        self.has_started && self.total_groups == self.loaded_groups
+        self.has_started && self.known_groups.len() == self.loaded_groups
     }
 
-    pub fn start(&mut self, total: usize) {
+    pub fn start(&mut self, known_groups: Vec<OwnedRoomId>) {
         self.has_started = true;
-        self.total_groups = total;
+        self.known_groups = known_groups;
+    }
+
+    pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
+        self.known_groups.contains(room_id)
+    }
+
+    pub fn started_loading_room(&mut self, room_id: OwnedRoomId) {
+        self.known_groups.push(room_id);
     }
 
     fn group_loaded(&mut self) {
@@ -228,7 +238,8 @@ impl Client {
             .spawn(async move {
                 tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
                 let groups = me.groups().await?;
-                history.lock_mut().start(groups.len());
+                let group_ids = groups.iter().map(|r| r.room_id().to_owned()).collect();
+                history.lock_mut().start(group_ids);
 
                 try_join_all(groups.iter().map(|g| async {
                     g.add_handlers().await;
@@ -333,6 +344,44 @@ impl Client {
                                 initial.store(false, Ordering::SeqCst);
                                 let _ = first_synced_arc.send(true);
                                 state.write().has_first_synced = true;
+                            } else {
+                                // see if we have new spaces to catch up upon
+                                let mut new_spaces = Vec::new();
+                                for (room_id, room) in response.rooms.join.iter() {
+                                    if sync_state_history.lock_mut().knows_room(room_id) {
+                                        // we are already loading this room
+                                        continue;
+                                    }
+
+                                    let Some(full_room) = me.get_room(room_id) else {
+                                        tracing::warn!("room not found. how can that be?");
+                                        continue
+                                    };
+                                    if is_acter_space(&full_room).await {
+                                        new_spaces.push(full_room)
+                                    }
+                                }
+
+                                if !new_spaces.is_empty() {
+                                    let history = sync_state_history.clone();
+                                    RUNTIME
+                                        .spawn(async move {
+                                            tracing::trace!(user_id=?me.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+
+                                            try_join_all(new_spaces.into_iter().map(|room| Group { inner: Room { room, client: me.core.client().clone() }, client: me.clone()}).map(|g| {
+                                                let history = history.clone();
+                                                async move {
+                                                    history.lock_mut().started_loading_room(g.room_id().to_owned());
+                                                    g.add_handlers().await;
+                                                    let x = g.refresh_history().await;
+                                                    history.lock_mut().group_loaded();
+                                                    x
+                                                }}))
+                                            .await?;
+                                            anyhow::Ok(())
+                                        }
+                                    );
+                                }
                             }
 
                             if state.read().should_stop_syncing {

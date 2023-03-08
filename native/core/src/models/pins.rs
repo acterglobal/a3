@@ -30,6 +30,10 @@ impl Pin {
         &self.meta.room_id
     }
 
+    pub fn is_link(&self) -> bool {
+        self.inner.url.is_some()
+    }
+
     pub fn updater(&self) -> PinUpdateBuilder {
         PinUpdateBuilder::default()
             .pin(self.meta.event_id.clone())

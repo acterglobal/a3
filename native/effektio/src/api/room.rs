@@ -1,6 +1,6 @@
 use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
-use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
+use effektio_core::spaces::is_acter_space;
 use log::{info, warn};
 
 use matrix_sdk::{
@@ -80,20 +80,7 @@ pub struct Room {
 
 impl Room {
     pub(crate) async fn is_effektio_group(&self) -> bool {
-        if let Ok(Some(_)) = self
-            .room
-            .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
-            .await
-        {
-            true
-        } else {
-            matches!(
-                self.room
-                    .get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
-                    .await,
-                Ok(Some(_))
-            )
-        }
+        is_acter_space(&self.room).await
     }
 
     pub async fn get_profile(&self) -> Result<RoomProfile> {

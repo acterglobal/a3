@@ -1,17 +1,43 @@
 use derive_builder::Builder;
-use matrix_sdk::ruma::{
-    api::client::room::{
-        create_room::v3::{CreationContent, Request as CreateRoomRequest},
-        Visibility,
+use matrix_sdk::{
+    room::Room as MatrixRoom,
+    ruma::{
+        api::client::room::{
+            create_room::v3::{CreationContent, Request as CreateRoomRequest},
+            Visibility,
+        },
+        assign,
+        room::RoomType,
+        serde::Raw,
+        OwnedRoomId, OwnedUserId, UserId,
     },
-    assign,
-    room::RoomType,
-    serde::Raw,
-    OwnedRoomId, OwnedUserId, UserId,
 };
 use serde::{Deserialize, Serialize};
 
-use crate::{client::CoreClient, error::Result, statics::default_acter_space_states};
+use crate::{
+    client::CoreClient,
+    error::Result,
+    statics::{default_acter_space_states, PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
+};
+
+/// Calculate whether we may consider this an acter space
+pub async fn is_acter_space(room: &MatrixRoom) -> bool {
+    if !room.is_space() {
+        return false;
+    }
+    if let Ok(Some(_)) = room
+        .get_state_event(PURPOSE_FIELD.into(), PURPOSE_TEAM_VALUE)
+        .await
+    {
+        true
+    } else {
+        matches!(
+            room.get_state_event(PURPOSE_FIELD_DEV.into(), PURPOSE_TEAM_VALUE)
+                .await,
+            Ok(Some(_))
+        )
+    }
+}
 
 fn space_visibilty_default() -> Visibility {
     Visibility::Private
