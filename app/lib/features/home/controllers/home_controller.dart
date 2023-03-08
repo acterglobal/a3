@@ -13,6 +13,8 @@ final clientProvider =
 );
 
 class ClientStateNotifier extends StateNotifier<AsyncValue<Client>> {
+  late SyncState syncState;
+
   ClientStateNotifier() : super(const AsyncLoading()) {
     getClient();
   }
@@ -22,7 +24,11 @@ class ClientStateNotifier extends StateNotifier<AsyncValue<Client>> {
     final sdk = await EffektioSdk.instance;
     state = await AsyncValue.guard(() async {
       final client = sdk.currentClient;
-      client.startSync();
+      // the result of startSync must be kept.
+      // if not, sync_with_result_callback thread is not kept.
+      // it means many features wouldn't work, including console log.
+      syncState = client.startSync();
+
       Get.put(ChatListController(client: client));
       Get.put(ChatRoomController(client: client));
       Get.put(ReceiptController(client: client));
