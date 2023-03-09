@@ -42,8 +42,8 @@ async fn pins_smoketest() -> Result<()> {
     Retry::spawn(retry_strategy, move || {
         let client = fetcher_client.clone();
         async move {
-            if client.pins().await?.is_empty() {
-                anyhow::bail!("no pins found");
+            if client.pins().await?.len() != 3 {
+                anyhow::bail!("not all pins found");
             } else {
                 Ok(())
             }
