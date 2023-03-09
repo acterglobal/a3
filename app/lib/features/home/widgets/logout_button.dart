@@ -1,4 +1,4 @@
-import 'package:effektio/features/home/repositories/client_repository.dart';
+import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +9,7 @@ class LogOutButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isGuest = ref.watch(clientRepositoryProvider).isGuest();
+    final isGuest = ref.watch(homeStateProvider.notifier).client.isGuest();
     return !isGuest
         ? IconButton(
             onPressed: () =>

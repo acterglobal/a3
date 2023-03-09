@@ -1,14 +1,16 @@
+import 'package:effektio/common/controllers/network_controller.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/utils/constants.dart';
 import 'package:effektio/common/widgets/custom_button.dart';
-import 'package:effektio/common/controllers/network_controller.dart';
+import 'package:effektio/common/widgets/no_internet.dart';
 import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:effektio/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:themed/themed.dart';
 import 'package:effektio/common/utils/constants.dart' show LoginPageKeys;
 
@@ -23,18 +25,17 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController username = TextEditingController();
   final TextEditingController password = TextEditingController();
-  final networkController = Get.put(NetworkController());
 
   @override
   void dispose() {
     username.dispose();
     password.dispose();
-    Get.delete<NetworkController>();
     super.dispose();
   }
 
   void _validateLogin() async {
     final isLoggedIn = ref.watch(isLoggedInProvider);
+
     if (isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -59,6 +60,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    var network = ref.watch(networkAwareProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
@@ -123,16 +125,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       key: LoginPageKeys.submitBtn,
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          if (networkController.isDisconnected()) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'No Internet. Please turn on internet to continue',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                backgroundColor: AppCommonTheme.darkShade,
-                              ),
-                            );
+                          if (network == NetworkStatus.Off) {
+                            showNoInternetNotification();
                           } else {
                             await ref
                                 .read(authControllerProvider.notifier)

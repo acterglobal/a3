@@ -1,6 +1,6 @@
-import 'package:effektio/features/home/repositories/client_repository.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final homeStateProvider = StateNotifierProvider<HomeStateNotifier, bool>(
@@ -19,6 +19,11 @@ class HomeStateNotifier extends StateNotifier<bool> {
   void _loadUp() async {
     state = false;
     final asyncSdk = await EffektioSdk.instance;
+    PlatformDispatcher.instance.onError = (exception, stackTrace) {
+      sdk.writeLog(exception.toString(), 'error');
+      sdk.writeLog(stackTrace.toString(), 'error');
+      return true; // make this error handled
+    };
     sdk = asyncSdk;
     client = sdk.currentClient;
     syncState = client.startSync();
@@ -28,8 +33,6 @@ class HomeStateNotifier extends StateNotifier<bool> {
   void refreshClient() {
     state = false;
     client = sdk.currentClient;
-    ref.read(clientRepositoryProvider.notifier).state =
-        ClientRepository(client: client);
     syncState = client.startSync();
     state = true;
   }

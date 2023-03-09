@@ -1,6 +1,6 @@
 import 'package:effektio/common/animations/like_animation.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/home/repositories/client_repository.dart';
+import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/news/controllers/news_controller.dart';
 import 'package:effektio/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
@@ -123,7 +123,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
                 LikeAnimation.run(index);
               },
               child: NewsItem(
-                client: ref.read(clientRepositoryProvider).client,
+                client: ref.read(homeStateProvider.notifier).client,
                 news: data[index],
                 index: index,
               ),
