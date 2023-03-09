@@ -42,12 +42,6 @@ Future<void> startApp() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  final sdk = await EffektioSdk.instance;
-  PlatformDispatcher.instance.onError = (exception, stackTrace) {
-    sdk.writeLog(exception.toString(), 'error');
-    sdk.writeLog(stackTrace.toString(), 'error');
-    return true; // make this error handled
-  };
   runApp(const ProviderScope(child: Effektio()));
 }
 

@@ -72,8 +72,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     // get platform of context.
     final bool isDesktop =
         desktopPlatforms.contains(Theme.of(context).platform);
-    final sdkState = ref.watch(homeStateProvider);
-    return sdkState
+    return ref.watch(homeStateProvider) != null
         ? Scaffold(
             body: Screenshot(
               controller: screenshotController,

@@ -12,7 +12,7 @@ class HomeWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(homeStateProvider.notifier).client;
+    final client = ref.watch(homeStateProvider)!;
     return PageView(
       controller: controller,
       children: <Widget>[
