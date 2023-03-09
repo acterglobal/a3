@@ -21,7 +21,7 @@ pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
         .with_max_level(LevelFilter::Trace)
         .with_tag(APP_TAG);
     if let Some(ref filter) = filter {
-        log_config = log_config.with_filter(FilterBuilder::new().parse(&filter).build());
+        log_config = log_config.with_filter(FilterBuilder::new().parse(filter).build());
     }
     let console_logger = LoggerWrapper::new(log_config).cloned_boxed_logger();
     native::init_logging(log_dir, filter, Some(console_logger))

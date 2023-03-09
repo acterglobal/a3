@@ -26,12 +26,16 @@ lazy_static! {
     static ref FILE_LOGGER: Mutex<Option<Arc<fern::ImplDispatch>>> = Mutex::new(None);
 }
 
-pub fn init_logging(log_dir: String, filter: Option<String>, console_logger: Option<Box<dyn Log>>) -> Result<()> {
+pub fn init_logging(
+    log_dir: String,
+    filter: Option<String>,
+    console_logger: Option<Box<dyn Log>>,
+) -> Result<()> {
     std::env::set_var("RUST_BACKTRACE", "1");
     log_panics::init();
 
     let log_level = match filter {
-        Some(ref filter) => FilterBuilder::new().parse(&filter).build(),
+        Some(ref filter) => FilterBuilder::new().parse(filter).build(),
         None => FilterBuilder::new().build(),
     };
 
