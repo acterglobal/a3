@@ -142,7 +142,7 @@ dependencies = ["ios-build", "ios-release", "post-ios"]
 condition = { platforms = ["mac"], env_true = ["DEV"] }
 # Build ios targets.
 command = "cargo"
-args = ["lipo", "--targets", "aarch64-apple-ios-sim"]
+args = ["lipo", "--targets", "aarch64-apple-ios-sim,x86_64-apple-ios"]
 
 [tasks.ios-release]
 condition = { platforms = ["mac"], env_true = ["RELEASE"] }

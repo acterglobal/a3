@@ -1,11 +1,7 @@
 use anyhow::Result;
-use flexi_logger::{AdaptiveFormat, Logger};
-use matrix_sdk::{Client, ClientBuilder};
-use std::{fs, path};
+use matrix_sdk::ClientBuilder;
 
 use super::native;
-
-pub use super::native::sanitize;
 
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
     let builder = native::new_client_config(base_path, home)
@@ -18,17 +14,8 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(filter: Option<String>) -> Result<()> {
-    std::env::set_var("RUST_BACKTRACE", "1");
-    log_panics::init();
+// this excludes macos, because macos and ios is very much alike in logging
 
-    let logger = if let Some(log_str) = filter {
-        Logger::try_with_env_or_str(log_str)?
-    } else {
-        Logger::try_with_env()?
-    };
-    logger
-        .adaptive_format_for_stderr(AdaptiveFormat::Detailed)
-        .start()?;
-    Ok(())
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+    native::init_logging(log_dir, filter, None)
 }

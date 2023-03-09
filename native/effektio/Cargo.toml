@@ -15,14 +15,16 @@ testing = [ "dep:matrix-sdk-base" ]
 dart = [ "with-mocks" ]
 
 [build-dependencies]
-ffi-gen = { git = "https://github.com/effektio/ffi-gen" }
+ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 
 [dependencies]
 anyhow = "1.0.51"
-assign = "1.1.1"
 async-broadcast = { workspace = true }
+chrono = "0.4"
 derive_builder = { version = "0.10.2" }
-ffi-gen-macro = { git = "https://github.com/effektio/ffi-gen" }
+env_logger = "0.10.0"
+fern = { git = "https://github.com/acterglobal/fern", branch = "rotate", features = ["manual"] }
+ffi-gen-macro = { git = "https://github.com/acterglobal/ffi-gen" }
 futures = "0.3.17"
 futures-signals = "0.3.31"
 lazy_static = "1.4"
@@ -39,7 +41,6 @@ tracing = { version = "0.1.29", default-features = false, features = ["log"] }
 url = "2.2.2"
 
 [dev-dependencies]
-env_logger = "0.9.0"
 tempfile = "3.3.0"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 
@@ -77,9 +78,9 @@ android_logger = "0.12"
 tokio = { version = "1", features = ["rt-multi-thread", "parking_lot"] }
 tracing-android = "0.2"
 
-#   ----   DESKTOP
-[target.'cfg(all(not(target_os = "android"), not(target_arch = "wasm32"), not(target_os = "ios")))'.dependencies]
-flexi_logger = "0.24.0"
+#   ----   IOS
+[target.'cfg(any(target_os = "ios", target_os = "macos"))'.dependencies]
+oslog = "0.2"
 
 [lib]
 name = "effektio"

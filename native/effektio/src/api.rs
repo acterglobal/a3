@@ -1,6 +1,5 @@
 use anyhow::Result;
 use futures::Stream;
-pub use futures_signals::signal_vec::VecDiff;
 use lazy_static::lazy_static;
 use tokio::runtime;
 
@@ -85,7 +84,14 @@ mod api {
     }
 }
 
-fn init_logging(filter: Option<String>) -> Result<()> {
-    platform::init_logging(filter)?;
-    Ok(())
+fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
+    platform::init_logging(log_dir, filter)
+}
+
+fn rotate_log_file() -> Result<String> {
+    platform::rotate_log_file()
+}
+
+fn write_log(text: String, level: String) -> Result<()> {
+    platform::write_log(text, level)
 }

@@ -1,7 +1,9 @@
-use android_logger::{Config, FilterBuilder};
+use android_logger::{AndroidLogger, Config};
 use anyhow::Result;
-use log::Level;
+use env_logger::filter::Builder as FilterBuilder;
+use log::{Level, LevelFilter, Log, Metadata, Record};
 use matrix_sdk::ClientBuilder;
+use std::sync::{Arc, Mutex};
 
 use super::native;
 
@@ -12,19 +14,44 @@ pub async fn new_client_config(base_path: String, home: String) -> Result<Client
     Ok(builder)
 }
 
-pub fn init_logging(filter: Option<String>) -> Result<()> {
-    std::env::set_var("RUST_BACKTRACE", "1");
+const APP_TAG: &str = "org.effektio.app"; // package name in manifest, application id in build.gradle
 
-    log_panics::init();
-
+pub fn init_logging(log_dir: String, filter: Option<String>) -> Result<()> {
     let mut log_config = Config::default()
-        .with_min_level(Level::Trace)
-        .with_tag("effektio-sdk");
-    if let Some(filter) = filter {
-        log_config = log_config.with_filter(FilterBuilder::new().parse(&filter).build())
+        .with_max_level(LevelFilter::Trace)
+        .with_tag(APP_TAG);
+    if let Some(ref filter) = filter {
+        log_config = log_config.with_filter(FilterBuilder::new().parse(filter).build());
+    }
+    let console_logger = LoggerWrapper::new(log_config).cloned_boxed_logger();
+    native::init_logging(log_dir, filter, Some(console_logger))
+}
+
+/// Wrapper for our console which acts as the actual logger.
+#[derive(Clone)]
+struct LoggerWrapper(Arc<Mutex<AndroidLogger>>);
+
+impl LoggerWrapper {
+    fn new(config: Config) -> Self {
+        let logger = AndroidLogger::new(config);
+        LoggerWrapper(Arc::new(Mutex::new(logger)))
     }
 
-    android_logger::init_once(log_config);
+    fn cloned_boxed_logger(&self) -> Box<dyn Log> {
+        Box::new(self.clone())
+    }
+}
 
-    Ok(())
+impl Log for LoggerWrapper {
+    fn enabled(&self, metadata: &Metadata) -> bool {
+        metadata.level() <= Level::Info
+    }
+
+    fn log(&self, record: &Record) {
+        if self.enabled(record.metadata()) {
+            self.0.lock().unwrap().log(record);
+        }
+    }
+
+    fn flush(&self) {}
 }

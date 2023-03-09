@@ -61,6 +61,7 @@ extension DateHelpers on DateTime {
 }
 
 String? simplifyUserId(String name) {
+  // example - @bitfriend:effektio.org
   RegExp re = RegExp(r'^@(.*):\w+([\.-]?\w+)*(\.\w+)+$');
   RegExpMatch? m1 = re.firstMatch(name);
   if (m1 != null) {
@@ -77,6 +78,7 @@ String? simplifyUserId(String name) {
 }
 
 String? simplifyRoomId(String name) {
+  // example - !qporfwt:matrix.org
   RegExp re = RegExp(r'^!(\w+([\.-]?\w+)*):\w+([\.-]?\w+)*(\.\w+)+$');
   RegExpMatch? match = re.firstMatch(name);
   if (match != null) {
@@ -106,4 +108,14 @@ String getUserInitials(types.User user) {
   }
 
   return initials.trim();
+}
+
+String? getIssueId(String url) {
+  // example - https://github.com/bitfriend/effektio-bugs/issues/9
+  RegExp re = RegExp(r'^https:\/\/github.com\/(.*)\/(.*)\/issues\/(\d*)$');
+  RegExpMatch? match = re.firstMatch(url);
+  if (match != null) {
+    return match.group(3);
+  }
+  return null;
 }

@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:date_format/date_format.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:effektio/common/utils/constants.dart';
 import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
 import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
 import 'package:effektio/features/chat/controllers/receipt_controller.dart';
@@ -9,8 +13,10 @@ import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:effektio/common/utils/constants.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
+import 'package:shake/shake.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -27,10 +33,26 @@ class _HomePageState extends ConsumerState<HomePage> {
     TargetPlatform.macOS,
     TargetPlatform.windows
   ];
+  late bool bugReportVisible;
+  late ShakeDetector detector;
+
   @override
   void initState() {
     super.initState();
     pageController = PageController(initialPage: _selectedIndex);
+    // shake is possible in only mobile
+    if (Platform.isAndroid || Platform.isIOS) {
+      bugReportVisible = false;
+      detector = ShakeDetector.waitForStart(
+        onPhoneShake: () {
+          detector.stopListening();
+          setState(() => bugReportVisible = true);
+        },
+      );
+      detector.startListening();
+    } else {
+      bugReportVisible = true;
+    }
   }
 
   @override
@@ -238,6 +260,38 @@ class _HomePageState extends ConsumerState<HomePage> {
                 },
               ),
       ),
+      floatingActionButton: Visibility(
+        child: FloatingActionButton(
+          onPressed: () async {
+            var appDocDir = await getApplicationDocumentsDirectory();
+            // rageshake disallows dot in filename
+            String timestamp = formatDate(
+              DateTime.now(),
+              [yyyy, '-', mm, '-', dd, '_', hh, '-', nn, '-', ss, '_', SSS],
+            );
+            var controller = Get.find<ScreenshotController>();
+            var imagePath = await controller.captureAndSave(
+              appDocDir.path,
+              fileName: 'screenshot_$timestamp.png',
+            );
+            if (imagePath != null) {
+              Navigator.pushNamed(
+                context,
+                '/bug_report',
+                arguments: {
+                  'screenshot': imagePath,
+                },
+              );
+            } else {
+              Navigator.pushNamed(context, '/bug_report');
+            }
+          },
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.bug_report_rounded),
+        ),
+        visible: bugReportVisible,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }
 

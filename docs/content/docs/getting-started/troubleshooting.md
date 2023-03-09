@@ -50,3 +50,15 @@ Unlike android, ios needs small space of 2~3 GB.
 This issue was fixed android 7.0.
 Please read [this comment](https://ubidots.com/community/t/solved-android-send-call-data-to-ubidots-etslotfrombufferlocked-unknown-buffer/334/2).
 Now minimum version of android is 7.0.
+
+### CocoaPods issue in iOS build
+
+You may get the error message `Invalid argument @ io_fread` during compilation of rust library.
+`cocoapods` is using `ruby-macho` and `ruby-macho` occurs the crash about big input file.
+iOS simulator uses `x86_64-apple-ios` architecture.
+The size of our library `libeffektio.a` is as following:
+Debug build: 717MB
+Release build: 223MB
+When using release build of `libeffektio.a`, the error `Invalid argument @ io_fread` disappeared.
+The compile command of release build is the following:
+`cargo make --profile release ios`
