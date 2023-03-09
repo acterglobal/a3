@@ -1,6 +1,5 @@
 import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk;
+import 'package:effektio/features/home/repositories/sdk_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,11 +18,11 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-    final sdk = await EffektioSdk.instance;
+    final sdk = ref.read(sdkRepositoryProvider);
     try {
-      await sdk.login(username, password);
+      await sdk.loginClient(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.invalidate(clientProvider);
+      ref.read(homeStateProvider.notifier).refreshClient();
       state = false;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
@@ -40,11 +39,11 @@ class AuthController extends StateNotifier<bool> {
     BuildContext context,
   ) async {
     state = true;
-    final sdk = await EffektioSdk.instance;
+    final sdk = ref.read(sdkRepositoryProvider);
     try {
-      await sdk.signUp(username, password, displayName, token);
+      await sdk.signUpClient(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.invalidate(clientProvider);
+      ref.read(homeStateProvider.notifier).refreshClient();
       state = false;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
@@ -53,10 +52,10 @@ class AuthController extends StateNotifier<bool> {
   }
 
   void logOut(BuildContext context) async {
-    final sdk = await EffektioSdk.instance;
-    await sdk.logout();
+    final sdk = ref.read(sdkRepositoryProvider);
+    await sdk.logoutClient();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
     Navigator.pushReplacementNamed(context, '/');
-    ref.invalidate(clientProvider);
+    ref.read(homeStateProvider.notifier).refreshClient();
   }
 }

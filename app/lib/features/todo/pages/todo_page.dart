@@ -1,5 +1,4 @@
 import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/controllers/network_controller.dart';
 import 'package:effektio/features/todo/pages/create_todo_page.dart';
 import 'package:effektio/features/todo/pages/todo_mine_page.dart';
 import 'package:effektio/features/todo/controllers/todo_controller.dart';
@@ -17,7 +16,6 @@ class ToDoPage extends StatefulWidget {
 
 class _ToDoPageState extends State<ToDoPage> {
   late final ToDoController todoController;
-  final networkController = Get.put(NetworkController());
   List<String> buttonText = ['All', 'Mine', 'Unassigned', 'All Teams'];
   late final List<Widget> buttonWidgets;
 

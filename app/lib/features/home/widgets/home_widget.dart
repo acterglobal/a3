@@ -1,4 +1,3 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/features/chat/pages/chat_page.dart';
 import 'package:effektio/features/pin/pages/pin_page.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
@@ -13,29 +12,15 @@ class HomeWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider);
-    return client.when(
-      data: (data) => PageView(
-        controller: controller,
-        children: <Widget>[
-          const NewsPage(),
-          PinPage(client: data),
-          ToDoPage(client: data),
-          ChatPage(client: data),
-        ],
-      ),
-      error: (error, stackTrace) => const Center(
-        child: Text('Couldn\'t fetch client'),
-      ),
-      loading: () => const Center(
-        child: SizedBox(
-          height: 50,
-          width: 50,
-          child: CircularProgressIndicator(
-            color: AppCommonTheme.primaryColor,
-          ),
-        ),
-      ),
+    final client = ref.watch(homeStateProvider.notifier).client;
+    return PageView(
+      controller: controller,
+      children: <Widget>[
+        const NewsPage(),
+        PinPage(client: client),
+        ToDoPage(client: client),
+        ChatPage(client: client),
+      ],
     );
   }
 }

@@ -30,7 +30,6 @@ class _NewsPageState extends ConsumerState<NewsPage>
 
   @override
   Widget build(BuildContext context) {
-    final client = ref.read(clientProvider).requireValue;
     final newsList = ref.watch(newsListProvider);
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -124,7 +123,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
                 LikeAnimation.run(index);
               },
               child: NewsItem(
-                client: client,
+                client: ref.read(homeStateProvider.notifier).client,
                 news: data[index],
                 index: index,
               ),
