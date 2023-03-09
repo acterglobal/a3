@@ -1,34 +1,28 @@
-import 'dart:io' show Platform;
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
+import 'package:overlay_support/overlay_support.dart';
 
-Widget noInternetWidget() {
-  Size screenSize = WidgetsBinding.instance.window.physicalSize;
-  bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
-  double width = screenSize.width;
-  double height = screenSize.height;
-  return Center(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+OverlaySupportEntry showNoInternetNotification() {
+  return showSimpleNotification(
+    Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Flexible(
-          child: Image.asset(
-            'assets/images/no_internet.png',
-            cacheHeight:
-                isDesktop ? (height * 0.25).toInt() : (height * 0.10).toInt(),
-            cacheWidth:
-                isDesktop ? (width * 0.15).toInt() : (height * 0.10).toInt(),
-            filterQuality: FilterQuality.high,
-          ),
+      children: const [
+        Icon(
+          FlutterIcons.loader_fea,
+          color: NotificationPopUpTheme.networkTextColor,
         ),
-        const Text(
-          'No internet\nPlease turn on internet to process',
-          style: SideMenuAndProfileTheme.profileMenuStyle,
-          textAlign: TextAlign.center,
+        SizedBox(
+          width: 12,
+        ),
+        Text(
+          'Network connectivity limited or unavailable',
+          style: NotificationPopUpTheme.networkTitleStyle,
         ),
       ],
     ),
+    background: NotificationPopUpTheme.networkBackgroundColor,
+    slideDismissDirection: DismissDirection.up,
+    duration: const Duration(seconds: 10),
   );
 }
