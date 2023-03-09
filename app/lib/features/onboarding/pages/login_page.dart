@@ -124,10 +124,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
                           if (networkController.isDisconnected()) {
-                            Get.snackbar(
-                              'No internet',
-                              'Please turn on internet to continue',
-                              colorText: Colors.white,
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'No Internet. Please turn on internet to continue',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: AppCommonTheme.darkShade,
+                              ),
                             );
                           } else {
                             await ref
