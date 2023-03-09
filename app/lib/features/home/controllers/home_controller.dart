@@ -1,7 +1,11 @@
+import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
+import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
+import 'package:effektio/features/chat/controllers/receipt_controller.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
 final homeStateProvider = StateNotifierProvider<HomeStateNotifier, Client?>(
   (ref) => HomeStateNotifier(ref),
@@ -24,6 +28,9 @@ class HomeStateNotifier extends StateNotifier<Client?> {
     };
     sdk = asyncSdk;
     state = sdk.currentClient;
+    Get.put(ChatListController(client: state!));
+    Get.put(ChatRoomController(client: state!));
+    Get.put(ReceiptController(client: state!));
     syncState = state!.startSync();
   }
 }
