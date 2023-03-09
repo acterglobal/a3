@@ -18,8 +18,8 @@ class HomeStateNotifier extends StateNotifier<Client?> {
   void _loadUp() async {
     final asyncSdk = await EffektioSdk.instance;
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
-      sdk.writeLog(exception.toString(), 'error');
-      sdk.writeLog(stackTrace.toString(), 'error');
+      asyncSdk.writeLog(exception.toString(), 'error');
+      asyncSdk.writeLog(stackTrace.toString(), 'error');
       return true; // make this error handled
     };
     sdk = asyncSdk;
