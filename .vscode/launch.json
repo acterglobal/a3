@@ -46,7 +46,11 @@
             "name": "flutter",
             "cwd": "app",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "RAGESHAKE_URL=http://localhost/api/submit"
+            ]
         },
         {
             "name": "flutter (profile mode)",

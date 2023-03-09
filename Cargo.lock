@@ -45,7 +45,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "037f3e1da32ddba7770530e69258b742c15ad67bdf90e5f6b35f4b6db9a60eb7"
 dependencies = [
  "android_log-sys",
- "env_logger 0.10.0",
+ "env_logger",
  "log",
  "once_cell",
 ]
@@ -182,17 +182,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b88d82667eca772c4aa12f0f1348b3ae643424c8876448f3f7bd5787032e234c"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "atty"
-version = "0.2.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9b39be18770d11421cdb1b9947a45dd3f37e93092cbf377614828a319d5fee8"
-dependencies = [
- "hermit-abi 0.1.19",
- "libc",
- "winapi",
 ]
 
 [[package]]
@@ -976,14 +965,14 @@ version = "0.1.0"
 dependencies = [
  "android_logger",
  "anyhow",
- "assign",
  "async-broadcast",
+ "chrono",
  "derive_builder 0.10.2",
  "effektio-core",
- "env_logger 0.9.3",
+ "env_logger",
+ "fern",
  "ffi-gen",
  "ffi-gen-macro",
- "flexi_logger",
  "futures",
  "futures-signals",
  "lazy_static",
@@ -993,6 +982,7 @@ dependencies = [
  "matrix-sdk-base",
  "matrix-sdk-sled",
  "mime",
+ "oslog",
  "parking_lot 0.11.2",
  "ruma 0.7.4 (git+https://github.com/ruma/ruma?rev=62ed200a56d00353eea128191311c4c8016def9f)",
  "sanitize-filename-reader-friendly",
@@ -1016,7 +1006,7 @@ dependencies = [
  "dialoguer",
  "effektio",
  "effektio-core",
- "env_logger 0.10.0",
+ "env_logger",
  "futures",
  "matrix-sdk",
  "matrix-sdk-base",
@@ -1032,7 +1022,6 @@ name = "effektio-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "assign",
  "async-broadcast",
  "async-recursion",
  "async-stream",
@@ -1043,7 +1032,7 @@ dependencies = [
  "derive-getters",
  "derive_builder 0.11.2",
  "enum_dispatch",
- "env_logger 0.10.0",
+ "env_logger",
  "fake",
  "futures",
  "indexmap",
@@ -1070,7 +1059,7 @@ dependencies = [
  "anyhow",
  "effektio",
  "effektio-core",
- "env_logger 0.10.0",
+ "env_logger",
  "futures",
  "log",
  "tempfile",
@@ -1092,7 +1081,7 @@ dependencies = [
  "dialoguer",
  "effektio",
  "effektio-core",
- "env_logger 0.10.0",
+ "env_logger",
  "futures",
  "mime",
  "term-table",
@@ -1133,19 +1122,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "env_logger"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a12e6657c4c97ebab115a42dcee77225f7f482cdd841cf7088c657a42e9e00e7"
-dependencies = [
- "atty",
- "humantime",
- "log",
- "regex",
- "termcolor",
 ]
 
 [[package]]
@@ -1208,9 +1184,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "fern"
+version = "0.6.1"
+source = "git+https://github.com/acterglobal/fern?branch=rotate#e6d8dbd1c3b4d8f8ece1be157c161a93a6a7a86b"
+dependencies = [
+ "chrono",
+ "log",
+]
+
+[[package]]
 name = "ffi-gen"
 version = "0.1.13"
-source = "git+https://github.com/effektio/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
+source = "git+https://github.com/acterglobal/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
 dependencies = [
  "anyhow",
  "genco",
@@ -1222,28 +1207,12 @@ dependencies = [
 [[package]]
 name = "ffi-gen-macro"
 version = "0.1.2"
-source = "git+https://github.com/effektio/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
+source = "git+https://github.com/acterglobal/ffi-gen#df0390450e0f99a951a8f9e787a04d8413182dec"
 dependencies = [
  "ffi-gen",
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "flexi_logger"
-version = "0.24.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ade8e86c48285f138a4d6ca15a2912e39bd6c74d62db42da4f1985f651a0b057"
-dependencies = [
- "atty",
- "chrono",
- "glob",
- "lazy_static",
- "log",
- "nu-ansi-term",
- "regex",
- "thiserror",
 ]
 
 [[package]]
@@ -1464,12 +1433,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "glob"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b919933a397b79c37e33b77bb2aa3dc8eb6e165ad809e58ff75bc7db2e34574"
-
-[[package]]
 name = "gloo-utils"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1512,15 +1475,6 @@ name = "heck"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2540771e65fc8cb83cd6e8a237f70c319bd5c29f78ed1084ba5d50eeac86f7f9"
-
-[[package]]
-name = "hermit-abi"
-version = "0.1.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
-dependencies = [
- "libc",
-]
 
 [[package]]
 name = "hermit-abi"
@@ -1735,7 +1689,7 @@ version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28dfb6c8100ccc63462345b67d1bbc3679177c75ee4bf59bf29c8b1d110b8189"
 dependencies = [
- "hermit-abi 0.2.6",
+ "hermit-abi",
  "io-lifetimes",
  "rustix",
  "windows-sys",
@@ -2173,7 +2127,7 @@ version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fac9e2da13b5eb447a6ce3d392f23a29d8694bff781bf03a16cd9ac8697593b"
 dependencies = [
- "hermit-abi 0.2.6",
+ "hermit-abi",
  "libc",
 ]
 
@@ -2194,6 +2148,17 @@ name = "os_str_bytes"
 version = "6.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b7820b9daea5457c9f21c69448905d723fbd21136ccf521748f23fd49e723ee"
+
+[[package]]
+name = "oslog"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "80d2043d1f61d77cb2f4b1f7b7b2295f40507f5f8e9d1c8bf10a1ca5f97a3969"
+dependencies = [
+ "cc",
+ "dashmap",
+ "log",
+]
 
 [[package]]
 name = "overload"

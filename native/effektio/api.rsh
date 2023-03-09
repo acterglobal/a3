@@ -1,5 +1,11 @@
 /// Initialize logging
-fn init_logging(filter: Option<string>) -> Result<()>;
+fn init_logging(log_dir: string, filter: Option<string>) -> Result<()>;
+
+/// Rotate the logging file
+fn rotate_log_file() -> Result<string>;
+
+/// Allow flutter to call logging on rust side
+fn write_log(text: string, level: string) -> Result<()>;
 
 /// Create a new client for homeserver at url with storage at data_path
 fn login_new_client(basepath: string, username: string, password: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
