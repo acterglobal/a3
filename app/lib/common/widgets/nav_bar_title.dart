@@ -1,4 +1,4 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 Widget navBarTitle(String title) {

@@ -1,7 +1,7 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/widgets/custom_avatar.dart';
-import 'package:effektio/common/widgets/nav_bar_title.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter/common/widgets/nav_bar_title.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class SocialProfilePage extends StatefulWidget {

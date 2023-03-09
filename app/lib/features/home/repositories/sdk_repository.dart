@@ -1,6 +1,6 @@
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart'
-    show EffektioSdk, Client;
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart'
+    show ActerSdk, Client;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final sdkRepositoryProvider = Provider<SdkRepository>((ref) {
@@ -9,7 +9,7 @@ final sdkRepositoryProvider = Provider<SdkRepository>((ref) {
 });
 
 class SdkRepository {
-  final EffektioSdk sdk;
+  final ActerSdk sdk;
 
   SdkRepository(this.sdk);
 

@@ -1,7 +1,7 @@
 import 'package:gherkin/gherkin.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_gherkin/flutter_gherkin.dart';
-import 'package:effektio/common/utils/constants.dart';
+import 'package:acter/common/utils/constants.dart';
 
 StepDefinitionGeneric givenWellKnownUserIsLoggedIn() {
   return given1<String, FlutterWorld>(

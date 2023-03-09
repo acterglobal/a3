@@ -1,5 +1,5 @@
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

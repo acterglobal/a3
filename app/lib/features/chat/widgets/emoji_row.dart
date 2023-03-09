@@ -20,9 +20,9 @@
  * SOFTWARE.
  */
 
-import 'package:effektio/common/utils/constants.dart';
-import 'package:effektio/common/widgets/emoji_picker_widget.dart';
-import 'package:effektio/common/widgets/reaction_pop_up_config.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/common/widgets/emoji_picker_widget.dart';
+import 'package:acter/common/widgets/reaction_pop_up_config.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 

@@ -1,13 +1,13 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:effektio/common/snackbars/not_implemented.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/news/controllers/news_comment_controller.dart';
-import 'package:effektio/features/news/widgets/comment_view.dart';
-import 'package:effektio/common/widgets/like_button.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' as ffi;
+import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/news/controllers/news_comment_controller.dart';
+import 'package:acter/features/news/widgets/comment_view.dart';
+import 'package:acter/common/widgets/like_button.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';

@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/common/widgets/custom_button.dart';
-import 'package:effektio/features/bug_report/controllers/bug_report_controller.dart';
-import 'package:effektio/features/bug_report/widgets/select_tag.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/features/bug_report/controllers/bug_report_controller.dart';
+import 'package:acter/features/bug_report/widgets/select_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

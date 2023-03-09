@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/chat/controllers/receipt_controller.dart';
-import 'package:effektio/features/chat/pages/image_selection_page.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/controllers/receipt_controller.dart';
+import 'package:acter/features/chat/pages/image_selection_page.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         Client,
         Conversation,

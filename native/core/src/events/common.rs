@@ -10,7 +10,7 @@ pub type UtcDateTime = DateTime<Utc>;
 
 /// Customize the color scheme
 #[derive(Clone, Debug, Deserialize, Serialize)]
-// #[ruma_event(type = "org.effektio.dev.colors")]
+// #[ruma_event(type = "global.acter.dev.colors")]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     pub color: Option<Color>,
@@ -91,7 +91,7 @@ impl From<Vec<OwnedEventId>> for References {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "rel_type", rename = "org.effektio.dev.update")]
+#[serde(tag = "rel_type", rename = "global.acter.dev.update")]
 pub struct Update {
     /// The event this event archives.
     pub event_id: OwnedEventId,
@@ -104,7 +104,7 @@ impl From<OwnedEventId> for Update {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "rel_type", rename = "org.effektio.dev.belongs_to")]
+#[serde(tag = "rel_type", rename = "global.acter.dev.belongs_to")]
 pub struct BelongsTo {
     /// The event this event archives.
     pub event_id: OwnedEventId,

@@ -1,10 +1,10 @@
-import 'package:effektio/common/controllers/network_controller.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/widgets/custom_button.dart';
-import 'package:effektio/common/widgets/no_internet.dart';
-import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
-import 'package:effektio/features/onboarding/pages/login_page.dart';
-import 'package:effektio/features/onboarding/widgets/onboarding_fields.dart';
+import 'package:acter/common/controllers/network_controller.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/common/widgets/no_internet.dart';
+import 'package:acter/features/onboarding/controllers/auth_controller.dart';
+import 'package:acter/features/onboarding/pages/login_page.dart';
+import 'package:acter/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

@@ -1,5 +1,5 @@
-import 'package:effektio/common/animations/like_animation.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:acter/common/animations/like_animation.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

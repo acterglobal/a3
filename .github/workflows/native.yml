@@ -21,12 +21,12 @@ jobs:
       matrix:
         include:
           - name: Core
-            package: effektio-core
+            package: acter-core
             clippy_extras: --tests
           - name: CLI
-            package: effektio-cli
+            package: acter-cli
           - name: TUI
-            package: effektio-tui
+            package: acter-tui
     steps:
       - uses: actions/checkout@v2
       - name: Install specific toolchain
@@ -81,18 +81,18 @@ jobs:
         name: Clippy
         with:
           command: clippy
-          args: -p effektio --target ${{matrix.target}} -- -D warnings
+          args: -p acter --target ${{matrix.target}} -- -D warnings
       - uses: taiki-e/install-action@nextest
       - uses: actions-rs/cargo@v1
         name: Unit tests
         with:
           command: nextest
-          args: run -p effektio --target ${{matrix.target}} --lib
+          args: run -p acter --target ${{matrix.target}} --lib
       - uses: actions-rs/cargo@v1
         name: Doctests
         with:
           command: test
-          args: -p effektio --target ${{matrix.target}} --doc
+          args: -p acter --target ${{matrix.target}} --doc
 
   ffigen:
     name: FFI-Gen up-to-date
@@ -111,4 +111,4 @@ jobs:
       - name: "Build FFI interface"
         run: cargo make ffigen
       - name: "Check file is no different"
-        run: git diff --exit-code app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart

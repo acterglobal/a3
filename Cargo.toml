@@ -3,7 +3,7 @@ members = [
   "native/*",
 ]
 
-default-members = ["native/effektio"]
+default-members = ["native/acter"]
 
 [workspace.dependencies.matrix-sdk]
 git = "https://github.com/matrix-org/matrix-rust-sdk"

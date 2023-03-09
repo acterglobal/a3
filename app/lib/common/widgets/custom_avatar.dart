@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

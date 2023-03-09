@@ -1,4 +1,4 @@
-import 'package:effektio/features/bug_report/controllers/bug_report_controller.dart';
+import 'package:acter/features/bug_report/controllers/bug_report_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_selector/flutter_custom_selector.dart';
 import 'package:get/get.dart';

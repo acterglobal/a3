@@ -1,10 +1,10 @@
 import Cocoa
 import FlutterMacOS
 
-public class EffektioFlutterSdkPlugin: NSObject, FlutterPlugin {
+public class ActerFlutterSdkPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channel = FlutterMethodChannel(name: "effektio_flutter_sdk", binaryMessenger: registrar.messenger)
-    let instance = EffektioFlutterSdkPlugin()
+    let channel = FlutterMethodChannel(name: "acter_flutter_sdk", binaryMessenger: registrar.messenger)
+    let instance = ActerFlutterSdkPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 

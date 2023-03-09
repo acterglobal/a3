@@ -1,15 +1,15 @@
 import 'dart:io';
 
 import 'package:date_format/date_format.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/constants.dart';
-import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/features/chat/controllers/receipt_controller.dart';
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio/features/home/widgets/home_widget.dart';
-import 'package:effektio/features/home/widgets/logout_button.dart';
-import 'package:effektio/features/home/widgets/user_avatar.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/utils/constants.dart';
+import 'package:acter/features/chat/controllers/chat_list_controller.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/controllers/receipt_controller.dart';
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter/features/home/widgets/home_widget.dart';
+import 'package:acter/features/home/widgets/logout_button.dart';
+import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';

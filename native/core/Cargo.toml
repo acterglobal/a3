@@ -1,10 +1,10 @@
 [package]
-name = "effektio-core"
-authors = [ "ben@effektio.org" ]
+name = "acter-core"
+authors = [ "ben@acter.global" ]
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.58"
-description = "Core types and features of the effektio app"
+description = "Core types and features of the acter app"
 homepage = "https://effekto.org"
 repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"

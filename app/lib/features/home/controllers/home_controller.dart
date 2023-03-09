@@ -1,5 +1,5 @@
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,7 +9,7 @@ final homeStateProvider = StateNotifierProvider<HomeStateNotifier, bool>(
 
 class HomeStateNotifier extends StateNotifier<bool> {
   final Ref ref;
-  late EffektioSdk sdk;
+  late ActerSdk sdk;
   late Client client;
   late SyncState syncState;
   HomeStateNotifier(this.ref) : super(false) {
@@ -18,7 +18,7 @@ class HomeStateNotifier extends StateNotifier<bool> {
 
   void _loadUp() async {
     state = false;
-    final asyncSdk = await EffektioSdk.instance;
+    final asyncSdk = await ActerSdk.instance;
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
       sdk.writeLog(exception.toString(), 'error');
       sdk.writeLog(stackTrace.toString(), 'error');

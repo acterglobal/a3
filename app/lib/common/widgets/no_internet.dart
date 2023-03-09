@@ -1,4 +1,4 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:overlay_support/overlay_support.dart';

@@ -496,7 +496,7 @@ name = "Example Template"
 
 [inputs]
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
-space = { type = "space", required = true, description = "The effektio space" }
+space = { type = "space", required = true, description = "The acter space" }
 
 [objects]
 start_list = { type = "task-list", name = "{{ user.display_name() }}'s Acter onboarding list" }

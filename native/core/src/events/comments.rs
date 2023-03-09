@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 /// Comment Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
-#[ruma_event(type = "org.effektio.dev.comment", kind = MessageLike)]
+#[ruma_event(type = "global.acter.dev.comment", kind = MessageLike)]
 #[builder(name = "CommentBuilder", derive(Debug))]
 pub struct CommentEventContent {
     #[builder(setter(into))]
@@ -20,7 +20,7 @@ pub struct CommentEventContent {
 
 /// The Comment Update Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
-#[ruma_event(type = "org.effektio.dev.comment.update", kind = MessageLike)]
+#[ruma_event(type = "global.acter.dev.comment.update", kind = MessageLike)]
 #[builder(name = "CommentUpdateBuilder", derive(Debug))]
 pub struct CommentUpdateEventContent {
     #[builder(setter(into))]

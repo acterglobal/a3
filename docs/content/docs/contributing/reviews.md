@@ -1,6 +1,6 @@
 +++
 title = "Reviews process"
-description = "The review process for effektio"
+description = "The review process for acter"
 date = 2022-05-23T18:10:00+00:00
 updated = 2021-05-23T18:10:00+00:00
 draft = false
@@ -9,7 +9,7 @@ sort_by = "weight"
 template = "docs/page.html"
 
 [extra]
-lead = "The review process for effektio"
+lead = "The review process for acter"
 toc = true
 top = false
 +++
@@ -36,11 +36,10 @@ When these check out and no required CI check blocks the merge, any core develop
 
 If someone left a `changes requested` review and you think you've addressed their concerns, use the github feature to re-request them to review it.
 
-
 ## As a reviewer
 
 1. Be specific and precise in what you want.
-2. Elaborate on the reasoning, don't be harsh or picky. 
+2. Elaborate on the reasoning, don't be harsh or picky.
 3. If you skipped parts, in particular because of lack of expertise, say so - maybe ping someone else more expericend with it, to check these out
 4. If only minor changes are needed that the author is trusted to do, lease an `approve` and just expect them to fix the mentioned problems
 5. If you leave a `changes requested`-review you are expected to follow up quickly if asked to review again. If that doesn't happen within a work-day, and the PR has another passing review (after the changes), it may be merged without your explicit consent.

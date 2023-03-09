@@ -1,4 +1,4 @@
-group 'org.effektio.effektio_flutter_sdk'
+group 'global.acter.acter_flutter_sdk'
 version '1.0-SNAPSHOT'
 
 buildscript {

@@ -6,7 +6,7 @@ target
 .local
 .DS_Store
 
-app/packages/rust_sdk/**/libeffektio.a
-native/effektio/src/api_generated.rs
-native/effektio/bindings.h
-native/effektio/bindings.dart
+app/packages/rust_sdk/**/libacter.a
+native/acter/src/api_generated.rs
+native/acter/bindings.h
+native/acter/bindings.dart

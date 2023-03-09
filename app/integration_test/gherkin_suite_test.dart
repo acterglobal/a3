@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:gherkin/gherkin.dart';
 import 'steps/given_login.dart';
 
-import 'package:effektio/main.dart' as app;
+import 'package:acter/main.dart' as app;
 
 part 'gherkin_suite_test.g.dart';
 

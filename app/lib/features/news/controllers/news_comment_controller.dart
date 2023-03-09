@@ -1,4 +1,4 @@
-import 'package:effektio/models/CommentModel.dart';
+import 'package:acter/models/CommentModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

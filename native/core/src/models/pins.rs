@@ -2,7 +2,7 @@ use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{AnyEffektioModel, EventMeta};
+use super::{AnyActerModel, EventMeta};
 
 use crate::{
     events::pins::{PinEventContent, PinUpdateBuilder, PinUpdateEventContent},
@@ -45,7 +45,7 @@ impl Pin {
     }
 }
 
-impl super::EffektioModel for Pin {
+impl super::ActerModel for Pin {
     fn indizes(&self) -> Vec<String> {
         vec![
             format!("{}::{}", self.meta.room_id, KEYS::PINS),
@@ -65,8 +65,8 @@ impl super::EffektioModel for Pin {
         super::default_model_execute(store, self.into()).await
     }
 
-    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
-        let AnyEffektioModel::PinUpdate(update) = model else {
+    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
+        let AnyActerModel::PinUpdate(update) = model else {
             return Ok(false)
         };
 
@@ -102,7 +102,7 @@ pub struct PinUpdate {
     meta: EventMeta,
 }
 
-impl super::EffektioModel for PinUpdate {
+impl super::ActerModel for PinUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.pin.event_id)]
     }

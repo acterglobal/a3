@@ -1,9 +1,8 @@
-
 <div align='center'>
 
 # acter3 — get organized!
 
-Your social organizing app build on [matrix](https://matrix.org): think WhatsApp, but with proper task lists, structured discussion, etc. 
+Your social organizing app build on [matrix](https://matrix.org): think WhatsApp, but with proper task lists, structured discussion, etc.
 
 [![Homepage ](https://img.shields.io/badge/HOMEPAGE-gray?style=for-the-badge)](https://acter.global)
 [![Docs ](https://img.shields.io/badge/DOCS-blue?style=for-the-badge)](https://docs.acter.global)
@@ -12,9 +11,8 @@ Your social organizing app build on [matrix](https://matrix.org): think WhatsApp
 ## Build
 
 ![Native Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/native.yml?branch=main&label=Rust%20Build&style=for-the-badge)
-![App Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/app.yml?branch=main&label=App%20Build&style=for-the-badge) 
+![App Build](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/app.yml?branch=main&label=App%20Build&style=for-the-badge)
 ![Docs](https://img.shields.io/github/actions/workflow/status/acterglobal/a3/docs.yml?branch=main&label=Docs&style=for-the-badge)
-
 
 [![Matrix: #News](https://img.shields.io/badge/Matrix-gray?style=for-the-badge)](https://matrix.to/#/#news:effektio.org)
 [![Matrix: #News](https://img.shields.io/badge/News-green?style=for-the-badge)](https://matrix.to/#/#news:effektio.org)

@@ -1,8 +1,8 @@
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/widgets/custom_avatar.dart';
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

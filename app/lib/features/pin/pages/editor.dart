@@ -1,5 +1,5 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/pin/widgets/tag_item.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/pin/widgets/tag_item.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
