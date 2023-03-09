@@ -7,10 +7,8 @@ import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:effektio/features/onboarding/widgets/onboarding_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:themed/themed.dart';
 import 'package:effektio/common/utils/constants.dart' show LoginPageKeys;
 
