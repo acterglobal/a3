@@ -95,7 +95,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   });
                                 },
                                 leading: const UserAvatarWidget(
-                                    isExtendedRail: false),
+                                  isExtendedRail: false,
+                                ),
                                 trailing:
                                     const LogOutButton(isExtendedRail: false),
                                 selectedIndex: _selectedIndex,
