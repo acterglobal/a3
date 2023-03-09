@@ -27,7 +27,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   late final PageController pageController;
-  late final ScreenshotController screenshotController;
+  final ScreenshotController screenshotController = ScreenshotController();
   int _selectedIndex = 0;
   final desktopPlatforms = [
     TargetPlatform.linux,
@@ -41,7 +41,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     pageController = PageController(initialPage: _selectedIndex);
-    screenshotController = ScreenshotController();
     // shake is possible in only mobile
     if (Platform.isAndroid || Platform.isIOS) {
       bugReportVisible = false;
