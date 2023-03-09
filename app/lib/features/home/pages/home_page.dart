@@ -86,19 +86,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                           // adapt layout according to platform.
                           Breakpoints.medium: SlotLayout.from(
                             key: const Key('primaryNavigation'),
-                            builder: (_) {
+                            builder: (BuildContext ctx) {
                               return AdaptiveScaffold.standardNavigationRail(
-                                onDestinationSelected: (int index) {
-                                  setState(() {
-                                    _selectedIndex = index;
-                                    pageController.jumpToPage(_selectedIndex);
-                                  });
-                                },
+                                onDestinationSelected:
+                                    handleDestinationSelected,
                                 leading: const UserAvatarWidget(
                                   isExtendedRail: false,
                                 ),
-                                trailing:
-                                    const LogOutButton(isExtendedRail: false),
+                                trailing: const LogOutButton(
+                                  isExtendedRail: false,
+                                ),
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
                                   NavigationRailDestination(
@@ -124,39 +121,38 @@ class _HomePageState extends ConsumerState<HomePage> {
 
                           Breakpoints.large: SlotLayout.from(
                             key: const Key('Large primaryNavigation'),
-                            builder: (_) =>
-                                AdaptiveScaffold.standardNavigationRail(
-                              onDestinationSelected: (int index) {
-                                setState(() {
-                                  _selectedIndex = index;
-                                  pageController.jumpToPage(_selectedIndex);
-                                });
-                              },
-                              selectedIndex: _selectedIndex,
-                              extended: true,
-                              leading:
-                                  const UserAvatarWidget(isExtendedRail: true),
-                              trailing:
-                                  const LogOutButton(isExtendedRail: true),
-                              destinations: <NavigationRailDestination>[
-                                NavigationRailDestination(
-                                  icon: newsFeedIcon(),
-                                  label: const Text('Updates'),
+                            builder: (BuildContext ctx) {
+                              return AdaptiveScaffold.standardNavigationRail(
+                                onDestinationSelected:
+                                    handleDestinationSelected,
+                                selectedIndex: _selectedIndex,
+                                extended: true,
+                                leading: const UserAvatarWidget(
+                                  isExtendedRail: true,
                                 ),
-                                NavigationRailDestination(
-                                  icon: pinsIcon(),
-                                  label: const Text('Pins'),
+                                trailing: const LogOutButton(
+                                  isExtendedRail: true,
                                 ),
-                                NavigationRailDestination(
-                                  icon: tasksIcon(),
-                                  label: const Text('Tasks'),
-                                ),
-                                NavigationRailDestination(
-                                  icon: chatIcon(),
-                                  label: const Text('Chat'),
-                                ),
-                              ],
-                            ),
+                                destinations: <NavigationRailDestination>[
+                                  NavigationRailDestination(
+                                    icon: newsFeedIcon(),
+                                    label: const Text('Updates'),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: pinsIcon(),
+                                    label: const Text('Pins'),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: tasksIcon(),
+                                    label: const Text('Tasks'),
+                                  ),
+                                  NavigationRailDestination(
+                                    icon: chatIcon(),
+                                    label: const Text('Chat'),
+                                  ),
+                                ],
+                              );
+                            },
                           )
                         },
                       )
@@ -165,13 +161,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                   config: <Breakpoint, SlotLayoutConfig>{
                     Breakpoints.small: SlotLayout.from(
                       key: const Key('Body Small'),
-                      builder: (_) => HomeWidget(pageController),
+                      builder: (BuildContext ctx) => HomeWidget(pageController),
                     ),
                     // show dashboard view on desktop only.
                     Breakpoints.mediumAndUp: isDesktop
                         ? SlotLayout.from(
                             key: const Key('Body Medium'),
-                            builder: (_) => const Scaffold(
+                            builder: (BuildContext ctx) => const Scaffold(
                               body: Center(
                                 child: Text(
                                   'Dashboard view to be implemented',
@@ -182,7 +178,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                           )
                         : SlotLayout.from(
                             key: const Key('body-meduim-mobile'),
-                            builder: (_) => HomeWidget(pageController),
+                            builder: (BuildContext ctx) {
+                              return HomeWidget(pageController);
+                            },
                           ),
                   },
                 ),
@@ -193,7 +191,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                         config: <Breakpoint, SlotLayoutConfig>{
                           Breakpoints.mediumAndUp: SlotLayout.from(
                             key: const Key('Body Medium'),
-                            builder: (_) => HomeWidget(pageController),
+                            builder: (BuildContext ctx) {
+                              return HomeWidget(pageController);
+                            },
                           )
                         },
                       )
@@ -207,15 +207,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                             key: const Key('Bottom Navigation Small'),
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
-                            builder: (_) =>
+                            builder: (BuildContext ctx) =>
                                 AdaptiveScaffold.standardBottomNavigationBar(
                               currentIndex: _selectedIndex,
-                              onDestinationSelected: (index) {
-                                setState(() {
-                                  _selectedIndex = index;
-                                  pageController.jumpToPage(_selectedIndex);
-                                });
-                              },
+                              onDestinationSelected: handleDestinationSelected,
                               destinations: <NavigationDestination>[
                                 NavigationDestination(
                                   icon: newsFeedIcon(),
@@ -245,15 +240,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                             key: const Key('Bottom Navigation Small'),
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
-                            builder: (_) =>
+                            builder: (BuildContext ctx) =>
                                 AdaptiveScaffold.standardBottomNavigationBar(
                               currentIndex: _selectedIndex,
-                              onDestinationSelected: (index) {
-                                setState(() {
-                                  _selectedIndex = index;
-                                  pageController.jumpToPage(_selectedIndex);
-                                });
-                              },
+                              onDestinationSelected: handleDestinationSelected,
                               destinations: <NavigationDestination>[
                                 NavigationDestination(
                                   icon: newsFeedIcon(),
@@ -278,6 +268,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
               ),
             ),
+            // place bug report button outside of screenshot
             floatingActionButton: Visibility(
               child: FloatingActionButton(
                 onPressed: handleBugReport,
@@ -331,6 +322,11 @@ class _HomePageState extends ConsumerState<HomePage> {
       padding: const EdgeInsets.only(top: 10),
       child: SvgPicture.asset('assets/images/notification_linear.svg'),
     );
+  }
+
+  void handleDestinationSelected(int index) {
+    setState(() => _selectedIndex = index);
+    pageController.jumpToPage(index);
   }
 
   Future<void> handleBugReport() async {
