@@ -123,7 +123,7 @@ pub(crate) struct ConversationController {
     encrypted_event_handle: Option<EventHandlerHandle>,
     message_event_handle: Option<EventHandlerHandle>,
     member_event_handle: Option<EventHandlerHandle>,
-    redacted_event_handle: Option<EventHandlerHandle>,
+    redaction_event_handle: Option<EventHandlerHandle>,
 }
 
 impl ConversationController {
@@ -136,7 +136,7 @@ impl ConversationController {
             encrypted_event_handle: None,
             message_event_handle: None,
             member_event_handle: None,
-            redacted_event_handle: None,
+            redaction_event_handle: None,
         }
     }
 
@@ -187,7 +187,7 @@ impl ConversationController {
                 me.clone().process_room_redaction(ev, &room, &c);
             },
         );
-        self.redacted_event_handle = Some(handle);
+        self.redaction_event_handle = Some(handle);
     }
 
     pub fn remove_event_handler(&mut self, client: &MatrixClient) {
@@ -203,9 +203,9 @@ impl ConversationController {
             client.remove_event_handler(handle);
             self.member_event_handle = None;
         }
-        if let Some(handle) = self.redacted_event_handle.clone() {
+        if let Some(handle) = self.redaction_event_handle.clone() {
             client.remove_event_handler(handle);
-            self.redacted_event_handle = None;
+            self.redaction_event_handle = None;
         }
     }
 
