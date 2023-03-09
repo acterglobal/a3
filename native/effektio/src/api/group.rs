@@ -22,8 +22,11 @@ use effektio_core::{
         serde::Raw,
         OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
     },
-    statics::{default_effektio_group_states, initial_state_for_alias},
+    spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder},
+    statics::initial_state_for_alias,
+    templates::{Engine, Value},
 };
+use futures::stream::StreamExt;
 use log::warn;
 use matrix_sdk::{
     deserialized_responses::EncryptionInfo,
@@ -40,6 +43,9 @@ use super::{
 
 use crate::api::RUNTIME;
 
+pub type CreateGroupSettings = CreateSpaceSettings;
+pub type CreateGroupSettingsBuilder = CreateSpaceSettingsBuilder;
+
 #[derive(Debug, Clone)]
 pub struct Group {
     pub client: Client,
@@ -53,10 +59,29 @@ struct HistoryState {
 }
 
 impl Group {
+    pub async fn create_onboarding_data(&self) -> Result<()> {
+        let mut engine = Engine::with_template(std::include_str!("../templates/onboarding.toml"))?;
+        engine
+            .add_user("main".to_owned(), self.client.core.clone())
+            .await?;
+        engine.add_ref(
+            "space".to_owned(),
+            "space".to_owned(),
+            self.room.room_id().to_string(),
+        )?;
+
+        let mut executer = engine.execute()?;
+        while let Some(i) = executer.next().await {
+            i?
+        }
+
+        Ok(())
+    }
+
     pub(crate) async fn add_handlers(&self) {
         self.room
             .client()
-            .add_event_handler_context(self.client.executor.clone());
+            .add_event_handler_context(self.client.executor().clone());
         let room_id = self.room_id().to_owned();
         // FIXME: combine into one handler
 
@@ -166,7 +191,6 @@ impl Group {
 
         let mut from = if let Ok(h) = self
             .client
-            .executor
             .store()
             .get_raw::<HistoryState>(&custom_storage_key)
             .await
@@ -193,8 +217,12 @@ impl Group {
             let has_chunks = !chunk.is_empty();
 
             for msg in chunk {
-                let Some(model) = AnyEffektioModel::from_raw_tlevent(&msg.event) else {
-                    continue
+                let model = match AnyEffektioModel::from_raw_tlevent(&msg.event) {
+                    Ok(model) => model,
+                    Err(m) => {
+                        tracing::warn!(event=?msg.event, "Model didn't parse {:}", m);
+                        continue;
+                    }
                 };
                 // match event {
                 //     MessageLikeEvent::Original(o) => {
@@ -244,50 +272,14 @@ impl std::ops::Deref for Group {
     }
 }
 
-#[derive(Builder, Default, Clone)]
-pub struct CreateGroupSettings {
-    #[builder(setter(strip_option))]
-    name: Option<String>,
-    #[builder(default = "Visibility::Private")]
-    visibility: Visibility,
-    #[builder(default = "Vec::new()")]
-    invites: Vec<OwnedUserId>,
-    #[builder(setter(strip_option), default)]
-    alias: Option<String>,
-}
-
-impl CreateGroupSettings {
-    pub fn visibility(&mut self, value: String) {
-        match value.as_str() {
-            "Public" => {
-                self.visibility = Visibility::Public;
-            }
-            "Private" => {
-                self.visibility = Visibility::Private;
-            }
-            _ => {}
-        }
-    }
-
-    pub fn add_invitee(&mut self, value: String) {
-        if let Ok(user_id) = UserId::parse(value) {
-            self.invites.push(user_id);
-        }
-    }
-
-    pub fn alias(&mut self, value: String) {
-        self.alias = Some(value);
-    }
-}
-
 // impl CreateGroupSettingsBuilder {
 //     pub fn add_invite(&mut self, user_id: OwnedUserId) {
 //         self.invites.get_or_insert_with(Vec::new).push(user_id);
 //     }
 // }
 
-pub fn new_group_settings(name: String) -> CreateGroupSettings {
-    CreateGroupSettingsBuilder::default()
+pub fn new_group_settings(name: String) -> CreateSpaceSettings {
+    CreateSpaceSettingsBuilder::default()
         .name(name)
         .build()
         .unwrap()
@@ -298,26 +290,9 @@ impl Client {
         &self,
         settings: Box<CreateGroupSettings>,
     ) -> Result<OwnedRoomId> {
-        let c = self.client.clone();
+        let c = self.core.clone();
         RUNTIME
-            .spawn(async move {
-                let initial_states = default_effektio_group_states();
-
-                Ok(c.create_room(assign!(CreateRoomRequest::new(), {
-                    creation_content: Some(Raw::new(&assign!(CreationContent::new(), {
-                        room_type: Some(RoomType::Space)
-                    }))?),
-                    initial_state: initial_states,
-                    is_direct: false,
-                    invite: settings.invites,
-                    room_alias_name: settings.alias,
-                    name: settings.name,
-                    visibility: settings.visibility,
-                }))
-                .await?
-                .room_id()
-                .to_owned())
-            })
+            .spawn(async move { Ok(c.create_acter_space(Box::into_inner(settings)).await?) })
             .await?
     }
 
@@ -338,7 +313,7 @@ impl Client {
                     client: self.clone(),
                     inner: Room {
                         room,
-                        client: self.client.clone(),
+                        client: self.core.client().clone(),
                     },
                 }),
                 None => bail!("Room not found"),

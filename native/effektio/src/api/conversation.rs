@@ -399,7 +399,7 @@ impl Client {
         &self,
         settings: CreateConversationSettings,
     ) -> Result<OwnedRoomId> {
-        let client = self.client.clone();
+        let client = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 let initial_states = default_effektio_conversation_states();

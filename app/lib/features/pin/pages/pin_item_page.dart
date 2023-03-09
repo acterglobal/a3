@@ -1,42 +1,40 @@
 import 'dart:io';
 
 import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/faq/widgets/tag_item.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as m_colors;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 
-class FaqItemPage extends StatefulWidget {
+class PinItemPage extends StatefulWidget {
   final Client client;
-  final Faq faq;
+  final ActerPin pin;
 
-  const FaqItemPage({
+  const PinItemPage({
     Key? key,
     required this.client,
-    required this.faq,
+    required this.pin,
   }) : super(key: key);
 
   @override
-  _FaqItemPageState createState() => _FaqItemPageState();
+  _PinItemPageState createState() => _PinItemPageState();
 }
 
 TextEditingController _controller = TextEditingController();
 
-class _FaqItemPageState extends State<FaqItemPage> {
-  TextEditingController faqController = TextEditingController();
+class _PinItemPageState extends State<PinItemPage> {
+  TextEditingController pinController = TextEditingController();
   bool emojiShowing = false;
   bool commentShowing = false;
-  bool editFaqTitle = false;
+  bool editPinTitle = false;
 
   @override
   void initState() {
     super.initState();
 
     commentShowing = false;
-    editFaqTitle = false;
-    faqController.text = widget.faq.title();
+    editPinTitle = false;
+    pinController.text = widget.pin.title();
   }
 
   void onEmojiSelected(Emoji emoji) {
@@ -77,14 +75,14 @@ class _FaqItemPageState extends State<FaqItemPage> {
             child: Column(
               children: [
                 Visibility(
-                  visible: editFaqTitle ? true : false,
+                  visible: editPinTitle ? true : false,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: TextField(
-                          controller: faqController,
+                          controller: pinController,
                           style: const m_colors.TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
                             labelText: 'Pin title',
@@ -102,10 +100,10 @@ class _FaqItemPageState extends State<FaqItemPage> {
                         padding: const EdgeInsets.only(right: 8),
                         child: ElevatedButton(
                           onPressed: () {
-                            setState(() => editFaqTitle = false);
+                            setState(() => editPinTitle = false);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(faqController.text.toString()),
+                                content: Text(pinController.text.toString()),
                               ),
                             );
                           },
@@ -121,21 +119,21 @@ class _FaqItemPageState extends State<FaqItemPage> {
                     vertical: 8,
                   ),
                   child: Visibility(
-                    visible: editFaqTitle ? false : true,
+                    visible: editPinTitle ? false : true,
                     child: Row(
                       children: [
                         Flexible(
                           fit: FlexFit.loose,
                           child: Text(
-                            widget.faq.title(),
-                            style: FAQTheme.titleStyle,
+                            widget.pin.title(),
+                            style: PinTheme.titleStyle,
                           ),
                         ),
                         Align(
                           alignment: Alignment.centerRight,
                           child: GestureDetector(
                             onTap: () {
-                              setState(() => editFaqTitle = true);
+                              setState(() => editPinTitle = true);
                             },
                             child: const Icon(Icons.edit, color: Colors.white),
                           ),
@@ -156,7 +154,7 @@ class _FaqItemPageState extends State<FaqItemPage> {
                         margin: const EdgeInsets.only(left: 12),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: FAQTheme.supportColor),
+                          border: Border.all(color: PinTheme.supportColor),
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +164,7 @@ class _FaqItemPageState extends State<FaqItemPage> {
                               padding: EdgeInsets.only(left: 8),
                               child: Text(
                                 'Support',
-                                style: FAQTheme.teamNameStyle,
+                                style: PinTheme.teamNameStyle,
                               ),
                             )
                           ],
@@ -185,11 +183,11 @@ class _FaqItemPageState extends State<FaqItemPage> {
                                   'assets/images/heart_like.png',
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8),
+                              const Padding(
+                                padding: EdgeInsets.only(left: 8),
                                 child: Text(
-                                  widget.faq.likesCount().toString(),
-                                  style: FAQTheme.likeAndCommentStyle,
+                                  '0', //widget.pin.likesCount().toString(),
+                                  style: PinTheme.likeAndCommentStyle,
                                 ),
                               ),
                               GestureDetector(
@@ -206,11 +204,11 @@ class _FaqItemPageState extends State<FaqItemPage> {
                                         'assets/images/comment.png',
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8),
+                                    const Padding(
+                                      padding: EdgeInsets.only(left: 8),
                                       child: Text(
-                                        widget.faq.commentsCount().toString(),
-                                        style: FAQTheme.likeAndCommentStyle,
+                                        '0', //widget.pin.commentsCount().toString(),
+                                        style: PinTheme.likeAndCommentStyle,
                                       ),
                                     ),
                                   ],
@@ -236,26 +234,27 @@ class _FaqItemPageState extends State<FaqItemPage> {
                     height: 40,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: widget.faq.tags().length,
+                      itemCount: 0, //widget.pin.tags().length,
                       itemBuilder: (context, index) {
-                        var color = widget.faq.tags().elementAt(index).color();
-                        var colorToShow = 0;
-                        if (color != null) {
-                          var colorList = color.rgbaU8();
-                          colorToShow = hexOfRGBA(
-                            colorList.elementAt(0),
-                            colorList.elementAt(1),
-                            colorList.elementAt(2),
-                            opacity: 0.7,
-                          );
-                        }
+                        return null;
+                        // var color = widget.pin.tags().elementAt(index).color();
+                        // var colorToShow = 0;
+                        // if (color != null) {
+                        //   var colorList = color.rgbaU8();
+                        //   colorToShow = hexOfRGBA(
+                        //     colorList.elementAt(0),
+                        //     colorList.elementAt(1),
+                        //     colorList.elementAt(2),
+                        //     opacity: 0.7,
+                        //   );
+                        // }
 
-                        return TagListItem(
-                          tagTitle: widget.faq.tags().elementAt(index).title(),
-                          tagColor: colorToShow > 0
-                              ? m_colors.Color(colorToShow)
-                              : Colors.white,
-                        );
+                        // return TagListItem(
+                        //   tagTitle: widget.pin.tags().elementAt(index).title(),
+                        //   tagColor: colorToShow > 0
+                        //       ? m_colors.Color(colorToShow)
+                        //       : Colors.white,
+                        // );
                       },
                     ),
                   ),

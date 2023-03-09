@@ -84,7 +84,7 @@ String? simplifyRoomId(String name) {
   if (match != null) {
     return match.group(1);
   }
-  return null;
+  return name;
 }
 
 String simplifyBody(String formattedBody) {

@@ -261,6 +261,7 @@ pub struct TaskEventContent {
     pub progress_percent: Option<u8>,
     /// Sort order within the TaskList
     #[builder(default)]
+    #[serde(default)]
     pub sort_order: u32,
     /// the priority of the Task
     #[builder(default)]

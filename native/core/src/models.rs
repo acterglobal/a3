@@ -1,23 +1,24 @@
 mod color;
 mod comments;
-mod faq;
 mod news;
+mod pins;
 mod tag;
 mod tasks;
 #[cfg(test)]
 mod test;
 
+use crate::error::Error;
 pub use crate::store::Store;
 pub use color::Color;
 pub use comments::{Comment, CommentUpdate, CommentsManager, CommentsStats};
 pub use core::fmt::Debug;
-pub use faq::Faq;
 use matrix_sdk::ruma::{
     events::{AnySyncTimelineEvent, AnyTimelineEvent, MessageLikeEvent},
     serde::Raw,
     EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
 };
 pub use news::News;
+pub use pins::{Pin, PinUpdate};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
 pub use tasks::{Task, TaskList, TaskListUpdate, TaskStats, TaskUpdate};
@@ -32,6 +33,7 @@ use crate::events::{
     comments::{
         OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
     },
+    pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
     tasks::{
         OriginalTaskEvent, OriginalTaskListEvent, OriginalTaskUpdateEvent, SyncTaskEvent,
         SyncTaskListEvent, SyncTaskUpdateEvent,
@@ -127,11 +129,17 @@ pub struct EventMeta {
 #[enum_dispatch]
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum AnyEffektioModel {
+    // -- Tasks
     TaskList,
     TaskListUpdate,
     Task,
     TaskUpdate,
-    // more generics
+
+    // -- Pins
+    Pin,
+    PinUpdate,
+
+    // -- more generics
     Comment,
     CommentUpdate,
     #[cfg(test)]
@@ -139,52 +147,94 @@ pub enum AnyEffektioModel {
 }
 
 impl AnyEffektioModel {
-    pub fn from_raw_tlevent(raw: &Raw<AnyTimelineEvent>) -> Option<Self> {
+    pub fn from_raw_tlevent(raw: &Raw<AnyTimelineEvent>) -> Result<Self, Error> {
         let Ok(Some(m_type)) = raw.get_field("type") else {
-            return None;
+            return Err(Error::UnknownModel(None));
         };
 
         match m_type {
-            "org.effektio.dev.tasklist" => Some(AnyEffektioModel::TaskList(
+            // -- TASKS
+            "org.effektio.dev.tasklist" => Ok(AnyEffektioModel::TaskList(
                 raw.deserialize_as::<OriginalTaskListEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task list event failed")
-                    })
-                    .ok()?
+                        tracing::error!(?error, ?raw, "parsing task list event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.tasklist".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
                     .into(),
             )),
-            "org.effektio.dev.task" => Some(AnyEffektioModel::Task(
+            "org.effektio.dev.task" => Ok(AnyEffektioModel::Task(
                 raw.deserialize_as::<OriginalTaskEvent>()
-                    .map_err(|error| tracing::error!(?error, ?raw, "parsing task event failed"))
-                    .ok()?
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing task event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.task".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
                     .into(),
             )),
-            "org.effektio.dev.task.update" => Some(AnyEffektioModel::TaskUpdate(
+            "org.effektio.dev.task.update" => Ok(AnyEffektioModel::TaskUpdate(
                 raw.deserialize_as::<OriginalTaskUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task update event failed")
-                    })
-                    .ok()?
+                        tracing::error!(?error, ?raw, "parsing task update event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.task.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
                     .into(),
             )),
 
-            // generics
+            // -- Pins
+            "org.effektio.dev.pin" => Ok(AnyEffektioModel::Pin(
+                raw.deserialize_as::<OriginalPinEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing pin event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.pin".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "org.effektio.dev.pin.updae" => Ok(AnyEffektioModel::PinUpdate(
+                raw.deserialize_as::<OriginalPinUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing pin update event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.pin.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
+            // -- generics
 
             // comments
-            "org.effektio.dev.comment" => Some(AnyEffektioModel::Comment(
+            "org.effektio.dev.comment" => Ok(AnyEffektioModel::Comment(
                 raw.deserialize_as::<OriginalCommentEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task update event failed")
-                    })
-                    .ok()?
+                        tracing::error!(?error, ?raw, "parsing task update event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.comment".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
                     .into(),
             )),
-            "org.effektio.dev.comment.update" => Some(AnyEffektioModel::CommentUpdate(
+            "org.effektio.dev.comment.update" => Ok(AnyEffektioModel::CommentUpdate(
                 raw.deserialize_as::<OriginalCommentUpdateEvent>()
                     .map_err(|error| {
-                        tracing::error!(?error, ?raw, "parsing task update event failed")
-                    })
-                    .ok()?
+                        tracing::error!(?error, ?raw, "parsing task update event failed");
+                        Error::FailedToParse {
+                            model_type: "org.effektio.dev.comment.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
                     .into(),
             )),
 
@@ -192,42 +242,92 @@ impl AnyEffektioModel {
                 if m_type.starts_with("org.effektio.") {
                     tracing::error!(?raw, "{m_type} not implemented");
                 }
-                None
+
+                Err(Error::UnknownModel(Some(m_type.to_owned())))
             }
         }
     }
-    pub fn from_raw_synctlevent(raw: &Raw<AnySyncTimelineEvent>, room_id: &RoomId) -> Option<Self> {
+    pub fn from_raw_synctlevent(
+        raw: &Raw<AnySyncTimelineEvent>,
+        room_id: &RoomId,
+    ) -> Result<Self, Error> {
         let Ok(Some(m_type)) = raw.get_field("type") else {
-            return None;
+            return Err(Error::UnknownModel(None));
         };
 
         match m_type {
+            // -- Tasks
             "org.effektio.dev.tasklist" => match raw
                 .deserialize_as::<SyncTaskListEvent>()
-                .map_err(|error| tracing::error!(?error, ?raw, "parsing task list event failed"))
-                .ok()?
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing task list event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.tasklist".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
                 .into_full_event(room_id.to_owned())
             {
-                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::TaskList(t.into())),
-                _ => None,
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::TaskList(t.into())),
+                _ => Err(Error::UnknownModel(None)),
             },
             "org.effektio.dev.task" => match raw
                 .deserialize_as::<SyncTaskEvent>()
-                .map_err(|error| tracing::error!(?error, ?raw, "parsing task event failed"))
-                .ok()?
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing task event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.task".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
                 .into_full_event(room_id.to_owned())
             {
-                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::Task(t.into())),
-                _ => None,
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::Task(t.into())),
+                _ => Err(Error::UnknownModel(None)),
             },
             "org.effektio.dev.task.update" => match raw
                 .deserialize_as::<SyncTaskUpdateEvent>()
-                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
-                .ok()?
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing task update event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.task.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
                 .into_full_event(room_id.to_owned())
             {
-                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::TaskUpdate(t.into())),
-                _ => None,
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::TaskUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
+            // -- Pins
+            "org.effektio.dev.pin" => match raw
+                .deserialize_as::<SyncPinEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing pin event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.pin".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::Pin(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "org.effektio.dev.pin.update" => match raw
+                .deserialize_as::<SyncPinUpdateEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing pin update event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.pin.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::PinUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
             },
 
             // generic
@@ -235,21 +335,31 @@ impl AnyEffektioModel {
             // comments
             "org.effektio.dev.comment" => match raw
                 .deserialize_as::<SyncCommentEvent>()
-                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
-                .ok()?
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing task update event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.comment".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
                 .into_full_event(room_id.to_owned())
             {
-                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::Comment(t.into())),
-                _ => None,
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::Comment(t.into())),
+                _ => Err(Error::UnknownModel(None)),
             },
             "org.effektio.dev.comment.update" => match raw
                 .deserialize_as::<SyncCommentUpdateEvent>()
-                .map_err(|error| tracing::error!(?error, ?raw, "parsing task update event failed"))
-                .ok()?
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing task update event failed");
+                    Error::FailedToParse {
+                        model_type: "org.effektio.dev.comment.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
                 .into_full_event(room_id.to_owned())
             {
-                MessageLikeEvent::Original(t) => Some(AnyEffektioModel::CommentUpdate(t.into())),
-                _ => None,
+                MessageLikeEvent::Original(t) => Ok(AnyEffektioModel::CommentUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
             },
 
             // unimplemented cases
@@ -257,7 +367,8 @@ impl AnyEffektioModel {
                 if m_type.starts_with("org.effektio.") {
                     tracing::error!(?raw, "{m_type} not implemented");
                 }
-                None
+
+                Err(Error::UnknownModel(Some(m_type.to_owned())))
             }
         }
     }
@@ -266,7 +377,6 @@ impl AnyEffektioModel {
 #[cfg(feature = "with-mocks")]
 pub mod mocks {
     pub use super::color::mocks::ColorFaker;
-    pub use super::faq::gen_mocks as gen_mock_faqs;
     pub use super::news::gen_mocks as gen_mock_news;
 }
 
@@ -284,7 +394,20 @@ mod tests {
             "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
             "user_id":"@odo:ds9.effektio.org","age":11523850}"#;
         let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
-        let _effektio_ev = AnyEffektioModel::from_raw_tlevent(&event).unwrap();
+        let _effektio_ev = AnyEffektioModel::from_raw_tlevent(&event)?;
+        // assert!(matches!(event, AnyCreation::TaskList(_)));
+        Ok(())
+    }
+    #[test]
+    fn ensure_minimal_pin_parses() -> Result<()> {
+        let json_raw = r#"{"type":"org.effektio.dev.pin",
+            "room_id":"!euhIDqDVvVXulrhWgN:ds9.effektio.org","sender":"@odo:ds9.effektio.org",
+            "content":{"title":"Seat arrangement"},"origin_server_ts":1672407531453,
+            "unsigned":{"age":11523850},
+            "event_id":"$KwumA4L3M-duXu0I3UA886LvN-BDCKAyxR1skNfnh3c",
+            "user_id":"@odo:ds9.effektio.org","age":11523850}"#;
+        let event = serde_json::from_str::<Raw<AnyTimelineEvent>>(json_raw)?;
+        let _effektio_ev = AnyEffektioModel::from_raw_tlevent(&event)?;
         // assert!(matches!(event, AnyCreation::TaskList(_)));
         Ok(())
     }

@@ -39,7 +39,8 @@ impl Client {
             bail!("{key} is not a task");
         };
         let room = self
-            .client
+            .core
+            .client()
             .get_room(content.room_id())
             .context("Room not found")?;
         Ok(TaskList {
@@ -54,7 +55,8 @@ impl Client {
             bail!("{key} is not a task");
         };
         let room = self
-            .client
+            .core
+            .client()
             .get_room(content.room_id())
             .context("Room not found")?;
         Ok(Task {
@@ -68,7 +70,7 @@ impl Client {
         let mut task_lists = Vec::new();
         let mut rooms_map: HashMap<OwnedRoomId, Room> = HashMap::new();
         let client = self.clone();
-        for mdl in self.store.get_list(KEYS::TASKS).await? {
+        for mdl in self.store().get_list(KEYS::TASKS).await? {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
                 let room_id = t.room_id().to_owned();
@@ -98,7 +100,7 @@ impl Client {
 
     pub async fn task_list(&self, key: &str) -> Result<TaskList> {
         let client = self.clone();
-        let mdl = self.store.get(key).await?;
+        let mdl = self.store().get(key).await?;
 
         let AnyEffektioModel::TaskList(task_list) = mdl else  {
             bail!("Not a Tasklist model: {key}")
@@ -119,16 +121,19 @@ impl Group {
     pub async fn task_lists(&self) -> Result<Vec<TaskList>> {
         let mut task_lists = Vec::new();
         let room_id = self.room_id();
-        for mdl in self.client.store().get_list(KEYS::TASKS).await? {
+        for mdl in self
+            .client
+            .store()
+            .get_list(&format!("{room_id}::{}", KEYS::TASKS))
+            .await?
+        {
             #[allow(irrefutable_let_patterns)]
             if let AnyEffektioModel::TaskList(t) = mdl {
-                if t.room_id() == room_id {
-                    task_lists.push(TaskList {
-                        client: self.client.clone(),
-                        room: self.room.clone(),
-                        content: t,
-                    })
-                }
+                task_lists.push(TaskList {
+                    client: self.client.clone(),
+                    room: self.room.clone(),
+                    content: t,
+                })
             } else {
                 tracing::warn!("Non task list model found in `tasks` index: {:?}", mdl);
             }

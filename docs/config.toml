@@ -24,14 +24,21 @@ highlight_code = true
 # Put all your custom variables here
 author = "Acter Developers"
 github = "https://github.com/acterglobal"
-# twitter = "https://twitter.com/effektio"
+twitter = "https://twitter.com/acterhq"
 email = "devs@acter.global"
 
 [[extra.menu.main]]
-name = "Docs"
+name = "Getting Started"
 section = "docs"
-url = "/docs/"
+url = "/docs/getting-started/setup/"
 weight = 10
+
+[[extra.menu.main]]
+name = "APIs"
+section = "docs"
+url = "/docs/dev/api-docs/"
+weight = 20
+
 
 # [[extra.menu.social]]
 # name = "Twitter"

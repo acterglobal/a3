@@ -9,11 +9,20 @@ use tokio::time::sleep;
 async fn load_pending_invitation() -> Result<()> {
     let _ = env_logger::try_init();
 
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
+        .unwrap_or("localhost")
+        .to_string();
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
+        .unwrap_or("http://localhost:8118")
+        .to_string();
+
     let tmp_dir = TempDir::new()?;
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
-        "@sisko:ds9.effektio.org".to_string(),
+        "@sisko".to_string(),
         "sisko".to_string(),
+        homeserver_name.clone(),
+        homeserver_url.clone(),
         Some("SISKO_DEV".to_string()),
     )
     .await?;
@@ -22,8 +31,10 @@ async fn load_pending_invitation() -> Result<()> {
     let tmp_dir = TempDir::new()?;
     let mut kyra = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
-        "@kyra:ds9.effektio.org".to_string(),
+        "@kyra".to_string(),
         "kyra".to_string(),
+        homeserver_name.clone(),
+        homeserver_url.clone(),
         Some("KYRA_DEV".to_string()),
     )
     .await?;
@@ -39,7 +50,7 @@ async fn load_pending_invitation() -> Result<()> {
     // sleep(Duration::from_secs(3)).await;
 
     // let room = sisko.get_joined_room(room_id.as_str().try_into()?)?;
-    // let kyra_id = effektio::matrix_sdk::ruma::user_id!("@kyra:ds9.effektio.org");
+    // let kyra_id = effektio::matrix_sdk::ruma::user_id!("@kyra");
     // room.invite_user_by_id(kyra_id).await?;
 
     // sleep(Duration::from_secs(3)).await;

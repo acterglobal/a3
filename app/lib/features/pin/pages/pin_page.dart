@@ -1,28 +1,28 @@
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/search_widget.dart';
-import 'package:effektio/features/faq/controllers/faq_controller.dart';
-import 'package:effektio/features/faq/widgets/faq_list_item.dart';
+import 'package:effektio/features/pin/controllers/pin_controller.dart';
+import 'package:effektio/features/pin/widgets/pin_list_item.dart';
 import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class FaqPage extends StatefulWidget {
+class PinPage extends StatefulWidget {
   final Client client;
 
-  const FaqPage({Key? key, required this.client}) : super(key: key);
+  const PinPage({Key? key, required this.client}) : super(key: key);
 
   @override
-  State<FaqPage> createState() => _FaqPageState();
+  State<PinPage> createState() => _PinPageState();
 }
 
-class _FaqPageState extends State<FaqPage> {
-  final faqController = Get.put(FaqController());
+class _PinPageState extends State<PinPage> {
+  final pinController = Get.put(PinController());
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<FfiListFaq>(
-      future: widget.client.faqs(),
-      builder: (BuildContext context, AsyncSnapshot<FfiListFaq> snapshot) {
+    return FutureBuilder<FfiListActerPin>(
+      future: widget.client.pins(),
+      builder: (BuildContext context, AsyncSnapshot<FfiListActerPin> snapshot) {
         return (!snapshot.hasData)
             ? Container(
                 height: MediaQuery.of(context).size.height,
@@ -52,20 +52,20 @@ class _FaqPageState extends State<FaqPage> {
                         ),
                       ),
                       SearchWidget(
-                        searchController: faqController.searchController,
+                        searchController: pinController.searchController,
                         onChanged: (text) {
-                          faqController.searchedData(
+                          pinController.searchedData(
                             text.toString(),
                             snapshot,
                           );
                         },
                         onReset: () {
-                          faqController.searchData.clear();
+                          pinController.searchData.clear();
                           setState(() {});
                         },
                       ),
-                      GetBuilder<FaqController>(
-                        builder: (FaqController controller) {
+                      GetBuilder<PinController>(
+                        builder: (PinController controller) {
                           return Expanded(
                             child: ListView.builder(
                               padding: const EdgeInsets.all(8),
@@ -78,9 +78,9 @@ class _FaqPageState extends State<FaqPage> {
                                 BuildContext context,
                                 int index,
                               ) {
-                                return FaqListItem(
+                                return PinListItem(
                                   client: widget.client,
-                                  faq: controller.searchData.isEmpty
+                                  pin: controller.searchData.isEmpty
                                       ? snapshot.requireData[index]
                                       : controller.searchData[index],
                                 );

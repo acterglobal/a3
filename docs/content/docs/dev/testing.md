@@ -381,7 +381,7 @@ HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p effektio-test --
 
 ### Flutter UI integration tests
 
-Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`]() to write and run our tests.
+Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`](https://github.com/acterglobal/flutter_gherkin) to write and run our tests.
 
 **Running**
 
@@ -392,7 +392,7 @@ cd app
 flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
 ```
 
-**From Visual Studio Ccode**
+**From Visual Studio Code**
 
 If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (effektio)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (effektio)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:
 

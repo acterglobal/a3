@@ -3,10 +3,12 @@ use anyhow::Result;
 use clap::Parser;
 use effektio_core::ruma;
 
+// mod execute;
 mod fetch_news;
 mod mock;
 mod post_news;
 
+// pub use execute::ExecuteOpts;
 pub use fetch_news::FetchNews;
 pub use mock::MockOpts;
 pub use post_news::PostNews;
@@ -21,6 +23,8 @@ pub enum Action {
     Mock(MockOpts),
     /// Room Management
     Manage(Manage),
+    // /// Template Execution
+    // Execute(ExecuteOpts),
 }
 
 impl Action {
@@ -29,6 +33,7 @@ impl Action {
             Action::PostNews(news) => news.run().await?,
             Action::FetchNews(config) => config.run().await?,
             Action::Mock(config) => config.run().await?,
+            // Action::Execute(config) => config.run().await?,
             _ => unimplemented!(),
         };
         Ok(())

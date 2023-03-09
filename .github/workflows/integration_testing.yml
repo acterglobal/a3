@@ -40,6 +40,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v1
 
+      - uses: taiki-e/install-action@nextest
+
       - name: Initialize e2ee mock data
         run: cargo run -p effektio-cli -- mock
         env:
@@ -52,7 +54,7 @@ jobs:
           DEFAULT_HOMESERVER_NAME: "localhost"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
-        run: cargo test -p effektio-test -- --nocapture
+        run: cargo nextest run --config-file .github/nextest-config.toml -p effektio-test
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
@@ -62,11 +64,11 @@ jobs:
           token: ${{ github.token }}
           title: Rust integration tests failed on main
           body: |
-            ### Desktop Integration tests failed on main
+            ### Rust Integration tests failed on main
             Workflow name - `${{ github.workflow }}`
             Job -           `${{ github.job }}`
             status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
             [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
 
@@ -159,7 +161,7 @@ jobs:
             Workflow name - `${{ github.workflow }}`
             Job -           `${{ github.job }}`
             status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
             [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
 
@@ -249,7 +251,7 @@ jobs:
             Workflow name - `${{ github.workflow }}`
             Job -           `${{ github.job }}`
             status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
             [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
 
@@ -345,6 +347,6 @@ jobs:
             Workflow name - `${{ github.workflow }}`
             Job -           `${{ github.job }}`
             status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})/jobs/${{ github.job_id }}
+            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
             [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn

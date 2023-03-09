@@ -13,7 +13,7 @@ use crate::{
     statics::KEYS,
 };
 
-static TASKS_KEY: &str = "tasks";
+static TASKS_KEY: &str = KEYS::TASKS;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
@@ -240,7 +240,10 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
 
 impl super::EffektioModel for TaskList {
     fn indizes(&self) -> Vec<String> {
-        vec![KEYS::TASKS.to_owned()]
+        vec![
+            format!("{}::{}", self.meta.room_id, KEYS::TASKS),
+            KEYS::TASKS.to_owned(),
+        ]
     }
     fn event_id(&self) -> &EventId {
         &self.meta.event_id

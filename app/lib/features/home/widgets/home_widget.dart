@@ -1,5 +1,5 @@
 import 'package:effektio/features/chat/pages/chat_page.dart';
-import 'package:effektio/features/faq/pages/faq_page.dart';
+import 'package:effektio/features/pin/pages/pin_page.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
 import 'package:effektio/features/news/pages/news_page.dart';
 import 'package:effektio/features/todo/pages/todo_page.dart';
@@ -17,7 +17,7 @@ class HomeWidget extends ConsumerWidget {
       controller: controller,
       children: <Widget>[
         const NewsPage(),
-        FaqPage(client: client),
+        PinPage(client: client),
         ToDoPage(client: client),
         ChatPage(client: client),
       ],

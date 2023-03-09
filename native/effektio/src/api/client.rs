@@ -2,15 +2,9 @@ use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
 use effektio_core::{
-    executor::Executor,
-    models::{AnyEffektioModel, Faq},
-    statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE},
-    store::Store,
-    RestoreToken,
+    client::CoreClient, executor::Executor, models::AnyEffektioModel, ruma::OwnedRoomId,
+    spaces::is_acter_space, store::Store, templates::Engine, RestoreToken,
 };
-
-#[cfg(feature = "with-mocks")]
-use effektio_core::mocks::gen_mock_faqs;
 
 use futures::{future::try_join_all, pin_mut, stream, Stream, StreamExt};
 use futures_signals::signal::{
@@ -58,9 +52,7 @@ pub struct ClientState {
 
 #[derive(Clone, Debug)]
 pub struct Client {
-    pub(crate) client: MatrixClient,
-    pub(crate) store: Store,
-    pub(crate) executor: Executor,
+    pub(crate) core: CoreClient,
     pub(crate) state: Arc<RwLock<ClientState>>,
     pub(crate) invitation_controller: InvitationController,
     pub(crate) verification_controller: VerificationController,
@@ -73,7 +65,7 @@ pub struct Client {
 impl std::ops::Deref for Client {
     type Target = MatrixClient;
     fn deref(&self) -> &MatrixClient {
-        &self.client
+        self.core.client()
     }
 }
 
@@ -84,7 +76,7 @@ pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Ve
             async move |(mut groups, mut conversations, client), room| {
                 let inner = Room {
                     room: room.clone(),
-                    client: client.client.clone(),
+                    client: client.core.client().clone(),
                 };
 
                 if inner.is_effektio_group().await {
@@ -106,18 +98,27 @@ pub(crate) async fn devide_groups_from_convos(client: Client) -> (Vec<Group>, Ve
 #[derive(Clone, Debug, Default)]
 pub struct HistoryLoadState {
     pub has_started: bool,
+    pub known_groups: Vec<OwnedRoomId>,
     pub total_groups: usize,
     pub loaded_groups: usize,
 }
 
 impl HistoryLoadState {
     pub fn is_done_loading(&self) -> bool {
-        self.has_started && self.total_groups == self.loaded_groups
+        self.has_started && self.known_groups.len() == self.loaded_groups
     }
 
-    pub fn start(&mut self, total: usize) {
+    pub fn start(&mut self, known_groups: Vec<OwnedRoomId>) {
         self.has_started = true;
-        self.total_groups = total;
+        self.known_groups = known_groups;
+    }
+
+    pub fn knows_room(&self, room_id: &OwnedRoomId) -> bool {
+        self.known_groups.contains(room_id)
+    }
+
+    pub fn started_loading_room(&mut self, room_id: OwnedRoomId) {
+        self.known_groups.push(room_id);
     }
 
     fn group_loaded(&mut self) {
@@ -186,19 +187,14 @@ impl Drop for SyncState {
 
 impl Client {
     fn user_id_ref(&self) -> Option<&matrix_sdk::ruma::UserId> {
-        self.client.user_id()
+        self.core.client().user_id()
     }
 }
 
 impl Client {
     pub async fn new(client: MatrixClient, state: ClientState) -> Result<Self> {
-        let store = Store::new(client.clone()).await?;
-        let executor = Executor::new(store.clone()).await?;
-        client.add_event_handler_context(executor.clone());
         let cl = Client {
-            client,
-            store,
-            executor,
+            core: CoreClient::new(client).await?,
             state: Arc::new(RwLock::new(state)),
             invitation_controller: InvitationController::new(),
             verification_controller: VerificationController::new(),
@@ -211,12 +207,17 @@ impl Client {
     }
 
     pub fn store(&self) -> &Store {
-        &self.store
+        self.core.store()
     }
 
     /// Get access to the internal state
     pub fn executor(&self) -> &Executor {
-        &self.executor
+        self.core.executor()
+    }
+
+    /// Get access to the internal state
+    pub async fn template_engine(&self, template: &str) -> Result<Engine> {
+        Ok(self.core.template_engine(template).await?)
     }
 
     async fn refresh_history(
@@ -228,7 +229,8 @@ impl Client {
             .spawn(async move {
                 tracing::trace!(user_id=?me.user_id_ref(), "refreshing history");
                 let groups = me.groups().await?;
-                history.lock_mut().start(groups.len());
+                let group_ids = groups.iter().map(|r| r.room_id().to_owned()).collect();
+                history.lock_mut().start(group_ids);
 
                 try_join_all(groups.iter().map(|g| async {
                     g.add_handlers().await;
@@ -257,8 +259,8 @@ impl Client {
     pub fn start_sync(&mut self) -> SyncState {
         let state = self.state.clone();
         let me = self.clone();
-        let executor = self.executor.clone();
-        let client = self.client.clone();
+        let executor = self.executor().clone();
+        let client = self.core.client().clone();
 
         self.invitation_controller.add_event_handler(&client);
         self.typing_controller.add_event_handler(&client);
@@ -333,6 +335,44 @@ impl Client {
                                 initial.store(false, Ordering::SeqCst);
                                 let _ = first_synced_arc.send(true);
                                 state.write().has_first_synced = true;
+                            } else {
+                                // see if we have new spaces to catch up upon
+                                let mut new_spaces = Vec::new();
+                                for (room_id, room) in response.rooms.join.iter() {
+                                    if sync_state_history.lock_mut().knows_room(room_id) {
+                                        // we are already loading this room
+                                        continue;
+                                    }
+
+                                    let Some(full_room) = me.get_room(room_id) else {
+                                        tracing::warn!("room not found. how can that be?");
+                                        continue
+                                    };
+                                    if is_acter_space(&full_room).await {
+                                        new_spaces.push(full_room)
+                                    }
+                                }
+
+                                if !new_spaces.is_empty() {
+                                    let history = sync_state_history.clone();
+                                    RUNTIME
+                                        .spawn(async move {
+                                            tracing::trace!(user_id=?me.user_id_ref(), count=?new_spaces.len(), "found new spaces");
+
+                                            try_join_all(new_spaces.into_iter().map(|room| Group { inner: Room { room, client: me.core.client().clone() }, client: me.clone()}).map(|g| {
+                                                let history = history.clone();
+                                                async move {
+                                                    history.lock_mut().started_loading_room(g.room_id().to_owned());
+                                                    g.add_handlers().await;
+                                                    let x = g.refresh_history().await;
+                                                    history.lock_mut().group_loaded();
+                                                    x
+                                                }}))
+                                            .await?;
+                                            anyhow::Ok(())
+                                        }
+                                    );
+                                }
                             }
 
                             if state.read().should_stop_syncing {
@@ -377,8 +417,8 @@ impl Client {
     }
 
     pub async fn restore_token(&self) -> Result<String> {
-        let session = self.client.session().context("Missing session")?.clone();
-        let homeurl = self.client.homeserver().await;
+        let session = self.session().context("Missing session")?.clone();
+        let homeurl = self.homeserver().await;
         let result = serde_json::to_string(&RestoreToken {
             session,
             homeurl,
@@ -397,13 +437,8 @@ impl Client {
             .await?
     }
 
-    #[cfg(feature = "with-mocks")]
-    pub async fn faqs(&self) -> Result<Vec<Faq>> {
-        Ok(gen_mock_faqs())
-    }
-
     // pub async fn get_mxcuri_media(&self, uri: String) -> Result<Vec<u8>> {
-    //     let client = self.client.clone();
+    //     let client = self.core.clone();
     //     RUNTIME.spawn(async move {
     //         let user_id = client.user_id().await.context("No User ID found")?;
     //         Ok(user_id.to_string())
@@ -411,7 +446,8 @@ impl Client {
     // }
 
     pub fn user_id(&self) -> Result<OwnedUserId> {
-        self.client
+        self.core
+            .client()
             .user_id()
             .map(|x| x.to_owned())
             .context("UserId not found. Not logged in?")
@@ -419,7 +455,7 @@ impl Client {
 
     pub async fn room(&self, room_name: String) -> Result<Room> {
         let room_id = RoomId::parse(room_name)?;
-        let l = self.client.clone();
+        let l = self.core.client().clone();
         RUNTIME
             .spawn(async move {
                 if let Some(room) = l.get_room(&room_id) {
@@ -442,7 +478,7 @@ impl Client {
         key: String,
         timeout: Option<Box<Duration>>,
     ) -> Result<AnyEffektioModel> {
-        let executor = self.executor.clone();
+        let executor = self.core.executor().clone();
 
         RUNTIME
             .spawn(async move {
@@ -457,18 +493,22 @@ impl Client {
 
     pub fn account(&self) -> Result<Account> {
         Ok(Account::new(
-            self.client.account(),
+            self.core.client().account(),
             self.user_id()?.to_string(),
         ))
     }
 
     pub fn device_id(&self) -> Result<String> {
-        let device_id = self.client.device_id().context("No Device ID found")?;
+        let device_id = self
+            .core
+            .client()
+            .device_id()
+            .context("No Device ID found")?;
         Ok(device_id.to_string())
     }
 
     pub async fn get_user_profile(&self) -> Result<UserProfile> {
-        let client = self.client.clone();
+        let client = self.core.client().clone();
         let user_id = client.user_id().unwrap().to_owned();
         RUNTIME
             .spawn(async move {
@@ -480,16 +520,17 @@ impl Client {
     }
 
     pub async fn verified_device(&self, dev_id: String) -> Result<bool> {
-        let c = self.client.clone();
+        let c = self.core.client().clone();
         RUNTIME
             .spawn(async move {
-                let user_id = c.user_id().expect("guest user cannot request verification");
+                let user_id = c
+                    .user_id()
+                    .context("guest user cannot request verification")?;
                 let dev = c
                     .encryption()
                     .get_device(user_id, device_id!(dev_id.as_str()))
-                    .await
-                    .expect("client should get device")
-                    .unwrap();
+                    .await?
+                    .context("client should get device")?;
                 Ok(dev.is_verified())
             })
             .await?
@@ -497,7 +538,7 @@ impl Client {
 
     pub async fn logout(&mut self) -> Result<bool> {
         (*self.state).write().should_stop_syncing = true;
-        let client = self.client.clone();
+        let client = self.core.client().clone();
 
         self.invitation_controller.remove_event_handler(&client);
         self.verification_controller
