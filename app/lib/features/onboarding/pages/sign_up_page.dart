@@ -1,6 +1,7 @@
+import 'package:effektio/common/controllers/network_controller.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/custom_button.dart';
-import 'package:effektio/common/controllers/network_controller.dart';
+import 'package:effektio/common/widgets/no_internet.dart';
 import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:effektio/features/onboarding/pages/login_page.dart';
 import 'package:effektio/features/onboarding/widgets/onboarding_fields.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -26,7 +26,6 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final TextEditingController token = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
   final TextEditingController name = TextEditingController();
-  final networkController = Get.put(NetworkController());
 
   void _validateSignUp(BuildContext context) async {
     final bool isLoggedIn = ref.read(isLoggedInProvider);
@@ -52,6 +51,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
+    var network = ref.watch(networkAwareProvider);
     return Scaffold(
       body: SingleChildScrollView(
         child: Form(
@@ -146,12 +146,8 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   : CustomButton(
                       onPressed: () async {
                         if (formKey.currentState!.validate()) {
-                          if (!networkController.isDisconnected()) {
-                            Get.snackbar(
-                              'No internet',
-                              'Please turn on internet to continue',
-                              colorText: Colors.white,
-                            );
+                          if (network == NetworkStatus.Off) {
+                            showNoInternetNotification();
                           } else {
                             await ref
                                 .read(authControllerProvider.notifier)

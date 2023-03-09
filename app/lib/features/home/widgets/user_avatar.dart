@@ -2,8 +2,18 @@ import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/custom_avatar.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
+import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+    show UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final userProfileProvider = FutureProvider<UserProfile>(
+  (ref) async {
+    final userProfile =
+        await ref.read(homeStateProvider.notifier).client.getUserProfile();
+    return userProfile;
+  },
+);
 
 class UserAvatarWidget extends ConsumerWidget {
   final bool isExtendedRail;
@@ -11,7 +21,7 @@ class UserAvatarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(clientProvider).requireValue;
+    final client = ref.watch(homeStateProvider.notifier).client;
     final userProfile = ref.watch(userProfileProvider);
     if (client.isGuest()) {
       return GestureDetector(
@@ -40,7 +50,7 @@ class UserAvatarWidget extends ConsumerWidget {
               cacheWidth: 120,
               avatar: data.getAvatar(),
               displayName: data.getDisplayName(),
-              stringName: data.getDisplayName()!,
+              stringName: data.getDisplayName() ?? '',
             ),
             if (isExtendedRail)
               Padding(
