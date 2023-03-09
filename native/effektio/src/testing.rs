@@ -81,7 +81,6 @@ pub async fn register(
             let request = assign!(RegistrationRequest::new(), {
                 username: Some(username.clone()),
                 password: Some(username),
-
                 auth: Some(uiaa::AuthData::Dummy(uiaa::Dummy::new())),
             });
             client.register(request).await?;

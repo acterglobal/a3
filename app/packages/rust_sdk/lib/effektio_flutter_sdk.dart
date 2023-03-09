@@ -38,6 +38,19 @@ const defaultSessionKey = String.fromEnvironment(
   defaultValue: 'sessions',
 );
 
+// ex: a3-nightly or effektio-linux
+String appName = String.fromEnvironment(
+  'RAGESHAKE_APP_NAME',
+  defaultValue: 'effektio-${Platform.operatingSystem}',
+);
+
+const versionName = String.fromEnvironment(
+  'RAGESHAKE_APP_VERSION',
+  defaultValue: 'DEV',
+);
+
+String userAgent = '$appName/$versionName';
+
 Color convertColor(ffi.EfkColor? primary, Color fallback) {
   if (primary == null) {
     return fallback;
@@ -96,7 +109,7 @@ class EffektioSdk {
         appDocPath,
         defaultServerName,
         defaultServerUrl,
-        deviceName,
+        userAgent,
       );
       _clients.add(client);
       loggedIn = client.loggedIn();
@@ -123,9 +136,7 @@ class EffektioSdk {
     return libDir;
   }
 
-  static Future<DynamicLibrary> _getAndroidDynamicLibrary(
-    String libName,
-  ) async {
+  static Future<DynamicLibrary> _getAndroidDynLib(String libName) async {
     try {
       // android api 30 is working here
       return DynamicLibrary.open(libName);
@@ -146,20 +157,17 @@ class EffektioSdk {
     }
   }
 
-  static String get deviceName {
-    return 'Effektio ${Platform.operatingSystem} ${const String.fromEnvironment('VERSION_NAME', defaultValue: 'DEV')}';
-  }
-
   static Future<EffektioSdk> get _unrestoredInstance async {
     if (_instance == null) {
       final api = Platform.isAndroid
-          ? ffi.Api(await _getAndroidDynamicLibrary('libeffektio.so'))
+          ? ffi.Api(await _getAndroidDynLib('libeffektio.so'))
           : ffi.Api.load();
+      Directory appDocDir = await getApplicationDocumentsDirectory();
       try {
-        api.initLogging(logSettings);
+        api.initLogging(appDocDir.path, logSettings);
       } catch (e) {
         developer.log(
-          'Setting logging failed',
+          'Logging setup failed',
           level: 900, // warning
           error: e,
         );
@@ -193,22 +201,20 @@ class EffektioSdk {
       password,
       defaultServerName,
       defaultServerUrl,
-      deviceName,
+      userAgent,
     );
     if (_clients.length == 1 && _clients[0].isGuest()) {
       // we are replacing a guest account
       var client = _clients.removeAt(0);
       unawaited(
-        client.logout().catchError(
-          (e) {
-            developer.log(
-              'Logout of Guest failed',
-              level: 900, // warning
-              error: e,
-            );
-            return e is int;
-          },
-        ),
+        client.logout().catchError((e) {
+          developer.log(
+            'Logout of Guest failed',
+            level: 900, // warning
+            error: e,
+          );
+          return e is int;
+        }),
       ); // Explicitly-ignored fire-and-forget.
     }
     _clients.add(client);
@@ -221,16 +227,14 @@ class EffektioSdk {
     var client = _clients.removeAt(0);
     await _persistSessions();
     unawaited(
-      client.logout().catchError(
-        (e) {
-          developer.log(
-            'Logout failed',
-            level: 900, // warning
-            error: e,
-          );
-          return e is int;
-        },
-      ),
+      client.logout().catchError((e) {
+        developer.log(
+          'Logout failed',
+          level: 900, // warning
+          error: e,
+        );
+        return e is int;
+      }),
     ); // Explicitly-ignored fire-and-forget.
     if (_clients.isEmpty) {
       // login as guest
@@ -260,7 +264,7 @@ class EffektioSdk {
       token,
       defaultServerName,
       defaultServerUrl,
-      deviceName,
+      userAgent,
     );
     final account = client.account();
     await account.setDisplayName(displayName);
@@ -279,5 +283,13 @@ class EffektioSdk {
 
   ffi.CreateGroupSettings newGroupSettings(String name) {
     return _api.newGroupSettings(name);
+  }
+
+  String rotateLogFile() {
+    return _api.rotateLogFile();
+  }
+
+  void writeLog(String text, String level) {
+    _api.writeLog(text, level);
   }
 }

@@ -249,6 +249,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.4"
+  date_format:
+    dependency: "direct main"
+    description:
+      name: date_format
+      sha256: "8e5154ca363411847220c8cbc43afcf69c08e8debe40ba09d57710c25711760c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.7"
   dbus:
     dependency: transitive
     description:
@@ -406,14 +414,14 @@ packages:
       url: "https://github.com/acterglobal/flyer-flutter_chat_ui.git"
     source: git
     version: "1.6.6"
-  flutter_colorpicker:
+  flutter_custom_selector:
     dependency: "direct main"
     description:
-      name: flutter_colorpicker
-      sha256: "458a6ed8ea480eb16ff892aedb4b7092b2804affd7e046591fb03127e8d8ef8b"
+      name: flutter_custom_selector
+      sha256: "4c42dcd6cc2de1574454f0fc86b324303d1bd30e4bc236d01071525342d51427"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.3"
+    version: "0.0.3"
   flutter_driver:
     dependency: transitive
     description: flutter
@@ -641,14 +649,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.6.5"
-  get_time_ago:
-    dependency: "direct main"
-    description:
-      name: get_time_ago
-      sha256: dbd81c7f508089b72298b1f24e4e3f67d9e6416f0fc4fe84c102f173e2fe64e7
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.8"
   gherkin:
     dependency: transitive
     description:
@@ -706,7 +706,7 @@ packages:
     source: hosted
     version: "2.5.1"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "6aa2946395183537c8b880962d935877325d6a09a2867c3970c05c0fed6ac482"
@@ -1182,6 +1182,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  screenshot:
+    dependency: "direct main"
+    description:
+      name: screenshot
+      sha256: "30bb9fade6eb2578a1fc2e84f6b184141fc86883cda10988d4500ff00eb728e2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.0"
   scroll_to_index:
     dependency: transitive
     description:
@@ -1198,6 +1206,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.4"
+  sensors_plus:
+    dependency: transitive
+    description:
+      name: sensors_plus
+      sha256: "362c8f4f001838b90dd5206b898bbad941bc0142479eab9a3415f0f79e622908"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.1"
+  sensors_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: sensors_plus_platform_interface
+      sha256: "95f0cc08791b8bf0c41c5fa99c84be2a7d5bf60a811ddc17e1438b1e68caf0d3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.3"
+  sensors_plus_web:
+    dependency: transitive
+    description:
+      name: sensors_plus_web
+      sha256: fca8d7d9ab6233b2a059952666415508e252420be1ef54f092d07884da53ec5e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
+  shake:
+    dependency: "direct main"
+    description:
+      name: shake
+      sha256: "107546951c6b8f5e4c2dca66dfb3aa27dd1a853b4e9a26c9aea224b167045023"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   shared_preferences:
     dependency: transitive
     description:
@@ -1419,14 +1459,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  transparent_image:
-    dependency: "direct main"
-    description:
-      name: transparent_image
-      sha256: e566a616922a781489f4d91cc939b1b3203b6e4a093317805f2f82f0bb0f8dec
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   tuple:
     dependency: transitive
     description:
@@ -1511,10 +1543,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_windows
-      sha256: "387e227c4b979034cc52afb11d66b04ed9b288ca1f45beeef39b2ea69e714fa5"
+      sha256: b6217370f8eb1fd85c8890c539f5a639a01ab209a36db82c921ebeacefc7a615
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.0.3"
   uuid:
     dependency: transitive
     description:
