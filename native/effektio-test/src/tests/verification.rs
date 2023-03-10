@@ -18,7 +18,7 @@ fn wait_for_verification_event(
 }
 
 #[tokio::test]
-#[ignore = "test runs forever :("]
+#[ignore = "test runs forever in both github runner and local synapse :("]
 async fn interactive_verification_started_from_request() -> Result<()> {
     let _ = env_logger::try_init();
 
