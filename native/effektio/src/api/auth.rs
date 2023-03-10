@@ -153,7 +153,7 @@ pub async fn login_new_client(
         .await?
 }
 
-pub async fn register_with_registration_token(
+pub async fn register_with_token(
     base_path: String,
     username: String,
     password: String,
