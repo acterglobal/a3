@@ -18,7 +18,7 @@ fn wait_for_verification_event(
 }
 
 #[tokio::test]
-#[ignore = "interactive tests only for debugging"]
+#[ignore = "test runs forever :("]
 async fn interactive_verification_started_from_request() -> Result<()> {
     let _ = env_logger::try_init();
 

@@ -8,7 +8,6 @@ use tempfile::TempDir;
 #[tokio::test]
 async fn guest_can_login() -> Result<()> {
     let _ = env_logger::try_init();
-    let tmp_dir = TempDir::new()?;
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
         .to_string();
@@ -16,6 +15,7 @@ async fn guest_can_login() -> Result<()> {
         .unwrap_or("http://localhost:8118")
         .to_string();
 
+    let tmp_dir = TempDir::new()?;
     let _client = guest_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         homeserver_name,
@@ -29,7 +29,6 @@ async fn guest_can_login() -> Result<()> {
 #[tokio::test]
 async fn sisko_can_login() -> Result<()> {
     let _ = env_logger::try_init();
-    let tmp_dir = TempDir::new()?;
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
         .to_string();
@@ -37,6 +36,7 @@ async fn sisko_can_login() -> Result<()> {
         .unwrap_or("http://localhost:8118")
         .to_string();
 
+    let tmp_dir = TempDir::new()?;
     let _client = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
@@ -75,14 +75,14 @@ async fn kyra_can_login() -> Result<()> {
 #[tokio::test]
 async fn kyra_can_restore() -> Result<()> {
     let _ = env_logger::try_init();
-    let tmp_dir = TempDir::new()?;
-    let base_path = tmp_dir.path().to_str().expect("always works").to_string();
     let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
         .unwrap_or("localhost")
         .to_string();
     let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
         .unwrap_or("http://localhost:8118")
         .to_string();
+    let tmp_dir = TempDir::new()?;
+    let base_path = tmp_dir.path().to_str().expect("always works").to_string();
     let (config, user_id) =
         make_client_config(base_path, "@kyra", &homeserver_name, &homeserver_url).await?;
 

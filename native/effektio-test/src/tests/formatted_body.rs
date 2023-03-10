@@ -6,7 +6,6 @@ use tempfile::TempDir;
 use tokio::time::{sleep, Duration};
 
 #[tokio::test]
-#[ignore = "test runs forever :("]
 async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let _ = env_logger::try_init();
 
