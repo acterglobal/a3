@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use effektio_core::{
     ruma::{
         api::client::{account::register, session::login, uiaa},
-        assign, OwnedUserId, ServerName,
+        assign, OwnedUserId,
     },
     RestoreToken,
 };
@@ -13,10 +13,11 @@ use crate::platform;
 
 use super::{
     client::{Client, ClientStateBuilder},
-    device, RUNTIME,
+    RUNTIME,
 };
 
-async fn make_client_config(
+// for only integration test, not api.rsh
+pub async fn make_client_config(
     base_path: String,
     username: &str,
     default_homeserver_name: &str,
@@ -79,7 +80,11 @@ pub async fn guest_client(
         .await?
 }
 
-pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
+// for only integration test, not api.rsh
+pub async fn login_with_token_under_config(
+    restore_token: String,
+    config: ClientBuilder,
+) -> Result<Client> {
     let RestoreToken {
         session,
         homeurl,
@@ -89,9 +94,7 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
     // First we need to log in.
     RUNTIME
         .spawn(async move {
-            let client = platform::new_client_config(base_path, user_id.clone())
-                .await
-                .context("can't build client")?
+            let client = config
                 .homeserver_url(homeurl)
                 .build()
                 .await
@@ -115,22 +118,26 @@ pub async fn login_with_token(base_path: String, restore_token: String) -> Resul
         .await?
 }
 
-pub async fn login_new_client(
-    base_path: String,
-    username: String,
+pub async fn login_with_token(base_path: String, restore_token: String) -> Result<Client> {
+    let RestoreToken {
+        session,
+        homeurl,
+        is_guest,
+    } = serde_json::from_str(&restore_token).context("Deserializing Restore Token failed")?;
+    let user_id = session.user_id.to_string();
+    let config = platform::new_client_config(base_path, user_id.clone())
+        .await
+        .context("can't build client")?;
+    login_with_token_under_config(restore_token, config).await
+}
+
+// for only integration test, not api.rsh
+pub async fn login_new_client_under_config(
+    config: ClientBuilder,
+    user_id: OwnedUserId,
     password: String,
-    default_homeserver_name: String,
-    default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (mut config, user_id) = make_client_config(
-        base_path,
-        &username,
-        &default_homeserver_name,
-        &default_homeserver_url,
-    )
-    .await?;
-    // First we need to log in.
     RUNTIME
         .spawn(async move {
             let client = config.build().await?;
@@ -153,6 +160,24 @@ pub async fn login_new_client(
         .await?
 }
 
+pub async fn login_new_client(
+    base_path: String,
+    username: String,
+    password: String,
+    default_homeserver_name: String,
+    default_homeserver_url: String,
+    device_name: Option<String>,
+) -> Result<Client> {
+    let (config, user_id) = make_client_config(
+        base_path,
+        &username,
+        &default_homeserver_name,
+        &default_homeserver_url,
+    )
+    .await?;
+    login_new_client_under_config(config, user_id, password, device_name).await
+}
+
 pub async fn register_with_token(
     base_path: String,
     username: String,
@@ -162,7 +187,7 @@ pub async fn register_with_token(
     default_homeserver_url: String,
     device_name: Option<String>,
 ) -> Result<Client> {
-    let (mut config, user_id) = make_client_config(
+    let (config, user_id) = make_client_config(
         base_path,
         &username,
         &default_homeserver_name,

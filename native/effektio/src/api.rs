@@ -31,7 +31,10 @@ mod typing;
 mod verification;
 
 pub use account::Account;
-pub use auth::{guest_client, login_new_client, login_with_token, register_with_token};
+pub use auth::{
+    guest_client, login_new_client, login_new_client_under_config, login_with_token,
+    login_with_token_under_config, make_client_config, register_with_token,
+};
 pub use client::{Client, ClientStateBuilder, HistoryLoadState, SyncState};
 pub use comments::{Comment, CommentDraft, CommentsManager};
 pub use common::duration_from_secs;

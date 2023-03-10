@@ -819,7 +819,7 @@ class Api {
     return tmp9;
   }
 
-  /// Create a new client anonymous client connecting to the homeserver
+  /// Create an anonymous client connecting to the homeserver
   Future<Client> guestClient(
     String basepath,
     String defaultHomeserverName,
@@ -900,7 +900,7 @@ class Api {
     return tmp19;
   }
 
-  /// Create a new client from the restore token
+  /// Create a new client from the registration token
   Future<Client> registerWithToken(
     String basepath,
     String username,
