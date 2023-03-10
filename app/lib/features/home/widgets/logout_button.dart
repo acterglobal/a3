@@ -9,7 +9,7 @@ class LogOutButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isGuest = ref.watch(homeStateProvider.notifier).client.isGuest();
+    final isGuest = ref.watch(homeStateProvider)!.isGuest();
     return !isGuest
         ? IconButton(
             onPressed: () =>
