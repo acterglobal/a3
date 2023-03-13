@@ -1,6 +1,8 @@
 import 'package:effektio/common/animations/like_animation.dart';
+import 'package:effektio/common/dialogs/logout_confirmation.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
+import 'package:effektio/features/home/widgets/user_avatar.dart';
 import 'package:effektio/features/news/controllers/news_controller.dart';
 import 'package:effektio/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
@@ -36,29 +38,14 @@ class _NewsPageState extends ConsumerState<NewsPage>
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              key: Keys.sidebarBtn,
-              icon: Container(
-                margin: const EdgeInsets.only(
-                  bottom: 10,
-                  left: 10,
-                ),
-                child: CircleAvatar(
-                  backgroundColor: AppCommonTheme.primaryColor,
-                  child: Image.asset(
-                    'assets/images/hamburger.png',
-                  ),
-                ),
-              ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
+        leading: MediaQuery.of(context).size.width < 600
+            ? IconButton(
+                key: Keys.sidebarBtn,
+                icon: const UserAvatarWidget(isExtendedRail: false),
+                onPressed: () => confirmationDialog(context, ref),
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              )
+            : const SizedBox.shrink(),
         centerTitle: true,
         title: const ButtonBar(
           alignment: MainAxisAlignment.center,
