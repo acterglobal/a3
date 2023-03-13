@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:date_format/date_format.dart';
+import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
@@ -8,7 +9,6 @@ import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/home/widgets/home_widget.dart';
-import 'package:acter/features/home/widgets/logout_button.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
@@ -89,11 +89,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                               return AdaptiveScaffold.standardNavigationRail(
                                 onDestinationSelected:
                                     handleDestinationSelected,
-                                leading: const UserAvatarWidget(
-                                  isExtendedRail: false,
-                                ),
-                                trailing: const LogOutButton(
-                                  isExtendedRail: false,
+                                leading: GestureDetector(
+                                  onTap: () => confirmationDialog(ctx, ref),
+                                  child: const UserAvatarWidget(
+                                    isExtendedRail: false,
+                                  ),
                                 ),
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
@@ -126,11 +126,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     handleDestinationSelected,
                                 selectedIndex: _selectedIndex,
                                 extended: true,
-                                leading: const UserAvatarWidget(
-                                  isExtendedRail: true,
-                                ),
-                                trailing: const LogOutButton(
-                                  isExtendedRail: true,
+                                leading: GestureDetector(
+                                  onTap: () => confirmationDialog(context, ref),
+                                  child: const UserAvatarWidget(
+                                    isExtendedRail: true,
+                                  ),
                                 ),
                                 destinations: <NavigationRailDestination>[
                                   NavigationRailDestination(
