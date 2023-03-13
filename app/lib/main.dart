@@ -42,7 +42,7 @@ Future<void> startApp() async {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(const ProviderScope(child: Effektio()));
+  runApp(const ProviderScope(child: Acter()));
 }
 
 class Acter extends StatelessWidget {

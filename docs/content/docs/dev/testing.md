@@ -360,6 +360,7 @@ Don't forget to rerun the `mock data` generation again.
 
 1. Stop service with `sudo systemctl stop matrix-synapse`
 2. Delete and recreate the database
+
 ```
 sudo su - postgres
 psql
@@ -367,8 +368,9 @@ DROP DATABASE synapse;
 CREATE DATABASE synapse ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "synapseuser";
 \q
 ```
+
 3. Start service with `sudo systemctl start matrix-synapse`
-4. Run this command `cargo run -p effektio-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.effektio.org`
+4. Run this command `cargo run -p acter-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.acter.global`
 
 ### Rust integration tests
 

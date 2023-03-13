@@ -1,8 +1,8 @@
-import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/features/chat/controllers/receipt_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter/features/chat/controllers/chat_list_controller.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/controllers/receipt_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
@@ -13,14 +13,14 @@ final homeStateProvider = StateNotifierProvider<HomeStateNotifier, Client?>(
 
 class HomeStateNotifier extends StateNotifier<Client?> {
   final Ref ref;
-  late EffektioSdk sdk;
+  late ActerSdk sdk;
   late SyncState syncState;
   HomeStateNotifier(this.ref) : super(null) {
     _loadUp();
   }
 
   void _loadUp() async {
-    final asyncSdk = await EffektioSdk.instance;
+    final asyncSdk = await ActerSdk.instance;
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
       asyncSdk.writeLog(exception.toString(), 'error');
       asyncSdk.writeLog(stackTrace.toString(), 'error');

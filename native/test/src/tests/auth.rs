@@ -1,9 +1,8 @@
-use acter::api::{guest_client, login_new_client, login_with_token};
-use anyhow::Result;
-use effektio::api::{
+use acter::api::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token_under_config,
     make_client_config,
 };
+use anyhow::Result;
 use tempfile::TempDir;
 
 #[tokio::test]
