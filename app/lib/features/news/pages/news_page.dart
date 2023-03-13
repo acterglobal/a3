@@ -123,7 +123,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
                 LikeAnimation.run(index);
               },
               child: NewsItem(
-                client: ref.read(homeStateProvider.notifier).client,
+                client: ref.read(homeStateProvider)!,
                 news: data[index],
                 index: index,
               ),

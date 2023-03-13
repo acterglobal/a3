@@ -7,13 +7,10 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final userProfileProvider = FutureProvider<UserProfile>(
-  (ref) async {
-    final userProfile =
-        await ref.read(homeStateProvider.notifier).client.getUserProfile();
-    return userProfile;
-  },
-);
+final userProfileProvider = FutureProvider<UserProfile>((ref) async {
+  final client = ref.watch(homeStateProvider);
+  return await client!.getUserProfile();
+});
 
 class UserAvatarWidget extends ConsumerWidget {
   final bool isExtendedRail;
@@ -21,18 +18,31 @@ class UserAvatarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(homeStateProvider.notifier).client;
+    final client = ref.watch(homeStateProvider)!;
     final userProfile = ref.watch(userProfileProvider);
     if (client.isGuest()) {
-      return GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/login'),
-        child: TextAvatar(
-          backgroundColor: Colors.grey,
-          text: 'G',
-          numberLetters: 1,
-          shape: Shape.Circular,
-          upperCase: true,
-        ),
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/login'),
+            child: TextAvatar(
+              backgroundColor: Colors.grey,
+              text: 'G',
+              numberLetters: 1,
+              shape: Shape.Circular,
+              upperCase: true,
+            ),
+          ),
+          if (isExtendedRail)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                'Guest User',
+                style: SideMenuAndProfileTheme.sideMenuProfileStyle,
+              ),
+            )
+        ],
       );
     }
     return userProfile.when(

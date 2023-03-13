@@ -6,7 +6,7 @@ use tempfile::TempDir;
 use tokio::time::{sleep, Duration};
 
 #[tokio::test]
-#[ignore = "test runs forever :("]
+#[ignore = "test runs forever in github runner, it works well in local synapse :("]
 async fn sisko_sends_rich_text_to_kyra() -> Result<()> {
     let _ = env_logger::try_init();
 

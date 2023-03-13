@@ -20,9 +20,9 @@ class AuthController extends StateNotifier<bool> {
     state = true;
     final sdk = ref.read(sdkRepositoryProvider);
     try {
-      await sdk.loginClient(username, password);
+      final client = await sdk.loginClient(username, password);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.read(homeStateProvider.notifier).refreshClient();
+      ref.read(homeStateProvider.notifier).state = client;
       state = false;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
@@ -41,9 +41,10 @@ class AuthController extends StateNotifier<bool> {
     state = true;
     final sdk = ref.read(sdkRepositoryProvider);
     try {
-      await sdk.signUpClient(username, password, displayName, token);
+      final client =
+          await sdk.signUpClient(username, password, displayName, token);
       ref.read(isLoggedInProvider.notifier).update((state) => !state);
-      ref.read(homeStateProvider.notifier).refreshClient();
+      ref.read(homeStateProvider.notifier).state = client;
       state = false;
       Navigator.pushReplacementNamed(context, '/');
     } catch (e) {
@@ -55,7 +56,8 @@ class AuthController extends StateNotifier<bool> {
     final sdk = ref.read(sdkRepositoryProvider);
     await sdk.logoutClient();
     ref.read(isLoggedInProvider.notifier).update((state) => !state);
+    // return to guest client.
+    ref.read(homeStateProvider.notifier).state = sdk.getClient();
     Navigator.pushReplacementNamed(context, '/');
-    ref.read(homeStateProvider.notifier).refreshClient();
   }
 }

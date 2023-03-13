@@ -819,7 +819,7 @@ class Api {
     return tmp9;
   }
 
-  /// Create a new client anonymous client connecting to the homeserver
+  /// Create an anonymous client connecting to the homeserver
   Future<Client> guestClient(
     String basepath,
     String defaultHomeserverName,
@@ -900,8 +900,8 @@ class Api {
     return tmp19;
   }
 
-  /// Create a new client from the restore token
-  Future<Client> registerWithRegistrationToken(
+  /// Create a new client from the registration token
+  Future<Client> registerWithToken(
     String basepath,
     String username,
     String password,
@@ -994,7 +994,7 @@ class Api {
       tmp27 = tmp27_0.address;
       tmp29 = tmp28;
     }
-    final tmp30 = _registerWithRegistrationToken(
+    final tmp30 = _registerWithToken(
       tmp1,
       tmp2,
       tmp3,
@@ -1020,11 +1020,9 @@ class Api {
     );
     final tmp32 = tmp30;
     final ffi.Pointer<ffi.Void> tmp32_0 = ffi.Pointer.fromAddress(tmp32);
-    final tmp32_1 =
-        _Box(this, tmp32_0, "__register_with_registration_token_future_drop");
+    final tmp32_1 = _Box(this, tmp32_0, "__register_with_token_future_drop");
     tmp32_1._finalizer = this._registerFinalizer(tmp32_1);
-    final tmp31 =
-        _nativeFuture(tmp32_1, this.__registerWithRegistrationTokenFuturePoll);
+    final tmp31 = _nativeFuture(tmp32_1, this.__registerWithTokenFuturePoll);
     return tmp31;
   }
 
@@ -1254,7 +1252,7 @@ class Api {
     return tmp7;
   }
 
-  Client? __registerWithRegistrationTokenFuturePoll(
+  Client? __registerWithTokenFuturePoll(
     int boxed,
     int postCobject,
     int port,
@@ -1268,7 +1266,7 @@ class Api {
     tmp1 = tmp0;
     tmp3 = tmp2;
     tmp5 = tmp4;
-    final tmp6 = _registerWithRegistrationTokenFuturePoll(
+    final tmp6 = _registerWithTokenFuturePoll(
       tmp1,
       tmp3,
       tmp5,
@@ -6165,7 +6163,7 @@ class Api {
     int,
     int,
   )>();
-  late final _registerWithRegistrationTokenPtr = _lookup<
+  late final _registerWithTokenPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
@@ -6190,11 +6188,10 @@ class Api {
     ffi.Int64,
     ffi.Uint64,
     ffi.Uint64,
-  )>>("__register_with_registration_token");
+  )>>("__register_with_token");
 
-  late final _registerWithRegistrationToken =
-      _registerWithRegistrationTokenPtr.asFunction<
-          int Function(
+  late final _registerWithToken = _registerWithTokenPtr.asFunction<
+      int Function(
     int,
     int,
     int,
@@ -10891,17 +10888,17 @@ class Api {
     int,
     int,
   )>();
-  late final _registerWithRegistrationTokenFuturePollPtr = _lookup<
+  late final _registerWithTokenFuturePollPtr = _lookup<
       ffi.NativeFunction<
-          _RegisterWithRegistrationTokenFuturePollReturn Function(
+          _RegisterWithTokenFuturePollReturn Function(
     ffi.Int64,
     ffi.Int64,
     ffi.Int64,
-  )>>("__register_with_registration_token_future_poll");
+  )>>("__register_with_token_future_poll");
 
-  late final _registerWithRegistrationTokenFuturePoll =
-      _registerWithRegistrationTokenFuturePollPtr.asFunction<
-          _RegisterWithRegistrationTokenFuturePollReturn Function(
+  late final _registerWithTokenFuturePoll =
+      _registerWithTokenFuturePollPtr.asFunction<
+          _RegisterWithTokenFuturePollReturn Function(
     int,
     int,
     int,
@@ -23323,7 +23320,7 @@ class _GuestClientFuturePollReturn extends ffi.Struct {
   external int arg5;
 }
 
-class _RegisterWithRegistrationTokenFuturePollReturn extends ffi.Struct {
+class _RegisterWithTokenFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()

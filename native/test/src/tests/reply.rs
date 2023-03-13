@@ -12,18 +12,20 @@ use tempfile::TempDir;
 #[tokio::test]
 async fn sisko_replies_message() -> Result<()> {
     let _ = env_logger::try_init();
+    let homeserver_name = option_env!("DEFAULT_HOMESERVER_NAME")
+        .unwrap_or("localhost")
+        .to_string();
+    let homeserver_url = option_env!("DEFAULT_HOMESERVER_URL")
+        .unwrap_or("http://localhost:8118")
+        .to_string();
 
     let tmp_dir = TempDir::new()?;
     let mut sisko = login_new_client(
         tmp_dir.path().to_str().expect("always works").to_string(),
         "@sisko".to_string(),
         "sisko".to_string(),
-        option_env!("DEFAULT_HOMESERVER_NAME")
-            .unwrap_or("localhost")
-            .to_string(),
-        option_env!("DEFAULT_HOMESERVER_URL")
-            .unwrap_or("http://localhost:8118")
-            .to_string(),
+        homeserver_name,
+        homeserver_url,
         Some("SISKO_DEV".to_string()),
     )
     .await?;

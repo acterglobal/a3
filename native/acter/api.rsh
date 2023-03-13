@@ -13,11 +13,11 @@ fn login_new_client(basepath: string, username: string, password: string, defaul
 /// Create a new client from the restore token
 fn login_with_token(basepath: string, restore_token: string) -> Future<Result<Client>>;
 
-/// Create a new client anonymous client connecting to the homeserver
+/// Create an anonymous client connecting to the homeserver
 fn guest_client(basepath: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
-/// Create a new client from the restore token
-fn register_with_registration_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
+/// Create a new client from the registration token
+fn register_with_token(basepath: string, username: string, password: string, registration_token: string, default_homeserver_name: string, default_homeserver_url: string, device_name: Option<string>) -> Future<Result<Client>>;
 
 /// generate news mock items
 fn gen_mock_news() -> Vec<News>;
