@@ -95,14 +95,13 @@ impl TimelineStream {
         }
     }
 
-    pub async fn diff_rx(&self) -> Result<impl Stream<Item = TimelineDiff>> {
+    pub fn diff_rx(&self) -> impl Stream<Item = TimelineDiff> {
         let timeline = self.timeline.clone();
         let room = self.room.clone();
 
-        RUNTIME
-            .spawn(async move {
+        async_stream::stream! {
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-                let stream = timeline_stream.map(move |diff| match diff {
+                let mut remap = timeline_stream.map(move |diff| match diff {
                     VectorDiff::Append { values } => TimelineDiff {
                         action: "Append".to_string(),
                         values: Some(
@@ -194,9 +193,11 @@ impl TimelineStream {
                         old_index: None,
                     },
                 });
-                Ok(stream)
-            })
-            .await?
+
+                while let Some(d) = remap.next().await {
+                    yield d
+                }
+            }
     }
 
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
