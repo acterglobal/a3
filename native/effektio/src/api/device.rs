@@ -6,11 +6,11 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     encryption::identities::Device,
+    locks::Mutex,
     ruma::{device_id, events::key::verification::VerificationMethod, MilliSecondsSinceUnixEpoch},
     sync::SyncResponse,
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{client::Client, RUNTIME};
@@ -307,10 +307,16 @@ impl DeviceController {
 
 impl Client {
     pub fn device_changed_event_rx(&self) -> Option<Receiver<DeviceChangedEvent>> {
-        self.device_controller.changed_event_rx.lock().take()
+        match self.device_controller.changed_event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
     }
 
     pub fn device_left_event_rx(&self) -> Option<Receiver<DeviceLeftEvent>> {
-        self.device_controller.left_event_rx.lock().take()
+        match self.device_controller.left_event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
     }
 }

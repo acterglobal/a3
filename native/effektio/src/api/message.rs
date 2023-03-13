@@ -1,10 +1,11 @@
+use chrono::{offset::Utc, DateTime};
 use core::time::Duration;
 use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     room::{
         timeline::{
-            EventTimelineItem, TimelineDetails, TimelineItem, TimelineItemContent,
+            EventTimelineItem, MemberProfileChange, MembershipChange, TimelineDetails, TimelineItem, TimelineItemContent,
             VirtualTimelineItem,
         },
         Room,
@@ -58,7 +59,7 @@ use matrix_sdk::{
                     OriginalRoomHistoryVisibilityEvent, OriginalSyncRoomHistoryVisibilityEvent,
                 },
                 join_rules::{OriginalRoomJoinRulesEvent, OriginalSyncRoomJoinRulesEvent},
-                member::{MembershipChange, OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
+                member::{OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
                 message::{
                     MessageFormat, MessageType, OriginalRoomMessageEvent,
                     OriginalSyncRoomMessageEvent, Relation,
@@ -2702,22 +2703,17 @@ impl RoomMessage {
     }
 
     pub(crate) fn from_timeline_event_item(event: &EventTimelineItem, room: Room) -> Self {
-        let event_id = match event.event_id() {
-            Some(id) => id.to_string(),
-            None => format!("{:?}", event.key()),
-        };
+        let event_id = event.unique_identifier();
         let room_id = room.room_id().to_string();
         let sender = event.sender().to_string();
         let origin_server_ts: u64 = event.timestamp().get().into();
         let mut reactions: HashMap<String, ReactionDesc> = HashMap::new();
-        for (key, value) in event.reactions().iter() {
-            let senders = if let TimelineDetails::Ready(senders) = value.senders.clone() {
-                senders
-            } else {
-                vec![]
-            };
-            let description = ReactionDesc::new(value.count.into(), senders);
-            reactions.insert(key.clone(), description);
+        if let Some(evt) = event.as_remote() {
+            for (key, value) in evt.reactions().iter() {
+                let senders: Vec<OwnedUserId> = value.senders().map(|x| x.to_owned()).collect();
+                let description = ReactionDesc::new(senders.len() as u64, senders);
+                reactions.insert(key.clone(), description);
+            }
         }
 
         let event_item = match event.content() {
@@ -2808,7 +2804,7 @@ impl RoomMessage {
                 }
                 let mut replied_to_id = None;
                 if let Some(in_reply_to) = msg.in_reply_to() {
-                    replied_to_id = Some(in_reply_to.to_owned());
+                    replied_to_id = Some(in_reply_to.event_id);
                 }
                 RoomEventItem::new(
                     event_id,
@@ -2885,9 +2881,9 @@ impl RoomMessage {
                     false,
                 )
             }
-            TimelineItemContent::RoomMember(m) => {
+            TimelineItemContent::MembershipChange(m) => {
                 info!("Edit event applies to a state event, discarding");
-                let fallback = match m.membership_change() {
+                let fallback = match m.change() {
                     Some(MembershipChange::None) => {
                         format!("{} not changed", m.user_id())
                     }
@@ -2936,12 +2932,6 @@ impl RoomMessage {
                     Some(MembershipChange::KnockDenied) => {
                         format!("{} denied knock", m.user_id())
                     }
-                    Some(MembershipChange::ProfileChanged {
-                        displayname_change,
-                        avatar_url_change,
-                    }) => {
-                        format!("{} changed profile", m.user_id())
-                    }
                     Some(MembershipChange::NotImplemented) => "not implemented".to_string(),
                     _ => "unknown error".to_string(),
                 };
@@ -2957,6 +2947,50 @@ impl RoomMessage {
                     None,
                     Some(text_desc),
                     None,
+                    None,
+                    None,
+                    None,
+                    Default::default(),
+                    false,
+                )
+            }
+            TimelineItemContent::ProfileChange(p) => {
+                info!("Edit event applies to a state event, discarding");
+                let text_desc = if let Some(change) = p.displayname_change() {
+                    let fallback = format!(
+                        "{} changed display name from {:?} to {:?}",
+                        p.user_id().to_string(),
+                        change.old.map(|x| x.to_string()),
+                        change.new.map(|x| x.to_string()),
+                    );
+                    Some(TextDesc {
+                        body: fallback,
+                        formatted_body: None,
+                    })
+                } else {
+                    None
+                };
+                let image_desc = if let Some(change) = p.avatar_url_change() {
+                    Some(ImageDesc {
+                        name: "new_picture".to_string(),
+                        mimetype: None,
+                        size: None,
+                        width: None,
+                        height: None,
+                        thumbnail_info: None,
+                        thumbnail_source: change.new.map(MediaSource::Plain),
+                    })
+                } else {
+                    None
+                };
+                RoomEventItem::new(
+                    event_id,
+                    sender,
+                    origin_server_ts,
+                    "m.room.member".to_string(),
+                    None,
+                    text_desc,
+                    image_desc,
                     None,
                     None,
                     None,
@@ -3026,13 +3060,18 @@ impl RoomMessage {
     pub(crate) fn from_timeline_virtual_item(event: &VirtualTimelineItem, room: Room) -> Self {
         let room_id = room.room_id().to_string();
         match event {
-            VirtualTimelineItem::DayDivider { year, month, day } => {
-                let desc = format!("{year}-{month:02}-{day:02}");
+            VirtualTimelineItem::DayDivider(ts) => {
+                let desc = if let Some(st) = ts.to_system_time() {
+                    let dt: DateTime<Utc> = st.into();
+                    Some(dt.format("%Y-%m-%d").to_string())
+                } else {
+                    None
+                };
                 RoomMessage::new(
                     "virtual".to_string(),
                     room_id,
                     None,
-                    Some(RoomVirtualItem::new("DayDivider".to_string(), Some(desc))),
+                    Some(RoomVirtualItem::new("DayDivider".to_string(), desc)),
                 )
             }
             VirtualTimelineItem::LoadingIndicator => RoomMessage::new(

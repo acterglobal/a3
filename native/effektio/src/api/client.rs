@@ -19,10 +19,10 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    ruma::{api::client::error::ErrorKind, device_id, OwnedUserId, RoomId},
+    locks::{Mutex, RwLock},
+    ruma::{device_id, OwnedUserId, RoomId},
     Client as MatrixClient, Error, HttpError, LoopCtrl, RefreshTokenError, RumaApiError,
 };
-use parking_lot::{Mutex, RwLock};
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,
@@ -143,7 +143,10 @@ impl SyncState {
     }
 
     pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
-        self.first_synced_rx.lock().take().map(|t| t.to_stream())
+        match self.first_synced_rx.try_lock() {
+            Ok(l) => l.map(|t| t.to_stream()),
+            Err(e) => None,
+        }
     }
 
     pub fn get_history_loading_rx(&self) -> SignalStream<MutableSignalCloned<HistoryLoadState>> {
@@ -332,14 +335,34 @@ impl Client {
 
                                 initial.store(false, Ordering::SeqCst);
                                 let _ = first_synced_arc.send(true);
-                                state.write().has_first_synced = true;
+                                // state.write().has_first_synced = true;
+                                match state.try_write() {
+                                    Ok(w) => {
+                                        w.has_first_synced = true;
+                                    }
+                                    Err(e) => {}
+                                }
                             }
 
-                            if state.read().should_stop_syncing {
-                                state.write().is_syncing = false;
-                                return Ok(LoopCtrl::Break);
-                            } else if !state.read().is_syncing {
-                                state.write().is_syncing = true;
+                            match state.try_read() {
+                                Ok(r) => {
+                                    r.is_syncing = false;
+                                    return Ok(LoopCtrl::Break);
+                                }
+                                Err(e) => {}
+                            }
+                            match state.try_read() {
+                                Ok(r) => {
+                                    if !r.is_syncing {
+                                        match state.try_write() {
+                                            Ok(w) => {
+                                                w.is_syncing = true;
+                                            }
+                                            Err(e) => {}
+                                        }
+                                    }
+                                }
+                                Err(e) => {}
                             }
                             LoopCtrl::Continue
                         } else {
@@ -363,17 +386,26 @@ impl Client {
     /// Indication whether we've received a first sync response since
     /// establishing the client (in memory)
     pub fn has_first_synced(&self) -> bool {
-        self.state.read().has_first_synced
+        match self.state.try_read() {
+            Ok(r) => r.has_first_synced,
+            Err(e) => false,
+        }
     }
 
     /// Indication whether we are currently syncing
     pub fn is_syncing(&self) -> bool {
-        self.state.read().is_syncing
+        match self.state.try_read() {
+            Ok(r) => r.is_syncing,
+            Err(e) => false,
+        }
     }
 
     /// Is this a guest account?
     pub fn is_guest(&self) -> bool {
-        self.state.read().is_guest
+        match self.state.try_read() {
+            Ok(r) => r.is_guest,
+            Err(e) => false,
+        }
     }
 
     pub async fn restore_token(&self) -> Result<String> {
@@ -382,7 +414,10 @@ impl Client {
         let result = serde_json::to_string(&RestoreToken {
             session,
             homeurl,
-            is_guest: self.state.read().is_guest,
+            is_guest: match self.state.try_read() {
+                Ok(r) => r.is_guest,
+                Err(e) => false,
+            },
         })?;
         Ok(result)
     }
@@ -496,7 +531,12 @@ impl Client {
     }
 
     pub async fn logout(&mut self) -> Result<bool> {
-        (*self.state).write().should_stop_syncing = true;
+        match self.state.try_write() {
+            Ok(mut w) => {
+                w.should_stop_syncing = true;
+            }
+            Err(e) => {}
+        }
         let client = self.client.clone();
 
         self.invitation_controller.remove_event_handler(&client);

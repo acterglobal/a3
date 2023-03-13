@@ -1,4 +1,5 @@
 use anyhow::{bail, Result};
+use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
 use futures_signals::signal_vec::{SignalVecExt, VecDiff};
 use log::info;
@@ -94,99 +95,122 @@ impl TimelineStream {
         }
     }
 
-    pub fn diff_rx(&self) -> impl Stream<Item = TimelineDiff> {
+    pub async fn diff_rx(&self) -> Result<impl Stream<Item = TimelineDiff>> {
         let timeline = self.timeline.clone();
         let room = self.room.clone();
 
-        let mut stream = timeline.signal().to_stream();
-        stream.map(move |diff| match diff {
-            VecDiff::Replace { values } => TimelineDiff {
-                action: "Replace".to_string(),
-                values: Some(
-                    values
-                        .iter()
-                        .map(|x| timeline_item_to_message(x.clone(), room.clone()))
-                        .collect(),
-                ),
-                index: None,
-                value: None,
-                new_index: None,
-                old_index: None,
-            },
-            VecDiff::InsertAt { index, value } => TimelineDiff {
-                action: "InsertAt".to_string(),
-                values: None,
-                index: Some(index),
-                value: Some(timeline_item_to_message(value, room.clone())),
-                new_index: None,
-                old_index: None,
-            },
-            VecDiff::UpdateAt { index, value } => TimelineDiff {
-                action: "UpdateAt".to_string(),
-                values: None,
-                index: Some(index),
-                value: Some(timeline_item_to_message(value, room.clone())),
-                new_index: None,
-                old_index: None,
-            },
-            VecDiff::Push { value } => TimelineDiff {
-                action: "Push".to_string(),
-                values: None,
-                index: None,
-                value: Some(timeline_item_to_message(value, room.clone())),
-                new_index: None,
-                old_index: None,
-            },
-            VecDiff::RemoveAt { index } => TimelineDiff {
-                action: "RemoveAt".to_string(),
-                values: None,
-                index: Some(index),
-                value: None,
-                new_index: None,
-                old_index: None,
-            },
-            VecDiff::Move {
-                old_index,
-                new_index,
-            } => TimelineDiff {
-                action: "Move".to_string(),
-                values: None,
-                index: None,
-                value: None,
-                old_index: Some(old_index),
-                new_index: Some(new_index),
-            },
-            VecDiff::Pop {} => TimelineDiff {
-                action: "Pop".to_string(),
-                values: None,
-                index: None,
-                value: None,
-                old_index: None,
-                new_index: None,
-            },
-            VecDiff::Clear {} => TimelineDiff {
-                action: "Clear".to_string(),
-                values: None,
-                index: None,
-                value: None,
-                old_index: None,
-                new_index: None,
-            },
-        })
+        RUNTIME
+            .spawn(async move {
+                let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
+                let stream = timeline_stream.map(move |diff| match diff {
+                    VectorDiff::Append { values } => TimelineDiff {
+                        action: "Append".to_string(),
+                        values: Some(
+                            values
+                                .iter()
+                                .map(|x| timeline_item_to_message(x.clone(), room.clone()))
+                                .collect(),
+                        ),
+                        index: None,
+                        value: None,
+                        new_index: None,
+                        old_index: None,
+                    },
+                    VectorDiff::Insert { index, value } => TimelineDiff {
+                        action: "Insert".to_string(),
+                        values: None,
+                        index: Some(index),
+                        value: Some(timeline_item_to_message(value, room.clone())),
+                        new_index: None,
+                        old_index: None,
+                    },
+                    VectorDiff::Set { index, value } => TimelineDiff {
+                        action: "Set".to_string(),
+                        values: None,
+                        index: Some(index),
+                        value: Some(timeline_item_to_message(value, room.clone())),
+                        new_index: None,
+                        old_index: None,
+                    },
+                    VectorDiff::Remove { index } => TimelineDiff {
+                        action: "Remove".to_string(),
+                        values: None,
+                        index: Some(index),
+                        value: None,
+                        new_index: None,
+                        old_index: None,
+                    },
+                    VectorDiff::PushBack { value } => TimelineDiff {
+                        action: "PushBack".to_string(),
+                        values: None,
+                        index: None,
+                        value: Some(timeline_item_to_message(value, room.clone())),
+                        new_index: None,
+                        old_index: None,
+                    },
+                    VectorDiff::PushFront { value } => TimelineDiff {
+                        action: "PushFront".to_string(),
+                        values: None,
+                        index: None,
+                        value: Some(timeline_item_to_message(value, room.clone())),
+                        new_index: None,
+                        old_index: None,
+                    },
+                    VectorDiff::PopBack => TimelineDiff {
+                        action: "PopBack".to_string(),
+                        values: None,
+                        index: None,
+                        value: None,
+                        old_index: None,
+                        new_index: None,
+                    },
+                    VectorDiff::PopFront => TimelineDiff {
+                        action: "PopFront".to_string(),
+                        values: None,
+                        index: None,
+                        value: None,
+                        old_index: None,
+                        new_index: None,
+                    },
+                    VectorDiff::Clear => TimelineDiff {
+                        action: "Clear".to_string(),
+                        values: None,
+                        index: None,
+                        value: None,
+                        old_index: None,
+                        new_index: None,
+                    },
+                    VectorDiff::Reset { values } => TimelineDiff {
+                        action: "Reset".to_string(),
+                        values: Some(
+                            values
+                                .iter()
+                                .map(|x| timeline_item_to_message(x.clone(), room.clone()))
+                                .collect(),
+                        ),
+                        index: None,
+                        value: None,
+                        new_index: None,
+                        old_index: None,
+                    },
+                });
+                Ok(stream)
+            })
+            .await?
     }
 
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {
         let timeline = self.timeline.clone();
-        let mut timeline_stream = timeline.signal().to_stream();
 
         RUNTIME
             .spawn(async move {
+                let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
                 timeline
                     .paginate_backwards(PaginationOptions::single_request(count))
                     .await?;
 
                 let mut is_loading_indicator = false;
-                if let Some(VecDiff::InsertAt { index: 0, value }) = timeline_stream.next().await {
+                if let Some(VectorDiff::Insert { index: 0, value }) = timeline_stream.next().await {
                     if let TimelineItem::Virtual(VirtualTimelineItem::LoadingIndicator) =
                         value.as_ref()
                     {
@@ -198,7 +222,7 @@ impl TimelineStream {
                 }
 
                 let mut is_timeline_start = false;
-                if let Some(VecDiff::UpdateAt { index: 0, value }) = timeline_stream.next().await {
+                if let Some(VectorDiff::Set { index: 0, value }) = timeline_stream.next().await {
                     if let TimelineItem::Virtual(VirtualTimelineItem::TimelineStart) =
                         value.as_ref()
                     {
@@ -220,38 +244,46 @@ impl TimelineStream {
 
         RUNTIME
             .spawn(async move {
-                let mut stream = timeline.stream();
+                let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
                 loop {
-                    if let Some(diff) = stream.next().await {
+                    if let Some(diff) = timeline_stream.next().await {
                         match (diff) {
-                            VecDiff::Replace { values } => {
-                                info!("stream forward timeline replace");
+                            VectorDiff::Append { values } => {
+                                info!("stream forward timeline append");
                             }
-                            VecDiff::InsertAt { index, value } => {
-                                info!("stream forward timeline insert_at");
+                            VectorDiff::Insert { index, value } => {
+                                info!("stream forward timeline insert");
                             }
-                            VecDiff::UpdateAt { index, value } => {
-                                info!("stream forward timeline update_at");
+                            VectorDiff::Set { index, value } => {
+                                info!("stream forward timeline set");
                             }
-                            VecDiff::Push { value } => {
-                                info!("stream forward timeline push");
+                            VectorDiff::Reset { values } => {
+                                info!("stream forward timeline reset");
+                            }
+                            VectorDiff::Remove { index } => {
+                                info!("stream forward timeline remove");
+                            }
+                            VectorDiff::PushBack { value } => {
+                                info!("stream forward timeline push_back");
                                 let inner = timeline_item_to_message(value, room.clone());
                                 return Ok(inner);
                             }
-                            VecDiff::RemoveAt { index } => {
-                                info!("stream forward timeline remove_at");
+                            VectorDiff::PushFront { value } => {
+                                info!("stream forward timeline push_front");
+                                let inner = timeline_item_to_message(value, room.clone());
+                                return Ok(inner);
                             }
-                            VecDiff::Move {
-                                old_index,
-                                new_index,
-                            } => {
-                                info!("stream forward timeline move");
+                            VectorDiff::PopBack => {
+                                info!("stream forward timeline pop_back");
                             }
-                            VecDiff::Pop {} => {
-                                info!("stream forward timeline pop");
+                            VectorDiff::PopFront => {
+                                info!("stream forward timeline pop_front");
                             }
-                            VecDiff::Clear {} => {
+                            VectorDiff::Clear => {
                                 info!("stream forward timeline clear");
+                            }
+                            VectorDiff::Reset { values } => {
+                                info!("stream forward timeline reset");
                             }
                         }
                     }
@@ -303,7 +335,7 @@ impl TimelineStream {
 
                 timeline
                     .send(edited_content.into(), txn_id.as_deref().map(Into::into))
-                    .await?;
+                    .await;
                 Ok(true)
             })
             .await?

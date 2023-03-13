@@ -6,11 +6,12 @@ use log::{info, warn};
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{Room as MatrixRoom, RoomMember},
+    room::{Invited, Joined, Left, Room as MatrixRoom, RoomMember},
     ruma::{
         assign,
         events::{
             reaction::ReactionEventContent,
+            receipt::{ReceiptThread, ReceiptType},
             relation::Annotation,
             room::{
                 message::{
@@ -23,9 +24,10 @@ use matrix_sdk::{
             AnyMessageLikeEvent, AnyMessageLikeEventContent, AnyStateEvent, AnyTimelineEvent,
             MessageLikeEvent, StateEvent,
         },
+        room::RoomType,
         EventId, UInt, UserId,
     },
-    Client as MatrixClient, RoomType,
+    Client as MatrixClient,
 };
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
@@ -198,7 +200,7 @@ impl Room {
         RUNTIME
             .spawn(async move {
                 let event_id = EventId::parse(event_id)?;
-                room.read_receipt(&event_id).await?;
+                room.event_receipts(ReceiptType::Read, ReceiptThread::Main, &event_id).await?;
                 Ok(true)
             })
             .await?
@@ -289,10 +291,10 @@ impl Room {
     }
 
     pub fn room_type(&self) -> String {
-        match self.room.room_type() {
-            RoomType::Joined => "joined".to_string(),
-            RoomType::Left => "left".to_string(),
-            RoomType::Invited => "invited".to_string(),
+        match self.room.state() {
+            Joined => "joined".to_string(),
+            Left => "left".to_string(),
+            Invited => "invited".to_string(),
         }
     }
 

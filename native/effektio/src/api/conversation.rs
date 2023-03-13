@@ -7,6 +7,7 @@ use log::{error, info, warn};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},
+    locks::Mutex,
     room::{MessagesOptions, Room as MatrixRoom},
     ruma::{
         api::client::room::{
@@ -15,6 +16,7 @@ use matrix_sdk::{
         },
         assign,
         events::{
+            receipt::{ReceiptThread, ReceiptType},
             room::{
                 encrypted::OriginalSyncRoomEncryptedEvent,
                 member::{MembershipState, OriginalSyncRoomMemberEvent},
@@ -28,7 +30,6 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{
@@ -97,7 +98,7 @@ impl Conversation {
                 let mut records: Vec<ReceiptRecord> = vec![];
                 for member in room.active_members().await? {
                     let user_id = member.user_id();
-                    if let Some((event_id, receipt)) = room.user_read_receipt(user_id).await? {
+                    if let Some((event_id, receipt)) = room.user_receipt(ReceiptType::Read, ReceiptThread::Main, user_id).await? {
                         let record = ReceiptRecord::new(event_id, user_id.to_owned(), receipt.ts);
                         records.push(record);
                     }
@@ -443,6 +444,9 @@ impl Client {
     }
 
     pub fn incoming_message_rx(&self) -> Option<Receiver<RoomMessage>> {
-        self.conversation_controller.incoming_event_rx.lock().take()
+        match self.conversation_controller.incoming_event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
     }
 }

@@ -8,6 +8,7 @@ use matrix_sdk::{
     config::SyncSettings,
     encryption::verification::{Verification, VerificationRequest},
     event_handler::{Ctx, EventHandlerHandle},
+    locks::Mutex,
     ruma::{
         events::{
             forwarded_room_key::ToDeviceForwardedRoomKeyEvent,
@@ -43,7 +44,6 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::{client::Client, RUNTIME};
@@ -1262,6 +1262,9 @@ impl VerificationController {
 
 impl Client {
     pub fn verification_event_rx(&self) -> Option<Receiver<VerificationEvent>> {
-        self.verification_controller.event_rx.lock().take()
+        match self.verification_controller.event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
     }
 }

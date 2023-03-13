@@ -5,11 +5,11 @@ use futures::{
 use log::{info, warn};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
+    locks::Mutex,
     room::Room as MatrixRoom,
     ruma::{events::typing::SyncTypingEvent, OwnedRoomId, OwnedUserId},
     Client as MatrixClient,
 };
-use parking_lot::Mutex;
 use std::sync::Arc;
 
 use super::client::Client;
@@ -81,6 +81,9 @@ impl TypingController {
 
 impl Client {
     pub fn typing_event_rx(&self) -> Option<Receiver<TypingEvent>> {
-        self.typing_controller.event_rx.lock().take()
+        match self.typing_controller.event_rx.try_lock() {
+            Ok(mut r) => r.take(),
+            Err(e) => None,
+        }
     }
 }

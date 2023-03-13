@@ -1,13 +1,12 @@
 use anyhow::Result;
 use futures::Stream;
 use lazy_static::lazy_static;
-use tokio::runtime;
+use tokio::runtime::Runtime;
 
 use crate::platform;
 
 lazy_static! {
-    pub static ref RUNTIME: runtime::Runtime =
-        runtime::Runtime::new().expect("Can't start Tokio runtime");
+    pub static ref RUNTIME: Runtime = Runtime::new().expect("Can't start Tokio runtime");
 }
 
 mod account;
