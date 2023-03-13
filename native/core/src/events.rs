@@ -11,6 +11,7 @@ mod labels;
 mod news;
 pub mod pins;
 pub mod tasks;
+pub mod calendar;
 
 pub use common::{
     BelongsTo, BrandIcon, Color, Colorize, Icon, Reference, References, TimeZone, Update,
