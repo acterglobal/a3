@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 use super::{BelongsTo, Color, Icon,  Update, UtcDateTime};
 
 
-
 /// Event Location
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(tag = "type")]
