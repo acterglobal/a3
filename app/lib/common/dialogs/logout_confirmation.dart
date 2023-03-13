@@ -3,6 +3,7 @@ import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// Can be extended to be reusable dialog as riverpod states get added.
 void confirmationDialog(BuildContext ctx, WidgetRef ref) {
   showDialog(
     context: ctx,
