@@ -1,4 +1,5 @@
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
+import 'package:effektio/common/dialogs/logout_confirmation.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/custom_avatar.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
@@ -22,10 +23,12 @@ class UserAvatarWidget extends ConsumerWidget {
     final userProfile = ref.watch(userProfileProvider);
     if (client.isGuest()) {
       return Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment:
+            isExtendedRail ? MainAxisAlignment.start : MainAxisAlignment.center,
         children: <Widget>[
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/login'),
+          SizedBox(
+            width: 40,
+            height: 40,
             child: TextAvatar(
               backgroundColor: Colors.grey,
               text: 'G',
@@ -54,7 +57,7 @@ class UserAvatarWidget extends ConsumerWidget {
           children: [
             CustomAvatar(
               uniqueKey: client.userId().toString(),
-              radius: 24,
+              radius: 20,
               isGroup: false,
               cacheHeight: 120,
               cacheWidth: 120,
