@@ -1,5 +1,4 @@
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-import 'package:effektio/common/dialogs/logout_confirmation.dart';
 import 'package:effektio/common/themes/seperated_themes.dart';
 import 'package:effektio/common/widgets/custom_avatar.dart';
 import 'package:effektio/features/home/controllers/home_controller.dart';
