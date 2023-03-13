@@ -1,8 +1,8 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/todo/controllers/todo_controller.dart';
-import 'package:effektio/models/ToDoList.dart';
-import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio/features/todo/pages/task_detail_page.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/todo/controllers/todo_controller.dart';
+import 'package:acter/models/ToDoList.dart';
+import 'package:acter/models/ToDoTask.dart';
+import 'package:acter/features/todo/pages/task_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_svg/flutter_svg.dart';

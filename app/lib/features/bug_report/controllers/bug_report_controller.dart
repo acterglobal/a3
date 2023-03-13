@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -74,7 +74,7 @@ class BugReportController extends GetxController {
 
     isSubmitting = true;
     update(['submit']);
-    final sdk = await EffektioSdk.instance;
+    final sdk = await ActerSdk.instance;
     String logFile = sdk.rotateLogFile();
 
     var request = http.MultipartRequest('POST', Uri.parse(rageshakeUrl));
@@ -111,7 +111,7 @@ class BugReportController extends GetxController {
     String? reportUrl;
     if (resp.statusCode == HttpStatus.ok) {
       Map<String, dynamic> json = jsonDecode(await resp.stream.bytesToString());
-      // example - https://github.com/bitfriend/effektio-bugs/issues/9
+      // example - https://github.com/bitfriend/acter-bugs/issues/9
       reportUrl = json['report_url'];
     }
     isSubmitting = false;

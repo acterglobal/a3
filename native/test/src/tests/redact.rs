@@ -1,0 +1,44 @@
+use crate::utils::random_user_with_random_space;
+use acter::matrix_sdk::ruma::{
+    events::{AnyMessageLikeEvent, AnyTimelineEvent},
+    EventId,
+};
+use anyhow::Result;
+use futures::stream::StreamExt;
+
+#[tokio::test]
+async fn message_redaction() -> Result<()> {
+    let _ = env_logger::try_init();
+
+    let (mut user, room_id) = random_user_with_random_space("message_redaction").await?;
+    let syncer = user.start_sync();
+    let mut synced = syncer.first_synced_rx().expect("note yet read");
+    while synced.next().await != Some(true) {} // let's wait for it to have synced
+
+    let group = user
+        .get_group(room_id.to_string())
+        .await
+        .expect("user belongs to its space");
+    let event_id = group.send_plain_message("Hi, everyone".to_string()).await?;
+    println!("event id: {event_id:?}");
+
+    let redact_id = group
+        .redact_message(event_id.clone(), Some("redact-test".to_string()), None)
+        .await?;
+
+    let redact_id = EventId::parse(redact_id)?;
+    let ev = group.event(&redact_id).await?;
+    println!("redact: {ev:?}");
+
+    let Ok(AnyTimelineEvent::MessageLike(AnyMessageLikeEvent::RoomRedaction(r))) = ev.event.deserialize() else {
+        panic!("not the proper room event");
+    };
+
+    let Some(e) = r.as_original() else {
+        panic!("This should be m.room.redaction event");
+
+    };
+
+    assert_eq!(e.redacts.to_string(), event_id);
+    Ok(())
+}

@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.14)
-set(PROJECT_NAME "effektio_flutter_sdk")
+set(PROJECT_NAME "acter_flutter_sdk")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
 # This value is used when generating builds using this plugin, so it must
 # not be changed
-set(PLUGIN_NAME "effektio_flutter_sdk_plugin")
+set(PLUGIN_NAME "acter_flutter_sdk_plugin")
 
 add_library(${PLUGIN_NAME} SHARED
-  "effektio_flutter_sdk_plugin.cpp"
+  "acter_flutter_sdk_plugin.cpp"
 )
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
@@ -18,7 +18,7 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin
-set(effektio_flutter_sdk_bundled_libraries
-  "${CMAKE_CURRENT_SOURCE_DIR}/effektio.dll"
+set(acter_flutter_sdk_bundled_libraries
+  "${CMAKE_CURRENT_SOURCE_DIR}/acter.dll"
   PARENT_SCOPE
 )

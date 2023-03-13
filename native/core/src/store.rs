@@ -2,7 +2,7 @@ use std::iter::FromIterator;
 use std::sync::Arc;
 
 use crate::{
-    models::{AnyEffektioModel, EffektioModel},
+    models::{ActerModel, AnyActerModel},
     Error, Result,
 };
 use dashmap::mapref::one::RefMut;
@@ -14,13 +14,13 @@ use matrix_sdk::Client as MatrixClient;
 pub struct Store {
     client: MatrixClient,
     fresh: bool,
-    models: Arc<dashmap::DashMap<String, AnyEffektioModel>>,
+    models: Arc<dashmap::DashMap<String, AnyActerModel>>,
     indizes: Arc<dashmap::DashMap<String, Vec<String>>>,
     dirty: Arc<dashmap::DashSet<String>>,
 }
 
-static ALL_MODELS_KEY: &str = "EFFEKTIO::ALL";
-static DB_VERSION_KEY: &str = "EFFEKTIO::DB_VERSION";
+static ALL_MODELS_KEY: &str = "ACTER::ALL";
+static DB_VERSION_KEY: &str = "ACTER::DB_VERSION";
 static CURRENT_DB_VERSION: u32 = 1;
 
 async fn get_from_store<T: serde::de::DeserializeOwned>(
@@ -29,7 +29,7 @@ async fn get_from_store<T: serde::de::DeserializeOwned>(
 ) -> Result<T> {
     let v = client
         .store()
-        .get_custom_value(format!("effektio:{key}").as_bytes())
+        .get_custom_value(format!("acter:{key}").as_bytes())
         .await?
         .ok_or(Error::ModelNotFound)?;
     Ok(serde_json::from_slice(v.as_slice())?)
@@ -48,7 +48,7 @@ impl Store {
         self.client
             .store()
             .set_custom_value(
-                format!("effektio:{key}").as_bytes(),
+                format!("acter:{key}").as_bytes(),
                 serde_json::to_vec(value)?,
             )
             .await?;
@@ -110,7 +110,7 @@ impl Store {
             })? {
             try_join_all(
                 v.iter()
-                    .map(|k| get_from_store::<AnyEffektioModel>(client.clone(), k)),
+                    .map(|k| get_from_store::<AnyActerModel>(client.clone(), k)),
             )
             .await?
         } else {
@@ -140,7 +140,7 @@ impl Store {
     }
 
     #[tracing::instrument(skip(self))]
-    pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyEffektioModel>> {
+    pub async fn get_list(&self, key: &str) -> Result<impl Iterator<Item = AnyActerModel>> {
         let listing = if let Some(r) = self.indizes.get(key) {
             r.value().clone()
         } else {
@@ -153,7 +153,7 @@ impl Store {
             .filter_map(move |name| models.get(&name).map(|v| v.value().clone())))
     }
 
-    pub async fn get(&self, model_key: &str) -> Result<AnyEffektioModel> {
+    pub async fn get(&self, model_key: &str) -> Result<AnyActerModel> {
         Ok(self
             .models
             .get(model_key)
@@ -161,12 +161,12 @@ impl Store {
             .value()
             .clone())
     }
-    pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyEffektioModel>> {
+    pub async fn get_many(&self, model_keys: Vec<String>) -> Vec<Option<AnyActerModel>> {
         join_all(model_keys.iter().map(|k| async { self.get(k).await.ok() })).await
     }
 
     #[tracing::instrument(skip(self))]
-    pub async fn save_model_inner(&self, mdl: AnyEffektioModel) -> Result<Vec<String>> {
+    pub async fn save_model_inner(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let key = mdl.event_id().to_string();
         let mut keys_changed = vec![key.clone()];
         tracing::trace!(user=?self.client.user_id(), key, "saving");
@@ -204,7 +204,7 @@ impl Store {
         Ok(keys_changed)
     }
 
-    pub async fn save_many(&self, models: Vec<AnyEffektioModel>) -> Result<Vec<String>> {
+    pub async fn save_many(&self, models: Vec<AnyActerModel>) -> Result<Vec<String>> {
         let mut total_list = Vec::new();
         for mdl in models.into_iter() {
             total_list.extend(self.save_model_inner(mdl).await?);
@@ -213,7 +213,7 @@ impl Store {
         Ok(total_list)
     }
 
-    pub async fn save(&self, mdl: AnyEffektioModel) -> Result<Vec<String>> {
+    pub async fn save(&self, mdl: AnyActerModel) -> Result<Vec<String>> {
         let keys = self.save_model_inner(mdl).await?;
         self.sync().await?; // FIXME: should we really run this every time?
         Ok(keys)
@@ -227,7 +227,7 @@ impl Store {
                 self.client
                     .store()
                     .set_custom_value(
-                        format!("effektio:{key:}").as_bytes(),
+                        format!("acter:{key:}").as_bytes(),
                         serde_json::to_vec(r.value())?,
                     )
                     .await?;

@@ -3,20 +3,20 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:effektio/common/snackbars/not_implemented.dart';
-import 'package:effektio/common/themes/chat_theme.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/features/chat/pages/profile_page.dart';
-import 'package:effektio/features/chat/widgets/bubble_builder.dart';
-import 'package:effektio/common/widgets/custom_avatar.dart';
-import 'package:effektio/features/chat/widgets/custom_input.dart';
-import 'package:effektio/features/chat/widgets/empty_history_placeholder.dart';
-import 'package:effektio/features/chat/widgets/text_message_builder.dart';
-import 'package:effektio/features/chat/widgets/type_indicator.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/controllers/chat_list_controller.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/pages/profile_page.dart';
+import 'package:acter/features/chat/widgets/bubble_builder.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter/features/chat/widgets/custom_input.dart';
+import 'package:acter/features/chat/widgets/empty_history_placeholder.dart';
+import 'package:acter/features/chat/widgets/text_message_builder.dart';
+import 'package:acter/features/chat/widgets/type_indicator.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Conversation, FfiBufferUint8;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -211,7 +211,7 @@ class _RoomPageState extends State<RoomPage> {
                                   ),
                                   const SizedBox(height: 16),
                                   const Text(
-                                    "You can report this message to Effektio if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
+                                    "You can report this message to Acter if you think that it goes against our community guidelines. We won't notify the account that you submitted this report",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
                                       color: AppCommonTheme.dividerColor,
@@ -566,7 +566,7 @@ class _RoomPageState extends State<RoomPage> {
               },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
-              theme: EffektioChatTheme(
+              theme: ActerChatTheme(
                 attachmentButtonIcon:
                     SvgPicture.asset('assets/images/attachment.svg'),
                 sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),

@@ -1,6 +1,6 @@
-import 'package:effektio/models/Team.dart';
-import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/models/Team.dart';
+import 'package:acter/models/ToDoTask.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show TaskDraft, TaskListUpdateBuilder;
 import 'package:flutter/widgets.dart';
 

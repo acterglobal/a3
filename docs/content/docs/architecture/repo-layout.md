@@ -42,9 +42,9 @@ docs                    # These documentation files
 native                  # Rust native libraries
 ├── cli                        # Command-Line interface
 ├── core                       # Core types and inner system
-├── effektio                   # FFI generation layer and public lib interface
-├── effektio-test              # Rust integration tests
-└── effektio-tui               # A terminal UI client
+├── acter                   # FFI generation layer and public lib interface
+├── acter-test              # Rust integration tests
+└── acter-tui               # A terminal UI client
 util                    # Further utilities
 └── cucumber_reporter          # generating HTML reports from cucumber integration tests
 └── ...

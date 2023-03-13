@@ -1,4 +1,4 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
 
 class GroupLinkView extends StatefulWidget {
@@ -75,7 +75,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         const Padding(
                           padding: EdgeInsets.all(16),
                           child: Text(
-                            'https://effektio/chat/group/#erifdjknsdjhndlsnGdhsuSsyUJKHSiojsjSHNIjsjfds{LIJHNmdjsoifkdsodjms',
+                            'https://acter/chat/group/#erifdjknsdjhndlsnGdhsuSsyUJKHSiojsjSHNIjsjfds{LIJHNmdjsoifkdsodjms',
                             style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
                         )

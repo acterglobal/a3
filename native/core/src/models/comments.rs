@@ -8,7 +8,7 @@ use derive_getters::Getters;
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId};
 use serde::{Deserialize, Serialize};
 
-use super::{AnyEffektioModel, EventMeta};
+use super::{AnyActerModel, EventMeta};
 
 static COMMENTS_FIELD: &str = "comments";
 static COMMENTS_STATS_FIELD: &str = "comments_stats";
@@ -50,7 +50,7 @@ impl CommentsManager {
             .get_list(&Comment::index_for(&self.event_id))
             .await?
             .filter_map(|e| match e {
-                AnyEffektioModel::Comment(c) => Some(c),
+                AnyActerModel::Comment(c) => Some(c),
                 _ => None,
             })
             .collect())
@@ -122,7 +122,7 @@ impl Comment {
     }
 }
 
-impl super::EffektioModel for Comment {
+impl super::ActerModel for Comment {
     fn indizes(&self) -> Vec<String> {
         self.belongs_to()
             .unwrap() // we always have some as comments
@@ -184,8 +184,8 @@ impl super::EffektioModel for Comment {
         Some(references)
     }
 
-    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
-        let AnyEffektioModel::CommentUpdate(update) = model else {
+    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
+        let AnyActerModel::CommentUpdate(update) = model else {
             return Ok(false)
         };
 
@@ -221,7 +221,7 @@ pub struct CommentUpdate {
     meta: EventMeta,
 }
 
-impl super::EffektioModel for CommentUpdate {
+impl super::ActerModel for CommentUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.comment.event_id)]
     }

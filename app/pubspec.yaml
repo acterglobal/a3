@@ -1,4 +1,4 @@
-name: effektio
+name: acter
 description: Your privacy-first social Organising App
 
 # The following line prevents the package from being accidentally published to
@@ -62,7 +62,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: ^0.17.0
-  effektio_flutter_sdk:
+  acter_flutter_sdk:
     path: packages/rust_sdk
 
   # State Management

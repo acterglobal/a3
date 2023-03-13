@@ -1,7 +1,7 @@
 use crate::config::{LoginConfig, ENV_ROOM};
+use acter_core::ruma;
 use anyhow::Result;
 use clap::Parser;
-use effektio_core::ruma;
 
 // mod execute;
 mod fetch_news;

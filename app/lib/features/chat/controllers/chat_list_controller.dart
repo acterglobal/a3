@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/models/JoinedRoom.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/models/JoinedRoom.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         Client,
         Conversation,

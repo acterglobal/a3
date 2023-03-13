@@ -1,15 +1,15 @@
 use crate::config::{LoginConfig, ENV_ROOM};
-use anyhow::{bail, Result};
-use clap::{crate_version, Parser, Subcommand};
-use effektio::{
+use acter::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
     Client as EfkClient, CreateGroupSettingsBuilder,
 };
-use effektio_core::{
-    models::EffektioModel,
+use acter_core::{
+    models::ActerModel,
     ruma::{api::client::room::Visibility, OwnedUserId},
 };
+use anyhow::{bail, Result};
+use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
@@ -34,7 +34,7 @@ pub struct ExecuteOpts {
 
     /// The room you want to post the news to
     #[clap(short, long, env = ENV_ROOM)]
-    pub room: Box<effektio_core::ruma::RoomId>,
+    pub room: Box<acter_core::ruma::RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,
 

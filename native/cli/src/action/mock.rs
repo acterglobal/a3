@@ -1,14 +1,14 @@
-use anyhow::{bail, Result};
-use clap::{crate_version, Parser, Subcommand};
-use effektio::{
+use acter::{
     platform::sanitize,
     testing::{ensure_user, wait_for},
     Client as EfkClient, CreateGroupSettingsBuilder,
 };
-use effektio_core::{
-    models::EffektioModel,
+use acter_core::{
+    models::ActerModel,
     ruma::{api::client::room::Visibility, OwnedUserId},
 };
+use anyhow::{bail, Result};
+use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
@@ -100,7 +100,7 @@ impl Mock {
                     StoreConfig::new().state_store(MemoryStore::new())
                 };
 
-                let user_agent = format!("effektio-cli/{}", crate_version!());
+                let user_agent = format!("acter-cli/{}", crate_version!());
 
                 let client = ensure_user(
                     self.homeserver.as_str(),
@@ -203,7 +203,7 @@ impl Mock {
 
         let admin = self.client("admin".to_owned()).await.unwrap();
 
-        match admin.create_effektio_group(ops_settings).await {
+        match admin.create_acter_group(ops_settings).await {
             Ok(ops_id) => {
                 tracing::info!("Ops Room Id: {:?}", ops_id);
             }
@@ -227,7 +227,7 @@ impl Mock {
                 .build()?,
         );
 
-        match admin.create_effektio_group(promenade_settings).await {
+        match admin.create_acter_group(promenade_settings).await {
             Ok(promenade_room_id) => {
                 tracing::info!("Promenade Room Id: {:?}", promenade_room_id);
             }
@@ -251,7 +251,7 @@ impl Mock {
                 .build()?,
         );
 
-        match admin.create_effektio_group(quarks_settings).await {
+        match admin.create_acter_group(quarks_settings).await {
             Ok(quarks_id) => {
                 tracing::info!("Quarks Room Id: {:?}", quarks_id);
             }

@@ -1,5 +1,5 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/onboarding/controllers/auth_controller.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/onboarding/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

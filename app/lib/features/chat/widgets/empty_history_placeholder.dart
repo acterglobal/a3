@@ -1,6 +1,6 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/features/chat/widgets/type_indicator.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/widgets/type_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

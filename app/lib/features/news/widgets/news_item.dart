@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:io' show Platform;
 
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/news/widgets/news_side_bar.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/news/widgets/news_side_bar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

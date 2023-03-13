@@ -52,7 +52,7 @@ jobs:
 
       - name: Build Rust docs
         run: |
-          cargo doc -p effektio
+          cargo doc -p acter
           echo --- Moving docs
           mv target/doc/ docs/static/api/main/rust
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         Client,
         DeviceChangedEvent,

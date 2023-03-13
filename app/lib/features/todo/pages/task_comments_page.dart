@@ -1,9 +1,9 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/todo/controllers/todo_controller.dart';
-import 'package:effektio/models/ToDoComment.dart';
-import 'package:effektio/features/todo/widgets/comment_input.dart';
-import 'package:effektio/common/widgets/custom_avatar.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/todo/controllers/todo_controller.dart';
+import 'package:acter/models/ToDoComment.dart';
+import 'package:acter/features/todo/widgets/comment_input.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';

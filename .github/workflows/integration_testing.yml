@@ -43,7 +43,7 @@ jobs:
       - uses: taiki-e/install-action@nextest
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -54,7 +54,7 @@ jobs:
           DEFAULT_HOMESERVER_NAME: "localhost"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: "clang"
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAG: -C link-arg=-fuse-ld=/usr/local/bin/mold
-        run: cargo nextest run --config-file .github/nextest-config.toml -p effektio-test
+        run: cargo nextest run --config-file .github/nextest-config.toml -p acter-test
 
       # file an error if this failed on `main` post-merge
       - name: Report issue
@@ -113,7 +113,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -125,7 +125,7 @@ jobs:
         run: cargo make --profile release desktop
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
       - name: Run flutter integration tests
         working-directory: app
@@ -204,7 +204,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -213,7 +213,7 @@ jobs:
         run: cargo make --profile release ios
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
       - uses: futureware-tech/simulator-action@v1
         with:
@@ -294,7 +294,7 @@ jobs:
             allow_guest_access: true
 
       - name: Initialize e2ee mock data
-        run: cargo run -p effektio-cli -- mock
+        run: cargo run -p acter-cli -- mock
         env:
           DEFAULT_HOMESERVER_NAME: "localhost"
           DEFAULT_HOMESERVER_URL: "http://localhost:8118"
@@ -303,7 +303,7 @@ jobs:
         run: cargo make --profile release android
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code effektio_flutter_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code acter_flutter_sdk/lib/acter_flutter_sdk_ffi.dart
 
       - name: Run integration tests on android
         uses: reactivecircus/android-emulator-runner@v2

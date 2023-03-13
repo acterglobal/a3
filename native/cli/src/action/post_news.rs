@@ -2,7 +2,7 @@ use anyhow::{bail, Context, Result};
 use clap::Parser;
 
 use crate::config::{LoginConfig, ENV_ROOM};
-use effektio_core::events;
+use acter_core::events;
 
 use std::ffi::OsStr;
 use std::path::PathBuf;
@@ -13,7 +13,7 @@ use tracing::info;
 pub struct PostNews {
     /// The room you want to post the news to
     #[clap(short, long, env = ENV_ROOM)]
-    pub room: Box<effektio_core::ruma::RoomId>,
+    pub room: Box<acter_core::ruma::RoomId>,
     #[clap(flatten)]
     pub login: LoginConfig,
 

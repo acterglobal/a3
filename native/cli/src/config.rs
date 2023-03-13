@@ -3,16 +3,16 @@ use clap::{crate_version, Parser};
 use dialoguer::theme::ColorfulTheme;
 use dialoguer::Password;
 
-use effektio_core::matrix_sdk::ruma::OwnedUserId;
-use effektio_core::matrix_sdk::{Client, ClientBuilder};
+use acter_core::matrix_sdk::ruma::OwnedUserId;
+use acter_core::matrix_sdk::{Client, ClientBuilder};
 
 use crate::action::Action;
 
 use tracing::warn;
 
-pub const ENV_USER: &str = "EFFEKTIO_USER";
-pub const ENV_PASSWORD: &str = "EFFEKTIO_PASSWORD";
-pub const ENV_ROOM: &str = "EFFEKTIO_ROOM";
+pub const ENV_USER: &str = "ACTER_USER";
+pub const ENV_PASSWORD: &str = "ACTER_PASSWORD";
+pub const ENV_ROOM: &str = "ACTER_ROOM";
 
 /// Generic Login Configuration helper
 #[derive(Parser, Debug)]
@@ -30,7 +30,7 @@ pub struct LoginConfig {
 }
 
 async fn default_client_config() -> Result<ClientBuilder> {
-    Ok(Client::builder().user_agent(format!("effektio-cli/{}", crate_version!())))
+    Ok(Client::builder().user_agent(format!("acter-cli/{}", crate_version!())))
 }
 
 impl LoginConfig {
@@ -62,9 +62,9 @@ impl LoginConfig {
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
-pub struct EffektioCliConfig {
+pub struct ActerCliConfig {
     /// Logging configuration
-    #[clap(short, long, default_value = "effektio_cli=info,warn")]
+    #[clap(short, long, default_value = "acter_cli=info,warn")]
     pub log: String,
 
     /// The action to perform

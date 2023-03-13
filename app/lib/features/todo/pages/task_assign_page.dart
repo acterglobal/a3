@@ -1,5 +1,5 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/chat/widgets/invite_user_dialog.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/chat/widgets/invite_user_dialog.dart';
 import 'package:flutter/material.dart';
 
 class TaskAssignPage extends StatelessWidget {

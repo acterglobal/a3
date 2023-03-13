@@ -7,11 +7,11 @@
 	<key>CFBundleExecutable</key>
 	<string>App</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.effektio.bundle</string>
+	<string>global.acter.bundle</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>effektio</string>
+	<string>acter</string>
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleShortVersionString</key>

@@ -1,5 +1,5 @@
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show News;
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show News;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final newsListProvider =

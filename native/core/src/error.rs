@@ -8,7 +8,7 @@ pub enum Error {
     #[error("Error in the MatrixSDK HTTP")]
     HttpError(#[from] HttpError),
 
-    #[error("Not a known Effektio Event")]
+    #[error("Not a known Acter Event")]
     UnknownEvent,
 
     #[error("Error De/serializing: {0}")]

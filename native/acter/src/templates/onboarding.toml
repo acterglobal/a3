@@ -1,0 +1,38 @@
+name = "Onboarding Template"
+version = "0.1"
+
+[inputs]
+main = { type = "user", is-default = true, required = true, description = "The starting user" }
+space = { type = "space", is-default = true, required = true, description = "The acter space" }
+
+[objects]
+start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboarding list" }
+
+[objects.task_1]
+type = "task"
+title = "Scroll through the news"
+assignees = ["{{ main.user_id }}"]
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
+
+[objects.task_2]
+type = "task"
+title = "Scroll through the news"
+assignees = ["{{ main.user_id }}"]
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
+
+[objects.acter-website-pin]
+type = "pin"
+title = "Acter Website"
+url = "https://acter.global"
+
+[objects.acter-source-pin]
+type = "pin"
+title = "Acter Source Code"
+url = "https://github.com/acterglobal/a3"
+
+[objects.acter-twitter-pin]
+type = "pin"
+title = "Acter Twitter"
+url = "https://twitter.com/acterHQ"

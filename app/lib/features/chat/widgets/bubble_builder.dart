@@ -3,11 +3,11 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bubble/bubble.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/features/chat/widgets/emoji_reaction_item.dart';
-import 'package:effektio/features/chat/widgets/emoji_row.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/widgets/emoji_reaction_item.dart';
+import 'package:acter/features/chat/widgets/emoji_row.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show ReactionDesc;
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;

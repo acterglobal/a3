@@ -51,7 +51,7 @@ impl Default for Priority {
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
-#[ruma_event(type = "org.effektio.dev.tasklist", kind = MessageLike)]
+#[ruma_event(type = "global.acter.dev.tasklist", kind = MessageLike)]
 #[builder(name = "TaskListBuilder", derive(Debug))]
 pub struct TaskListEventContent {
     pub name: String,
@@ -92,7 +92,7 @@ impl TaskListBuilder {
 ///
 /// modeled after [JMAP TaskList](https://jmap.io/spec-tasks.html#tasklists)
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
-#[ruma_event(type = "org.effektio.dev.tasklist.update", kind = MessageLike)]
+#[ruma_event(type = "global.acter.dev.tasklist.update", kind = MessageLike)]
 #[builder(name = "TaskListUpdateBuilder", derive(Debug))]
 pub struct TaskListUpdateEventContent {
     #[builder(setter(into))]
@@ -222,7 +222,7 @@ impl TaskListUpdateEventContent {
 /// see also the [IETF Task](https://www.rfc-editor.org/rfc/rfc8984.html#name-task)
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
-#[ruma_event(type = "org.effektio.dev.task", kind = MessageLike)]
+#[ruma_event(type = "global.acter.dev.task", kind = MessageLike)]
 #[builder(
     name = "TaskBuilder",
     build_fn(validate = "Self::validate"),
@@ -297,7 +297,7 @@ impl TaskBuilder {
 /// see also the [IETF Task](https://www.rfc-editor.org/rfc/rfc8984.html#name-task)
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
-#[ruma_event(type = "org.effektio.dev.task.update", kind = MessageLike)]
+#[ruma_event(type = "global.acter.dev.task.update", kind = MessageLike)]
 #[builder(name = "TaskUpdateBuilder", derive(Debug))]
 pub struct TaskUpdateEventContent {
     #[builder(setter(into))]

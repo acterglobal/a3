@@ -18,10 +18,10 @@ top = false
 
 ## Contribute to Acter
 
-👉 The Acter code lives in the [`effektio` repository](https://github.com/acterglobal/a3)
+👉 The Acter code lives in the [`acter` repository](https://github.com/acterglobal/a3)
 
-- Pick an [issue from marked as `accepted / todo `](https://github.com/orgs/effektio/projects/1/views/1)
-    - post a comment that you'd like to work on it, so others will know you are working on it
+- Pick an [issue from marked as `accepted / todo `](https://github.com/orgs/acter/projects/1/views/1)
+  - post a comment that you'd like to work on it, so others will know you are working on it
 - Follow the [GitHub flow](https://guides.github.com/introduction/flow/).
 - After submitting your PR, accept the CLA (the bot will comment on the PR for you), accepting your code to be published under the [Acter Public Source License](../license/)
 - Address all review remarks, ensure the CI is passing and the PR ios up to date with latest `main`, more details in **[the review process description](../reviews)**
@@ -32,17 +32,19 @@ top = false
 - [Feature request](https://github.com/acterglobal/a3/issues/new?template=feature-request---.md)
 
 ## Improve documentation
+
 /
 👉 The documentation lives in [`./docs/content/docs/`](https://github.com/acterglobal/a3/tree/main/docs/content/docs)
-of the `effektio` repository.
+of the `acter` repository.
 
 - Follow the [GitHub flow](https://guides.github.com/introduction/flow/).
 - Follow the [Conventional Commits Specification](https://www.conventionalcommits.org/en/v1.0.0/)
 
 ## Improve Localisation
+
 /
 👉 The localisations live in [`./docs/content/docs/`](https://github.com/acterglobal/a3/tree/main/docs/content/docs)
-of the `effektio` repository.
+of the `acter` repository.
 
 - Read the [localisation guide](../../dev/localisations/).
 - Follow the [GitHub flow](https://guides.github.com/introduction/flow/).

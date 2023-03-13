@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "org.effektio" "\0"
+            VALUE "CompanyName", "global.acter" "\0"
             VALUE "FileDescription", "app" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "app" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2022 org.effektio. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2022 global.acter. All rights reserved." "\0"
             VALUE "OriginalFilename", "app.exe" "\0"
             VALUE "ProductName", "app" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

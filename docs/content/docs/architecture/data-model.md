@@ -33,6 +33,6 @@ Further more, the event model itself, too, leads from a autonomous-user approach
 
 ## Special Spaces
 
-Because Acter needs to read the entire history upon joining to be able to calculate the accurate state of all models in the state machine client side, we do not mix the state machine data with linear chat messages, which reading from the newest backwards is just a fine support case. To signify that a space is of this special state machine, we've set its `purpose`-state as described in [MSC3088][] to our special [`acter purpose value`](/api/main/rust/effektio_core/statics/static.PURPOSE_TEAM_VALUE.html). Only spaces with that purpose state will be read and assumed to be acter spaces with a state machine.
+Because Acter needs to read the entire history upon joining to be able to calculate the accurate state of all models in the state machine client side, we do not mix the state machine data with linear chat messages, which reading from the newest backwards is just a fine support case. To signify that a space is of this special state machine, we've set its `purpose`-state as described in [MSC3088][] to our special [`acter purpose value`](/api/main/rust/acter_core/statics/static.PURPOSE_TEAM_VALUE.html). Only spaces with that purpose state will be read and assumed to be acter spaces with a state machine.
 
 [msc3088]: https://github.com/matrix-org/matrix-spec-proposals/blob/travis/msc/mutable-subtypes/proposals/3088-room-subtyping.md

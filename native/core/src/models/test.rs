@@ -2,7 +2,7 @@ use derive_builder::Builder;
 use matrix_sdk::ruma::{event_id, room_id, user_id, OwnedEventId};
 use serde::{Deserialize, Serialize};
 
-use crate::models::EffektioModel;
+use crate::models::ActerModel;
 
 use super::EventMeta;
 
@@ -32,7 +32,7 @@ impl TestModelBuilder {
     }
 }
 
-impl EffektioModel for TestModel {
+impl ActerModel for TestModel {
     fn event_id(&self) -> &matrix_sdk::ruma::EventId {
         &self.event_id
     }
@@ -46,7 +46,7 @@ impl EffektioModel for TestModel {
         Some(self.belongs_to.clone())
     }
 
-    fn transition(&mut self, _model: &super::AnyEffektioModel) -> crate::Result<bool> {
+    fn transition(&mut self, _model: &super::AnyActerModel) -> crate::Result<bool> {
         Ok(true)
     }
     async fn execute(self, store: &super::Store) -> crate::Result<Vec<String>> {

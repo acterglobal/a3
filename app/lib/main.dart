@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:effektio/common/themes/app_theme.dart';
-import 'package:effektio/features/bug_report/pages/bug_report_page.dart';
-import 'package:effektio/features/gallery/pages/gallery_page.dart';
-import 'package:effektio/features/home/pages/home_page.dart';
-import 'package:effektio/features/onboarding/pages/login_page.dart';
-import 'package:effektio/features/onboarding/pages/sign_up_page.dart';
-import 'package:effektio/features/profile/pages/social_profile_page.dart';
-import 'package:effektio/l10n/l10n.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
+import 'package:acter/common/themes/app_theme.dart';
+import 'package:acter/features/bug_report/pages/bug_report_page.dart';
+import 'package:acter/features/gallery/pages/gallery_page.dart';
+import 'package:acter/features/home/pages/home_page.dart';
+import 'package:acter/features/onboarding/pages/login_page.dart';
+import 'package:acter/features/onboarding/pages/sign_up_page.dart';
+import 'package:acter/features/profile/pages/social_profile_page.dart';
+import 'package:acter/l10n/l10n.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -27,7 +27,7 @@ void main() async {
 }
 
 Future<void> startFreshTestApp(String key) async {
-  await EffektioSdk.resetSessionsAndClients(key);
+  await ActerSdk.resetSessionsAndClients(key);
   await startApp();
 }
 
@@ -35,18 +35,18 @@ Future<void> startApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
   if (isDesktop) {
-    setWindowTitle('Effektio');
+    setWindowTitle('Acter');
   }
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
-  runApp(const ProviderScope(child: Effektio()));
+  runApp(const ProviderScope(child: Acter()));
 }
 
-class Effektio extends StatelessWidget {
-  const Effektio({Key? key}) : super(key: key);
+class Acter extends StatelessWidget {
+  const Acter({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class Effektio extends StatelessWidget {
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             theme: AppTheme.theme,
-            title: 'Effektio',
+            title: 'Acter',
             localizationsDelegates: const [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,

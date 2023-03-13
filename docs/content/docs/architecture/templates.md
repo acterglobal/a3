@@ -74,7 +74,7 @@ Currently only `version = "0.1.0"` is supported. This is a first temporary versi
 
 ## Functions & Filters
 
-Aside from the minijinja builtin [functions](https://docs.rs/minijinja/latest/minijinja/functions/index.html#functions) & [filters](https://docs.rs/minijinja/latest/minijinja/filters/index.html#functions), we provide additional [functions](/api/main/rust/effektio_core/templates/functions.html) and [filters](/api/main/rust/effektio_core/templaets/filters.html). Check their API documentation for details.
+Aside from the minijinja builtin [functions](https://docs.rs/minijinja/latest/minijinja/functions/index.html#functions) & [filters](https://docs.rs/minijinja/latest/minijinja/filters/index.html#functions), we provide additional [functions](/api/main/rust/acter_core/templates/functions.html) and [filters](/api/main/rust/acter_core/templaets/filters.html). Check their API documentation for details.
 
 [toml]: https://github.com/toml-lang/toml
 [jinja2]: https://jinja.palletsprojects.com/en/3.1.x/templates/
