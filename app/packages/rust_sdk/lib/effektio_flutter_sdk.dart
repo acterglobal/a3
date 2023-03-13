@@ -257,7 +257,7 @@ class EffektioSdk {
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
-    final client = await _api.registerWithRegistrationToken(
+    final client = await _api.registerWithToken(
       appDocPath,
       username,
       password,
