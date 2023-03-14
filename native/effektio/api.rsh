@@ -310,7 +310,7 @@ object TimelineDiff {
 
 /// Timeline with Room Events
 object TimelineStream {
-    // Fires whenever new diff found
+    /// Fires whenever new diff found
     fn diff_rx() -> Stream<TimelineDiff>;
 
     /// Fires whenever new event arrived

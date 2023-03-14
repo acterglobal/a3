@@ -144,7 +144,7 @@ impl SyncState {
 
     pub fn first_synced_rx(&self) -> Option<SignalStream<Receiver<bool>>> {
         match self.first_synced_rx.try_lock() {
-            Ok(l) => l.map(|t| t.to_stream()),
+            Ok(mut l) => l.take().map(|t| t.to_stream()),
             Err(e) => None,
         }
     }
