@@ -1,14 +1,13 @@
 use super::{
-    Colorize, ImageMessageEventContent, TextMessageEventContent, VideoMessageEventContent,
+    Colorize, ImageMessageEventContent, ObjRef, TextMessageEventContent, VideoMessageEventContent,
 };
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
-/// The content that is specific to each message type variant.
+/// The content that is specific to
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
-#[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
-pub enum NewsContentType {
+pub enum NewsContent {
     /// An image message.
     Image(ImageMessageEventContent),
     /// A text message.
@@ -17,18 +16,24 @@ pub enum NewsContentType {
     Video(VideoMessageEventContent),
 }
 
+/// A news slide represents one full-sized slide of news
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct NewsSlide {
+    /// A slide must contain some news-worthy content
+    #[serde(flatten)]
+    content: NewsContent,
+    /// A slide may optionally contain references to other items
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    references: Vec<ObjRef>,
+}
+
 /// The payload for our news event.
 #[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]
-pub struct NewsEventDevContent {
-    pub contents: Vec<NewsContentType>,
+pub struct NewsEntryContent {
+    /// A news entry may have one or more slides of news
+    /// which are scrolled through horizontally
+    pub slides: Vec<NewsSlide>,
+    /// You can define custom background and foreground colors
     pub colors: Option<Colorize>,
-}
-
-/// The content that is specific to each news type variant.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(untagged)]
-#[cfg_attr(not(feature = "unstable-exhaustive-types"), non_exhaustive)]
-pub enum NewsEvent {
-    Dev(NewsEventDevContent),
 }
