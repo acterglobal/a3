@@ -26,19 +26,25 @@ url = "https://twitter.com/acterHQ"
 [objects.acter-onboarding-event]
 type = "calendar-event"
 title = "Onboarding on Acter"
-utc_start = "{{ future(add_mins=1).as_rfc3339 }}"
-utc_end = "{{ future(add_days=7).as_rfc3339 }}"
+utc_start = "{{ future(mins=1).as_rfc3339 }}"
+utc_end = "{{ future(days=7).as_rfc3339 }}"
 
 [objects.task_1]
 type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
 "m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
+utc_due = "{{ future(mins=5).as_rfc3339 }}"
 
 [objects.task_2]
 type = "task"
 title = "Scroll through the news"
 assignees = ["{{ main.user_id }}"]
 "m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ future(add_days=1).as_rfc3339 }}"
+utc_due = "{{ future(days=1).as_rfc3339 }}"
+
+[objects.example-news-item]
+type = "news-entry"
+slides = [
+  { body = "This is the news section. Swipe down for more.", info = { size = 3264047, mimetype = "image/jpeg", thumbnail_info = { w = 400, h = 600, mimetype = "image/jpeg", size = 130511   }, w = 3840, h = 5760, "xyz.amorgan.blurhash" = "TQF=,g?uIo},={X5$c#+V@t2sRjF", thumbnail_url = "mxc://acter.global/aJhqfXrJRWXsFgWFRNlBlpnD" }, msgtype = "m.image", url = "mxc://acter.global/tVLtaQaErMyoXmcCroPZdfNG" }
+]

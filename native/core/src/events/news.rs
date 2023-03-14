@@ -30,7 +30,7 @@ pub struct NewsSlide {
 /// The payload for our news event.
 #[derive(Clone, Debug, Default, Deserialize, Serialize, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]
-pub struct NewsEntryContent {
+pub struct NewsEntryEventContent {
     /// A news entry may have one or more slides of news
     /// which are scrolled through horizontally
     pub slides: Vec<NewsSlide>,

@@ -11,7 +11,7 @@ pub fn now() -> Value {
 
 /// create a date in the future add `days`, `weeks`, `hours`, `mins`, `secs` (or any combinations of them) to create
 /// a date in the future. Example:
-/// ```no_run
+/// ```no_compile
 ///     {{ future(weeks=3, days=4, hours=20, mins=10)}}
 /// ```
 pub fn future(kwargs: Value) -> Result<Value, Error> {

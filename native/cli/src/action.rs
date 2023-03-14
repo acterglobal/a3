@@ -4,21 +4,13 @@ use anyhow::Result;
 use clap::Parser;
 
 // mod execute;
-mod fetch_news;
 mod mock;
-mod post_news;
 
 // pub use execute::ExecuteOpts;
-pub use fetch_news::FetchNews;
 pub use mock::MockOpts;
-pub use post_news::PostNews;
 
 #[derive(clap::Subcommand, Debug)]
 pub enum Action {
-    /// Post News to a room
-    PostNews(PostNews),
-    /// Fetch News of the use
-    FetchNews(FetchNews),
     /// Mock Data on fresh server
     Mock(MockOpts),
     /// Room Management
@@ -30,8 +22,6 @@ pub enum Action {
 impl Action {
     pub async fn run(&self) -> Result<()> {
         match self {
-            Action::PostNews(news) => news.run().await?,
-            Action::FetchNews(config) => config.run().await?,
             Action::Mock(config) => config.run().await?,
             // Action::Execute(config) => config.run().await?,
             _ => unimplemented!(),

@@ -29,11 +29,13 @@ pub struct LoginConfig {
     login_password: Option<String>,
 }
 
+#[allow(dead_code)]
 async fn default_client_config() -> Result<ClientBuilder> {
     Ok(Client::builder().user_agent(format!("acter-cli/{}", crate_version!())))
 }
 
 impl LoginConfig {
+    #[allow(dead_code)]
     pub async fn client(&self) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
