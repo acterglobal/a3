@@ -48,6 +48,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.10.0"
+  atlas_icons:
+    dependency: "direct main"
+    description:
+      name: atlas_icons
+      sha256: f4790795c495cf9eabb91b75096a4f687aaa6f99ff907d18d18aa8b54a022adc
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.12"
   boolean_selector:
     dependency: transitive
     description:

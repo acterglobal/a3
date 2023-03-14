@@ -63,7 +63,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               SizedBox(
                 height: 50,
                 width: 50,
-                child: SvgPicture.asset('assets/images/logo.svg'),
+                child: SvgPicture.asset('assets/icon/acter.svg'),
               ),
               const SizedBox(height: 40),
               Text(
