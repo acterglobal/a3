@@ -251,6 +251,10 @@ pub struct TaskEventContent {
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub utc_due: Option<UtcDateTime>,
+    /// Should the due be shown as a date only?
+    #[builder(default)]
+    #[serde(default)]
+    pub show_without_time: bool,
     /// When was this task started?
     #[builder(setter(into), default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -344,6 +348,14 @@ pub struct TaskUpdateEventContent {
         deserialize_with = "deserialize_some"
     )]
     pub utc_due: Option<Option<UtcDateTime>>,
+    /// Whether to ignore time of day when showing the due date
+    #[builder(default)]
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "deserialize_some"
+    )]
+    pub show_without_time: Option<bool>,
     /// When was this task started?
     #[builder(default)]
     #[serde(
@@ -441,6 +453,11 @@ impl TaskUpdateEventContent {
 
         if let Some(sort_order) = &self.sort_order {
             task.sort_order = *sort_order;
+            updated = true;
+        }
+
+        if let Some(show_without_time) = &self.show_without_time {
+            task.show_without_time = *show_without_time;
             updated = true;
         }
 
