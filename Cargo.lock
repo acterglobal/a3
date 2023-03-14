@@ -980,7 +980,6 @@ dependencies = [
  "anyhow",
  "async-broadcast",
  "async-stream",
- "chrono",
  "derive_builder 0.10.2",
  "effektio-core",
  "env_logger",

@@ -1,6 +1,6 @@
 use anyhow::{bail, Context, Result};
 use futures_signals::signal::{
-    Mutable, MutableSignal, MutableSignalCloned, SignalExt, SignalStream,
+    Mutable, MutableSignalCloned, SignalExt, SignalStream,
 };
 use log::{error, info};
 use matrix_sdk::{

@@ -1,7 +1,6 @@
 use anyhow::{bail, Result};
 use eyeball_im::VectorDiff;
 use futures::{Stream, StreamExt};
-use futures_signals::signal_vec::{SignalVecExt, VecDiff};
 use log::info;
 use matrix_sdk::{
     room::{
@@ -37,26 +36,23 @@ impl TimelineDiff {
     }
 
     pub fn values(&self) -> Option<Vec<RoomMessage>> {
-        if self.action == "Append" || self.action == "Reset" {
-            self.values.clone()
-        } else {
-            None
+        match self.action.as_str() {
+            "Append" | "Reset" => self.values.clone(),
+            _ => None,
         }
     }
 
     pub fn index(&self) -> Option<usize> {
-        if self.action == "Insert" || self.action == "Set" || self.action == "Remove" {
-            self.index
-        } else {
-            None
+        match self.action.as_str() {
+            "Insert" | "Set" | "Remove" => self.index,
+            _ => None
         }
     }
 
     pub fn value(&self) -> Option<RoomMessage> {
-        if self.action == "Insert" || self.action == "Set" || self.action == "PushBack" || self.action == "PushFront" {
-            self.value.clone()
-        } else {
-            None
+        match self.action.as_str() {
+            "Insert" | "Set" | "PushBack" | "PushFront" => self.value.clone(),
+            _ => None,
         }
     }
 }
@@ -210,7 +206,7 @@ impl TimelineStream {
                 let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
                 loop {
                     if let Some(diff) = timeline_stream.next().await {
-                        match (diff) {
+                        match diff {
                             VectorDiff::Append { values } => {
                                 info!("stream forward timeline append");
                             }

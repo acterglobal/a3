@@ -1,5 +1,5 @@
-use chrono::{offset::Utc, DateTime};
 use core::time::Duration;
+use effektio_core::util::{DateTime, Utc};
 use log::info;
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,

@@ -21,7 +21,6 @@ ffi-gen = { git = "https://github.com/acterglobal/ffi-gen" }
 anyhow = "1.0.51"
 async-broadcast = { workspace = true }
 async-stream =  "0.3.4"
-chrono = "0.4"
 derive_builder = { version = "0.10.2" }
 env_logger = "0.10.0"
 eyeball-im = "0.1"

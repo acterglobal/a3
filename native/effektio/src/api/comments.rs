@@ -27,7 +27,6 @@ use effektio_core::{
     store::Store,
     util::DateTime,
 };
-use futures_signals::signal::Mutable;
 use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
 
 impl Client {

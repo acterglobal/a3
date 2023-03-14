@@ -1,4 +1,5 @@
 use anyhow::{bail, Result};
+use effektio_core::util::Local;
 use env_logger::filter::Builder as FilterBuilder;
 use lazy_static::lazy_static;
 use log::{Log, Metadata, Record};
@@ -46,7 +47,7 @@ pub fn init_logging(
         .format(|out, message, record| {
             out.finish(format_args!(
                 "{}[{}][{}] {}",
-                chrono::Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                Local::now().format("[%Y-%m-%d][%H:%M:%S]"),
                 record.target(),
                 record.level(),
                 message
