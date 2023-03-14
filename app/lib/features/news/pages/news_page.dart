@@ -39,12 +39,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: MediaQuery.of(context).size.width < 600
-            ? IconButton(
-                key: Keys.sidebarBtn,
-                icon: const UserAvatarWidget(isExtendedRail: false),
-                onPressed: () => confirmationDialog(context, ref),
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              )
+            ? const UserAvatarWidget(isExtendedRail: false)
             : const SizedBox.shrink(),
         centerTitle: true,
         title: const ButtonBar(
