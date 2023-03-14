@@ -7,10 +7,7 @@ use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},
     room::Room as MatrixRoom,
     ruma::{
-        events::{
-            receipt::{ReceiptEventContent, ReceiptType, SyncReceiptEvent},
-            SyncEphemeralRoomEvent,
-        },
+        events::receipt::{ReceiptType, SyncReceiptEvent},
         MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
     },
     Client as MatrixClient,

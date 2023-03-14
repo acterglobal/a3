@@ -1,4 +1,3 @@
-use crate::config::{LoginConfig, ENV_ROOM};
 use acter_core::ruma;
 use anyhow::Result;
 use clap::Parser;
@@ -7,6 +6,8 @@ use clap::Parser;
 mod fetch_news;
 mod mock;
 mod post_news;
+
+use crate::config::{LoginConfig, ENV_ROOM};
 
 // pub use execute::ExecuteOpts;
 pub use fetch_news::FetchNews;

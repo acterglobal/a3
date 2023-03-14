@@ -9,8 +9,6 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-use super::super::api::RUNTIME;
-
 pub async fn new_client_config(base_path: String, home: String) -> Result<ClientBuilder> {
     let data_path = sanitize(base_path, home);
 

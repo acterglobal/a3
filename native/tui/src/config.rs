@@ -1,12 +1,9 @@
-use std::path::PathBuf;
-
 use anyhow::Result;
 use clap::Parser;
-use dialoguer::theme::ColorfulTheme;
-use dialoguer::Password;
+use dialoguer::{theme::ColorfulTheme, Password};
+use std::path::PathBuf;
 
-use acter::api::login_new_client;
-use acter::Client;
+use acter::{api::login_new_client, Client};
 use acter_core::matrix_sdk::ruma::OwnedUserId;
 
 pub const ENV_USER: &str = "ACTER_USER";

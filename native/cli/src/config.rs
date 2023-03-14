@@ -1,14 +1,10 @@
+use acter_core::matrix_sdk::{ruma::OwnedUserId, Client, ClientBuilder};
 use anyhow::Result;
 use clap::{crate_version, Parser};
-use dialoguer::theme::ColorfulTheme;
-use dialoguer::Password;
-
-use acter_core::matrix_sdk::ruma::OwnedUserId;
-use acter_core::matrix_sdk::{Client, ClientBuilder};
+use dialoguer::{theme::ColorfulTheme, Password};
+use tracing::warn;
 
 use crate::action::Action;
-
-use tracing::warn;
 
 pub const ENV_USER: &str = "ACTER_USER";
 pub const ENV_PASSWORD: &str = "ACTER_PASSWORD";

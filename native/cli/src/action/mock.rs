@@ -12,6 +12,7 @@ use clap::{crate_version, Parser, Subcommand};
 use matrix_sdk_base::store::{MemoryStore, StoreConfig};
 use matrix_sdk_sled::make_store_config;
 use std::collections::HashMap;
+
 #[derive(Parser, Debug)]
 pub struct MockOpts {
     /// the URL to the homeserver are we running against
