@@ -1,4 +1,5 @@
 mod auth;
+mod calendar;
 mod formatted_body;
 mod invitation;
 // mod news;

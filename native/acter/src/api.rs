@@ -12,6 +12,7 @@ lazy_static! {
 
 mod account;
 mod auth;
+mod calendar_events;
 mod client;
 mod comments;
 mod common;

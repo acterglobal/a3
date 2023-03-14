@@ -1,6 +1,7 @@
 use crate::{
     client::CoreClient,
     events::{
+        calendar::CalendarEventEventContent,
         pins::PinEventContent,
         tasks::{TaskEventContent, TaskListEventContent},
     },
@@ -138,6 +139,10 @@ pub enum ObjectInner {
     Pin {
         #[serde(flatten)]
         fields: PinEventContent,
+    },
+    CalendarEvent {
+        #[serde(flatten)]
+        fields: CalendarEventEventContent,
     },
 }
 
@@ -446,6 +451,17 @@ impl Engine {
                             .event_id;
                         context.insert(key,
                             Value::from_struct_object(ObjRef::new(id.to_string(), "task".to_owned())));
+                        yield
+
+                    }
+                    ObjectInner::CalendarEvent{ fields } => {
+                        let id = room
+                            .send(fields, None)
+                            .await
+                            .map_err(|e| Error::Remap(format!("{key} submission failed"), e.to_string()))?
+                            .event_id;
+                        context.insert(key,
+                            Value::from_struct_object(ObjRef::new(id.to_string(), "calendar-event".to_owned())));
                         yield
 
                     }

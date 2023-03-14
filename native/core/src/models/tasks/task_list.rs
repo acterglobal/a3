@@ -1,18 +1,15 @@
 use derive_getters::Getters;
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId,  RoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{
-    super::{AnyActerModel, ActerModel, EventMeta, Capability, Store, default_model_execute},
-    TASKS_KEY
+    super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
+    TASKS_KEY,
 };
 
 use crate::{
-    events::tasks::{
-        TaskListEventContent, TaskListUpdateBuilder, TaskListUpdateEventContent,
-        
-    },
+    events::tasks::{TaskListEventContent, TaskListUpdateBuilder, TaskListUpdateEventContent},
     statics::KEYS,
 };
 

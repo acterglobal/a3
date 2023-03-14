@@ -1,53 +1,40 @@
-use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, RoomId};
+use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, RoomId};
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
 use super::{
     super::{default_model_execute, ActerModel, AnyActerModel, Capability, EventMeta, Store},
-    TaskList, TASKS_KEY,
+    CALENDAR_KEY,
 };
 
-use crate::events::tasks::{TaskEventContent, TaskUpdateBuilder, TaskUpdateEventContent};
+use crate::events::calendar::{
+    CalendarEventEventContent, CalendarEventUpdateBuilder, CalendarEventUpdateEventContent,
+};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Task {
-    inner: TaskEventContent,
+pub struct CalendarEvent {
+    inner: CalendarEventEventContent,
     meta: EventMeta,
 }
-impl Deref for Task {
-    type Target = TaskEventContent;
+impl Deref for CalendarEvent {
+    type Target = CalendarEventEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl Task {
+impl CalendarEvent {
     pub fn title(&self) -> &String {
         &self.inner.title
-    }
-
-    pub fn subscribers(&self) -> Vec<OwnedUserId> {
-        self.inner.subscribers.clone()
     }
 
     pub fn room_id(&self) -> &RoomId {
         &self.meta.room_id
     }
 
-    pub fn is_done(&self) -> bool {
-        self.inner
-            .progress_percent
-            .map(|u| u >= 100)
-            .unwrap_or_default()
-    }
-
-    pub fn percent(&self) -> Option<u8> {
-        self.inner.progress_percent
-    }
-
-    pub fn updater(&self) -> TaskUpdateBuilder {
-        TaskUpdateBuilder::default()
-            .task(self.meta.event_id.clone())
+    pub fn updater(&self) -> CalendarEventUpdateBuilder {
+        CalendarEventUpdateBuilder::default()
+            .calendar_event(self.meta.event_id.clone())
             .to_owned()
     }
 
@@ -56,9 +43,12 @@ impl Task {
     }
 }
 
-impl ActerModel for Task {
+impl ActerModel for CalendarEvent {
     fn indizes(&self) -> Vec<String> {
-        vec![format!("{}::{TASKS_KEY}", self.inner.task_list_id.event_id)]
+        vec![
+            format!("{}::{}", self.meta.room_id, CALENDAR_KEY),
+            CALENDAR_KEY.to_string(),
+        ]
     }
 
     fn event_id(&self) -> &EventId {
@@ -74,13 +64,11 @@ impl ActerModel for Task {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![TaskList::key_from_event(
-            &self.inner.task_list_id.event_id,
-        )])
+        None
     }
 
     fn transition(&mut self, model: &AnyActerModel) -> crate::Result<bool> {
-        let AnyActerModel::TaskUpdate(update) = model else {
+        let AnyActerModel::CalendarEventUpdate(update) = model else {
             return Ok(false)
         };
 
@@ -88,8 +76,8 @@ impl ActerModel for Task {
     }
 }
 
-impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
-    fn from(outer: OriginalMessageLikeEvent<TaskEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<CalendarEventEventContent>> for CalendarEvent {
+    fn from(outer: OriginalMessageLikeEvent<CalendarEventEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -98,7 +86,7 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
             origin_server_ts,
             ..
         } = outer;
-        Task {
+        CalendarEvent {
             inner: content,
             meta: EventMeta {
                 room_id,
@@ -111,14 +99,14 @@ impl From<OriginalMessageLikeEvent<TaskEventContent>> for Task {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct TaskUpdate {
-    inner: TaskUpdateEventContent,
+pub struct CalendarEventUpdate {
+    inner: CalendarEventUpdateEventContent,
     meta: EventMeta,
 }
 
-impl ActerModel for TaskUpdate {
+impl ActerModel for CalendarEventUpdate {
     fn indizes(&self) -> Vec<String> {
-        vec![format!("{:}::history", self.inner.task.event_id)]
+        vec![format!("{:}::history", self.inner.calendar_event.event_id)]
     }
 
     fn event_id(&self) -> &EventId {
@@ -130,19 +118,19 @@ impl ActerModel for TaskUpdate {
     }
 
     fn belongs_to(&self) -> Option<Vec<String>> {
-        Some(vec![Task::key_from_event(&self.inner.task.event_id)])
+        None
     }
 }
 
-impl Deref for TaskUpdate {
-    type Target = TaskUpdateEventContent;
+impl Deref for CalendarEventUpdate {
+    type Target = CalendarEventUpdateEventContent;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
-    fn from(outer: OriginalMessageLikeEvent<TaskUpdateEventContent>) -> Self {
+impl From<OriginalMessageLikeEvent<CalendarEventUpdateEventContent>> for CalendarEventUpdate {
+    fn from(outer: OriginalMessageLikeEvent<CalendarEventUpdateEventContent>) -> Self {
         let OriginalMessageLikeEvent {
             content,
             room_id,
@@ -151,7 +139,7 @@ impl From<OriginalMessageLikeEvent<TaskUpdateEventContent>> for TaskUpdate {
             origin_server_ts,
             ..
         } = outer;
-        TaskUpdate {
+        CalendarEventUpdate {
             inner: content,
             meta: EventMeta {
                 room_id,

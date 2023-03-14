@@ -2,15 +2,14 @@ use super::TextMessageEventContent;
 use crate::util::deserialize_some;
 use derive_builder::Builder;
 use derive_getters::Getters;
-use matrix_sdk::ruma::{events::macros::EventContent};
+use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
 /// Calendar Events
 /// modeled after [JMAP Calendar Events](https://jmap.io/spec-calendars.html#calendar-events), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-event).
 ///
-use super::{BelongsTo, Color, Icon,  Update, UtcDateTime};
-
+use super::{BelongsTo, Color, Icon, Update, UtcDateTime};
 
 /// Event Location
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -20,7 +19,6 @@ pub enum RsvpState {
     Maybe,
     No,
 }
-
 
 /// Event Location
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -55,8 +53,7 @@ pub enum EventLocation {
         /// Alternative Icon to show with this location
         #[serde(default, skip_serializing_if = "Option::is_none")]
         icon: Option<Icon>,
-
-    }
+    },
 }
 
 /// The Calendar Event
@@ -66,10 +63,7 @@ pub enum EventLocation {
 /// but all timezones have been dumbed down to UTC-only.
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]
 #[ruma_event(type = "global.acter.dev.calendar_event", kind = MessageLike)]
-#[builder(
-    name = "CalendarEventBuilder",
-    derive(Debug)
-)]
+#[builder(name = "CalendarEventBuilder", derive(Debug))]
 pub struct CalendarEventEventContent {
     /// The title of the CalendarEvent
     pub title: String,
@@ -257,8 +251,7 @@ impl CalendarEventUpdateEventContent {
     }
 }
 
-
-/// The RSVP Event 
+/// The RSVP Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder)]
 #[ruma_event(type = "global.acter.dev.rsvp", kind = MessageLike)]
 #[builder(name = "RsvpBuilder", derive(Debug))]

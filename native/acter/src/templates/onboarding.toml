@@ -8,20 +8,6 @@ space = { type = "space", is-default = true, required = true, description = "The
 [objects]
 start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboarding list" }
 
-[objects.task_1]
-type = "task"
-title = "Scroll through the news"
-assignees = ["{{ main.user_id }}"]
-"m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
-
-[objects.task_2]
-type = "task"
-title = "Scroll through the news"
-assignees = ["{{ main.user_id }}"]
-"m.relates_to" = { event_id = "{{ start_list.id }}" }
-utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
-
 [objects.acter-website-pin]
 type = "pin"
 title = "Acter Website"
@@ -36,3 +22,23 @@ url = "https://github.com/acterglobal/a3"
 type = "pin"
 title = "Acter Twitter"
 url = "https://twitter.com/acterHQ"
+
+[objects.acter-onboarding-event]
+type = "calendar-event"
+title = "Onboarding on Acter"
+utc_start = "{{ future(add_mins=1).as_rfc3339 }}"
+utc_end = "{{ future(add_days=7).as_rfc3339 }}"
+
+[objects.task_1]
+type = "task"
+title = "Scroll through the news"
+assignees = ["{{ main.user_id }}"]
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ future(add_mins=5).as_rfc3339 }}"
+
+[objects.task_2]
+type = "task"
+title = "Scroll through the news"
+assignees = ["{{ main.user_id }}"]
+"m.relates_to" = { event_id = "{{ start_list.id }}" }
+utc_due = "{{ future(add_days=1).as_rfc3339 }}"
