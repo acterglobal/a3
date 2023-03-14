@@ -6779,26 +6779,6 @@ class Api {
       _TimelineDiffValueReturn Function(
     int,
   )>();
-  late final _timelineDiffNewIndexPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineDiffNewIndexReturn Function(
-    ffi.Int64,
-  )>>("__TimelineDiff_new_index");
-
-  late final _timelineDiffNewIndex = _timelineDiffNewIndexPtr.asFunction<
-      _TimelineDiffNewIndexReturn Function(
-    int,
-  )>();
-  late final _timelineDiffOldIndexPtr = _lookup<
-      ffi.NativeFunction<
-          _TimelineDiffOldIndexReturn Function(
-    ffi.Int64,
-  )>>("__TimelineDiff_old_index");
-
-  late final _timelineDiffOldIndex = _timelineDiffOldIndexPtr.asFunction<
-      _TimelineDiffOldIndexReturn Function(
-    int,
-  )>();
   late final _timelineStreamDiffRxPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
@@ -14475,7 +14455,7 @@ class TimelineDiff {
 
   TimelineDiff._(this._api, this._box);
 
-  /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+  /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
   String action() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -14495,7 +14475,7 @@ class TimelineDiff {
     return tmp2;
   }
 
-  /// for Replace
+  /// for Append/Reset
   FfiListRoomMessage? values() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -14515,7 +14495,7 @@ class TimelineDiff {
     return tmp2;
   }
 
-  /// for InsertAt/UpdateAt/RemoveAt
+  /// for Insert/Set/Remove
   int? index() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -14531,7 +14511,7 @@ class TimelineDiff {
     return tmp2;
   }
 
-  /// for InsertAt/UpdateAt/Push
+  /// for Insert/Set/PushBack/PushFront
   RoomMessage? value() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
@@ -14547,38 +14527,6 @@ class TimelineDiff {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_RoomMessage");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = RoomMessage._(_api, tmp4_1);
-    return tmp2;
-  }
-
-  /// for Move
-  int? newIndex() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffNewIndex(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
-    return tmp2;
-  }
-
-  /// for Move
-  int? oldIndex() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._timelineDiffOldIndex(
-      tmp0,
-    );
-    final tmp3 = tmp1.arg0;
-    final tmp4 = tmp1.arg1;
-    if (tmp3 == 0) {
-      return null;
-    }
-    final tmp2 = tmp4;
     return tmp2;
   }
 
@@ -21454,20 +21402,6 @@ class _TimelineDiffValueReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Int64()
-  external int arg1;
-}
-
-class _TimelineDiffNewIndexReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
-  external int arg1;
-}
-
-class _TimelineDiffOldIndexReturn extends ffi.Struct {
-  @ffi.Uint8()
-  external int arg0;
-  @ffi.Uint64()
   external int arg1;
 }
 

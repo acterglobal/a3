@@ -29,8 +29,6 @@ pub struct TimelineDiff {
     values: Option<Vec<RoomMessage>>,
     index: Option<usize>,
     value: Option<RoomMessage>,
-    new_index: Option<usize>,
-    old_index: Option<usize>,
 }
 
 impl TimelineDiff {
@@ -39,7 +37,7 @@ impl TimelineDiff {
     }
 
     pub fn values(&self) -> Option<Vec<RoomMessage>> {
-        if self.action == "Replace" {
+        if self.action == "Append" || self.action == "Reset" {
             self.values.clone()
         } else {
             None
@@ -47,7 +45,7 @@ impl TimelineDiff {
     }
 
     pub fn index(&self) -> Option<usize> {
-        if self.action == "InsertAt" || self.action == "UpdateAt" || self.action == "RemoveAt" {
+        if self.action == "Insert" || self.action == "Set" || self.action == "Remove" {
             self.index
         } else {
             None
@@ -55,24 +53,8 @@ impl TimelineDiff {
     }
 
     pub fn value(&self) -> Option<RoomMessage> {
-        if self.action == "InsertAt" || self.action == "UpdateAt" || self.action == "Push" {
+        if self.action == "Insert" || self.action == "Set" || self.action == "PushBack" || self.action == "PushFront" {
             self.value.clone()
-        } else {
-            None
-        }
-    }
-
-    pub fn old_index(&self) -> Option<usize> {
-        if self.action == "Move" {
-            self.old_index
-        } else {
-            None
-        }
-    }
-
-    pub fn new_index(&self) -> Option<usize> {
-        if self.action == "Move" {
-            self.new_index
         } else {
             None
         }
@@ -112,72 +94,54 @@ impl TimelineStream {
                     ),
                     index: None,
                     value: None,
-                    new_index: None,
-                    old_index: None,
                 },
                 VectorDiff::Insert { index, value } => TimelineDiff {
                     action: "Insert".to_string(),
                     values: None,
                     index: Some(index),
                     value: Some(timeline_item_to_message(value, room.clone())),
-                    new_index: None,
-                    old_index: None,
                 },
                 VectorDiff::Set { index, value } => TimelineDiff {
                     action: "Set".to_string(),
                     values: None,
                     index: Some(index),
                     value: Some(timeline_item_to_message(value, room.clone())),
-                    new_index: None,
-                    old_index: None,
                 },
                 VectorDiff::Remove { index } => TimelineDiff {
                     action: "Remove".to_string(),
                     values: None,
                     index: Some(index),
                     value: None,
-                    new_index: None,
-                    old_index: None,
                 },
                 VectorDiff::PushBack { value } => TimelineDiff {
                     action: "PushBack".to_string(),
                     values: None,
                     index: None,
                     value: Some(timeline_item_to_message(value, room.clone())),
-                    new_index: None,
-                    old_index: None,
                 },
                 VectorDiff::PushFront { value } => TimelineDiff {
                     action: "PushFront".to_string(),
                     values: None,
                     index: None,
                     value: Some(timeline_item_to_message(value, room.clone())),
-                    new_index: None,
-                    old_index: None,
                 },
                 VectorDiff::PopBack => TimelineDiff {
                     action: "PopBack".to_string(),
                     values: None,
                     index: None,
                     value: None,
-                    old_index: None,
-                    new_index: None,
                 },
                 VectorDiff::PopFront => TimelineDiff {
                     action: "PopFront".to_string(),
                     values: None,
                     index: None,
                     value: None,
-                    old_index: None,
-                    new_index: None,
                 },
                 VectorDiff::Clear => TimelineDiff {
                     action: "Clear".to_string(),
                     values: None,
                     index: None,
                     value: None,
-                    old_index: None,
-                    new_index: None,
                 },
                 VectorDiff::Reset { values } => TimelineDiff {
                     action: "Reset".to_string(),
@@ -189,8 +153,6 @@ impl TimelineStream {
                     ),
                     index: None,
                     value: None,
-                    new_index: None,
-                    old_index: None,
                 },
             });
 

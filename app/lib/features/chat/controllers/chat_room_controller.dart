@@ -154,8 +154,8 @@ class ChatRoomController extends GetxController {
       // event handler from paginate
       _diffSubscription = _stream?.diffRx().listen((event) {
         switch (event.action()) {
-          case 'Replace':
-            debugPrint('chat room message replace');
+          case 'Append':
+            debugPrint('chat room message append');
             List<RoomMessage> values = event.values()!.toList();
             for (RoomMessage msg in values) {
               var m = _prepareMessage(msg);
@@ -183,8 +183,8 @@ class ChatRoomController extends GetxController {
               }
             }
             break;
-          case 'InsertAt':
-            debugPrint('chat room message insert at');
+          case 'Insert':
+            debugPrint('chat room message insert');
             RoomMessage value = event.value()!;
             var m = _prepareMessage(value);
             if (m is types.UnsupportedMessage) {
@@ -210,8 +210,8 @@ class ChatRoomController extends GetxController {
               }
             }
             break;
-          case 'UpdateAt':
-            debugPrint('chat room message update at');
+          case 'Set':
+            debugPrint('chat room message set');
             RoomMessage value = event.value()!;
             var m = _prepareMessage(value);
             if (m is types.UnsupportedMessage) {
@@ -237,8 +237,36 @@ class ChatRoomController extends GetxController {
               }
             }
             break;
-          case 'Push':
-            debugPrint('chat room message push');
+          case 'Remove':
+            int index = event.index()!;
+            _messages.removeAt(_messages.length - 1 - index);
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            break;
+          case 'PushBack':
+            debugPrint('chat room message push_back');
+            RoomMessage value = event.value()!;
+            var m = _prepareMessage(value);
+            if (m is types.UnsupportedMessage) {
+              break;
+            }
+            _messages.add(m);
+            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+            }
+            RoomEventItem? eventItem = value.eventItem();
+            if (eventItem != null) {
+              if (isLoading.isFalse) {
+                update(['Chat']);
+              }
+              if (eventItem.msgtype() == 'm.image') {
+                _fetchMessageContent(m.id);
+              }
+            }
+            break;
+          case 'PushFront':
+            debugPrint('chat room message push_front');
             RoomMessage value = event.value()!;
             var m = _prepareMessage(value);
             if (m is types.UnsupportedMessage) {
@@ -258,34 +286,16 @@ class ChatRoomController extends GetxController {
               }
             }
             break;
-          case 'RemoveAt':
-            int index = event.index()!;
-            _messages.removeAt(_messages.length - 1 - index);
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            break;
-          case 'Move':
-            int oldIndex = event.oldIndex()!;
-            int newIndex = event.newIndex()!;
-            int i = _messages.length - newIndex;
-            if (oldIndex < newIndex) {
-              i += 1;
-            }
-            var m = _messages.removeAt(_messages.length - 1 - oldIndex);
-            if (m is types.UnsupportedMessage) {
-              break;
-            }
-            _messages.insert(i, m);
-            if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
-              _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
-            }
-            if (isLoading.isFalse) {
-              update(['Chat']);
-            }
-            break;
-          case 'Pop':
+          case 'PopBack':
+            debugPrint('chat room message pop_back');
             _messages.removeLast();
+            if (isLoading.isFalse) {
+              update(['Chat']);
+            }
+            break;
+          case 'PopFront':
+            debugPrint('chat room message pop_front');
+            _messages.removeAt(0);
             if (isLoading.isFalse) {
               update(['Chat']);
             }
@@ -294,6 +304,35 @@ class ChatRoomController extends GetxController {
             _messages.clear();
             if (isLoading.isFalse) {
               update(['Chat']);
+            }
+            break;
+          case 'Reset':
+            debugPrint('chat room message reset');
+            List<RoomMessage> values = event.values()!.toList();
+            for (RoomMessage msg in values) {
+              var m = _prepareMessage(msg);
+              if (m is types.UnsupportedMessage) {
+                continue;
+              }
+              int index = _messages.indexWhere((msg) => m.id == msg.id);
+              if (index == -1) {
+                _insertMessage(m);
+              } else {
+                // update event may be fetched prior to insert event
+                _updateMessage(m, index);
+              }
+              if (m.metadata != null && m.metadata!.containsKey('repliedTo')) {
+                _fetchOriginalContent(m.metadata?['repliedTo'], m.id);
+              }
+              RoomEventItem? eventItem = msg.eventItem();
+              if (eventItem != null) {
+                if (isLoading.isFalse) {
+                  update(['Chat']);
+                }
+                if (eventItem.msgtype() == 'm.image') {
+                  _fetchMessageContent(m.id);
+                }
+              }
             }
             break;
         }

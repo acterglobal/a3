@@ -289,23 +289,17 @@ object ReactionDesc {
 }
 
 object TimelineDiff {
-    /// Replace/InsertAt/UpdateAt/Push/RemoveAt/Move/Pop/Clear
+    /// Append/Insert/Set/Remove/PushBack/PushFront/PopBack/PopFront/Clear/Reset
     fn action() -> string;
 
-    /// for Replace
+    /// for Append/Reset
     fn values() -> Option<Vec<RoomMessage>>;
 
-    /// for InsertAt/UpdateAt/RemoveAt
+    /// for Insert/Set/Remove
     fn index() -> Option<usize>;
 
-    /// for InsertAt/UpdateAt/Push
+    /// for Insert/Set/PushBack/PushFront
     fn value() -> Option<RoomMessage>;
-
-    /// for Move
-    fn new_index() -> Option<usize>;
-
-    /// for Move
-    fn old_index() -> Option<usize>;
 }
 
 /// Timeline with Room Events

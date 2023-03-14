@@ -154,9 +154,7 @@ class _ChatPageState extends State<ChatPage> {
                     if (widget.client.isGuest())
                       empty
                     else
-                      _ListWidget(
-                        client: widget.client,
-                      ),
+                      _ListWidget(client: widget.client),
                   ],
                 ),
               ),
