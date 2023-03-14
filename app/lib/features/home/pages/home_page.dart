@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:acter/features/home/widgets/custom_selected_icon.dart';
 import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
@@ -105,8 +104,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 padding: const EdgeInsets.all(0),
                                 onDestinationSelected:
                                     handleDestinationSelected,
-                                leading: GestureDetector(
-                                  onTap: () => confirmationDialog(ctx, ref),
+                                leading: Container(
+                                  margin: const EdgeInsets.only(top: 8),
                                   child: const UserAvatarWidget(
                                     isExtendedRail: false,
                                   ),
@@ -158,8 +157,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     handleDestinationSelected,
                                 selectedIndex: _selectedIndex,
                                 extended: true,
-                                leading: GestureDetector(
-                                  onTap: () => confirmationDialog(context, ref),
+                                leading: Container(
+                                  margin: const EdgeInsets.only(
+                                    left: 22,
+                                    top: 8,
+                                  ),
                                   child: const UserAvatarWidget(
                                     isExtendedRail: true,
                                   ),

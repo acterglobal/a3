@@ -7,7 +7,7 @@ AppTheme currentTheme = AppTheme();
 class AppTheme {
   static ThemeData get theme {
     return ThemeData(
-      textTheme: GoogleFonts.robotoTextTheme(),
+      textTheme: GoogleFonts.interTextTheme(),
       splashColor: Colors.transparent,
       useMaterial3: true,
       scaffoldBackgroundColor: AppCommonTheme.backgroundColor,
@@ -25,14 +25,14 @@ class AppTheme {
         unselectedLabelStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white,
         selectedLabelStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         selectedIconTheme: IconThemeData(color: Colors.white, size: 20),
         unselectedIconTheme: IconThemeData(color: Colors.white, size: 20),
@@ -45,12 +45,12 @@ class AppTheme {
         unselectedLabelTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         selectedLabelTextStyle: TextStyle(
           color: Colors.white,
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w400,
         ),
         selectedIconTheme: IconThemeData(color: Colors.white, size: 20),
         unselectedIconTheme: IconThemeData(color: Colors.white, size: 20),
