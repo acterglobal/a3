@@ -337,7 +337,7 @@ impl Client {
                                 let _ = first_synced_arc.send(true);
                                 // state.write().has_first_synced = true;
                                 match state.try_write() {
-                                    Ok(w) => {
+                                    Ok(mut w) => {
                                         w.has_first_synced = true;
                                     }
                                     Err(e) => {}
@@ -346,8 +346,15 @@ impl Client {
 
                             match state.try_read() {
                                 Ok(r) => {
-                                    r.is_syncing = false;
-                                    return Ok(LoopCtrl::Break);
+                                    if r.should_stop_syncing {
+                                        match state.try_write() {
+                                            Ok(mut w) => {
+                                                w.is_syncing = false;
+                                            }
+                                            Err(e) => {}
+                                        }
+                                        return Ok(LoopCtrl::Break);
+                                    }
                                 }
                                 Err(e) => {}
                             }
@@ -355,7 +362,7 @@ impl Client {
                                 Ok(r) => {
                                     if !r.is_syncing {
                                         match state.try_write() {
-                                            Ok(w) => {
+                                            Ok(mut w) => {
                                                 w.is_syncing = true;
                                             }
                                             Err(e) => {}

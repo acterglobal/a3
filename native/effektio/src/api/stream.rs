@@ -100,104 +100,104 @@ impl TimelineStream {
         let room = self.room.clone();
 
         async_stream::stream! {
-                let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
-                let mut remap = timeline_stream.map(move |diff| match diff {
-                    VectorDiff::Append { values } => TimelineDiff {
-                        action: "Append".to_string(),
-                        values: Some(
-                            values
-                                .iter()
-                                .map(|x| timeline_item_to_message(x.clone(), room.clone()))
-                                .collect(),
-                        ),
-                        index: None,
-                        value: None,
-                        new_index: None,
-                        old_index: None,
-                    },
-                    VectorDiff::Insert { index, value } => TimelineDiff {
-                        action: "Insert".to_string(),
-                        values: None,
-                        index: Some(index),
-                        value: Some(timeline_item_to_message(value, room.clone())),
-                        new_index: None,
-                        old_index: None,
-                    },
-                    VectorDiff::Set { index, value } => TimelineDiff {
-                        action: "Set".to_string(),
-                        values: None,
-                        index: Some(index),
-                        value: Some(timeline_item_to_message(value, room.clone())),
-                        new_index: None,
-                        old_index: None,
-                    },
-                    VectorDiff::Remove { index } => TimelineDiff {
-                        action: "Remove".to_string(),
-                        values: None,
-                        index: Some(index),
-                        value: None,
-                        new_index: None,
-                        old_index: None,
-                    },
-                    VectorDiff::PushBack { value } => TimelineDiff {
-                        action: "PushBack".to_string(),
-                        values: None,
-                        index: None,
-                        value: Some(timeline_item_to_message(value, room.clone())),
-                        new_index: None,
-                        old_index: None,
-                    },
-                    VectorDiff::PushFront { value } => TimelineDiff {
-                        action: "PushFront".to_string(),
-                        values: None,
-                        index: None,
-                        value: Some(timeline_item_to_message(value, room.clone())),
-                        new_index: None,
-                        old_index: None,
-                    },
-                    VectorDiff::PopBack => TimelineDiff {
-                        action: "PopBack".to_string(),
-                        values: None,
-                        index: None,
-                        value: None,
-                        old_index: None,
-                        new_index: None,
-                    },
-                    VectorDiff::PopFront => TimelineDiff {
-                        action: "PopFront".to_string(),
-                        values: None,
-                        index: None,
-                        value: None,
-                        old_index: None,
-                        new_index: None,
-                    },
-                    VectorDiff::Clear => TimelineDiff {
-                        action: "Clear".to_string(),
-                        values: None,
-                        index: None,
-                        value: None,
-                        old_index: None,
-                        new_index: None,
-                    },
-                    VectorDiff::Reset { values } => TimelineDiff {
-                        action: "Reset".to_string(),
-                        values: Some(
-                            values
-                                .iter()
-                                .map(|x| timeline_item_to_message(x.clone(), room.clone()))
-                                .collect(),
-                        ),
-                        index: None,
-                        value: None,
-                        new_index: None,
-                        old_index: None,
-                    },
-                });
+            let (timeline_items, mut timeline_stream) = timeline.subscribe().await;
+            let mut remap = timeline_stream.map(move |diff| match diff {
+                VectorDiff::Append { values } => TimelineDiff {
+                    action: "Append".to_string(),
+                    values: Some(
+                        values
+                            .iter()
+                            .map(|x| timeline_item_to_message(x.clone(), room.clone()))
+                            .collect(),
+                    ),
+                    index: None,
+                    value: None,
+                    new_index: None,
+                    old_index: None,
+                },
+                VectorDiff::Insert { index, value } => TimelineDiff {
+                    action: "Insert".to_string(),
+                    values: None,
+                    index: Some(index),
+                    value: Some(timeline_item_to_message(value, room.clone())),
+                    new_index: None,
+                    old_index: None,
+                },
+                VectorDiff::Set { index, value } => TimelineDiff {
+                    action: "Set".to_string(),
+                    values: None,
+                    index: Some(index),
+                    value: Some(timeline_item_to_message(value, room.clone())),
+                    new_index: None,
+                    old_index: None,
+                },
+                VectorDiff::Remove { index } => TimelineDiff {
+                    action: "Remove".to_string(),
+                    values: None,
+                    index: Some(index),
+                    value: None,
+                    new_index: None,
+                    old_index: None,
+                },
+                VectorDiff::PushBack { value } => TimelineDiff {
+                    action: "PushBack".to_string(),
+                    values: None,
+                    index: None,
+                    value: Some(timeline_item_to_message(value, room.clone())),
+                    new_index: None,
+                    old_index: None,
+                },
+                VectorDiff::PushFront { value } => TimelineDiff {
+                    action: "PushFront".to_string(),
+                    values: None,
+                    index: None,
+                    value: Some(timeline_item_to_message(value, room.clone())),
+                    new_index: None,
+                    old_index: None,
+                },
+                VectorDiff::PopBack => TimelineDiff {
+                    action: "PopBack".to_string(),
+                    values: None,
+                    index: None,
+                    value: None,
+                    old_index: None,
+                    new_index: None,
+                },
+                VectorDiff::PopFront => TimelineDiff {
+                    action: "PopFront".to_string(),
+                    values: None,
+                    index: None,
+                    value: None,
+                    old_index: None,
+                    new_index: None,
+                },
+                VectorDiff::Clear => TimelineDiff {
+                    action: "Clear".to_string(),
+                    values: None,
+                    index: None,
+                    value: None,
+                    old_index: None,
+                    new_index: None,
+                },
+                VectorDiff::Reset { values } => TimelineDiff {
+                    action: "Reset".to_string(),
+                    values: Some(
+                        values
+                            .iter()
+                            .map(|x| timeline_item_to_message(x.clone(), room.clone()))
+                            .collect(),
+                    ),
+                    index: None,
+                    value: None,
+                    new_index: None,
+                    old_index: None,
+                },
+            });
 
-                while let Some(d) = remap.next().await {
-                    yield d
-                }
+            while let Some(d) = remap.next().await {
+                yield d
             }
+        }
     }
 
     pub async fn paginate_backwards(&self, mut count: u16) -> Result<bool> {

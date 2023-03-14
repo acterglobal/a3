@@ -2804,7 +2804,7 @@ impl RoomMessage {
                 }
                 let mut replied_to_id = None;
                 if let Some(in_reply_to) = msg.in_reply_to() {
-                    replied_to_id = Some(in_reply_to.event_id);
+                    replied_to_id = Some(in_reply_to.clone().event_id);
                 }
                 RoomEventItem::new(
                     event_id,
@@ -2960,8 +2960,8 @@ impl RoomMessage {
                     let fallback = format!(
                         "{} changed display name from {:?} to {:?}",
                         p.user_id().to_string(),
-                        change.old.map(|x| x.to_string()),
-                        change.new.map(|x| x.to_string()),
+                        change.old.clone().map(|x| x.to_string()),
+                        change.new.clone().map(|x| x.to_string()),
                     );
                     Some(TextDesc {
                         body: fallback,
@@ -2978,7 +2978,7 @@ impl RoomMessage {
                         width: None,
                         height: None,
                         thumbnail_info: None,
-                        thumbnail_source: change.new.map(MediaSource::Plain),
+                        thumbnail_source: change.new.clone().map(MediaSource::Plain),
                     })
                 } else {
                     None

@@ -9,7 +9,7 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-default = [ "with-mocks", "dart" ]
+default = [ "with-mocks", "dart", "dep:matrix-sdk-base" ]
 with-mocks = [ "effektio-core/with-mocks" ]
 testing = [ "dep:matrix-sdk-base" ]
 dart = [ "with-mocks" ]

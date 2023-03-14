@@ -2,11 +2,10 @@ use anyhow::{bail, Context, Result};
 use derive_builder::Builder;
 use effektio_core::statics::{PURPOSE_FIELD, PURPOSE_FIELD_DEV, PURPOSE_TEAM_VALUE};
 use log::{info, warn};
-
 use matrix_sdk::{
     attachment::{AttachmentConfig, AttachmentInfo, BaseFileInfo, BaseImageInfo},
     media::{MediaFormat, MediaRequest},
-    room::{Invited, Joined, Left, Room as MatrixRoom, RoomMember},
+    room::{Room as MatrixRoom, RoomMember},
     ruma::{
         assign,
         events::{
@@ -29,6 +28,7 @@ use matrix_sdk::{
     },
     Client as MatrixClient,
 };
+use matrix_sdk_base::RoomState;
 use std::{fs::File, io::Write, path::PathBuf, sync::Arc};
 
 use super::{
@@ -292,9 +292,9 @@ impl Room {
 
     pub fn room_type(&self) -> String {
         match self.room.state() {
-            Joined => "joined".to_string(),
-            Left => "left".to_string(),
-            Invited => "invited".to_string(),
+            RoomState::Joined => "joined".to_string(),
+            RoomState::Left => "left".to_string(),
+            RoomState::Invited => "invited".to_string(),
         }
     }
 
