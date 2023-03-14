@@ -651,9 +651,8 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .style_warn(Style::default().fg(Color::Yellow))
         .style_trace(Style::default().fg(Color::Gray))
         .style_info(Style::default().fg(Color::Blue))
-        .block(block);
-
-    logger.state(&app.log_state);
+        .block(block)
+        .state(&app.log_state);
 
     f.render_widget(tabs, chunks[0]);
     f.render_widget(status, chunks[2]);
