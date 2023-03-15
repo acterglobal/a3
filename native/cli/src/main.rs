@@ -1,9 +1,8 @@
 #![warn(clippy::all)]
 
+use acter_core::ruma;
 use anyhow::Result;
 use clap::Parser;
-
-use acter_core::ruma;
 
 mod action;
 mod config;

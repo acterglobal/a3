@@ -1,31 +1,17 @@
 use acter_core::{
     events::{
-        pins::{self, PinBuilder, SyncPinEvent},
-        Icon, TextMessageEventContent, UtcDateTime,
+        pins::{self, PinBuilder},
+        Icon, TextMessageEventContent,
     },
-    executor::Executor,
     models::{self, ActerModel, AnyActerModel, Color},
-    ruma::{
-        events::{
-            room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
-            MessageLikeEvent,
-        },
-        OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
+    ruma::{OwnedEventId, OwnedRoomId},
     statics::KEYS,
-    store::Store,
-    util::DateTime,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use futures_signals::signal::Mutable;
-use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
-use std::{
-    collections::{hash_map::Entry, HashMap},
-    convert::{TryFrom, TryInto},
-    ops::{Deref, DerefMut},
-};
+use matrix_sdk::{room::Joined, room::Room};
+use std::collections::{hash_map::Entry, HashMap};
 
 use super::{client::Client, group::Group, RUNTIME};
 

@@ -1,8 +1,9 @@
-use super::{BelongsTo, References, TextMessageEventContent, Update};
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
+
+use super::{BelongsTo, References, TextMessageEventContent, Update};
 
 /// Comment Event
 #[derive(Clone, Debug, Deserialize, Serialize, EventContent, Builder, Getters)]

@@ -1,20 +1,15 @@
 #![warn(clippy::all)]
 
-use anyhow::Result;
-use clap::Parser;
-
 mod config;
 mod ui;
 
-use config::ActerTuiConfig;
-use futures::future::Either;
-use futures::pin_mut;
-use futures::StreamExt;
-use std::sync::mpsc::channel;
-
-use ui::AppUpdate;
-
+use anyhow::Result;
 use app_dirs2::{app_root, AppDataType, AppInfo};
+use clap::Parser;
+use config::ActerTuiConfig;
+use futures::{future::Either, pin_mut, StreamExt};
+use std::sync::mpsc::channel;
+use ui::AppUpdate;
 
 const APP_INFO: AppInfo = AppInfo {
     name: "acter-tui",

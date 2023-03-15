@@ -5,7 +5,6 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use core::time::Duration;
 use derive_builder::Builder;
-
 use futures::{future::try_join_all, pin_mut, stream, Stream, StreamExt};
 use futures_signals::signal::{
     channel, Mutable, MutableSignalCloned, Receiver, SignalExt, SignalStream,
@@ -13,8 +12,8 @@ use futures_signals::signal::{
 use log::info;
 use matrix_sdk::{
     config::SyncSettings,
-    ruma::{api::client::error::ErrorKind, device_id, OwnedUserId, RoomId},
-    Client as MatrixClient, Error, HttpError, LoopCtrl, RefreshTokenError, RumaApiError,
+    ruma::{device_id, OwnedUserId, RoomId},
+    Client as MatrixClient, LoopCtrl, RumaApiError,
 };
 use parking_lot::{Mutex, RwLock};
 use std::sync::{
@@ -25,7 +24,6 @@ use tokio::task::JoinHandle;
 
 use super::{
     account::Account,
-    api::FfiBuffer,
     conversation::{Conversation, ConversationController},
     device::DeviceController,
     group::Group,

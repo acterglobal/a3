@@ -1,14 +1,12 @@
+use acter_core::{events, ruma};
 use anyhow::{bail, Context, Result};
 use clap::Parser;
-
-use crate::config::{LoginConfig, ENV_ROOM};
-use acter_core::events;
-use acter_core::ruma;
-
-use crate::ruma::api::client::filter::RoomEventFilter;
-use crate::ruma::events::room::MediaSource;
-
 use tracing::{info, warn};
+
+use crate::{
+    config::{LoginConfig, ENV_ROOM},
+    ruma::{api::client::filter::RoomEventFilter, events::room::MediaSource},
+};
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]
