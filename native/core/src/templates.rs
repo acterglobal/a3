@@ -1,12 +1,3 @@
-use crate::{
-    client::CoreClient,
-    events::{
-        pins::PinEventContent,
-        tasks::{TaskEventContent, TaskListEventContent},
-    },
-    spaces::CreateSpaceSettings,
-};
-
 use async_stream::try_stream;
 use core::pin::Pin;
 use futures::{
@@ -17,7 +8,6 @@ use indexmap::IndexMap;
 use matrix_sdk::ruma::RoomId;
 pub use minijinja::value::Value;
 use minijinja::Environment;
-use serde;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::Arc};
 use tokio_retry::{
@@ -31,6 +21,15 @@ pub mod functions;
 pub mod values;
 
 use values::{ObjRef, UserValue};
+
+use crate::{
+    client::CoreClient,
+    events::{
+        pins::PinEventContent,
+        tasks::{TaskEventContent, TaskListEventContent},
+    },
+    spaces::CreateSpaceSettings,
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {

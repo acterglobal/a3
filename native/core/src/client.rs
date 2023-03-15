@@ -1,7 +1,8 @@
+use derive_getters::Getters;
 use matrix_sdk::Client as MatrixClient;
 
 use crate::{error::Error, executor::Executor, store::Store};
-use derive_getters::Getters;
+
 /// Comment Event
 #[derive(Clone, Debug, Getters)]
 pub struct CoreClient {

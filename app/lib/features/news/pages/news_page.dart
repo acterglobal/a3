@@ -1,12 +1,10 @@
 import 'package:acter/common/animations/like_animation.dart';
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/home/controllers/home_controller.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:acter/features/news/controllers/news_controller.dart';
 import 'package:acter/features/news/widgets/news_item.dart';
 import 'package:flutter/material.dart';
-import 'package:acter/common/utils/constants.dart' show Keys;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NewsPage extends ConsumerStatefulWidget {
@@ -39,12 +37,7 @@ class _NewsPageState extends ConsumerState<NewsPage>
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: MediaQuery.of(context).size.width < 600
-            ? IconButton(
-                key: Keys.sidebarBtn,
-                icon: const UserAvatarWidget(isExtendedRail: false),
-                onPressed: () => confirmationDialog(context, ref),
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              )
+            ? const UserAvatarWidget(isExtendedRail: false)
             : const SizedBox.shrink(),
         centerTitle: true,
         title: const ButtonBar(
