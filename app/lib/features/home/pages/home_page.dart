@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:date_format/date_format.dart';
-import 'package:acter/common/dialogs/logout_confirmation.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
@@ -89,11 +88,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                               return AdaptiveScaffold.standardNavigationRail(
                                 onDestinationSelected:
                                     handleDestinationSelected,
-                                leading: GestureDetector(
-                                  onTap: () => confirmationDialog(ctx, ref),
-                                  child: const UserAvatarWidget(
-                                    isExtendedRail: false,
-                                  ),
+                                leading: const UserAvatarWidget(
+                                  isExtendedRail: false,
                                 ),
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
@@ -126,11 +122,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     handleDestinationSelected,
                                 selectedIndex: _selectedIndex,
                                 extended: true,
-                                leading: GestureDetector(
-                                  onTap: () => confirmationDialog(context, ref),
-                                  child: const UserAvatarWidget(
-                                    isExtendedRail: true,
-                                  ),
+                                leading: const UserAvatarWidget(
+                                  isExtendedRail: true,
                                 ),
                                 destinations: <NavigationRailDestination>[
                                   NavigationRailDestination(
