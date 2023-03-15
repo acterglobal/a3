@@ -9,6 +9,7 @@ pub static PURPOSE_TEAM_VALUE: &str = "global.acter.team";
 pub mod KEYS {
     pub static TASKS: &str = "tasks";
     pub static CALENDAR: &str = "calendar";
+    pub static NEWS: &str = "news";
     pub static PINS: &str = "pins";
 }
 

@@ -34,7 +34,7 @@ mod verification;
 pub use account::Account;
 pub use acter_core::{
     events::UtcDateTime,
-    models::{Color as EfkColor, News, Tag},
+    models::{Color as EfkColor, Tag},
 };
 pub use auth::{
     guest_client, login_new_client, login_new_client_under_config, login_with_token,
@@ -52,6 +52,7 @@ pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
     VideoDesc,
 };
+pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};
@@ -62,9 +63,6 @@ pub use tasks::{
 };
 pub use typing::TypingEvent;
 pub use verification::{VerificationEmoji, VerificationEvent};
-
-#[cfg(feature = "with-mocks")]
-pub use acter_core::mocks::*;
 
 pub use acter_core::ruma::events::room::MediaSource;
 

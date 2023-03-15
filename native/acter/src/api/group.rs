@@ -2,6 +2,7 @@ use acter_core::{
     events::{
         calendar::{SyncCalendarEventEvent, SyncCalendarEventUpdateEvent},
         comments::{SyncCommentEvent, SyncCommentUpdateEvent},
+        news::{SyncNewsEntryEvent, SyncNewsEntryUpdateEvent},
         pins::{SyncPinEvent, SyncPinUpdateEvent},
         tasks::{SyncTaskEvent, SyncTaskListEvent, SyncTaskListUpdateEvent, SyncTaskUpdateEvent},
     },
@@ -211,6 +212,36 @@ impl Group {
                     if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
                         executor
                             .handle(AnyActerModel::CalendarEventUpdate(t.into()))
+                            .await;
+                    }
+                }
+            },
+        );
+
+        // NewsEntrys
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncNewsEntryEvent, client: MatrixClient, Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor.handle(AnyActerModel::NewsEntry(t.into())).await;
+                    }
+                }
+            },
+        );
+        let room_id = self.room_id().to_owned();
+        self.room.add_event_handler(
+            move |ev: SyncNewsEntryUpdateEvent,
+                  client: MatrixClient,
+                  Ctx(executor): Ctx<Executor>| {
+                let room_id = room_id.clone();
+                async move {
+                    // FIXME: handle redactions
+                    if let MessageLikeEvent::Original(t) = ev.into_full_event(room_id.clone()) {
+                        executor
+                            .handle(AnyActerModel::NewsEntryUpdate(t.into()))
                             .await;
                     }
                 }

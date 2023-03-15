@@ -10,7 +10,6 @@ repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
-with-mocks = ["fake", "rand"]
 templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
 
 [dependencies]
@@ -31,10 +30,6 @@ serde_repr = "0.1"
 thiserror = "1.0"
 tracing = "0.1.37"
 url = { version = "2.2.2", features = ["serde"] }
-
-# with-mocks
-fake = { version = "2.4", optional = true, features = ["derive"] }
-rand = { version = "0.8", optional = true }
 
 # templates
 toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }

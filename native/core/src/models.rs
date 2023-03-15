@@ -19,7 +19,7 @@ use matrix_sdk::ruma::{
     serde::Raw,
     EventId, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId, RoomId,
 };
-pub use news::News;
+pub use news::{NewsEntry, NewsEntryUpdate};
 pub use pins::{Pin, PinUpdate};
 use serde::{Deserialize, Serialize};
 pub use tag::Tag;
@@ -38,6 +38,10 @@ use crate::events::{
     },
     comments::{
         OriginalCommentEvent, OriginalCommentUpdateEvent, SyncCommentEvent, SyncCommentUpdateEvent,
+    },
+    news::{
+        OriginalNewsEntryEvent, OriginalNewsEntryUpdateEvent, SyncNewsEntryEvent,
+        SyncNewsEntryUpdateEvent,
     },
     pins::{OriginalPinEvent, OriginalPinUpdateEvent, SyncPinEvent, SyncPinUpdateEvent},
     tasks::{
@@ -149,6 +153,10 @@ pub enum AnyActerModel {
     Pin,
     PinUpdate,
 
+    // -- News
+    NewsEntry,
+    NewsEntryUpdate,
+
     // -- more generics
     Comment,
     CommentUpdate,
@@ -240,6 +248,30 @@ impl AnyActerModel {
                         tracing::error!(?error, ?raw, "parsing pin update event failed");
                         Error::FailedToParse {
                             model_type: "global.acter.dev.pin.update".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+
+            // -- News
+            "global.acter.dev.news" => Ok(AnyActerModel::NewsEntry(
+                raw.deserialize_as::<OriginalNewsEntryEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing news event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.news".to_string(),
+                            msg: error.to_string(),
+                        }
+                    })?
+                    .into(),
+            )),
+            "global.acter.dev.news.update" => Ok(AnyActerModel::NewsEntryUpdate(
+                raw.deserialize_as::<OriginalNewsEntryUpdateEvent>()
+                    .map_err(|error| {
+                        tracing::error!(?error, ?raw, "parsing news update event failed");
+                        Error::FailedToParse {
+                            model_type: "global.acter.dev.news.update".to_string(),
                             msg: error.to_string(),
                         }
                     })?
@@ -394,6 +426,36 @@ impl AnyActerModel {
                 _ => Err(Error::UnknownModel(None)),
             },
 
+            // -- NewsEntrys
+            "global.acter.dev.news" => match raw
+                .deserialize_as::<SyncNewsEntryEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing news event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.news".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::NewsEntry(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+            "global.acter.dev.news.update" => match raw
+                .deserialize_as::<SyncNewsEntryUpdateEvent>()
+                .map_err(|error| {
+                    tracing::error!(?error, ?raw, "parsing news update event failed");
+                    Error::FailedToParse {
+                        model_type: "global.acter.dev.news.update".to_string(),
+                        msg: error.to_string(),
+                    }
+                })?
+                .into_full_event(room_id.to_owned())
+            {
+                MessageLikeEvent::Original(t) => Ok(AnyActerModel::NewsEntryUpdate(t.into())),
+                _ => Err(Error::UnknownModel(None)),
+            },
+
             // generic
 
             // comments
@@ -436,12 +498,6 @@ impl AnyActerModel {
             }
         }
     }
-}
-
-#[cfg(feature = "with-mocks")]
-pub mod mocks {
-    pub use super::color::mocks::ColorFaker;
-    pub use super::news::gen_mocks as gen_mock_news;
 }
 
 #[cfg(test)]
