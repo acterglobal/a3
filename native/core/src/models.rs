@@ -164,8 +164,6 @@ impl AnyActerModel {
 
         match m_type {
             // -- CALENDAR
-
-            // -- Pins
             "global.acter.dev.calendar_event" => Ok(AnyActerModel::CalendarEvent(
                 raw.deserialize_as::<OriginalCalendarEventEvent>()
                     .map_err(|error| {
@@ -188,6 +186,7 @@ impl AnyActerModel {
                     })?
                     .into(),
             )),
+
             // -- TASKS
             "global.acter.dev.tasklist" => Ok(AnyActerModel::TaskList(
                 raw.deserialize_as::<OriginalTaskListEvent>()

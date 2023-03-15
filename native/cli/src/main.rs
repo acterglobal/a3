@@ -3,8 +3,6 @@
 use anyhow::Result;
 use clap::Parser;
 
-
-
 mod action;
 mod config;
 

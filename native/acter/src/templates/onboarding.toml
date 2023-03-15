@@ -3,9 +3,10 @@ version = "0.1"
 
 [inputs]
 main = { type = "user", is-default = true, required = true, description = "The starting user" }
-space = { type = "space", is-default = true, required = true, description = "The acter space" }
+# space = { type = "space", is-default = true, required = true, description = "The acter space" }
 
 [objects]
+main_space = { type = "space", is-default = true, name = "{{ main.display_name }}'s onboarding space"}
 start_list = { type = "task-list", name = "{{ main.display_name }}'s Acter onboarding list" }
 
 [objects.acter-website-pin]
