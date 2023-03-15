@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 
 @immutable
-class EffektioChatTheme extends ChatTheme {
-  const EffektioChatTheme({
+class ActerChatTheme extends ChatTheme {
+  const ActerChatTheme({
     Widget? attachmentButtonIcon,
     EdgeInsets? attachmentButtonMargin,
     Color backgroundColor = const Color.fromRGBO(36, 38, 50, 0),

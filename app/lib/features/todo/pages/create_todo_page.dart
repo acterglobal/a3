@@ -1,7 +1,7 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/widgets/custom_button.dart';
-import 'package:effektio/features/todo/controllers/todo_controller.dart';
-import 'package:effektio/models/Team.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/widgets/custom_button.dart';
+import 'package:acter/features/todo/controllers/todo_controller.dart';
+import 'package:acter/models/Team.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';

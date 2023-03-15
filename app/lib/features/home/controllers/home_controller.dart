@@ -1,39 +1,36 @@
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter/features/chat/controllers/chat_list_controller.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/controllers/receipt_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 
-final homeStateProvider = StateNotifierProvider<HomeStateNotifier, bool>(
+final homeStateProvider = StateNotifierProvider<HomeStateNotifier, Client?>(
   (ref) => HomeStateNotifier(ref),
 );
 
-class HomeStateNotifier extends StateNotifier<bool> {
+class HomeStateNotifier extends StateNotifier<Client?> {
   final Ref ref;
-  late EffektioSdk sdk;
-  late Client client;
+  late ActerSdk sdk;
   late SyncState syncState;
-  HomeStateNotifier(this.ref) : super(false) {
+  HomeStateNotifier(this.ref) : super(null) {
     _loadUp();
   }
 
   void _loadUp() async {
-    state = false;
-    final asyncSdk = await EffektioSdk.instance;
+    final asyncSdk = await ActerSdk.instance;
     PlatformDispatcher.instance.onError = (exception, stackTrace) {
-      sdk.writeLog(exception.toString(), 'error');
-      sdk.writeLog(stackTrace.toString(), 'error');
+      asyncSdk.writeLog(exception.toString(), 'error');
+      asyncSdk.writeLog(stackTrace.toString(), 'error');
       return true; // make this error handled
     };
     sdk = asyncSdk;
-    client = sdk.currentClient;
-    syncState = client.startSync();
-    state = true;
-  }
-
-  void refreshClient() {
-    state = false;
-    client = sdk.currentClient;
-    syncState = client.startSync();
-    state = true;
+    state = sdk.currentClient;
+    Get.put(ChatListController(client: state!));
+    Get.put(ChatRoomController(client: state!));
+    Get.put(ReceiptController(client: state!));
+    syncState = state!.startSync();
   }
 }

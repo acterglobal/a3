@@ -1,6 +1,7 @@
 pub use chrono::{DateTime, Utc};
 pub use chrono_tz::Tz as TimeZone;
 pub use csscolorparser::Color;
+pub use matrix_sdk::ruma::events::room::ImageInfo;
 use matrix_sdk::ruma::OwnedEventId;
 use serde::{Deserialize, Serialize};
 
@@ -9,12 +10,39 @@ pub type UtcDateTime = DateTime<Utc>;
 
 /// Customize the color scheme
 #[derive(Clone, Debug, Deserialize, Serialize)]
-// #[ruma_event(type = "org.effektio.dev.colors")]
+// #[ruma_event(type = "global.acter.dev.colors")]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
     pub color: Option<Color>,
     /// The background color to be used, as HEX
     pub background: Option<Color>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum BrandIcon {
+    Matrix,
+    Twitter,
+    Facebook,
+    Email,
+    Youtube,
+    Whatsapp,
+    Reddit,
+    Skype,
+    Zoom,
+    Jitsi,
+    Telegram,
+    GoogleDrive,
+    // FIXME: support for others?
+}
+
+/// Customize the color scheme
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(tag = "type")]
+pub enum Icon {
+    Emoji { key: String },
+    BrandIcon { icon: BrandIcon },
+    Image(ImageInfo),
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -63,7 +91,7 @@ impl From<Vec<OwnedEventId>> for References {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "rel_type", rename = "org.effektio.dev.update")]
+#[serde(tag = "rel_type", rename = "global.acter.dev.update")]
 pub struct Update {
     /// The event this event archives.
     pub event_id: OwnedEventId,
@@ -76,7 +104,7 @@ impl From<OwnedEventId> for Update {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(tag = "rel_type", rename = "org.effektio.dev.belongs_to")]
+#[serde(tag = "rel_type", rename = "global.acter.dev.belongs_to")]
 pub struct BelongsTo {
     /// The event this event archives.
     pub event_id: OwnedEventId,

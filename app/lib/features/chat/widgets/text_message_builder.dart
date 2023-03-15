@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:effektio/common/themes/chat_theme.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/common/themes/chat_theme.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
@@ -51,13 +51,13 @@ class TextMessageBuilder extends StatelessWidget {
             ? ChatTheme01.chatMutedBodyStyle
                 .copyWith(fontWeight: FontWeight.w800)
             : controller.userId == message.author.id
-                ? const EffektioChatTheme().sentMessageLinkTitleTextStyle
-                : const EffektioChatTheme().receivedMessageLinkTitleTextStyle,
+                ? const ActerChatTheme().sentMessageLinkTitleTextStyle
+                : const ActerChatTheme().receivedMessageLinkTitleTextStyle,
         metadataTextStyle: isNotice
             ? ChatTheme01.chatMutedBodyStyle.copyWith(fontSize: 12)
             : controller.userId == message.author.id
-                ? const EffektioChatTheme().sentMessageLinkDescriptionTextStyle
-                : const EffektioChatTheme()
+                ? const ActerChatTheme().sentMessageLinkDescriptionTextStyle
+                : const ActerChatTheme()
                     .receivedMessageLinkDescriptionTextStyle,
         enableAnimation: true,
         imageBuilder: (image) {
@@ -115,8 +115,8 @@ class _TextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final emojiTextStyle = controller.userId == message.author.id
-        ? const EffektioChatTheme().sentEmojiMessageTextStyle
-        : const EffektioChatTheme().receivedEmojiMessageTextStyle;
+        ? const ActerChatTheme().sentEmojiMessageTextStyle
+        : const ActerChatTheme().receivedEmojiMessageTextStyle;
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxWidth: enlargeEmoji

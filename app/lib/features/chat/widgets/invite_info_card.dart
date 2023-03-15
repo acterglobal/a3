@@ -1,9 +1,9 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/utils/utils.dart';
-import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
-import 'package:effektio/features/chat/pages/room_page.dart';
-import 'package:effektio/common/widgets/custom_avatar.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/utils/utils.dart';
+import 'package:acter/features/chat/controllers/chat_list_controller.dart';
+import 'package:acter/features/chat/pages/room_page.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, FfiBufferUint8, Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

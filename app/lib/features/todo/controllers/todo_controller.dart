@@ -1,9 +1,9 @@
-import 'package:effektio/models/Team.dart';
-import 'package:effektio/models/ToDoComment.dart';
-import 'package:effektio/models/ToDoList.dart';
-import 'package:effektio/models/ToDoTask.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/models/Team.dart';
+import 'package:acter/models/ToDoComment.dart';
+import 'package:acter/models/ToDoList.dart';
+import 'package:acter/models/ToDoTask.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show
         Client,
         Comment,
@@ -45,13 +45,10 @@ class ToDoController extends GetxController {
 
   /// creates team (group).
   Future<String> createTeam(String name) async {
-    final sdk = await EffektioSdk.instance;
+    final sdk = await ActerSdk.instance;
     CreateGroupSettings settings = sdk.newGroupSettings(name);
-    settings.alias(UniqueKey().toString());
-    settings.visibility('Public');
-    settings.addInvitee('@sisko:matrix.org');
     String roomId =
-        await client.createEffektioGroup(settings).then((id) => id.toString());
+        await client.createActerGroup(settings).then((id) => id.toString());
     return roomId;
   }
 

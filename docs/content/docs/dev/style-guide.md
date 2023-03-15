@@ -14,8 +14,7 @@ top = false
 
 +++
 
-
-## Effektio Brand
+## Acter Brand
 
 ### Overview
 
@@ -35,17 +34,17 @@ top = false
 
 #### Typeface
 
- - App-Wide Font: Roboto
- - Headlines: Roboto Semi-Bold
- - Regular Text: Robot Light
- - Font-Sizes:
-    - H1: 18/20
-    - H2: 16/Auto
-    - H3 subject: 15/20
-    - Body Text: 10/15
-    - H4 substitles: 10/15
-    - H5 Big Word: 20/25
-    - H6 legal: 10/auto
+- App-Wide Font: Roboto
+- Headlines: Roboto Semi-Bold
+- Regular Text: Robot Light
+- Font-Sizes:
+  - H1: 18/20
+  - H2: 16/Auto
+  - H3 subject: 15/20
+  - Body Text: 10/15
+  - H4 substitles: 10/15
+  - H5 Big Word: 20/25
+  - H6 legal: 10/auto
 
 #### Icons
 
@@ -76,12 +75,11 @@ Icon(FlutterIcons.stepforward_ant)
 Icon(FlutterIcons.html5_faw)
 ```
 
-### [Brandguide as PDF](/styles/Effektio-MVP-Design-Style.pdf)
+### [Brandguide as PDF](/styles/Acter-MVP-Design-Style.pdf)
 
 ## Implementation Guide
 
 TBD
-
 
 ## Themeing / Customisastion
 

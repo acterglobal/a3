@@ -4,9 +4,9 @@ services:
 
   synapse:
     build:
-      context: .github/effektio-synapse-ci
+      context: .github/acter-synapse-ci
       dockerfile: Dockerfile
-    image: lightyear/effektio-synapse-ci:latest
+    image: lightyear/acter-synapse-ci:latest
     restart: unless-stopped
     environment:
       - SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
@@ -17,7 +17,7 @@ services:
       - 8118:8008/tcp
 
   setup-admin:
-    image: "lightyear/effektio-synapse-ci:latest"
+    image: "lightyear/acter-synapse-ci:latest"
     restart: on-failure
     volumes:
       - ./.local/docker-data:/data:r

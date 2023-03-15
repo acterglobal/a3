@@ -1,6 +1,6 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/todo/controllers/todo_controller.dart';
-import 'package:effektio/models/ToDoList.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/todo/controllers/todo_controller.dart';
+import 'package:acter/models/ToDoList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';

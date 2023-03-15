@@ -1,5 +1,5 @@
-// import 'package:effektio/common/store/themes/SeperatedThemes.dart';
-// import 'package:effektio/controllers/todo_controller.dart';
+// import 'package:acter/common/store/themes/SeperatedThemes.dart';
+// import 'package:acter/controllers/todo_controller.dart';
 // import 'package:flutter/material.dart';
 // import 'package:get/get.dart';
 

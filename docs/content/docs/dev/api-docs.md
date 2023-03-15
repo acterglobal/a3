@@ -7,6 +7,6 @@ template = "docs/page.html"
 
 +++
 
- - [App docs (main)](/api/main/app/)
- - [SDK docs (main)](/api/main/dart-sdk/)
- - [Rust docs (main)](/api/main/rust/effektio/)
+- [App docs (main)](/api/main/app/)
+- [SDK docs (main)](/api/main/dart-sdk/)
+- [Rust docs (main)](/api/main/rust/acter/)

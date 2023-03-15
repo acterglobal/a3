@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(runner LANGUAGES CXX)
 
-set(BINARY_NAME "effektio")
-set(APPLICATION_ID "org.effektio.app")
+set(BINARY_NAME "acter")
+set(APPLICATION_ID "global.acter.app")
 
 cmake_policy(SET CMP0063 NEW)
 

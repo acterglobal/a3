@@ -1,7 +1,7 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/chat/widgets/pending_req_list_view.dart';
-import 'package:effektio/features/chat/widgets/req_list_view.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/chat/widgets/pending_req_list_view.dart';
+import 'package:acter/features/chat/widgets/req_list_view.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
 
 class RequestsPage extends StatefulWidget {

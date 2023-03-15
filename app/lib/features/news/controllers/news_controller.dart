@@ -1,5 +1,5 @@
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart' show News;
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show News;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final newsListProvider =
@@ -15,9 +15,9 @@ class NewsListNotifier extends StateNotifier<AsyncValue<List<News>>> {
 
   Future<void> _fetchNews() async {
     state = const AsyncLoading();
-    final client = ref.read(homeStateProvider.notifier).client;
+    final client = ref.read(homeStateProvider);
     state = await AsyncValue.guard(() async {
-      return await client.latestNews().then((ffiList) => ffiList.toList());
+      return await client!.latestNews().then((ffiList) => ffiList.toList());
     });
   }
 }

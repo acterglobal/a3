@@ -1,4 +1,4 @@
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show CommentsManager, TaskUpdateBuilder;
 import 'package:flutter/widgets.dart';
 

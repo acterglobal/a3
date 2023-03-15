@@ -1,16 +1,17 @@
 [package]
-name = "effektio-core"
-authors = [ "ben@effektio.org" ]
+name = "acter-core"
+authors = [ "ben@acter.global" ]
 version = "0.1.0"
 edition = "2021"
 rust-version = "1.58"
-description = "Core types and features of the effektio app"
+description = "Core types and features of the acter app"
 homepage = "https://effekto.org"
 repository = "https://github.com/acterglobal/a3"
 license-file = "../../LICENSE.txt"
 
 [features]
 with-mocks = ["fake", "rand"]
+templates = ["toml", "minijinja", "indexmap", "tokio-retry"]
 
 [dependencies]
 async-broadcast = { workspace = true }
@@ -34,6 +35,13 @@ url = { version = "2.2.2", features = ["serde"] }
 fake = { version = "2.4", optional = true, features = ["derive"] }
 rand = { version = "0.8", optional = true }
 
+# templates
+toml = { version = "0.7.2", optional = true, features = ["preserve_order"] }
+minijinja = { version = "0.30.5", optional = true, features = ["builtins"] }
+indexmap = { version = "1.9.2", optional = true }
+async-stream = { version = "0.3.4" }
+tokio-retry = { version = "0.3.0", optional = true }
+
 [dependencies.matrix-sdk]
 workspace = true
 default-features = false
@@ -42,6 +50,7 @@ default-features = false
 env_logger = { version = "0.10.0" }
 tokio = { version = "1", features = ["rt", "macros"]}
 tracing = { version = "0.1.37", default-features = false, features = ["log"] }
+anyhow = "1.0.69"
 
 [dev-dependencies.matrix-sdk]
 workspace = true

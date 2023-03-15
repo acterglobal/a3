@@ -1,5 +1,5 @@
 use crate::{
-    models::{AnyEffektioModel, EffektioModel},
+    models::{ActerModel, AnyActerModel},
     store::Store,
     Result,
 };
@@ -47,7 +47,7 @@ impl Executor {
         }
     }
 
-    pub async fn wait_for(&self, key: String) -> crate::Result<AnyEffektioModel> {
+    pub async fn wait_for(&self, key: String) -> crate::Result<AnyActerModel> {
         let mut subscribe = self.subscribe(key.clone());
         let Ok(model) = self.store.get(&key).await else {
             if let Err(e) = subscribe.recv().await {
@@ -88,7 +88,7 @@ impl Executor {
         counter
     }
 
-    pub async fn handle(&self, model: AnyEffektioModel) -> Result<()> {
+    pub async fn handle(&self, model: AnyActerModel) -> Result<()> {
         self.notify(model.execute(&self.store).await?);
         Ok(())
     }
@@ -243,7 +243,7 @@ mod tests {
 
         let new_model = waiter.await?;
 
-        let AnyEffektioModel::TestModel(inner_model) = new_model else {
+        let AnyActerModel::TestModel(inner_model) = new_model else {
             panic!("Not a test model")
         };
 

@@ -2,8 +2,8 @@ use anyhow::{bail, Context, Result};
 use clap::Parser;
 
 use crate::config::{LoginConfig, ENV_ROOM};
-use effektio_core::events;
-use effektio_core::ruma;
+use acter_core::events;
+use acter_core::ruma;
 
 use crate::ruma::api::client::filter::RoomEventFilter;
 use crate::ruma::events::room::MediaSource;
@@ -22,7 +22,7 @@ pub struct FetchNews {
 
 impl FetchNews {
     pub async fn run(&self) -> Result<()> {
-        let types = vec!["org.effektio.dev.news".to_owned()];
+        let types = vec!["global.acter.dev.news".to_owned()];
         let client = self.login.client().await?;
         // FIXME: is there a more efficient way? First sync can take very long...
         let sync_resp = client.sync_once(Default::default()).await?;

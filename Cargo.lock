@@ -3,6 +3,137 @@
 version = 3
 
 [[package]]
+name = "acter"
+version = "0.1.0"
+dependencies = [
+ "acter-core",
+ "android_logger",
+ "anyhow",
+ "async-broadcast",
+ "async-stream",
+ "derive_builder 0.10.2",
+ "env_logger",
+ "eyeball-im",
+ "fern",
+ "ffi-gen",
+ "ffi-gen-macro",
+ "futures",
+ "futures-signals",
+ "lazy_static",
+ "log",
+ "log-panics",
+ "matrix-sdk",
+ "matrix-sdk-base",
+ "matrix-sdk-sled",
+ "mime",
+ "oslog",
+ "ruma",
+ "sanitize-filename-reader-friendly",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tracing",
+ "tracing-android",
+ "tracing-wasm",
+ "url",
+ "wasm-bindgen-futures",
+]
+
+[[package]]
+name = "acter-cli"
+version = "0.1.0"
+dependencies = [
+ "acter",
+ "acter-core",
+ "anyhow",
+ "clap",
+ "dialoguer",
+ "env_logger",
+ "futures",
+ "matrix-sdk",
+ "matrix-sdk-base",
+ "matrix-sdk-sled",
+ "mime",
+ "term-table",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "acter-core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-broadcast",
+ "async-recursion",
+ "async-stream",
+ "chrono",
+ "chrono-tz",
+ "csscolorparser",
+ "dashmap",
+ "derive-getters",
+ "derive_builder 0.11.2",
+ "enum_dispatch",
+ "env_logger",
+ "fake",
+ "futures",
+ "indexmap",
+ "matrix-sdk",
+ "matrix-sdk-base",
+ "minijinja",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "thiserror",
+ "tokio",
+ "tokio-retry",
+ "toml",
+ "tracing",
+ "url",
+]
+
+[[package]]
+name = "acter-test"
+version = "0.1.0"
+dependencies = [
+ "acter",
+ "acter-core",
+ "anyhow",
+ "env_logger",
+ "futures",
+ "log",
+ "tempfile",
+ "tokio",
+ "tokio-retry",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "acter-tui"
+version = "0.1.0"
+dependencies = [
+ "acter",
+ "acter-core",
+ "anyhow",
+ "app_dirs2",
+ "async-broadcast",
+ "clap",
+ "crossterm",
+ "dialoguer",
+ "env_logger",
+ "futures",
+ "mime",
+ "term-table",
+ "tokio",
+ "tracing",
+ "tui",
+ "tui-logger",
+]
+
+[[package]]
 name = "aead"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -970,129 +1101,6 @@ dependencies = [
  "serde_bytes",
  "sha2 0.9.9",
  "zeroize",
-]
-
-[[package]]
-name = "effektio"
-version = "0.1.0"
-dependencies = [
- "android_logger",
- "anyhow",
- "async-broadcast",
- "async-stream",
- "derive_builder 0.10.2",
- "effektio-core",
- "env_logger",
- "eyeball-im",
- "fern",
- "ffi-gen",
- "ffi-gen-macro",
- "futures",
- "futures-signals",
- "lazy_static",
- "log",
- "log-panics",
- "matrix-sdk",
- "matrix-sdk-base",
- "matrix-sdk-sled",
- "mime",
- "oslog",
- "ruma",
- "sanitize-filename-reader-friendly",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-android",
- "tracing-wasm",
- "url",
- "wasm-bindgen-futures",
-]
-
-[[package]]
-name = "effektio-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "dialoguer",
- "effektio",
- "effektio-core",
- "env_logger",
- "futures",
- "matrix-sdk",
- "matrix-sdk-base",
- "matrix-sdk-sled",
- "mime",
- "term-table",
- "tokio",
- "tracing",
-]
-
-[[package]]
-name = "effektio-core"
-version = "0.1.0"
-dependencies = [
- "async-broadcast",
- "async-recursion",
- "chrono",
- "chrono-tz",
- "csscolorparser",
- "dashmap",
- "derive-getters",
- "derive_builder 0.11.2",
- "enum_dispatch",
- "env_logger",
- "fake",
- "futures",
- "matrix-sdk",
- "matrix-sdk-base",
- "rand 0.8.5",
- "serde",
- "serde_json",
- "serde_repr",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "effektio-test"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "effektio",
- "effektio-core",
- "env_logger",
- "futures",
- "log",
- "tempfile",
- "tokio",
- "uuid",
-]
-
-[[package]]
-name = "effektio-tui"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "app_dirs2",
- "async-broadcast",
- "clap",
- "crossterm",
- "dialoguer",
- "effektio",
- "effektio-core",
- "env_logger",
- "futures",
- "mime",
- "term-table",
- "tokio",
- "tracing",
- "tui",
- "tui-logger",
 ]
 
 [[package]]
@@ -2113,6 +2121,15 @@ name = "mime"
 version = "0.3.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2a60c7ce501c71e03a9c9c0d35b861413ae925bd979cc7a4e30d060069aaac8d"
+
+[[package]]
+name = "minijinja"
+version = "0.30.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "650266e616c4634fd6c188a410886e8700689fe78197f54d194a9ed560863f94"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "mio"
@@ -3327,6 +3344,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-retry"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f57eb36ecbe0fc510036adff84824dd3c24bb781e21bfa67b69d556aa85214f"
+dependencies = [
+ "pin-project",
+ "rand 0.8.5",
+ "tokio",
+]
+
+[[package]]
 name = "tokio-rustls"
 version = "0.23.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3369,6 +3397,7 @@ version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b403acf6f2bb0859c93c7f0d967cb4a75a7ac552100f9322faf64dc047669b21"
 dependencies = [
+ "indexmap",
  "serde",
  "serde_spanned",
  "toml_datetime",

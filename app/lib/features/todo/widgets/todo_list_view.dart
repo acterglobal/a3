@@ -1,6 +1,6 @@
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/todo/controllers/todo_controller.dart';
-import 'package:effektio/features/todo/widgets/todo_card.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/todo/controllers/todo_controller.dart';
+import 'package:acter/features/todo/widgets/todo_card.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

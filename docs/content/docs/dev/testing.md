@@ -44,7 +44,7 @@ You need a fresh [`synapse` matrix backend](https://matrix-org.github.io/synapse
 
 #### Docker Container
 
-We have a `docker` container image available with that setup already for you at `lightyear/effektio-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
+We have a `docker` container image available with that setup already for you at `lightyear/acter-synapse-ci:latest`. Easiest is to use `docker-compose up -d` to run it locally from the root directory. This will also create the necessary `admin` account.
 
 <details>
 <summary><strong>Custom Synapse-Server</strong></summary>
@@ -101,7 +101,7 @@ At the end of `sudo apt install matrix-synapse-py3`, you will get the following 
 
 ![Ubuntu ServerName](/images/ubuntu-servername.png)
 
-Keep `localhost` in this dialog, that is domain applied to all users in `effektio-test`.
+Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `/etc/matrix-synapse/homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
 
 In `homeserver.yaml`, you have to change `bind_addresses: ['::1', '127.0.0.1']` to `bind_addresses: ['0.0.0.0']`.
@@ -203,7 +203,7 @@ At the end of `sudo apt install matrix-synapse-py3`, you will get the following 
 
 ![Ubuntu ServerName](/images/ubuntu-servername.png)
 
-Keep `localhost` in this dialog, that is domain applied to all users in `effektio-test`.
+Keep `localhost` in this dialog, that is domain applied to all users in `acter-test`.
 `server_name` in `homeserver.yaml` seems to not affect synapse config and the setting of this dialog during installation affects synapse config clearly.
 
 In `homeserver.yaml`, you have to change `bind_addresses: ['::1', '127.0.0.1']` to `bind_addresses: ['0.0.0.0']`.
@@ -337,9 +337,10 @@ If you are running synapse on a virtual or remote machine and API call is not wo
 
 The integration tests expect a certain set of `mock` data. You can easily get this set up by running
 
-`cargo run -p effektio-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
+`cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
 **Reset docker**
+
 To start the docker-compose afresh:
 
 1. stop the service with `docker-compose stop`
@@ -351,9 +352,25 @@ To start the docker-compose afresh:
 1. Stop service with `sudo systemctl stop matrix-synapse`
 2. Delete this file `/var/lib/matrix-synapse/homeserver.db`
 3. Start service with `sudo systemctl start matrix-synapse`
-4. Run this command `cargo run -p effektio-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
+4. Run this command `cargo run -p acter-cli -- mock --homeserver-url $HOMESERVER --homeserver-name localhost`
 
 Don't forget to rerun the `mock data` generation again.
+
+**Reset database (in case of PostgreSQL)**
+
+1. Stop service with `sudo systemctl stop matrix-synapse`
+2. Delete and recreate the database
+
+```
+sudo su - postgres
+psql
+DROP DATABASE synapse;
+CREATE DATABASE synapse ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "synapseuser";
+\q
+```
+
+3. Start service with `sudo systemctl start matrix-synapse`
+4. Run this command `cargo run -p acter-cli mock --homeserver-url http://192.168.142.130:8008 --homeserver-name ds9.acter.global`
 
 ### Rust integration tests
 
@@ -364,7 +381,7 @@ To run the rust integration tests, you need a fresh integration testing infrastr
 You can set up environment variable for `cargo` as following (assuming the server is accessible at `10.0.0.1:8008` and log level is `info`):
 
 ```bash
-$env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p effektio-test -- --nocapture
+$env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p acter-test -- --nocapture
 ```
 
 </details>
@@ -374,14 +391,14 @@ $env:HOMESERVER="http://10.0.0.1:8008"; $env:RUST_LOG="info"; cargo test -p effe
 You can set up environment variable for `cargo` as following (assuming the server is available at `10.0.0.1:8008` and log level is `warn`):
 
 ```bash
-HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p effektio-test -- --nocapture
+HOMESERVER="http://10.0.0.1:8008" RUST_LOG="warn" cargo test -p acter-test -- --nocapture
 ```
 
 </details>
 
 ### Flutter UI integration tests
 
-Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`]() to write and run our tests.
+Flutter integration tests can be found `app/integration_test/features`. We use (a forked) [`flutter_gherkin`](https://github.com/acterglobal/flutter_gherkin) to write and run our tests.
 
 **Running**
 
@@ -392,8 +409,8 @@ cd app
 flutter test integration_test/gherkin_suite_test.dart --dart-define DEFAULT_HOMESERVER_URL=$DEFAULT_HOMESERVER_URL --dart-define DEFAULT_HOMESERVER_NAME=$DEFAULT_HOMESERVER_NAME
 ```
 
-**From Visual Studio Ccode**
+**From Visual Studio Code**
 
-If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (effektio)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (effektio)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:
+If you have the [Flutter extension for vscode](https://marketplace.visualstudio.com/items?itemName=Dart-Code.flutter) you can also run the `Run Integration Tests (acter)` launch commend from within your VSCode to run the tests directly or use the `Run Local Integration Tests` on the specific test from within your editor. To **debug** an integration tests, use the `Debug Integration Tests (acter)` on the specific test from within the editor - which allows you to add breakpoints and debugging widgets as usual:
 
 ![](/images/integration-tests-debug-vscode-example.png)

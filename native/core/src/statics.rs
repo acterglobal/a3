@@ -3,11 +3,12 @@ use serde_json::{json, value::to_raw_value};
 
 pub static PURPOSE_FIELD: &str = "m.room.purpose";
 pub static PURPOSE_FIELD_DEV: &str = "org.matrix.msc3088.room.purpose";
-pub static PURPOSE_TEAM_VALUE: &str = "org.effektio.team";
+pub static PURPOSE_TEAM_VALUE: &str = "global.acter.team";
 
 #[allow(non_snake_case)]
 pub mod KEYS {
     pub static TASKS: &str = "tasks";
+    pub static PINS: &str = "pins";
 }
 
 const HISTORY: &str = r#"{
@@ -28,8 +29,8 @@ const ENCRYPTION: &str = r#"{
     }
 }"#;
 
-/// Generate the default set ot initial states for effektio teams
-pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
+/// Generate the default set ot initial states for acter teams
+pub fn default_acter_space_states() -> Vec<Raw<AnyInitialStateEvent>> {
     let mut v: Vec<Raw<AnyInitialStateEvent>> = [HISTORY]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))
@@ -49,7 +50,7 @@ pub fn default_effektio_group_states() -> Vec<Raw<AnyInitialStateEvent>> {
     v
 }
 
-pub fn default_effektio_conversation_states() -> Vec<Raw<AnyInitialStateEvent>> {
+pub fn default_acter_conversation_states() -> Vec<Raw<AnyInitialStateEvent>> {
     [HISTORY, ENCRYPTION]
         .into_iter()
         .map(|a| serde_json::from_str::<Raw<AnyInitialStateEvent>>(a).expect("static don't fail"))

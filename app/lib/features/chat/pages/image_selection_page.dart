@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/chat/controllers/chat_room_controller.dart';
-import 'package:effektio/features/chat/widgets/custom_input.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/chat/controllers/chat_room_controller.dart';
+import 'package:acter/features/chat/widgets/custom_input.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

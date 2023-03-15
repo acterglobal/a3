@@ -28,7 +28,7 @@ jobs:
             cargo_make_args: android-arm
             with_ndk_version: r23c
             flutter_build_args: "build apk --target-platform android-arm64"
-            artifact_prefix: effektio-nightly-android-arm64
+            artifact_prefix: acter-nightly-android-arm64
             artifact_path:  app/build/app/outputs/apk/release/
             artifact_files: "app-release.apk"
           - name: Linux x64
@@ -37,15 +37,15 @@ jobs:
             cargo_make_args: desktop
             flutter_config: "--enable-linux-desktop"
             flutter_build_args: "build linux"
-            artifact_prefix: effektio-nightly-linux-x64
+            artifact_prefix: acter-nightly-linux-x64
             artifact_path: app/build/linux/x64/release/bundle/
-            artifact_files: lib/ data/ effektio
+            artifact_files: lib/ data/ acter
           - name: iOS
             os: macos-latest
             cargo_make_setup: setup-ios
             cargo_make_args: ios
             flutter_build_args: "build ipa --no-codesign"
-            artifact_prefix: effektio-nightly-ios
+            artifact_prefix: acter-nightly-ios
             artifact_path:  app/build/ios/archive/
             artifact_files: Runner.xcarchive
           - name: Mac OSx 
@@ -53,15 +53,15 @@ jobs:
             cargo_make_args: desktop
             flutter_config: "--enable-macos-desktop"
             flutter_build_args: "build macos"
-            artifact_prefix: effektio-nightly-macosx
+            artifact_prefix: acter-nightly-macosx
             artifact_path: app/build/macos/Build/Products/Release/
-            artifact_files: "Effektio.app"
+            artifact_files: "Acter.app"
           - name: Windows
             os: windows-latest
             cargo_make_args: desktop
             flutter_config: "--enable-windows-desktop"
             flutter_build_args: "build windows"
-            artifact_prefix: effektio-nightly-windows
+            artifact_prefix: acter-nightly-windows
             artifact_path: app/build/windows/runner/
             artifact_files: "Release"
 
@@ -134,7 +134,7 @@ jobs:
         run: cargo make --profile release ${{ matrix.cargo_make_args}}
 
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
       - run: flutter ${{ matrix.flutter_build_args }} --dart-define=VERSION_NAME=Nightly+${{ steps.tag.outputs.tag }}
         working-directory: ./app

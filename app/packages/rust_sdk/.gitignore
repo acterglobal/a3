@@ -29,6 +29,6 @@
 build/
 ios/Classes/bindings.h
 
-linux/libeffektio.so
-macos/libeffektio.dylib
-windows/effektio.dll
+linux/libacter.so
+macos/libacter.dylib
+windows/acter.dll

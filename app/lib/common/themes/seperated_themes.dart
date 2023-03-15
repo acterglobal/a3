@@ -211,12 +211,12 @@ class ChatTheme01 {
   );
 }
 
-class FAQTheme {
-  static const faqTitleColor =
+class PinTheme {
+  static const pinTitleColor =
       ColorRef(Color.fromRGBO(254, 254, 254, 1), id: 'FT');
-  static const faqTeamColor = ColorRef(Colors.white, id: 'FT0');
-  static const faqCardColor = ColorRef(Color.fromRGBO(47, 49, 62, 1));
-  static const faqOutlineBorderColor = ColorRef(Color.fromRGBO(90, 90, 90, 1));
+  static const pinTeamColor = ColorRef(Colors.white, id: 'FT0');
+  static const pinCardColor = ColorRef(Color.fromRGBO(47, 49, 62, 1));
+  static const pinOutlineBorderColor = ColorRef(Color.fromRGBO(90, 90, 90, 1));
 
   static const uxColor = ColorRef(Color(0xFF7879F1));
   static const importantColor = ColorRef(Color(0xFF23AFC2));
@@ -227,7 +227,7 @@ class FAQTheme {
     TextStyle(
       fontSize: 15,
       fontWeight: FontWeight.w400,
-      color: faqTitleColor,
+      color: pinTitleColor,
     ),
   );
 
@@ -235,7 +235,7 @@ class FAQTheme {
     TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w500,
-      color: faqTeamColor,
+      color: pinTeamColor,
     ),
   );
 
@@ -243,7 +243,7 @@ class FAQTheme {
     TextStyle(
       fontSize: 13,
       fontWeight: FontWeight.w400,
-      color: faqTitleColor,
+      color: pinTitleColor,
     ),
   );
 

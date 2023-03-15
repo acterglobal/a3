@@ -2,7 +2,7 @@ use matrix_sdk::Session;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-/// Extensive Restore Token for Effektio Sessions
+/// Extensive Restore Token for Acter Sessions
 #[derive(Serialize, Deserialize)]
 pub struct RestoreToken {
     /// Was this registered per guest-account?

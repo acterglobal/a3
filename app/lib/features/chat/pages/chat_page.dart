@@ -1,12 +1,12 @@
 import 'dart:ui';
 
-import 'package:effektio/common/snackbars/not_implemented.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/features/chat/controllers/chat_list_controller.dart';
-import 'package:effektio/features/chat/widgets/invite_info_card.dart';
-import 'package:effektio/features/chat/widgets/list_item.dart';
-import 'package:effektio/models/JoinedRoom.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/snackbars/not_implemented.dart';
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/features/chat/controllers/chat_list_controller.dart';
+import 'package:acter/features/chat/widgets/invite_info_card.dart';
+import 'package:acter/features/chat/widgets/list_item.dart';
+import 'package:acter/models/JoinedRoom.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, Invitation;
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

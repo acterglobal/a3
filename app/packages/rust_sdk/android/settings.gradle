@@ -1,2 +1,2 @@
-rootProject.name = 'effektio_flutter_sdk'
+rootProject.name = 'acter_flutter_sdk'
 org.gradle.jvmargs=-Xmx4608m

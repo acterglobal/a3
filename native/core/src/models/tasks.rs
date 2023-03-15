@@ -3,7 +3,7 @@ use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedUserId, R
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 
-use super::{AnyEffektioModel, EventMeta};
+use super::{AnyActerModel, EventMeta};
 
 use crate::{
     events::tasks::{
@@ -13,7 +13,7 @@ use crate::{
     statics::KEYS,
 };
 
-static TASKS_KEY: &str = "tasks";
+static TASKS_KEY: &str = KEYS::TASKS;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Task {
@@ -62,7 +62,7 @@ impl Task {
     }
 }
 
-impl super::EffektioModel for Task {
+impl super::ActerModel for Task {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{}::{TASKS_KEY}", self.inner.task_list_id.event_id)]
     }
@@ -85,8 +85,8 @@ impl super::EffektioModel for Task {
         )])
     }
 
-    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
-        let AnyEffektioModel::TaskUpdate(update) = model else {
+    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
+        let AnyActerModel::TaskUpdate(update) = model else {
             return Ok(false)
         };
 
@@ -122,7 +122,7 @@ pub struct TaskUpdate {
     meta: EventMeta,
 }
 
-impl super::EffektioModel for TaskUpdate {
+impl super::ActerModel for TaskUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!("{:}::history", self.inner.task.event_id)]
     }
@@ -238,9 +238,12 @@ impl From<OriginalMessageLikeEvent<TaskListEventContent>> for TaskList {
     }
 }
 
-impl super::EffektioModel for TaskList {
+impl super::ActerModel for TaskList {
     fn indizes(&self) -> Vec<String> {
-        vec![KEYS::TASKS.to_owned()]
+        vec![
+            format!("{}::{}", self.meta.room_id, KEYS::TASKS),
+            KEYS::TASKS.to_owned(),
+        ]
     }
     fn event_id(&self) -> &EventId {
         &self.meta.event_id
@@ -254,10 +257,10 @@ impl super::EffektioModel for TaskList {
         super::default_model_execute(store, self.into()).await
     }
 
-    fn transition(&mut self, model: &super::AnyEffektioModel) -> crate::Result<bool> {
+    fn transition(&mut self, model: &super::AnyActerModel) -> crate::Result<bool> {
         match model {
-            super::AnyEffektioModel::TaskListUpdate(update) => update.apply(&mut self.inner),
-            super::AnyEffektioModel::Task(task) => {
+            super::AnyActerModel::TaskListUpdate(update) => update.apply(&mut self.inner),
+            super::AnyActerModel::Task(task) => {
                 let key = self.event_id().to_owned();
                 tracing::trace!(?key, ?task, "adding task to list");
                 self.task_stats.tasks_count += 1;
@@ -278,7 +281,7 @@ pub struct TaskListUpdate {
     meta: EventMeta,
 }
 
-impl super::EffektioModel for TaskListUpdate {
+impl super::ActerModel for TaskListUpdate {
     fn indizes(&self) -> Vec<String> {
         vec![format!(
             "tasklist-{:}::history",

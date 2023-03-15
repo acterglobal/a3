@@ -1,11 +1,14 @@
-use matrix_sdk::Error as MatrixError;
+use matrix_sdk::{Error as MatrixError, HttpError};
 
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Error in the inner MatrixSDK")]
     MatrixSdk(#[from] MatrixError),
 
-    #[error("Not a known Effektio Event")]
+    #[error("Error in the MatrixSDK HTTP")]
+    HttpError(#[from] HttpError),
+
+    #[error("Not a known Acter Event")]
     UnknownEvent,
 
     #[error("Error De/serializing: {0}")]
@@ -19,6 +22,12 @@ pub enum Error {
 
     #[error("Index not found.")]
     IndexNotFound,
+
+    #[error("Model {0:?} unknown")]
+    UnknownModel(Option<String>),
+
+    #[error("Failed to parse {model_type}: {msg}")]
+    FailedToParse { model_type: String, msg: String },
 
     #[error("{0}")]
     Custom(String),

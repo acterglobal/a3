@@ -37,19 +37,19 @@ jobs:
       #   name: Clippy
       #   with:
       #     command: clippy
-      #     args: -p effektio --target aarch64-linux-android -- -D warnings
+      #     args: -p acter --target aarch64-linux-android -- -D warnings
       # - uses: actions-rs/cargo@v1
       #   name: Test
       #   with:
       #     command: test
-      #     args: -p effektio --target aarch64-linux-android
+      #     args: -p acter --target aarch64-linux-android
       - name: Build Android FFI
         run: cargo make --profile release android
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
-      #   working-directory: ./effektio_flutter_sdk
+      #   working-directory: ./acter_flutter_sdk
       #   name: Testing SDK
       # # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
@@ -84,19 +84,19 @@ jobs:
       #   name: Clippy
       #   with:
       #     command: clippy
-      #     args: -p effektio --target x86_64-apple-ios -- -D warnings
+      #     args: -p acter --target x86_64-apple-ios -- -D warnings
       # - uses: actions-rs/cargo@v1
       #   name: Test
       #   with:
       #     command: test
-      #     args: -p effektio --target x86_64-apple-ios
+      #     args: -p acter --target x86_64-apple-ios
       - name: Build iOS FFI
         run: cargo make --profile release  ios
       - name: Ensure ffi-interface is up to date
-        run: git diff --exit-code  app/packages/rust_sdk/lib/effektio_flutter_sdk_ffi.dart
+        run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
       # FIXME: tests are not set up to work yet
       # - run: flutter --pub test
-      #   working-directory: ./effektio_flutter_sdk
+      #   working-directory: ./acter_flutter_sdk
       #   name: Testing SDK
       # # FIXME: tests are not set up to work yet
       # - run: flutter --pub test

@@ -1,19 +1,16 @@
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
-import 'package:effektio/common/themes/seperated_themes.dart';
-import 'package:effektio/common/widgets/custom_avatar.dart';
-import 'package:effektio/features/home/controllers/home_controller.dart';
-import 'package:effektio_flutter_sdk/effektio_flutter_sdk_ffi.dart'
+import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:acter/features/home/controllers/home_controller.dart';
+import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show UserProfile;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final userProfileProvider = FutureProvider<UserProfile>(
-  (ref) async {
-    final userProfile =
-        await ref.read(homeStateProvider.notifier).client.getUserProfile();
-    return userProfile;
-  },
-);
+final userProfileProvider = FutureProvider<UserProfile>((ref) async {
+  final client = ref.watch(homeStateProvider);
+  return await client!.getUserProfile();
+});
 
 class UserAvatarWidget extends ConsumerWidget {
   final bool isExtendedRail;
@@ -21,18 +18,33 @@ class UserAvatarWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final client = ref.watch(homeStateProvider.notifier).client;
+    final client = ref.watch(homeStateProvider)!;
     final userProfile = ref.watch(userProfileProvider);
     if (client.isGuest()) {
-      return GestureDetector(
-        onTap: () => Navigator.pushNamed(context, '/login'),
-        child: TextAvatar(
-          backgroundColor: Colors.grey,
-          text: 'G',
-          numberLetters: 1,
-          shape: Shape.Circular,
-          upperCase: true,
-        ),
+      return Row(
+        mainAxisAlignment:
+            isExtendedRail ? MainAxisAlignment.start : MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: TextAvatar(
+              backgroundColor: Colors.grey,
+              text: 'G',
+              numberLetters: 1,
+              shape: Shape.Circular,
+              upperCase: true,
+            ),
+          ),
+          if (isExtendedRail)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                'Guest User',
+                style: SideMenuAndProfileTheme.sideMenuProfileStyle,
+              ),
+            )
+        ],
       );
     }
     return userProfile.when(
@@ -44,7 +56,7 @@ class UserAvatarWidget extends ConsumerWidget {
           children: [
             CustomAvatar(
               uniqueKey: client.userId().toString(),
-              radius: 24,
+              radius: 20,
               isGroup: false,
               cacheHeight: 120,
               cacheWidth: 120,

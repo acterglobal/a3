@@ -6,6 +6,7 @@
 pub use matrix_sdk;
 pub use matrix_sdk::ruma;
 
+pub mod client;
 pub mod error;
 pub mod events;
 pub mod executor;
@@ -15,6 +16,9 @@ pub mod store;
 pub mod support;
 pub use error::{Error, Result};
 pub use support::RestoreToken;
+pub mod spaces;
+#[cfg(feature = "templates")]
+pub mod templates;
 pub mod util;
 
 #[cfg(feature = "with-mocks")]
