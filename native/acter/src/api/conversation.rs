@@ -1,9 +1,9 @@
 use acter_core::statics::default_acter_conversation_states;
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, Result};
 use derive_builder::Builder;
 use futures::channel::mpsc::{channel, Receiver, Sender};
 use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
-use log::{error, info, warn};
+use log::{info, warn};
 use matrix_sdk::{
     deserialized_responses::SyncTimelineEvent,
     event_handler::{Ctx, EventHandlerHandle},

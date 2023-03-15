@@ -2,9 +2,10 @@ pub use csscolorparser::Color;
 
 #[cfg(feature = "with-mocks")]
 pub(crate) mod mocks {
-    use super::Color;
     use fake::Dummy;
     use rand::Rng;
+
+    use super::Color;
 
     pub struct ColorFaker;
 

@@ -1,10 +1,10 @@
-use super::TextMessageEventContent;
-use super::{Color, Icon, Update};
-use crate::util::deserialize_some;
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
+
+use super::{Color, Icon, TextMessageEventContent, Update};
+use crate::util::deserialize_some;
 
 #[derive(Clone, Debug, Deserialize, Serialize, Builder)]
 #[builder(name = "PinDisplayInfoBuilder", derive(Debug))]

@@ -1,5 +1,6 @@
-use crate::utils::random_user_with_random_space;
 use anyhow::Result;
+
+use crate::utils::random_user_with_random_space;
 
 #[tokio::test]
 async fn onboarding_is_created() -> Result<()> {

@@ -1,12 +1,10 @@
+use acter_core::events;
 use anyhow::{bail, Context, Result};
 use clap::Parser;
+use std::{ffi::OsStr, path::PathBuf};
+use tracing::info;
 
 use crate::config::{LoginConfig, ENV_ROOM};
-use acter_core::events;
-
-use std::ffi::OsStr;
-use std::path::PathBuf;
-use tracing::info;
 
 /// Posting a news item to a given room
 #[derive(Parser, Debug)]

@@ -1,6 +1,5 @@
 use acter_core::spaces::is_acter_space;
 use anyhow::{bail, Context, Result};
-use derive_builder::Builder;
 use log::{info, warn};
 
 use matrix_sdk::{
