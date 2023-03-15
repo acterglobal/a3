@@ -33,6 +33,7 @@ class AppTheme {
           color: Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w400,
+          height: 1.5,
         ),
         selectedIconTheme: IconThemeData(color: Colors.white, size: 20),
         unselectedIconTheme: IconThemeData(color: Colors.white, size: 20),
