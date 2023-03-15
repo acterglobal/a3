@@ -8,7 +8,7 @@ use matrix_sdk::{
             profile::get_profile::v3::Request as GetProfileRequest,
         },
         events::room::MediaSource,
-        OwnedMxcUri, OwnedRoomId, OwnedUserId, RoomId, UInt, UserId,
+        OwnedMxcUri, OwnedRoomId, OwnedUserId, UInt,
     },
     Client,
 };

@@ -1,10 +1,10 @@
-use crate::utils::random_user_with_template;
 use anyhow::Result;
-
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+
+use crate::utils::random_user_with_template;
 
 const TMPL: &str = r#"
 version = "0.1"

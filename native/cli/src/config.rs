@@ -6,8 +6,6 @@ use dialoguer::Password;
 
 use crate::action::Action;
 
-use tracing::warn;
-
 pub const ENV_USER: &str = "ACTER_USER";
 pub const ENV_PASSWORD: &str = "ACTER_PASSWORD";
 pub const ENV_ROOM: &str = "ACTER_ROOM";
@@ -45,7 +43,7 @@ impl LoginConfig {
     pub async fn client(&self) -> Result<Client> {
         let theme = ColorfulTheme::default();
         let username = self.login_username.clone();
-        warn!("Logging in as {}", username);
+        tracing::warn!("Logging in as {}", username);
         let password = match self.login_password {
             Some(ref pw) => pw.clone(),
             _ => Password::with_theme(&theme)

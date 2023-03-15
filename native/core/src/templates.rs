@@ -19,7 +19,6 @@ use indexmap::IndexMap;
 use matrix_sdk::ruma::RoomId;
 pub use minijinja::value::Value;
 use minijinja::Environment;
-use serde;
 use serde::Deserialize;
 use std::{collections::BTreeMap, sync::Arc};
 use tokio_retry::{

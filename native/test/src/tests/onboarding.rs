@@ -1,9 +1,10 @@
-use crate::utils::random_user_with_random_space;
 use anyhow::Result;
 use tokio_retry::{
     strategy::{jitter, FibonacciBackoff},
     Retry,
 };
+
+use crate::utils::random_user_with_random_space;
 
 #[tokio::test]
 async fn onboarding_is_created() -> Result<()> {

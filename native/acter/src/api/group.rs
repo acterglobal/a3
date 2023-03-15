@@ -7,27 +7,11 @@ use acter_core::{
     },
     executor::Executor,
     models::AnyActerModel,
-    ruma::{
-        api::client::{
-            account::register::v3::Request as RegistrationRequest,
-            room::{
-                create_room::v3::{CreationContent, Request as CreateRoomRequest},
-                Visibility,
-            },
-            uiaa,
-        },
-        assign,
-        events::{AnySyncTimelineEvent, MessageLikeEvent},
-        room::RoomType,
-        serde::Raw,
-        OwnedRoomAliasId, OwnedRoomId, OwnedUserId, UserId,
-    },
+    ruma::{events::MessageLikeEvent, OwnedRoomAliasId, OwnedRoomId, OwnedUserId},
     spaces::{CreateSpaceSettings, CreateSpaceSettingsBuilder},
-    statics::initial_state_for_alias,
-    templates::{Engine, Value},
+    templates::Engine,
 };
 use anyhow::{bail, Result};
-use derive_builder::Builder;
 use futures::stream::StreamExt;
 use log::warn;
 use matrix_sdk::{
@@ -42,7 +26,6 @@ use super::{
     client::{devide_groups_from_convos, Client},
     room::Room,
 };
-
 use crate::api::RUNTIME;
 
 pub type CreateGroupSettings = CreateSpaceSettings;

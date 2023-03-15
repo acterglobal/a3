@@ -3,11 +3,11 @@ use anyhow::{bail, Context, Result};
 
 #[cfg(feature = "with-mocks")]
 use acter_core::mocks::gen_mock_news;
+
 use futures_signals::signal::Mutable;
 use matrix_sdk::{room::Joined, Client as MatrixClient};
 use std::{
     ffi::OsStr,
-    fs::File,
     path::PathBuf, // FIXME: make these optional for wasm
 };
 

@@ -1,8 +1,9 @@
+use matrix_sdk::ruma::events::macros::EventContent;
+use serde::{Deserialize, Serialize};
+
 use super::{
     Colorize, ImageMessageEventContent, ObjRef, TextMessageEventContent, VideoMessageEventContent,
 };
-use matrix_sdk::ruma::events::macros::EventContent;
-use serde::{Deserialize, Serialize};
 
 /// The content that is specific to
 #[derive(Clone, Debug, Deserialize, Serialize)]

@@ -1,19 +1,20 @@
-use super::{Color, Tag};
 use matrix_sdk::ruma::OwnedEventId;
 
-#[cfg(feature = "with-mocks")]
-use super::mocks::ColorFaker;
 #[cfg(feature = "with-mocks")]
 use fake::{
     faker::lorem::en::{Sentence, Word},
     Dummy, Fake, Faker,
 };
 
+use super::{Color, Tag};
+
+#[cfg(feature = "with-mocks")]
+use super::mocks::ColorFaker;
+
 #[cfg(feature = "with-mocks")]
 pub(crate) mod mocks {
     use fake::Dummy;
-    use rand::prelude::*;
-    use rand::Rng;
+    use rand::{prelude::*, Rng};
 
     pub struct RandomImage;
     pub static IMAGE_001: &[u8] = include_bytes!("./mocks/images/07.jpg").as_slice();

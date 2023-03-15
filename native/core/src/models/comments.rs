@@ -1,14 +1,15 @@
-use std::ops::Deref;
-
-use crate::events::comments::{
-    CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
-};
-use crate::store::Store;
 use derive_getters::Getters;
 use matrix_sdk::ruma::{events::OriginalMessageLikeEvent, EventId, OwnedEventId};
 use serde::{Deserialize, Serialize};
+use std::ops::Deref;
 
 use super::{AnyActerModel, EventMeta};
+use crate::{
+    events::comments::{
+        CommentBuilder, CommentEventContent, CommentUpdateBuilder, CommentUpdateEventContent,
+    },
+    store::Store,
+};
 
 static COMMENTS_FIELD: &str = "comments";
 static COMMENTS_STATS_FIELD: &str = "comments_stats";

@@ -1,16 +1,16 @@
-use super::TextMessageEventContent;
-use crate::util::deserialize_some;
 use derive_builder::Builder;
 use derive_getters::Getters;
 use matrix_sdk::ruma::{events::macros::EventContent, OwnedUserId};
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
+use super::TextMessageEventContent;
 /// ToDo Lists and Task Items management
 /// modeled after [JMAP Tasks](https://jmap.io/spec-tasks.html), extensions to
 /// [ietf rfc8984](https://www.rfc-editor.org/rfc/rfc8984.html#name-task).
 ///
 use super::{BelongsTo, Color, TimeZone, Update, UtcDateTime};
+use crate::util::deserialize_some;
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum SpecialTaskListRole {

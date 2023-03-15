@@ -1,8 +1,10 @@
-use super::values::UtcDateTimeValue;
-use crate::events::UtcDateTime;
 use chrono::Duration;
 use minijinja::{value::Value, Error, ErrorKind};
 use std::time::SystemTime;
+
+use crate::events::UtcDateTime;
+
+use super::values::UtcDateTimeValue;
 
 /// create a date using the current date time
 pub fn now() -> Value {
