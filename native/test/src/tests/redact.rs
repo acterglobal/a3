@@ -1,10 +1,11 @@
-use crate::utils::random_user_with_random_space;
 use acter::matrix_sdk::ruma::{
     events::{AnyMessageLikeEvent, AnyTimelineEvent},
     EventId,
 };
 use anyhow::Result;
 use futures::stream::StreamExt;
+
+use crate::utils::random_user_with_random_space;
 
 #[tokio::test]
 async fn message_redaction() -> Result<()> {

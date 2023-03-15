@@ -8,10 +8,7 @@ use matrix_sdk::{
     locks::Mutex,
     room::Room as MatrixRoom,
     ruma::{
-        events::{
-            receipt::{ReceiptEventContent, ReceiptType, SyncReceiptEvent},
-            SyncEphemeralRoomEvent,
-        },
+        events::receipt::{ReceiptType, SyncReceiptEvent},
         MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedRoomId, OwnedUserId,
     },
     Client as MatrixClient,

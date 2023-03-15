@@ -1,7 +1,5 @@
-use anyhow::{bail, Context, Result};
-use futures_signals::signal::{
-    Mutable, MutableSignalCloned, SignalExt, SignalStream,
-};
+use anyhow::{Context, Result};
+use futures_signals::signal::{Mutable, MutableSignalCloned, SignalExt, SignalStream};
 use log::{error, info};
 use matrix_sdk::{
     event_handler::{Ctx, EventHandlerHandle},

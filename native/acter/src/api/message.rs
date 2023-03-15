@@ -62,7 +62,7 @@ use matrix_sdk::{
                 member::{OriginalRoomMemberEvent, OriginalSyncRoomMemberEvent},
                 message::{
                     MessageFormat, MessageType, OriginalRoomMessageEvent,
-                    OriginalSyncRoomMessageEvent, Relation,
+                    OriginalSyncRoomMessageEvent,
                 },
                 name::{OriginalRoomNameEvent, OriginalSyncRoomNameEvent},
                 pinned_events::{OriginalRoomPinnedEventsEvent, OriginalSyncRoomPinnedEventsEvent},

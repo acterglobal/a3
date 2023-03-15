@@ -1,25 +1,14 @@
 use acter_core::{
-    events::{self, comments::CommentBuilder, TextMessageEventContent, UtcDateTime},
-    executor::Executor,
+    events::{comments::CommentBuilder, TextMessageEventContent},
     models::{self, ActerModel, AnyActerModel, Color},
-    ruma::{
-        events::{
-            room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
-            MessageLikeEvent,
-        },
-        EventId, OwnedEventId, OwnedRoomId,
-    },
-    statics::KEYS,
-    store::Store,
-    util::DateTime,
+    ruma::OwnedEventId,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use futures_signals::signal::Mutable;
-use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
+use matrix_sdk::room::{Joined, Room};
 
-use super::{client::Client, group::Group, RUNTIME};
+use super::{client::Client, RUNTIME};
 use crate::UserId;
 
 impl Client {

@@ -1,4 +1,3 @@
-use crate::utils::random_user_with_random_space;
 use acter::{
     matrix_sdk::config::StoreConfig,
     testing::{ensure_user, wait_for},
@@ -6,6 +5,8 @@ use acter::{
 use acter_core::models::ActerModel;
 use anyhow::{bail, Result};
 use tokio::time::{sleep, Duration};
+
+use crate::utils::random_user_with_random_space;
 
 #[tokio::test]
 async fn odos_tasks() -> Result<()> {

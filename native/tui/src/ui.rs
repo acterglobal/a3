@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+use acter::{Conversation, Group, HistoryLoadState, Task, TaskList};
 use anyhow::Result;
 use async_broadcast::Receiver as Subscription;
 use clap::crate_version;
@@ -7,11 +8,11 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-
-use acter::{Conversation, Group, HistoryLoadState, Task, TaskList};
-
-use std::{io, time::Duration};
-use std::{sync::mpsc::Receiver, time::Instant};
+use std::{
+    io,
+    sync::mpsc::Receiver,
+    time::{Duration, Instant},
+};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Alignment, Constraint, Direction, Layout, Rect},

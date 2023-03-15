@@ -1,26 +1,17 @@
 use acter_core::{
     events::{
-        tasks::{self, Priority, SyncTaskEvent, SyncTaskListEvent, TaskBuilder, TaskListBuilder},
+        tasks::{self, Priority, TaskBuilder, TaskListBuilder},
         TextMessageEventContent, UtcDateTime,
     },
-    executor::Executor,
     models::{self, ActerModel, AnyActerModel, Color, TaskStats},
-    ruma::{
-        events::{
-            room::message::{RoomMessageEventContent, SyncRoomMessageEvent},
-            MessageLikeEvent,
-        },
-        OwnedEventId, OwnedRoomId, OwnedUserId,
-    },
+    ruma::{OwnedEventId, OwnedRoomId, OwnedUserId},
     statics::KEYS,
-    store::Store,
     util::DateTime,
 };
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use futures_signals::signal::Mutable;
-use matrix_sdk::{event_handler::Ctx, room::Joined, room::Room, Client as MatrixClient};
+use matrix_sdk::{room::Joined, room::Room};
 use std::collections::{hash_map::Entry, HashMap};
 
 use super::{client::Client, group::Group, RUNTIME};
