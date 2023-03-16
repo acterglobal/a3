@@ -452,14 +452,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.0"
-  flutter_icons_null_safety:
-    dependency: "direct main"
-    description:
-      name: flutter_icons_null_safety
-      sha256: "60fd2594b08cba99d74c9c75e0fb7856b33377a538563713dca21bb71fcc1eec"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   flutter_inappwebview:
     dependency: transitive
     description:
