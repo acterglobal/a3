@@ -5,6 +5,7 @@ import 'package:acter/common/utils/utils.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/bug_report/controllers/bug_report_controller.dart';
 import 'package:acter/features/bug_report/widgets/select_tag.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,7 +40,7 @@ class _BugReportState extends State<BugReportPage> {
         leading: InkWell(
           onTap: () => Navigator.pop(context),
           child: const Icon(
-            Icons.arrow_back_ios_new,
+            Atlas.arrow_left_circle,
             color: Colors.white,
           ),
         ),
