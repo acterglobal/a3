@@ -93,7 +93,7 @@ class ActerSdk {
   }
 
   Future<void> _restore() async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
+    Directory appDocDir = await getApplicationSupportDirectory();
     String appDocPath = appDocDir.path;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> sessions = (prefs.getStringList(_sessionKey) ?? []);
@@ -162,7 +162,7 @@ class ActerSdk {
       final api = Platform.isAndroid
           ? ffi.Api(await _getAndroidDynLib('libacter.so'))
           : ffi.Api.load();
-      Directory appDocDir = await getApplicationDocumentsDirectory();
+      Directory appDocDir = await getApplicationSupportDirectory();
       try {
         api.initLogging(appDocDir.path, logSettings);
       } catch (e) {
@@ -193,7 +193,7 @@ class ActerSdk {
       }
     }
 
-    Directory appDocDir = await getApplicationDocumentsDirectory();
+    Directory appDocDir = await getApplicationSupportDirectory();
     String appDocPath = appDocDir.path;
     final client = await _api.loginNewClient(
       appDocPath,
@@ -255,7 +255,7 @@ class ActerSdk {
       }
     }
 
-    Directory appDocDir = await getApplicationDocumentsDirectory();
+    Directory appDocDir = await getApplicationSupportDirectory();
     String appDocPath = appDocDir.path;
     final client = await _api.registerWithToken(
       appDocPath,
