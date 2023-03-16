@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:colorize_text_avatar/colorize_text_avatar.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CustomAvatar extends StatefulWidget {
   final String uniqueKey;
@@ -90,7 +90,7 @@ class _CustomAvatarState extends State<CustomAvatar> {
           return CircleAvatar(
             radius: widget.radius,
             backgroundColor: Colors.grey[700],
-            child: SvgPicture.asset('assets/images/people.svg'),
+            child: const Icon(Atlas.team_group_thin),
           );
         } else {
           return SizedBox(
