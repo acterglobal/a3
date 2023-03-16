@@ -73,7 +73,7 @@ use matrix_sdk::{
                 },
                 tombstone::{OriginalRoomTombstoneEvent, OriginalSyncRoomTombstoneEvent},
                 topic::{OriginalRoomTopicEvent, OriginalSyncRoomTopicEvent},
-                MediaSource, ThumbnailInfo,
+                ImageInfo, MediaSource, ThumbnailInfo,
             },
             space::{
                 child::{OriginalSpaceChildEvent, OriginalSyncSpaceChildEvent},
@@ -1852,15 +1852,7 @@ impl RoomMessage {
             MessageType::Emote(content) => {}
             MessageType::Image(content) => {
                 if let Some(info) = content.info.as_ref() {
-                    image_desc = Some(ImageDesc {
-                        name: content.body.clone(),
-                        mimetype: info.mimetype.clone(),
-                        size: info.size.map(u64::from),
-                        width: info.width.map(u64::from),
-                        height: info.height.map(u64::from),
-                        thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
-                        thumbnail_source: info.thumbnail_source.clone(),
-                    });
+                    image_desc = Some(ImageDesc::new(content.body.clone(), *info.clone()));
                 }
             }
             MessageType::Video(content) => {
@@ -3113,6 +3105,17 @@ pub struct ImageDesc {
 }
 
 impl ImageDesc {
+    pub fn new(name: String, info: ImageInfo) -> Self {
+        ImageDesc {
+            name,
+            mimetype: info.mimetype,
+            size: info.size.map(u64::from),
+            width: info.width.map(u64::from),
+            height: info.height.map(u64::from),
+            thumbnail_info: info.thumbnail_info.to_owned().map(|x| *x),
+            thumbnail_source: info.thumbnail_source,
+        }
+    }
     pub fn name(&self) -> String {
         self.name.clone()
     }

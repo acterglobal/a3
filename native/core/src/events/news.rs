@@ -1,6 +1,6 @@
 use crate::util::deserialize_some;
-use derive_getters::Getters;
 use derive_builder::Builder;
+use derive_getters::Getters;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
 
@@ -36,7 +36,7 @@ impl NewsContent {
         };
         Some(i.clone())
     }
-    
+
     pub fn text(&self) -> Option<TextMessageEventContent> {
         let NewsContent::Text(i) = self else {
             return None;
@@ -53,7 +53,7 @@ impl NewsContent {
 }
 
 /// A news slide represents one full-sized slide of news
-#[derive(Clone, Debug, Builder, Deserialize, Getters,Serialize)]
+#[derive(Clone, Debug, Builder, Deserialize, Getters, Serialize)]
 pub struct NewsSlide {
     /// A slide must contain some news-worthy content
     #[serde(flatten)]

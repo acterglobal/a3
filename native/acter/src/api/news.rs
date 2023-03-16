@@ -1,3 +1,4 @@
+use super::message::{ImageDesc, TextDesc, VideoDesc};
 use acter_core::{
     events::{
         news::{self, NewsEntryBuilder},
@@ -10,10 +11,14 @@ use acter_core::{
 use anyhow::{bail, Context, Result};
 use async_broadcast::Receiver;
 use core::time::Duration;
-use matrix_sdk::{room::Joined, room::Room};
+use matrix_sdk::{
+    media::{MediaFormat, MediaRequest},
+    room::Joined,
+    room::Room,
+};
 use std::collections::{hash_map::Entry, HashMap};
 
-use super::{client::Client, group::Group, RUNTIME};
+use super::{api::FfiBuffer, client::Client, group::Group, RUNTIME};
 
 impl Client {
     pub async fn wait_for_news(
@@ -117,6 +122,59 @@ impl Group {
 }
 
 #[derive(Clone, Debug)]
+pub struct NewsSlide {
+    client: Client,
+    room: Room,
+    inner: news::NewsSlide,
+}
+
+impl std::ops::Deref for NewsSlide {
+    type Target = news::NewsSlide;
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl NewsSlide {
+    pub fn type_str(&self) -> String {
+        self.inner.content().type_str()
+    }
+
+    pub fn image_desc(&self) -> Option<ImageDesc> {
+        self.inner.content().image().and_then(|img| {
+            let Some(info) = img.info else {
+                return None
+            };
+            Some(ImageDesc::new(img.body.clone(), *info))
+        })
+    }
+
+    pub fn text(&self) -> Option<String> {
+        // FIXME: to be implemented
+        None
+    }
+
+    pub async fn image_binary(&self) -> Result<FfiBuffer<u8>> {
+        // any variable in self can't be called directly in spawn
+        let Some(content) = self.inner.content().image() else {
+            bail!("Not an image");
+        };
+        let client = self.client.clone();
+        let request = MediaRequest {
+            source: content.source.clone(),
+            format: MediaFormat::File,
+        };
+        RUNTIME
+            .spawn(async move {
+                Ok(FfiBuffer::new(
+                    client.media().get_media_content(&request, false).await?,
+                ))
+            })
+            .await?
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct NewsEntry {
     client: Client,
     room: Room,
@@ -130,11 +188,22 @@ impl std::ops::Deref for NewsEntry {
     }
 }
 
-/// helpers for content
-impl NewsEntry {}
-
 /// Custom functions
 impl NewsEntry {
+    pub fn slides_count(&self) -> u8 {
+        self.content.slides().len() as u8
+    }
+
+    pub fn get_slide(&self, pos: u8) -> Option<NewsSlide> {
+        self.content
+            .slides()
+            .get(pos as usize)
+            .map(|inner| NewsSlide {
+                inner: inner.clone(),
+                client: self.client.clone(),
+                room: self.room.clone(),
+            })
+    }
     pub async fn refresh(&self) -> Result<NewsEntry> {
         let key = self.content.event_id().to_string();
         let client = self.client.clone();
@@ -183,6 +252,14 @@ impl NewsEntry {
                 Ok(crate::CommentsManager::new(client, room, inner))
             })
             .await?
+    }
+
+    pub fn comments_count(&self) -> u32 {
+        4
+    }
+
+    pub fn likes_count(&self) -> u32 {
+        19
     }
 }
 

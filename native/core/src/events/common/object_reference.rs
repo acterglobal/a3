@@ -1,6 +1,6 @@
 use super::Position;
-use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId};
 use derive_getters::Getters;
+use matrix_sdk::ruma::{OwnedEventId, OwnedRoomId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Eq, PartialEq, Clone, strum::Display, Debug, Deserialize, Serialize, Default)]
@@ -53,7 +53,7 @@ impl CalendarEventAction {
     }
 }
 
-#[derive(Eq, PartialEq,  Clone, Debug, Deserialize, Serialize)]
+#[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case", tag = "ref")]
 pub enum RefDetails {
     Task {
@@ -74,7 +74,7 @@ pub enum RefDetails {
 impl RefDetails {
     pub fn type_str(&self) -> String {
         match self {
-            RefDetails::Task {.. } => "task".to_string(),
+            RefDetails::Task { .. } => "task".to_string(),
             RefDetails::TaskList { .. } => "task-list".to_string(),
             RefDetails::CalendarEvent { .. } => "calendar-event".to_string(),
         }
@@ -82,17 +82,16 @@ impl RefDetails {
 
     pub fn embed_action_str(&self) -> String {
         match self {
-            RefDetails::Task {action , .. } => action.to_string(),
-            RefDetails::TaskList { action , .. } => action.to_string(),
+            RefDetails::Task { action, .. } => action.to_string(),
+            RefDetails::TaskList { action, .. } => action.to_string(),
             RefDetails::CalendarEvent { action, .. } => action.to_string(),
         }
-
     }
 
     pub fn task_list_id_str(&self) -> Option<String> {
         match self {
-            RefDetails::Task { task_list , .. } => Some(task_list.to_string()),
-            _ => None
+            RefDetails::Task { task_list, .. } => Some(task_list.to_string()),
+            _ => None,
         }
     }
 }

@@ -1,6 +1,6 @@
 pub use csscolorparser::Color;
-pub use matrix_sdk::ruma::events::room::ImageInfo;
 use derive_getters::Getters;
+pub use matrix_sdk::ruma::events::room::ImageInfo;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, strum::Display, Deserialize, Serialize, Default)]

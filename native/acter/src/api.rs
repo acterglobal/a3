@@ -33,10 +33,7 @@ mod verification;
 
 pub use account::Account;
 pub use acter_core::{
-    events::{
-        news::{NewsSlide, NewsContent},
-        RefDetails, ObjRef, UtcDateTime, Colorize,
-    },
+    events::{news::NewsContent, Colorize, ObjRef, RefDetails, UtcDateTime},
     models::{Color as EfkColor, Tag},
 };
 pub use auth::{
@@ -55,7 +52,7 @@ pub use message::{
     FileDesc, ImageDesc, ReactionDesc, RoomEventItem, RoomMessage, RoomVirtualItem, TextDesc,
     VideoDesc,
 };
-pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder};
+pub use news::{NewsEntry, NewsEntryDraft, NewsEntryUpdateBuilder, NewsSlide};
 pub use pins::{Pin as ActerPin, PinDraft, PinUpdateBuilder};
 pub use profile::{RoomProfile, UserProfile};
 pub use receipt::{ReceiptEvent, ReceiptRecord};

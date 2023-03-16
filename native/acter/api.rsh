@@ -66,27 +66,31 @@ object Colorize {
     fn background() -> Option<EfkColor>;
 }
 
-object NewsContent {
-    /// gives either `image`, `text` or `video`
-    fn type_str() -> string;
-    
-
-}
 
 /// A single Slide of a NewsEntry
 object NewsSlide {
     /// the content of this slide
-    fn content() -> NewsContent;
+    fn type_str() -> string;
     /// the references linked in this slide,
     fn references() -> Vec<ObjRef>;
+    /// if this is an image, hand over the description
+    fn image_desc() -> Option<ImageDesc>;
+    /// if this is an image, hand over the data
+    fn image_binary() -> Future<Result<buffer<u8>>>;
 }
 
 /// A news entry
 object NewsEntry {
+    fn slides_count() -> u8;
     /// The slides belonging to this news item
-    fn slides() -> Vec<NewsSlide>;
+    fn get_slide(pos: u8) -> Option<NewsSlide>;
     /// The color setting
     fn colors() -> Option<Colorize>;
+
+    /// how many comments on this news entry
+    fn comments_count() -> u32;
+    /// how many likes on this news entry
+    fn likes_count() -> u32;
 }
 
 object NewsEntryDraft {

@@ -12,7 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class NewsItem extends StatelessWidget {
   final Client client;
-  final News news;
+  final NewsEntry news;
   final int index;
 
   const NewsItem({
@@ -24,8 +24,8 @@ class NewsItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var bgColor = convertColor(news.bgColor(), AppCommonTheme.backgroundColor);
-    var fgColor = convertColor(news.fgColor(), AppCommonTheme.primaryColor);
+    var bgColor = convertColor(news.colors()?.background(), AppCommonTheme.backgroundColor);
+    var fgColor = convertColor(news.colors()?.color(), AppCommonTheme.primaryColor);
     bool isDesktop = Platform.isWindows || Platform.isMacOS || Platform.isLinux;
 
     return Stack(
@@ -35,7 +35,7 @@ class NewsItem extends StatelessWidget {
           color: bgColor,
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          child: _ImageWidget(news: news, isDesktop: isDesktop),
+          child: _ImageWidget(news: news.get_slide(0), isDesktop: isDesktop),
           clipBehavior: Clip.none,
         ),
         LayoutBuilder(
@@ -93,12 +93,12 @@ class _ImageWidget extends StatelessWidget {
     required this.isDesktop,
   });
 
-  final News news;
+  final NewsSlide news;
   final bool isDesktop;
 
   @override
   Widget build(BuildContext context) {
-    var image = news.image();
+    var image = await news.image_binary()?;
     Size size = WidgetsBinding.instance.window.physicalSize;
     if (image == null) {
       return const SizedBox.shrink();
@@ -121,7 +121,7 @@ class _TitleWidget extends StatelessWidget {
     required this.foregroundColor,
   });
 
-  final News news;
+  final NewsEntry news;
   final ui.Color backgroundColor;
   final ui.Color foregroundColor;
 
@@ -140,7 +140,7 @@ class _SubtitleWidget extends StatelessWidget {
     required this.foregroundColor,
   });
 
-  final News news;
+  final NewsEntry news;
   final ui.Color backgroundColor;
   final ui.Color foregroundColor;
 

@@ -13,6 +13,6 @@ pub mod pins;
 pub mod tasks;
 
 pub use common::{
-    BelongsTo, BrandIcon, Color, Colorize, Icon, Labels, ObjRef, Reference, References, TimeZone,
-    Update, UtcDateTime, RefDetails, Position,
+    BelongsTo, BrandIcon, Color, Colorize, Icon, Labels, ObjRef, Position, RefDetails, Reference,
+    References, TimeZone, Update, UtcDateTime,
 };

@@ -1285,6 +1285,52 @@ class Api {
     return tmp7;
   }
 
+  FfiBufferUint8? __newsSlideImageBinaryFuturePoll(
+    int boxed,
+    int postCobject,
+    int port,
+  ) {
+    final tmp0 = boxed;
+    final tmp2 = postCobject;
+    final tmp4 = port;
+    var tmp1 = 0;
+    var tmp3 = 0;
+    var tmp5 = 0;
+    tmp1 = tmp0;
+    tmp3 = tmp2;
+    tmp5 = tmp4;
+    final tmp6 = _newsSlideImageBinaryFuturePoll(
+      tmp1,
+      tmp3,
+      tmp5,
+    );
+    final tmp8 = tmp6.arg0;
+    final tmp9 = tmp6.arg1;
+    final tmp10 = tmp6.arg2;
+    final tmp11 = tmp6.arg3;
+    final tmp12 = tmp6.arg4;
+    final tmp13 = tmp6.arg5;
+    if (tmp8 == 0) {
+      return null;
+    }
+    if (tmp9 == 0) {
+      final ffi.Pointer<ffi.Uint8> tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+      final tmp9_0 = utf8.decode(tmp10_0.asTypedList(tmp11));
+      if (tmp11 > 0) {
+        final ffi.Pointer<ffi.Void> tmp10_0;
+        tmp10_0 = ffi.Pointer.fromAddress(tmp10);
+        this.__deallocate(tmp10_0, tmp12, 1);
+      }
+      throw tmp9_0;
+    }
+    final ffi.Pointer<ffi.Void> tmp13_0 = ffi.Pointer.fromAddress(tmp13);
+    final tmp13_1 = _Box(this, tmp13_0, "drop_box_FfiBuffer");
+    tmp13_1._finalizer = this._registerFinalizer(tmp13_1);
+    final tmp14 = FfiBufferUint8._(this, tmp13_1);
+    final tmp7 = tmp14;
+    return tmp7;
+  }
+
   EventId? __pinDraftSendFuturePoll(
     int boxed,
     int postCobject,
@@ -6404,24 +6450,14 @@ class Api {
       _ColorizeBackgroundReturn Function(
     int,
   )>();
-  late final _newsContentTypeStrPtr = _lookup<
+  late final _newsSlideTypeStrPtr = _lookup<
       ffi.NativeFunction<
-          _NewsContentTypeStrReturn Function(
+          _NewsSlideTypeStrReturn Function(
     ffi.Int64,
-  )>>("__NewsContent_type_str");
+  )>>("__NewsSlide_type_str");
 
-  late final _newsContentTypeStr = _newsContentTypeStrPtr.asFunction<
-      _NewsContentTypeStrReturn Function(
-    int,
-  )>();
-  late final _newsSlideContentPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Int64 Function(
-    ffi.Int64,
-  )>>("__NewsSlide_content");
-
-  late final _newsSlideContent = _newsSlideContentPtr.asFunction<
-      int Function(
+  late final _newsSlideTypeStr = _newsSlideTypeStrPtr.asFunction<
+      _NewsSlideTypeStrReturn Function(
     int,
   )>();
   late final _newsSlideReferencesPtr = _lookup<
@@ -6434,14 +6470,46 @@ class Api {
       int Function(
     int,
   )>();
-  late final _newsEntrySlidesPtr = _lookup<
+  late final _newsSlideImageDescPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideImageDescReturn Function(
+    ffi.Int64,
+  )>>("__NewsSlide_image_desc");
+
+  late final _newsSlideImageDesc = _newsSlideImageDescPtr.asFunction<
+      _NewsSlideImageDescReturn Function(
+    int,
+  )>();
+  late final _newsSlideImageBinaryPtr = _lookup<
       ffi.NativeFunction<
           ffi.Int64 Function(
     ffi.Int64,
-  )>>("__NewsEntry_slides");
+  )>>("__NewsSlide_image_binary");
 
-  late final _newsEntrySlides = _newsEntrySlidesPtr.asFunction<
+  late final _newsSlideImageBinary = _newsSlideImageBinaryPtr.asFunction<
       int Function(
+    int,
+  )>();
+  late final _newsEntrySlidesCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint8 Function(
+    ffi.Int64,
+  )>>("__NewsEntry_slides_count");
+
+  late final _newsEntrySlidesCount = _newsEntrySlidesCountPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _newsEntryGetSlidePtr = _lookup<
+      ffi.NativeFunction<
+          _NewsEntryGetSlideReturn Function(
+    ffi.Int64,
+    ffi.Uint8,
+  )>>("__NewsEntry_get_slide");
+
+  late final _newsEntryGetSlide = _newsEntryGetSlidePtr.asFunction<
+      _NewsEntryGetSlideReturn Function(
+    int,
     int,
   )>();
   late final _newsEntryColorsPtr = _lookup<
@@ -6452,6 +6520,26 @@ class Api {
 
   late final _newsEntryColors = _newsEntryColorsPtr.asFunction<
       _NewsEntryColorsReturn Function(
+    int,
+  )>();
+  late final _newsEntryCommentsCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__NewsEntry_comments_count");
+
+  late final _newsEntryCommentsCount = _newsEntryCommentsCountPtr.asFunction<
+      int Function(
+    int,
+  )>();
+  late final _newsEntryLikesCountPtr = _lookup<
+      ffi.NativeFunction<
+          ffi.Uint32 Function(
+    ffi.Int64,
+  )>>("__NewsEntry_likes_count");
+
+  late final _newsEntryLikesCount = _newsEntryLikesCountPtr.asFunction<
+      int Function(
     int,
   )>();
   late final _tagTitlePtr = _lookup<
@@ -11018,6 +11106,21 @@ class Api {
     int,
     int,
   )>();
+  late final _newsSlideImageBinaryFuturePollPtr = _lookup<
+      ffi.NativeFunction<
+          _NewsSlideImageBinaryFuturePollReturn Function(
+    ffi.Int64,
+    ffi.Int64,
+    ffi.Int64,
+  )>>("__NewsSlide_image_binary_future_poll");
+
+  late final _newsSlideImageBinaryFuturePoll =
+      _newsSlideImageBinaryFuturePollPtr.asFunction<
+          _NewsSlideImageBinaryFuturePollReturn Function(
+    int,
+    int,
+    int,
+  )>();
   late final _pinDraftSendFuturePollPtr = _lookup<
       ffi.NativeFunction<
           _PinDraftSendFuturePollReturn Function(
@@ -13177,55 +13280,6 @@ class Api {
 
   late final _ffiListNewsEntryInsert =
       _ffiListNewsEntryInsertPtr.asFunction<void Function(int, int, int)>();
-  FfiListNewsSlide createFfiListNewsSlide() {
-    final ffi.Pointer<ffi.Void> list_ptr =
-        ffi.Pointer.fromAddress(_ffiListNewsSlideCreate());
-    final list_box = _Box(this, list_ptr, "drop_box_FfiListNewsSlide");
-    return FfiListNewsSlide._(this, list_box);
-  }
-
-  late final _ffiListNewsSlideCreatePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function()>>(
-          "__FfiListNewsSlideCreate");
-
-  late final _ffiListNewsSlideCreate =
-      _ffiListNewsSlideCreatePtr.asFunction<int Function()>();
-
-  late final _ffiListNewsSlideLenPtr =
-      _lookup<ffi.NativeFunction<ffi.Uint32 Function(ffi.IntPtr)>>(
-          "__FfiListNewsSlideLen");
-
-  late final _ffiListNewsSlideLen =
-      _ffiListNewsSlideLenPtr.asFunction<int Function(int)>();
-
-  late final _ffiListNewsSlideElementAtPtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListNewsSlideElementAt");
-
-  late final _ffiListNewsSlideElementAt =
-      _ffiListNewsSlideElementAtPtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListNewsSlideRemovePtr =
-      _lookup<ffi.NativeFunction<ffi.IntPtr Function(ffi.IntPtr, ffi.Uint32)>>(
-          "__FfiListNewsSlideRemove");
-
-  late final _ffiListNewsSlideRemove =
-      _ffiListNewsSlideRemovePtr.asFunction<int Function(int, int)>();
-
-  late final _ffiListNewsSlideAddPtr =
-      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.IntPtr, ffi.IntPtr)>>(
-          "__FfiListNewsSlideAdd");
-
-  late final _ffiListNewsSlideAdd =
-      _ffiListNewsSlideAddPtr.asFunction<void Function(int, int)>();
-
-  late final _ffiListNewsSlideInsertPtr = _lookup<
-      ffi.NativeFunction<
-          ffi.Void Function(
-              ffi.IntPtr, ffi.Uint32, ffi.IntPtr)>>("__FfiListNewsSlideInsert");
-
-  late final _ffiListNewsSlideInsert =
-      _ffiListNewsSlideInsertPtr.asFunction<void Function(int, int, int)>();
   FfiListObjRef createFfiListObjRef() {
     final ffi.Pointer<ffi.Void> list_ptr =
         ffi.Pointer.fromAddress(_ffiListObjRefCreate());
@@ -13954,17 +14008,18 @@ class Colorize {
   }
 }
 
-class NewsContent {
+/// A single Slide of a NewsEntry
+class NewsSlide {
   final Api _api;
   final _Box _box;
 
-  NewsContent._(this._api, this._box);
+  NewsSlide._(this._api, this._box);
 
-  /// gives either `image`, `text` or `video`
+  /// the content of this slide
   String typeStr() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsContentTypeStr(
+    final tmp1 = _api._newsSlideTypeStr(
       tmp0,
     );
     final tmp3 = tmp1.arg0;
@@ -13977,34 +14032,6 @@ class NewsContent {
       tmp3_0 = ffi.Pointer.fromAddress(tmp3);
       _api.__deallocate(tmp3_0, tmp5 * 1, 1);
     }
-    return tmp2;
-  }
-
-  /// Manually drops the object and unregisters the FinalizableHandle.
-  void drop() {
-    _box.drop();
-  }
-}
-
-/// A single Slide of a NewsEntry
-class NewsSlide {
-  final Api _api;
-  final _Box _box;
-
-  NewsSlide._(this._api, this._box);
-
-  /// the content of this slide
-  NewsContent content() {
-    var tmp0 = 0;
-    tmp0 = _box.borrow();
-    final tmp1 = _api._newsSlideContent(
-      tmp0,
-    );
-    final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_NewsContent");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp2 = NewsContent._(_api, tmp3_1);
     return tmp2;
   }
 
@@ -14024,6 +14051,40 @@ class NewsSlide {
     return tmp2;
   }
 
+  /// if this is an image, hand over the description
+  ImageDesc? imageDesc() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideImageDesc(
+      tmp0,
+    );
+    final tmp3 = tmp1.arg0;
+    final tmp4 = tmp1.arg1;
+    if (tmp3 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp4_0 = ffi.Pointer.fromAddress(tmp4);
+    final tmp4_1 = _Box(_api, tmp4_0, "drop_box_ImageDesc");
+    tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
+    final tmp2 = ImageDesc._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// if this is an image, hand over the data
+  Future<FfiBufferUint8> imageBinary() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsSlideImageBinary(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
+    final tmp3_1 = _Box(_api, tmp3_0, "__NewsSlide_image_binary_future_drop");
+    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
+    final tmp2 = _nativeFuture(tmp3_1, _api.__newsSlideImageBinaryFuturePoll);
+    return tmp2;
+  }
+
   /// Manually drops the object and unregisters the FinalizableHandle.
   void drop() {
     _box.drop();
@@ -14037,20 +14098,40 @@ class NewsEntry {
 
   NewsEntry._(this._api, this._box);
 
-  /// The slides belonging to this news item
-  FfiListNewsSlide slides() {
+  int slidesCount() {
     var tmp0 = 0;
     tmp0 = _box.borrow();
-    final tmp1 = _api._newsEntrySlides(
+    final tmp1 = _api._newsEntrySlidesCount(
       tmp0,
     );
     final tmp3 = tmp1;
-    final ffi.Pointer<ffi.Void> tmp3_0 = ffi.Pointer.fromAddress(tmp3);
-    final tmp3_1 = _Box(_api, tmp3_0, "drop_box_FfiListNewsSlide");
-    tmp3_1._finalizer = _api._registerFinalizer(tmp3_1);
-    final tmp4 = FfiListNewsSlide._(_api, tmp3_1);
-    final tmp2 = tmp4;
+    final tmp2 = tmp3;
     return tmp2;
+  }
+
+  /// The slides belonging to this news item
+  NewsSlide? getSlide(
+    int pos,
+  ) {
+    final tmp1 = pos;
+    var tmp0 = 0;
+    var tmp2 = 0;
+    tmp0 = _box.borrow();
+    tmp2 = tmp1;
+    final tmp3 = _api._newsEntryGetSlide(
+      tmp0,
+      tmp2,
+    );
+    final tmp5 = tmp3.arg0;
+    final tmp6 = tmp3.arg1;
+    if (tmp5 == 0) {
+      return null;
+    }
+    final ffi.Pointer<ffi.Void> tmp6_0 = ffi.Pointer.fromAddress(tmp6);
+    final tmp6_1 = _Box(_api, tmp6_0, "drop_box_NewsSlide");
+    tmp6_1._finalizer = _api._registerFinalizer(tmp6_1);
+    final tmp4 = NewsSlide._(_api, tmp6_1);
+    return tmp4;
   }
 
   /// The color setting
@@ -14069,6 +14150,30 @@ class NewsEntry {
     final tmp4_1 = _Box(_api, tmp4_0, "drop_box_Colorize");
     tmp4_1._finalizer = _api._registerFinalizer(tmp4_1);
     final tmp2 = Colorize._(_api, tmp4_1);
+    return tmp2;
+  }
+
+  /// how many comments on this news entry
+  int commentsCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryCommentsCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
+    return tmp2;
+  }
+
+  /// how many likes on this news entry
+  int likesCount() {
+    var tmp0 = 0;
+    tmp0 = _box.borrow();
+    final tmp1 = _api._newsEntryLikesCount(
+      tmp0,
+    );
+    final tmp3 = tmp1;
+    final tmp2 = tmp3;
     return tmp2;
   }
 
@@ -22496,13 +22601,27 @@ class _ColorizeBackgroundReturn extends ffi.Struct {
   external int arg1;
 }
 
-class _NewsContentTypeStrReturn extends ffi.Struct {
+class _NewsSlideTypeStrReturn extends ffi.Struct {
   @ffi.Int64()
   external int arg0;
   @ffi.Uint64()
   external int arg1;
   @ffi.Uint64()
   external int arg2;
+}
+
+class _NewsSlideImageDescReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
+}
+
+class _NewsEntryGetSlideReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Int64()
+  external int arg1;
 }
 
 class _NewsEntryColorsReturn extends ffi.Struct {
@@ -23829,6 +23948,21 @@ class _GuestClientFuturePollReturn extends ffi.Struct {
 }
 
 class _RegisterWithTokenFuturePollReturn extends ffi.Struct {
+  @ffi.Uint8()
+  external int arg0;
+  @ffi.Uint8()
+  external int arg1;
+  @ffi.Int64()
+  external int arg2;
+  @ffi.Uint64()
+  external int arg3;
+  @ffi.Uint64()
+  external int arg4;
+  @ffi.Int64()
+  external int arg5;
+}
+
+class _NewsSlideImageBinaryFuturePollReturn extends ffi.Struct {
   @ffi.Uint8()
   external int arg0;
   @ffi.Uint8()
@@ -26004,66 +26138,6 @@ class FfiListNewsEntry extends Iterable<NewsEntry>
   ///Although you can use the "elementAt" method to get a reference to the added element
   void insert(int index, NewsEntry element) {
     _api._ffiListNewsEntryInsert(_box.borrow(), index, element._box.borrow());
-    element._box.move();
-  }
-
-  void drop() {
-    _box.drop();
-  }
-}
-
-class FfiListNewsSlide extends Iterable<NewsSlide>
-    implements CustomIterable<NewsSlide> {
-  final Api _api;
-  final _Box _box;
-
-  FfiListNewsSlide._(this._api, this._box);
-
-  @override
-  Iterator<NewsSlide> get iterator => CustomIterator(this);
-
-  @override
-  int get length {
-    return _api._ffiListNewsSlideLen(_box.borrow());
-  }
-
-  ///List object owns the elements, and objects returned by this method hold onto the list object ensuring the pointed to element isn/t dropped.
-  @override
-  NewsSlide elementAt(int index) {
-    final address = _api._ffiListNewsSlideElementAt(_box.borrow(), index);
-    final reference = _Box(
-      _api,
-      ffi.Pointer.fromAddress(address),
-      "drop_box_Leak",
-      context: this,
-    );
-    return NewsSlide._(_api, reference);
-  }
-
-  NewsSlide operator [](int index) {
-    return elementAt(index);
-  }
-
-  /// Moves the element out of this list and returns it
-  NewsSlide remove(int index) {
-    final address = _api._ffiListNewsSlideRemove(_box.borrow(), index);
-    final reference =
-        _Box(_api, ffi.Pointer.fromAddress(address), "drop_box_NewsSlide");
-    reference._finalizer = _api._registerFinalizer(reference);
-    return NewsSlide._(_api, reference);
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void add(NewsSlide element) {
-    _api._ffiListNewsSlideAdd(_box.borrow(), element._box.borrow());
-    element._box.move();
-  }
-
-  ///The inserted element is moved into the list and must not be used again
-  ///Although you can use the "elementAt" method to get a reference to the added element
-  void insert(int index, NewsSlide element) {
-    _api._ffiListNewsSlideInsert(_box.borrow(), index, element._box.borrow());
     element._box.move();
   }
 
