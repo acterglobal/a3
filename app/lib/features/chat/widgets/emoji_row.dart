@@ -23,6 +23,7 @@
 import 'package:acter/common/utils/constants.dart';
 import 'package:acter/common/widgets/emoji_picker_widget.dart';
 import 'package:acter/common/widgets/reaction_pop_up_config.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 
@@ -68,7 +69,7 @@ class EmojiRow extends StatelessWidget {
         IconButton(
           padding: const EdgeInsets.only(bottom: 5.0),
           icon: Icon(
-            Icons.add,
+            Atlas.plus_circle,
             color: Colors.grey.shade600,
             size: size ?? 28,
           ),

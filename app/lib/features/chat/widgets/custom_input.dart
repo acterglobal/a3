@@ -3,22 +3,21 @@ import 'dart:convert';
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:themed/themed.dart';
 import 'package:intl/intl.dart' show toBeginningOfSentenceCase;
 
 class CustomChatInput extends StatelessWidget {
-  static const List<List<String>> _attachmentNameList = [
-    ['camera', 'Camera'],
-    ['gif', 'GIF'],
-    ['document', 'File'],
-    ['location', 'Location'],
+  static const List<Icon> _attachmentIcons = [
+    Icon(Atlas.camera_photo),
+    Icon(Atlas.folder),
+    Icon(Atlas.location),
   ];
   final ChatRoomController roomController;
   final Function()? onButtonPressed;
@@ -91,7 +90,7 @@ class CustomChatInput extends StatelessWidget {
                                 controller.update(['chat-input']);
                               },
                               child: const Icon(
-                                Icons.close,
+                                Atlas.xmark_circle,
                                 color: Colors.white,
                               ),
                             ),
@@ -151,7 +150,7 @@ class CustomChatInput extends StatelessWidget {
         ),
         AttachmentWidget(
           controller: roomController,
-          attachmentNameList: _attachmentNameList,
+          icons: _attachmentIcons,
           roomName: roomName,
           size: size,
         ),
@@ -189,18 +188,14 @@ class _BuildPlusBtn extends StatelessWidget {
     return Obx(
       () => Visibility(
         visible: controller.isAttachmentVisible.value,
-        replacement:
-            SvgPicture.asset('assets/images/add.svg', fit: BoxFit.none),
+        replacement: const Icon(Atlas.plus_circle),
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: AppCommonTheme.backgroundColor,
             borderRadius: BorderRadius.circular(5),
           ),
-          child: SvgPicture.asset(
-            'assets/images/add_rotate.svg',
-            fit: BoxFit.none,
-          ),
+          child: const Icon(Atlas.xmark_circle),
         ),
       ),
     );
@@ -244,7 +239,7 @@ class _TextInputWidget extends StatelessWidget {
             controller.focusNode.unfocus();
             controller.focusNode.canRequestFocus = true;
           },
-          child: SvgPicture.asset('assets/images/emoji.svg', fit: BoxFit.none),
+          child: const Icon(Icons.emoji_emotions),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
@@ -350,14 +345,14 @@ class _ReplyContentWidget extends StatelessWidget {
 
 class AttachmentWidget extends StatelessWidget {
   final ChatRoomController controller;
-  final List<List<String>> attachmentNameList;
+  final List<Icon> icons;
   final String roomName;
   final Size size;
 
   const AttachmentWidget({
     Key? key,
     required this.controller,
-    required this.attachmentNameList,
+    required this.icons,
     required this.roomName,
     required this.size,
   }) : super(key: key);
@@ -388,13 +383,54 @@ class AttachmentWidget extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      for (List<String> item in attachmentNameList)
-                        _BuildItem(
-                          controller: controller,
-                          roomName: roomName,
-                          item: item,
+                    children: <Widget>[
+                      InkWell(
+                        onTap: () {
+                          controller.isAttachmentVisible.value = false;
+                          controller.handleMultipleImageSelection(
+                            context,
+                            roomName,
+                          );
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            Icon(Atlas.camera),
+                            SizedBox(height: 6),
+                            Text(
+                              'Camera',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
                         ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          controller.handleFileSelection(context);
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            Icon(Atlas.folder),
+                            SizedBox(height: 6),
+                            Text('File', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {},
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const <Widget>[
+                            Icon(Atlas.location),
+                            SizedBox(height: 6),
+                            Text(
+                              'Location',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -412,7 +448,7 @@ class _BuildAudioBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SvgPicture.asset('assets/images/microphone-2.svg', fit: BoxFit.none);
+    return const Icon(Atlas.microphone);
   }
 }
 
@@ -430,7 +466,7 @@ class _BuildImageBtn extends StatelessWidget {
       onTap: () {
         controller.handleMultipleImageSelection(context, roomName);
       },
-      child: SvgPicture.asset('assets/images/camera.svg', fit: BoxFit.none),
+      child: const Icon(Atlas.camera_photo),
     );
   }
 }
@@ -475,56 +511,7 @@ class _BuildSendBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onButtonPressed,
-      child: SvgPicture.asset('assets/images/sendIcon.svg'),
-    );
-  }
-}
-
-class _BuildItem extends StatelessWidget {
-  const _BuildItem({
-    required this.controller,
-    required this.roomName,
-    required this.item,
-  });
-  final ChatRoomController controller;
-  final String roomName;
-  final List<String> item;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        switch (item[0]) {
-          case 'camera':
-            controller.isAttachmentVisible.value = false;
-            controller.handleMultipleImageSelection(context, roomName);
-            break;
-          case 'gif':
-            controller.handleImageSelection(context);
-            break;
-          case 'document':
-            controller.handleFileSelection(context);
-            break;
-          case 'location':
-            //location handle
-            break;
-        }
-      },
-      child: Container(
-        width: 85,
-        decoration: BoxDecoration(
-          color: AppCommonTheme.backgroundColor,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset('assets/images/${item[0]}.svg', fit: BoxFit.none),
-            const SizedBox(height: 6),
-            Text(item[1], style: const TextStyle(color: Colors.white)),
-          ],
-        ),
-      ),
+      child: const Icon(Atlas.paper_airplane),
     );
   }
 }
