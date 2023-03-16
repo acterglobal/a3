@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:acter/features/home/widgets/custom_selected_icon.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:date_format/date_format.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
-import 'package:acter/common/utils/constants.dart';
 import 'package:acter/features/chat/controllers/chat_list_controller.dart';
 import 'package:acter/features/chat/controllers/chat_room_controller.dart';
 import 'package:acter/features/chat/controllers/receipt_controller.dart';
@@ -11,7 +12,6 @@ import 'package:acter/features/home/widgets/home_widget.dart';
 import 'package:acter/features/home/widgets/user_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -86,28 +86,47 @@ class _HomePageState extends ConsumerState<HomePage> {
                             key: const Key('primaryNavigation'),
                             builder: (BuildContext ctx) {
                               return AdaptiveScaffold.standardNavigationRail(
+                                // Todo: Applied literal theme values here
+                                // as NavigationRail is not considering
+                                // NavigationRailTheme values from MaterialTheme.
+                                // To be removed once issue is fixed in package.
+                                backgroundColor: Theme.of(context)
+                                    .navigationRailTheme
+                                    .backgroundColor!,
+                                selectedIconTheme: const IconThemeData(
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                unselectedIconTheme: const IconThemeData(
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                padding: const EdgeInsets.all(0),
                                 onDestinationSelected:
                                     handleDestinationSelected,
-                                leading: const UserAvatarWidget(
-                                  isExtendedRail: false,
+                                leading: Container(
+                                  margin: const EdgeInsets.only(top: 8),
+                                  child: const UserAvatarWidget(
+                                    isExtendedRail: false,
+                                  ),
                                 ),
                                 selectedIndex: _selectedIndex,
                                 destinations: <NavigationRailDestination>[
-                                  NavigationRailDestination(
-                                    icon: newsFeedIcon(),
-                                    label: const Text('Updates'),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.bullhorn),
+                                    label: Text('Updates'),
                                   ),
                                   NavigationRailDestination(
-                                    icon: pinsIcon(),
-                                    label: const Text('Pins'),
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 28,
+                                      width: 28,
+                                    ),
+                                    label: const Text('Space'),
                                   ),
-                                  NavigationRailDestination(
-                                    icon: tasksIcon(),
-                                    label: const Text('Tasks'),
-                                  ),
-                                  NavigationRailDestination(
-                                    icon: chatIcon(),
-                                    label: const Text('Chat'),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.chats),
+                                    label: Text('Chat'),
                                   ),
                                 ],
                               );
@@ -118,29 +137,72 @@ class _HomePageState extends ConsumerState<HomePage> {
                             key: const Key('Large primaryNavigation'),
                             builder: (BuildContext ctx) {
                               return AdaptiveScaffold.standardNavigationRail(
+                                // Todo: Applied literal theme values here
+                                // as NavigationRail is not considering
+                                // NavigationRailTheme values from MaterialTheme.
+                                // To be removed once issue is fixed in package.
+                                backgroundColor: Theme.of(context)
+                                    .navigationRailTheme
+                                    .backgroundColor!,
+                                selectedIconTheme: const IconThemeData(
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                unselectedIconTheme: const IconThemeData(
+                                  size: 20,
+                                  color: Colors.white,
+                                ),
+                                padding: const EdgeInsets.all(0),
                                 onDestinationSelected:
                                     handleDestinationSelected,
                                 selectedIndex: _selectedIndex,
                                 extended: true,
-                                leading: const UserAvatarWidget(
-                                  isExtendedRail: true,
+                                leading: Container(
+                                  margin: const EdgeInsets.only(
+                                    left: 22,
+                                    top: 8,
+                                  ),
+                                  child: const UserAvatarWidget(
+                                    isExtendedRail: true,
+                                  ),
                                 ),
                                 destinations: <NavigationRailDestination>[
-                                  NavigationRailDestination(
-                                    icon: newsFeedIcon(),
-                                    label: const Text('Updates'),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.bullhorn),
+                                    label: Text(
+                                      'Updates',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                   NavigationRailDestination(
-                                    icon: pinsIcon(),
-                                    label: const Text('Pins'),
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    label: const Text(
+                                      'Space',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
-                                  NavigationRailDestination(
-                                    icon: tasksIcon(),
-                                    label: const Text('Tasks'),
-                                  ),
-                                  NavigationRailDestination(
-                                    icon: chatIcon(),
-                                    label: const Text('Chat'),
+                                  const NavigationRailDestination(
+                                    icon: Icon(Atlas.chats),
+                                    label: Text(
+                                      'Chat',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               );
@@ -199,27 +261,40 @@ class _HomePageState extends ConsumerState<HomePage> {
                             key: const Key('Bottom Navigation Small'),
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
-                            builder: (BuildContext ctx) =>
-                                AdaptiveScaffold.standardBottomNavigationBar(
+                            builder: (BuildContext ctx) => BottomNavigationBar(
                               currentIndex: _selectedIndex,
-                              onDestinationSelected: handleDestinationSelected,
-                              destinations: <NavigationDestination>[
-                                NavigationDestination(
-                                  icon: newsFeedIcon(),
-                                  label: '',
+                              onTap: handleDestinationSelected,
+                              type: BottomNavigationBarType.fixed,
+                              items: <BottomNavigationBarItem>[
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.bullhorn),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.bullhorn),
+                                  ),
+                                  label: 'Updates',
                                 ),
-                                NavigationDestination(
-                                  icon: pinsIcon(),
-                                  label: '',
+                                BottomNavigationBarItem(
+                                  icon: SvgPicture.asset(
+                                    'assets/icon/acter.svg',
+                                    height: 28,
+                                    width: 28,
+                                  ),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 28,
+                                      width: 28,
+                                    ),
+                                  ),
+                                  label: 'Space',
                                 ),
-                                NavigationDestination(
-                                  icon: tasksIcon(),
-                                  label: '',
-                                ),
-                                NavigationDestination(
-                                  icon: chatIcon(),
-                                  label: '',
-                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.chats),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.chats),
+                                  ),
+                                  label: 'Chat',
+                                )
                               ],
                             ),
                           ),
@@ -232,27 +307,40 @@ class _HomePageState extends ConsumerState<HomePage> {
                             key: const Key('Bottom Navigation Small'),
                             inAnimation: AdaptiveScaffold.bottomToTop,
                             outAnimation: AdaptiveScaffold.topToBottom,
-                            builder: (BuildContext ctx) =>
-                                AdaptiveScaffold.standardBottomNavigationBar(
+                            builder: (BuildContext ctx) => BottomNavigationBar(
                               currentIndex: _selectedIndex,
-                              onDestinationSelected: handleDestinationSelected,
-                              destinations: <NavigationDestination>[
-                                NavigationDestination(
-                                  icon: newsFeedIcon(),
-                                  label: '',
+                              onTap: handleDestinationSelected,
+                              type: BottomNavigationBarType.fixed,
+                              items: <BottomNavigationBarItem>[
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.bullhorn),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.bullhorn),
+                                  ),
+                                  label: 'Updates',
                                 ),
-                                NavigationDestination(
-                                  icon: pinsIcon(),
-                                  label: '',
+                                BottomNavigationBarItem(
+                                  icon: SvgPicture.asset(
+                                    'assets/icon/acter.svg',
+                                    height: 28,
+                                    width: 28,
+                                  ),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: SvgPicture.asset(
+                                      'assets/icon/acter.svg',
+                                      height: 28,
+                                      width: 28,
+                                    ),
+                                  ),
+                                  label: 'Space',
                                 ),
-                                NavigationDestination(
-                                  icon: tasksIcon(),
-                                  label: '',
-                                ),
-                                NavigationDestination(
-                                  icon: chatIcon(),
-                                  label: '',
-                                ),
+                                const BottomNavigationBarItem(
+                                  icon: Icon(Atlas.chats),
+                                  activeIcon: CustomSelectedIcon(
+                                    icon: Icon(Atlas.chats),
+                                  ),
+                                  label: 'Chat',
+                                )
                               ],
                             ),
                           ),
@@ -278,42 +366,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
           );
-  }
-
-  Widget newsFeedIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      key: Keys.newsSectionBtn,
-      child: SvgPicture.asset('assets/images/newsfeed_linear.svg'),
-    );
-  }
-
-  Widget pinsIcon() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 10),
-      child: Icon(FlutterIcons.pin_ent),
-    );
-  }
-
-  Widget tasksIcon() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 10),
-      child: Icon(FlutterIcons.tasks_faw5s),
-    );
-  }
-
-  Widget chatIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: SvgPicture.asset('assets/images/chat_linear.svg'),
-    );
-  }
-
-  Widget notificationIcon() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: SvgPicture.asset('assets/images/notification_linear.svg'),
-    );
   }
 
   void handleDestinationSelected(int index) {

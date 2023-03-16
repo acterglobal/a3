@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/chat_theme.dart';
@@ -22,7 +23,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:themed/themed.dart';
@@ -76,9 +76,9 @@ class _RoomPageState extends State<RoomPage> {
                   onTap: () => roomController.handleImageSelection(context),
                   child: Row(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SvgPicture.asset('assets/images/camera.svg'),
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Atlas.camera),
                       ),
                       const SizedBox(width: 10),
                       Padding(
@@ -96,9 +96,9 @@ class _RoomPageState extends State<RoomPage> {
                   onTap: () => roomController.handleFileSelection(context),
                   child: Row(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: SvgPicture.asset('assets/images/document.svg'),
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Atlas.document),
                       ),
                       const SizedBox(width: 10),
                       Padding(
@@ -198,7 +198,7 @@ class _RoomPageState extends State<RoomPage> {
                                           Navigator.pop(ctx);
                                         },
                                         child: const Icon(
-                                          Icons.close,
+                                          Atlas.xmark_circle,
                                           color: Colors.white,
                                         ),
                                       ),
@@ -398,10 +398,7 @@ class _RoomPageState extends State<RoomPage> {
             toolbarHeight: 70,
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
-              icon: SvgPicture.asset(
-                'assets/images/back_button.svg',
-                color: AppCommonTheme.svgIconColor,
-              ),
+              icon: const Icon(Atlas.arrow_left),
             ),
             title: Column(
               mainAxisSize: MainAxisSize.max,
@@ -530,7 +527,6 @@ class _RoomPageState extends State<RoomPage> {
                 inputPlaceholder: AppLocalizations.of(context)!.message,
                 sendButtonAccessibilityLabel: '',
               ),
-              customStatusBuilder: customStatusBuilder,
               messages: controller.getMessages(),
               typingIndicatorOptions: TypingIndicatorOptions(
                 customTypingIndicator: buildTypingIndicator(),
@@ -566,10 +562,9 @@ class _RoomPageState extends State<RoomPage> {
               },
               emptyState: const EmptyHistoryPlaceholder(),
               //Custom Theme class, see lib/common/store/chatTheme.dart
-              theme: ActerChatTheme(
-                attachmentButtonIcon:
-                    SvgPicture.asset('assets/images/attachment.svg'),
-                sendButtonIcon: SvgPicture.asset('assets/images/sendIcon.svg'),
+              theme: const ActerChatTheme(
+                attachmentButtonIcon: Icon(Atlas.plus_circle),
+                sendButtonIcon: Icon(Atlas.paper_airplane),
               ),
             ),
           ],
@@ -628,7 +623,7 @@ class _RoomPageState extends State<RoomPage> {
           children: [
             const ListTile(
               leading: Icon(
-                Icons.link,
+                Atlas.link,
                 color: Colors.white,
               ),
               title: Text(
@@ -644,7 +639,7 @@ class _RoomPageState extends State<RoomPage> {
             ),
             const ListTile(
               leading: Icon(
-                Icons.bookmark_border_outlined,
+                Atlas.book,
                 color: Colors.white,
               ),
               title: Text(
@@ -695,37 +690,6 @@ class _RoomPageState extends State<RoomPage> {
         );
       },
     );
-  }
-
-  Widget customStatusBuilder(
-    types.Message message, {
-    required BuildContext context,
-  }) {
-    if (message.status == types.Status.delivered) {
-      return SvgPicture.asset('assets/images/deliveredIcon.svg');
-    } else if (message.status == types.Status.seen) {
-      return SvgPicture.asset('assets/images/seenIcon.svg');
-    } else if (message.status == types.Status.sending) {
-      return const Center(
-        child: SizedBox(
-          height: 10,
-          width: 10,
-          child: CircularProgressIndicator(
-            backgroundColor: Colors.transparent,
-            strokeWidth: 1.5,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              AppCommonTheme.primaryColor,
-            ),
-          ),
-        ),
-      );
-    } else {
-      return SvgPicture.asset(
-        'assets/images/sentIcon.svg',
-        width: 12,
-        height: 12,
-      );
-    }
   }
 
   Widget customMessageBuilder(

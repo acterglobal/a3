@@ -2,6 +2,7 @@ import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/pin/pages/pin_item_page.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
     show Client, ActerPin;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class PinListItem extends StatelessWidget {
@@ -50,10 +51,7 @@ class PinListItem extends StatelessWidget {
                       onTap: () => {
                         const SnackBar(content: Text('Bookmark Icon tapped'))
                       },
-                      child: Image.asset(
-                        'assets/images/bookmark.png',
-                        color: AppCommonTheme.svgIconColor,
-                      ),
+                      child: const Icon(Atlas.book),
                     )
                   ],
                 ),

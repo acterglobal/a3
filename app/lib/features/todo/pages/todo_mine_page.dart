@@ -3,8 +3,8 @@ import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/pages/assignments_page.dart';
 import 'package:acter/features/todo/pages/recent_activity_page.dart';
 import 'package:acter/features/todo/pages/bookmarks_page.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 
 class ToDoMinePage extends StatefulWidget {
   const ToDoMinePage({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             );
           },
           leading: const Icon(
-            FlutterIcons.check_circle_faw,
+            Atlas.check_circle,
             color: Colors.white,
           ),
           title: const Text(
@@ -44,7 +44,7 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             );
           },
           leading: const Icon(
-            FlutterIcons.bookmark_mdi,
+            Atlas.book,
             color: Colors.white,
           ),
           title: const Text(
@@ -61,7 +61,7 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             );
           },
           leading: const Icon(
-            FlutterIcons.pie_chart_ent,
+            Atlas.pie_chart,
             color: Colors.white,
           ),
           title: const Text(
@@ -77,7 +77,7 @@ class _ToDoMinePageState extends State<ToDoMinePage> {
             );
           },
           leading: const Icon(
-            FlutterIcons.event_mdi,
+            Atlas.calendar_bell,
             color: Colors.white,
           ),
           title: const Text(

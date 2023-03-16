@@ -2,6 +2,7 @@ import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
 import 'package:acter/common/widgets/nav_bar_title.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class SocialProfilePage extends StatefulWidget {
@@ -40,31 +41,11 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
       appBar: AppBar(
         title: navBarTitle('Social Profile'),
         elevation: 1,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Container(
-                margin: const EdgeInsets.only(bottom: 10, left: 10),
-                child: Image.asset(
-                  'assets/images/hamburger.png',
-                  color: AppCommonTheme.svgIconColor,
-                ),
-              ),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-              tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            );
-          },
-        ),
         actions: [
           IconButton(
             icon: Container(
               margin: const EdgeInsets.only(bottom: 10, right: 10),
-              child: Image.asset(
-                'assets/images/edit.png',
-                color: AppCommonTheme.svgIconColor,
-              ),
+              child: const Icon(Atlas.pencil_edit),
             ),
             onPressed: () {},
           )
@@ -84,10 +65,7 @@ class _SocialProfilePageState extends State<SocialProfilePage> {
                   height: 230,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(25),
-                    child: Image.asset(
-                      'assets/images/profileBack.png',
-                      fit: BoxFit.cover,
-                    ),
+                    child: const SizedBox(),
                   ),
                 ),
                 Positioned(

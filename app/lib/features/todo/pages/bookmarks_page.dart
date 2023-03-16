@@ -1,6 +1,6 @@
 import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 
 class BookmarksPage extends StatefulWidget {
   const BookmarksPage({Key? key}) : super(key: key);
@@ -21,7 +21,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
             Navigator.pop(context);
           },
           child: const Icon(
-            Icons.arrow_back_ios,
+            Atlas.arrow_left_circle,
             color: Colors.white,
             size: 24,
           ),
@@ -37,7 +37,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
             child: InkWell(
               onTap: () => buildAboutDialog(),
               child: const Icon(
-                FlutterIcons.exclamation_evi,
+                Atlas.info_circle,
                 color: Colors.white,
                 size: 24,
               ),
@@ -83,7 +83,7 @@ class _BookmarksPageState extends State<BookmarksPage> {
                               width: 8,
                             ),
                             Icon(
-                              Icons.arrow_forward_ios,
+                              Atlas.arrow_right_circle,
                               color: ToDoTheme.secondaryTextColor,
                               size: 18,
                             ),

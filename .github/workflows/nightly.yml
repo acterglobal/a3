@@ -136,7 +136,15 @@ jobs:
       - name: Ensure ffi-interface is up to date
         run: git diff --exit-code  app/packages/rust_sdk/lib/acter_flutter_sdk_ffi.dart
 
-      - run: flutter ${{ matrix.flutter_build_args }} --dart-define=VERSION_NAME=Nightly+${{ steps.tag.outputs.tag }}
+      - env:
+          RAGESHAKE_URL: ${{ secrets.RAGESHAKE_URL }}
+          RAGESHAKE_APP_NAME: ${{ secrets.RAGESHAKE_APP_NAME_NIGHTLY }}
+        run: |
+          flutter ${{ matrix.flutter_build_args }} \
+            --dart-define=VERSION_NAME=Nightly+${{ steps.tag.outputs.tag }} \
+            --dart-define=RAGESHAKE_URL=$RAGESHAKE_URL \
+            --dart-define=RAGESHAKE_APP_NAME=$RAGESHAKE_APP_NAME \
+            --dart-define=RAGESHAKE_APP_VERSION="Nightly-${{ steps.tag.outputs.tag }}/${{ matrix.name }}"
         working-directory: ./app
 
       - name: Package Tar file
@@ -159,6 +167,19 @@ jobs:
           prerelease: true
           files: |
             ${{ matrix.artifact_path }}/${{ matrix.artifact_prefix }}-${{ steps.tag.outputs.tag }}.*
+
+      - name: Report issue
+        if: ${{ failure() }}
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "${{matrix.name}} nightly build failed"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        with:
+          assignees: gnunicorn
+          filename: .github/failure-report-template.md
+          update_existing: true
 
   publish:
     runs-on: ubuntu-latest
@@ -189,25 +210,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_id: ${{ steps.create_release.outputs.id }}
-
-
-  report-issue:
-    runs-on: ubuntu-latest
-    name: Report issue
-    if: ${{ failure() }}
-    needs:
-      - build
-      - publish
-    steps:
-      - name: Create Issue on Failed workflow
-        uses: dacbd/create-issue-action@main
-        with:
-          token: ${{ github.token }}
-          title: Nightly build failed
-          body: |
-            ### Nightly build failed
-            Workflow name - `${{ github.workflow }}`
-            Job -           `${{ github.job }}`
-            status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          assignees: gnunicorn

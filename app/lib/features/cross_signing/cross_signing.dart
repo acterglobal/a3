@@ -8,9 +8,9 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart'
         DeviceChangedEvent,
         FfiListVerificationEmoji,
         VerificationEvent;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sprintf/sprintf.dart';
@@ -76,10 +76,8 @@ class CrossSigning {
       }
       showSimpleNotification(
         ListTile(
-          leading: SvgPicture.asset(
-            'assets/images/baseline-devices.svg',
-            color: Colors.white,
-          ),
+          leading:
+              isDesktop ? const Icon(Atlas.laptop) : const Icon(Atlas.phone),
           title: const Text(
             'New Session Alert',
             style: NotificationPopUpTheme.contentTitleStyle,
@@ -188,7 +186,9 @@ class CrossSigning {
               children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.all(10),
-                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  child: isDesktop
+                      ? const Icon(Atlas.laptop)
+                      : const Icon(Atlas.phone),
                 ),
                 Text(
                   AppLocalizations.of(context)!.sasIncomingReqNotifTitle,
@@ -223,13 +223,9 @@ class CrossSigning {
           ),
         ),
         const Spacer(flex: 1),
-        Flexible(
+        const Flexible(
           flex: 3,
-          child: SvgPicture.asset(
-            'assets/images/lock.svg',
-            width: 100,
-            height: 100,
-          ),
+          child: Icon(Atlas.lock_keyhole),
         ),
         const Spacer(flex: 1),
         Flexible(flex: 1, child: _buildBodyOnRequest(context, event, setState)),
@@ -312,7 +308,9 @@ class CrossSigning {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
-                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  child: isDesktop
+                      ? const Icon(Atlas.laptop)
+                      : const Icon(Atlas.phone),
                 ),
                 const SizedBox(width: 5),
                 Text(
@@ -372,14 +370,9 @@ class CrossSigning {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: SvgPicture.asset(
-                    'assets/images/camera.svg',
-                    color: AppCommonTheme.primaryColor,
-                    height: 14,
-                    width: 14,
-                  ),
+                const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(Atlas.camera),
                 ),
                 Text(
                   AppLocalizations.of(context)!.verificationScanWithThisDevice,
@@ -471,7 +464,9 @@ class CrossSigning {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                child: isDesktop
+                    ? const Icon(Atlas.laptop)
+                    : const Icon(Atlas.phone),
               ),
               const SizedBox(width: 5),
               Text(
@@ -564,8 +559,9 @@ class CrossSigning {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
-                    child:
-                        SvgPicture.asset('assets/images/baseline-devices.svg'),
+                    child: isDesktop
+                        ? const Icon(Atlas.laptop)
+                        : const Icon(Atlas.phone),
                   ),
                   const SizedBox(width: 5),
                   Text(
@@ -579,15 +575,10 @@ class CrossSigning {
               ),
             ),
           ),
-          Flexible(
+          const Flexible(
             flex: 3,
             child: Center(
-              child: SvgPicture.asset(
-                'assets/images/lock.svg',
-                color: CrossSigningSheetTheme.secondaryTextColor,
-                height: 100,
-                width: 100,
-              ),
+              child: Icon(Atlas.lock_keyhole),
             ),
           ),
           Flexible(
@@ -634,8 +625,9 @@ class CrossSigning {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
-                    child:
-                        SvgPicture.asset('assets/images/baseline-devices.svg'),
+                    child: isDesktop
+                        ? const Icon(Atlas.laptop)
+                        : const Icon(Atlas.phone),
                   ),
                   const SizedBox(width: 5),
                   Text(
@@ -650,14 +642,9 @@ class CrossSigning {
             ),
           ),
           const Spacer(flex: 1),
-          Flexible(
+          const Flexible(
             flex: 3,
-            child: SvgPicture.asset(
-              'assets/images/lock.svg',
-              width: MediaQuery.of(context).size.width * 0.15,
-              height: MediaQuery.of(context).size.height * 0.15,
-              color: CrossSigningSheetTheme.secondaryTextColor,
-            ),
+            child: Icon(Atlas.lock_keyhole),
           ),
           Flexible(
             flex: 2,
@@ -731,7 +718,9 @@ class CrossSigning {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
-                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  child: isDesktop
+                      ? const Icon(Atlas.laptop)
+                      : const Icon(Atlas.phone),
                 ),
                 const SizedBox(width: 5),
                 Text(
@@ -820,7 +809,9 @@ class CrossSigning {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
-                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  child: isDesktop
+                      ? const Icon(Atlas.laptop)
+                      : const Icon(Atlas.phone),
                 ),
                 const SizedBox(width: 5),
                 Text(
@@ -1026,7 +1017,9 @@ class CrossSigning {
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
-                  child: SvgPicture.asset('assets/images/baseline-devices.svg'),
+                  child: isDesktop
+                      ? const Icon(Atlas.laptop)
+                      : const Icon(Atlas.phone),
                 ),
                 const SizedBox(width: 5),
                 Text(
@@ -1053,14 +1046,10 @@ class CrossSigning {
             ),
           ),
         ),
-        Flexible(
+        const Flexible(
           flex: 2,
           child: Center(
-            child: SvgPicture.asset(
-              'assets/images/lock.svg',
-              width: MediaQuery.of(context).size.width * 0.15,
-              height: MediaQuery.of(context).size.height * 0.15,
-            ),
+            child: Icon(Atlas.lock_keyhole),
           ),
         ),
         Flexible(

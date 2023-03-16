@@ -59,18 +59,16 @@ jobs:
       # file an error if this failed on `main` post-merge
       - name: Report issue
         if: ${{ github.ref == 'refs/heads/main' && failure() }}
-        uses: dacbd/create-issue-action@main
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "Rust integration tests failed on main"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
-          token: ${{ github.token }}
-          title: Rust integration tests failed on main
-          body: |
-            ### Rust Integration tests failed on main
-            Workflow name - `${{ github.workflow }}`
-            Job -           `${{ github.job }}`
-            status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
-            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
+          filename: .github/failure-report-template.md
+          update_existing: true
 
   flutter-desktop:
     runs-on: ubuntu-latest
@@ -152,18 +150,16 @@ jobs:
       # file an error if this failed on `main` post-merge
       - name: Report issue
         if: ${{ github.ref == 'refs/heads/main' && failure() }}
-        uses: dacbd/create-issue-action@main
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "Desktop integration tests failed on main"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
-          token: ${{ github.token }}
-          title: Desktop integration tests failed on main
-          body: |
-            ### Desktop Integration tests failed on main
-            Workflow name - `${{ github.workflow }}`
-            Job -           `${{ github.job }}`
-            status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
-            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
+          filename: .github/failure-report-template.md
+          update_existing: true
 
   flutter-ios:
     runs-on: macos-latest
@@ -242,18 +238,16 @@ jobs:
       # file an error if this failed on `main` post-merge
       - name: Report issue
         if: ${{ github.ref == 'refs/heads/main' && failure() }}
-        uses: dacbd/create-issue-action@main
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "iOS integration tests failed on main"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
-          token: ${{ github.token }}
-          title: iOS integration tests failed on main
-          body: |
-            ### iOS Integration tests failed on main
-            Workflow name - `${{ github.workflow }}`
-            Job -           `${{ github.job }}`
-            status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
-            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
+          filename: .github/failure-report-template.md
+          update_existing: true
 
   flutter-android:
     runs-on: macos-latest
@@ -338,15 +332,13 @@ jobs:
       # file an error if this failed on `main` post-merge
       - name: Report issue
         if: ${{ github.ref == 'refs/heads/main' && failure() }}
-        uses: dacbd/create-issue-action@main
+        uses: JasonEtco/create-an-issue@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TITLE: "Android integration tests failed on main"
+          FAILED_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job }}
+          ARTIFACT_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
         with:
-          token: ${{ github.token }}
-          title: Android integration tests failed on main
-          body: |
-            ### Android Integration tests failed on main
-            Workflow name - `${{ github.workflow }}`
-            Job -           `${{ github.job }}`
-            status -        `${{ job.status }}`
-            [Failed Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs/${{ github.job_id }})
-            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           assignees: gnunicorn
+          filename: .github/failure-report-template.md
+          update_existing: true

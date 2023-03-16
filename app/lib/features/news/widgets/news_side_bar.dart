@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:acter/common/snackbars/not_implemented.dart';
 import 'package:acter/common/themes/seperated_themes.dart';
@@ -10,7 +11,6 @@ import 'package:acter_flutter_sdk/acter_flutter_sdk.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' as ffi;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class NewsSideBar extends StatefulWidget {
@@ -59,15 +59,13 @@ class _NewsSideBarState extends State<NewsSideBar> {
           index: widget.index,
         ),
         _SideBarItem(
-          iconName: 'comment',
+          icon: const Icon(Atlas.comment_dots, color: Colors.white),
           label: widget.news.commentsCount().toString(),
-          color: fgColor,
           style: style,
         ),
         _SideBarItem(
-          iconName: 'reply',
+          icon: const Icon(Atlas.curve_arrow_right_bold, color: Colors.white),
           label: '76',
-          color: fgColor,
           style: style,
         ),
         _ProfileImageWidget(borderColor: fgColor),
@@ -197,37 +195,21 @@ class _ProfileImageWidget extends StatelessWidget {
 
 class _SideBarItem extends StatelessWidget {
   const _SideBarItem({
-    required this.iconName,
+    required this.icon,
     required this.label,
-    required this.color,
     required this.style,
   });
-  final String iconName;
+  final Widget icon;
   final String label;
-  final Color? color;
   final TextStyle style;
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (iconName == 'comment') {
-          showBottomSheet(context);
-        } else {
-          showNotYetImplementedMsg(context, 'News Action not yet implemented');
-        }
-      },
-      child: Column(
-        children: [
-          SvgPicture.asset(
-            'assets/images/$iconName.svg',
-            color: color,
-            width: 35,
-            height: 35,
-          ),
-          const SizedBox(height: 5),
-          Text(label, style: style),
-        ],
-      ),
+    return Column(
+      children: [
+        icon,
+        const SizedBox(height: 5),
+        Text(label, style: style),
+      ],
     );
   }
 

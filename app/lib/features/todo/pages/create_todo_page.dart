@@ -2,8 +2,8 @@ import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/common/widgets/custom_button.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/Team.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
 class CreateTodoPage extends StatefulWidget {
@@ -35,7 +35,7 @@ class _CreateTodoPageState extends State<CreateTodoPage> {
         leading: InkWell(
           onTap: () => Navigator.pop(context),
           child: const Icon(
-            Icons.arrow_back_ios_new,
+            Atlas.arrow_left_circle,
             color: Colors.white,
           ),
         ),
@@ -150,14 +150,11 @@ class _SelectTeamWidgetState extends State<_SelectTeamWidget> {
               );
             },
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: Transform.rotate(
-              angle: 90,
-              child: const Icon(
-                FlutterIcons.flow_branch_ent,
-                color: ToDoTheme.calendarColor,
-              ),
+          const Padding(
+            padding: EdgeInsets.only(left: 12.0),
+            child: Icon(
+              Atlas.group_team_collective,
+              color: ToDoTheme.calendarColor,
             ),
           )
         ],

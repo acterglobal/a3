@@ -1,6 +1,5 @@
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 OverlaySupportEntry showNoInternetNotification() {
@@ -9,7 +8,7 @@ OverlaySupportEntry showNoInternetNotification() {
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
         Icon(
-          FlutterIcons.loader_fea,
+          Icons.wifi_off,
           color: NotificationPopUpTheme.networkTextColor,
         ),
         SizedBox(

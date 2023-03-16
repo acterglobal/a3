@@ -3,9 +3,8 @@ import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoList.dart';
 import 'package:acter/models/ToDoTask.dart';
 import 'package:acter/features/todo/pages/task_detail_page.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -136,19 +135,14 @@ class TaskCard extends StatelessWidget {
                   child: Visibility(
                     visible: task.progressPercent >= 100,
                     child: const Icon(
-                      FlutterIcons.ios_checkmark_circle_outline_ion,
+                      Atlas.check_circle,
                       color: Colors.red,
                       size: 18,
                     ),
                   ),
                 ),
                 task.due != null
-                    ? SvgPicture.asset(
-                        'assets/images/calendar-2.svg',
-                        color: task.progressPercent >= 100
-                            ? Colors.red
-                            : ToDoTheme.todayCalendarColor,
-                      )
+                    ? const Icon(Atlas.calendar_dots)
                     : const SizedBox.shrink(),
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
@@ -173,15 +167,10 @@ class TaskCard extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         const Icon(
-                          FlutterIcons.dot_single_ent,
+                          Atlas.dots_horizontal,
                           color: Colors.grey,
                         ),
-                        SvgPicture.asset(
-                          'assets/images/message.svg',
-                          color: Colors.white,
-                          height: 18,
-                          width: 18,
-                        ),
+                        const Icon(Atlas.message),
                         Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: Text(
