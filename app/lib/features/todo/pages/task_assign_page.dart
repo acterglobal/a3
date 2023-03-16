@@ -1,5 +1,6 @@
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/chat/widgets/invite_user_dialog.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class TaskAssignPage extends StatelessWidget {
@@ -20,7 +21,7 @@ class TaskAssignPage extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.close),
+          icon: const Icon(Atlas.xmark_circle),
           color: ToDoTheme.primaryTextColor,
         ),
         title: const Text('List Members', style: ToDoTheme.listTitleTextStyle),
@@ -28,7 +29,7 @@ class TaskAssignPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.more_horiz),
+            icon: const Icon(Atlas.dots_horizontal),
             color: ToDoTheme.primaryTextColor,
           ),
         ],
@@ -55,7 +56,7 @@ class TaskAssignPage extends StatelessWidget {
                         const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Icon(
-                            Icons.search,
+                            Atlas.magnifying_glass,
                             color: Colors.grey,
                           ),
                         ),

@@ -1,4 +1,5 @@
 import 'package:acter/features/bug_report/controllers/bug_report_controller.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_selector/flutter_custom_selector.dart';
 import 'package:get/get.dart';
@@ -49,7 +50,7 @@ class SelectTag extends StatelessWidget {
               color: labelColor,
               fontSize: 16,
             ),
-            suffixIcon: const Icon(Icons.keyboard_arrow_down_outlined),
+            suffixIcon: const Icon(Atlas.arrow_down_circle),
             suffixIconColor: Colors.white,
             enabledBorder: inputFieldBorder(),
             border: inputFieldBorder(),

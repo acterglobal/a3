@@ -4,8 +4,8 @@ import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoComment.dart';
 import 'package:acter/features/todo/widgets/comment_input.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:get/get.dart';
 
 class TaskCommentsPage extends StatefulWidget {
@@ -49,7 +49,7 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
             Navigator.pop(context);
           },
           child: const Icon(
-            Icons.arrow_back_ios,
+            Atlas.arrow_left_circle,
             color: Colors.white,
             size: 24,
           ),
@@ -128,7 +128,7 @@ class _TaskCommentsPageState extends State<TaskCommentsPage> {
                             trailing: InkWell(
                               onTap: () => showCommentBottomSheet(context),
                               child: const Icon(
-                                FlutterIcons.dots_three_horizontal_ent,
+                                Atlas.dots_horizontal,
                                 color: Colors.white,
                               ),
                             ),

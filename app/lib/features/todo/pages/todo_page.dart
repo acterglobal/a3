@@ -4,6 +4,7 @@ import 'package:acter/features/todo/pages/todo_mine_page.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/features/todo/widgets/todo_list_view.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart' show Client;
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -63,7 +64,7 @@ class _ToDoPageState extends State<ToDoPage> {
                 ),
               ),
               child: const Icon(
-                Icons.add,
+                Atlas.plus_circle,
                 color: Colors.white,
               ),
             ),

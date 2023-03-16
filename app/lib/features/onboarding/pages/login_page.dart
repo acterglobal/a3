@@ -71,7 +71,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 height: 50,
                 width: 50,
                 child: SvgPicture.asset(
-                  'assets/images/logo.svg',
+                  'assets/icon/acter.svg',
                 ),
               ),
               const SizedBox(height: 40),

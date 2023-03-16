@@ -1,4 +1,5 @@
 import 'package:acter/common/themes/seperated_themes.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 
 class GroupLinkView extends StatefulWidget {
@@ -106,7 +107,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
                           Icon(
-                            Icons.ios_share,
+                            Atlas.share,
                             color: Colors.white,
                           ),
                           Padding(
@@ -148,7 +149,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
                           Icon(
-                            Icons.qr_code,
+                            Atlas.qr_code_thin,
                             color: Colors.white,
                           ),
                           Padding(
@@ -190,7 +191,7 @@ class _GroupLinkScreenState extends State<GroupLinkView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
                           Icon(
-                            Icons.restore_outlined,
+                            Atlas.round_arrows,
                             color: Colors.white,
                           ),
                           Padding(

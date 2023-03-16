@@ -9,10 +9,9 @@ import 'package:acter/features/todo/pages/task_assign_page.dart';
 import 'package:acter/features/todo/pages/task_comments_page.dart';
 import 'package:acter/features/todo/widgets/comment_input.dart';
 import 'package:acter/common/widgets/custom_avatar.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -35,7 +34,7 @@ class TaskDetailPage extends StatelessWidget {
         backgroundColor: ToDoTheme.secondaryColor,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close),
+          icon: const Icon(Atlas.xmark_circle),
           color: ToDoTheme.primaryTextColor,
         ),
         title: Obx(
@@ -48,7 +47,7 @@ class TaskDetailPage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () => showMoreBottomSheet(context),
-            icon: const Icon(Icons.more_horiz),
+            icon: const Icon(Atlas.dots_horizontal),
             color: ToDoTheme.primaryTextColor,
           ),
         ],
@@ -329,14 +328,7 @@ class _DueDateWidget extends StatelessWidget {
         ),
         child: Row(
           children: <Widget>[
-            SvgPicture.asset(
-              'assets/images/calendar-2.svg',
-              width: 18,
-              height: 18,
-              color: task.due != null
-                  ? ToDoTheme.todayCalendarColor
-                  : ToDoTheme.calendarColor,
-            ),
+            const Icon(Atlas.calendar),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: task.due != null
@@ -369,11 +361,11 @@ class _DueDateWidget extends StatelessWidget {
       'Next Week',
       'Pick a Date & Time'
     ];
-    List<String> optionIcons = [
-      'assets/images/clock.svg',
-      'assets/images/calendar-2.svg',
-      'assets/images/calendar.svg',
-      'assets/images/calendar-tick.svg'
+    const List<Icon> optionIcons = [
+      Icon(Atlas.clock),
+      Icon(Atlas.calendar),
+      Icon(Atlas.calendar),
+      Icon(Atlas.calendar_schedule)
     ];
 
     showModalBottomSheet(
@@ -522,12 +514,7 @@ class _DueDateWidget extends StatelessWidget {
                           ? ToDoTheme.todayCalendarColor
                           : Colors.transparent,
                       selected: tappedIdx != null && tappedIdx == index,
-                      leading: SvgPicture.asset(
-                        optionIcons[index],
-                        color: index == options.length - 1
-                            ? ToDoTheme.floatingABColor
-                            : Colors.white,
-                      ),
+                      leading: optionIcons[index],
                       title: Text(
                         options[index],
                         style: index == options.length - 1
@@ -537,7 +524,7 @@ class _DueDateWidget extends StatelessWidget {
                       ),
                       trailing: index == options.length - 1
                           ? const Icon(
-                              FlutterIcons.chevron_right_ent,
+                              Atlas.arrow_right_circle,
                               color: ToDoTheme.floatingABColor,
                             )
                           : null,
@@ -564,12 +551,7 @@ class _AddFileWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: <Widget>[
-            SvgPicture.asset(
-              'assets/images/quill_attachment.svg',
-              width: 18,
-              height: 18,
-              color: ToDoTheme.calendarColor,
-            ),
+            const Icon(Atlas.pen),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
@@ -602,7 +584,7 @@ class _AddFileWidget extends StatelessWidget {
               child: Row(
                 children: [
                   const Icon(
-                    FlutterIcons.camera_outline_mco,
+                    Atlas.camera_photo,
                     color: Colors.white,
                   ),
                   Expanded(
@@ -626,7 +608,7 @@ class _AddFileWidget extends StatelessWidget {
               child: Row(
                 children: [
                   const Icon(
-                    FlutterIcons.md_photos_ion,
+                    Atlas.photo_camera,
                     color: Colors.white,
                   ),
                   Expanded(
@@ -650,7 +632,7 @@ class _AddFileWidget extends StatelessWidget {
               child: Row(
                 children: [
                   const Icon(
-                    FlutterIcons.file_document_outline_mco,
+                    Atlas.file,
                     color: Colors.white,
                   ),
                   Expanded(
@@ -709,7 +691,7 @@ class _DiscussionWidget extends StatelessWidget {
                 Row(
                   children: [
                     const Icon(
-                      FlutterIcons.message1_ant,
+                      Atlas.message,
                       color: ToDoTheme.calendarColor,
                       size: 18,
                     ),
@@ -726,7 +708,7 @@ class _DiscussionWidget extends StatelessWidget {
                   ],
                 ),
                 const Icon(
-                  FlutterIcons.dot_single_ent,
+                  Icons.fiber_manual_record,
                   color: Colors.grey,
                 ),
 
@@ -806,7 +788,7 @@ class _DiscussionWidget extends StatelessWidget {
                                       onTap: () =>
                                           showCommentBottomSheet(context),
                                       child: const Icon(
-                                        FlutterIcons.dots_three_horizontal_ent,
+                                        Atlas.dots_horizontal,
                                         color: Colors.white,
                                       ),
                                     ),

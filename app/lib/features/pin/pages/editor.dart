@@ -1,5 +1,6 @@
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/pin/widgets/tag_item.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -72,7 +73,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Icon(Icons.close, color: Colors.white),
+              child: const Icon(Atlas.xmark_circle, color: Colors.white),
             ),
             title: Text(widget.title),
             centerTitle: true,
@@ -191,7 +192,7 @@ class _HtmlEditorExampleState extends State<HtmlEditorExample> {
                       'Tags',
                       style: TextStyle(color: Colors.white),
                     ),
-                    icon: const Icon(Icons.add, color: Colors.white),
+                    icon: const Icon(Atlas.plus_circle, color: Colors.white),
                   ),
                   if (_tagList.isNotEmpty)
                     Expanded(
@@ -371,7 +372,7 @@ class _GridView extends StatelessWidget {
             width: 80,
             child: Visibility(
               visible: selectedIndexList.contains(index) ? true : false,
-              child: const Icon(Icons.done, color: Colors.white),
+              child: const Icon(Atlas.check_circle, color: Colors.white),
             ),
             decoration: BoxDecoration(
               color: arr[index],
