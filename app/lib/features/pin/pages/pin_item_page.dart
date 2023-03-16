@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter_flutter_sdk/acter_flutter_sdk_ffi.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as m_colors;
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
@@ -62,7 +63,7 @@ class _PinItemPageState extends State<PinItemPage> {
         actions: <Widget>[
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.menu),
+            icon: const Icon(Atlas.menu_square_thin),
           )
         ],
       ),
@@ -135,7 +136,10 @@ class _PinItemPageState extends State<PinItemPage> {
                             onTap: () {
                               setState(() => editPinTitle = true);
                             },
-                            child: const Icon(Icons.edit, color: Colors.white),
+                            child: const Icon(
+                              Atlas.pencil_box,
+                              color: Colors.white,
+                            ),
                           ),
                         )
                       ],
@@ -328,7 +332,10 @@ class _PinItemPageState extends State<PinItemPage> {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         },
-                        icon: const Icon(Icons.send, color: Colors.pink),
+                        icon: const Icon(
+                          Atlas.paper_airplane,
+                          color: Colors.pink,
+                        ),
                       )
                     ],
                   ),
