@@ -1,8 +1,8 @@
 import 'package:acter/common/themes/seperated_themes.dart';
 import 'package:acter/features/todo/controllers/todo_controller.dart';
 import 'package:acter/models/ToDoList.dart';
+import 'package:atlas_icons/atlas_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -171,7 +171,7 @@ class _InputWidgetState extends State<_InputWidget> {
                         Navigator.pop(context);
                       },
                 icon: Icon(
-                  FlutterIcons.send_fea,
+                  Atlas.paper_airplane,
                   color: titleInputController.text.isEmpty
                       ? Colors.grey
                       : Colors.pink,
@@ -238,7 +238,7 @@ class __ScheduleBtnWidgetState extends State<_ScheduleBtnWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Icon(
-              FlutterIcons.calendar_weekend_outline_mco,
+              Atlas.calendar_dots,
               color: widget.index == widget.buttonIndex
                   ? ToDoTheme.primaryTextColor
                   : ToDoTheme.calendarColor,
