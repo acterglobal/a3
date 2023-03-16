@@ -1,4 +1,5 @@
 use crate::util::deserialize_some;
+use derive_getters::Getters;
 use derive_builder::Builder;
 use matrix_sdk::ruma::events::macros::EventContent;
 use serde::{Deserialize, Serialize};
@@ -20,8 +21,39 @@ pub enum NewsContent {
     Video(VideoMessageEventContent),
 }
 
+impl NewsContent {
+    pub fn type_str(&self) -> String {
+        match self {
+            NewsContent::Image(_) => "image".to_owned(),
+            NewsContent::Text(_) => "text".to_owned(),
+            NewsContent::Video(_) => "video".to_owned(),
+        }
+    }
+
+    pub fn image(&self) -> Option<ImageMessageEventContent> {
+        let NewsContent::Image(i) = self else {
+            return None;
+        };
+        Some(i.clone())
+    }
+    
+    pub fn text(&self) -> Option<TextMessageEventContent> {
+        let NewsContent::Text(i) = self else {
+            return None;
+        };
+        Some(i.clone())
+    }
+
+    pub fn video(&self) -> Option<VideoMessageEventContent> {
+        let NewsContent::Video(i) = self else {
+            return None;
+        };
+        Some(i.clone())
+    }
+}
+
 /// A news slide represents one full-sized slide of news
-#[derive(Clone, Debug, Builder, Deserialize, Serialize)]
+#[derive(Clone, Debug, Builder, Deserialize, Getters,Serialize)]
 pub struct NewsSlide {
     /// A slide must contain some news-worthy content
     #[serde(flatten)]
@@ -33,13 +65,13 @@ pub struct NewsSlide {
 }
 
 /// The payload for our news event.
-#[derive(Clone, Debug, Builder, Deserialize, Serialize, EventContent)]
+#[derive(Clone, Debug, Builder, Deserialize, Serialize, Getters, EventContent)]
 #[ruma_event(type = "global.acter.dev.news", kind = MessageLike)]
 #[builder(name = "NewsEntryBuilder", derive(Debug))]
 pub struct NewsEntryEventContent {
     /// A news entry may have one or more slides of news
     /// which are scrolled through horizontally
-    pub slides: Vec<NewsSlide>,
+    slides: Vec<NewsSlide>,
     /// You can define custom background and foreground colors
     #[builder(default)]
     #[serde(
@@ -47,7 +79,7 @@ pub struct NewsEntryEventContent {
         skip_serializing_if = "Option::is_none",
         deserialize_with = "deserialize_some"
     )]
-    pub colors: Option<Colorize>,
+    colors: Option<Colorize>,
 }
 
 /// The payload for our news event.

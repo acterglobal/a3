@@ -1,8 +1,9 @@
 pub use csscolorparser::Color;
 pub use matrix_sdk::ruma::events::room::ImageInfo;
+use derive_getters::Getters;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+#[derive(Clone, Debug, strum::Display, Deserialize, Serialize, Default)]
 #[serde(rename_all = "kebab-case")]
 pub enum Position {
     TopLeft,
@@ -18,12 +19,12 @@ pub enum Position {
 }
 
 /// Customize the color scheme
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Getters, Deserialize, Serialize)]
 pub struct Colorize {
     /// The foreground color to be used, as HEX
-    pub color: Option<Color>,
+    color: Option<Color>,
     /// The background color to be used, as HEX
-    pub background: Option<Color>,
+    background: Option<Color>,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

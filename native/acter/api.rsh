@@ -37,8 +37,56 @@ object UtcDateTime {
     fn to_rfc3339() -> string;
 }
 
-/// A news object
+object RefDetails {
+    /// gives either `task`, `task-list` or `calendar_client`
+    fn type_str() -> string;
+    /// what type of embed action is requested_inputs
+    fn embed_action_str() -> string;
+    /// if this is a `task` type, what `task-list-id` does it belong to
+    fn task_list_id_str() -> Option<string>;
+}
+
+/// An acter internal link to a different object
+object ObjRef {
+    /// the event id
+    fn event_id_str() -> string;
+    /// if that is in a different room, specified here
+    fn room_id_str() -> Option<string>;
+    /// where to position the element (if given)
+    fn position_str() -> Option<string>;
+    /// further details of the reference
+    fn reference() -> RefDetails;
+}
+
+/// A foreground and background color setting
+object Colorize {
+    /// Foreground or text color
+    fn color() -> Option<EfkColor>;
+    /// Background color
+    fn background() -> Option<EfkColor>;
+}
+
+object NewsContent {
+    /// gives either `image`, `text` or `video`
+    fn type_str() -> string;
+    
+
+}
+
+/// A single Slide of a NewsEntry
+object NewsSlide {
+    /// the content of this slide
+    fn content() -> NewsContent;
+    /// the references linked in this slide,
+    fn references() -> Vec<ObjRef>;
+}
+
+/// A news entry
 object NewsEntry {
+    /// The slides belonging to this news item
+    fn slides() -> Vec<NewsSlide>;
+    /// The color setting
+    fn colors() -> Option<Colorize>;
 }
 
 object NewsEntryDraft {

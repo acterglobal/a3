@@ -33,7 +33,10 @@ mod verification;
 
 pub use account::Account;
 pub use acter_core::{
-    events::UtcDateTime,
+    events::{
+        news::{NewsSlide, NewsContent},
+        RefDetails, ObjRef, UtcDateTime, Colorize,
+    },
     models::{Color as EfkColor, Tag},
 };
 pub use auth::{

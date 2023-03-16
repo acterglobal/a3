@@ -27,6 +27,7 @@ ruma-macros = { workspace = true }
 serde = "1.0.136"
 serde_json = "1.0.82"
 serde_repr = "0.1"
+strum = { version = "0.24.1", features = ["derive"] }
 thiserror = "1.0"
 tracing = "0.1.37"
 url = { version = "2.2.2", features = ["serde"] }
